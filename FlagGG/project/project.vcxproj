@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9460C75C-5276-468B-BA29-BF80AEAB1183}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>project</RootNamespace>
+    <ProjectName>FlagGG</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)../;$(SolutionDir)..\3rd\boost_1_67_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\3rd\boost_1_67_0\vc12_x86\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libboost_regex-vc120-mt-gd-x32-1_67.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\AsyncFrame\KernelObject\HandleObject.cpp" />
+    <ClCompile Include="..\AsyncFrame\Process\Process.cpp" />
+    <ClCompile Include="..\AsyncFrame\Thread\SharedThread.cpp" />
+    <ClCompile Include="..\AsyncFrame\Thread\ThreadPool.cpp" />
+    <ClCompile Include="..\AsyncFrame\Thread\UniqueThread.cpp" />
+    <ClCompile Include="..\Code\Code.cpp" />
+    <ClCompile Include="..\Config\parse.cpp" />
+    <ClCompile Include="..\IOFrame\Acceptor\TCPAcceptor.cpp" />
+    <ClCompile Include="..\IOFrame\Buffer\Buffer.cpp" />
+    <ClCompile Include="..\IOFrame\Channel\TCPChannel.cpp" />
+    <ClCompile Include="..\IOFrame\Connector\Connector.cpp" />
+    <ClCompile Include="..\IOFrame\Context\TCPContext.cpp" />
+    <ClCompile Include="..\IOFrame\IOError.cpp" />
+    <ClCompile Include="..\IOFrame\ThreadPool\NetThreadPool.cpp" />
+    <ClCompile Include="..\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Allocator\SmartMemory.hpp" />
+    <ClInclude Include="..\AsyncFrame\KernelObject\HandleObject.h" />
+    <ClInclude Include="..\AsyncFrame\KernelObject\Runtime.h" />
+    <ClInclude Include="..\AsyncFrame\Locker.hpp" />
+    <ClInclude Include="..\AsyncFrame\LockQueue.hpp" />
+    <ClInclude Include="..\AsyncFrame\Process\Process.h" />
+    <ClInclude Include="..\AsyncFrame\Process\SharedObject\SharedConditionVariable.h" />
+    <ClInclude Include="..\AsyncFrame\Process\SharedObject\SharedMemory.h" />
+    <ClInclude Include="..\AsyncFrame\Process\SharedObject\SharedMutex.h" />
+    <ClInclude Include="..\AsyncFrame\Thread\SharedThread.h" />
+    <ClInclude Include="..\AsyncFrame\Thread\ThreadPool.h" />
+    <ClInclude Include="..\AsyncFrame\Thread\UniqueThread.h" />
+    <ClInclude Include="..\Code\Code.h" />
+    <ClInclude Include="..\Config\parse.h" />
+    <ClInclude Include="..\Define.h" />
+    <ClInclude Include="..\ErrorCode.h" />
+    <ClInclude Include="..\IOFrame\Acceptor\IOAcceptor.h" />
+    <ClInclude Include="..\IOFrame\Acceptor\TCPAcceptor.h" />
+    <ClInclude Include="..\IOFrame\Buffer\Buffer.h" />
+    <ClInclude Include="..\IOFrame\Channel\IOChannel.h" />
+    <ClInclude Include="..\IOFrame\Channel\TCPChannel.h" />
+    <ClInclude Include="..\IOFrame\Connector\Connector.h" />
+    <ClInclude Include="..\IOFrame\Context\IOContext.h" />
+    <ClInclude Include="..\IOFrame\Context\TCPContext.h" />
+    <ClInclude Include="..\IOFrame\Handler\EventHandler.h" />
+    <ClInclude Include="..\IOFrame\IOError.h" />
+    <ClInclude Include="..\IOFrame\ThreadPool\NetThreadPool.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

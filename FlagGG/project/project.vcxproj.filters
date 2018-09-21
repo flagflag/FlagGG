@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="AsyncFrame">
+      <UniqueIdentifier>{48fc43a4-f171-4314-b63f-564a20addf82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code">
+      <UniqueIdentifier>{313d3f02-275e-4137-a6ed-6c946a5c43f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ErrorCode">
+      <UniqueIdentifier>{dac5914e-585f-438e-89fa-8aca038e896e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IOFrame">
+      <UniqueIdentifier>{0b5d392e-533b-4f52-a758-eb9030205a3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Allocator">
+      <UniqueIdentifier>{ac9718c0-71a7-4b57-a2ea-8d26f29e3c83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AsyncFrame\Thread">
+      <UniqueIdentifier>{72adcd58-ce10-48ce-94a9-c4f730d68664}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AsyncFrame\Process">
+      <UniqueIdentifier>{75393ae3-b965-4152-ae69-7652baac120b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AsyncFrame\KernelObject">
+      <UniqueIdentifier>{b0fdaa60-8ed0-4c72-940e-f965de099f42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AsyncFrame\Process\SharedObject">
+      <UniqueIdentifier>{34bf63e8-3cb0-4850-9c3e-6388f121f6f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IOFrame\Channel">
+      <UniqueIdentifier>{2a70316a-3451-4c16-9e1a-f7fd8a40555e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IOFrame\Connector">
+      <UniqueIdentifier>{a12bcb43-9f75-4cff-8a54-6bbfde767b9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IOFrame\Acceptor">
+      <UniqueIdentifier>{3394e562-646f-4530-a101-0ff8c48ecc16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IOFrame\Buffer">
+      <UniqueIdentifier>{4c8197fa-9136-4dac-9dd3-2ad51ce837cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IOFrame\Handler">
+      <UniqueIdentifier>{b03e81a0-5c87-476a-9528-0bd248139d9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IOFrame\ThreadPool">
+      <UniqueIdentifier>{65b2f95c-3cc2-4264-9876-4ae16047213a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IOFrame\Context">
+      <UniqueIdentifier>{d7ce6cf8-a282-42a6-bbfa-323b94639ad4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Config">
+      <UniqueIdentifier>{494b9a8c-326a-4a89-ac9c-59cc16f132ff}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\Code\Code.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AsyncFrame\Thread\ThreadPool.cpp">
+      <Filter>AsyncFrame\Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AsyncFrame\Process\Process.cpp">
+      <Filter>AsyncFrame\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AsyncFrame\Thread\SharedThread.cpp">
+      <Filter>AsyncFrame\Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AsyncFrame\Thread\UniqueThread.cpp">
+      <Filter>AsyncFrame\Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AsyncFrame\KernelObject\HandleObject.cpp">
+      <Filter>AsyncFrame\KernelObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IOFrame\Channel\TCPChannel.cpp">
+      <Filter>IOFrame\Channel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IOFrame\Buffer\Buffer.cpp">
+      <Filter>IOFrame\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IOFrame\Connector\Connector.cpp">
+      <Filter>IOFrame\Connector</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IOFrame\ThreadPool\NetThreadPool.cpp">
+      <Filter>IOFrame\ThreadPool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IOFrame\Acceptor\TCPAcceptor.cpp">
+      <Filter>IOFrame\Acceptor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IOFrame\Context\TCPContext.cpp">
+      <Filter>IOFrame\Context</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IOFrame\IOError.cpp">
+      <Filter>IOFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Config\parse.cpp">
+      <Filter>Config</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Code\Code.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Allocator\SmartMemory.hpp">
+      <Filter>Allocator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AsyncFrame\Locker.hpp">
+      <Filter>AsyncFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AsyncFrame\LockQueue.hpp">
+      <Filter>AsyncFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AsyncFrame\Thread\ThreadPool.h">
+      <Filter>AsyncFrame\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AsyncFrame\Process\Process.h">
+      <Filter>AsyncFrame\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AsyncFrame\Thread\SharedThread.h">
+      <Filter>AsyncFrame\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AsyncFrame\Thread\UniqueThread.h">
+      <Filter>AsyncFrame\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AsyncFrame\KernelObject\HandleObject.h">
+      <Filter>AsyncFrame\KernelObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AsyncFrame\Process\SharedObject\SharedConditionVariable.h">
+      <Filter>AsyncFrame\Process\SharedObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AsyncFrame\Process\SharedObject\SharedMemory.h">
+      <Filter>AsyncFrame\Process\SharedObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AsyncFrame\Process\SharedObject\SharedMutex.h">
+      <Filter>AsyncFrame\Process\SharedObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AsyncFrame\KernelObject\Runtime.h">
+      <Filter>AsyncFrame\KernelObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IOFrame\Channel\IOChannel.h">
+      <Filter>IOFrame\Channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IOFrame\Channel\TCPChannel.h">
+      <Filter>IOFrame\Channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IOFrame\Buffer\Buffer.h">
+      <Filter>IOFrame\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Define.h" />
+    <ClInclude Include="..\IOFrame\Connector\Connector.h">
+      <Filter>IOFrame\Connector</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IOFrame\ThreadPool\NetThreadPool.h">
+      <Filter>IOFrame\ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IOFrame\Acceptor\TCPAcceptor.h">
+      <Filter>IOFrame\Acceptor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IOFrame\Acceptor\IOAcceptor.h">
+      <Filter>IOFrame\Acceptor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IOFrame\Handler\EventHandler.h">
+      <Filter>IOFrame\Handler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IOFrame\Context\IOContext.h">
+      <Filter>IOFrame\Context</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IOFrame\Context\TCPContext.h">
+      <Filter>IOFrame\Context</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ErrorCode.h" />
+    <ClInclude Include="..\IOFrame\IOError.h">
+      <Filter>IOFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Config\parse.h">
+      <Filter>Config</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,9 @@
+FlagGG/3rd/*
+FlagGG/project/Debug/*
+FlagGG/project/Release/*
+*.suo
+*.sdf
+*.opensdf
+*.vcxproj.user
+*.sln.docstates
+

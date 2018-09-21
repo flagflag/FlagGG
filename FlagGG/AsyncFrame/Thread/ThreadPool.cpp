@@ -1,0 +1,78 @@
+﻿#include "ThreadPool.h"
+#include <assert.h>
+
+namespace FlagGG
+{
+	namespace AsyncFrame
+	{
+		namespace Thread
+		{
+#define THREAD_POOL_MAX_SIZE 64
+
+			ThreadPool::ThreadPool(size_t thread_count)
+			{
+				assert(thread_count <= THREAD_POOL_MAX_SIZE);
+
+				for (size_t i = 0; i < thread_count; ++i)
+				{
+					m_threads.emplace_back(new SharedThread);
+				}
+			}
+
+			ThreadPool::~ThreadPool()
+			{
+
+			}
+
+			void ThreadPool::add(ThreadTask task_func)
+			{
+				size_t index = 0;
+				uint32_t min_waiting_time = INT_MAX;
+
+				for (size_t i = 0; i < m_threads.size(); ++i)
+				{
+					uint32_t waiting_time = m_threads[i]->waitingTime();
+					if (waiting_time < min_waiting_time)
+					{
+						index = i;
+						min_waiting_time = waiting_time;
+					}
+				}
+
+				if (m_threads.size() > 0)
+				{
+					m_threads[index]->add(task_func);
+				}
+			}
+
+			void ThreadPool::start()
+			{
+				for (size_t i = 0; i < m_threads.size(); ++i)
+				{
+					m_threads[i]->start();
+				}
+			}
+
+			void ThreadPool::stop()
+			{
+				for (size_t i = 0; i < m_threads.size(); ++i)
+				{
+					m_threads[i]->stop();
+				}
+			};
+
+			void ThreadPool::waitForStop()
+			{
+				for (size_t i = 0; i < m_threads.size(); ++i)
+				{
+					m_threads[i]->waitForStop();
+				}
+			};
+
+			void ThreadPool::waitForStop(DWORD wait_time)
+			{
+				Sleep(wait_time);
+			}
+		}
+	}
+}
