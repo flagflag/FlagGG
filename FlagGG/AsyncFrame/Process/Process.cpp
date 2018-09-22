@@ -50,32 +50,32 @@ namespace FlagGG
 
 			void ParameterList::add(const std::string& param_name)
 			{
-				add(Code::Ut8ToWide(param_name));
+				add(Code::Utf8ToWide(param_name));
 			}
 
 			void ParameterList::add(const std::string& param_name, std::string& param)
 			{
-				add(Code::Ut8ToWide(param_name), Code::Ut8ToWide(param));
+				add(Code::Utf8ToWide(param_name), Code::Utf8ToWide(param));
 			}
 
 			void ParameterList::add(const std::string& param_name, int32_t param)
 			{
-				add(Code::Ut8ToWide(param_name), param);
+				add(Code::Utf8ToWide(param_name), param);
 			}
 
 			void ParameterList::add(const std::string& param_name, int64_t param)
 			{
-				add(Code::Ut8ToWide(param_name), param);
+				add(Code::Utf8ToWide(param_name), param);
 			}
 
 			void ParameterList::add(const std::string& param_name, double param)
 			{
-				add(Code::Ut8ToWide(param_name), param);
+				add(Code::Utf8ToWide(param_name), param);
 			}
 
 			void ParameterList::add(const std::string& param_name, long double param)
 			{
-				add(Code::Ut8ToWide(param_name), param);
+				add(Code::Utf8ToWide(param_name), param);
 			}
 
 
@@ -155,17 +155,17 @@ namespace FlagGG
 
 			ProcessObjectPtr Builder::createProcess(const std::string& proc_path)
 			{
-				return createProcess(Code::Ut8ToWide(proc_path));
+				return createProcess(Code::Utf8ToWide(proc_path));
 			}
 
 			ProcessObjectPtr Builder::createProcess(const std::string& proc_path, const std::string& param)
 			{
-				return createProcess(Code::Ut8ToWide(proc_path), Code::Ut8ToWide(param));
+				return createProcess(Code::Utf8ToWide(proc_path), Code::Utf8ToWide(param));
 			}
 
 			ProcessObjectPtr Builder::createProcess(const std::string& proc_path, const ParameterList& param)
 			{
-				return createProcess(Code::Ut8ToWide(proc_path), param);
+				return createProcess(Code::Utf8ToWide(proc_path), param);
 			}
 		}
 	}

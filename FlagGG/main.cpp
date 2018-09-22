@@ -120,6 +120,10 @@
 #include "IOFrame\Handler\EventHandler.h"
 #include "AsyncFrame\Thread\UniqueThread.h"
 
+#include "Code\Code.h"
+#include <fstream>
+#include <iostream>
+
 class ServerHandler : public FlagGG::IOFrame::Handler::EventHandler
 {
 public:
@@ -183,9 +187,20 @@ void StartClient()
 
 void Gao()
 {
-	FlagGG::Config::Reader gao;
-	gao.load(L"C:\\MyC++Projects\\test.txt");
-	printf("\n%s\n", gao.getErrorMessage().c_str());
+	std::string ansi_string = "我是大麻哈";
+	std::wstring unicode_string = FlagGG::Code::AnsiToWide(ansi_string);
+	ansi_string = FlagGG::Code::WideToUtf8(unicode_string);
+	unicode_string = FlagGG::Code::Utf8ToWide(ansi_string);
+	ansi_string = FlagGG::Code::WideToAnsi(unicode_string);
+
+
+	printf("%d\n", unicode_string.length());
+	std::cout << ansi_string << '\n';
+
+	std::wofstream stream;
+	stream.open("C:\\test\\gg.txt", std::ios::trunc | std::ios::out);
+	stream << unicode_string << '\n';
+	stream.close();
 }
 
 int main()
