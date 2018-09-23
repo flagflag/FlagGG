@@ -1,4 +1,4 @@
-#ifndef __IO_CONNECTOR__
+﻿#ifndef __IO_CONNECTOR__
 #define __IO_CONNECTOR__
 
 #include "IOFrame\Buffer\Buffer.h"
