@@ -79,9 +79,6 @@
     <ClCompile Include="..\IOFrame\Buffer\Buffer.cpp">
       <Filter>IOFrame\Buffer</Filter>
     </ClCompile>
-    <ClCompile Include="..\IOFrame\Connector\Connector.cpp">
-      <Filter>IOFrame\Connector</Filter>
-    </ClCompile>
     <ClCompile Include="..\IOFrame\ThreadPool\NetThreadPool.cpp">
       <Filter>IOFrame\ThreadPool</Filter>
     </ClCompile>
@@ -96,6 +93,9 @@
     </ClCompile>
     <ClCompile Include="..\Config\parse.cpp">
       <Filter>Config</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IOFrame\Connector\TCPConnector.cpp">
+      <Filter>IOFrame\Connector</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -148,9 +148,6 @@
       <Filter>IOFrame\Buffer</Filter>
     </ClInclude>
     <ClInclude Include="..\Define.h" />
-    <ClInclude Include="..\IOFrame\Connector\Connector.h">
-      <Filter>IOFrame\Connector</Filter>
-    </ClInclude>
     <ClInclude Include="..\IOFrame\ThreadPool\NetThreadPool.h">
       <Filter>IOFrame\ThreadPool</Filter>
     </ClInclude>
@@ -175,6 +172,12 @@
     </ClInclude>
     <ClInclude Include="..\Config\parse.h">
       <Filter>Config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IOFrame\Connector\TCPConnector.h">
+      <Filter>IOFrame\Connector</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IOFrame\Connector\IOConnector.h">
+      <Filter>IOFrame\Connector</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

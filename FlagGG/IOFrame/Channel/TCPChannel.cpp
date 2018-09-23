@@ -31,7 +31,7 @@ namespace FlagGG
 					return;
 				}
 
-				if (!error_code)
+				if (error_code)
 				{
 					printf("%d %s.\n", error_code.value(), error_code.message());
 				}

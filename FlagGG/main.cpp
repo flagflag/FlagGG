@@ -117,6 +117,7 @@
 #include "Config\parse.h"
 
 #include "IOFrame\Acceptor\TCPAcceptor.h"
+#include "IOFrame\Connector\TCPConnector.h"
 #include "IOFrame\Handler\EventHandler.h"
 #include "AsyncFrame\Thread\UniqueThread.h"
 
@@ -150,7 +151,7 @@ public:
 		size_t data_size = 0;
 		buffer->toString(data, data_size);
 		
-
+		std::cout << "recive: " << std::string(data, data_size) << '\n';
 	}
 
 	virtual void errorCatch(FlagGG::IOFrame::Context::IOContextPtr context, const FlagGG::ErrorCode& error_code) override
@@ -182,7 +183,29 @@ void StartServer()
 
 void StartClient()
 {
-	boost::asio::io_service io;
+	FlagGG::IOFrame::NetThreadPool thread_pool(1);
+
+	thread_pool.start();
+
+	FlagGG::IOFrame::Connector::TCPConnectorPtr connector(
+		new FlagGG::IOFrame::Connector::TCPConnector(
+		nullptr,
+		thread_pool));
+
+	connector->connect("127.0.0.1", 5000);
+
+	printf("succeed to startup client\n");
+
+	FlagGG::IOFrame::Buffer::NetBufferPtr buffer(new FlagGG::IOFrame::Buffer::NetBuffer);
+	std::string content = "test233";
+	buffer->writeStream(content.data(), content.length());
+	for (int i = 0; i < 3; ++i)
+	{
+		bool result = connector->write(buffer);
+		printf("write %d result(%d)\n", i, result ? 1 : 0);
+	}
+
+	thread_pool.waitForStop();
 }
 
 void Gao()
@@ -215,11 +238,13 @@ int main()
 
 	//BufferTest();
 
-	//FlagGG::AsyncFrame::Thread::UniqueThread server_thread(StartServer);
+	FlagGG::AsyncFrame::Thread::UniqueThread server_thread(StartServer);
 
-	//FlagGG::AsyncFrame::Thread::UniqueThread client_thread(StartClient);
+	//等两秒，保证服务器开启
+	Sleep(2000);
+	FlagGG::AsyncFrame::Thread::UniqueThread client_thread(StartClient);
 
-	Gao();
+	//Gao();
 
 	system("pause");
 

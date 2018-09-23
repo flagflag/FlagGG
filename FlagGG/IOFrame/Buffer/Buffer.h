@@ -85,6 +85,8 @@ namespace FlagGG
 			
 				SimpleBuffer m_current_buffer;
 			};
+
+			typedef std::shared_ptr < NetBuffer > NetBufferPtr;
 		}
 	}
 }

@@ -1,0 +1,30 @@
+#ifndef __IO_CONNECTOR__
+#define __IO_CONNECTOR__
+
+#include "IOFrame\Buffer\Buffer.h"
+
+#include <memory>
+#include <stdint.h>
+
+namespace FlagGG
+{
+	namespace IOFrame
+	{
+		namespace Connector
+		{
+			class IOConnector
+			{
+			public:
+				virtual ~IOConnector() {}
+
+				virtual bool connect(const char* ip, uint16_t port) = 0;
+
+				virtual bool write(Buffer::IOBufferPtr buffer) = 0;
+			};
+
+			typedef std::shared_ptr < IOConnector > IOConnectorPtr;
+		}
+	}
+}
+
+#endif
