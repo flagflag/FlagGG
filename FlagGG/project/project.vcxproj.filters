@@ -52,6 +52,9 @@
     <Filter Include="Config">
       <UniqueIdentifier>{494b9a8c-326a-4a89-ac9c-59cc16f132ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{8d12564a-024b-4e27-bed8-20624fad7d84}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cpp" />
@@ -96,6 +99,9 @@
     </ClCompile>
     <ClCompile Include="..\IOFrame\Connector\TCPConnector.cpp">
       <Filter>IOFrame\Connector</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Utility\SystemHelper.cpp">
+      <Filter>Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="..\IOFrame\Connector\IOConnector.h">
       <Filter>IOFrame\Connector</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utility\SystemHelper.h">
+      <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

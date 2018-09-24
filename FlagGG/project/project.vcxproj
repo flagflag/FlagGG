@@ -97,6 +97,7 @@
     <ClCompile Include="..\IOFrame\IOError.cpp" />
     <ClCompile Include="..\IOFrame\ThreadPool\NetThreadPool.cpp" />
     <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\Utility\SystemHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Allocator\SmartMemory.hpp" />
@@ -127,6 +128,7 @@
     <ClInclude Include="..\IOFrame\Handler\EventHandler.h" />
     <ClInclude Include="..\IOFrame\IOError.h" />
     <ClInclude Include="..\IOFrame\ThreadPool\NetThreadPool.h" />
+    <ClInclude Include="..\Utility\SystemHelper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -125,6 +125,8 @@
 #include <fstream>
 #include <iostream>
 
+#include "Utility\SystemHelper.h"
+
 class ServerHandler : public FlagGG::IOFrame::Handler::EventHandler
 {
 public:
@@ -226,6 +228,12 @@ void Gao()
 	stream.close();
 }
 
+void SystemHelper()
+{
+	std::wstring temp = L"//\\2333\\/////\\23";
+	std::wcout << FlagGG::Utility::SystemHelper::FormatPath(temp) << '\n';
+}
+
 int main()
 {
 	//ProcessTest();
@@ -238,13 +246,15 @@ int main()
 
 	//BufferTest();
 
-	FlagGG::AsyncFrame::Thread::UniqueThread server_thread(StartServer);
+	//FlagGG::AsyncFrame::Thread::UniqueThread server_thread(StartServer);
 
 	//等两秒，保证服务器开启
-	Sleep(2000);
-	FlagGG::AsyncFrame::Thread::UniqueThread client_thread(StartClient);
+	//Sleep(2000);
+	//FlagGG::AsyncFrame::Thread::UniqueThread client_thread(StartClient);
 
 	//Gao();
+
+	SystemHelper();
 
 	system("pause");
 
