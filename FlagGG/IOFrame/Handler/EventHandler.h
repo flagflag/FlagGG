@@ -16,7 +16,7 @@ namespace FlagGG
 			public:
 				virtual ~EventHandler() {};
 
-				virtual void channelCreated(Context::IOContextPtr context) = 0;
+				virtual void channelRegisterd(Context::IOContextPtr context) = 0;
 
 				virtual void channelOpend(Context::IOContextPtr context) = 0;
 

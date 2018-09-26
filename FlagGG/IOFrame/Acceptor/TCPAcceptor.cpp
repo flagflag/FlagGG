@@ -59,6 +59,8 @@ namespace FlagGG
 			{
 				Channel::TCPChannelPtr channel(new Channel::TCPChannel(m_thread_pool->getService()));
 
+				channel->onRegisterd();
+
 				m_acceptor.async_accept(
 					channel->getSocket(),
 					boost::bind(&TCPAcceptor::handleAccept, this, channel,
@@ -72,6 +74,7 @@ namespace FlagGG
 					if (!error_code)
 					{
 						//m_handler->channelOpend(channel);
+						channel->onOpend();
 					}
 					else
 					{

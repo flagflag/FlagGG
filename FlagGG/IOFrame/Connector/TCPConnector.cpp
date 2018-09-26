@@ -9,7 +9,9 @@ namespace FlagGG
 			TCPConnector::TCPConnector(Handler::EventHandlerPtr handler, IOFrame::NetThreadPool& thread_pool)
 				: m_channel(new Channel::TCPChannel(thread_pool.getService()))
 				, m_handler(handler)
-			{ }
+			{ 
+				m_channel->onRegisterd();
+			}
 
 			TCPConnector::~TCPConnector()
 			{ }

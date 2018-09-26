@@ -132,7 +132,7 @@ class ServerHandler : public FlagGG::IOFrame::Handler::EventHandler
 public:
 	virtual ~ServerHandler() {}
 
-	virtual void channelCreated(FlagGG::IOFrame::Context::IOContextPtr context) override
+	virtual void channelRegisterd(FlagGG::IOFrame::Context::IOContextPtr context) override
 	{
 		printf("channelCreated\n");
 	}
@@ -246,15 +246,15 @@ int main()
 
 	//BufferTest();
 
-	//FlagGG::AsyncFrame::Thread::UniqueThread server_thread(StartServer);
+	FlagGG::AsyncFrame::Thread::UniqueThread server_thread(StartServer);
 
 	//等两秒，保证服务器开启
-	//Sleep(2000);
-	//FlagGG::AsyncFrame::Thread::UniqueThread client_thread(StartClient);
+	Sleep(2000);
+	FlagGG::AsyncFrame::Thread::UniqueThread client_thread(StartClient);
 
 	//Gao();
 
-	SystemHelper();
+	//SystemHelper();
 
 	system("pause");
 

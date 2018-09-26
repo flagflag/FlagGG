@@ -93,7 +93,9 @@ namespace FlagGG
 
 				if (!error_code)
 				{
-					m_state = Connected;
+					//m_state = Connected;
+
+					onOpend();
 
 					printf("connect succeeded.\n");
 				}
@@ -181,6 +183,57 @@ namespace FlagGG
 			boost::asio::ip::tcp::socket& TCPChannel::getSocket()
 			{
 				return m_socket;
+			}
+
+			void TCPChannel::onRegisterd()
+			{
+
+			}
+
+			void TCPChannel::handleRead(const boost::system::error_code& error_code, size_t bytes_transferred)
+			{
+				if (!error_code)
+				{
+					m_buffer[bytes_transferred] = '\0';
+					printf("%s\n", m_buffer);
+				}
+
+				startRead();
+			}
+
+			void TCPChannel::startRead()
+			{
+				//如果没连接，接收不到数据的
+				if (m_state != Connected)
+				{
+					return;
+				}
+
+				try
+				{
+					m_socket.async_receive(
+						boost::asio::buffer(m_buffer, ONE_KB),
+						m_strand.wrap(boost::bind(&TCPChannel::handleRead,
+						std::dynamic_pointer_cast < TCPChannel >(shared_from_this()),
+						boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred)
+						));
+				}
+				catch (...)
+				{
+
+				}
+			}
+
+			void TCPChannel::onOpend()
+			{
+				m_state = Connected;
+
+				startRead();
+			}
+
+			void TCPChannel::onClosed()
+			{
+
 			}
 		}
 	}

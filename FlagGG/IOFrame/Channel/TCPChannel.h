@@ -8,7 +8,10 @@
 #include <boost\enable_shared_from_this.hpp>
 
 #include "IOFrame\Channel\IOChannel.h"
+#include "IOFrame\Handler\IOHandler.h"
 #include "AsyncFrame\Locker.hpp"
+
+#include "Define.h"
 
 namespace FlagGG
 {
@@ -25,12 +28,14 @@ namespace FlagGG
 				Shutdown	= 5,
 			};
 
-			class TCPChannel : public IOChannel
+			class TCPChannel : public IOChannel, public Handler::IOHandler
 			{
 			public:
 				TCPChannel(boost::asio::io_service& service);
 
 				virtual ~TCPChannel();
+
+				//IOChannel interface:
 
 				virtual bool write(Buffer::IOBufferPtr buffer) override;
 
@@ -46,12 +51,24 @@ namespace FlagGG
 
 				virtual bool isClosed() override;
 
+				//IOHandler interface:
+
+				virtual void onRegisterd() override;
+
+				virtual void onOpend() override;
+
+				virtual void onClosed() override;
+
 				boost::asio::ip::tcp::socket& getSocket();
 
 			protected:
 				void handleConnect(const boost::system::error_code& error_code);
 
 				void handleWrite(const boost::system::error_code& error_code, size_t bytes_transferred);
+
+				void handleRead(const boost::system::error_code& error_code, size_t bytes_transferred);
+
+				void startRead();
 
 			private:
 				boost::asio::io_service&			m_service;
@@ -67,6 +84,8 @@ namespace FlagGG
 				bool								m_shutdown;
 
 				std::recursive_mutex				m_mutex;
+
+				char								m_buffer[ONE_KB];
 			};
 
 			typedef std::shared_ptr < TCPChannel > TCPChannelPtr;

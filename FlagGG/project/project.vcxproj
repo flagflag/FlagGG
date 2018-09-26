@@ -126,6 +126,7 @@
     <ClInclude Include="..\IOFrame\Context\IOContext.h" />
     <ClInclude Include="..\IOFrame\Context\TCPContext.h" />
     <ClInclude Include="..\IOFrame\Handler\EventHandler.h" />
+    <ClInclude Include="..\IOFrame\Handler\IOHandler.h" />
     <ClInclude Include="..\IOFrame\IOError.h" />
     <ClInclude Include="..\IOFrame\ThreadPool\NetThreadPool.h" />
     <ClInclude Include="..\Utility\SystemHelper.h" />
