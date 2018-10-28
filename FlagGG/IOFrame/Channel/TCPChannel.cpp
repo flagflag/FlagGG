@@ -4,6 +4,8 @@
 #include <memory>
 
 #include "TCPChannel.h"
+#include "IOFrame\Context\TCPContext.h"
+#include "IOFrame\IOError.h"
 
 namespace FlagGG
 {
@@ -33,7 +35,7 @@ namespace FlagGG
 
 				if (error_code)
 				{
-					printf("%d %s.\n", error_code.value(), error_code.message());
+					THROW_IO_ERROR(Context::TCPContext, shared_from_this(), m_handler, error_code);
 				}
 			}
 
@@ -104,6 +106,8 @@ namespace FlagGG
 					m_state = Free;
 
 					printf("connect failed.\n");
+
+					THROW_IO_ERROR(Context::TCPContext, shared_from_this(), m_handler, error_code);
 				}
 			}
 
@@ -149,6 +153,8 @@ namespace FlagGG
 
 					m_state = Closed;
 					m_closed = true;
+
+					onClosed();
 				}
 			}
 
@@ -163,6 +169,8 @@ namespace FlagGG
 
 					m_state = Shutdown;
 					m_shutdown = true;
+
+					onClosed();
 				}
 			}
 
@@ -185,17 +193,27 @@ namespace FlagGG
 				return m_socket;
 			}
 
-			void TCPChannel::onRegisterd()
+			void TCPChannel::onRegisterd(Handler::EventHandlerPtr handler)
 			{
+				m_handler = handler;
 
+				Context::TCPContextPtr context(new Context::TCPContext(shared_from_this()));
+				m_handler->channelRegisterd(context);
 			}
 
 			void TCPChannel::handleRead(const boost::system::error_code& error_code, size_t bytes_transferred)
 			{
 				if (!error_code)
 				{
-					m_buffer[bytes_transferred] = '\0';
-					printf("%s\n", m_buffer);
+					Context::TCPContextPtr context(new Context::TCPContext(shared_from_this()));
+					Buffer::NetBufferPtr buffer(new Buffer::NetBuffer);
+					buffer->writeStream(m_buffer, bytes_transferred);
+
+					m_handler->messageRecived(context, buffer);
+				}
+				else
+				{
+					THROW_IO_ERROR(Context::TCPContext, shared_from_this(), m_handler, error_code);
 				}
 
 				startRead();
@@ -220,7 +238,7 @@ namespace FlagGG
 				}
 				catch (...)
 				{
-
+					
 				}
 			}
 
@@ -228,12 +246,16 @@ namespace FlagGG
 			{
 				m_state = Connected;
 
+				Context::TCPContextPtr context(new Context::TCPContext(shared_from_this()));
+				m_handler->channelOpend(context);
+
 				startRead();
 			}
 
 			void TCPChannel::onClosed()
 			{
-
+				Context::TCPContextPtr context(new Context::TCPContext(shared_from_this()));
+				m_handler->channelClosed(context);
 			}
 		}
 	}

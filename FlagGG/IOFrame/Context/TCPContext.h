@@ -21,6 +21,8 @@ namespace FlagGG
 			private:
 				Channel::IOChannelPtr m_channel;
 			};
+
+			typedef std::shared_ptr < TCPContext > TCPContextPtr;
 		}
 	}
 }

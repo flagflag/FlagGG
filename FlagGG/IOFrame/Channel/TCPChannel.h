@@ -17,6 +17,16 @@ namespace FlagGG
 {
 	namespace IOFrame
 	{
+		namespace Acceptor
+		{
+			class TCPAcceptor;
+		};
+
+		namespace Connector
+		{
+			class TCPConnector;
+		}
+
 		namespace Channel
 		{
 			enum TCPConnectionState
@@ -51,15 +61,10 @@ namespace FlagGG
 
 				virtual bool isClosed() override;
 
-				//IOHandler interface:
-
-				virtual void onRegisterd() override;
-
-				virtual void onOpend() override;
-
-				virtual void onClosed() override;
-
 				boost::asio::ip::tcp::socket& getSocket();
+
+				friend class Acceptor::TCPAcceptor;
+				friend class Connector::TCPConnector;
 
 			protected:
 				void handleConnect(const boost::system::error_code& error_code);
@@ -69,6 +74,14 @@ namespace FlagGG
 				void handleRead(const boost::system::error_code& error_code, size_t bytes_transferred);
 
 				void startRead();
+
+				//IOHandler interface:
+
+				virtual void onRegisterd(Handler::EventHandlerPtr handler) override;
+
+				virtual void onOpend() override;
+
+				virtual void onClosed() override;
 
 			private:
 				boost::asio::io_service&			m_service;
@@ -86,6 +99,8 @@ namespace FlagGG
 				std::recursive_mutex				m_mutex;
 
 				char								m_buffer[ONE_KB];
+
+				Handler::EventHandlerPtr			m_handler;
 			};
 
 			typedef std::shared_ptr < TCPChannel > TCPChannelPtr;

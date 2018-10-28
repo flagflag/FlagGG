@@ -10,7 +10,7 @@ namespace FlagGG
 				: m_channel(new Channel::TCPChannel(thread_pool.getService()))
 				, m_handler(handler)
 			{ 
-				m_channel->onRegisterd();
+				m_channel->onRegisterd(handler);
 			}
 
 			TCPConnector::~TCPConnector()

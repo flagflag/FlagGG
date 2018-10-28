@@ -2,6 +2,8 @@
 #include <boost\asio\placeholders.hpp>
 
 #include "TCPAcceptor.h"
+#include "IOFrame\IOError.h"
+#include "IOFrame\Context\TCPContext.h"
 
 namespace FlagGG
 {
@@ -59,7 +61,7 @@ namespace FlagGG
 			{
 				Channel::TCPChannelPtr channel(new Channel::TCPChannel(m_thread_pool->getService()));
 
-				channel->onRegisterd();
+				channel->onRegisterd(m_handler);
 
 				m_acceptor.async_accept(
 					channel->getSocket(),
@@ -73,12 +75,11 @@ namespace FlagGG
 				{
 					if (!error_code)
 					{
-						//m_handler->channelOpend(channel);
 						channel->onOpend();
 					}
 					else
 					{
-						printf("%d %s\n", error_code.value(), error_code.message());
+						THROW_IO_ERROR(Context::TCPContext, channel, m_handler, error_code);
 					}
 
 					startAccept();

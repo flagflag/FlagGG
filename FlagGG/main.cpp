@@ -191,7 +191,7 @@ void StartClient()
 
 	FlagGG::IOFrame::Connector::TCPConnectorPtr connector(
 		new FlagGG::IOFrame::Connector::TCPConnector(
-		nullptr,
+		FlagGG::IOFrame::Handler::EventHandlerPtr(new ServerHandler),
 		thread_pool));
 
 	connector->connect("127.0.0.1", 5000);
@@ -256,7 +256,8 @@ int main()
 
 	//SystemHelper();
 
-	system("pause");
+	//system("pause");
+	getchar();
 
 	return 0;
 }

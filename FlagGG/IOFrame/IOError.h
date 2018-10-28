@@ -4,6 +4,14 @@
 #include <boost\asio\error.hpp>
 
 #include "ErrorCode.h"
+#include "IOFrame\Channel\IOChannel.h"
+
+#define THROW_IO_ERROR(IOContextType, channel, handler, error_code) \
+	{ \
+		IOContextType##Ptr context(new IOContextType(channel)); \
+		FlagGG::IOFrame::Error::IOError error(error_code); \
+		handler->errorCatch(context, error); \
+	}
 
 namespace FlagGG
 {
@@ -11,12 +19,12 @@ namespace FlagGG
 	{
 		namespace Error
 		{
-			class TCPError : public ErrorCode
+			class IOError : public ErrorCode
 			{
 			public:
-				TCPError(boost::system::error_code error_code);
+				IOError(boost::system::error_code error_code);
 
-				virtual ~TCPError() { }
+				virtual ~IOError() { }
 
 				virtual int value() const override;
 
