@@ -103,6 +103,9 @@
     <ClCompile Include="..\Utility\SystemHelper.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="..\IOFrame\Channel\ChannelPool.cpp">
+      <Filter>IOFrame\Channel</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Code.h">
@@ -190,6 +193,9 @@
     </ClInclude>
     <ClInclude Include="..\IOFrame\Handler\IOHandler.h">
       <Filter>IOFrame\Handler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IOFrame\Channel\ChannelPool.h">
+      <Filter>IOFrame\Channel</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

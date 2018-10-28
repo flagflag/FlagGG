@@ -28,6 +28,24 @@ namespace FlagGG
 			};
 
 			typedef std::shared_ptr < EventHandler > EventHandlerPtr;
+
+			class NullEventHandler : public EventHandler
+			{
+			public:
+				virtual ~NullEventHandler() {}
+
+				virtual void channelRegisterd(Context::IOContextPtr context) {}
+
+				virtual void channelOpend(Context::IOContextPtr context) {}
+
+				virtual void channelClosed(Context::IOContextPtr context) {}
+
+				virtual void messageRecived(Context::IOContextPtr context, Buffer::IOBufferPtr buffer) {}
+
+				virtual void errorCatch(Context::IOContextPtr context, const ErrorCode& error_code) {}
+			};
+
+			typedef std::shared_ptr < NullEventHandler > NullEventHandlerPtr;
 		}
 	}
 }

@@ -91,6 +91,7 @@
     <ClCompile Include="..\Config\parse.cpp" />
     <ClCompile Include="..\IOFrame\Acceptor\TCPAcceptor.cpp" />
     <ClCompile Include="..\IOFrame\Buffer\Buffer.cpp" />
+    <ClCompile Include="..\IOFrame\Channel\ChannelPool.cpp" />
     <ClCompile Include="..\IOFrame\Channel\TCPChannel.cpp" />
     <ClCompile Include="..\IOFrame\Connector\TCPConnector.cpp" />
     <ClCompile Include="..\IOFrame\Context\TCPContext.cpp" />
@@ -119,6 +120,7 @@
     <ClInclude Include="..\IOFrame\Acceptor\IOAcceptor.h" />
     <ClInclude Include="..\IOFrame\Acceptor\TCPAcceptor.h" />
     <ClInclude Include="..\IOFrame\Buffer\Buffer.h" />
+    <ClInclude Include="..\IOFrame\Channel\ChannelPool.h" />
     <ClInclude Include="..\IOFrame\Channel\IOChannel.h" />
     <ClInclude Include="..\IOFrame\Channel\TCPChannel.h" />
     <ClInclude Include="..\IOFrame\Connector\IOConnector.h" />

@@ -193,14 +193,6 @@ namespace FlagGG
 				return m_socket;
 			}
 
-			void TCPChannel::onRegisterd(Handler::EventHandlerPtr handler)
-			{
-				m_handler = handler;
-
-				Context::TCPContextPtr context(new Context::TCPContext(shared_from_this()));
-				m_handler->channelRegisterd(context);
-			}
-
 			void TCPChannel::handleRead(const boost::system::error_code& error_code, size_t bytes_transferred)
 			{
 				if (!error_code)
@@ -240,6 +232,14 @@ namespace FlagGG
 				{
 					
 				}
+			}
+
+			void TCPChannel::onRegisterd(Handler::EventHandlerPtr handler)
+			{
+				m_handler = handler ? handler : Handler::NullEventHandlerPtr(new Handler::NullEventHandler);
+
+				Context::TCPContextPtr context(new Context::TCPContext(shared_from_this()));
+				m_handler->channelRegisterd(context);
 			}
 
 			void TCPChannel::onOpend()
