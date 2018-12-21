@@ -1,13 +1,23 @@
 ﻿#ifndef __INTERPRETER__
 #define __INTERPRETER__
 
-class LSInterpreter
+#include <string>
+
+namespace FlagGG
 {
-public:
-	
+	namespace LScript
+	{
+		class LSInterpreter
+		{
+		public:
+			void executeCode(const std::string& code);
 
-private:
+			void executeFile(const std::string& file_path);
 
-};
+		private:
+
+		};
+	}
+}
 
 #endif

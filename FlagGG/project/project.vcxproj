@@ -54,13 +54,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)../;$(SolutionDir)..\3rd\boost_1_67_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)../;$(SolutionDir)..\3rd\boost_1_67_0;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\3rd\boost_1_67_0\vc12_x86\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libboost_regex-vc120-mt-gd-x32-1_67.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\3rd\boost_1_67_0\vc12_x86\lib;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Samples\C++\Effects11\Debug;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libboost_regex-vc120-mt-gd-x32-1_67.lib;d3d11.lib;d3dx11d.lib;dxerr.lib;d3dcompiler.lib;Effects11.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -89,6 +89,7 @@
     <ClCompile Include="..\AsyncFrame\Thread\UniqueThread.cpp" />
     <ClCompile Include="..\Code\Code.cpp" />
     <ClCompile Include="..\Config\parse.cpp" />
+    <ClCompile Include="..\Graphics\Direct3DWindow.cpp" />
     <ClCompile Include="..\IOFrame\Acceptor\TCPAcceptor.cpp" />
     <ClCompile Include="..\IOFrame\Buffer\Buffer.cpp" />
     <ClCompile Include="..\IOFrame\Channel\ChannelPool.cpp" />
@@ -97,6 +98,7 @@
     <ClCompile Include="..\IOFrame\Context\TCPContext.cpp" />
     <ClCompile Include="..\IOFrame\IOError.cpp" />
     <ClCompile Include="..\IOFrame\ThreadPool\NetThreadPool.cpp" />
+    <ClCompile Include="..\LScript\Interpreter.cpp" />
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\Utility\SystemHelper.cpp" />
   </ItemGroup>
@@ -117,6 +119,7 @@
     <ClInclude Include="..\Config\parse.h" />
     <ClInclude Include="..\Define.h" />
     <ClInclude Include="..\ErrorCode.h" />
+    <ClInclude Include="..\Graphics\Direct3DWindow.h" />
     <ClInclude Include="..\IOFrame\Acceptor\IOAcceptor.h" />
     <ClInclude Include="..\IOFrame\Acceptor\TCPAcceptor.h" />
     <ClInclude Include="..\IOFrame\Buffer\Buffer.h" />
@@ -131,6 +134,7 @@
     <ClInclude Include="..\IOFrame\Handler\IOHandler.h" />
     <ClInclude Include="..\IOFrame\IOError.h" />
     <ClInclude Include="..\IOFrame\ThreadPool\NetThreadPool.h" />
+    <ClInclude Include="..\LScript\Interpreter.h" />
     <ClInclude Include="..\Utility\SystemHelper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

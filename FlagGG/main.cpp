@@ -127,6 +127,10 @@
 
 #include "Utility\SystemHelper.h"
 
+#include "LScript\Interpreter.h"
+
+#include "Graphics/Direct3DWindow.h"
+
 class ServerHandler : public FlagGG::IOFrame::Handler::EventHandler
 {
 public:
@@ -234,6 +238,35 @@ void SystemHelper()
 	std::wcout << FlagGG::Utility::SystemHelper::FormatPath(temp) << '\n';
 }
 
+void LScriptTest()
+{
+
+}
+
+void Direct3DTest()
+{
+	using namespace FlagGG::Graphics;
+
+	WindowDevice::Initialize();
+
+	Direct3DWindow* window = new Direct3DWindow(nullptr, 100, 100, 500, 500);
+
+	window->Show();
+
+	window->AddDefaultGraphics();
+
+	while (true)
+	{
+		Sleep(16);
+
+		WindowDevice::Update();
+
+		window->Update();
+	}
+
+	WindowDevice::Uninitialize();
+}
+
 int main()
 {
 	//ProcessTest();
@@ -246,15 +279,19 @@ int main()
 
 	//BufferTest();
 
-	FlagGG::AsyncFrame::Thread::UniqueThread server_thread(StartServer);
+	//FlagGG::AsyncFrame::Thread::UniqueThread server_thread(StartServer);
 
 	//等两秒，保证服务器开启
-	Sleep(2000);
-	FlagGG::AsyncFrame::Thread::UniqueThread client_thread(StartClient);
+	//Sleep(2000);
+	//FlagGG::AsyncFrame::Thread::UniqueThread client_thread(StartClient);
 
 	//Gao();
 
 	//SystemHelper();
+
+	//LScriptTest();
+
+	Direct3DTest();
 
 	//system("pause");
 	getchar();
