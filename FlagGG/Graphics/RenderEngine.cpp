@@ -130,7 +130,7 @@ namespace FlagGG
 
 		void RenderEngine::CreateShader()
 		{
-			ID3DBlob* VSCode = GetShaderCode(L"E:\\Shader\\test.hlsl", 0);
+			ID3DBlob* VSCode = GetShaderCode(L"../Shader\\test.hlsl", 0);
 			if (VSCode)
 			{
 				HRESULT hr = device_->CreateVertexShader(
@@ -177,7 +177,7 @@ namespace FlagGG
 
 			SAFE_RELEASE(VSCode);
 
-			ID3DBlob* PSCode = GetShaderCode(L"E:\\Shader\\test.hlsl", 1);
+			ID3DBlob* PSCode = GetShaderCode(L"../Shader\\test.hlsl", 1);
 			if (PSCode)
 			{
 				HRESULT hr = device_->CreatePixelShader(
