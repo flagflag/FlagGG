@@ -6,7 +6,7 @@
 
 namespace FlagGG
 {
-	namespace Graphics
+	namespace TestGraphics
 	{
 		class WindowDevice
 		{

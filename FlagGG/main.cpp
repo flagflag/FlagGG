@@ -131,6 +131,9 @@
 
 #include "Graphics/Direct3DWindow.h"
 
+#include "Graphics/WinViewport.h"
+#include "Graphics/RenderEngine.h"
+
 class ServerHandler : public FlagGG::IOFrame::Handler::EventHandler
 {
 public:
@@ -245,7 +248,7 @@ void LScriptTest()
 
 void Direct3DTest()
 {
-	using namespace FlagGG::Graphics;
+	using namespace FlagGG::TestGraphics;
 
 	WindowDevice::Initialize();
 
@@ -265,6 +268,64 @@ void Direct3DTest()
 	}
 
 	WindowDevice::Uninitialize();
+}
+
+void Direct3DDemo()
+{
+	float buffer1[9] = { 0 };
+	buffer1[0] = -0.5f;
+	buffer1[1] = 0.5f;
+	buffer1[2] = 0.5f;
+
+	buffer1[3] = 0.5f;
+	buffer1[4] = -0.5f;
+	buffer1[5] = 0.5f;
+
+	buffer1[6] = -0.5f;
+	buffer1[7] = -0.5f;
+	buffer1[8] = 0.5f;
+
+	float buffer2[9] = { 0 };
+	buffer2[0] = 0.5f;
+	buffer2[1] = 0.5f;
+	buffer2[2] = 0.5f;
+
+	buffer2[3] = 0.5f;
+	buffer2[4] = -0.5f;
+	buffer2[5] = 0.5f;
+
+	buffer2[6] = -0.5f;
+	buffer2[7] = -0.5f;
+	buffer2[8] = 0.5f;
+
+	using namespace FlagGG::Graphics;
+
+	WindowDevice::Initialize();
+	RenderEngine::Initialize();
+
+	WinViewport* viewport[] = {
+		new WinViewport(nullptr, 100, 100, 500, 500),
+		new WinViewport(nullptr, 100, 100, 500, 500)
+	};
+
+	viewport[0]->Initialize();
+	viewport[0]->Show();
+
+	viewport[1]->Initialize();
+	viewport[1]->Show();
+
+	while (true)
+	{
+		Sleep(16);
+
+		WindowDevice::Update();
+
+		viewport[0]->Render((const unsigned char*)buffer1, 12, 3);
+		viewport[1]->Render((const unsigned char*)buffer2, 12, 3);
+	}
+
+	WindowDevice::Uninitialize();
+	RenderEngine::Uninitialize();
 }
 
 int main()
@@ -291,7 +352,9 @@ int main()
 
 	//LScriptTest();
 
-	Direct3DTest();
+	//Direct3DTest();
+
+	Direct3DDemo();
 
 	//system("pause");
 	getchar();

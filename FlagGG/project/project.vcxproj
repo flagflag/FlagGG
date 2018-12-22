@@ -90,6 +90,12 @@
     <ClCompile Include="..\Code\Code.cpp" />
     <ClCompile Include="..\Config\parse.cpp" />
     <ClCompile Include="..\Graphics\Direct3DWindow.cpp" />
+    <ClCompile Include="..\Graphics\GPUObject.cpp" />
+    <ClCompile Include="..\Graphics\RenderEngine.cpp" />
+    <ClCompile Include="..\Graphics\RenderTarget.cpp" />
+    <ClCompile Include="..\Graphics\Texture.cpp" />
+    <ClCompile Include="..\Graphics\Viewport.cpp" />
+    <ClCompile Include="..\Graphics\WinViewport.cpp" />
     <ClCompile Include="..\IOFrame\Acceptor\TCPAcceptor.cpp" />
     <ClCompile Include="..\IOFrame\Buffer\Buffer.cpp" />
     <ClCompile Include="..\IOFrame\Channel\ChannelPool.cpp" />
@@ -100,6 +106,8 @@
     <ClCompile Include="..\IOFrame\ThreadPool\NetThreadPool.cpp" />
     <ClCompile Include="..\LScript\Interpreter.cpp" />
     <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\Math\Vector2.cpp" />
+    <ClCompile Include="..\Math\Vector3.cpp" />
     <ClCompile Include="..\Utility\SystemHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -120,6 +128,12 @@
     <ClInclude Include="..\Define.h" />
     <ClInclude Include="..\ErrorCode.h" />
     <ClInclude Include="..\Graphics\Direct3DWindow.h" />
+    <ClInclude Include="..\Graphics\GPUObject.h" />
+    <ClInclude Include="..\Graphics\RenderEngine.h" />
+    <ClInclude Include="..\Graphics\RenderTarget.h" />
+    <ClInclude Include="..\Graphics\Texture.h" />
+    <ClInclude Include="..\Graphics\Viewport.h" />
+    <ClInclude Include="..\Graphics\WinViewport.h" />
     <ClInclude Include="..\IOFrame\Acceptor\IOAcceptor.h" />
     <ClInclude Include="..\IOFrame\Acceptor\TCPAcceptor.h" />
     <ClInclude Include="..\IOFrame\Buffer\Buffer.h" />
@@ -135,6 +149,8 @@
     <ClInclude Include="..\IOFrame\IOError.h" />
     <ClInclude Include="..\IOFrame\ThreadPool\NetThreadPool.h" />
     <ClInclude Include="..\LScript\Interpreter.h" />
+    <ClInclude Include="..\Math\Vector2.h" />
+    <ClInclude Include="..\Math\Vector3.h" />
     <ClInclude Include="..\Utility\SystemHelper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

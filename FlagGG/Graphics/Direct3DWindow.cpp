@@ -17,7 +17,7 @@
 
 namespace FlagGG
 {
-	namespace Graphics
+	namespace TestGraphics
 	{
 		const wchar_t* WindowDevice::className_ = L"Custom D3D11 Window";
 
@@ -260,9 +260,6 @@ namespace FlagGG
 
 		void Direct3DWindow::Draw()
 		{
-			float color[] = { 0.5, 0.5f, 0.5f, 1.0f };
-			deviceContext_->ClearRenderTargetView(renderTargetView_, color);
-
 			if (isRenderTargetDirty_)
 			{
 				deviceContext_->OMSetRenderTargets(1, &renderTargetView_, nullptr);
@@ -297,6 +294,9 @@ namespace FlagGG
 
 				isShaderDirty_ = false;
 			}
+
+			float color[] = { 0.5, 0.5f, 0.5f, 1.0f };
+			deviceContext_->ClearRenderTargetView(renderTargetView_, color);
 
 			deviceContext_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			deviceContext_->Draw(3, 0);
