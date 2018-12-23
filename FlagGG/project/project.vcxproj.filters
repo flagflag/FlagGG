@@ -124,9 +124,6 @@
     <ClCompile Include="..\LScript\Interpreter.cpp">
       <Filter>LScript</Filter>
     </ClCompile>
-    <ClCompile Include="..\Graphics\Direct3DWindow.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\Graphics\Viewport.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
@@ -250,9 +247,6 @@
     </ClInclude>
     <ClInclude Include="..\LScript\Interpreter.h">
       <Filter>LScript</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Graphics\Direct3DWindow.h">
-      <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\Graphics\Viewport.h">
       <Filter>Graphics</Filter>

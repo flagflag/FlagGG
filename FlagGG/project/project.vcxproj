@@ -90,7 +90,6 @@
     <ClCompile Include="..\Code\Code.cpp" />
     <ClCompile Include="..\Config\parse.cpp" />
     <ClCompile Include="..\Graphics\Batch.cpp" />
-    <ClCompile Include="..\Graphics\Direct3DWindow.cpp" />
     <ClCompile Include="..\Graphics\GPUObject.cpp" />
     <ClCompile Include="..\Graphics\RenderEngine.cpp" />
     <ClCompile Include="..\Graphics\RenderTarget.cpp" />
@@ -130,7 +129,6 @@
     <ClInclude Include="..\Define.h" />
     <ClInclude Include="..\ErrorCode.h" />
     <ClInclude Include="..\Graphics\Batch.h" />
-    <ClInclude Include="..\Graphics\Direct3DWindow.h" />
     <ClInclude Include="..\Graphics\GPUObject.h" />
     <ClInclude Include="..\Graphics\RenderEngine.h" />
     <ClInclude Include="..\Graphics\RenderTarget.h" />

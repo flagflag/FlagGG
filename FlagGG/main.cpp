@@ -129,8 +129,6 @@
 
 #include "LScript\Interpreter.h"
 
-#include "Graphics/Direct3DWindow.h"
-
 #include "Graphics/WinViewport.h"
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Texture2D.h"
@@ -247,30 +245,6 @@ void LScriptTest()
 
 }
 
-void Direct3DTest()
-{
-	using namespace FlagGG::TestGraphics;
-
-	WindowDevice::Initialize();
-
-	Direct3DWindow* window = new Direct3DWindow(nullptr, 100, 100, 500, 500);
-
-	window->Show();
-
-	window->AddDefaultGraphics();
-
-	while (true)
-	{
-		Sleep(16);
-
-		WindowDevice::Update();
-
-		window->Update();
-	}
-
-	WindowDevice::Uninitialize();
-}
-
 void Direct3DDemo()
 {
 	using namespace FlagGG::Graphics;
@@ -350,8 +324,6 @@ int main()
 	//SystemHelper();
 
 	//LScriptTest();
-
-	//Direct3DTest();
 
 	Direct3DDemo();
 
