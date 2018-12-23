@@ -19,7 +19,7 @@ namespace FlagGG
 			void Initialize() override;
 
 		private:
-			ID3D11Texture2D* backbufferTexture_;
+			ID3D11Texture2D* backbufferTexture_{ nullptr };
 		};
 	}
 }

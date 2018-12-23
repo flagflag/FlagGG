@@ -151,6 +151,12 @@
     <ClCompile Include="..\Graphics\RenderEngine.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\Graphics\Texture2D.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\Batch.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Code.h">
@@ -270,6 +276,12 @@
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\Graphics\RenderEngine.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\Texture2D.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\Batch.h">
       <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>

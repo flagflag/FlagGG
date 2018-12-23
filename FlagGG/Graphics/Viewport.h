@@ -34,7 +34,7 @@ namespace FlagGG
 
 			void SetViewport();
 
-			RenderTarget* renderTarget_;
+			RenderTarget* renderTarget_{ nullptr };
 		};
 	}
 }

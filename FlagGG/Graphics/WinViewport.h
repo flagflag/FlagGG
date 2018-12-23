@@ -2,6 +2,7 @@
 #define __WIN_VIEWPORT__
 
 #include "Viewport.h"
+#include "Batch.h"
 
 namespace FlagGG
 {
@@ -38,7 +39,7 @@ namespace FlagGG
 
 			void Hide();
 
-			void Render(const unsigned char* vertexs, unsigned vertexSize, unsigned vertexCount);
+			void Render(const Batch& batch);
 
 		private:
 			void UpdateVertexData(const unsigned char* vertexs, unsigned vertexSize, unsigned vertexCount);

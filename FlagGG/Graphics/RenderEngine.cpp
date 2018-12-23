@@ -130,7 +130,9 @@ namespace FlagGG
 
 		void RenderEngine::CreateShader()
 		{
-			ID3DBlob* VSCode = GetShaderCode(L"../Shader\\test.hlsl", 0);
+			static const wchar_t* shaderPath = L"../Shader/Texture.hlsl"; // test.hlsl
+
+			ID3DBlob* VSCode = GetShaderCode(shaderPath, 0);
 			if (VSCode)
 			{
 				HRESULT hr = device_->CreateVertexShader(
@@ -148,36 +150,33 @@ namespace FlagGG
 
 					return;
 				}
-			}
 
-			D3D11_INPUT_ELEMENT_DESC solidColorLayout[] =
-			{
+				D3D11_INPUT_ELEMENT_DESC solidColorLayout[] =
 				{
-					"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,
+					{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+					{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+				};
 
-					0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0
+				unsigned int totalLayoutElements = ARRAYSIZE(solidColorLayout);
+
+				hr = device_->CreateInputLayout(
+					solidColorLayout,
+					totalLayoutElements,
+					VSCode->GetBufferPointer(),
+					VSCode->GetBufferSize(),
+					&inputLayout_
+					);
+				if (hr != 0)
+				{
+					puts("CreateInputLayout failed.");
+
+					return;
 				}
-			};
-
-			unsigned int totalLayoutElements = ARRAYSIZE(solidColorLayout);
-
-			HRESULT hr = device_->CreateInputLayout(
-				solidColorLayout,
-				totalLayoutElements,
-				VSCode->GetBufferPointer(),
-				VSCode->GetBufferSize(),
-				&inputLayout_
-				);
-			if (hr != 0)
-			{
-				puts("CreateInputLayout failed.");
-
-				return;
 			}
 
 			SAFE_RELEASE(VSCode);
 
-			ID3DBlob* PSCode = GetShaderCode(L"../Shader\\test.hlsl", 1);
+			ID3DBlob* PSCode = GetShaderCode(shaderPath, 1);
 			if (PSCode)
 			{
 				HRESULT hr = device_->CreatePixelShader(

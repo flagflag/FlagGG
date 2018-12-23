@@ -133,6 +133,7 @@
 
 #include "Graphics/WinViewport.h"
 #include "Graphics/RenderEngine.h"
+#include "Graphics/Texture2D.h"
 
 class ServerHandler : public FlagGG::IOFrame::Handler::EventHandler
 {
@@ -272,40 +273,38 @@ void Direct3DTest()
 
 void Direct3DDemo()
 {
-	float buffer1[9] = { 0 };
-	buffer1[0] = -0.5f;
-	buffer1[1] = 0.5f;
-	buffer1[2] = 0.5f;
-
-	buffer1[3] = 0.5f;
-	buffer1[4] = -0.5f;
-	buffer1[5] = 0.5f;
-
-	buffer1[6] = -0.5f;
-	buffer1[7] = -0.5f;
-	buffer1[8] = 0.5f;
-
-	float buffer2[9] = { 0 };
-	buffer2[0] = 0.5f;
-	buffer2[1] = 0.5f;
-	buffer2[2] = 0.5f;
-
-	buffer2[3] = 0.5f;
-	buffer2[4] = -0.5f;
-	buffer2[5] = 0.5f;
-
-	buffer2[6] = -0.5f;
-	buffer2[7] = -0.5f;
-	buffer2[8] = 0.5f;
-
 	using namespace FlagGG::Graphics;
+	using namespace FlagGG::Math;
 
 	WindowDevice::Initialize();
 	RenderEngine::Initialize();
 
+	Texture2D texture[2] = {
+		Texture2D(L"E:\\Res\\UI\\image\\HeroIcon\\heroHead_10003_icon.png"),
+		Texture2D(L"E:\\Res\\UI\\image\\HeroIcon\\heroHead_10003_icon.png")
+	};
+	texture[0].Initialize();
+	texture[1].Initialize();
+
+	Batch bath[2] = {
+		Batch(&texture[0], nullptr),
+		Batch(&texture[1], nullptr)
+	};
+
+	bath[0].AddTriangle(
+		Vector2(-0.5, 0.5), Vector2(0.5, -0.5), Vector2(-0.5, -0.5),
+		Vector2(0, 0), Vector2(1, 0), Vector2(0, 1),
+		0
+		);
+	bath[1].AddTriangle(
+		Vector2(0.5, 0.5), Vector2(0.5, -0.5), Vector2(-0.5, -0.5),
+		Vector2(0, 0), Vector2(1, 0), Vector2(0, 1),
+		0
+		);
+
 	WinViewport* viewport[] = {
 		new WinViewport(nullptr, 100, 100, 500, 500),
-		new WinViewport(nullptr, 100, 100, 500, 500)
+		new WinViewport(nullptr, 600, 100, 500, 500)
 	};
 
 	viewport[0]->Initialize();
@@ -320,8 +319,8 @@ void Direct3DDemo()
 
 		WindowDevice::Update();
 
-		viewport[0]->Render((const unsigned char*)buffer1, 12, 3);
-		viewport[1]->Render((const unsigned char*)buffer2, 12, 3);
+		viewport[0]->Render(bath[0]);
+		viewport[1]->Render(bath[1]);
 	}
 
 	WindowDevice::Uninitialize();
