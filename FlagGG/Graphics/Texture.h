@@ -15,6 +15,8 @@ namespace FlagGG
 
 			void Initialize() override;
 
+			bool IsValid() override;
+
 			virtual void SetData(int x, int y, unsigned width, unsigned height, const void* data) = 0;
 
 			friend class WinViewport;

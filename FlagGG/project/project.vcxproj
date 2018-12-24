@@ -95,10 +95,13 @@
     <ClCompile Include="..\Graphics\Batch3D.cpp" />
     <ClCompile Include="..\Graphics\Camera.cpp" />
     <ClCompile Include="..\Graphics\GPUObject.cpp" />
+    <ClCompile Include="..\Graphics\RenderContext.cpp" />
     <ClCompile Include="..\Graphics\RenderEngine.cpp" />
     <ClCompile Include="..\Graphics\RenderTarget.cpp" />
+    <ClCompile Include="..\Graphics\Shader.cpp" />
     <ClCompile Include="..\Graphics\Texture.cpp" />
     <ClCompile Include="..\Graphics\Texture2D.cpp" />
+    <ClCompile Include="..\Graphics\VertexFormat.cpp" />
     <ClCompile Include="..\Graphics\Viewport.cpp" />
     <ClCompile Include="..\Graphics\WinViewport.cpp" />
     <ClCompile Include="..\IOFrame\Acceptor\TCPAcceptor.cpp" />
@@ -140,10 +143,13 @@
     <ClInclude Include="..\Graphics\Batch3D.h" />
     <ClInclude Include="..\Graphics\Camera.h" />
     <ClInclude Include="..\Graphics\GPUObject.h" />
+    <ClInclude Include="..\Graphics\RenderContext.h" />
     <ClInclude Include="..\Graphics\RenderEngine.h" />
     <ClInclude Include="..\Graphics\RenderTarget.h" />
+    <ClInclude Include="..\Graphics\Shader.h" />
     <ClInclude Include="..\Graphics\Texture.h" />
     <ClInclude Include="..\Graphics\Texture2D.h" />
+    <ClInclude Include="..\Graphics\VertexFormat.h" />
     <ClInclude Include="..\Graphics\Viewport.h" />
     <ClInclude Include="..\Graphics\WinViewport.h" />
     <ClInclude Include="..\IOFrame\Acceptor\IOAcceptor.h" />

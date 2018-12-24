@@ -167,11 +167,10 @@ namespace FlagGG
 			RenderEngine::GetDeviceContext()->Unmap(d3d11Buffer_, 0);
 		}
 
-		void WinViewport::Render(const Batch* batch)
+		void WinViewport::Render(const RenderContext* context)
 		{
-			if (!batch) return;
-
-			RenderEngine::Update();
+			if (!context || !context->IsValid()) return;
+			Batch* batch = context->batch_;
 
 			ID3D11DeviceContext* deviceContext = RenderEngine::GetDeviceContext();
 
@@ -187,7 +186,11 @@ namespace FlagGG
 			}
 			deviceContext->IASetVertexBuffers(0, 1, &d3d11Buffer_, &vertexSize, &vertexOffset);
 
-			//deviceContext->VSSetSamplers(0, 1, &batch.GetTexture()->sampler_);		
+			//deviceContext->VSSetSamplers(0, 1, &batch.GetTexture()->sampler_);
+
+			deviceContext->IASetInputLayout(context->format_->GetObject<ID3D11InputLayout>());
+			deviceContext->VSSetShader(context->VSShader_->GetObject<ID3D11VertexShader>(), nullptr, 0);
+			deviceContext->PSSetShader(context->PSShader_->GetObject<ID3D11PixelShader>(), nullptr, 0);
 			deviceContext->PSSetShaderResources(0, 1, &batch->GetTexture()->shaderResourceView_);
 			deviceContext->PSSetSamplers(0, 1, &batch->GetTexture()->sampler_);
 

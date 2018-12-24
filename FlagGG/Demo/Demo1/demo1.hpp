@@ -2,6 +2,9 @@
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Texture2D.h"
 #include "Graphics/Batch2D.h"
+#include "Graphics/RenderContext.h"
+#include "Graphics/Shader.h"
+#include "Graphics/VertexFormat.h"
 
 void Demo1Run()
 {
@@ -20,32 +23,40 @@ void Demo1Run()
 	texture[0].Initialize();
 	texture[1].Initialize();
 
-	Batch2D bath[2] = {
+	Batch2D batch[2] = {
 		Batch2D(&texture[0], nullptr),
 		Batch2D(&texture[1], nullptr)
 	};
 
-	bath[0].AddTriangle(
+	batch[0].AddTriangle(
 		Vector2(1.0f, 1.0f), Vector2(1.0f, -1.0f), Vector2(-1.0f, -1.0f),
 		Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
 		0
 		);
-	bath[0].AddTriangle(
+	batch[0].AddTriangle(
 		Vector2(-1.0f, -1.0f), Vector2(-1.0f, 1.0f), Vector2(1.0f, 1.0f),
 		Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
 		0
 		);
 
-	bath[1].AddTriangle(
+	batch[1].AddTriangle(
 		Vector2(1.0f, 1.0f), Vector2(1.0f, -1.0f), Vector2(-1.0f, -1.0f),
 		Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
 		0
 		);
-	bath[1].AddTriangle(
+	batch[1].AddTriangle(
 		Vector2(-1.0f, -1.0f), Vector2(-1.0f, 1.0f), Vector2(1.0f, 1.0f),
 		Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
 		0
 		);
+
+	Shader vs(L"../Shader/Texture.hlsl", VS);
+	Shader ps(L"../Shader/Texture.hlsl", PS);
+	vs.Initialize();
+	ps.Initialize();
+
+	VertexFormat format(vs.GetByteCode(), VERTEX2D);
+	format.Initialize();
 
 	WinViewport* viewport[] = {
 		new WinViewport(nullptr, 100, 100, 500, 500),
@@ -58,14 +69,19 @@ void Demo1Run()
 	viewport[1]->Initialize();
 	viewport[1]->Show();
 
+	RenderContext context[2] = {
+		RenderContext(&batch[0], &vs, &ps, &format),
+		RenderContext(&batch[1], &vs, &ps, &format)
+	};
+
 	while (true)
 	{
 		Sleep(16);
 
 		WindowDevice::Update();
 
-		viewport[0]->Render(&bath[0]);
-		viewport[1]->Render(&bath[1]);
+		viewport[0]->Render(&context[0]);
+		viewport[1]->Render(&context[1]);
 	}
 
 	WindowDevice::Uninitialize();

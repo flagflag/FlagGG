@@ -3,6 +3,7 @@
 
 #include "Viewport.h"
 #include "Batch.h"
+#include "RenderContext.h"
 
 namespace FlagGG
 {
@@ -39,7 +40,7 @@ namespace FlagGG
 
 			void Hide();
 
-			void Render(const Batch* batch);
+			void Render(const RenderContext* context);
 
 		private:
 			void UpdateVertexData(const unsigned char* vertexs, unsigned vertexSize, unsigned vertexCount);

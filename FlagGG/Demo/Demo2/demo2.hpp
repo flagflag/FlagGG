@@ -3,38 +3,61 @@
 #include "Graphics/Texture2D.h"
 #include "Graphics/Batch3D.h"
 
+#include <fstream>
+
+using namespace FlagGG::Graphics;
+using namespace FlagGG::Math;
+
+void LoadVertexData(Batch3D& bath)
+{
+	std::ifstream stream;
+	stream.open("../Demo/Demo2/vertex.txt", std::ios::in);
+	if (!stream.is_open())
+	{
+		puts("load vertex data failed.");
+
+		return;
+	}
+
+	Vector3 v[3], n[3];
+	Vector2 uv[3];
+
+	while (!stream.eof())
+	{
+		for (int i = 0; i < 3; ++i)
+		{
+			stream >> v[i].x_ >> v[i].y_ >> v[i].z_;
+		}
+
+		for (int i = 0; i < 2; ++i)
+		{
+			stream >> uv[i].x_ >> uv[i].y_;
+		}
+
+		for (int i = 0; i < 3; ++i)
+		{
+			stream >> n[i].x_ >> n[i].y_ >> n[i].z_;
+		}
+
+		
+	}
+}
+
 void Demo2Run()
 {
-	using namespace FlagGG::Graphics;
-	using namespace FlagGG::Math;
-
 	WindowDevice::Initialize();
 	RenderEngine::Initialize();
 
-	Texture2D texture[2] = {
-		//Texture2D(L"E:\\Res\\UI\\image\\HeroIcon\\heroHead_10003_icon.png"),
-		//Texture2D(L"E:\\Res\\UI\\image\\HeroIcon\\heroHead_10007_icon.png")
-		Texture2D(L"E:\\heroHead_10003_icon.dds"),
-		Texture2D(L"E:\\heroHead_10009_icon.dds")
-	};
-	texture[0].Initialize();
-	texture[1].Initialize();
+	Texture2D texture(L"../Demo/Demo2/texture.png");
+	texture.Initialize();
 
-	Batch3D bath[2] = {
-		Batch3D(&texture[0], nullptr),
-		Batch3D(&texture[1], nullptr)
-	};
+	Batch3D bath(&texture, nullptr);
+	LoadVertexData(bath);
 
-	WinViewport* viewport[] = {
-		new WinViewport(nullptr, 100, 100, 500, 500),
-		new WinViewport(nullptr, 600, 100, 500, 500)
-	};
+	WinViewport viewport(nullptr, 100, 100, 500, 500);
 
-	viewport[0]->Initialize();
-	viewport[0]->Show();
-
-	viewport[1]->Initialize();
-	viewport[1]->Show();
+	viewport.Initialize();
+	viewport.Show();
 
 	while (true)
 	{
@@ -42,8 +65,7 @@ void Demo2Run()
 
 		WindowDevice::Update();
 
-		viewport[0]->Render(&bath[0]);
-		viewport[1]->Render(&bath[1]);
+		//viewport.Render(&bath);
 	}
 
 	WindowDevice::Uninitialize();

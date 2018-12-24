@@ -15,6 +15,8 @@ namespace FlagGG
 
 			void Initialize() override;
 
+			bool IsValid() override;
+
 			virtual unsigned GetWidth() = 0;
 
 			virtual unsigned GetHeight() = 0;

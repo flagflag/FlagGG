@@ -18,6 +18,8 @@ namespace FlagGG
 		
 			void Initialize() override;
 
+			bool IsValid() override;
+
 		private:
 			ID3D11Resource* resource_{ nullptr };
 		};

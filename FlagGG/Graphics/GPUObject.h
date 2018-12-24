@@ -26,7 +26,7 @@ namespace FlagGG
 
 			GPUHandler GetHandler();
 
-			bool IsValid();
+			virtual bool IsValid() = 0;
 
 			virtual void Initialize() = 0;
 

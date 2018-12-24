@@ -181,6 +181,15 @@
     <ClCompile Include="..\Graphics\Batch3D.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\Graphics\Shader.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\RenderContext.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\VertexFormat.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Code.h">
@@ -321,6 +330,15 @@
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\Graphics\Batch3D.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\Shader.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\RenderContext.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\VertexFormat.h">
       <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>

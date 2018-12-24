@@ -14,6 +14,11 @@ namespace FlagGG
 			SetViewport();
 		}
 
+		bool Viewport::IsValid()
+		{
+			return GetHandler() != nullptr && renderTarget_ != nullptr && renderTarget_->IsValid();
+		}
+
 		RenderTarget* Viewport::GetRenderTarget()
 		{
 			return renderTarget_;

@@ -39,5 +39,10 @@ namespace FlagGG
 				ResetHandler(resource);
 			}
 		}
+
+		bool Texture::IsValid()
+		{
+			return GetHandler() != nullptr && shaderResourceView_ != nullptr && sampler_ != nullptr;
+		}
 	}
 }

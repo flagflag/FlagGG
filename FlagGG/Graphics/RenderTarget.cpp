@@ -36,5 +36,10 @@ namespace FlagGG
 
 			ResetHandler(renderTargetView);
 		}
+
+		bool RenderTarget::IsValid()
+		{
+			return GetHandler() != nullptr && resource_ != nullptr;
+		}
 	}
 }

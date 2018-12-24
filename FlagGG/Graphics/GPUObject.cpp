@@ -26,11 +26,6 @@ namespace FlagGG
 			return gpuHandler_;
 		}
 
-		bool GPUObject::IsValid()
-		{
-			return gpuHandler_ != nullptr;
-		}
-
 		void GPUObject::ResetHandler(GPUHandler handler)
 		{
 			SAFE_RELEASE(gpuHandler_);

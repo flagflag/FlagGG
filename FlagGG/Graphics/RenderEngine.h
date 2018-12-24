@@ -26,22 +26,12 @@ namespace FlagGG
 
 			static ID3D11DeviceContext* GetDeviceContext();
 
-			static void Update();
-
 		private:
 			static void CreateDevice();
-
-			static void CreateShader();
 
 			static ID3D11Device* device_;
 
 			static ID3D11DeviceContext* deviceContext_;
-
-			static ID3D11VertexShader* vertexShader_;
-
-			static ID3D11PixelShader* pixelShader_;
-
-			static ID3D11InputLayout* inputLayout_;
 		};
 	}
 }
