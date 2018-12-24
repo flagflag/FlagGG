@@ -20,6 +20,8 @@ namespace FlagGG
 				const Math::Vector2& uv1, const Math::Vector2& uv2, const Math::Vector2& uv3, 
 				const Math::Vector3& n1, const Math::Vector3& n2, const Math::Vector3& n3,
 				unsigned color);
+
+			void AddBlob(const void* data, unsigned size);
 		};
 	}
 }

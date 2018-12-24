@@ -46,5 +46,15 @@ namespace FlagGG
 			dest[22] = n3.y_;
 			dest[23] = n3.z_;
 		}
+
+		void Batch3D::AddBlob(const void* data, unsigned size)
+		{
+			unsigned begin = vertexs_->size();
+			vertexEnd_ = vertexs_->size() + size;
+			vertexs_->resize(vertexEnd_);
+
+			void* dest = &(*vertexs_)[begin];
+			memcpy(dest, data, size);
+		}
 	}
 }

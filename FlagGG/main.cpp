@@ -268,9 +268,9 @@ int main()
 
 	//LScriptTest();
 
-	Demo1Run();
+	//Demo1Run();
 
-	//Demo2Run();
+	Demo2Run();
 
 	//system("pause");
 	getchar();
