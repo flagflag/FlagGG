@@ -254,8 +254,10 @@ void Direct3DDemo()
 	RenderEngine::Initialize();
 
 	Texture2D texture[2] = {
-		Texture2D(L"E:\\Res\\UI\\image\\HeroIcon\\heroHead_10003_icon.png"),
-		Texture2D(L"E:\\Res\\UI\\image\\HeroIcon\\heroHead_10003_icon.png")
+		//Texture2D(L"E:\\Res\\UI\\image\\HeroIcon\\heroHead_10003_icon.png"),
+		//Texture2D(L"E:\\Res\\UI\\image\\HeroIcon\\heroHead_10007_icon.png")
+		Texture2D(L"E:\\heroHead_10003_icon.dds"),
+		Texture2D(L"E:\\heroHead_10009_icon.dds")
 	};
 	texture[0].Initialize();
 	texture[1].Initialize();
@@ -266,13 +268,24 @@ void Direct3DDemo()
 	};
 
 	bath[0].AddTriangle(
-		Vector2(-0.5, 0.5), Vector2(0.5, -0.5), Vector2(-0.5, -0.5),
-		Vector2(0, 0), Vector2(1, 0), Vector2(0, 1),
+		Vector2(1.0f, 1.0f), Vector2(1.0f, -1.0f), Vector2(-1.0f, -1.0f),
+		Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
+		0
+		);
+	bath[0].AddTriangle(
+		Vector2(-1.0f, -1.0f), Vector2(-1.0f, 1.0f), Vector2(1.0f, 1.0f),
+		Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
+		0
+		);
+
+	bath[1].AddTriangle(
+		Vector2(1.0f, 1.0f), Vector2(1.0f, -1.0f), Vector2(-1.0f, -1.0f),
+		Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
 		0
 		);
 	bath[1].AddTriangle(
-		Vector2(0.5, 0.5), Vector2(0.5, -0.5), Vector2(-0.5, -0.5),
-		Vector2(0, 0), Vector2(1, 0), Vector2(0, 1),
+		Vector2(-1.0f, -1.0f), Vector2(-1.0f, 1.0f), Vector2(1.0f, 1.0f),
+		Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
 		0
 		);
 

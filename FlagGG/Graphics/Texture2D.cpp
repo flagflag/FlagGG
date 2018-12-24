@@ -1,6 +1,8 @@
 #include "Texture2D.h"
 #include "RenderEngine.h"
 
+#include "3rd/DDS/DDSTextureLoader.h"
+
 #include <d3dx11.h>
 
 namespace FlagGG
@@ -14,6 +16,7 @@ namespace FlagGG
 
 		bool Texture2D::Create(ID3D11Resource*& resource, ID3D11ShaderResourceView*& resourceView)
 		{
+#ifndef USE_DDS
 			if (texturePath_.empty())
 			{
 				D3D11_TEXTURE2D_DESC textureDesc;
@@ -82,6 +85,21 @@ namespace FlagGG
 
 				return false;
 			}
+#else
+			HRESULT hr = DirectX::CreateDDSTextureFromFile(
+				RenderEngine::GetDevice(),
+				RenderEngine::GetDeviceContext(),
+				texturePath_.data(),
+				&resource,
+				&resourceView
+				);
+			if (hr != 0)
+			{
+				puts("CreateDDSTextureFromFile failed.");
+
+				return false;
+			}
+#endif
 
 			return true;
 		}

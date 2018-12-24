@@ -151,6 +151,13 @@ namespace FlagGG
 					return;
 				}
 
+				//LPCSTR SemanticName;
+				//UINT SemanticIndex;
+				//DXGI_FORMAT Format;
+				//UINT InputSlot;
+				//UINT AlignedByteOffset;
+				//D3D11_INPUT_CLASSIFICATION InputSlotClass;
+				//UINT InstanceDataStepRate;
 				D3D11_INPUT_ELEMENT_DESC solidColorLayout[] =
 				{
 					{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },

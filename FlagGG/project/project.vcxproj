@@ -82,6 +82,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\3rd\DDS\DDSTextureLoader.cpp" />
     <ClCompile Include="..\AsyncFrame\KernelObject\HandleObject.cpp" />
     <ClCompile Include="..\AsyncFrame\Process\Process.cpp" />
     <ClCompile Include="..\AsyncFrame\Thread\SharedThread.cpp" />
@@ -112,6 +113,7 @@
     <ClCompile Include="..\Utility\SystemHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\3rd\DDS\DDSTextureLoader.h" />
     <ClInclude Include="..\Allocator\SmartMemory.hpp" />
     <ClInclude Include="..\AsyncFrame\KernelObject\HandleObject.h" />
     <ClInclude Include="..\AsyncFrame\KernelObject\Runtime.h" />

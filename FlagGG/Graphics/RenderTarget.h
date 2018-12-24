@@ -12,14 +12,14 @@ namespace FlagGG
 		class RenderTarget : public GPUObject
 		{
 		public:
-			RenderTarget(ID3D11Texture2D* backbufferTexture);
+			RenderTarget(ID3D11Resource* resource);
 
 			virtual ~RenderTarget() override;
 		
 			void Initialize() override;
 
 		private:
-			ID3D11Texture2D* backbufferTexture_{ nullptr };
+			ID3D11Resource* resource_{ nullptr };
 		};
 	}
 }

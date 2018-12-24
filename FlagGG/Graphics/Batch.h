@@ -35,7 +35,7 @@ namespace FlagGG
 			VertexVector* vertexs_;
 			bool owner_;
 
-			unsigned vertexSize_{ 24 };
+			unsigned vertexSize_{ 20 };
 			
 			unsigned vertexStart_;
 

@@ -5,14 +5,14 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		RenderTarget::RenderTarget(ID3D11Texture2D* backbufferTexture) :
-			backbufferTexture_(backbufferTexture)
+		RenderTarget::RenderTarget(ID3D11Resource* resource) :
+			resource_(resource)
 		{
 		}
 
 		RenderTarget::~RenderTarget()
 		{
-			SAFE_RELEASE(backbufferTexture_);
+			SAFE_RELEASE(resource_);
 		}
 
 		void RenderTarget::Initialize()
@@ -20,7 +20,7 @@ namespace FlagGG
 			ID3D11RenderTargetView* renderTargetView = GetObject<ID3D11RenderTargetView>();
 
 			HRESULT hr = RenderEngine::GetDevice()->CreateRenderTargetView(
-				backbufferTexture_,
+				resource_,
 				nullptr,
 				&renderTargetView
 			);

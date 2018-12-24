@@ -70,6 +70,12 @@
     <Filter Include="Math">
       <UniqueIdentifier>{f0748942-6870-4d9c-a839-096c80ff8612}</UniqueIdentifier>
     </Filter>
+    <Filter Include="3rd">
+      <UniqueIdentifier>{ed237fd4-c7cf-4685-a0de-329536eb8ea9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rd\DDS">
+      <UniqueIdentifier>{7cdaa3d4-ad1f-491a-ba75-cb6059017dd4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cpp" />
@@ -153,6 +159,9 @@
     </ClCompile>
     <ClCompile Include="..\Graphics\Batch.cpp">
       <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd\DDS\DDSTextureLoader.cpp">
+      <Filter>3rd\DDS</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -277,6 +286,9 @@
     </ClInclude>
     <ClInclude Include="..\Graphics\Batch.h">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\DDS\DDSTextureLoader.h">
+      <Filter>3rd\DDS</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
