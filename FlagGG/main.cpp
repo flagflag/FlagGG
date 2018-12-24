@@ -129,9 +129,8 @@
 
 #include "LScript\Interpreter.h"
 
-#include "Graphics/WinViewport.h"
-#include "Graphics/RenderEngine.h"
-#include "Graphics/Texture2D.h"
+#include "Demo/Demo1/demo1.hpp"
+#include "Demo/Demo2/demo2.hpp"
 
 class ServerHandler : public FlagGG::IOFrame::Handler::EventHandler
 {
@@ -245,75 +244,6 @@ void LScriptTest()
 
 }
 
-void Direct3DDemo()
-{
-	using namespace FlagGG::Graphics;
-	using namespace FlagGG::Math;
-
-	WindowDevice::Initialize();
-	RenderEngine::Initialize();
-
-	Texture2D texture[2] = {
-		//Texture2D(L"E:\\Res\\UI\\image\\HeroIcon\\heroHead_10003_icon.png"),
-		//Texture2D(L"E:\\Res\\UI\\image\\HeroIcon\\heroHead_10007_icon.png")
-		Texture2D(L"E:\\heroHead_10003_icon.dds"),
-		Texture2D(L"E:\\heroHead_10009_icon.dds")
-	};
-	texture[0].Initialize();
-	texture[1].Initialize();
-
-	Batch bath[2] = {
-		Batch(&texture[0], nullptr),
-		Batch(&texture[1], nullptr)
-	};
-
-	bath[0].AddTriangle(
-		Vector2(1.0f, 1.0f), Vector2(1.0f, -1.0f), Vector2(-1.0f, -1.0f),
-		Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
-		0
-		);
-	bath[0].AddTriangle(
-		Vector2(-1.0f, -1.0f), Vector2(-1.0f, 1.0f), Vector2(1.0f, 1.0f),
-		Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
-		0
-		);
-
-	bath[1].AddTriangle(
-		Vector2(1.0f, 1.0f), Vector2(1.0f, -1.0f), Vector2(-1.0f, -1.0f),
-		Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
-		0
-		);
-	bath[1].AddTriangle(
-		Vector2(-1.0f, -1.0f), Vector2(-1.0f, 1.0f), Vector2(1.0f, 1.0f),
-		Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
-		0
-		);
-
-	WinViewport* viewport[] = {
-		new WinViewport(nullptr, 100, 100, 500, 500),
-		new WinViewport(nullptr, 600, 100, 500, 500)
-	};
-
-	viewport[0]->Initialize();
-	viewport[0]->Show();
-
-	viewport[1]->Initialize();
-	viewport[1]->Show();
-
-	while (true)
-	{
-		Sleep(16);
-
-		WindowDevice::Update();
-
-		viewport[0]->Render(bath[0]);
-		viewport[1]->Render(bath[1]);
-	}
-
-	WindowDevice::Uninitialize();
-	RenderEngine::Uninitialize();
-}
-
 int main()
 {
 	//ProcessTest();
@@ -338,7 +268,9 @@ int main()
 
 	//LScriptTest();
 
-	Direct3DDemo();
+	//Demo1Run();
+
+	Demo2Run();
 
 	//system("pause");
 	getchar();

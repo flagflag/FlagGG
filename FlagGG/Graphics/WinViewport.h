@@ -39,7 +39,7 @@ namespace FlagGG
 
 			void Hide();
 
-			void Render(const Batch& batch);
+			void Render(const Batch* batch);
 
 		private:
 			void UpdateVertexData(const unsigned char* vertexs, unsigned vertexSize, unsigned vertexCount);

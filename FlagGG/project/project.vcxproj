@@ -91,6 +91,9 @@
     <ClCompile Include="..\Code\Code.cpp" />
     <ClCompile Include="..\Config\parse.cpp" />
     <ClCompile Include="..\Graphics\Batch.cpp" />
+    <ClCompile Include="..\Graphics\Batch2D.cpp" />
+    <ClCompile Include="..\Graphics\Batch3D.cpp" />
+    <ClCompile Include="..\Graphics\Camera.cpp" />
     <ClCompile Include="..\Graphics\GPUObject.cpp" />
     <ClCompile Include="..\Graphics\RenderEngine.cpp" />
     <ClCompile Include="..\Graphics\RenderTarget.cpp" />
@@ -129,8 +132,13 @@
     <ClInclude Include="..\Code\Code.h" />
     <ClInclude Include="..\Config\parse.h" />
     <ClInclude Include="..\Define.h" />
+    <ClInclude Include="..\Demo\Demo1\demo1.hpp" />
+    <ClInclude Include="..\Demo\Demo2\demo2.hpp" />
     <ClInclude Include="..\ErrorCode.h" />
     <ClInclude Include="..\Graphics\Batch.h" />
+    <ClInclude Include="..\Graphics\Batch2D.h" />
+    <ClInclude Include="..\Graphics\Batch3D.h" />
+    <ClInclude Include="..\Graphics\Camera.h" />
     <ClInclude Include="..\Graphics\GPUObject.h" />
     <ClInclude Include="..\Graphics\RenderEngine.h" />
     <ClInclude Include="..\Graphics\RenderTarget.h" />

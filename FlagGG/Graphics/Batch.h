@@ -1,8 +1,6 @@
 #ifndef __BATCH__
 #define __BATCH__
 
-#include "Math/Vector2.h"
-
 #include <vector>
 
 namespace FlagGG
@@ -16,12 +14,9 @@ namespace FlagGG
 		class Batch
 		{
 		public:
-			Batch(Texture* texture, VertexVector* vertexs = nullptr);
+			Batch(Texture* texture, VertexVector* vertexs, unsigned vertexSize);
 
 			virtual ~Batch();
-
-			void AddTriangle(const Math::Vector2& v1, const Math::Vector2& v2, const Math::Vector2& v3,
-				const Math::Vector2& uv1, const Math::Vector2& uv2, const Math::Vector2& uv3, unsigned color);
 
 			VertexVector* GetVertexs() const;
 
@@ -31,11 +26,11 @@ namespace FlagGG
 
 			Texture* GetTexture() const;
 
-		private:
+		protected:
 			VertexVector* vertexs_;
 			bool owner_;
 
-			unsigned vertexSize_{ 20 };
+			unsigned vertexSize_;
 			
 			unsigned vertexStart_;
 

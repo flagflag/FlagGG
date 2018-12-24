@@ -76,6 +76,15 @@
     <Filter Include="3rd\DDS">
       <UniqueIdentifier>{7cdaa3d4-ad1f-491a-ba75-cb6059017dd4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Demo">
+      <UniqueIdentifier>{db2ed975-4ff7-4823-8d42-3560f4aa4fd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Demo\Demo1">
+      <UniqueIdentifier>{9fef05a8-f7c4-48b1-8464-cc2ae1061673}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Demo\Demo2">
+      <UniqueIdentifier>{4d93bf3a-c5e4-482f-a629-827561d5d565}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cpp" />
@@ -162,6 +171,15 @@
     </ClCompile>
     <ClCompile Include="..\3rd\DDS\DDSTextureLoader.cpp">
       <Filter>3rd\DDS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\Camera.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\Batch2D.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\Batch3D.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -289,6 +307,21 @@
     </ClInclude>
     <ClInclude Include="..\3rd\DDS\DDSTextureLoader.h">
       <Filter>3rd\DDS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\Camera.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Demo\Demo1\demo1.hpp">
+      <Filter>Demo\Demo1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Demo\Demo2\demo2.hpp">
+      <Filter>Demo\Demo2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\Batch2D.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\Batch3D.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
