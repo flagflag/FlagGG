@@ -1,16 +1,38 @@
-float4 VS( float4 pos : POSITION ) : SV_POSITION
+Texture2D colorMap_ : register( t0 );
  
+SamplerState colorSampler_ : register( s0 );
+ 
+struct VS_Input
 {
+	float4 pos : POSITION;
+	float2 tex0 : TEXCOORD0;
+	float3 nor : NORMAL;
+};
  
-	return pos;
+struct PS_Input
+{
+	float4 pos : SV_POSITION;
+	float2 tex0 : TEXCOORD0;
+	float3 nor : NORMAL;
+};
  
+PS_Input VS( VS_Input vertex )
+{
+	PS_Input vsOut = ( PS_Input )0;
+	 
+	vsOut.pos = vertex.pos;
+	 
+	vsOut.tex0 = vertex.tex0;
+
+	vsOut.nor = vertex.nor;
+	 
+	return vsOut;
 }
  
-float4 PS( float4 pos : SV_POSITION ) : SV_TARGET
- 
+float4 PS( PS_Input frag ) : SV_TARGET
 {
- 
-	return float4( 0.0f, 1.0f, 0.0f, 1.0f );
- 
+	return colorMap_.Sample( colorSampler_, frag.tex0 );
 }
+ 
+ 
  

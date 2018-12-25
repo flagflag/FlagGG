@@ -12,27 +12,38 @@ using namespace FlagGG::Math;
 
 void LoadVertexData(Batch3D& batch)
 {
-	std::ifstream stream;
-	stream.open("../Demo/Demo2/vertex.txt", std::ios::in);
-	if (!stream.is_open())
-	{
-		puts("load vertex data failed.");
+	//std::ifstream stream;
+	//stream.open("../Demo/Demo2/vertex.txt", std::ios::in);
+	//if (!stream.is_open())
+	//{
+	//	puts("load vertex data failed.");
 
-		return;
-	}
+	//	return;
+	//}
 
-	while (!stream.eof())
-	{
-		float buffer[8];
-		for (int i = 0; i < 8; ++i)
-		{
-			stream >> buffer[i];
-		}
-		
-		batch.AddBlob(buffer, 8 * 4);
-	}
+	//while (!stream.eof())
+	//{
+	//	float buffer[8];
+	//	for (int i = 0; i < 8; ++i)
+	//	{
+	//		stream >> buffer[i];
+	//	}
+	//	
+	//	batch.AddBlob(buffer, 8 * 4);
+	//}
 
-	stream.close();
+	//stream.close();
+
+	//batch.AddTriangle(
+	//	Vector3(1.0f, 1.0f, 0.0f), Vector3(1.0f, -1.0f, 0.0f), Vector3(-1.0f, -1.0f, 0.0f),
+	//	Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
+	//	Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
+	//	0);
+	batch.AddTriangle(
+		Vector3(1.0f, 1.0f, 0.0f), Vector3(-1.0f, -1.0f, 0.0f), Vector3(1.0f, -1.0f, 0.0f),
+		Vector2(1.0f, 1.0f), Vector2(0.0f, 0.0f), Vector2(1.0f, 0.0f),
+		Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
+		0);
 }
 
 void Demo2Run()
@@ -46,8 +57,8 @@ void Demo2Run()
 	Batch3D batch(&texture, nullptr);
 	LoadVertexData(batch);
 
-	Shader vs(L"../Shader/VS.hlsl", VS);
-	Shader ps(L"../Shader/PS.hlsl", PS);
+	Shader vs(L"../Shader/3D_VS.hlsl", VS);
+	Shader ps(L"../Shader/3D_PS.hlsl", PS);
 	vs.Initialize();
 	ps.Initialize();
 
