@@ -29,9 +29,13 @@ namespace FlagGG
 		private:
 			static void CreateDevice();
 
+			static void CreateRasterizerState();
+
 			static ID3D11Device* device_;
 
 			static ID3D11DeviceContext* deviceContext_;
+
+			static ID3D11RasterizerState* rasterizerState_;
 		};
 	}
 }

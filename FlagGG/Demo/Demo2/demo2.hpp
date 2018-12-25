@@ -34,16 +34,16 @@ void LoadVertexData(Batch3D& batch)
 
 	//stream.close();
 
-	//batch.AddTriangle(
-	//	Vector3(1.0f, 1.0f, 0.0f), Vector3(1.0f, -1.0f, 0.0f), Vector3(-1.0f, -1.0f, 0.0f),
-	//	Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
-	//	Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
-	//	0);
 	batch.AddTriangle(
-		Vector3(1.0f, 1.0f, 0.0f), Vector3(-1.0f, -1.0f, 0.0f), Vector3(1.0f, -1.0f, 0.0f),
-		Vector2(1.0f, 1.0f), Vector2(0.0f, 0.0f), Vector2(1.0f, 0.0f),
+		Vector3(1.0f, 1.0f, 0.0f), Vector3(1.0f, -1.0f, 0.0f), Vector3(-1.0f, -1.0f, 0.0f),
+		Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
 		Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
 		0);
+	//batch.AddTriangle(
+	//	Vector3(1.0f, 1.0f, 0.0f), Vector3(-1.0f, -1.0f, 0.0f), Vector3(1.0f, -1.0f, 0.0f),
+	//	Vector2(1.0f, 1.0f), Vector2(0.0f, 0.0f), Vector2(1.0f, 0.0f),
+	//	Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 0.0f, -1.0f),
+	//	0);
 }
 
 void Demo2Run()

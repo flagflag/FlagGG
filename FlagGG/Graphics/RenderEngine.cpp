@@ -8,6 +8,8 @@ namespace FlagGG
 
 		ID3D11DeviceContext* RenderEngine::deviceContext_ = nullptr;
 
+		ID3D11RasterizerState* RenderEngine::rasterizerState_ = nullptr;
+
 		void RenderEngine::CreateDevice()
 		{
 			unsigned createDeviceFlags = 0;
@@ -39,15 +41,43 @@ namespace FlagGG
 			}
 		}
 
+		void RenderEngine::CreateRasterizerState()
+		{
+			D3D11_RASTERIZER_DESC stateDesc;
+			memset(&stateDesc, 0, sizeof(stateDesc));
+			stateDesc.FillMode = D3D11_FILL_SOLID;
+			stateDesc.CullMode = D3D11_CULL_BACK;
+			stateDesc.FrontCounterClockwise = false;
+			stateDesc.DepthBias = 0;
+			stateDesc.DepthBiasClamp = 0.0f;
+
+			stateDesc.SlopeScaledDepthBias = 0;
+			stateDesc.DepthClipEnable = false;
+			stateDesc.ScissorEnable = false;
+			stateDesc.MultisampleEnable = false;
+			stateDesc.AntialiasedLineEnable = false;
+
+			HRESULT hr = device_->CreateRasterizerState(&stateDesc, &rasterizerState_);
+			if (hr != 0)
+			{
+				puts("CreateRasterizerState failed.");
+
+				SAFE_RELEASE(rasterizerState_);
+			}
+		}
+
 		void RenderEngine::Initialize()
 		{
 			CreateDevice();
+
+			CreateRasterizerState();
 		}
 
 		void RenderEngine::Uninitialize()
 		{
 			SAFE_RELEASE(device_);
 			SAFE_RELEASE(deviceContext_);
+			SAFE_RELEASE(rasterizerState_);
 		}
 
 		ID3D11Device* RenderEngine::GetDevice()
