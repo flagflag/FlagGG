@@ -63,7 +63,11 @@ namespace FlagGG
 				puts("CreateRasterizerState failed.");
 
 				SAFE_RELEASE(rasterizerState_);
+
+				return;
 			}
+
+			deviceContext_->RSSetState(rasterizerState_);
 		}
 
 		void RenderEngine::Initialize()
