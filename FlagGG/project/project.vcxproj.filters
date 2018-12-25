@@ -190,6 +190,9 @@
     <ClCompile Include="..\Graphics\VertexFormat.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\Math\Matrix4.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Code.h">
@@ -340,6 +343,9 @@
     </ClInclude>
     <ClInclude Include="..\Graphics\VertexFormat.h">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Math\Matrix4.h">
+      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

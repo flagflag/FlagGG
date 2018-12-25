@@ -114,6 +114,7 @@
     <ClCompile Include="..\IOFrame\ThreadPool\NetThreadPool.cpp" />
     <ClCompile Include="..\LScript\Interpreter.cpp" />
     <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\Math\Matrix4.cpp" />
     <ClCompile Include="..\Math\Vector2.cpp" />
     <ClCompile Include="..\Math\Vector3.cpp" />
     <ClCompile Include="..\Utility\SystemHelper.cpp" />
@@ -167,6 +168,7 @@
     <ClInclude Include="..\IOFrame\IOError.h" />
     <ClInclude Include="..\IOFrame\ThreadPool\NetThreadPool.h" />
     <ClInclude Include="..\LScript\Interpreter.h" />
+    <ClInclude Include="..\Math\Matrix4.h" />
     <ClInclude Include="..\Math\Vector2.h" />
     <ClInclude Include="..\Math\Vector3.h" />
     <ClInclude Include="..\Utility\SystemHelper.h" />

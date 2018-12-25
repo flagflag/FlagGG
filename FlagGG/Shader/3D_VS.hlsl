@@ -1,3 +1,10 @@
+cbuffer MatrixBuffer
+{
+    float4x4 worldMatrix;
+    float4x4 viewMatrix;
+    float4x4 projectionMatrix;
+}
+
 struct VertexInput
 {
 	float3 pos : POSITION;
@@ -20,6 +27,10 @@ PixelInput VS( VertexInput input )
 	output.pos.w = 1;
 	output.tex0 = input.tex0;
 	output.nor = input.nor;
+
+    output.pos = mul(output.pos, worldMatrix);
+    output.pos = mul(output.pos, viewMatrix);
+    output.pos = mul(output.pos, projectionMatrix);
 
 	return output;
 }
