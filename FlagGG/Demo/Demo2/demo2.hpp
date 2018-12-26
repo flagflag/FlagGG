@@ -63,7 +63,7 @@ class InputDemo : public Input
 {
 public:
 	InputDemo() :
-		camera_(LAND_OBJECT)
+		camera_(AIRCRAFT)
 	{
 	}
 
@@ -99,6 +99,38 @@ public:
 		if (keyCode == 'F' || keyCode == 'f')
 		{
 			camera_.Fly(-0.1f);
+		}
+
+
+
+		if (keyCode == VK_UP)
+		{
+			camera_.Pitch(0.0025);
+		}
+
+		if (keyCode == VK_DOWN)
+		{
+			camera_.Pitch(-0.0025);
+		}
+
+		if (keyCode == VK_LEFT)
+		{
+			camera_.Yaw(-0.0025);
+		}
+
+		if (keyCode == VK_RIGHT)
+		{
+			camera_.Yaw(0.0025);
+		}
+
+		if (keyCode == 'N' || keyCode == 'n')
+		{
+			camera_.Roll(0.0025);
+		}
+
+		if (keyCode == 'M' || keyCode == 'm')
+		{
+			camera_.Roll(-0.0025);
 		}
 	}
 

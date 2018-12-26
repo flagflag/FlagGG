@@ -74,5 +74,98 @@ namespace FlagGG
 			else
 				return target;
 		}
+
+		Matrix4 MatrixTranslation(float dx, float dy, float dz)
+		{
+			return Matrix4(
+				1.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 1.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f, 0.0f,
+				dx, dy, dz, 1.0f
+				);
+		}
+
+		Matrix4 MatrixRotationX(float angle)
+		{
+			float sina = Math::Sin(angle);
+			float cosa = Math::Cos(angle);
+
+			return Matrix4(
+				1.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, cosa, -sina, 0.0f,
+				0.0f, sina, cosa, 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f
+				);
+		}
+
+		Matrix4 MatrixRotationY(float angle)
+		{
+			float sina = Math::Sin(angle);
+			float cosa = Math::Cos(angle);
+
+			return Matrix4(
+				cosa, 0.0f, sina, 0.0f,
+				0.0f, 1.0f, 0.0f, 0.0f,
+				-sina, 0.0f, cosa, 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f
+				);
+		}
+
+		Matrix4 MatrixRotationZ(float angle)
+		{
+			float sina = Math::Sin(angle);
+			float cosa = Math::Cos(angle);
+
+			return Matrix4(
+				cosa, -sina, 0.0f, 0.0f,
+				sina, cosa, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f, 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f
+				);
+		}
+
+		Matrix4 MatrixRotationAxis(const Vector3& axis, float angle)
+		{
+			float x = axis.x_;
+			float y = axis.y_;
+			float z = axis.z_;
+			float sina = Math::Sin(angle);
+			float cosa = Math::Cos(angle);
+
+			return Matrix4(
+					cosa + (1.0f - cosa) * x * x,	(1.0f - cosa) * x * y - sina * z,	(1.0f - cosa) * x * z + sina * y,	0.0f,
+				(1.0f - cosa) * y * z + sina * z,		cosa + (1.0f - cosa) * y * y,	(1.0f - cosa) * y * z - sina * x,	0.0f,
+				(1.0f - cosa) * z * x - sina * y,	(1.0f - cosa) * z * y + sina * x,		cosa + (1.0f - cosa) * z * z,	0.0f,
+											0.0f,								0.0f,								0.0f,	1.0f
+				);
+		}
+
+		Vector3 Vector3TransformNormal(const Vector3& target, const Matrix4& T)
+		{
+			Matrix4 mat(
+				target.x_, target.y_, target.z_, 1.0f,
+				0.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 0.0f, 0.0f
+				);
+
+			mat = mat * T;
+
+			return Vector3(mat.m00_, mat.m01_, mat.m02_);
+		}
+
+		Vector3 Vector3TransformCoord(const Vector3& target, const Matrix4& T)
+		{
+			Matrix4 mat(
+				target.x_, target.y_, target.z_, 1.0f,
+				0.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 0.0f, 0.0f
+				);
+
+			mat = mat * T;
+
+			return Vector3(mat.m00_ / mat.m03_, mat.m01_ / mat.m03_, mat.m02_ / mat.m03_);
+		}
 	}
 }

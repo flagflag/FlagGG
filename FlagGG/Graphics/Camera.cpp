@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "RenderEngine.h"
+#include "Math/Math.h"
 
 namespace FlagGG
 {
@@ -55,9 +56,10 @@ namespace FlagGG
 
 		void Camera::Pitch(float angle)
 		{
-			Math::Matrix4 T = Math::Matrix4::MatrixRotationAxis(right_, angle);
+			Math::Matrix4 T = Math::MatrixRotationAxis(right_, angle);
 
-			// .....
+			up_ = Math::Vector3TransformCoord(up_, T);
+			look_ = Math::Vector3TransformCoord(look_, T);
 		}
 
 		void Camera::Yaw(float angle)
@@ -66,24 +68,26 @@ namespace FlagGG
 
 			if (cameraType_ == LAND_OBJECT)
 			{
-				T = Math::Matrix4::MatrixRotationY(angle);
+				T = Math::MatrixRotationY(angle);
 			}
 
 			if (cameraType_ == AIRCRAFT)
 			{
-				T = Math::Matrix4::MatrixRotationAxis(up_, angle);
+				T = Math::MatrixRotationAxis(up_, angle);
 			}
 
-			// .....
+			right_ = Math::Vector3TransformCoord(right_, T);
+			look_ = Math::Vector3TransformCoord(look_, T);
 		}
 
 		void Camera::Roll(float angle)
 		{
 			if (cameraType_ == AIRCRAFT)
 			{
-				Math::Matrix4 T = Math::Matrix4::MatrixRotationAxis(look_, angle);
+				Math::Matrix4 T = Math::MatrixRotationAxis(look_, angle);
 
-				// ......
+				right_ = Math::Vector3TransformCoord(right_, T);
+				up_ = Math::Vector3TransformCoord(up_, T);
 			}
 		}
 

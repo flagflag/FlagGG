@@ -341,53 +341,6 @@ namespace FlagGG
 				src += 16;
 			}
 		}
-
-		Matrix4 Matrix4::MatrixTranslation(float dx, float dy, float dz)
-		{
-			return Matrix4(
-				1.0f,	0.0f,	0.0f,	0.0f,
-				0.0f,	1.0f,	0.0f,	0.0f,
-				0.0f,	0.0f,	1.0f,	0.0f,
-				dx,		dy,		dz,		1.0f
-				);
-		}
-
-		using namespace FlagGG::Math;
-
-		Matrix4 Matrix4::MatrixRotationX(float angle)
-		{
-			return Matrix4(
-				1.0f, 0.0f, 0.0f, 0.0f,
-				0.0f, Cos(angle), -Sin(angle), 0.0f,
-				0.0f, Sin(angle), Cos(angle), 0.0f,
-				0.0f, 0.0f, 0.0f, 1.0f
-				);
-		}
-
-		Matrix4 Matrix4::MatrixRotationY(float angle)
-		{
-			return Matrix4(
-				Cos(angle), 0.0f, Sin(angle), 0.0f,
-				0.0f, 1.0f, 0.0f, 0.0f,
-				-Sin(angle), 0.0f, Cos(angle), 0.0f,
-				0.0f, 0.0f, 0.0f, 1.0f
-				);
-		}
-
-		Matrix4 Matrix4::MatrixRotationZ(float angle)
-		{
-			return Matrix4(
-				Cos(angle), -Sin(angle), 0.0f, 0.0f,
-				Sin(angle), Cos(angle), 0.0f, 0.0f,
-				0.0f, 0.0f, 1.0f, 0.0f,
-				0.0f, 0.0f, 0.0f, 1.0f
-				);
-		}
-
-		Matrix4 Matrix4::MatrixRotationAxis(const Vector3& axis, float angle)
-		{
-			return Matrix4::ZERO;
-		}
 	}
 }
 
