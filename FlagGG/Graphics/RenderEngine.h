@@ -15,6 +15,8 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
+		class Camera;
+
 		class RenderEngine
 		{
 		public:
@@ -26,16 +28,22 @@ namespace FlagGG
 
 			static ID3D11DeviceContext* GetDeviceContext();
 
+			static void UpdateMatrix(Camera* camera);
+
 		private:
 			static void CreateDevice();
 
 			static void CreateRasterizerState();
+
+			static void CreateMatrixData();
 
 			static ID3D11Device* device_;
 
 			static ID3D11DeviceContext* deviceContext_;
 
 			static ID3D11RasterizerState* rasterizerState_;
+
+			static ID3D11Buffer* matrixData_;
 		};
 	}
 }

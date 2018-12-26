@@ -1,8 +1,8 @@
 #ifndef __CAMERA__
 #define __CAMERA__
 
-#include <d3dx11.h>
-#include <d3dx9.h>
+#include "Math/Vector3.h"
+#include "Math/Matrix4.h"
 
 namespace FlagGG
 {
@@ -17,36 +17,37 @@ namespace FlagGG
 		class Camera
 		{
 		public:
-			Camera() = default;
-
 			Camera(CameraType cameraType);
 
 			virtual ~Camera() = default;
 
 			void Strafe(float units);
-			void fly(float units);
-			void walk(float units);
+			void Fly(float units);
+			void Walk(float units);
 
-			void pitch(float angle);
-			void yaw(float angle);
-			void roll(float angle);
+			void Pitch(float angle);
+			void Yaw(float angle);
+			void Roll(float angle);
 
-			void GetViewMatrix(D3DXMATRIX* V);
+			Math::Matrix4 GetViewMatrix();
+
+			CameraType GetCameraType() const;
 			void SetCameraType(CameraType cameraType);
-			void GetPosition(D3DXVECTOR3* pos);
-			void SetPosition(D3DXVECTOR3* pos);
 
-			void GetRight(D3DXVECTOR3* right);
-			void GetUp(D3DXVECTOR3* up);
-			void GetLook(D3DXVECTOR3* look);
+			const Math::Vector3& GetPosition() const;
+			void SetPosition(const Math::Vector3& pos);
+
+			const Math::Vector3& GetRight() const;
+			const Math::Vector3& GetUp() const;
+			const Math::Vector3& GetLook() const;
 
 		private:
 			CameraType cameraType_;
 
-			D3DXVECTOR3 right_;
-			D3DXVECTOR3 up_;
-			D3DXVECTOR3 look_;
-			D3DXVECTOR3 pos_;
+			Math::Vector3 pos_;
+			Math::Vector3 right_;
+			Math::Vector3 up_;
+			Math::Vector3 look_;		
 		};
 	}
 }

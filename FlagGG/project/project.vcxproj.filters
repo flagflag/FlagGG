@@ -193,6 +193,9 @@
     <ClCompile Include="..\Math\Matrix4.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="..\Math\Math.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Code.h">
@@ -345,6 +348,9 @@
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\Math\Matrix4.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Math\Math.h">
       <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,6 +1,6 @@
 #include "Matrix4.h"
 
-#include <math.h>
+#include "Math/Math.h"
 
 namespace FlagGG
 {
@@ -352,12 +352,14 @@ namespace FlagGG
 				);
 		}
 
+		using namespace FlagGG::Math;
+
 		Matrix4 Matrix4::MatrixRotationX(float angle)
 		{
 			return Matrix4(
 				1.0f, 0.0f, 0.0f, 0.0f,
-				0.0f, cos(angle), -sin(angle), 0.0f,
-				0.0f, sin(angle), cos(angle), 0.0f,
+				0.0f, Cos(angle), -Sin(angle), 0.0f,
+				0.0f, Sin(angle), Cos(angle), 0.0f,
 				0.0f, 0.0f, 0.0f, 1.0f
 				);
 		}
@@ -365,9 +367,9 @@ namespace FlagGG
 		Matrix4 Matrix4::MatrixRotationY(float angle)
 		{
 			return Matrix4(
-				cos(angle), 0.0f, sin(angle), 0.0f,
+				Cos(angle), 0.0f, Sin(angle), 0.0f,
 				0.0f, 1.0f, 0.0f, 0.0f,
-				-sin(angle), 0.0f, cos(angle), 0.0f,
+				-Sin(angle), 0.0f, Cos(angle), 0.0f,
 				0.0f, 0.0f, 0.0f, 1.0f
 				);
 		}
@@ -375,11 +377,16 @@ namespace FlagGG
 		Matrix4 Matrix4::MatrixRotationZ(float angle)
 		{
 			return Matrix4(
-				cos(angle), -sin(angle), 0.0f, 0.0f,
-				sin(angle), cos(angle), 0.0f, 0.0f,
+				Cos(angle), -Sin(angle), 0.0f, 0.0f,
+				Sin(angle), Cos(angle), 0.0f, 0.0f,
 				0.0f, 0.0f, 1.0f, 0.0f,
 				0.0f, 0.0f, 0.0f, 1.0f
 				);
+		}
+
+		Matrix4 Matrix4::MatrixRotationAxis(const Vector3& axis, float angle)
+		{
+			return Matrix4::ZERO;
 		}
 	}
 }

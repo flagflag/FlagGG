@@ -4,6 +4,7 @@
 #include "Graphics/Batch3D.h"
 #include "Graphics/Shader.h"
 #include "Graphics/VertexFormat.h"
+#include "Graphics/Camera.h"
 #include "Math/Matrix4.h"
 
 #include <fstream>
@@ -58,6 +59,84 @@ struct MatrixBufferType
 	Matrix4 projection;
 };
 
+class InputDemo : public Input
+{
+public:
+	InputDemo() :
+		camera_(LAND_OBJECT)
+	{
+	}
+
+	void OnKeyDown(KeyState* keyState, unsigned keyCode) override
+	{
+		printf("OnKeyDown keyCode = %u\n", keyCode);
+
+		if (keyCode == 'W' || keyCode == 'w')
+		{
+			camera_.Walk(0.1f);
+		}
+
+		if (keyCode == 'S' || keyCode == 's')
+		{
+			camera_.Walk(-0.1f);
+		}
+
+		if (keyCode == 'A' || keyCode == 'a')
+		{
+			camera_.Strafe(-0.1f);
+		}
+
+		if (keyCode == 'D' || keyCode == 'd')
+		{
+			camera_.Strafe(0.1f);
+		}
+
+		if (keyCode == 'R' || keyCode == 'r')
+		{
+			camera_.Fly(0.1f);
+		}
+
+		if (keyCode == 'F' || keyCode == 'f')
+		{
+			camera_.Fly(-0.1f);
+		}
+	}
+
+	void OnKeyUp(KeyState* keyState, unsigned keyCode) override
+	{
+		printf("OnKeyUp keyCode = %u\n", keyCode);
+	}
+
+	void OnMouseDown(KeyState* keyState, MouseKey mouseKey) override
+	{
+		if (mouseKey == MOUSE_LEFT)
+		{
+			mouseDown_ = true;
+		}
+	}
+
+	void OnMouseUp(KeyState* keyState, MouseKey mouseKey) override
+	{
+		if (mouseKey == MOUSE_LEFT)
+		{
+			mouseDown_ = false;
+		}
+	}
+
+	void OnMouseMove(KeyState* keyState, const Vector2& delta) override
+	{
+		if (mouseDown_)
+		{
+			printf("mouse delta (%lf, %lf)\n", delta.x_, delta.y_);
+		}
+	}
+
+	Camera camera_;
+
+private:
+	bool mouseDown_{ false };
+};
+
 void Demo2Run()
 {
 	WindowDevice::Initialize();
@@ -82,42 +161,12 @@ void Demo2Run()
 	viewport.Initialize();
 	viewport.Show();
 
+	InputDemo inputDemo;
+	viewport.SetInput(&inputDemo);
+
 	RenderContext context(&batch, &vs, &ps, &format);
 
-	{
-		ID3D11Buffer* buffer = nullptr;
-		D3D11_BUFFER_DESC bufferDesc;
-		memset(&bufferDesc, 0, sizeof(bufferDesc));
-		bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-		bufferDesc.ByteWidth = sizeof(MatrixBufferType);
-		HRESULT hr = RenderEngine::GetDevice()->CreateBuffer(&bufferDesc, NULL, &buffer);
-		if (hr != 0)
-		{
-			puts("CreateBuffer failed.");
-
-			SAFE_RELEASE(buffer);
-
-			return;
-		}
-
-		D3D11_MAPPED_SUBRESOURCE mappedResource;
-		unsigned int bufferNumber;
-
-		RenderEngine::GetDeviceContext()->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-
-		memset(mappedResource.pData, 0, sizeof(MatrixBufferType));
-		MatrixBufferType* dataPtr = (MatrixBufferType*)mappedResource.pData;
-		//dataPtr->world = Matrix4::MatrixTranslation(-0.5, 0.5, 0).Transpose();
-		dataPtr->world = Matrix4::MatrixRotationZ(3.14f / 3.0f).Transpose();
-		dataPtr->view = Matrix4::IDENTITY.Transpose();
-		dataPtr->projection = Matrix4::IDENTITY.Transpose();
-
-		RenderEngine::GetDeviceContext()->Unmap(buffer, 0);
-
-		RenderEngine::GetDeviceContext()->VSSetConstantBuffers(0, 1, &buffer);
-	}
+	WindowDevice::RegisterWinMessage(&viewport);
 
 	while (true)
 	{
@@ -125,8 +174,12 @@ void Demo2Run()
 
 		WindowDevice::Update();
 
+		RenderEngine::UpdateMatrix(&inputDemo.camera_);
+
 		viewport.Render(&context);
 	}
+
+	WindowDevice::UnregisterWinMessage(&viewport);
 
 	WindowDevice::Uninitialize();
 	RenderEngine::Uninitialize();

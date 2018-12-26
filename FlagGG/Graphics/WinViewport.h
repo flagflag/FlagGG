@@ -5,10 +5,22 @@
 #include "Batch.h"
 #include "RenderContext.h"
 
+#include <set>
+
 namespace FlagGG
 {
 	namespace Graphics
 	{
+		struct DefferedMessage
+		{
+			HWND handler_;
+			UINT message_;
+			WPARAM wParam_;
+			LPARAM lParam_;
+		};
+
+		class WinViewport;
+
 		class WindowDevice
 		{
 		public:
@@ -18,7 +30,51 @@ namespace FlagGG
 
 			static void Update();
 
+			static void RegisterWinMessage(WinViewport* wv);
+
+			static void UnregisterWinMessage(WinViewport* wv);
+
 			static const wchar_t* className_;
+
+			static std::set<WinViewport*> recivers_;
+
+			static std::vector<DefferedMessage> defferedMsgs_;
+		};
+
+		class KeyState
+		{
+		public:
+			bool OnCtrl();
+
+			bool OnAlt();
+
+			bool OnShift();
+
+		private:
+			
+		};
+
+		enum MouseKey
+		{
+			MOUSE_LEFT = 0,
+			MOUSE_MID,
+			MOUSE_RIGHT,
+		};
+
+		class Input
+		{
+		public:
+			virtual ~Input() = default;
+
+			virtual void OnKeyDown(KeyState* keyState, unsigned keyCode) = 0;
+
+			virtual void OnKeyUp(KeyState* keyState, unsigned keyCode) = 0;
+
+			virtual void OnMouseDown(KeyState* keyState, MouseKey mouseKey) = 0;
+
+			virtual void OnMouseUp(KeyState* keyState, MouseKey mouseKey) = 0;
+
+			virtual void OnMouseMove(KeyState* keyState, const Math::Vector2& delta) = 0;
 		};
 
 		class WinViewport : public Viewport
@@ -42,6 +98,10 @@ namespace FlagGG
 
 			void Render(const RenderContext* context);
 
+			void WinProc(UINT message, WPARAM wParam, LPARAM lParam);
+
+			void SetInput(Input* input);
+
 		private:
 			void UpdateVertexData(const unsigned char* vertexs, unsigned vertexSize, unsigned vertexCount);
 
@@ -53,6 +113,10 @@ namespace FlagGG
 
 			unsigned vertexSize_;
 			unsigned vertexCount_;
+
+			Input* input_{ nullptr };
+
+			POINT mousePos_;
 		};
 	}
 }

@@ -1,6 +1,8 @@
 #ifndef __MATRIX4__
 #define __MATRIX4__
 
+#include "Math/Vector3.h"
+
 namespace FlagGG
 {
 	namespace Math
@@ -85,6 +87,9 @@ namespace FlagGG
 			// Z轴顺时针旋转矩阵
 			// https://baike.baidu.com/item/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/3265181?fr=aladdin
 			static Matrix4 MatrixRotationZ(float angle);
+
+			// 任意轴顺时针旋转矩阵
+			static Matrix4 MatrixRotationAxis(const Vector3& axis, float angle);
 
 			/**
 			 * @brief 

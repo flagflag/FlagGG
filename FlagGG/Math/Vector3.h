@@ -28,6 +28,68 @@ namespace FlagGG
 
 			Vector3(const Vector3& other);
 
+			Vector3 operator +(const Vector3& rhs) const;
+
+			Vector3 operator -() const;
+
+			Vector3 operator -(const Vector3& rhs) const;
+
+			Vector3 operator *(float rhs) const;
+
+			Vector3 operator *(const Vector3& rhs) const;
+
+			Vector3 operator /(float rhs) const;
+
+			Vector3 operator /(const Vector3& rhs) const;
+
+			Vector3& operator +=(const Vector3& rhs);
+
+			Vector3& operator -=(const Vector3& rhs);
+
+			Vector3& operator *=(float rhs);
+
+			Vector3& operator *=(const Vector3& rhs);
+
+			Vector3& operator /=(float rhs);
+
+			Vector3& operator /=(const Vector3& rhs);
+
+			void Normalize();
+
+			float Length() const;
+
+			float LengthSquared() const;
+
+			float DotProduct(const Vector3& rhs) const;
+
+			float AbsDotProduct(const Vector3& rhs) const;
+
+			float ProjectOntoAxis(const Vector3& axis) const;
+
+			Vector3 ProjectOntoPlane(const Vector3& origin, const Vector3& normal) const;
+
+			Vector3 ProjectOntoLine(const Vector3& from, const Vector3& to, bool clamped = false) const;
+
+			float DistanceToPoint(const Vector3& point) const;
+
+			float DistanceToPlane(const Vector3& origin, const Vector3& normal) const;
+
+			Vector3 Orthogonalize(const Vector3& axis) const;
+
+			Vector3 CrossProduct(const Vector3& rhs) const;
+
+			Vector3 Abs() const;
+
+			Vector3 Lerp(const Vector3& rhs, float t) const;
+
+			bool Equals(const Vector3& rhs) const;
+
+			float Angle(const Vector3& rhs) const;
+
+			bool IsNaN() const;
+
+			Vector3 Normalized() const;
+
 			float x_;
 
 			float y_;

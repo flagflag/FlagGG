@@ -10,6 +10,10 @@ namespace FlagGG
 	{
 		const wchar_t* WindowDevice::className_ = L"Custom D3D11 Window";
 
+		std::set<WinViewport*> WindowDevice::recivers_;
+
+		std::vector<DefferedMessage> WindowDevice::defferedMsgs_;
+
 		static LRESULT APIENTRY StaticWndProc(HWND handler, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			switch (message)
@@ -18,6 +22,13 @@ namespace FlagGG
 				puts("create window success.");
 				break;
 			}
+
+			DefferedMessage msg;
+			msg.handler_ = handler;
+			msg.message_ = message;
+			msg.wParam_ = wParam;
+			msg.lParam_ = lParam;
+			WindowDevice::defferedMsgs_.push_back(msg);
 
 			return DefWindowProc(handler, message, wParam, lParam);
 		}
@@ -51,7 +62,31 @@ namespace FlagGG
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
 			}
+
+			for (auto msg = defferedMsgs_.begin(); msg != defferedMsgs_.end(); ++msg)
+			{
+				for (auto rec = recivers_.begin(); rec != recivers_.end(); ++rec)
+				{
+					if ((*rec)->GetWindow() == msg->handler_)
+					{
+						(*rec)->WinProc(msg->message_, msg->wParam_, msg->lParam_);
+					}
+				}
+			}
+
+			defferedMsgs_.clear();
 		}
+
+		void WindowDevice::RegisterWinMessage(WinViewport* wv)
+		{
+			recivers_.insert(wv);
+		}
+
+		void WindowDevice::UnregisterWinMessage(WinViewport* wv)
+		{
+			recivers_.erase(wv);
+		}
+
 
 		WinViewport::WinViewport(void* parentWindow, unsigned x, unsigned y, unsigned width, unsigned height) :
 			parentWindow_(parentWindow)
@@ -75,6 +110,8 @@ namespace FlagGG
 			{
 				printf("CreateWindow failed, error code(%d).\n", GetLastError());
 			}
+
+			::GetCursorPos(&mousePos_);
 		}
 
 		unsigned WinViewport::GetWidth()
@@ -202,6 +239,66 @@ namespace FlagGG
 			deviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			deviceContext->Draw(vertexCount, 0);
 			GetObject<IDXGISwapChain>()->Present(0, 0);
+		}
+
+		void WinViewport::WinProc(UINT message, WPARAM wParam, LPARAM lParam)
+		{
+			if (!input_) return;
+
+			switch (message)
+			{
+			case WM_KEYDOWN:
+				input_->OnKeyDown(nullptr, wParam);
+
+				break;
+
+			case WM_KEYUP:
+				input_->OnKeyUp(nullptr, wParam);
+
+				break;
+
+			case WM_LBUTTONDOWN:
+			case WM_RBUTTONDOWN:
+			case WM_MBUTTONDOWN:
+				{
+					MouseKey key;
+					if (message == WM_LBUTTONDOWN) key = MOUSE_LEFT;
+					else if (message == WM_RBUTTONDOWN) key = MOUSE_RIGHT;
+					else if (message == WM_MBUTTONDOWN) key = MOUSE_MID;
+					
+					input_->OnMouseDown(nullptr, key);
+				}
+				break;
+
+			case WM_LBUTTONUP:
+			case WM_RBUTTONUP:
+			case WM_MBUTTONUP:
+				{
+					MouseKey key;
+					if (message == WM_LBUTTONUP) key = MOUSE_LEFT;
+					else if (message == WM_RBUTTONUP) key = MOUSE_RIGHT;
+					else if (message == WM_MBUTTONUP) key = MOUSE_MID;
+
+					input_->OnMouseUp(nullptr, key);
+				}
+				break;
+			
+			case WM_MOUSEMOVE:
+				static POINT mousePos;
+
+				::GetCursorPos(&mousePos);
+				input_->OnMouseMove(nullptr,
+					Math::Vector2(mousePos.x - mousePos_.x, mousePos.y - mousePos_.y));
+
+				mousePos_ = mousePos;
+
+				break;
+			}
+		}
+
+		void WinViewport::SetInput(Input* input)
+		{
+			input_ = input;
 		}
 	}
 }
