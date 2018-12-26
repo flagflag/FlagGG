@@ -5,6 +5,8 @@
 #include "Shader.h"
 #include "VertexFormat.h"
 
+#include <vector>
+
 namespace FlagGG
 {
 	namespace Graphics
@@ -17,7 +19,7 @@ namespace FlagGG
 
 			bool IsValid() const;
 
-			Batch* batch_;
+			std::vector<Batch*> batchs_;
 
 			Shader* VSShader_;
 

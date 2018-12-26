@@ -11,10 +11,16 @@ namespace FlagGG
 
 		typedef std::vector<unsigned char> VertexVector;
 
+		enum BatchType
+		{
+			DRAW_LINE = 0,
+			DRAW_TRIANGLE = 1,
+		};
+
 		class Batch
 		{
 		public:
-			Batch(Texture* texture, VertexVector* vertexs, unsigned vertexSize);
+			Batch(BatchType type, Texture* texture, VertexVector* vertexs, unsigned vertexSize);
 
 			virtual ~Batch();
 
@@ -25,6 +31,8 @@ namespace FlagGG
 			unsigned GetVertexCount() const;
 
 			Texture* GetTexture() const;
+
+			BatchType GetType() const;
 
 		protected:
 			VertexVector* vertexs_;
@@ -37,6 +45,8 @@ namespace FlagGG
 			unsigned vertexEnd_;
 
 			Texture* texture_;
+
+			BatchType type_;
 		};
 	}
 }

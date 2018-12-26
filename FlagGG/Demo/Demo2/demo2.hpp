@@ -12,7 +12,37 @@
 using namespace FlagGG::Graphics;
 using namespace FlagGG::Math;
 
-void LoadVertexData(Batch3D& batch)
+void AddGrid(Batch3D& batch)
+{
+	float lineWidth = 0.01;
+	float space = 0.1;
+	int count = 1.0f / space * 2;
+
+	Vector3 v1(-1.0f, -1.0f, -1.0f);
+	Vector3 v2(-1.0f, -1.0f, 1.0f);
+
+	Vector3 v3(-1.0f, -1.0f, -1.0f);
+	Vector3 v4(1.0f, -1.0f, -1.0f);
+
+	for (int i = 0; i < count; ++i)
+	{
+		Vector3 d1(space * i, 0.0f, 0.0f);
+
+		batch.AddLine(
+			v1 + d1, v2 + d1,
+			Vector2(0.5f, 0.5f), Vector2(0.5f, 0.5f),
+			0);
+
+		Vector3 d2(0.0f, 0.0f, space * i);
+
+		batch.AddLine(
+			v3 + d2, v4 + d2,
+			Vector2(0.5f, 0.5f), Vector2(0.5f, 0.5f),
+			0);
+	}
+}
+
+void LoadVertexData(Batch3D& batch, Batch3D& grid)
 {
 	//std::ifstream stream;
 	//stream.open("../demo/demo2/vertex.txt", std::ios::in);
@@ -40,16 +70,91 @@ void LoadVertexData(Batch3D& batch)
 
 	//stream.close();
 
-	batch.AddTriangle(
-		Vector3(0.5f, 0.5f, 0.0f), Vector3(0.5f, -0.5f, 0.0f), Vector3(-0.5f, -0.5f, 0.0f),
-		Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
-		Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
-		0);
-	batch.AddTriangle(
-		Vector3(-0.5f, -0.5f, 0.0f), Vector3(-0.5f, 0.5f, 0.0f), Vector3(0.5f, 0.5f, 0.0f),
-		Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
-		Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
-		0);
+	AddGrid(grid);
+
+	// 正面
+	{
+		batch.AddTriangle(
+			Vector3(0.5f, 0.5f, -0.5f), Vector3(0.5f, -0.5f, -0.5f), Vector3(-0.5f, -0.5f, -0.5f),
+			Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
+			Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
+			0);
+		batch.AddTriangle(
+			Vector3(-0.5f, -0.5f, -0.5f), Vector3(-0.5f, 0.5f, -0.5f), Vector3(0.5f, 0.5f, -0.5f),
+			Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
+			Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
+			0);
+	}
+
+	// 上面
+	{
+		batch.AddTriangle(
+			Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, -0.5f), Vector3(-0.5f, 0.5f, -0.5f),
+			Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
+			Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
+			0);
+		batch.AddTriangle(
+			Vector3(-0.5f, 0.5f, -0.5f), Vector3(-0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f),
+			Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
+			Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
+			0);
+	}
+
+	// 右面
+	{
+		batch.AddTriangle(
+			Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, -0.5f, 0.5f), Vector3(0.5f, -0.5f, -0.5f),
+			Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
+			Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
+			0);
+		batch.AddTriangle(
+			Vector3(0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f),
+			Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
+			Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
+			0);
+	}
+
+	// 背面
+	{
+		batch.AddTriangle(
+			Vector3(-0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, 0.5f), Vector3(0.5f, -0.5f, 0.5f),
+			Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
+			Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
+			0); 
+		batch.AddTriangle(
+			Vector3(0.5f, -0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, 0.5f, 0.5f),
+			Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
+			Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
+			0);
+	}
+
+	// 下面
+	{
+		batch.AddTriangle(
+			Vector3(-0.5f, -0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, -0.5f, -0.5f),
+			Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
+			Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
+			0);
+		batch.AddTriangle(
+			Vector3(0.5f, -0.5f, -0.5f), Vector3(0.5f, -0.5f, 0.5f), Vector3(-0.5f, -0.5f, 0.5f),
+			Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
+			Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
+			0);
+	}
+
+	// 左面
+	{
+		batch.AddTriangle(
+			Vector3(-0.5f, 0.5f, -0.5f), Vector3(-0.5f, -0.5f, -0.5f), Vector3(-0.5f, -0.5f, 0.5f),
+			Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
+			Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
+			0);
+		batch.AddTriangle(
+			Vector3(-0.5f, -0.5f, 0.5f), Vector3(-0.5f, 0.5f, 0.5f), Vector3(-0.5f, 0.5f, -0.5f),
+			Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
+			Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
+			0);
+	}
 }
 
 struct MatrixBufferType
@@ -177,8 +282,9 @@ void Demo2Run()
 	Texture2D texture(L"../Demo/Demo2/texture.dds");
 	texture.Initialize();
 
-	Batch3D batch(&texture, nullptr);
-	LoadVertexData(batch);
+	Batch3D batch(DRAW_TRIANGLE, &texture, nullptr);
+	Batch3D grid(DRAW_LINE, &texture, nullptr); //地板的batch
+	LoadVertexData(batch, grid);
 
 	Shader vs(L"../Shader/3D_VS.hlsl", VS);
 	Shader ps(L"../Shader/3D_PS.hlsl", PS);
@@ -197,6 +303,7 @@ void Demo2Run()
 	viewport.SetInput(&inputDemo);
 
 	RenderContext context(&batch, &vs, &ps, &format);
+	context.batchs_.emplace_back(&grid);
 
 	WindowDevice::RegisterWinMessage(&viewport);
 

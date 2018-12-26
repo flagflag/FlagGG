@@ -207,37 +207,52 @@ namespace FlagGG
 		void WinViewport::Render(const RenderContext* context)
 		{
 			if (!context || !context->IsValid()) return;
-			Batch* batch = context->batch_;
 
 			ID3D11DeviceContext* deviceContext = RenderEngine::GetDeviceContext();
 
 			ID3D11RenderTargetView* renderTargetView = GetRenderTarget()->GetObject<ID3D11RenderTargetView>();
 			deviceContext->OMSetRenderTargets(1, &renderTargetView, nullptr);
-	
-			unsigned vertexSize = batch->GetVertexSize();
-			unsigned vertexCount = batch->GetVertexCount();
-			unsigned vertexOffset = 0;
-			if (vertexCount > 0)
-			{
-				UpdateVertexData(&(*batch->GetVertexs())[0], vertexSize, vertexCount);
-			}
-			deviceContext->IASetVertexBuffers(0, 1, &d3d11Buffer_, &vertexSize, &vertexOffset);
 
-			//deviceContext->VSSetSamplers(0, 1, &batch.GetTexture()->sampler_);
-
-			deviceContext->IASetInputLayout(context->format_->GetObject<ID3D11InputLayout>());
-			deviceContext->VSSetShader(context->VSShader_->GetObject<ID3D11VertexShader>(), nullptr, 0);
-			deviceContext->PSSetShader(context->PSShader_->GetObject<ID3D11PixelShader>(), nullptr, 0);
-			deviceContext->PSSetShaderResources(0, 1, &batch->GetTexture()->shaderResourceView_);
-			deviceContext->PSSetSamplers(0, 1, &batch->GetTexture()->sampler_);
-
-			deviceContext->OMSetRenderTargets(1, &renderTargetView, nullptr);
-
-			float color[] = { 0.5, 0.5f, 0.5f, 1.0f };
+			float color[] = { 0.0, 0.0f, 0.0f, 1.0f };
 			deviceContext->ClearRenderTargetView(renderTargetView, color);
 
-			deviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			deviceContext->Draw(vertexCount, 0);
+			for (int i = 0; i < context->batchs_.size(); ++i)
+			{
+				Batch* batch = context->batchs_[i];
+
+				unsigned vertexSize = batch->GetVertexSize();
+				unsigned vertexCount = batch->GetVertexCount();
+				unsigned vertexOffset = 0;
+				if (vertexCount > 0)
+				{
+					UpdateVertexData(&(*batch->GetVertexs())[0], vertexSize, vertexCount);
+				}
+				deviceContext->IASetVertexBuffers(0, 1, &d3d11Buffer_, &vertexSize, &vertexOffset);
+
+				//deviceContext->VSSetSamplers(0, 1, &batch.GetTexture()->sampler_);
+
+				deviceContext->IASetInputLayout(context->format_->GetObject<ID3D11InputLayout>());
+				deviceContext->VSSetShader(context->VSShader_->GetObject<ID3D11VertexShader>(), nullptr, 0);
+				deviceContext->PSSetShader(context->PSShader_->GetObject<ID3D11PixelShader>(), nullptr, 0);
+				deviceContext->PSSetShaderResources(0, 1, &batch->GetTexture()->shaderResourceView_);
+				deviceContext->PSSetSamplers(0, 1, &batch->GetTexture()->sampler_);
+
+				switch (batch->GetType())
+				{
+				case DRAW_LINE:
+					deviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+
+					break;
+
+				case DRAW_TRIANGLE:
+					deviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+					break;
+				}
+				
+				deviceContext->Draw(vertexCount, 0);
+			}
+
 			GetObject<IDXGISwapChain>()->Present(0, 0);
 		}
 

@@ -6,7 +6,7 @@ namespace FlagGG
 	namespace Graphics
 	{
 		Batch2D::Batch2D(Texture* texture, VertexVector* vertexs) :
-			Batch(texture, vertexs, 20)
+			Batch(DRAW_TRIANGLE, texture, vertexs, 20)
 		{
 		}
 

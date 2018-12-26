@@ -5,16 +5,19 @@ namespace FlagGG
 	namespace Graphics
 	{
 		RenderContext::RenderContext(Batch* batch, Shader* VS, Shader* PS, VertexFormat* format) :
-			batch_(batch),
 			VSShader_(VS),
 			PSShader_(PS),
 			format_(format)
 		{
+			if (batch)
+			{
+				batchs_.emplace_back(batch);
+			}	
 		}
 
 		bool RenderContext::IsValid() const
 		{
-			return batch_ != nullptr && VSShader_ != nullptr && PSShader_ != nullptr;
+			return batchs_.size() > 0 && VSShader_ != nullptr && PSShader_ != nullptr;
 		}
 	}
 }

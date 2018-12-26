@@ -5,7 +5,8 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		Batch::Batch(Texture* texture, VertexVector* vertexs, unsigned vertexSize) :
+		Batch::Batch(BatchType type, Texture* texture, VertexVector* vertexs, unsigned vertexSize) :
+			type_(type),
 			texture_(texture),
 			vertexs_(vertexs),
 			vertexSize_(vertexSize)
@@ -51,6 +52,11 @@ namespace FlagGG
 		Texture* Batch::GetTexture() const
 		{
 			return texture_;
+		}
+
+		BatchType Batch::GetType() const
+		{
+			return type_;
 		}
 	}
 }
