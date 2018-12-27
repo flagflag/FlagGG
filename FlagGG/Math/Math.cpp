@@ -2,12 +2,14 @@
 
 #include <math.h>
 
+#include <d3dx9math.h>
+
 namespace FlagGG
 {
 	namespace Math
 	{
-		static const float EPS = 1e-5;
-		static const float PI = asin(1.0f) * 2;
+		const float EPS = 1e-5;
+		const float PI = asin(1.0f) * 2;
 
 		bool IsNaN(float number)
 		{
@@ -166,6 +168,23 @@ namespace FlagGG
 			mat = mat * T;
 
 			return Vector3(mat.m00_ / mat.m03_, mat.m01_ / mat.m03_, mat.m02_ / mat.m03_);
+		}
+
+		Matrix4 MatrixPerspectiveFovLH(float fovy, float aspect, float zn, float zf)
+		{
+			D3DXMATRIX out;
+			D3DXMatrixPerspectiveFovLH(
+				&out,
+				fovy,
+				aspect,
+				zn,
+				zf
+				);
+
+			Math::Matrix4 output;
+			memcpy(&output, &out, sizeof(Math::Matrix4));
+
+			return output;
 		}
 	}
 }

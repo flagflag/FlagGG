@@ -8,6 +8,8 @@ namespace FlagGG
 {
 	namespace Math
 	{
+		extern const float PI;
+
 		bool IsNaN(float number);
 
 		float Sin(float angle);
@@ -74,7 +76,7 @@ namespace FlagGG
 		 * @param zf     - 表示视截体中远裁剪面距我们摄像机的位置，即人眼到“室外黑色墙壁”之间的距离
 		 * 注：具体可以参考这里：https://blog.csdn.net/poem_qianmo/article/details/8408723
 		 */
-		static Matrix4 MatrixPerspectiveFovLH(float fovy, float aspect, float zn, float zf);
+		Matrix4 MatrixPerspectiveFovLH(float fovy, float aspect, float zn, float zf);
 	}
 }
 

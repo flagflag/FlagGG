@@ -2,8 +2,6 @@
 #include "RenderEngine.h"
 #include "Math/Math.h"
 
-#include <d3dx9math.h>
-
 namespace FlagGG
 {
 	namespace Graphics
@@ -117,21 +115,12 @@ namespace FlagGG
 
 		Math::Matrix4 Camera::GetProjectionMatrix()
 		{
-			// return Math::Matrix4::IDENTITY;
-
-			D3DXMATRIX out;
-			D3DXMatrixPerspectiveFovLH(
-				&out,
-				D3DX_PI / 4,
+			return Math::MatrixPerspectiveFovLH(
+				Math::PI / 4,
 				1.0f,
 				1.0f,
 				100.0f
 				);
-
-			Math::Matrix4 output;
-			memcpy(&output, &out, sizeof(Math::Matrix4));
-
-			return output;
 		}
 
 		CameraType Camera::GetCameraType() const
