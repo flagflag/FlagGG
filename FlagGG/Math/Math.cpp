@@ -7,7 +7,7 @@ namespace FlagGG
 	namespace Math
 	{
 		static const float EPS = 1e-5;
-		static const float PI = 3.1415926;
+		static const float PI = asin(1.0f) * 2;
 
 		bool IsNaN(float number)
 		{

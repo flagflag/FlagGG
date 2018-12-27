@@ -30,6 +30,7 @@ namespace FlagGG
 			void Roll(float angle);
 
 			Math::Matrix4 GetViewMatrix();
+			Math::Matrix4 GetProjectionMatrix();
 
 			CameraType GetCameraType() const;
 			void SetCameraType(CameraType cameraType);

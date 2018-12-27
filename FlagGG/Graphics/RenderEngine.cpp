@@ -134,9 +134,9 @@ namespace FlagGG
 			RenderEngine::GetDeviceContext()->Map(matrixData_, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
 			MatrixData* dataPtr = static_cast<MatrixData*>(mappedResource.pData);
-			dataPtr->world		= Math::Matrix4::IDENTITY;
-			dataPtr->view		= camera->GetViewMatrix();
-			dataPtr->projection = Math::Matrix4::IDENTITY.Transpose();
+			dataPtr->world		= Math::Matrix4::IDENTITY.Transpose();
+			dataPtr->view		= camera->GetViewMatrix().Transpose();
+			dataPtr->projection = camera->GetProjectionMatrix().Transpose();
 
 			RenderEngine::GetDeviceContext()->Unmap(matrixData_, 0);
 

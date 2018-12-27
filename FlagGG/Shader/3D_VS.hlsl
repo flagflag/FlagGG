@@ -26,7 +26,8 @@ PixelInput VS( VertexInput input )
 	output.pos.xzy = input.pos.xzy;
 	output.pos.w = 1;
 	output.tex0 = input.tex0;
-	output.nor = input.nor;
+	output.nor = mul(input.nor, (float3x3)worldMatrix);
+	output.nor = normalize(output.nor);
 
     output.pos = mul(output.pos, worldMatrix);
     output.pos = mul(output.pos, viewMatrix);
