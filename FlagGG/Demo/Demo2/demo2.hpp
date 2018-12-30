@@ -168,7 +168,7 @@ class InputDemo : public Input
 {
 public:
 	InputDemo() :
-		camera_(AIRCRAFT)
+		camera_(LAND_OBJECT)
 	{
 		camera_.Walk(-5.0);
 		camera_.Fly(1.0);
@@ -270,6 +270,9 @@ public:
 		if (mouseDown_)
 		{
 			printf("mouse delta (%lf, %lf)\n", delta.x_, delta.y_);
+
+			camera_.Yaw(-delta.x_ * rate_);
+			camera_.Pitch(-delta.y_ * rate_);
 		}
 	}
 
@@ -277,6 +280,8 @@ public:
 
 private:
 	bool mouseDown_{ false };
+
+	float rate_{ 0.0001 };
 };
 
 void Demo2Run()
