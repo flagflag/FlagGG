@@ -110,7 +110,7 @@ macro (define_source_files)
         set (ARG_GLOB_CPP_PATTERNS *.cpp)    # Default glob pattern
     endif ()
     if (NOT ARG_GLOB_H_PATTERNS)
-        set (ARG_GLOB_H_PATTERNS *.h)
+        set (ARG_GLOB_H_PATTERNS *.h *.hpp)
     endif ()
     if (ARG_RECURSE)
         set (ARG_RECURSE _RECURSE)
