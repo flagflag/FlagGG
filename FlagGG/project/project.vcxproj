@@ -54,12 +54,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)../;$(SolutionDir)..\3rd\boost_1_67_0;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)../;$(SolutionDir)..\..\3rd\boost_1_67_0;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\3rd\boost_1_67_0\vc12_x86\lib;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Samples\C++\Effects11\Debug;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\..\3rd\boost_1_67_0\vc12_x86\lib;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Samples\C++\Effects11\Debug;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libboost_regex-vc120-mt-gd-x32-1_67.lib;d3d11.lib;d3dx11d.lib;dxerr.lib;d3dcompiler.lib;Effects11.lib;dxgi.lib;dxguid.lib;d3d9.lib;d3dx9.lib;d3dx9d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -82,7 +82,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\3rd\DDS\DDSTextureLoader.cpp" />
     <ClCompile Include="..\AsyncFrame\KernelObject\HandleObject.cpp" />
     <ClCompile Include="..\AsyncFrame\Process\Process.cpp" />
     <ClCompile Include="..\AsyncFrame\Thread\SharedThread.cpp" />
@@ -94,6 +93,7 @@
     <ClCompile Include="..\Graphics\Batch2D.cpp" />
     <ClCompile Include="..\Graphics\Batch3D.cpp" />
     <ClCompile Include="..\Graphics\Camera.cpp" />
+    <ClCompile Include="..\Graphics\DDS\DDSTextureLoader.cpp" />
     <ClCompile Include="..\Graphics\GPUObject.cpp" />
     <ClCompile Include="..\Graphics\RenderContext.cpp" />
     <ClCompile Include="..\Graphics\RenderEngine.cpp" />
@@ -121,7 +121,6 @@
     <ClCompile Include="..\Utility\SystemHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\3rd\DDS\DDSTextureLoader.h" />
     <ClInclude Include="..\Allocator\SmartMemory.hpp" />
     <ClInclude Include="..\AsyncFrame\KernelObject\HandleObject.h" />
     <ClInclude Include="..\AsyncFrame\KernelObject\Runtime.h" />
@@ -144,6 +143,7 @@
     <ClInclude Include="..\Graphics\Batch2D.h" />
     <ClInclude Include="..\Graphics\Batch3D.h" />
     <ClInclude Include="..\Graphics\Camera.h" />
+    <ClInclude Include="..\Graphics\DDS\DDSTextureLoader.h" />
     <ClInclude Include="..\Graphics\GPUObject.h" />
     <ClInclude Include="..\Graphics\RenderContext.h" />
     <ClInclude Include="..\Graphics\RenderEngine.h" />

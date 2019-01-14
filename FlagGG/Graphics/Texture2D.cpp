@@ -1,7 +1,7 @@
 #include "Texture2D.h"
 #include "RenderEngine.h"
 
-#include "3rd/DDS/DDSTextureLoader.h"
+#include "DDS/DDSTextureLoader.h"
 
 #include <d3dx11.h>
 

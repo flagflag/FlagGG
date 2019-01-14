@@ -70,12 +70,6 @@
     <Filter Include="Math">
       <UniqueIdentifier>{f0748942-6870-4d9c-a839-096c80ff8612}</UniqueIdentifier>
     </Filter>
-    <Filter Include="3rd">
-      <UniqueIdentifier>{ed237fd4-c7cf-4685-a0de-329536eb8ea9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="3rd\DDS">
-      <UniqueIdentifier>{7cdaa3d4-ad1f-491a-ba75-cb6059017dd4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Demo">
       <UniqueIdentifier>{db2ed975-4ff7-4823-8d42-3560f4aa4fd6}</UniqueIdentifier>
     </Filter>
@@ -84,6 +78,9 @@
     </Filter>
     <Filter Include="Demo\Demo2">
       <UniqueIdentifier>{4d93bf3a-c5e4-482f-a629-827561d5d565}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\DDS">
+      <UniqueIdentifier>{1e7b6820-10cf-4118-b537-a25e7874f157}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -169,9 +166,6 @@
     <ClCompile Include="..\Graphics\Batch.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\3rd\DDS\DDSTextureLoader.cpp">
-      <Filter>3rd\DDS</Filter>
-    </ClCompile>
     <ClCompile Include="..\Graphics\Camera.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
@@ -195,6 +189,9 @@
     </ClCompile>
     <ClCompile Include="..\Math\Math.cpp">
       <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\DDS\DDSTextureLoader.cpp">
+      <Filter>Graphics\DDS</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -320,9 +317,6 @@
     <ClInclude Include="..\Graphics\Batch.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\3rd\DDS\DDSTextureLoader.h">
-      <Filter>3rd\DDS</Filter>
-    </ClInclude>
     <ClInclude Include="..\Graphics\Camera.h">
       <Filter>Graphics</Filter>
     </ClInclude>
@@ -352,6 +346,9 @@
     </ClInclude>
     <ClInclude Include="..\Math\Math.h">
       <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\DDS\DDSTextureLoader.h">
+      <Filter>Graphics\DDS</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
