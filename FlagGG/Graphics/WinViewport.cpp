@@ -186,6 +186,9 @@ namespace FlagGG
 
 					return;
 				}
+
+				vertexSize_ = vertexSize;
+				vertexCount_ = vertexCount;
 			}
 
 			D3D11_MAPPED_SUBRESOURCE mappedData;

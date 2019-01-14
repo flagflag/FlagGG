@@ -105,14 +105,14 @@ namespace FlagGG
 		private:
 			void UpdateVertexData(const unsigned char* vertexs, unsigned vertexSize, unsigned vertexCount);
 
-			void* window;
+			void* window{ nullptr };
 
-			void* parentWindow_;
+			void* parentWindow_{ nullptr };
 
-			ID3D11Buffer* d3d11Buffer_;
+			ID3D11Buffer* d3d11Buffer_{ nullptr };
 
-			unsigned vertexSize_;
-			unsigned vertexCount_;
+			unsigned vertexSize_{ 0 };
+			unsigned vertexCount_{ 0 };
 
 			Input* input_{ nullptr };
 

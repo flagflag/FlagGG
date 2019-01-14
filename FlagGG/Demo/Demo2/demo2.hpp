@@ -289,15 +289,15 @@ void Demo2Run()
 	WindowDevice::Initialize();
 	RenderEngine::Initialize();
 
-	Texture2D texture(L"../Demo/Demo2/texture.dds");
+	Texture2D texture(L"../../FlagGG/Demo/Demo2/texture.dds");
 	texture.Initialize();
 
 	Batch3D batch(DRAW_TRIANGLE, &texture, nullptr);
 	Batch3D grid(DRAW_LINE, &texture, nullptr); //µØ°åµÄbatch
 	LoadVertexData(batch, grid);
 
-	Shader vs(L"../Shader/3D_VS.hlsl", VS);
-	Shader ps(L"../Shader/3D_PS.hlsl", PS);
+	Shader vs(L"../../FlagGG/Shader/3D_VS.hlsl", VS);
+	Shader ps(L"../../FlagGG/Shader/3D_PS.hlsl", PS);
 	vs.Initialize();
 	ps.Initialize();
 

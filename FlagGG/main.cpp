@@ -256,11 +256,11 @@ int main()
 
 	//BufferTest();
 
-	FlagGG::AsyncFrame::Thread::UniqueThread server_thread(StartServer);
+	//FlagGG::AsyncFrame::Thread::UniqueThread server_thread(StartServer);
 
 	//等两秒，保证服务器开启
-	Sleep(2000);
-	FlagGG::AsyncFrame::Thread::UniqueThread client_thread(StartClient);
+	//Sleep(2000);
+	//FlagGG::AsyncFrame::Thread::UniqueThread client_thread(StartClient);
 
 	//Gao();
 
@@ -270,7 +270,7 @@ int main()
 
 	//Demo1Run();
 
-	//Demo2Run();
+	Demo2Run();
 
 	//system("pause");
 	getchar();
