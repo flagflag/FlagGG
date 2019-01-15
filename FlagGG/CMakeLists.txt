@@ -13,8 +13,15 @@ add_definitions (-D_DEBUG -DFlagGG_EXPORTS)
 
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
+# 在非windows上把Graphics排除，因为目前Graphics只写了windows的部分
+if (NOT FLAGGG_D3D11)
+    list (APPEND EXCLUDED_SOURCE_DIRS Graphics)
+endif ()
+# 输出排除的目录
+message ("exclude folder: ${EXCLUDED_SOURCE_DIRS}")
+string (REPLACE ";" "/[^;]+;" EXCLUDE_PATTERNS "${EXCLUDED_SOURCE_DIRS};")
 # define_source_files这个宏定义在Common.cmake
-define_source_files (RECURSE GROUP)
+define_source_files (EXCLUDE_PATTERNS ${EXCLUDE_PATTERNS} RECURSE GROUP)
 
 # setup_library (STATIC) 表示静态库(win上*.lib，linux上*.a)
 # setup_library (SHARED) 表示动态库(win上*.dll，linux上*.os)
