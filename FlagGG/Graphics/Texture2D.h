@@ -11,7 +11,7 @@ namespace FlagGG
 	{
 #define USE_DDS
 
-		class Texture2D : public Texture
+		class FlagGG_API Texture2D : public Texture
 		{
 		public:
 			Texture2D() = default;

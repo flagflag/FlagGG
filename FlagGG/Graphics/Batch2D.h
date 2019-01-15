@@ -1,6 +1,8 @@
 #ifndef __BATCH2D__
 #define __BATCH2D__
 
+#include "Export.h"
+
 #include "Math/Vector2.h"
 #include "Batch.h"
 
@@ -8,7 +10,7 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		class Batch2D : public Batch
+		class FlagGG_API Batch2D : public Batch
 		{
 		public:
 			Batch2D(Texture* texture, VertexVector* vertexs = nullptr);

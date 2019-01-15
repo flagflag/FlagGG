@@ -1,6 +1,8 @@
 #ifndef __CAMERA__
 #define __CAMERA__
 
+#include "Export.h"
+
 #include "Math/Vector3.h"
 #include "Math/Matrix4.h"
 
@@ -14,7 +16,7 @@ namespace FlagGG
 			AIRCRAFT,
 		};
 
-		class Camera
+		class FlagGG_API Camera
 		{
 		public:
 			Camera(CameraType cameraType);

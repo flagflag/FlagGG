@@ -1,6 +1,8 @@
 #ifndef __TEXTURE__
 #define __TEXTURE__
 
+#include "Export.h"
+
 #include "GPUObject.h"
 
 namespace FlagGG
@@ -8,7 +10,7 @@ namespace FlagGG
 	namespace Graphics
 	{
 		//Base Class, ID3D11Texture2D or ID3D11Texture3D
-		class Texture : public GPUObject
+		class FlagGG_API Texture : public GPUObject
 		{
 		public:
 			~Texture() override;

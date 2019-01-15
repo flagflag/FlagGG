@@ -1,6 +1,8 @@
 #ifndef __GPU_OBJECT__
 #define __GPU_OBJECT__
 
+#include "Export.h"
+
 #include <d3d11.h>
 
 #include "Define.h"
@@ -15,7 +17,7 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		class GPUObject
+		class FlagGG_API GPUObject
 		{
 		public:
 			GPUObject();

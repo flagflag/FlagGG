@@ -1,6 +1,8 @@
 #ifndef __RENDER_CONTEXT__
 #define __RENDER_CONTEXT__
 
+#include "Export.h"
+
 #include "Batch.h"
 #include "Shader.h"
 #include "VertexFormat.h"
@@ -11,7 +13,7 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		struct RenderContext
+		struct FlagGG_API RenderContext
 		{
 			RenderContext(Batch* batch, Shader* VS, Shader* PS, VertexFormat* format);
 

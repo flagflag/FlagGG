@@ -1,6 +1,8 @@
 #ifndef __MATRIX4__
 #define __MATRIX4__
 
+#include "Export.h"
+
 #include "Math/Vector3.h"
 
 namespace FlagGG
@@ -8,7 +10,7 @@ namespace FlagGG
 	namespace Math
 	{
 		/// 4x4 matrix for arbitrary linear transforms including projection.
-		class Matrix4
+		class FlagGG_API Matrix4
 		{
 		public:
 			Matrix4();

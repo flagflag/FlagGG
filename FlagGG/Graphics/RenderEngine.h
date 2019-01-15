@@ -1,6 +1,8 @@
 #ifndef __RENDER_ENGINE__
 #define __RENDER_ENGINE__
 
+#include "Export.h"
+
 #include <d3d11.h>
 
 #include <stdio.h>
@@ -17,7 +19,7 @@ namespace FlagGG
 	{
 		class Camera;
 
-		class RenderEngine
+		class FlagGG_API RenderEngine
 		{
 		public:
 			static void Initialize();

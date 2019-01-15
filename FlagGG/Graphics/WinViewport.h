@@ -1,6 +1,8 @@
 #ifndef __WIN_VIEWPORT__
 #define __WIN_VIEWPORT__
 
+#include "Export.h"
+
 #include "Viewport.h"
 #include "Batch.h"
 #include "RenderContext.h"
@@ -21,7 +23,7 @@ namespace FlagGG
 
 		class WinViewport;
 
-		class WindowDevice
+		class FlagGG_API WindowDevice
 		{
 		public:
 			static void Initialize();
@@ -61,7 +63,7 @@ namespace FlagGG
 			MOUSE_RIGHT,
 		};
 
-		class Input
+		class FlagGG_API Input
 		{
 		public:
 			virtual ~Input() = default;
@@ -77,7 +79,7 @@ namespace FlagGG
 			virtual void OnMouseMove(KeyState* keyState, const Math::Vector2& delta) = 0;
 		};
 
-		class WinViewport : public Viewport
+		class FlagGG_API WinViewport : public Viewport
 		{
 		public:
 			WinViewport(void* parentWindow, unsigned x, unsigned y, unsigned width, unsigned height);

@@ -1,6 +1,8 @@
 #ifndef __BATCH__
 #define __BATCH__
 
+#include "Export.h"
+
 #include <vector>
 
 namespace FlagGG
@@ -9,7 +11,7 @@ namespace FlagGG
 	{
 		class Texture;
 
-		typedef std::vector<unsigned char> VertexVector;
+		typedef std::vector <unsigned char> VertexVector;
 
 		enum BatchType
 		{
@@ -17,7 +19,7 @@ namespace FlagGG
 			DRAW_TRIANGLE = 1,
 		};
 
-		class Batch
+		class FlagGG_API Batch
 		{
 		public:
 			Batch(BatchType type, Texture* texture, VertexVector* vertexs, unsigned vertexSize);

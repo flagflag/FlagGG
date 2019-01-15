@@ -1,11 +1,13 @@
 #ifndef __VECTOR3__
 #define __VECTOR3__
 
+#include "Export.h"
+
 namespace FlagGG
 {
 	namespace Math
 	{
-		struct IntVector3
+		struct FlagGG_API IntVector3
 		{
 			IntVector3();
 
@@ -20,7 +22,7 @@ namespace FlagGG
 			int z_;
 		};
 
-		struct Vector3
+		struct FlagGG_API Vector3
 		{
 			Vector3();
 

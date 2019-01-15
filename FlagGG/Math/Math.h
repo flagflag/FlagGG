@@ -1,6 +1,8 @@
 #ifndef __MATH__
 #define __MATH__
 
+#include "Export.h"
+
 #include "Vector3.h"
 #include "Matrix4.h"
 
@@ -10,55 +12,55 @@ namespace FlagGG
 	{
 		extern const float PI;
 
-		bool IsNaN(float number);
+		bool FlagGG_API IsNaN(float number);
 
-		float Sin(float angle);
+		float FlagGG_API Sin(float angle);
 
-		float Cos(float angle);
+		float FlagGG_API Cos(float angle);
 
-		float Tan(float angle);
+		float FlagGG_API Tan(float angle);
 
-		float Asin(float angle);
+		float FlagGG_API Asin(float angle);
 
-		float Acos(float angle);
+		float FlagGG_API Acos(float angle);
 
-		float Atan(float angle);
-
-
-		float Abs(float number);
-
-		float Sqrt(float number);
+		float FlagGG_API Atan(float angle);
 
 
-		int Compare(float _1, float _2);
+		float FlagGG_API Abs(float number);
 
-		float Equals(float _1, float _2);
+		float FlagGG_API Sqrt(float number);
 
-		float Clamp(float target, float min, float max);
+
+		int FlagGG_API Compare(float _1, float _2);
+
+		float FlagGG_API Equals(float _1, float _2);
+
+		float FlagGG_API Clamp(float target, float min, float max);
 
 
 		// 位移矩阵
-		Matrix4 MatrixTranslation(float dx, float dy, float dz);
+		Matrix4 FlagGG_API MatrixTranslation(float dx, float dy, float dz);
 
 		// X轴顺时针旋转矩阵
 		// https://baike.baidu.com/item/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/3265181?fr=aladdin
-		Matrix4 MatrixRotationX(float angle);
+		Matrix4 FlagGG_API MatrixRotationX(float angle);
 
 		// Y轴顺时针旋转矩阵
 		// https://baike.baidu.com/item/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/3265181?fr=aladdin
-		Matrix4 MatrixRotationY(float angle);
+		Matrix4 FlagGG_API MatrixRotationY(float angle);
 
 		// Z轴顺时针旋转矩阵
 		// https://baike.baidu.com/item/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/3265181?fr=aladdin
-		Matrix4 MatrixRotationZ(float angle);
+		Matrix4 FlagGG_API MatrixRotationZ(float angle);
 
 		// 任意轴顺时针旋转矩阵
 		// https://baike.baidu.com/item/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/3265181?fr=aladdin
-		Matrix4 MatrixRotationAxis(const Vector3& axis, float angle);
+		Matrix4 FlagGG_API MatrixRotationAxis(const Vector3& axis, float angle);
 
-		Vector3 Vector3TransformNormal(const Vector3& target, const Matrix4& T);
+		Vector3 FlagGG_API Vector3TransformNormal(const Vector3& target, const Matrix4& T);
 
-		Vector3 Vector3TransformCoord(const Vector3& target, const Matrix4& T);
+		Vector3 FlagGG_API Vector3TransformCoord(const Vector3& target, const Matrix4& T);
 
 		/**
 		 * @brief
@@ -66,7 +68,7 @@ namespace FlagGG
 		 * @param at  - 观察点的位置
 		 * @param up  - 摄像机的向上分量
 		 */
-		static Matrix4 MatrixLookAtLH(const Matrix4& eye, const Matrix4& at, const Matrix4& up);
+		Matrix4 FlagGG_API MatrixLookAtLH(const Matrix4& eye, const Matrix4& at, const Matrix4& up);
 
 		/**
 		 * @brief 投影矩阵变换
@@ -76,7 +78,7 @@ namespace FlagGG
 		 * @param zf     - 表示视截体中远裁剪面距我们摄像机的位置，即人眼到“室外黑色墙壁”之间的距离
 		 * 注：具体可以参考这里：https://blog.csdn.net/poem_qianmo/article/details/8408723
 		 */
-		Matrix4 MatrixPerspectiveFovLH(float fovy, float aspect, float zn, float zf);
+		Matrix4 FlagGG_API MatrixPerspectiveFovLH(float fovy, float aspect, float zn, float zf);
 	}
 }
 

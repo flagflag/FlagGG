@@ -1,6 +1,8 @@
 #ifndef __SHADER__
 #define __SHADER__
 
+#include "Export.h"
+
 #include "GPUObject.h"
 
 #include <string>
@@ -15,7 +17,7 @@ namespace FlagGG
 			PS = 1
 		};
 
-		class Shader : public GPUObject
+		class FlagGG_API Shader : public GPUObject
 		{
 		public:
 			Shader(const std::wstring& shaderPath, ShaderType shaderType);

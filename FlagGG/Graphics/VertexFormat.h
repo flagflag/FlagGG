@@ -1,6 +1,8 @@
 #ifndef __VERTEX_FORMAT__
 #define __VERTEX_FORMAT__
 
+#include "Export.h"
+
 #include "GPUObject.h"
 
 namespace FlagGG
@@ -13,7 +15,7 @@ namespace FlagGG
 			VERTEX3D = 1,
 		};
 
-		class VertexFormat : public GPUObject
+		class FlagGG_API VertexFormat : public GPUObject
 		{
 		public:
 			VertexFormat(ID3DBlob* shaderCode, VertexType vertexType);

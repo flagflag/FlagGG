@@ -1,6 +1,8 @@
 #ifndef __VIEWPORT__
 #define __VIEWPORT__
 
+#include "Export.h"
+
 #include "RenderTarget.h"
 
 namespace FlagGG
@@ -8,7 +10,7 @@ namespace FlagGG
 	namespace Graphics
 	{
 		// IDXGISwapChain*;
-		class Viewport : public GPUObject
+		class FlagGG_API Viewport : public GPUObject
 		{
 		public:
 			virtual ~Viewport() = default;
