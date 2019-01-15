@@ -1,6 +1,8 @@
 ﻿#ifndef __BUFFER__
 #define __BUFFER__
 
+#include "IOBuffer.h"
+
 #include <vector>
 #include <memory>
 #include <stdint.h>
@@ -11,14 +13,6 @@ namespace FlagGG
 	{
 		namespace Buffer
 		{
-			class IOBuffer
-			{
-			public:
-				virtual void toString(char*& data, size_t& data_size) = 0;
-			};
-
-			typedef std::shared_ptr < IOBuffer > IOBufferPtr;
-
 			//不区分TCP和UDP，用同一种buffer
 			class NetBuffer : public IOBuffer
 			{
@@ -31,35 +25,35 @@ namespace FlagGG
 
 				NetBuffer();
 
-				virtual ~NetBuffer();
+				~NetBuffer() override = default;
 
-				void clearIndex();
+				void clearIndex() override;
 
-				void readInt8(int8_t& value);
-				void writeInt8(int8_t value);
+				void readInt8(int8_t& value) override;
+				void writeInt8(int8_t value) override;
 
-				void readUInt8(uint8_t& value);
-				void writeUInt8(uint8_t value);
+				void readUInt8(uint8_t& value) override;
+				void writeUInt8(uint8_t value) override;
 
-				void readInt16(int16_t& value);
-				void writeInt16(int16_t value);
+				void readInt16(int16_t& value) override;
+				void writeInt16(int16_t value) override;
 
-				void readUInt16(uint16_t& value);
-				void writeUInt16(uint16_t value);
+				void readUInt16(uint16_t& value) override;
+				void writeUInt16(uint16_t value) override;
 
-				void readInt32(int32_t& value);
-				void writeInt32(int32_t value);
+				void readInt32(int32_t& value) override;
+				void writeInt32(int32_t value) override;
 
-				void readUInt32(uint32_t& value);
-				void writeUInt32(uint32_t value);
+				void readUInt32(uint32_t& value) override;
+				void writeUInt32(uint32_t value) override;
 
-				void readInt64(int64_t& value);
-				void writeInt64(int64_t value);
+				void readInt64(int64_t& value) override;
+				void writeInt64(int64_t value) override;
 
-				void readUInt64(uint64_t& value);
-				void writeUInt64(uint64_t value);
+				void readUInt64(uint64_t& value) override;
+				void writeUInt64(uint64_t value) override;
 
-				void writeStream(const char* data, size_t data_size);
+				void writeStream(const char* data, size_t data_size) override;
 
 				void toString(char*& data, size_t& data_size) override;
 

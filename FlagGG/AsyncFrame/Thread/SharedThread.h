@@ -22,15 +22,15 @@ namespace FlagGG
 			public:
 				SharedThread();
 
-				virtual ~SharedThread();
+				~SharedThread() override;
 
 				void start();
 
-				virtual void stop() override;
+				void stop() override;
 
-				virtual void waitForStop() override;
+				void waitForStop() override;
 
-				virtual void waitForStop(DWORD wait_time) override;
+				void waitForStop(uint32_t wait_time) override;
 
 				void add(ThreadTask task_func);
 

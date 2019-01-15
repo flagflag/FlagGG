@@ -13,11 +13,6 @@ namespace FlagGG
 				clearIndex();
 			}
 
-			NetBuffer::~NetBuffer()
-			{
-
-			}
-
 			bool NetBuffer::checkBuffer(int mode)
 			{
 				if (!m_current_buffer.buffer || m_count >= (int)m_current_buffer.buffer_size)

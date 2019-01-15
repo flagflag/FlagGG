@@ -1,7 +1,8 @@
 ﻿#ifndef __IO_CONNECTOR__
 #define __IO_CONNECTOR__
 
-#include "IOFrame\Buffer\Buffer.h"
+#include "IOFrame\Buffer\IOBuffer.h"
+#include "Export.h"
 
 #include <memory>
 #include <stdint.h>
@@ -12,10 +13,10 @@ namespace FlagGG
 	{
 		namespace Connector
 		{
-			class IOConnector
+			class FlagGG_API IOConnector
 			{
 			public:
-				virtual ~IOConnector() {}
+				virtual ~IOConnector() = default;
 
 				virtual bool connect(const char* ip, uint16_t port) = 0;
 

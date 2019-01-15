@@ -6,6 +6,7 @@
 #include "TCPChannel.h"
 #include "IOFrame\Context\TCPContext.h"
 #include "IOFrame\IOError.h"
+#include "IOFrame\Buffer\Buffer.h"
 
 namespace FlagGG
 {
@@ -20,9 +21,6 @@ namespace FlagGG
 				, m_state(Free)
 				, m_closed(false)
 				, m_shutdown(false)
-			{ }
-
-			TCPChannel::~TCPChannel()
 			{ }
 
 			void TCPChannel::handleWrite(const boost::system::error_code& error_code, size_t bytes_transferred)

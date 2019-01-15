@@ -7,8 +7,8 @@
 
 #include "IOFrame\Acceptor\IOAcceptor.h"
 #include "IOFrame\Channel\TCPChannel.h"
-#include "IOFrame\ThreadPool\NetThreadPool.h"
 #include "IOFrame\Handler\EventHandler.h"
+#include "IOFrame\ThreadPool\IOThreadPool.h"
 
 namespace FlagGG
 {
@@ -21,15 +21,15 @@ namespace FlagGG
 			public:
 				TCPAcceptor(Handler::EventHandlerPtr handler, size_t thread_count = 1);
 
-				virtual ~TCPAcceptor();
+				~TCPAcceptor() override = default;
 
-				virtual bool bind(const char* ip, uint16_t port) override;
+				bool bind(const char* ip, uint16_t port) override;
 
-				virtual void start() override;
+				void start() override;
 
-				virtual void stop() override;
+				void stop() override;
 
-				virtual void waitForStop() override;
+				void waitForStop() override;
 
 			protected:
 				void startAccept();
@@ -39,7 +39,7 @@ namespace FlagGG
 			private:
 				//声明顺序不能变，C++初始化列表是按照声明顺序执行的！！！
 
-				IOFrame::NetThreadPoolPtr			m_thread_pool;
+				IOFrame::IOThreadPoolPtr			m_thread_pool;
 
 				boost::asio::ip::tcp::acceptor		m_acceptor;
 

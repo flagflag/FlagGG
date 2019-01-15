@@ -5,32 +5,32 @@
 
 #include <atomic>
 
-#include "AsyncFrame\KernelObject\Runtime.h"
 #include "AsyncFrame\Thread\UniqueThread.h"
+#include "IOThreadPool.h"
 
 namespace FlagGG
 {
 	namespace IOFrame
 	{
-		class NetThreadPool : AsyncFrame::KernelObject::Runtime
+		class NetThreadPool : public IOThreadPool
 		{
 		public:
 			NetThreadPool(size_t thread_count);
 
-			virtual ~NetThreadPool();
+			~NetThreadPool() override = default;
 
-			void start();
+			void start() override;
 
-			virtual void stop() override;
+			void stop() override;
 
-			virtual void waitForStop() override;
+			void waitForStop() override;
 
 			boost::asio::io_service& getService();
 
 		private:
 			void netThread();
 
-			virtual void waitForStop(DWORD wait_time) override { };
+			void waitForStop(uint32_t wait_time) override { };
 
 		private:
 			size_t												m_thread_count;

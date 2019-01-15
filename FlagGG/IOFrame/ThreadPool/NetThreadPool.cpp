@@ -9,9 +9,6 @@ namespace FlagGG
 			, m_thread_count(thread_count)
 		{ }
 
-		NetThreadPool::~NetThreadPool()
-		{ }
-
 		void NetThreadPool::start()
 		{
 			m_running = true;

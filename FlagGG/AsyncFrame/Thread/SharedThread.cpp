@@ -1,5 +1,7 @@
 ﻿#include "SharedThread.h"
 
+#include <windows.h>
+
 namespace FlagGG
 {
 	namespace AsyncFrame
@@ -53,7 +55,7 @@ namespace FlagGG
 				}
 			}
 
-			void SharedThread::waitForStop(DWORD wait_time)
+			void SharedThread::waitForStop(uint32_t wait_time)
 			{
 				if (m_running && m_thread)
 				{

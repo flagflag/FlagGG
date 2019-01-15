@@ -4,6 +4,7 @@
 #include "TCPAcceptor.h"
 #include "IOFrame\IOError.h"
 #include "IOFrame\Context\TCPContext.h"
+#include "IOFrame\ThreadPool\NetThreadPool.h"
 
 namespace FlagGG
 {
@@ -13,11 +14,8 @@ namespace FlagGG
 		{
 			TCPAcceptor::TCPAcceptor(Handler::EventHandlerPtr handler, size_t thread_count)
 				: m_thread_pool(new IOFrame::NetThreadPool(thread_count))
-				, m_acceptor(m_thread_pool->getService())
+				, m_acceptor(std::dynamic_pointer_cast<IOFrame::NetThreadPool>(m_thread_pool)->getService())
 				, m_handler(handler)
-			{ }
-
-			TCPAcceptor::~TCPAcceptor()
 			{ }
 
 			bool TCPAcceptor::bind(const char* ip, uint16_t port)
@@ -59,7 +57,7 @@ namespace FlagGG
 
 			void TCPAcceptor::startAccept()
 			{
-				Channel::TCPChannelPtr channel(new Channel::TCPChannel(m_thread_pool->getService()));
+				Channel::TCPChannelPtr channel(new Channel::TCPChannel(std::dynamic_pointer_cast<IOFrame::NetThreadPool>(m_thread_pool)->getService()));
 
 				channel->onRegisterd(m_handler);
 

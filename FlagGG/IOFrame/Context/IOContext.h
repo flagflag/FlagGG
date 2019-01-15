@@ -2,6 +2,7 @@
 #define __IO_CHNTEXT__
 
 #include "IOFrame\Channel\IOChannel.h"
+#include "Export.h"
 
 namespace FlagGG
 {
@@ -9,10 +10,10 @@ namespace FlagGG
 	{
 		namespace Context
 		{
-			class IOContext
+			class FlagGG_API IOContext
 			{
 			public:
-				virtual ~IOContext() {}
+				virtual ~IOContext() = default;
 
 				virtual Channel::IOChannelPtr getChannel() = 0;
 			};

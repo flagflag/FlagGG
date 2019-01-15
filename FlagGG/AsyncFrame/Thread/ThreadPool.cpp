@@ -1,6 +1,8 @@
 ﻿#include "ThreadPool.h"
 #include <assert.h>
 
+#include <windows.h>
+
 namespace FlagGG
 {
 	namespace AsyncFrame
@@ -17,11 +19,6 @@ namespace FlagGG
 				{
 					m_threads.emplace_back(new SharedThread);
 				}
-			}
-
-			ThreadPool::~ThreadPool()
-			{
-
 			}
 
 			void ThreadPool::add(ThreadTask task_func)
@@ -69,7 +66,7 @@ namespace FlagGG
 				}
 			};
 
-			void ThreadPool::waitForStop(DWORD wait_time)
+			void ThreadPool::waitForStop(uint32_t wait_time)
 			{
 				Sleep(wait_time);
 			}

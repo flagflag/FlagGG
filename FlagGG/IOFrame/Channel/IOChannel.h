@@ -1,7 +1,8 @@
 ﻿#ifndef __IOCHANNEL__
 #define __IOCHANNEL__
 
-#include "IOFrame\Buffer\Buffer.h"
+#include "IOFrame\Buffer\IOBuffer.h"
+#include "Export.h"
 
 namespace FlagGG
 {
@@ -9,7 +10,7 @@ namespace FlagGG
 	{
 		namespace Channel
 		{
-			class IOChannel : public std::enable_shared_from_this < IOChannel >
+			class FlagGG_API IOChannel : public std::enable_shared_from_this < IOChannel >
 			{
 			public:
 				virtual ~IOChannel() {};

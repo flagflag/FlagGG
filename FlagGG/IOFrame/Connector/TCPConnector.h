@@ -3,8 +3,9 @@
 
 #include "IOConnector.h"
 #include "IOFrame\Channel\TCPChannel.h"
-#include "IOFrame\ThreadPool\NetThreadPool.h"
 #include "IOFrame\Handler\EventHandler.h"
+#include "IOFrame\Buffer\IOBuffer.h"
+#include "IOFrame\ThreadPool\IOThreadPool.h"
 
 namespace FlagGG
 {
@@ -15,13 +16,13 @@ namespace FlagGG
 			class TCPConnector : public IOConnector
 			{
 			public:
-				TCPConnector(Handler::EventHandlerPtr handler, IOFrame::NetThreadPool& thread_pool);
+				TCPConnector(Handler::EventHandlerPtr handler, IOFrame::IOThreadPoolPtr& thread_pool);
 
-				virtual ~TCPConnector();
+				~TCPConnector() override = default;
 
-				virtual bool connect(const char* ip, uint16_t port) override;
+				bool connect(const char* ip, uint16_t port) override;
 
-				virtual bool write(Buffer::IOBufferPtr buffer) override;
+				bool write(Buffer::IOBufferPtr buffer) override;
 
 			private:
 				IOFrame::Channel::TCPChannelPtr		m_channel;

@@ -2,6 +2,8 @@
 #include "Code\Code.h"
 #include "Allocator\SmartMemory.hpp"
 
+#include <windows.h>
+
 namespace FlagGG
 {
 	namespace AsyncFrame
@@ -83,10 +85,7 @@ namespace FlagGG
 				: m_id(0)
 			{ }
 
-			ProcessObject::~ProcessObject()
-			{ }
-
-			DWORD ProcessObject::getID()
+			uint32_t ProcessObject::getID()
 			{
 				return m_id;
 			}
@@ -101,7 +100,7 @@ namespace FlagGG
 				WaitForSingleObject(m_handle, INFINITE);
 			}
 
-			void ProcessObject::waitForStop(DWORD wait_time)
+			void ProcessObject::waitForStop(uint32_t wait_time)
 			{
 				WaitForSingleObject(m_handle, wait_time);
 			}

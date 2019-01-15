@@ -2,8 +2,9 @@
 #define __EVENT_HANDLER__
 
 #include "IOFrame\Context\IOContext.h"
-#include "IOFrame\Buffer\Buffer.h"
+#include "IOFrame\Buffer\IOBuffer.h"
 #include "ErrorCode.h"
+#include "Export.h"
 
 namespace FlagGG
 {
@@ -11,10 +12,10 @@ namespace FlagGG
 	{
 		namespace Handler
 		{
-			class EventHandler
+			class FlagGG_API EventHandler
 			{
 			public:
-				virtual ~EventHandler() {};
+				virtual ~EventHandler() = default;
 
 				virtual void channelRegisterd(Context::IOContextPtr context) = 0;
 
@@ -32,7 +33,7 @@ namespace FlagGG
 			class NullEventHandler : public EventHandler
 			{
 			public:
-				virtual ~NullEventHandler() {}
+				~NullEventHandler() override = default;
 
 				virtual void channelRegisterd(Context::IOContextPtr context) {}
 

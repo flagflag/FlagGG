@@ -5,10 +5,11 @@ include (${CMAKE_CURRENT_SOURCE_DIR}/../CMake/ThirdParty.cmake)
 
 # Define target name
 set (TARGET_NAME FlagGG)
+set (LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../bin)
 
 setup_lint ()
 
-add_definitions (-D_DEBUG)
+add_definitions (-D_DEBUG -DFlagGG_EXPORTS)
 
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -18,7 +19,8 @@ define_source_files (RECURSE GROUP)
 # setup_library (STATIC) 表示静态库(win上*.lib，linux上*.a)
 # setup_library (SHARED) 表示动态库(win上*.dll，linux上*.os)
 # setup_main_executable() 表示可执行文件
-setup_main_executable ()
+# setup_main_executable ()
+setup_library (SHARED)
 
 target_link_libraries(${TARGET_NAME}
     libboost_regex-vc120-mt-gd-x32-1_67

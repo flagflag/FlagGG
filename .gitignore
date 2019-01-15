@@ -7,4 +7,4 @@ FlagGG/project/Release/*
 *.vcxproj.user
 *.sln.docstates
 build
-
+bin

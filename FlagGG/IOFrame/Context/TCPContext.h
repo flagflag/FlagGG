@@ -14,9 +14,9 @@ namespace FlagGG
 			public:
 				TCPContext(Channel::IOChannelPtr channel);
 
-				virtual ~TCPContext() { }
+				~TCPContext() override = default;
 
-				virtual Channel::IOChannelPtr getChannel() override;
+				Channel::IOChannelPtr getChannel() override;
 
 			private:
 				Channel::IOChannelPtr m_channel;

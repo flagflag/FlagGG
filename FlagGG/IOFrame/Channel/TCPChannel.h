@@ -43,23 +43,23 @@ namespace FlagGG
 			public:
 				TCPChannel(boost::asio::io_service& service);
 
-				virtual ~TCPChannel();
+				~TCPChannel() override = default;
 
 				//IOChannel interface:
 
-				virtual bool write(Buffer::IOBufferPtr buffer) override;
+				bool write(Buffer::IOBufferPtr buffer) override;
 
-				virtual bool flush() override;
+				bool flush() override;
 
-				virtual bool connect(const char* ip, uint16_t port) override;
+				bool connect(const char* ip, uint16_t port) override;
 
-				virtual void close() override;
+				void close() override;
 
-				virtual void shutdown() override;
+				void shutdown() override;
 
-				virtual bool isConnected() override;
+				bool isConnected() override;
 
-				virtual bool isClosed() override;
+				bool isClosed() override;
 
 				boost::asio::ip::tcp::socket& getSocket();
 
@@ -77,11 +77,11 @@ namespace FlagGG
 
 				//IOHandler interface:
 
-				virtual void onRegisterd(Handler::EventHandlerPtr handler) override;
+				void onRegisterd(Handler::EventHandlerPtr handler) override;
 
-				virtual void onOpend() override;
+				void onOpend() override;
 
-				virtual void onClosed() override;
+				void onClosed() override;
 
 			private:
 				boost::asio::io_service&			m_service;

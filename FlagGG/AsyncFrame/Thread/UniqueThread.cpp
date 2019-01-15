@@ -1,5 +1,7 @@
 ﻿#include "UniqueThread.h"
 
+#include <windows.h>
+
 namespace FlagGG
 {
 	namespace AsyncFrame
@@ -36,9 +38,6 @@ namespace FlagGG
 				}
 			}
 
-			UniqueThread::~UniqueThread()
-			{ }
-
 			void UniqueThread::stop()
 			{
 				TerminateThread(m_handle, -1);
@@ -49,7 +48,7 @@ namespace FlagGG
 				WaitForSingleObject(m_handle, INFINITE);
 			}
 
-			void UniqueThread::waitForStop(DWORD wait_time)
+			void UniqueThread::waitForStop(uint32_t wait_time)
 			{
 				WaitForSingleObject(m_handle, wait_time);
 			}

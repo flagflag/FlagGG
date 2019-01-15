@@ -3,6 +3,7 @@
 
 #include "AsyncFrame\KernelObject\HandleObject.h"
 #include "AsyncFrame\KernelObject\Runtime.h"
+#include "Export.h"
 
 #include <functional>
 #include <memory>
@@ -13,18 +14,18 @@ namespace FlagGG
 	{
 		namespace Thread
 		{
-			class UniqueThread : public KernelObject::HandleObject, public KernelObject::Runtime
+			class FlagGG_API UniqueThread : public KernelObject::HandleObject, public KernelObject::Runtime
 			{
 			public:
 				UniqueThread(std::function < void(void) > thread_func);
 
-				virtual ~UniqueThread();
+				~UniqueThread() override = default;
 
-				virtual void stop() override;
+				void stop() override;
 
-				virtual void waitForStop() override;
+				void waitForStop() override;
 
-				virtual void waitForStop(DWORD wait_time) override;
+				void waitForStop(uint32_t wait_time) override;
 			};
 
 			typedef std::shared_ptr < UniqueThread > UniqueThreadPtr;

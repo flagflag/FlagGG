@@ -1,7 +1,9 @@
 ﻿#ifndef __HANDLE_OBJECT__
 #define __HANDLE_OBJECT__
 
-#include <windows.h>
+#include "Export.h"
+
+typedef void* KernelHandle;
 
 namespace FlagGG
 {
@@ -9,17 +11,17 @@ namespace FlagGG
 	{
 		namespace KernelObject
 		{
-			class HandleObject
+			class FlagGG_API HandleObject
 			{
 			public:
 				HandleObject();
 
 				virtual ~HandleObject();
 
-				HANDLE getHandle();
+				KernelHandle getHandle();
 
 			protected:
-				HANDLE m_handle;
+				KernelHandle m_handle;
 			};
 		}
 	}

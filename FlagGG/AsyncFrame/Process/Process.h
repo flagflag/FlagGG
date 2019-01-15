@@ -9,8 +9,6 @@
 #include <vector>
 #include <stdint.h>
 
-#include <windows.h>
-
 namespace FlagGG
 {
 	namespace AsyncFrame
@@ -63,20 +61,20 @@ namespace FlagGG
 			public:
 				ProcessObject();
 
-				virtual ~ProcessObject();
+				~ProcessObject() override = default;
 
-				DWORD getID();
+				uint32_t getID();
 
-				virtual void stop() override;
+				void stop() override;
 
-				virtual void waitForStop() override;
+				void waitForStop() override;
 
-				virtual void waitForStop(DWORD wait_time) override;
+				void waitForStop(uint32_t wait_time) override;
 
 				friend class Builder;
 
 			private:
-				DWORD m_id;
+				uint32_t m_id;
 			};
 
 			typedef std::shared_ptr < ProcessObject > ProcessObjectPtr;

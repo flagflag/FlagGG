@@ -1,6 +1,8 @@
 ﻿#ifndef __IO_ACCEPTOR__
 #define __IO_ACCEPTOR__
 
+#include "Export.h"
+
 #include <memory>
 #include <stdint.h>
 
@@ -10,10 +12,10 @@ namespace FlagGG
 	{
 		namespace Acceptor
 		{
-			class IOAcceptor
+			class FlagGG_API IOAcceptor
 			{
 			public:
-				virtual ~IOAcceptor() {};
+				virtual ~IOAcceptor() = default;
 
 				virtual bool bind(const char* ip, uint16_t port) = 0;
 

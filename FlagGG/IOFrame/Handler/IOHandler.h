@@ -2,6 +2,7 @@
 #define __IO_HANDLER__
 
 #include "IOFrame\Handler\EventHandler.h"
+#include "Export.h"
 
 namespace FlagGG
 {
@@ -9,10 +10,10 @@ namespace FlagGG
 	{
 		namespace Handler
 		{
-			class IOHandler
+			class FlagGG_API IOHandler
 			{
 			public:
-				virtual ~IOHandler() {}
+				virtual ~IOHandler() = default;
 
 				virtual void onRegisterd(Handler::EventHandlerPtr handler) = 0;
 

@@ -1,7 +1,9 @@
 ﻿#ifndef __RUNTIME__
 #define __RUNTIME__
 
-#include <windows.h>
+#include "Export.h"
+
+#include <stdint.h>
 
 namespace FlagGG
 {
@@ -9,14 +11,16 @@ namespace FlagGG
 	{
 		namespace KernelObject
 		{
-			class Runtime
+			class FlagGG_API Runtime
 			{
 			public:
+				virtual ~Runtime() = default;
+
 				virtual void stop() = 0;
 
 				virtual void waitForStop() = 0;
 
-				virtual void waitForStop(DWORD) = 0;
+				virtual void waitForStop(uint32_t) = 0;
 			};
 		}
 	}

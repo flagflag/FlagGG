@@ -1,4 +1,5 @@
 ﻿#include "TCPConnector.h"
+#include "IOFrame\ThreadPool\NetThreadPool.h"
 
 namespace FlagGG
 {
@@ -6,15 +7,12 @@ namespace FlagGG
 	{
 		namespace Connector
 		{
-			TCPConnector::TCPConnector(Handler::EventHandlerPtr handler, IOFrame::NetThreadPool& thread_pool)
-				: m_channel(new Channel::TCPChannel(thread_pool.getService()))
+			TCPConnector::TCPConnector(Handler::EventHandlerPtr handler, IOFrame::IOThreadPoolPtr& thread_pool)
+				: m_channel(new Channel::TCPChannel(std::dynamic_pointer_cast<IOFrame::NetThreadPool>(thread_pool)->getService()))
 				, m_handler(handler)
 			{ 
 				m_channel->onRegisterd(handler);
 			}
-
-			TCPConnector::~TCPConnector()
-			{ }
 
 			bool TCPConnector::connect(const char* ip, uint16_t port)
 			{
