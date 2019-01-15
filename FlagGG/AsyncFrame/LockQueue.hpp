@@ -1,6 +1,8 @@
 ﻿#ifndef __LOCK_QUEUE__
 #define __LOCK_QUEUE__
 
+#include "Export.h"
+
 #include "Locker.hpp"
 
 #include <list>
@@ -10,7 +12,7 @@ namespace FlagGG
 	namespace AsyncFrame
 	{
 		template < class ObjectType >
-		class LockQueue
+		class FlagGG_API LockQueue
 		{
 		public:
 			typedef ObjectType Object;

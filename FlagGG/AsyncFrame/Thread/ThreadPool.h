@@ -1,6 +1,8 @@
 ﻿#ifndef __THREAD_POOL__
 #define __THREAD_POOL__
 
+#include "Export.h"
+
 #include "SharedThread.h"
 
 #include <vector>
@@ -11,7 +13,7 @@ namespace FlagGG
 	{
 		namespace Thread
 		{
-			class ThreadPool : public KernelObject::Runtime
+			class FlagGG_API ThreadPool : public KernelObject::Runtime
 			{
 			public:
 				ThreadPool(size_t thread_count);

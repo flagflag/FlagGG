@@ -1,6 +1,8 @@
 ﻿#ifndef __SHARED_THREAD__
 #define __SHARED_THREAD__
 
+#include "Export.h"
+
 #include "AsyncFrame\LockQueue.hpp"
 #include "AsyncFrame\Thread\UniqueThread.h"
 #include "AsyncFrame\KernelObject\Runtime.h"
@@ -17,7 +19,7 @@ namespace FlagGG
 		{
 			typedef std::function < void(void) > ThreadTask;
 
-			class SharedThread : public KernelObject::Runtime
+			class FlagGG_API SharedThread : public KernelObject::Runtime
 			{
 			public:
 				SharedThread();

@@ -1,13 +1,15 @@
 ﻿#ifndef __LOCKER__
 #define __LOCKER__
 
+#include "Export.h"
+
 #include <mutex>
 
 namespace FlagGG
 {
 	namespace AsyncFrame
 	{
-		class Locker
+		class FlagGG_API Locker
 		{
 		public:
 			Locker(std::mutex& mutex)
@@ -25,17 +27,17 @@ namespace FlagGG
 			std::mutex& m_mutex;
 		};
 
-		class ReadLocker
+		class FlagGG_API ReadLocker
 		{
 
 		};
 
-		class WriteLocker
+		class FlagGG_API WriteLocker
 		{
 
 		};
 
-		class RecursiveLocker
+		class FlagGG_API RecursiveLocker
 		{
 		public:
 			RecursiveLocker(std::recursive_mutex& mutex)

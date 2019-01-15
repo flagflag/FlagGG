@@ -1,6 +1,8 @@
 ﻿#ifndef __PROCESS__
 #define __PROCESS__
 
+#include "Export.h"
+
 #include "AsyncFrame\KernelObject\HandleObject.h"
 #include "AsyncFrame\KernelObject\Runtime.h"
 
@@ -15,7 +17,7 @@ namespace FlagGG
 	{
 		namespace Process
 		{
-			class ParameterList
+			class FlagGG_API ParameterList
 			{
 			public:
 				ParameterList();
@@ -56,7 +58,7 @@ namespace FlagGG
 				std::vector < std::wstring > m_list;
 			};
 
-			class ProcessObject : public KernelObject::HandleObject, public KernelObject::Runtime
+			class FlagGG_API ProcessObject : public KernelObject::HandleObject, public KernelObject::Runtime
 			{
 			public:
 				ProcessObject();
@@ -79,7 +81,7 @@ namespace FlagGG
 
 			typedef std::shared_ptr < ProcessObject > ProcessObjectPtr;
 
-			class Builder
+			class FlagGG_API Builder
 			{
 			public:
 				//--------------------------------- utf-16 ------------------------------------------

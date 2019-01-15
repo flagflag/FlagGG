@@ -1,6 +1,8 @@
 ﻿#ifndef __SYSTEM_HELPER__
 #define __SYSTEM_HELPER__
 
+#include "Export.h"
+
 #include <string>
 
 namespace FlagGG
@@ -9,7 +11,7 @@ namespace FlagGG
 	{
 		namespace SystemHelper
 		{
-			std::wstring FormatPath(const std::wstring& in_path);
+			std::wstring FlagGG_API FormatPath(const std::wstring& in_path);
 		}
 	}
 }

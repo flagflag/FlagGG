@@ -1,6 +1,8 @@
 ﻿#ifndef __SMART_MEMORY__
 #define __SMART_MEMORY__
 
+#include "Export.h"
+
 #include <stdlib.h>
 
 namespace FlagGG
@@ -8,7 +10,7 @@ namespace FlagGG
 	namespace Allocator
 	{
 		template < class Type = char >
-		class SmartMemory
+		class FlagGG_API SmartMemory
 		{
 		public:
 			SmartMemory(size_t count)
