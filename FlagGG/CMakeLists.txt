@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.13)
-
 include (${CMAKE_CURRENT_SOURCE_DIR}/../CMake/Common.cmake)
 include (${CMAKE_CURRENT_SOURCE_DIR}/../CMake/ThirdParty.cmake)
 
@@ -12,6 +10,7 @@ setup_lint ()
 add_definitions (-D_DEBUG -DFlagGG_EXPORTS)
 
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
+message ("include dir: ${CMAKE_CURRENT_SOURCE_DIR}")
 
 # 在非windows上把Graphics排除，因为目前Graphics只写了windows的部分
 if (NOT FLAGGG_D3D11)
@@ -29,18 +28,12 @@ define_source_files (EXCLUDE_PATTERNS ${EXCLUDE_PATTERNS} RECURSE GROUP)
 # setup_main_executable ()
 setup_library (SHARED)
 
+message ("boost lib: ${BOOST_LIB}")
+message ("d3d11 lib: ${D3D11_LIB}")
+
 target_link_libraries(${TARGET_NAME}
-    libboost_regex-vc120-mt-gd-x32-1_67
-    d3d9
-    d3dx9
-    d3dx9d
-    d3d11
-    d3dx11d
-    dxerr
-    d3dcompiler
-    Effects11
-    dxgi
-    dxguid)
+    ${BOOST_LIB}
+    ${D3D11_LIB})
 
 # Setup test cases
 setup_test ()

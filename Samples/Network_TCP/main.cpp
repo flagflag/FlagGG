@@ -1,8 +1,7 @@
 
 #include <IOFrame/IOFrame.h>
 #include <AsyncFrame/AsyncFrame.h>
-
-#include <windows.h>
+#include <Utility/SystemHelper.h>
 
 #include <iostream>
 
@@ -93,8 +92,8 @@ int main()
 {
 	FlagGG::AsyncFrame::Thread::UniqueThread server_thread(StartServer);
 
-	// µÈÁ½Ãë£¬±£Ö¤·þÎñÆ÷¿ªÆô
-	Sleep(2000);
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ë£¬ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	FlagGG::Utility::SystemHelper::Sleep(2000);
 	FlagGG::AsyncFrame::Thread::UniqueThread client_thread(StartClient);
 
 	getchar();

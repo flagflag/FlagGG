@@ -1,7 +1,7 @@
 ﻿#include "ThreadPool.h"
-#include <assert.h>
+#include "Utility/SystemHelper.h"
 
-#include <windows.h>
+#include <assert.h>
 
 namespace FlagGG
 {
@@ -68,7 +68,7 @@ namespace FlagGG
 
 			void ThreadPool::waitForStop(uint32_t wait_time)
 			{
-				Sleep(wait_time);
+				Utility::SystemHelper::Sleep(wait_time);
 			}
 		}
 	}

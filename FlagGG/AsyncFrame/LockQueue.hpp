@@ -30,7 +30,7 @@ namespace FlagGG
 			{
 				RecursiveLocker locker(m_mutex);
 
-				Objects::iterator it = m_queue.begin();
+				typename Objects::iterator it = m_queue.begin();
 				obj = (*it);
 				m_queue.erase(it);
 			}

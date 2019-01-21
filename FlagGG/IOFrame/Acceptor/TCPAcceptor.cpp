@@ -1,10 +1,11 @@
-﻿#include <boost\bind.hpp>
-#include <boost\asio\placeholders.hpp>
+﻿
+#include <boost/bind.hpp>
+#include <boost/asio/placeholders.hpp>
 
 #include "TCPAcceptor.h"
-#include "IOFrame\IOError.h"
-#include "IOFrame\Context\TCPContext.h"
-#include "IOFrame\ThreadPool\NetThreadPool.h"
+#include "IOFrame/IOError.h"
+#include "IOFrame/Context/TCPContext.h"
+#include "IOFrame/ThreadPool/NetThreadPool.h"
 
 namespace FlagGG
 {

@@ -1,10 +1,10 @@
 ﻿#ifndef __IO_ERROR__
 #define __IO_ERROR__
 
-#include <boost\asio\error.hpp>
+#include <boost/asio/error.hpp>
 
 #include "ErrorCode.h"
-#include "IOFrame\Channel\IOChannel.h"
+#include "IOFrame/Channel/IOChannel.h"
 
 #define THROW_IO_ERROR(IOContextType, channel, handler, error_code) \
 	{ \

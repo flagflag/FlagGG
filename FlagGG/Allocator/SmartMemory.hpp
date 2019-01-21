@@ -18,7 +18,7 @@ namespace FlagGG
 			{
 				if (count > 0)
 				{
-					m_memory = (Type*)malloc(count * (sizeof Type));
+					m_memory = (Type*)malloc(count * (sizeof (Type)));
 				}
 			}
 

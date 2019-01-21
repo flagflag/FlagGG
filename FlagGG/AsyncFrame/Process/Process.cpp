@@ -1,8 +1,13 @@
 ﻿#include "Process.h"
-#include "Code\Code.h"
-#include "Allocator\SmartMemory.hpp"
+#include "Code/Code.h"
+#include "Allocator/SmartMemory.hpp"
 
+#if WIN32 || WIN64
 #include <windows.h>
+#else
+#include <unistd.h>
+#include <sys/wait.h>
+#endif
 
 namespace FlagGG
 {
@@ -25,7 +30,7 @@ namespace FlagGG
 				m_list.emplace_back(param_name);
 			}
 
-			void ParameterList::add(const std::wstring& param_name, std::wstring& param)
+			void ParameterList::add(const std::wstring& param_name, const std::wstring& param)
 			{
 				m_list.emplace_back(param_name + L"=" + param);
 			}
@@ -92,17 +97,29 @@ namespace FlagGG
 
 			void ProcessObject::stop()
 			{
+#if WIN32 || WIN64
 				TerminateProcess(m_handle, -1);
+#else
+
+#endif
 			}
 
 			void ProcessObject::waitForStop()
 			{
+#if WIN32 || WIN64
 				WaitForSingleObject(m_handle, INFINITE);
+#else
+				waitpid(*((pid_t*)m_handle), nullptr, 0);
+#endif
 			}
 
 			void ProcessObject::waitForStop(uint32_t wait_time)
 			{
+#if WIN32 || WIN64
 				WaitForSingleObject(m_handle, wait_time);
+#else
+
+#endif
 			}
 
 
@@ -113,6 +130,7 @@ namespace FlagGG
 
 			ProcessObjectPtr Builder::createProcess(const std::wstring& proc_path, const std::wstring& param)
 			{
+#if WIN32 || WIN64
 				STARTUPINFOW startup_info;
 				ZeroMemory(&startup_info, sizeof startup_info);
 				startup_info.cb = sizeof(startup_info);
@@ -137,6 +155,36 @@ namespace FlagGG
 				proc_obj->m_id = process_info.dwProcessId;
 
 				return proc_obj;
+#else
+				pid_t pid = fork();
+				// something error!
+				if (pid == -1)
+				{
+					exit(-1);
+				}
+				// child process
+				else if (pid == 0)
+				{
+					std::string _proc_path = Code::WideToAnsi(proc_path);
+					std::string _param = Code::WideToAnsi(param);
+
+					if (0 != execl(_proc_path.c_str(), _param.c_str()))
+					{
+						exit(-1);
+					}
+
+					exit(0);
+				}
+				// main process
+				else
+				{
+					ProcessObjectPtr proc_obj = ProcessObjectPtr(new ProcessObject());
+					proc_obj->m_id = pid;
+					proc_obj->m_handle = &(proc_obj->m_id);
+
+					return proc_obj;
+				}
+#endif
 			}
 
 			ProcessObjectPtr Builder::createProcess(const std::wstring& proc_path, const ParameterList& param)

@@ -1,14 +1,14 @@
 ﻿#ifndef __TCP_ACCEPTOR__
 #define __TCP_ACCEPTOR__
 
-#include <boost\asio\io_service.hpp>
-#include <boost\asio\ip\tcp.hpp>
-#include <boost\asio\error.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/error.hpp>
 
-#include "IOFrame\Acceptor\IOAcceptor.h"
-#include "IOFrame\Channel\TCPChannel.h"
-#include "IOFrame\Handler\EventHandler.h"
-#include "IOFrame\ThreadPool\IOThreadPool.h"
+#include "IOFrame/Acceptor/IOAcceptor.h"
+#include "IOFrame/Channel/TCPChannel.h"
+#include "IOFrame/Handler/EventHandler.h"
+#include "IOFrame/ThreadPool/IOThreadPool.h"
 
 namespace FlagGG
 {

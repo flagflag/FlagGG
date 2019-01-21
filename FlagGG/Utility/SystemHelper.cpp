@@ -1,9 +1,14 @@
 #include "SystemHelper.h"
 
+#if WIN32 || WIN64
 #include <windows.h>
 #include <shlwapi.h>
-
 #pragma comment(lib, "shlwapi.lib")
+#else
+#include <unistd.h>
+#include <limits.h>
+#define MAX_PATH NAME_MAX
+#endif
 
 namespace FlagGG
 {
@@ -37,9 +42,22 @@ namespace FlagGG
 					last_char = ch;
 				}
 
+#if WIN32 || WIN64
 				wchar_t out_path[MAX_PATH] = { 0 };
 				::PathCanonicalizeW(out_path, format_path);
 				return out_path;
+#else
+				return format_path;
+#endif
+			}
+
+			void Sleep(uint64_t time)
+			{
+#if WIN32 || WIN64
+				Sleep(time);
+#else
+				usleep(time * 1000);
+#endif
 			}
 		}
 	}

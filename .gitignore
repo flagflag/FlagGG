@@ -1,4 +1,5 @@
 3rd/boost_1_67_0
+3rd/boost_1_69_0
 FlagGG/project/Debug/*
 FlagGG/project/Release/*
 *.suo
@@ -8,3 +9,5 @@ FlagGG/project/Release/*
 *.sln.docstates
 build
 bin
+.vscode
+.DS_Store

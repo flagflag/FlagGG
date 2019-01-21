@@ -1,7 +1,7 @@
 ﻿#ifndef __IOCHANNEL__
 #define __IOCHANNEL__
 
-#include "IOFrame\Buffer\IOBuffer.h"
+#include "IOFrame/Buffer/IOBuffer.h"
 #include "Export.h"
 
 namespace FlagGG

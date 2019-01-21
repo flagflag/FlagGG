@@ -1,7 +1,7 @@
 ﻿#ifndef __IO_CONNECTOR__
 #define __IO_CONNECTOR__
 
-#include "IOFrame\Buffer\IOBuffer.h"
+#include "IOFrame/Buffer/IOBuffer.h"
 #include "Export.h"
 
 #include <memory>

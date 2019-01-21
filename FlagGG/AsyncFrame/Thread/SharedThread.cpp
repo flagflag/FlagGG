@@ -1,6 +1,5 @@
 ﻿#include "SharedThread.h"
-
-#include <windows.h>
+#include "Utility/SystemHelper.h"
 
 namespace FlagGG
 {
@@ -80,7 +79,7 @@ namespace FlagGG
 			{
 				while (m_running)
 				{
-					Sleep(16);
+					Utility::SystemHelper::Sleep(16);
 
 					if (m_task_queue.size() > 0)
 					{

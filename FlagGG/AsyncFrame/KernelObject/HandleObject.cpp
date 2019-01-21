@@ -1,6 +1,10 @@
 ﻿#include "HandleObject.h"
 
+#if WIN32 || WIN64
 #include <windows.h>
+#else
+#include <unistd.h>
+#endif
 
 namespace FlagGG
 {
@@ -9,15 +13,17 @@ namespace FlagGG
 		namespace KernelObject
 		{
 			HandleObject::HandleObject()
-				: m_handle(nullptr)
+				: m_handle(NULL_HANDLE)
 			{ }
 
 			HandleObject::~HandleObject()
 			{
 				if (m_handle)
 				{
+#if WIN32 || WIN64
 					CloseHandle((HANDLE)m_handle);
-					m_handle = nullptr;
+#endif
+					m_handle = NULL_HANDLE;
 				}
 			}
 

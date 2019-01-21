@@ -3,8 +3,8 @@
 
 #include "Export.h"
 
-#include "AsyncFrame\KernelObject\HandleObject.h"
-#include "AsyncFrame\KernelObject\Runtime.h"
+#include "AsyncFrame/KernelObject/HandleObject.h"
+#include "AsyncFrame/KernelObject/Runtime.h"
 
 #include <memory>
 #include <string>
@@ -28,7 +28,7 @@ namespace FlagGG
 
 				void add(const std::wstring& param_name);
 
-				void add(const std::wstring& param_name, std::wstring& param);
+				void add(const std::wstring& param_name, const std::wstring& param);
 
 				void add(const std::wstring& param_name, int32_t param);
 

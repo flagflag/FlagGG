@@ -2,10 +2,10 @@
 #define __TCP_CONNECTOR__
 
 #include "IOConnector.h"
-#include "IOFrame\Channel\TCPChannel.h"
-#include "IOFrame\Handler\EventHandler.h"
-#include "IOFrame\Buffer\IOBuffer.h"
-#include "IOFrame\ThreadPool\IOThreadPool.h"
+#include "IOFrame/Channel/TCPChannel.h"
+#include "IOFrame/Handler/EventHandler.h"
+#include "IOFrame/Buffer/IOBuffer.h"
+#include "IOFrame/ThreadPool/IOThreadPool.h"
 
 namespace FlagGG
 {

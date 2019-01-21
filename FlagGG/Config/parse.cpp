@@ -1,4 +1,5 @@
 ﻿#include "parse.h"
+#include "Code/Code.h"
 #include <fstream>
 
 namespace FlagGG
@@ -302,7 +303,8 @@ namespace FlagGG
 		bool Reader::load(const std::wstring& file_path)
 		{
 			std::ifstream file_reader;
-			file_reader.open(file_path, std::ios::in | std::ios::binary | std::ios::ate);
+			std::string _file_path = Code::WideToAnsi(file_path);
+			file_reader.open(_file_path, std::ios::in | std::ios::binary | std::ios::ate);
 			if (!file_reader.is_open())
 			{
 				return false;

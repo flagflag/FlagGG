@@ -1,7 +1,7 @@
 ﻿#ifndef __IO_CHNTEXT__
 #define __IO_CHNTEXT__
 
-#include "IOFrame\Channel\IOChannel.h"
+#include "IOFrame/Channel/IOChannel.h"
 #include "Export.h"
 
 namespace FlagGG

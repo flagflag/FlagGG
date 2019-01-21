@@ -1,4 +1,5 @@
 ﻿#include "NetThreadPool.h"
+#include "Utility/SystemHelper.h"
 
 namespace FlagGG
 {
@@ -41,7 +42,7 @@ namespace FlagGG
 		{
 			while (m_running)
 			{
-				Sleep(0);
+				Utility::SystemHelper::Sleep(0);
 
 				m_service.run();
 			}

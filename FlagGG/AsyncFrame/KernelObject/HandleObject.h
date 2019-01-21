@@ -4,6 +4,7 @@
 #include "Export.h"
 
 typedef void* KernelHandle;
+#define NULL_HANDLE nullptr
 
 namespace FlagGG
 {
