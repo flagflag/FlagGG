@@ -2,6 +2,7 @@
 #include <IOFrame/IOFrame.h>
 #include <AsyncFrame/AsyncFrame.h>
 #include <Utility/SystemHelper.h>
+#include <Log.h>
 
 #include <iostream>
 
@@ -12,17 +13,17 @@ public:
 
 	void channelRegisterd(FlagGG::IOFrame::Context::IOContextPtr context) override
 	{
-		printf("channelCreated\n");
+		FLAGGG_LOG_DEBUG("channelCreated");
 	}
 
 	void channelOpend(FlagGG::IOFrame::Context::IOContextPtr context) override
 	{
-		printf("channelOpend\n");
+		FLAGGG_LOG_DEBUG("channelOpend");
 	}
 
 	void channelClosed(FlagGG::IOFrame::Context::IOContextPtr context) override
 	{
-		printf("channelClosed\n");
+		FLAGGG_LOG_DEBUG("channelClosed");
 	}
 
 	void messageRecived(FlagGG::IOFrame::Context::IOContextPtr context, FlagGG::IOFrame::Buffer::IOBufferPtr buffer) override
@@ -36,12 +37,14 @@ public:
 
 	void errorCatch(FlagGG::IOFrame::Context::IOContextPtr context, const FlagGG::ErrorCode& error_code) override
 	{
-		printf("errorCatch %d %s\n", error_code.value(), error_code.message().c_str());
+		FLAGGG_LOG_DEBUG("errorCatch %d %s", error_code.value(), error_code.message().c_str());
 	}
 };
 
 void StartServer()
 {
+	FLAGGG_LOG_DEBUG("ready start server.");
+
 	FlagGG::IOFrame::Acceptor::IOAcceptorPtr acceptor = 
 		FlagGG::IOFrame::TCP::createAcceptor(
 		FlagGG::IOFrame::Handler::EventHandlerPtr(new ServerHandler),
@@ -51,18 +54,20 @@ void StartServer()
 	{
 		acceptor->start();
 
-		printf("succeed to startup server\n");
+		FLAGGG_LOG_DEBUG("succeed to startup server");
 
 		acceptor->waitForStop();
 	}
 	else
 	{
-		printf("failed to startup server\n");
+		FLAGGG_LOG_DEBUG("failed to startup server");
 	}
 }
 
 void StartClient()
 {
+	FLAGGG_LOG_DEBUG("ready start client.");
+
 	FlagGG::IOFrame::IOThreadPoolPtr thread_pool = FlagGG::IOFrame::TCP::createThreadPool(1);
 
 	thread_pool->start();
@@ -74,7 +79,7 @@ void StartClient()
 
 	connector->connect("127.0.0.1", 5000);
 
-	printf("succeed to startup client\n");
+	FLAGGG_LOG_DEBUG("succeed to startup client");
 
 	FlagGG::IOFrame::Buffer::IOBufferPtr buffer = FlagGG::IOFrame::TCP::createBuffer();
 	std::string content = "test233";
@@ -82,7 +87,7 @@ void StartClient()
 	for (int i = 0; i < 3; ++i)
 	{
 		bool result = connector->write(buffer);
-		printf("write %d result(%d)\n", i, result ? 1 : 0);
+		FLAGGG_LOG_DEBUG("write %d result(%d)", i, result ? 1 : 0);
 	}
 
 	thread_pool->waitForStop();
@@ -90,11 +95,15 @@ void StartClient()
 
 int main()
 {
+	FLAGGG_LOG_DEBUG("ready run all.");
+
 	FlagGG::AsyncFrame::Thread::UniqueThread server_thread(StartServer);
 
 	// �����룬��֤����������
 	FlagGG::Utility::SystemHelper::Sleep(2000);
 	FlagGG::AsyncFrame::Thread::UniqueThread client_thread(StartClient);
+
+	FLAGGG_LOG_DEBUG("all running...");
 
 	getchar();
 

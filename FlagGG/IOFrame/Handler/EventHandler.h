@@ -35,15 +35,15 @@ namespace FlagGG
 			public:
 				~NullEventHandler() override = default;
 
-				virtual void channelRegisterd(Context::IOContextPtr context) {}
+				void channelRegisterd(Context::IOContextPtr context) override {}
 
-				virtual void channelOpend(Context::IOContextPtr context) {}
+				void channelOpend(Context::IOContextPtr context) override {}
 
-				virtual void channelClosed(Context::IOContextPtr context) {}
+				void channelClosed(Context::IOContextPtr context) override {}
 
-				virtual void messageRecived(Context::IOContextPtr context, Buffer::IOBufferPtr buffer) {}
+				void messageRecived(Context::IOContextPtr context, Buffer::IOBufferPtr buffer) override {}
 
-				virtual void errorCatch(Context::IOContextPtr context, const ErrorCode& error_code) {}
+				void errorCatch(Context::IOContextPtr context, const ErrorCode& error_code) override {}
 			};
 
 			typedef std::shared_ptr < NullEventHandler > NullEventHandlerPtr;
