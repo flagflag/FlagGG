@@ -23,7 +23,7 @@ namespace FlagGG
 			public:
 				UniqueThread(std::function < void(void) > thread_func);
 
-				~UniqueThread() override = default;
+				~UniqueThread() override;
 
 				void stop() override;
 

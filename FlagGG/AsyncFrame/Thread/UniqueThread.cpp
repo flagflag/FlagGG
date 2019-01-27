@@ -1,4 +1,5 @@
 ﻿#include "UniqueThread.h"
+#include "Log.h"
 
 #if WIN32 || WIN64
 #include <windows.h>
@@ -49,7 +50,14 @@ namespace FlagGG
 					param->thread_func = thread_func;
 #if WIN32 || WIN64
 					m_handle = CreateThread(nullptr, 0, ThreadFunc, param, 0, nullptr);
+
+					if (!m_handle)
+					{
+						FLAGGG_LOG_ERROR("create thread failed!");
+					}
 #else
+					pthread_mutex_init(&m_mutex, nullptr);
+					pthread_cond_init(&m_cond, nullptr);
 					param->pcond = &m_cond;
 					pthread_t thread_id;
 					if (0 == pthread_create((pthread_t*)m_handle, nullptr, ThreadFunc, param))
@@ -58,20 +66,29 @@ namespace FlagGG
 					}
 					else
 					{
-						
+						FLAGGG_LOG_ERROR("create thread failed!");
 					}
 #endif
 				}
 			}
 
+			UniqueThread::~UniqueThread()
+			{
+#if !WIN32 && !WIN64
+				pthread_mutex_destroy(&m_mutex);
+				pthread_cond_destroy(&m_cond);
+#endif
+			}
+
 			void UniqueThread::stop()
 			{
+				
 #if WIN32 || WIN64
 				TerminateThread(m_handle, -1);
 #else
-				if (!m_handle || 0 != pthread_cancel(*((pthread_t*)m_handle)))
+				if (!m_handle)
 				{
-
+					pthread_cancel(*((pthread_t*)m_handle));
 				}
 #endif
 			}
@@ -81,9 +98,9 @@ namespace FlagGG
 #if WIN32 || WIN64
 				WaitForSingleObject(m_handle, INFINITE);
 #else
-				if(!m_handle || 0 != pthread_join(*((pthread_t*)m_handle), nullptr))
+				if(!m_handle)
 				{
-
+					pthread_join(*((pthread_t*)m_handle), nullptr);
 				}
 #endif
 			}

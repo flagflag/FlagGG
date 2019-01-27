@@ -18,28 +18,7 @@ namespace FlagGG
         LOG_ERROR
     };
 
-    void FlagGG_API Log(LogType log_type, const char* format, ...)
-    {
-        if (log_type == LOG_DEBUG)
-        {
-#if !DEBUG && !_DEBUG
-            return;
-#endif
-        }
-
-        va_list va;
-        va_start(va, format);
-        size_t len = vsnprintf(nullptr, 0, format, va);
-        
-        char _buffer[ONE_KB];
-        Allocator::SmartMemory <char> temp(len, len <= ONE_KB ? _buffer : nullptr);
-        char* buffer = temp.get();
-
-        vsnprintf(buffer, len, format, va);
-        va_end(va);
-
-        puts(buffer);
-    }
+    void FlagGG_API Log(LogType log_type, const char* format, ...);
 }
 
 #define FLAGGG_LOG_DEBUG(format, ...) FlagGG::Log(FlagGG::LOG_DEBUG, format, ##__VA_ARGS__)

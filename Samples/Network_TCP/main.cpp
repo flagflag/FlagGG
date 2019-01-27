@@ -48,7 +48,7 @@ void StartServer()
 	FlagGG::IOFrame::Acceptor::IOAcceptorPtr acceptor = 
 		FlagGG::IOFrame::TCP::createAcceptor(
 		FlagGG::IOFrame::Handler::EventHandlerPtr(new ServerHandler),
-		4);
+		1);
 
 	if (acceptor->bind("127.0.0.1", 5000))
 	{
