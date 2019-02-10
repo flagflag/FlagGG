@@ -20,13 +20,15 @@ namespace FlagGG
         va_start(va, format);
         size_t len = vsnprintf(nullptr, 0, format, va);
         
-        char _buffer[ONE_KB];
-        Allocator::SmartMemory <char> temp(len, len <= ONE_KB ? _buffer : nullptr);
+        char _buffer[ONE_KB + 1];
+        Allocator::SmartMemory <char> temp(len + 1, len <= ONE_KB ? _buffer : nullptr);
         char* buffer = temp.get();
 
         vsnprintf(buffer, len, format, va);
         va_end(va);
+		
 
-        puts(buffer);
+		buffer[len] = '\0';
+		puts(buffer);
     }
 }

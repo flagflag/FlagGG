@@ -54,7 +54,7 @@ namespace FlagGG
 			void Sleep(uint64_t time)
 			{
 #if WIN32 || WIN64
-				Sleep(time);
+				::Sleep(time);
 #else
 				usleep(time * 1000);
 #endif
