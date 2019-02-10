@@ -17,7 +17,7 @@ if (WIN32 OR WIN64)
     set (D3D11_LIB
     d3d9
     d3dx9
-    d3dx9d/
+    d3dx9d
     d3d11
     d3dx11d
     dxerr
