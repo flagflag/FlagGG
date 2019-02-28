@@ -2,12 +2,13 @@
 #define __RESOURCE__
 
 #include <string>
+#include "Export.h"
 
 namespace FlagGG
 {
 	namespace Resource
 	{
-		class Resource
+		class FlagGG_API Resource
 		{
 		public:
 			virtual ~Resource() = default;

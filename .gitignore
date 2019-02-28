@@ -1,5 +1,6 @@
 3rd/boost_1_67_0
 3rd/boost_1_69_0
+3rd/rapidjson/.git
 FlagGG/project/Debug/*
 FlagGG/project/Release/*
 *.suo
