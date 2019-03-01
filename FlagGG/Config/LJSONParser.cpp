@@ -255,6 +255,13 @@ namespace FlagGG
 
 		bool LJSONParser::ToValue(const LJSONValue& parent, const std::string& type, const std::string& content, LJSONValue& value)
 		{
+			if (content.length() >= 2 && content[0] == '(' && content.back() == ')')
+			{
+				value = content.substr(2, content.length() - 4);
+
+				return true;
+			}
+
 			if (content.length() >= 2 && content[0] == '\"' && content.back() == '\"')
 			{
 				if (content.length() > 2 && content[1] == '@')

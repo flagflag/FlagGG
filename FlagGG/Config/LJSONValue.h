@@ -29,6 +29,8 @@ namespace FlagGG
 		using LJSONString = std::string;
 		using LJSONArray = std::vector<LJSONValue>;
 		using LJSONObject = std::map<std::string, LJSONValue>;
+		using LJSONIterator = LJSONObject::iterator;
+		using LJSONConstIterator = LJSONObject::const_iterator;
 
 		// Like JSON Value
 		class FlagGG_API LJSONValue
@@ -89,6 +91,9 @@ namespace FlagGG
 			// 其他
 			bool Contains(const std::string& key) const;
 			uint32_t Size() const;
+
+			LJSONConstIterator Begin() const;
+			LJSONConstIterator End() const;
 
 			static const LJSONValue EMPTY;
 

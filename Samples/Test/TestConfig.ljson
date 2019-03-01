@@ -1,0 +1,14 @@
+{
+    app = 233,
+    bgg = ("
+        if (!unit.IsDead()) {
+            unit.MoveTo(Vector3(0.0f, 0.0f, 0.0f));
+        }
+    "),
+    omg = [
+        "233", "555", 888
+    ],
+    zip = {
+        xxx = 1, "yyy" = "dd"
+    }
+}

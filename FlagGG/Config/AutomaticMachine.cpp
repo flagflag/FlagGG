@@ -11,7 +11,7 @@ namespace FlagGG
 #define AM_SET_ALPHA "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 #define AM_SET_DIGIT "0123456789"
 #define AM_SET_ILLEGAL "~!@#$%^&*?|\\/()<>[]{},;=\'\""
-#define AM_MID ":"
+#define AM_MID "="
 
 		StateNode::StateNode()
 		{
@@ -48,27 +48,27 @@ namespace FlagGG
 #define __IGNORE__() \
 	index = bufferStart; \
 	StatePtr now = start_; \
-		while (index < bufferEnd && now->next[*index] == start_) \
-		{ \
+	while (index < bufferEnd && now->next[*index] == start_) \
+	{ \
 		now = now->next[*index]; \
 		++index; \
-		}
+	}
 
 #define __GET_TOKEN__(token) \
 	const Byte* tokenStart = index; \
-		while (index < bufferEnd && now->next[*index] && now->next[*index] != end_) \
-		{ \
+	while (index < bufferEnd && now->next[*index] && now->next[*index] != end_) \
+	{ \
 		now = now->next[*index]; \
 		++index; \
-		} \
-		if (!now->next[*index]) return false; \
-		token.assign((const char*)tokenStart, index - tokenStart);
+	} \
+	if (!now->next[*index]) return false; \
+	token.assign((const char*)tokenStart, index - tokenStart);
 
 #define REMOVE_QUOTATION(__value__) \
-		if (__value__.length() >= 2 && __value__[0] == '\"' && __value__[__value__.length() - 1] == '\"') \
-		{ \
+	if (__value__.length() >= 2 && __value__[0] == '\"' && __value__[__value__.length() - 1] == '\"') \
+	{ \
 		__value__ = __value__.substr(1, __value__.length() - 2); \
-		}
+	}
 
 		static void EscapeToken(std::string& token, bool remove)
 		{
@@ -247,7 +247,7 @@ namespace FlagGG
 			quotationEnd_ = &pool_[4];
 			escapes_ = &pool_[5];
 
-			LinkSet(start_, token_, AM_SET_EMPTY AM_SET_ILLEGAL);
+			LinkNoneSet(start_, token_, AM_SET_EMPTY AM_SET_ILLEGAL);
 			LinkNoneSet(token_, token_, AM_SET_EMPTY AM_SET_ILLEGAL);
 
 			LinkSet(start_, start_, AM_SET_EMPTY);

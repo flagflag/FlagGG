@@ -8,7 +8,7 @@ namespace FlagGG
 {
 	namespace Config
 	{
-#define AM_MID_SIGN ':'
+#define AM_MID_SIGN '='
 
 		typedef uint8_t Byte;
 

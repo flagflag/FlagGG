@@ -293,6 +293,16 @@ namespace FlagGG
 			return 0u;
 		}
 
+		LJSONConstIterator LJSONValue::Begin() const
+		{
+			return type_ == LJSON_OBJECT ? objectValue_->begin() : EMPTY_OBJECT.begin();
+		}
+
+		LJSONConstIterator LJSONValue::End() const
+		{
+			return type_ == LJSON_OBJECT ? objectValue_->end() : EMPTY_OBJECT.end();
+		}
+
 		void LJSONValue::CheckType(LJSONValueType type)
 		{
 			if (type_ != type)
