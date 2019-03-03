@@ -4,7 +4,7 @@ namespace FlagGG
 {
 	namespace Resource
 	{
-		bool Resource::LoadFile(const std::wstring& fileName)
+		bool Resource::LoadFile(const Container::String& fileName)
 		{
 			return false;
 		}

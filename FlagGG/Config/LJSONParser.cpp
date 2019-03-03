@@ -1,4 +1,5 @@
 #include "LJSONParser.h"
+#include "Utility/Format.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
@@ -8,7 +9,7 @@ namespace FlagGG
 {
 	namespace Config
 	{
-		void LJSONError::DumpError(const Byte* bufferStart, const Byte* bufferEnd, const Byte* bufferIndex, const std::string& content)
+		void LJSONError::DumpError(const Byte* bufferStart, const Byte* bufferEnd, const Byte* bufferIndex, const Container::String& content)
 		{
 			int32_t lineCount = 1;
 			for (const Byte* index = bufferStart; index < bufferEnd && index <= bufferIndex; ++index)
@@ -16,30 +17,30 @@ namespace FlagGG
 				if ((*index) == '\n') ++lineCount;
 			}
 
-			errors_.emplace_back(filePath_ + "(" + std::to_string(lineCount) + "):" + content);
+			errors_.Push(filePath_ + "(" + Utility::Format::ToString("%d", lineCount) + "):" + content);
 		}
 
-		void LJSONError::SetFilePath(const std::string& filePath)
+		void LJSONError::SetFilePath(const Container::String& filePath)
 		{
 			filePath_ = filePath;
 		}
 
 		void LJSONError::Dump()
 		{
-			for (uint32_t i = 0; i < errors_.size(); ++i)
+			for (uint32_t i = 0; i < errors_.Size(); ++i)
 			{
-				puts(errors_[i].c_str());
+				puts(errors_[i].CString());
 			}
 		}
 
 		void LJSONError::Clear()
 		{
-			errors_.clear();
+			errors_.Clear();
 		}
 
 		bool LJSONError::HasError()
 		{
-			return errors_.size() > 0;
+			return errors_.Size() > 0;
 		}
 
 #define ERROR_STREAM(__content__) error_.DumpError(bufferStart_, bufferEnd_, index_, __content__)
@@ -79,7 +80,7 @@ namespace FlagGG
 
 #define READ_COMMENT() while (AcceptComment())
 
-		bool LJSONParser::StartAccept(const LJSONValue& parent, LJSONValue& node, const std::string& rootType)
+		bool LJSONParser::StartAccept(const LJSONValue& parent, LJSONValue& node, const Container::String& rootType)
 		{
 			// 注释
 			READ_COMMENT();
@@ -94,7 +95,7 @@ namespace FlagGG
 
 			if (ch == '{')
 			{
-				std::string key;
+				Container::String key;
 				for (bool symbol = false; HasNext(); symbol = true)
 				{
 					READ_COMMENT();
@@ -171,7 +172,7 @@ namespace FlagGG
 			{
 				Back();
 
-				std::string content;
+				Container::String content;
 				if (!AcceptContent(content))
 				{
 					ERROR_STREAM("cannot accept content.");
@@ -194,23 +195,23 @@ namespace FlagGG
 
 		bool LJSONParser::HasNext()
 		{
-			static std::string none;
+			static Container::String none;
 			emptyState_->Accapt(index_, bufferEnd_, index_, none);
 			return index_ < bufferEnd_;
 		}
 
 		bool LJSONParser::AcceptComment()
 		{
-			std::string comment;
+			Container::String comment;
 			const Byte* cacheIndex = index_;
-			bool result = commentState_->Accapt(index_, bufferEnd_, index_, comment) && !comment.empty();
+			bool result = commentState_->Accapt(index_, bufferEnd_, index_, comment) && !comment.Empty();
 			if (!result) index_ = cacheIndex;
 			return result;
 		}
 
-		std::string LJSONParser::AcceptType()
+		Container::String LJSONParser::AcceptType()
 		{
-			std::string type;
+			Container::String type;
 			const Byte* cacheIndex = index_;
 			bool result = keywordState_->Accapt(index_, bufferEnd_, index_, type);
 			if (!result)
@@ -221,7 +222,7 @@ namespace FlagGG
 			return std::move(type);
 		}
 
-		bool LJSONParser::AcceptKey(std::string& key)
+		bool LJSONParser::AcceptKey(Container::String& key)
 		{
 			const Byte* cacheIndex = index_;
 			bool result = variableState_->Accapt(index_, bufferEnd_, index_, key);
@@ -229,7 +230,7 @@ namespace FlagGG
 			return result;
 		}
 
-		bool LJSONParser::AcceptContent(std::string& content)
+		bool LJSONParser::AcceptContent(Container::String& content)
 		{
 			const Byte* cacheIndex = index_;
 			bool result = contentState_->Accapt(index_, bufferEnd_, index_, content);
@@ -239,7 +240,7 @@ namespace FlagGG
 
 		bool LJSONParser::AcceptValidChar(char& c)
 		{
-			static std::string none;
+			static Container::String none;
 			bool result = emptyState_->Accapt(index_, bufferEnd_, index_, none);
 			if (result)
 			{
@@ -253,25 +254,24 @@ namespace FlagGG
 			--index_;
 		}
 
-		bool LJSONParser::ToValue(const LJSONValue& parent, const std::string& type, const std::string& content, LJSONValue& value)
+		bool LJSONParser::ToValue(const LJSONValue& parent, const Container::String& type, const Container::String& content, LJSONValue& value)
 		{
-			if (content.length() >= 2 && content[0] == '(' && content.back() == ')')
+			if (content.Length() >= 2 && content[0] == '(' && content.Back() == ')')
 			{
-				value = content.substr(2, content.length() - 4);
+				value = content.Substring(2, content.Length() - 4);
 
 				return true;
 			}
 
-			if (content.length() >= 2 && content[0] == '\"' && content.back() == '\"')
+			if (content.Length() >= 2 && content[0] == '\"' && content.Back() == '\"')
 			{
-				if (content.length() > 2 && content[1] == '@')
+				if (content.Length() > 2 && content[1] == '@')
 				{
-					std::string temp = content.substr(2, content.length() - 3);
-					std::vector<std::string> path;
-					boost::split(path, temp, boost::is_any_of("."));
+					Container::String temp = content.Substring(2, content.Length() - 3);
+					Container::Vector<Container::String> path = temp.Split('.', false);
 
 					const LJSONValue* index = &parent;
-					for (size_t i = 0; i < path.size(); ++i)
+					for (size_t i = 0; i < path.Size(); ++i)
 					{
 						if (index && index->IsObject() && index->Contains(path[i]))
 						{
@@ -291,7 +291,7 @@ namespace FlagGG
 				}
 				else
 				{
-					value = content.substr(1, content.length() - 2);
+					value = content.Substring(1, content.Length() - 2);
 				}
 
 				return true;
@@ -314,7 +314,7 @@ namespace FlagGG
 			bool hasNonDig = false;
 			bool appearDot = false;
 
-			for (uint32_t i = 0; i < content.length(); ++i)
+			for (uint32_t i = 0; i < content.Length(); ++i)
 			{
 				if (!isdigit(content[i]))
 				{
@@ -337,7 +337,7 @@ namespace FlagGG
 
 			if (!hasNonDig)
 			{
-				value = boost::lexical_cast<double>(content);
+				value = Utility::Format::ToDouble(content);
 
 				return true;
 			}

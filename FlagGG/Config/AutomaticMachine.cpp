@@ -62,17 +62,17 @@ namespace FlagGG
 		++index; \
 	} \
 	if (!now->next[*index]) return false; \
-	token.assign((const char*)tokenStart, index - tokenStart);
+	token.Asign((const char*)tokenStart, index - tokenStart);
 
 #define REMOVE_QUOTATION(__value__) \
-	if (__value__.length() >= 2 && __value__[0] == '\"' && __value__[__value__.length() - 1] == '\"') \
+	if (__value__.Length() >= 2 && __value__[0] == '\"' && __value__[__value__.Length() - 1] == '\"') \
 	{ \
-		__value__ = __value__.substr(1, __value__.length() - 2); \
+		__value__ = __value__.Substring(1, __value__.Length() - 2); \
 	}
 
-		static void EscapeToken(std::string& token, bool remove)
+		static void EscapeToken(Container::String& token, bool remove)
 		{
-			if (token.length() > 0)
+			if (token.Length() > 0)
 			{
 				if (remove)
 				{
@@ -81,7 +81,7 @@ namespace FlagGG
 
 				int32_t offset = 0;
 				bool flag = false;
-				for (size_t i = 0; i < token.length(); ++i)
+				for (size_t i = 0; i < token.Length(); ++i)
 				{
 					if (flag)
 					{
@@ -147,7 +147,7 @@ namespace FlagGG
 
 				if (offset > 0)
 				{
-					token = token.substr(0, token.length() - offset);
+					token = token.Substring(0, token.Length() - offset);
 				}
 			}
 		}
@@ -159,7 +159,7 @@ namespace FlagGG
 			LinkSet(start_, start_, AM_SET_EMPTY);
 		}
 
-		bool EmptyAutomaticMachine::Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, std::string& token)
+		bool EmptyAutomaticMachine::Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, Container::String& token)
 		{
 			__IGNORE__();
 
@@ -171,7 +171,7 @@ namespace FlagGG
 			return c1[0] == c2[0] && c1[1] == c2[1];
 		}
 
-		bool CommentAutomationMachine::Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, std::string& token)
+		bool CommentAutomationMachine::Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, Container::String& token)
 		{
 			EmptyAutomaticMachine::Accapt(bufferStart, bufferEnd, index, token);
 
@@ -189,7 +189,7 @@ namespace FlagGG
 
 				if (_start && _end)
 				{
-					token = std::string(_start, _end - _start);
+					token = Container::String(_start, _end - _start);
 				}
 			}
 
@@ -219,7 +219,7 @@ namespace FlagGG
 			keywords_.emplace_back("array");
 		}
 
-		bool TypeKeywordAutomaticMachine::Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, std::string& token)
+		bool TypeKeywordAutomaticMachine::Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, Container::String& token)
 		{
 			__IGNORE__();
 
@@ -262,7 +262,7 @@ namespace FlagGG
 			LinkSet(quotationEnd_, end_, AM_SET_EMPTY AM_MID);
 		}
 
-		bool VariableAutomaticMachine::Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, std::string& token)
+		bool VariableAutomaticMachine::Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, Container::String& token)
 		{
 			__IGNORE__();
 
@@ -311,7 +311,7 @@ namespace FlagGG
 			LinkSet(rightBracket_, end_, AM_SET_EMPTY ";,}]");
 		}
 
-		bool ContentAutomaticMachine::Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, std::string& token)
+		bool ContentAutomaticMachine::Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, Container::String& token)
 		{
 			__IGNORE__();
 

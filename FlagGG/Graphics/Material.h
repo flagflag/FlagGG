@@ -14,7 +14,7 @@ namespace FlagGG
 		public:
 			~Material() override = default;
 
-			bool LoadFile(const std::wstring& fileName) override;
+			bool LoadFile(const Container::String& fileName) override;
 
 		private:
 			Math::Color diffuse_;

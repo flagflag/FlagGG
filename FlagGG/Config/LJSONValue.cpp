@@ -96,13 +96,13 @@ namespace FlagGG
 			return (*arrayValue_)[index];
 		}
 
-		LJSONValue& LJSONValue::operator[](const std::string& key)
+		LJSONValue& LJSONValue::operator[](const LJSONString& key)
 		{
 			CheckType(LJSON_OBJECT);
 			return (*objectValue_)[key];
 		}
 
-		const LJSONValue& LJSONValue::operator[](const std::string& key) const
+		const LJSONValue& LJSONValue::operator[](const LJSONString& key) const
 		{
 			if (type_ != LJSON_OBJECT)
 			{
@@ -277,30 +277,31 @@ namespace FlagGG
 		LJSONValue& LJSONValue::Append()
 		{
 			CheckType(LJSON_ARRAY);
-			arrayValue_->emplace_back();
-			return arrayValue_->back();
+			LJSONValue temp;
+			arrayValue_->Push(temp);
+			return arrayValue_->Back();
 		}
 
-		bool LJSONValue::Contains(const std::string& key) const
+		bool LJSONValue::Contains(const LJSONString& key) const
 		{
-			return type_ == LJSON_OBJECT && objectValue_->find(key) != objectValue_->end();
+			return type_ == LJSON_OBJECT && objectValue_->Contains(key);
 		}
 
 		uint32_t LJSONValue::Size() const
 		{
-			if (type_ == LJSON_ARRAY) return arrayValue_->size();
-			if (type_ == LJSON_OBJECT) return objectValue_->size();
+			if (type_ == LJSON_ARRAY) return arrayValue_->Size();
+			if (type_ == LJSON_OBJECT) return objectValue_->Size();
 			return 0u;
 		}
 
 		LJSONConstIterator LJSONValue::Begin() const
 		{
-			return type_ == LJSON_OBJECT ? objectValue_->begin() : EMPTY_OBJECT.begin();
+			return type_ == LJSON_OBJECT ? objectValue_->Begin() : EMPTY_OBJECT.Begin();
 		}
 
 		LJSONConstIterator LJSONValue::End() const
 		{
-			return type_ == LJSON_OBJECT ? objectValue_->end() : EMPTY_OBJECT.end();
+			return type_ == LJSON_OBJECT ? objectValue_->End() : EMPTY_OBJECT.End();
 		}
 
 		void LJSONValue::CheckType(LJSONValueType type)

@@ -3,6 +3,7 @@
 
 #include <string>
 #include "Export.h"
+#include "Container/Str.h"
 
 namespace FlagGG
 {
@@ -13,7 +14,7 @@ namespace FlagGG
 		public:
 			virtual ~Resource() = default;
 
-			virtual bool LoadFile(const std::wstring& fileName);
+			virtual bool LoadFile(const Container::String& fileName);
 		};
 	}
 }

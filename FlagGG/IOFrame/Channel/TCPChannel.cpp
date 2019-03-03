@@ -1,8 +1,6 @@
 ﻿#include <boost/bind.hpp>
 #include <boost/asio/placeholders.hpp>
 
-#include <memory>
-
 #include "TCPChannel.h"
 #include "IOFrame/Context/TCPContext.h"
 #include "IOFrame/IOError.h"

@@ -253,7 +253,7 @@ namespace FlagGG
 			}
 
 			/// Move-assign a hash map.
-			HashMap& operator =(HashMap<T, U> && rhs) noexcept
+			HashMap& operator =(HashMap<T, U> && rhs) NOEXCEPT
 			{
 				assert(&rhs != this);
 				Swap(rhs);

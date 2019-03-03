@@ -14,7 +14,7 @@ namespace FlagGG
 		public:
 			~LJSONFile() override = default;
 
-			bool LoadFile(const std::wstring& fileName) override;
+			bool LoadFile(const Container::String& fileName) override;
 
 			const LJSONValue& GetRoot() const;
 

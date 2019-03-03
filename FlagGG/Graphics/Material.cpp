@@ -8,13 +8,13 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		bool Material::LoadFile(const std::wstring& fileName)
+		bool Material::LoadFile(const Container::String& fileName)
 		{
 			std::ifstream stream;
-			stream.open(fileName);
+			stream.open(fileName.CString());
 			if (!stream.is_open())
 			{
-				FLAGGG_LOG_ERROR("load file [%s] failed", Code::WideToUtf8(fileName).c_str());
+				FLAGGG_LOG_ERROR("load file [%s] failed", fileName.CString());
 
 				return false;
 			}

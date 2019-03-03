@@ -355,6 +355,8 @@ namespace FlagGG
 			void Clear();
 			/// Swap with another string.
 			void Swap(String& str);
+			/// Asign for std::string::asign
+			void Asign(const char* str, unsigned length);
 
 			/// Return iterator to the beginning.
 			Iterator Begin() { return Iterator(buffer_); }

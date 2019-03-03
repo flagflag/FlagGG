@@ -8,7 +8,6 @@
 #include "Export.h"
 
 #include <functional>
-#include <memory>
 
 #if !WIN32 && !WIN64
 #include <pthread.h>

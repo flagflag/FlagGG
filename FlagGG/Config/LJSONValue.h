@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Export.h"
+#include "Container/Str.h"
+#include "Container/Vector.h"
+#include "Container/HashMap.h"
 
-#include <string>
-#include <vector>
-#include <map>
 #include <stdint.h>
 
 namespace FlagGG
@@ -26,11 +26,11 @@ namespace FlagGG
 
 		using LJSONBool = bool;
 		using LJSONNumber = double;
-		using LJSONString = std::string;
-		using LJSONArray = std::vector<LJSONValue>;
-		using LJSONObject = std::map<std::string, LJSONValue>;
-		using LJSONIterator = LJSONObject::iterator;
-		using LJSONConstIterator = LJSONObject::const_iterator;
+		using LJSONString = Container::String;
+		using LJSONArray = Container::Vector<LJSONValue>;
+		using LJSONObject = Container::HashMap<LJSONString, LJSONValue>;
+		using LJSONIterator = LJSONObject::Iterator;
+		using LJSONConstIterator = LJSONObject::ConstIterator;
 
 		// Like JSON Value
 		class FlagGG_API LJSONValue
@@ -54,8 +54,8 @@ namespace FlagGG
 			LJSONValue& operator[](uint32_t index);
 			const LJSONValue& operator[](uint32_t index) const;
 
-			LJSONValue& operator[](const std::string& key);
-			const LJSONValue& operator[](const std::string& key) const;
+			LJSONValue& operator[](const LJSONString& key);
+			const LJSONValue& operator[](const LJSONString& key) const;
 
 			// 赋值
 			LJSONValue& operator=(bool value);
@@ -89,7 +89,7 @@ namespace FlagGG
 			LJSONValue& Append();
 
 			// 其他
-			bool Contains(const std::string& key) const;
+			bool Contains(const LJSONString& key) const;
 			uint32_t Size() const;
 
 			LJSONConstIterator Begin() const;

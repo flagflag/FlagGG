@@ -8,7 +8,6 @@
 #include "Container/Ptr.h"
 #include "Container/RefCounted.h"
 
-#include <memory>
 #include <string>
 #include <vector>
 #include <stdint.h>

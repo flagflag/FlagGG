@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Container/Str.h"
+
 #include <string>
 #include <vector>
 #include <stdint.h>
@@ -29,7 +31,7 @@ namespace FlagGG
 		public:
 			virtual ~AutomaticMachine() = default;
 
-			virtual bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, std::string& token) = 0;
+			virtual bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, Container::String& token) = 0;
 
 		protected:
 			void LinkSet(StatePtr state1, StatePtr state2, const char* set);
@@ -48,7 +50,7 @@ namespace FlagGG
 
 			~EmptyAutomaticMachine() override = default;
 
-			bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, std::string& token) override;
+			bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, Container::String& token) override;
 
 		private:
 			StateNode pool_[1];
@@ -63,7 +65,7 @@ namespace FlagGG
 
 			~CommentAutomationMachine() override = default;
 
-			bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, std::string& token) override;
+			bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, Container::String& token) override;
 		};
 
 		class TypeKeywordAutomaticMachine : public AutomaticMachine
@@ -73,7 +75,7 @@ namespace FlagGG
 
 			~TypeKeywordAutomaticMachine() override = default;
 
-			bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, std::string& token) override;
+			bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, Container::String& token) override;
 
 		private:
 			StateNode pool_[3];
@@ -82,7 +84,7 @@ namespace FlagGG
 			StatePtr token_;
 			StatePtr end_;
 
-			std::vector<std::string> keywords_;
+			std::vector<Container::String> keywords_;
 		};
 
 		class VariableAutomaticMachine : public AutomaticMachine
@@ -92,7 +94,7 @@ namespace FlagGG
 
 			~VariableAutomaticMachine() override = default;
 
-			bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, std::string& token) override;
+			bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, Container::String& token) override;
 
 		private:
 			StateNode pool_[6];
@@ -112,7 +114,7 @@ namespace FlagGG
 
 			~ContentAutomaticMachine() override = default;
 
-			bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, std::string& token) override;
+			bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, Container::String& token) override;
 
 		private:
 			StateNode pool_[11];

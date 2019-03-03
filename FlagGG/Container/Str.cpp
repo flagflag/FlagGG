@@ -464,6 +464,12 @@ namespace FlagGG
 			FlagGG::Container::Swap(buffer_, str.buffer_);
 		}
 
+		void String::Asign(const char* str, unsigned length)
+		{
+			Resize(length);
+			CopyChars(buffer_, str, length);
+		}
+
 		String String::Substring(unsigned pos) const
 		{
 			if (pos < length_)

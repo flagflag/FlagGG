@@ -6,8 +6,6 @@
 #include "Container/Ptr.h"
 #include "Export.h"
 
-#include <memory>
-
 namespace FlagGG
 {
 	namespace IOFrame

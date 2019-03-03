@@ -9,10 +9,10 @@ namespace FlagGG
 {
 	namespace Config
 	{
-		bool LJSONFile::LoadFile(const std::wstring& fileName)
+		bool LJSONFile::LoadFile(const Container::String& fileName)
 		{
 			std::ifstream stream;
-			stream.open(fileName, std::ios::in | std::ios::binary | std::ios::ate);
+			stream.open(fileName.CString(), std::ios::in | std::ios::binary | std::ios::ate);
 			if (!stream.is_open())
 			{
 				FLAGGG_LOG_ERROR("open json file failed.");

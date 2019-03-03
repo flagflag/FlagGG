@@ -12,8 +12,8 @@ void Print(const LJSONValue& root, const std::string& t = "")
 		printf("\n%s{\n", t.c_str());
 		for (auto it = root.Begin(); it != root.End(); ++it)
 		{
-			const LJSONValue& value = it->second;
-			printf("%s" TAB "%s = ", t.c_str(), it->first.c_str());
+			const LJSONValue& value = it->second_;
+			printf("%s" TAB "%s = ", t.c_str(), it->first_.CString());
 			Print(value, t + TAB);
 		}
 		printf("%s}\n", t.c_str());
@@ -39,16 +39,16 @@ void Print(const LJSONValue& root, const std::string& t = "")
 	}
 	else if (root.IsString())
 	{
-		const std::string& content = root.GetString();
-		bool flag = content.find('\n');
-		printf("%s\"%s\"%s,\n", flag ? "(" : "", content.c_str(), flag ? ")" : "");
+		const FlagGG::Container::String& content = root.GetString();
+		bool flag = content.Find('\n');
+		printf("%s\"%s\"%s,\n", flag ? "(" : "", content.CString(), flag ? ")" : "");
 	}
 }
 
 void Run()
 {
 	LJSONFile jsonFile;
-	if (!jsonFile.LoadFile(L"../../../Samples/Test/TestConfig.ljson"))
+	if (!jsonFile.LoadFile("../../../Samples/Test/TestConfig.ljson"))
 	{
 		FLAGGG_LOG_DEBUG("fuck.");
 

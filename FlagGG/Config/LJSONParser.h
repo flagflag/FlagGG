@@ -1,5 +1,6 @@
 #pragma  once
 
+#include "Container/Str.h"
 #include "Config/AutomaticMachine.h"
 #include "Config/LJSONValue.h"
 
@@ -10,9 +11,9 @@ namespace FlagGG
 		class LJSONError
 		{
 		public:
-			void DumpError(const Byte* bufferStart, const Byte* bufferEnd, const Byte* bufferIndex, const std::string& content);
+			void DumpError(const Byte* bufferStart, const Byte* bufferEnd, const Byte* bufferIndex, const Container::String& content);
 
-			void SetFilePath(const std::string& filePath);
+			void SetFilePath(const Container::String& filePath);
 
 			void Dump();
 
@@ -21,9 +22,9 @@ namespace FlagGG
 			bool HasError();
 
 		private:
-			std::string filePath_;
+			Container::String filePath_;
 
-			std::vector<std::string> errors_;
+			Container::Vector<Container::String> errors_;
 		};
 
 		// Like JSON Parser
@@ -37,23 +38,23 @@ namespace FlagGG
 			bool Load(const char* buffer, uint32_t bufferSize, LJSONValue& value);
 
 		protected:
-			bool StartAccept(const LJSONValue& parent, LJSONValue& node, const std::string& rootType);
+			bool StartAccept(const LJSONValue& parent, LJSONValue& node, const Container::String& rootType);
 
 			bool HasNext();
 
 			bool AcceptComment();
 
-			std::string AcceptType();
+			Container::String AcceptType();
 
-			bool AcceptKey(std::string& key);
+			bool AcceptKey(Container::String& key);
 
-			bool AcceptContent(std::string& content);
+			bool AcceptContent(Container::String& content);
 
 			bool AcceptValidChar(char& c);
 
 			void Back();
 
-			bool ToValue(const LJSONValue& parent, const std::string& type, const std::string& content, LJSONValue& value);
+			bool ToValue(const LJSONValue& parent, const Container::String& type, const Container::String& content, LJSONValue& value);
 
 		private:
 			const Byte* bufferStart_;
