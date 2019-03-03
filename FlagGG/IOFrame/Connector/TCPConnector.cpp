@@ -8,7 +8,7 @@ namespace FlagGG
 		namespace Connector
 		{
 			TCPConnector::TCPConnector(Handler::EventHandlerPtr handler, IOFrame::IOThreadPoolPtr& thread_pool)
-				: channel_(new Channel::TCPChannel(std::dynamic_pointer_cast<IOFrame::NetThreadPool>(thread_pool)->getService()))
+				: channel_(new Channel::TCPChannel(Container::DynamicCast<IOFrame::NetThreadPool>(thread_pool)->getService()))
 				, handler_(handler)
 			{ 
 				channel_->OnRegisterd(handler);

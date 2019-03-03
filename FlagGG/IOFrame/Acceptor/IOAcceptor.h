@@ -2,8 +2,9 @@
 #define __IO_ACCEPTOR__
 
 #include "Export.h"
+#include "Container/Ptr.h"
+#include "Container/RefCounted.h"
 
-#include <memory>
 #include <stdint.h>
 
 namespace FlagGG
@@ -12,7 +13,7 @@ namespace FlagGG
 	{
 		namespace Acceptor
 		{
-			class FlagGG_API IOAcceptor
+			class FlagGG_API IOAcceptor : public Container::RefCounted
 			{
 			public:
 				virtual ~IOAcceptor() = default;
@@ -26,7 +27,7 @@ namespace FlagGG
 				virtual void WaitForStop() = 0;
 			};
 
-			typedef std::shared_ptr < IOAcceptor > IOAcceptorPtr;
+			typedef Container::SharedPtr < IOAcceptor > IOAcceptorPtr;
 		}
 	}
 }

@@ -8,7 +8,8 @@
 #include "IOFrame/Acceptor/IOAcceptor.h"
 #include "IOFrame/Channel/TCPChannel.h"
 #include "IOFrame/Handler/EventHandler.h"
-#include "IOFrame/ThreadPool/IOThreadPool.h"
+//#include "IOFrame/ThreadPool/IOThreadPool.h"
+#include "IOFrame/ThreadPool/NetThreadPool.h"
 
 namespace FlagGG
 {
@@ -39,7 +40,8 @@ namespace FlagGG
 			private:
 				//声明顺序不能变，C++初始化列表是按照声明顺序执行的！！！
 
-				IOFrame::IOThreadPoolPtr			threadPool_;
+				//IOFrame::IOThreadPoolPtr			threadPool_;
+				IOFrame::NetThreadPoolPtr			threadPool_;
 
 				boost::asio::ip::tcp::acceptor		acceptor_;
 

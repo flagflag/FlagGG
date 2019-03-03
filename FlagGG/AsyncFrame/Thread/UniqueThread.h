@@ -3,6 +3,8 @@
 
 #include "AsyncFrame/KernelObject/HandleObject.h"
 #include "AsyncFrame/KernelObject/Runtime.h"
+#include "Container/Ptr.h"
+#include "Container/RefCounted.h"
 #include "Export.h"
 
 #include <functional>
@@ -18,7 +20,7 @@ namespace FlagGG
 	{
 		namespace Thread
 		{
-			class FlagGG_API UniqueThread : public KernelObject::HandleObject, public KernelObject::Runtime
+			class FlagGG_API UniqueThread : public KernelObject::HandleObject, public KernelObject::Runtime, public Container::RefCounted
 			{
 			public:
 				UniqueThread(std::function < void(void) > thread_func);
@@ -37,7 +39,7 @@ namespace FlagGG
 #endif
 			};
 
-			typedef std::shared_ptr < UniqueThread > UniqueThreadPtr;
+			typedef Container::SharedPtr < UniqueThread > UniqueThreadPtr;
 		}
 	}
 }

@@ -4,7 +4,6 @@
 #include "IOBuffer.h"
 
 #include <vector>
-#include <memory>
 #include <stdint.h>
 
 namespace FlagGG
@@ -80,7 +79,7 @@ namespace FlagGG
 				SimpleBuffer currentBuffer_;
 			};
 
-			typedef std::shared_ptr < NetBuffer > NetBufferPtr;
+			typedef Container::SharedPtr < NetBuffer > NetBufferPtr;
 		}
 	}
 }

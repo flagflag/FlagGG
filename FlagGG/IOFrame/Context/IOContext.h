@@ -10,7 +10,7 @@ namespace FlagGG
 	{
 		namespace Context
 		{
-			class FlagGG_API IOContext
+			class FlagGG_API IOContext : public Container::RefCounted
 			{
 			public:
 				virtual ~IOContext() = default;
@@ -18,7 +18,7 @@ namespace FlagGG
 				virtual Channel::IOChannelPtr GetChannel() = 0;
 			};
 
-			typedef std::shared_ptr < IOContext > IOContextPtr;
+			typedef Container::SharedPtr < IOContext > IOContextPtr;
 		}
 	}
 }

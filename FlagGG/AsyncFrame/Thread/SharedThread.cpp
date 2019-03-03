@@ -24,7 +24,7 @@ namespace FlagGG
 				{
 					running_ = true;
 
-					thread_.reset(new UniqueThread(std::bind(&SharedThread::WorkThread, this)));
+					thread_ = new UniqueThread(std::bind(&SharedThread::WorkThread, this));
 				}		
 			}
 

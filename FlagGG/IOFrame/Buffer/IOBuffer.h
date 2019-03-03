@@ -2,8 +2,10 @@
 #define __IOBUFFER__
 
 #include "Export.h"
+#include "Container/Ptr.h"
+#include "Container/RefCounted.h"
 
-#include <memory>
+#include <stdint.h>
 
 namespace FlagGG
 {
@@ -11,7 +13,7 @@ namespace FlagGG
 	{
 		namespace Buffer
 		{
-			class FlagGG_API IOBuffer
+			class FlagGG_API IOBuffer : public Container::RefCounted
 			{
 			public:
 				virtual ~IOBuffer() = default;
@@ -47,7 +49,7 @@ namespace FlagGG
 				virtual void ToString(char*& data, size_t& data_size) = 0;
 			};
 
-			typedef std::shared_ptr < IOBuffer > IOBufferPtr;
+			typedef Container::SharedPtr < IOBuffer > IOBufferPtr;
 		}
 	}
 }

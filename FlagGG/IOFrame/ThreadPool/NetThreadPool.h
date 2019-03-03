@@ -42,7 +42,7 @@ namespace FlagGG
 			std::atomic < bool >								running_;
 		};
 
-		typedef std::shared_ptr < NetThreadPool > NetThreadPoolPtr;
+		typedef Container::SharedPtr < NetThreadPool > NetThreadPoolPtr;
 	}
 }
 

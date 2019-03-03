@@ -33,7 +33,7 @@ namespace FlagGG
 
 				if (error_code)
 				{
-					THROW_IO_ERROR(Context::TCPContext, shared_from_this(), handler_, error_code);
+					THROW_IO_ERROR(Context::TCPContext, Container::SharedPtr<IOChannel>(this), handler_, error_code);
 				}
 			}
 
@@ -61,7 +61,7 @@ namespace FlagGG
 					socket_.async_send(
 						boost::asio::buffer(data, data_size),
 						strand_.wrap(boost::bind(&TCPChannel::HandleWrite, 
-						std::dynamic_pointer_cast < TCPChannel >(shared_from_this()),
+						Container::SharedPtr<TCPChannel>(this),
 						boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred)));
 				}
 				catch (...)
@@ -105,7 +105,7 @@ namespace FlagGG
 
 					printf("connect failed.\n");
 
-					THROW_IO_ERROR(Context::TCPContext, shared_from_this(), handler_, error_code);
+					THROW_IO_ERROR(Context::TCPContext, Container::SharedPtr<IOChannel>(this), handler_, error_code);
 				}
 			}
 
@@ -126,7 +126,7 @@ namespace FlagGG
 					socket_.async_connect(
 						endpoint,
 						strand_.wrap(boost::bind(&TCPChannel::HandleConnect, 
-						std::dynamic_pointer_cast < TCPChannel >(shared_from_this()),
+						Container::SharedPtr<TCPChannel>(this),
 						boost::asio::placeholders::error)));
 				}
 				catch (...)
@@ -195,7 +195,7 @@ namespace FlagGG
 			{
 				if (!error_code)
 				{
-					Context::TCPContextPtr context(new Context::TCPContext(shared_from_this()));
+					Context::TCPContextPtr context(new Context::TCPContext(Container::SharedPtr<IOChannel>(this)));
 					Buffer::NetBufferPtr buffer(new Buffer::NetBuffer);
 					buffer->WriteStream(buffer_, bytes_transferred);
 
@@ -203,7 +203,7 @@ namespace FlagGG
 				}
 				else
 				{
-					THROW_IO_ERROR(Context::TCPContext, shared_from_this(), handler_, error_code);
+					THROW_IO_ERROR(Context::TCPContext, Container::SharedPtr<IOChannel>(this), handler_, error_code);
 				}
 
 				StartRead();
@@ -222,7 +222,7 @@ namespace FlagGG
 					socket_.async_receive(
 						boost::asio::buffer(buffer_, ONE_KB),
 						strand_.wrap(boost::bind(&TCPChannel::HandleRead,
-						std::dynamic_pointer_cast < TCPChannel >(shared_from_this()),
+						Container::SharedPtr<TCPChannel>(this),
 						boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred)
 						));
 				}
@@ -236,7 +236,7 @@ namespace FlagGG
 			{
 				handler_ = handler ? handler : Handler::NullEventHandlerPtr(new Handler::NullEventHandler);
 
-				Context::TCPContextPtr context(new Context::TCPContext(shared_from_this()));
+				Context::TCPContextPtr context(new Context::TCPContext(Container::SharedPtr<IOChannel>(this)));
 				handler_->ChannelRegisterd(context);
 			}
 
@@ -244,7 +244,7 @@ namespace FlagGG
 			{
 				state_ = Connected;
 
-				Context::TCPContextPtr context(new Context::TCPContext(shared_from_this()));
+				Context::TCPContextPtr context(new Context::TCPContext(Container::SharedPtr<IOChannel>(this)));
 				handler_->ChannelOpend(context);
 
 				StartRead();
@@ -252,7 +252,7 @@ namespace FlagGG
 
 			void TCPChannel::OnClosed()
 			{
-				Context::TCPContextPtr context(new Context::TCPContext(shared_from_this()));
+				Context::TCPContextPtr context(new Context::TCPContext(Container::SharedPtr<IOChannel>(this)));
 				handler_->ChannelClosed(context);
 			}
 		}

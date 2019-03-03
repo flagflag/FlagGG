@@ -30,7 +30,7 @@ namespace FlagGG
 				Handler::EventHandlerPtr			handler_;
 			};
 			
-			typedef std::shared_ptr < TCPConnector > TCPConnectorPtr;
+			typedef Container::SharedPtr < TCPConnector > TCPConnectorPtr;
 		}
 	}
 }

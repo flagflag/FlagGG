@@ -10,7 +10,7 @@ namespace FlagGG
 	{
 		namespace Channel
 		{
-			class FlagGG_API IOChannel : public std::enable_shared_from_this < IOChannel >
+			class FlagGG_API IOChannel : public Container::RefCounted
 			{
 			public:
 				virtual ~IOChannel() {};
@@ -30,7 +30,7 @@ namespace FlagGG
 				virtual bool IsClosed() = 0;
 			};
 
-			typedef std::shared_ptr < IOChannel > IOChannelPtr;
+			typedef Container::SharedPtr < IOChannel > IOChannelPtr;
 		}
 	}
 }

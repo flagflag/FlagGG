@@ -127,7 +127,7 @@ namespace FlagGG
 			operator T*() const { return ptr_; }    // NOLINT(google-explicit-constructor)
 
 			/// Swap with another SharedPtr.
-			void Swap(SharedPtr& rhs) { Urho3D::Swap(ptr_, rhs.ptr_); }
+			void Swap(SharedPtr& rhs) { FlagGG::Container::Swap(ptr_, rhs.ptr_); }
 
 			/// Reset to null and release the object reference.
 			void Reset() { ReleaseRef(); }
@@ -625,3 +625,12 @@ namespace FlagGG
 		}
 	}
 }
+
+namespace boost
+{
+	template<class T> inline T* get_pointer(FlagGG::Container::SharedPtr<T>& sharedPtr)
+	{
+		return sharedPtr.Get();
+	}
+}
+

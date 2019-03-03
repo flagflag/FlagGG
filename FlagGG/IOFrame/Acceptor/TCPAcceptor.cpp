@@ -15,7 +15,7 @@ namespace FlagGG
 		{
 			TCPAcceptor::TCPAcceptor(Handler::EventHandlerPtr handler, size_t thread_count)
 				: threadPool_(new IOFrame::NetThreadPool(thread_count))
-				, acceptor_(std::dynamic_pointer_cast<IOFrame::NetThreadPool>(threadPool_)->getService())
+				, acceptor_(threadPool_->getService())
 				, handler_(handler)
 			{ }
 
@@ -58,7 +58,7 @@ namespace FlagGG
 
 			void TCPAcceptor::StartAccept()
 			{
-				Channel::TCPChannelPtr channel(new Channel::TCPChannel(std::dynamic_pointer_cast<IOFrame::NetThreadPool>(threadPool_)->getService()));
+				Channel::TCPChannelPtr channel(new Channel::TCPChannel(threadPool_->getService()));
 
 				channel->OnRegisterd(handler_);
 

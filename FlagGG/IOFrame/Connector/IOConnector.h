@@ -4,7 +4,6 @@
 #include "IOFrame/Buffer/IOBuffer.h"
 #include "Export.h"
 
-#include <memory>
 #include <stdint.h>
 
 namespace FlagGG
@@ -13,7 +12,7 @@ namespace FlagGG
 	{
 		namespace Connector
 		{
-			class FlagGG_API IOConnector
+			class FlagGG_API IOConnector : public Container::RefCounted
 			{
 			public:
 				virtual ~IOConnector() = default;
@@ -23,7 +22,7 @@ namespace FlagGG
 				virtual bool Write(Buffer::IOBufferPtr buffer) = 0;
 			};
 
-			typedef std::shared_ptr < IOConnector > IOConnectorPtr;
+			typedef Container::SharedPtr < IOConnector > IOConnectorPtr;
 		}
 	}
 }

@@ -5,6 +5,8 @@
 
 #include "AsyncFrame/KernelObject/HandleObject.h"
 #include "AsyncFrame/KernelObject/Runtime.h"
+#include "Container/Ptr.h"
+#include "Container/RefCounted.h"
 
 #include <memory>
 #include <string>
@@ -58,7 +60,7 @@ namespace FlagGG
 				std::vector < std::wstring > list_;
 			};
 
-			class FlagGG_API ProcessObject : public KernelObject::HandleObject, public KernelObject::Runtime
+			class FlagGG_API ProcessObject : public KernelObject::HandleObject, public KernelObject::Runtime, public Container::RefCounted
 			{
 			public:
 				ProcessObject();
@@ -79,7 +81,7 @@ namespace FlagGG
 				uint32_t id_;
 			};
 
-			typedef std::shared_ptr < ProcessObject > ProcessObjectPtr;
+			typedef Container::SharedPtr < ProcessObject > ProcessObjectPtr;
 
 			class FlagGG_API Builder
 			{

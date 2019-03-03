@@ -13,7 +13,7 @@ namespace FlagGG
 	{
 		namespace Thread
 		{
-			class FlagGG_API ThreadPool : public KernelObject::Runtime
+			class FlagGG_API ThreadPool : public KernelObject::Runtime, public Container::RefCounted
 			{
 			public:
 				ThreadPool(size_t thread_count);

@@ -12,7 +12,7 @@ namespace FlagGG
 	{
 		namespace Handler
 		{
-			class FlagGG_API EventHandler
+			class FlagGG_API EventHandler : public Container::RefCounted
 			{
 			public:
 				virtual ~EventHandler() = default;
@@ -28,7 +28,7 @@ namespace FlagGG
 				virtual void ErrorCatch(Context::IOContextPtr context, const ErrorCode& error_code) = 0;
 			};
 
-			typedef std::shared_ptr < EventHandler > EventHandlerPtr;
+			typedef Container::SharedPtr < EventHandler > EventHandlerPtr;
 
 			class NullEventHandler : public EventHandler
 			{
@@ -46,7 +46,7 @@ namespace FlagGG
 				void ErrorCatch(Context::IOContextPtr context, const ErrorCode& error_code) override {}
 			};
 
-			typedef std::shared_ptr < NullEventHandler > NullEventHandlerPtr;
+			typedef Container::SharedPtr < NullEventHandler > NullEventHandlerPtr;
 		}
 	}
 }

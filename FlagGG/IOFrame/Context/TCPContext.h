@@ -22,7 +22,7 @@ namespace FlagGG
 				Channel::IOChannelPtr channel_;
 			};
 
-			typedef std::shared_ptr < TCPContext > TCPContextPtr;
+			typedef Container::SharedPtr < TCPContext > TCPContextPtr;
 		}
 	}
 }

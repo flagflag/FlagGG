@@ -19,7 +19,7 @@ namespace FlagGG
 		{
 			typedef std::function < void(void) > ThreadTask;
 
-			class FlagGG_API SharedThread : public KernelObject::Runtime
+			class FlagGG_API SharedThread : public KernelObject::Runtime, public Container::RefCounted
 			{
 			public:
 				SharedThread();
@@ -51,7 +51,7 @@ namespace FlagGG
 				std::atomic < bool >		running_;
 			};
 
-			typedef std::shared_ptr < SharedThread > SharedThreadPtr;
+			typedef Container::SharedPtr < SharedThread > SharedThreadPtr;
 		}
 	}
 }

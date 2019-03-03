@@ -103,7 +103,7 @@ namespace FlagGG
 				Handler::EventHandlerPtr			handler_;
 			};
 
-			typedef std::shared_ptr < TCPChannel > TCPChannelPtr;
+			typedef Container::SharedPtr < TCPChannel > TCPChannelPtr;
 		}
 	}
 }
