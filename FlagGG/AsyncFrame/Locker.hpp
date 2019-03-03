@@ -13,18 +13,18 @@ namespace FlagGG
 		{
 		public:
 			Locker(std::mutex& mutex)
-				: m_mutex(mutex)
+				: mutex_(mutex)
 			{
-				m_mutex.lock();
+				mutex_.lock();
 			}
 
 			virtual ~Locker()
 			{
-				m_mutex.unlock();
+				mutex_.unlock();
 			}
 
 		private:
-			std::mutex& m_mutex;
+			std::mutex& mutex_;
 		};
 
 		class FlagGG_API ReadLocker
@@ -41,18 +41,18 @@ namespace FlagGG
 		{
 		public:
 			RecursiveLocker(std::recursive_mutex& mutex)
-				: m_mutex(mutex)
+				: mutex_(mutex)
 			{
-				m_mutex.lock();
+				mutex_.lock();
 			}
 
 			virtual ~RecursiveLocker()
 			{
-				m_mutex.unlock();
+				mutex_.unlock();
 			}
 
 		private:
-			std::recursive_mutex& m_mutex;
+			std::recursive_mutex& mutex_;
 		};
 	}
 }

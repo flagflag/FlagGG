@@ -15,29 +15,29 @@ namespace FlagGG
 
 			bool NetBuffer::CheckBuffer(int mode)
 			{
-				if (!m_current_buffer.buffer || m_count >= (int)m_current_buffer.buffer_size)
+				if (!currentBuffer_.buffer || count_ >= (int)currentBuffer_.bufferSize)
 				{
-					if (m_index + 1 >= (int)m_buffers.size())
+					if (index_ + 1 >= (int)buffers_.size())
 					{
 						if (mode == mode_read) //读模式，不会开辟内存
 						{
 							return false;
 						}
 
-						m_current_buffer.buffer = new char[ONE_KB];
-						m_current_buffer.buffer_size = ONE_KB;
+						currentBuffer_.buffer = new char[ONE_KB];
+						currentBuffer_.bufferSize = ONE_KB;
 
-						m_index = m_buffers.size();
-						m_count = 0;
+						index_ = buffers_.size();
+						count_ = 0;
 
-						m_buffers.emplace_back(m_current_buffer);
+						buffers_.emplace_back(currentBuffer_);
 					}
 					else
 					{
-						++m_index;
-						m_count = 0;
+						++index_;
+						count_ = 0;
 
-						m_current_buffer = m_buffers[m_index];
+						currentBuffer_ = buffers_[index_];
 					}
 				}
 
@@ -46,10 +46,10 @@ namespace FlagGG
 
 			void NetBuffer::ClearIndex()
 			{
-				m_index = -1;
-				m_count = 0;
-				m_current_buffer.buffer = nullptr;
-				m_current_buffer.buffer_size = 0;
+				index_ = -1;
+				count_ = 0;
+				currentBuffer_.buffer = nullptr;
+				currentBuffer_.bufferSize = 0;
 			}
 
 			bool NetBuffer::ReadByte(uint8_t& byte)
@@ -59,8 +59,8 @@ namespace FlagGG
 					return false;
 				}
 
-				byte = (uint8_t)m_current_buffer.buffer[m_count];
-				++m_count;
+				byte = (uint8_t)currentBuffer_.buffer[count_];
+				++count_;
 
 				return true;
 			}
@@ -72,8 +72,8 @@ namespace FlagGG
 					return false;
 				}
 
-				m_current_buffer.buffer[m_count] = (char)byte;
-				++m_count;
+				currentBuffer_.buffer[count_] = (char)byte;
+				++count_;
 
 				return true;
 			}
@@ -201,11 +201,11 @@ namespace FlagGG
 					CheckBuffer(mode_write);
 
 					size_t write_size = std::min < size_t >(left_size, 
-						m_current_buffer.buffer_size - m_count);
+						currentBuffer_.bufferSize - count_);
 
-					memcpy(m_current_buffer.buffer, index, write_size);
+					memcpy(currentBuffer_.buffer, index, write_size);
 					index += write_size;
-					m_count += write_size;
+					count_ += write_size;
 
 					left_size -= write_size;
 				}
@@ -213,7 +213,7 @@ namespace FlagGG
 
 			void NetBuffer::ToString(char*& data, size_t& data_size)
 			{
-				if (m_buffers.size() <= 0)
+				if (buffers_.size() <= 0)
 				{
 					data = nullptr;
 					data_size = 0;
@@ -221,17 +221,17 @@ namespace FlagGG
 				}
 
 				data_size = 0;
-				for (size_t i = 0; i < m_buffers.size(); ++i)
+				for (size_t i = 0; i < buffers_.size(); ++i)
 				{
-					data_size += (i + 1 == m_buffers.size() ? m_count : m_buffers[i].buffer_size);
+					data_size += (i + 1 == buffers_.size() ? count_ : buffers_[i].bufferSize);
 				}
 
 				data = new char[data_size];
 				char* index = data;
-				for (size_t i = 0; i < m_buffers.size(); ++i)
+				for (size_t i = 0; i < buffers_.size(); ++i)
 				{
-					size_t real_size = (i + 1 == m_buffers.size() ? m_count : m_buffers[i].buffer_size);
-					memcpy(index, m_buffers[i].buffer, real_size);
+					size_t real_size = (i + 1 == buffers_.size() ? count_ : buffers_[i].bufferSize);
+					memcpy(index, buffers_[i].buffer, real_size);
 					index += real_size;
 				}
 			}

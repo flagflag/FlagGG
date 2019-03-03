@@ -8,8 +8,8 @@ namespace FlagGG
 		namespace Thread
 		{
 			SharedThread::SharedThread()
-				: m_thread(nullptr)
-				, m_running(false)
+				: thread_(nullptr)
+				, running_(false)
 			{ }
 
 			SharedThread::~SharedThread()
@@ -20,73 +20,73 @@ namespace FlagGG
 
 			void SharedThread::Start()
 			{
-				if (!m_running)
+				if (!running_)
 				{
-					m_running = true;
+					running_ = true;
 
-					m_thread.reset(new UniqueThread(std::bind(&SharedThread::WorkThread, this)));
+					thread_.reset(new UniqueThread(std::bind(&SharedThread::WorkThread, this)));
 				}		
 			}
 
 			void SharedThread::Stop()
 			{
-				if (m_running && m_thread)
+				if (running_ && thread_)
 				{
-					m_running = false;
+					running_ = false;
 				}
 			}
 
 			void SharedThread::ForceStop()
 			{
-				if (m_running && m_thread)
+				if (running_ && thread_)
 				{
-					m_running = false;
+					running_ = false;
 
-					m_thread->Stop();
+					thread_->Stop();
 				}
 			}
 
 			void SharedThread::WaitForStop()
 			{
-				if (m_running && m_thread)
+				if (running_ && thread_)
 				{
-					m_thread->WaitForStop();
+					thread_->WaitForStop();
 				}
 			}
 
 			void SharedThread::WaitForStop(uint32_t wait_time)
 			{
-				if (m_running && m_thread)
+				if (running_ && thread_)
 				{
-					m_thread->WaitForStop(wait_time);
+					thread_->WaitForStop(wait_time);
 				}
 			}
 
 			void SharedThread::Add(ThreadTask task_func)
 			{
-				if (m_running && m_thread)
+				if (running_ && thread_)
 				{
-					m_task_queue.Push(task_func);
+					task_queue_.Push(task_func);
 				}
 			}
 
 			uint32_t SharedThread::WaitingTime()
 			{
-				return (uint32_t)m_task_queue.Size();
+				return (uint32_t)task_queue_.Size();
 			}
 
 			void SharedThread::WorkThread()
 			{
-				while (m_running)
+				while (running_)
 				{
 					Utility::SystemHelper::Sleep(16);
 
-					if (m_task_queue.Size() > 0)
+					if (task_queue_.Size() > 0)
 					{
 						LockQueue < ThreadTask >::Objects objects;
-						m_task_queue.Slipce(objects);
+						task_queue_.Slipce(objects);
 
-						for (auto it = objects.begin(); it != objects.end() && m_running; ++it)
+						for (auto it = objects.begin(); it != objects.end() && running_; ++it)
 						{
 							if ((*it))
 							{

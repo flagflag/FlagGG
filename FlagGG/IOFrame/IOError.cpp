@@ -7,17 +7,17 @@ namespace FlagGG
 		namespace Error
 		{
 			IOError::IOError(boost::system::error_code error_code)
-				: m_error_code(error_code)
+				: errorCode_(error_code)
 			{ }
 
 			int IOError::Value() const
 			{
-				return m_error_code.value();
+				return errorCode_.value();
 			}
 
 			std::string IOError::Message() const
 			{
-				return std::move(m_error_code.message());
+				return std::move(errorCode_.message());
 			}
 		}
 	}

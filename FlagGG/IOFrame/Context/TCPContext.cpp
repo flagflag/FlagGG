@@ -7,12 +7,12 @@ namespace FlagGG
 		namespace Context
 		{
 			TCPContext::TCPContext(Channel::IOChannelPtr channel)
-				: m_channel(channel)
+				: channel_(channel)
 			{ }
 
 			Channel::IOChannelPtr TCPContext::GetChannel()
 			{
-				return m_channel;
+				return channel_;
 			}
 		}
 	}

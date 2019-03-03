@@ -14,9 +14,9 @@ namespace FlagGG
 		namespace Acceptor
 		{
 			TCPAcceptor::TCPAcceptor(Handler::EventHandlerPtr handler, size_t thread_count)
-				: m_thread_pool(new IOFrame::NetThreadPool(thread_count))
-				, m_acceptor(std::dynamic_pointer_cast<IOFrame::NetThreadPool>(m_thread_pool)->getService())
-				, m_handler(handler)
+				: threadPool_(new IOFrame::NetThreadPool(thread_count))
+				, acceptor_(std::dynamic_pointer_cast<IOFrame::NetThreadPool>(threadPool_)->getService())
+				, handler_(handler)
 			{ }
 
 			bool TCPAcceptor::Bind(const char* ip, uint16_t port)
@@ -24,13 +24,13 @@ namespace FlagGG
 				boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip), port);
 				boost::system::error_code error_code;
 
-				m_acceptor.open(endpoint.protocol());
-				m_acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
-				m_acceptor.bind(endpoint, error_code);
+				acceptor_.open(endpoint.protocol());
+				acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+				acceptor_.bind(endpoint, error_code);
 				
 				if (!error_code)
 				{
-					m_acceptor.listen();
+					acceptor_.listen();
 				}
 				
 				return !error_code;
@@ -38,31 +38,31 @@ namespace FlagGG
 
 			void TCPAcceptor::Start()
 			{
-				m_thread_pool->Start();
+				threadPool_->Start();
 
 				StartAccept();
 			}
 
 			void TCPAcceptor::Stop()
 			{
-				m_acceptor.cancel();
-				m_acceptor.close();
+				acceptor_.cancel();
+				acceptor_.close();
 
-				m_thread_pool->Stop();
+				threadPool_->Stop();
 			}
 
 			void TCPAcceptor::WaitForStop()
 			{
-				m_thread_pool->WaitForStop();
+				threadPool_->WaitForStop();
 			}
 
 			void TCPAcceptor::StartAccept()
 			{
-				Channel::TCPChannelPtr channel(new Channel::TCPChannel(std::dynamic_pointer_cast<IOFrame::NetThreadPool>(m_thread_pool)->getService()));
+				Channel::TCPChannelPtr channel(new Channel::TCPChannel(std::dynamic_pointer_cast<IOFrame::NetThreadPool>(threadPool_)->getService()));
 
-				channel->OnRegisterd(m_handler);
+				channel->OnRegisterd(handler_);
 
-				m_acceptor.async_accept(
+				acceptor_.async_accept(
 					channel->getSocket(),
 					boost::bind(&TCPAcceptor::HandleAccept, this, channel,
 					boost::asio::placeholders::error));
@@ -70,7 +70,7 @@ namespace FlagGG
 
 			void TCPAcceptor::HandleAccept(Channel::TCPChannelPtr channel, const boost::system::error_code& error_code)
 			{
-				if (m_acceptor.is_open())
+				if (acceptor_.is_open())
 				{
 					if (!error_code)
 					{
@@ -78,7 +78,7 @@ namespace FlagGG
 					}
 					else
 					{
-						THROW_IO_ERROR(Context::TCPContext, channel, m_handler, error_code);
+						THROW_IO_ERROR(Context::TCPContext, channel, handler_, error_code);
 					}
 
 					StartAccept();

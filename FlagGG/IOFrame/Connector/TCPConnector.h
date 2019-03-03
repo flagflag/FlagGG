@@ -25,9 +25,9 @@ namespace FlagGG
 				bool Write(Buffer::IOBufferPtr buffer) override;
 
 			private:
-				IOFrame::Channel::TCPChannelPtr		m_channel;
+				IOFrame::Channel::TCPChannelPtr		channel_;
 
-				Handler::EventHandlerPtr			m_handler;
+				Handler::EventHandlerPtr			handler_;
 			};
 			
 			typedef std::shared_ptr < TCPConnector > TCPConnectorPtr;

@@ -33,13 +33,13 @@ namespace FlagGG
 			void WaitForStop(uint32_t wait_time) override { };
 
 		private:
-			size_t												m_thread_count;
+			size_t												threadCount_;
 
-			boost::asio::io_service								m_service;
+			boost::asio::io_service								service_;
 
-			std::vector < AsyncFrame::Thread::UniqueThreadPtr > m_thread_group;
+			std::vector < AsyncFrame::Thread::UniqueThreadPtr > threadGroup_;
 
-			std::atomic < bool >								m_running;
+			std::atomic < bool >								running_;
 		};
 
 		typedef std::shared_ptr < NetThreadPool > NetThreadPoolPtr;

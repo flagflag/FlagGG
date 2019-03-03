@@ -84,23 +84,23 @@ namespace FlagGG
 				void OnClosed() override;
 
 			private:
-				boost::asio::io_service&			m_service;
+				boost::asio::io_service&			service_;
 
-				boost::asio::ip::tcp::socket		m_socket;
+				boost::asio::ip::tcp::socket		socket_;
 
-				boost::asio::io_service::strand		m_strand;
+				boost::asio::io_service::strand		strand_;
 
-				TCPConnectionState					m_state;
+				TCPConnectionState					state_;
 
-				bool								m_closed;
+				bool								closed_;
 
-				bool								m_shutdown;
+				bool								shutdown_;
 
-				std::recursive_mutex				m_mutex;
+				std::recursive_mutex				mutex_;
 
-				char								m_buffer[ONE_KB];
+				char								buffer_[ONE_KB];
 
-				Handler::EventHandlerPtr			m_handler;
+				Handler::EventHandlerPtr			handler_;
 			};
 
 			typedef std::shared_ptr < TCPChannel > TCPChannelPtr;

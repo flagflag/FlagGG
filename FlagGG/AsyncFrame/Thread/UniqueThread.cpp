@@ -49,16 +49,16 @@ namespace FlagGG
 					ThreadParam* param = new ThreadParam();
 					param->thread_func = thread_func;
 #if WIN32 || WIN64
-					m_handle = CreateThread(nullptr, 0, ThreadFunc, param, 0, nullptr);
+					handle_ = CreateThread(nullptr, 0, ThreadFunc, param, 0, nullptr);
 
-					if (!m_handle)
+					if (!handle_)
 					{
 						FLAGGG_LOG_ERROR("create thread failed!");
 					}
 #else
-					pthread_mutex_init(&m_mutex, nullptr);
-					pthread_cond_init(&m_cond, nullptr);
-					param->pcond = &m_cond;
+					pthread_mutex_init(&mutex_, nullptr);
+					pthread_cond_init(&cond_, nullptr);
+					param->pcond = &cond_;
 					pthread_t thread_id;
 					if (0 == pthread_create((pthread_t*)m_handle, nullptr, ThreadFunc, param))
 					{
@@ -75,8 +75,8 @@ namespace FlagGG
 			UniqueThread::~UniqueThread()
 			{
 #if !WIN32 && !WIN64
-				pthread_mutex_destroy(&m_mutex);
-				pthread_cond_destroy(&m_cond);
+				pthread_mutex_destroy(&mutex_);
+				pthread_cond_destroy(&cond_);
 #endif
 			}
 
@@ -84,7 +84,7 @@ namespace FlagGG
 			{
 				
 #if WIN32 || WIN64
-				TerminateThread(m_handle, -1);
+				TerminateThread(handle_, -1);
 #else
 				if (!m_handle)
 				{
@@ -96,7 +96,7 @@ namespace FlagGG
 			void UniqueThread::WaitForStop()
 			{
 #if WIN32 || WIN64
-				WaitForSingleObject(m_handle, INFINITE);
+				WaitForSingleObject(handle_, INFINITE);
 #else
 				if(!m_handle)
 				{
@@ -108,14 +108,14 @@ namespace FlagGG
 			void UniqueThread::WaitForStop(uint32_t wait_time)
 			{
 #if WIN32 || WIN64
-				WaitForSingleObject(m_handle, wait_time);
+				WaitForSingleObject(handle_, wait_time);
 #else
-				pthread_mutex_lock(&m_mutex);
+				pthread_mutex_lock(&mutex_);
 				static timespec out_time;
 				out_time.tv_sec = 0;
 				out_time.tv_nsec = wait_time * 1000;
-				pthread_cond_timedwait(&m_cond, &m_mutex, &out_time);
-				pthread_mutex_unlock(&m_mutex);
+				pthread_cond_timedwait(&cond_, &mutex_, &out_time);
+				pthread_mutex_unlock(&mutex_);
 #endif
 			}
 		}

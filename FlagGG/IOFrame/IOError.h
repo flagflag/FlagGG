@@ -31,7 +31,7 @@ namespace FlagGG
 				virtual std::string Message() const override;
 
 			private:
-				boost::system::error_code m_error_code;
+				boost::system::error_code errorCode_;
 			};
 		}
 	}

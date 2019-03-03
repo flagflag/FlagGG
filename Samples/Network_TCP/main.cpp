@@ -29,10 +29,10 @@ public:
 	void MessageRecived(FlagGG::IOFrame::Context::IOContextPtr context, FlagGG::IOFrame::Buffer::IOBufferPtr buffer) override
 	{
 		char* data;
-		size_t data_size = 0;
-		buffer->ToString(data, data_size);
+		size_t dataSize = 0;
+		buffer->ToString(data, dataSize);
 
-		std::cout << "recive: " << std::string(data, data_size) << '\n';
+		std::cout << "recive: " << std::string(data, dataSize) << '\n';
 	}
 
 	void ErrorCatch(FlagGG::IOFrame::Context::IOContextPtr context, const FlagGG::ErrorCode& error_code) override

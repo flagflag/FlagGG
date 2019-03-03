@@ -22,7 +22,7 @@ namespace FlagGG
 				KernelHandle GetHandle();
 
 			protected:
-				KernelHandle m_handle;
+				KernelHandle handle_;
 			};
 		}
 	}

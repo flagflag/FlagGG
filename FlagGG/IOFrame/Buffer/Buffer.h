@@ -20,7 +20,7 @@ namespace FlagGG
 				struct SimpleBuffer
 				{
 					char* buffer;
-					size_t buffer_size;
+					size_t bufferSize;
 				};
 
 				NetBuffer();
@@ -71,13 +71,13 @@ namespace FlagGG
 				bool WriteByte(uint8_t byte);
 
 			private:
-				std::vector < SimpleBuffer > m_buffers;
+				std::vector < SimpleBuffer > buffers_;
 
-				int m_index;
+				int index_;
 				
-				int m_count;
+				int count_;
 			
-				SimpleBuffer m_current_buffer;
+				SimpleBuffer currentBuffer_;
 			};
 
 			typedef std::shared_ptr < NetBuffer > NetBufferPtr;

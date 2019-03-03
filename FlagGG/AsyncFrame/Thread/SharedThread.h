@@ -44,11 +44,11 @@ namespace FlagGG
 				void WorkThread();
 
 			private:
-				LockQueue < ThreadTask >	m_task_queue;
+				LockQueue < ThreadTask >	task_queue_;
 
-				UniqueThreadPtr				m_thread;
+				UniqueThreadPtr				thread_;
 
-				std::atomic < bool >		m_running;
+				std::atomic < bool >		running_;
 			};
 
 			typedef std::shared_ptr < SharedThread > SharedThreadPtr;

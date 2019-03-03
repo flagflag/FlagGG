@@ -27,32 +27,32 @@ namespace FlagGG
 
 			void ParameterList::Add(const std::wstring& param_name)
 			{
-				m_list.emplace_back(param_name);
+				list_.emplace_back(param_name);
 			}
 
 			void ParameterList::Add(const std::wstring& param_name, const std::wstring& param)
 			{
-				m_list.emplace_back(param_name + L"=" + param);
+				list_.emplace_back(param_name + L"=" + param);
 			}
 
 			void ParameterList::Add(const std::wstring& param_name, int32_t param)
 			{
-				m_list.emplace_back(param_name + L"=" + std::to_wstring(param));
+				list_.emplace_back(param_name + L"=" + std::to_wstring(param));
 			}
 
 			void ParameterList::Add(const std::wstring& param_name, int64_t param)
 			{
-				m_list.emplace_back(param_name + L"=" + std::to_wstring(param));
+				list_.emplace_back(param_name + L"=" + std::to_wstring(param));
 			}
 
 			void ParameterList::Add(const std::wstring& param_name, double param)
 			{
-				m_list.emplace_back(param_name + L"=" + std::to_wstring(param));
+				list_.emplace_back(param_name + L"=" + std::to_wstring(param));
 			}
 
 			void ParameterList::Add(const std::wstring& param_name, long double param)
 			{
-				m_list.emplace_back(param_name + L"=" + std::to_wstring(param));
+				list_.emplace_back(param_name + L"=" + std::to_wstring(param));
 			}
 
 			void ParameterList::Add(const std::string& param_name)
@@ -87,18 +87,18 @@ namespace FlagGG
 
 
 			ProcessObject::ProcessObject()
-				: m_id(0)
+				: id_(0)
 			{ }
 
 			uint32_t ProcessObject::GetID()
 			{
-				return m_id;
+				return id_;
 			}
 
 			void ProcessObject::Stop()
 			{
 #if WIN32 || WIN64
-				TerminateProcess(m_handle, -1);
+				TerminateProcess(handle_, -1);
 #else
 
 #endif
@@ -107,7 +107,7 @@ namespace FlagGG
 			void ProcessObject::WaitForStop()
 			{
 #if WIN32 || WIN64
-				WaitForSingleObject(m_handle, INFINITE);
+				WaitForSingleObject(handle_, INFINITE);
 #else
 				waitpid(*((pid_t*)m_handle), nullptr, 0);
 #endif
@@ -116,7 +116,7 @@ namespace FlagGG
 			void ProcessObject::WaitForStop(uint32_t wait_time)
 			{
 #if WIN32 || WIN64
-				WaitForSingleObject(m_handle, wait_time);
+				WaitForSingleObject(handle_, wait_time);
 #else
 
 #endif
@@ -154,8 +154,8 @@ namespace FlagGG
 				}
 
 				ProcessObjectPtr proc_obj = ProcessObjectPtr(new ProcessObject());
-				proc_obj->m_handle = process_info.hProcess;
-				proc_obj->m_id = process_info.dwProcessId;
+				proc_obj->handle_ = process_info.hProcess;
+				proc_obj->id_ = process_info.dwProcessId;
 
 				return proc_obj;
 #else
@@ -182,8 +182,8 @@ namespace FlagGG
 				else
 				{
 					ProcessObjectPtr proc_obj = ProcessObjectPtr(new ProcessObject());
-					proc_obj->m_id = pid;
-					proc_obj->m_handle = &(proc_obj->m_id);
+					proc_obj->id_ = pid;
+					proc_obj->m_handle = &(proc_obj->id_);
 
 					return proc_obj;
 				}
@@ -194,10 +194,10 @@ namespace FlagGG
 			{
 				std::wstring _param = L"";
 
-				for (size_t i = 0; i < param.m_list.size(); ++i)
+				for (size_t i = 0; i < param.list_.size(); ++i)
 				{
 					if (i != 0) _param += L" ";
-					_param += param.m_list[i];
+					_param += param.list_[i];
 				}
 
 				return CreateProcess(proc_path, _param);

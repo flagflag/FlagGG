@@ -19,7 +19,7 @@ namespace FlagGG
 				Channel::IOChannelPtr GetChannel() override;
 
 			private:
-				Channel::IOChannelPtr m_channel;
+				Channel::IOChannelPtr channel_;
 			};
 
 			typedef std::shared_ptr < TCPContext > TCPContextPtr;

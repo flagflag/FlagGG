@@ -31,7 +31,7 @@ namespace FlagGG
 				void WaitForStop(uint32_t wait_time) override;
 
 			private:
-				std::vector < SharedThreadPtr > m_threads;
+				std::vector < SharedThreadPtr > threads_;
 			};
 		}
 	}

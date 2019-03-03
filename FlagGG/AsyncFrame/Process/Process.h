@@ -55,7 +55,7 @@ namespace FlagGG
 				friend class Builder;
 
 			private:
-				std::vector < std::wstring > m_list;
+				std::vector < std::wstring > list_;
 			};
 
 			class FlagGG_API ProcessObject : public KernelObject::HandleObject, public KernelObject::Runtime
@@ -76,7 +76,7 @@ namespace FlagGG
 				friend class Builder;
 
 			private:
-				uint32_t m_id;
+				uint32_t id_;
 			};
 
 			typedef std::shared_ptr < ProcessObject > ProcessObjectPtr;

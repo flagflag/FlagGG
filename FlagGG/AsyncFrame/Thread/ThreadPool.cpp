@@ -17,7 +17,7 @@ namespace FlagGG
 
 				for (size_t i = 0; i < thread_count; ++i)
 				{
-					m_threads.emplace_back(new SharedThread);
+					threads_.emplace_back(new SharedThread);
 				}
 			}
 
@@ -26,9 +26,9 @@ namespace FlagGG
 				size_t index = 0;
 				uint32_t min_waiting_time = INT_MAX;
 
-				for (size_t i = 0; i < m_threads.size(); ++i)
+				for (size_t i = 0; i < threads_.size(); ++i)
 				{
-					uint32_t waiting_time = m_threads[i]->WaitingTime();
+					uint32_t waiting_time = threads_[i]->WaitingTime();
 					if (waiting_time < min_waiting_time)
 					{
 						index = i;
@@ -36,33 +36,33 @@ namespace FlagGG
 					}
 				}
 
-				if (m_threads.size() > 0)
+				if (threads_.size() > 0)
 				{
-					m_threads[index]->Add(task_func);
+					threads_[index]->Add(task_func);
 				}
 			}
 
 			void ThreadPool::Start()
 			{
-				for (size_t i = 0; i < m_threads.size(); ++i)
+				for (size_t i = 0; i < threads_.size(); ++i)
 				{
-					m_threads[i]->Start();
+					threads_[i]->Start();
 				}
 			}
 
 			void ThreadPool::Stop()
 			{
-				for (size_t i = 0; i < m_threads.size(); ++i)
+				for (size_t i = 0; i < threads_.size(); ++i)
 				{
-					m_threads[i]->Stop();
+					threads_[i]->Stop();
 				}
 			};
 
 			void ThreadPool::WaitForStop()
 			{
-				for (size_t i = 0; i < m_threads.size(); ++i)
+				for (size_t i = 0; i < threads_.size(); ++i)
 				{
-					m_threads[i]->WaitForStop();
+					threads_[i]->WaitForStop();
 				}
 			};
 

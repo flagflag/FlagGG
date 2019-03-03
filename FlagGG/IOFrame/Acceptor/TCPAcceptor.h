@@ -39,11 +39,11 @@ namespace FlagGG
 			private:
 				//声明顺序不能变，C++初始化列表是按照声明顺序执行的！！！
 
-				IOFrame::IOThreadPoolPtr			m_thread_pool;
+				IOFrame::IOThreadPoolPtr			threadPool_;
 
-				boost::asio::ip::tcp::acceptor		m_acceptor;
+				boost::asio::ip::tcp::acceptor		acceptor_;
 
-				Handler::EventHandlerPtr			m_handler;
+				Handler::EventHandlerPtr			handler_;
 			};
 		}
 	}

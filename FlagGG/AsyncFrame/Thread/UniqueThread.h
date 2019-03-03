@@ -32,8 +32,8 @@ namespace FlagGG
 				void WaitForStop(uint32_t wait_time) override;
 
 #if !WIN32 && !WIN64
-				pthread_mutex_t m_mutex;
-				pthread_cond_t m_cond;
+				pthread_mutex_t mutex_;
+				pthread_cond_t cond_;
 #endif
 			};
 

@@ -21,40 +21,40 @@ namespace FlagGG
 
 			void Push(const Object& obj)
 			{
-				RecursiveLocker locker(m_mutex);
+				RecursiveLocker locker(mutex_);
 
-				m_queue.insert(m_queue.end(), obj);
+				queue_.insert(queue_.end(), obj);
 			}
 
 			void Pop(Object& obj)
 			{
-				RecursiveLocker locker(m_mutex);
+				RecursiveLocker locker(mutex_);
 
-				typename Objects::iterator it = m_queue.begin();
+				typename Objects::iterator it = queue_.begin();
 				obj = (*it);
-				m_queue.erase(it);
+				queue_.erase(it);
 			}
 
 			void Slipce(Objects& objs)
 			{
-				RecursiveLocker locker(m_mutex);
+				RecursiveLocker locker(mutex_);
 
-				objs.splice(objs.begin(), m_queue, m_queue.begin(), m_queue.end());
+				objs.splice(objs.begin(), queue_, queue_.begin(), queue_.end());
 			}
 
 			size_t Size()
 			{
-				RecursiveLocker locker(m_mutex);
+				RecursiveLocker locker(mutex_);
 
-				size_t _size = m_queue.size();
+				size_t _size = queue_.size();
 
 				return _size;
 			}
 
 		private:
-			std::recursive_mutex m_mutex;
+			std::recursive_mutex mutex_;
 
-			Objects m_queue;
+			Objects queue_;
 		};
 	}
 }

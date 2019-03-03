@@ -6,45 +6,45 @@ namespace FlagGG
 	namespace IOFrame
 	{
 		NetThreadPool::NetThreadPool(size_t thread_count)
-			: m_running(false)
-			, m_thread_count(thread_count)
+			: running_(false)
+			, threadCount_(thread_count)
 		{ }
 
 		void NetThreadPool::Start()
 		{
-			m_running = true;
+			running_ = true;
 
-			for (size_t i = 0; i < m_thread_count; ++i)
+			for (size_t i = 0; i < threadCount_; ++i)
 			{
-				m_thread_group.emplace_back(new AsyncFrame::Thread::UniqueThread(std::bind(&NetThreadPool::NetThread, this)));
+				threadGroup_.emplace_back(new AsyncFrame::Thread::UniqueThread(std::bind(&NetThreadPool::NetThread, this)));
 			}
 		}
 
 		void NetThreadPool::Stop()
 		{
-			m_running = false;
+			running_ = false;
 		}
 
 		void NetThreadPool::WaitForStop()
 		{
-			for (size_t i = 0; i < m_thread_group.size(); ++i)
+			for (size_t i = 0; i < threadGroup_.size(); ++i)
 			{
-				m_thread_group[i]->WaitForStop();
+				threadGroup_[i]->WaitForStop();
 			}
 		}
 
 		boost::asio::io_service& NetThreadPool::getService()
 		{
-			return m_service;
+			return service_;
 		}
 
 		void NetThreadPool::NetThread()
 		{
-			while (m_running)
+			while (running_)
 			{
 				Utility::SystemHelper::Sleep(0);
 
-				m_service.run();
+				service_.run();
 			}
 		}
 	}

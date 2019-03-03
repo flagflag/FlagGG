@@ -13,23 +13,23 @@ namespace FlagGG
 		namespace KernelObject
 		{
 			HandleObject::HandleObject()
-				: m_handle(NULL_HANDLE)
+				: handle_(NULL_HANDLE)
 			{ }
 
 			HandleObject::~HandleObject()
 			{
-				if (m_handle)
+				if (handle_)
 				{
 #if WIN32 || WIN64
-					CloseHandle((HANDLE)m_handle);
+					CloseHandle((HANDLE)handle_);
 #endif
-					m_handle = NULL_HANDLE;
+					handle_ = NULL_HANDLE;
 				}
 			}
 
 			KernelHandle HandleObject::GetHandle()
 			{
-				return m_handle;
+				return handle_;
 			}
 		}
 	}
