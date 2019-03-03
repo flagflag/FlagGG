@@ -9,6 +9,7 @@ namespace FlagGG
     {
         LOG_DEBUG = 0,
         LOG_INFO,
+		LOG_WARN,
         LOG_ERROR
     };
 
@@ -18,6 +19,8 @@ namespace FlagGG
 #define FLAGGG_LOG_DEBUG(format, ...) FlagGG::Log(FlagGG::LOG_DEBUG, format, ##__VA_ARGS__)
 
 #define FLAGGG_LOG_INFO(format, ...) FlagGG::Log(FlagGG::LOG_INFO, format, ##__VA_ARGS__)
+
+#define FLAGGG_LOG_WARN(format, ...) FlagGG::Log(FlagGG::LOG_WARN, format, ##__VA_ARGS__)
 
 #define FLAGGG_LOG_ERROR(format, ...) FlagGG::Log(FlagGG::LOG_ERROR, format, ##__VA_ARGS__)
 

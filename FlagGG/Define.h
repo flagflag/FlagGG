@@ -7,4 +7,10 @@
 
 #define USE_DIRECT3D
 
+#ifdef CPP_17
+#define NOEXCEPT noexcept
+#else
+#define NOEXCEPT
+#endif
+
 #endif
