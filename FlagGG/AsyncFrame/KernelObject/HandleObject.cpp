@@ -27,7 +27,7 @@ namespace FlagGG
 				}
 			}
 
-			KernelHandle HandleObject::getHandle()
+			KernelHandle HandleObject::GetHandle()
 			{
 				return m_handle;
 			}

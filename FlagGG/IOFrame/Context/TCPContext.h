@@ -16,7 +16,7 @@ namespace FlagGG
 
 				~TCPContext() override = default;
 
-				Channel::IOChannelPtr getChannel() override;
+				Channel::IOChannelPtr GetChannel() override;
 
 			private:
 				Channel::IOChannelPtr m_channel;

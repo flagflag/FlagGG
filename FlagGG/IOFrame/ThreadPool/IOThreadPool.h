@@ -13,7 +13,7 @@ namespace FlagGG
 		class FlagGG_API IOThreadPool : public AsyncFrame::KernelObject::Runtime
 		{
 		public:
-			virtual void start() = 0;
+			virtual void Start() = 0;
 		};
 
 		typedef std::shared_ptr < IOThreadPool > IOThreadPoolPtr;

@@ -19,7 +19,7 @@ namespace FlagGG
 
 				virtual ~HandleObject();
 
-				KernelHandle getHandle();
+				KernelHandle GetHandle();
 
 			protected:
 				KernelHandle m_handle;

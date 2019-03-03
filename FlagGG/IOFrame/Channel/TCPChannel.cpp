@@ -23,7 +23,7 @@ namespace FlagGG
 				, m_shutdown(false)
 			{ }
 
-			void TCPChannel::handleWrite(const boost::system::error_code& error_code, size_t bytes_transferred)
+			void TCPChannel::HandleWrite(const boost::system::error_code& error_code, size_t bytes_transferred)
 			{
 				//为了防止在异步发送数据的时候关闭socket出错
 				if (m_closed || m_shutdown)
@@ -37,7 +37,7 @@ namespace FlagGG
 				}
 			}
 
-			bool TCPChannel::write(Buffer::IOBufferPtr buffer)
+			bool TCPChannel::Write(Buffer::IOBufferPtr buffer)
 			{
 				AsyncFrame::RecursiveLocker locker(m_mutex);
 
@@ -49,7 +49,7 @@ namespace FlagGG
 
 				char* data = nullptr;
 				size_t data_size = 0;
-				buffer->toString(data, data_size);
+				buffer->ToString(data, data_size);
 
 				if (!data || data_size == 0)
 				{
@@ -60,7 +60,7 @@ namespace FlagGG
 				{
 					m_socket.async_send(
 						boost::asio::buffer(data, data_size),
-						m_strand.wrap(boost::bind(&TCPChannel::handleWrite, 
+						m_strand.wrap(boost::bind(&TCPChannel::HandleWrite, 
 						std::dynamic_pointer_cast < TCPChannel >(shared_from_this()),
 						boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred)));
 				}
@@ -72,7 +72,7 @@ namespace FlagGG
 				return true;
 			}
 
-			bool TCPChannel::flush()
+			bool TCPChannel::Flush()
 			{
 				AsyncFrame::RecursiveLocker locker(m_mutex);
 
@@ -81,7 +81,7 @@ namespace FlagGG
 				return true;
 			}
 
-			void TCPChannel::handleConnect(const boost::system::error_code& error_code)
+			void TCPChannel::HandleConnect(const boost::system::error_code& error_code)
 			{
 				AsyncFrame::RecursiveLocker locker(m_mutex);
 
@@ -95,7 +95,7 @@ namespace FlagGG
 				{
 					//m_state = Connected;
 
-					onOpend();
+					OnOpend();
 
 					printf("connect succeeded.\n");
 				}
@@ -109,11 +109,11 @@ namespace FlagGG
 				}
 			}
 
-			bool TCPChannel::connect(const char* ip, uint16_t port)
+			bool TCPChannel::Connect(const char* ip, uint16_t port)
 			{
 				AsyncFrame::RecursiveLocker locker(m_mutex);
 
-				//if (m_state == Connecting || m_state == Connected || m_state == Closed || m_state == Shutdown)
+				//if (m_state == Connecting || m_state == Connected || m_state == Closed || m_state == Shutdown_)
 				if (m_state != Free)
 				{
 					return false;
@@ -125,7 +125,7 @@ namespace FlagGG
 
 					m_socket.async_connect(
 						endpoint,
-						m_strand.wrap(boost::bind(&TCPChannel::handleConnect, 
+						m_strand.wrap(boost::bind(&TCPChannel::HandleConnect, 
 						std::dynamic_pointer_cast < TCPChannel >(shared_from_this()),
 						boost::asio::placeholders::error)));
 				}
@@ -139,7 +139,7 @@ namespace FlagGG
 				return true;
 			}
 
-			void TCPChannel::close()
+			void TCPChannel::Close()
 			{
 				AsyncFrame::RecursiveLocker locker(m_mutex);
 
@@ -152,11 +152,11 @@ namespace FlagGG
 					m_state = Closed;
 					m_closed = true;
 
-					onClosed();
+					OnClosed();
 				}
 			}
 
-			void TCPChannel::shutdown()
+			void TCPChannel::Shutdown()
 			{
 				AsyncFrame::RecursiveLocker locker(m_mutex);
 
@@ -165,21 +165,21 @@ namespace FlagGG
 				{
 					m_socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
 
-					m_state = Shutdown;
+					m_state = Shutdown_;
 					m_shutdown = true;
 
-					onClosed();
+					OnClosed();
 				}
 			}
 
-			bool TCPChannel::isConnected()
+			bool TCPChannel::IsConnected()
 			{
 				AsyncFrame::RecursiveLocker locker(m_mutex);
 
 				return m_state == Connected;
 			}
 
-			bool TCPChannel::isClosed()
+			bool TCPChannel::IsClosed()
 			{
 				AsyncFrame::RecursiveLocker locker(m_mutex);
 
@@ -191,25 +191,25 @@ namespace FlagGG
 				return m_socket;
 			}
 
-			void TCPChannel::handleRead(const boost::system::error_code& error_code, size_t bytes_transferred)
+			void TCPChannel::HandleRead(const boost::system::error_code& error_code, size_t bytes_transferred)
 			{
 				if (!error_code)
 				{
 					Context::TCPContextPtr context(new Context::TCPContext(shared_from_this()));
 					Buffer::NetBufferPtr buffer(new Buffer::NetBuffer);
-					buffer->writeStream(m_buffer, bytes_transferred);
+					buffer->WriteStream(m_buffer, bytes_transferred);
 
-					m_handler->messageRecived(context, buffer);
+					m_handler->MessageRecived(context, buffer);
 				}
 				else
 				{
 					THROW_IO_ERROR(Context::TCPContext, shared_from_this(), m_handler, error_code);
 				}
 
-				startRead();
+				StartRead();
 			}
 
-			void TCPChannel::startRead()
+			void TCPChannel::StartRead()
 			{
 				//如果没连接，接收不到数据的
 				if (m_state != Connected)
@@ -221,7 +221,7 @@ namespace FlagGG
 				{
 					m_socket.async_receive(
 						boost::asio::buffer(m_buffer, ONE_KB),
-						m_strand.wrap(boost::bind(&TCPChannel::handleRead,
+						m_strand.wrap(boost::bind(&TCPChannel::HandleRead,
 						std::dynamic_pointer_cast < TCPChannel >(shared_from_this()),
 						boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred)
 						));
@@ -232,28 +232,28 @@ namespace FlagGG
 				}
 			}
 
-			void TCPChannel::onRegisterd(Handler::EventHandlerPtr handler)
+			void TCPChannel::OnRegisterd(Handler::EventHandlerPtr handler)
 			{
 				m_handler = handler ? handler : Handler::NullEventHandlerPtr(new Handler::NullEventHandler);
 
 				Context::TCPContextPtr context(new Context::TCPContext(shared_from_this()));
-				m_handler->channelRegisterd(context);
+				m_handler->ChannelRegisterd(context);
 			}
 
-			void TCPChannel::onOpend()
+			void TCPChannel::OnOpend()
 			{
 				m_state = Connected;
 
 				Context::TCPContextPtr context(new Context::TCPContext(shared_from_this()));
-				m_handler->channelOpend(context);
+				m_handler->ChannelOpend(context);
 
-				startRead();
+				StartRead();
 			}
 
-			void TCPChannel::onClosed()
+			void TCPChannel::OnClosed()
 			{
 				Context::TCPContextPtr context(new Context::TCPContext(shared_from_this()));
-				m_handler->channelClosed(context);
+				m_handler->ChannelClosed(context);
 			}
 		}
 	}

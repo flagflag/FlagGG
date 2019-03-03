@@ -25,11 +25,11 @@ namespace FlagGG
 
 				~UniqueThread() override;
 
-				void stop() override;
+				void Stop() override;
 
-				void waitForStop() override;
+				void WaitForStop() override;
 
-				void waitForStop(uint32_t wait_time) override;
+				void WaitForStop(uint32_t wait_time) override;
 
 #if !WIN32 && !WIN64
 				pthread_mutex_t m_mutex;

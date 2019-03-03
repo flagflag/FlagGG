@@ -10,26 +10,26 @@ namespace FlagGG
 			, m_thread_count(thread_count)
 		{ }
 
-		void NetThreadPool::start()
+		void NetThreadPool::Start()
 		{
 			m_running = true;
 
 			for (size_t i = 0; i < m_thread_count; ++i)
 			{
-				m_thread_group.emplace_back(new AsyncFrame::Thread::UniqueThread(std::bind(&NetThreadPool::netThread, this)));
+				m_thread_group.emplace_back(new AsyncFrame::Thread::UniqueThread(std::bind(&NetThreadPool::NetThread, this)));
 			}
 		}
 
-		void NetThreadPool::stop()
+		void NetThreadPool::Stop()
 		{
 			m_running = false;
 		}
 
-		void NetThreadPool::waitForStop()
+		void NetThreadPool::WaitForStop()
 		{
 			for (size_t i = 0; i < m_thread_group.size(); ++i)
 			{
-				m_thread_group[i]->waitForStop();
+				m_thread_group[i]->WaitForStop();
 			}
 		}
 
@@ -38,7 +38,7 @@ namespace FlagGG
 			return m_service;
 		}
 
-		void NetThreadPool::netThread()
+		void NetThreadPool::NetThread()
 		{
 			while (m_running)
 			{

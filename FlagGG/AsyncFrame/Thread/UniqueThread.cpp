@@ -80,7 +80,7 @@ namespace FlagGG
 #endif
 			}
 
-			void UniqueThread::stop()
+			void UniqueThread::Stop()
 			{
 				
 #if WIN32 || WIN64
@@ -93,7 +93,7 @@ namespace FlagGG
 #endif
 			}
 
-			void UniqueThread::waitForStop()
+			void UniqueThread::WaitForStop()
 			{
 #if WIN32 || WIN64
 				WaitForSingleObject(m_handle, INFINITE);
@@ -105,7 +105,7 @@ namespace FlagGG
 #endif
 			}
 
-			void UniqueThread::waitForStop(uint32_t wait_time)
+			void UniqueThread::WaitForStop(uint32_t wait_time)
 			{
 #if WIN32 || WIN64
 				WaitForSingleObject(m_handle, wait_time);

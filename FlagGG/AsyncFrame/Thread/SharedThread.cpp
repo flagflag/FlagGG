@@ -14,21 +14,21 @@ namespace FlagGG
 
 			SharedThread::~SharedThread()
 			{
-				stop();
-				waitForStop();
+				Stop();
+				WaitForStop();
 			}
 
-			void SharedThread::start()
+			void SharedThread::Start()
 			{
 				if (!m_running)
 				{
 					m_running = true;
 
-					m_thread.reset(new UniqueThread(std::bind(&SharedThread::workThread, this)));
+					m_thread.reset(new UniqueThread(std::bind(&SharedThread::WorkThread, this)));
 				}		
 			}
 
-			void SharedThread::stop()
+			void SharedThread::Stop()
 			{
 				if (m_running && m_thread)
 				{
@@ -36,55 +36,55 @@ namespace FlagGG
 				}
 			}
 
-			void SharedThread::forceStop()
+			void SharedThread::ForceStop()
 			{
 				if (m_running && m_thread)
 				{
 					m_running = false;
 
-					m_thread->stop();
+					m_thread->Stop();
 				}
 			}
 
-			void SharedThread::waitForStop()
+			void SharedThread::WaitForStop()
 			{
 				if (m_running && m_thread)
 				{
-					m_thread->waitForStop();
+					m_thread->WaitForStop();
 				}
 			}
 
-			void SharedThread::waitForStop(uint32_t wait_time)
+			void SharedThread::WaitForStop(uint32_t wait_time)
 			{
 				if (m_running && m_thread)
 				{
-					m_thread->waitForStop(wait_time);
+					m_thread->WaitForStop(wait_time);
 				}
 			}
 
-			void SharedThread::add(ThreadTask task_func)
+			void SharedThread::Add(ThreadTask task_func)
 			{
 				if (m_running && m_thread)
 				{
-					m_task_queue.push(task_func);
+					m_task_queue.Push(task_func);
 				}
 			}
 
-			uint32_t SharedThread::waitingTime()
+			uint32_t SharedThread::WaitingTime()
 			{
-				return (uint32_t)m_task_queue.size();
+				return (uint32_t)m_task_queue.Size();
 			}
 
-			void SharedThread::workThread()
+			void SharedThread::WorkThread()
 			{
 				while (m_running)
 				{
 					Utility::SystemHelper::Sleep(16);
 
-					if (m_task_queue.size() > 0)
+					if (m_task_queue.Size() > 0)
 					{
 						LockQueue < ThreadTask >::Objects objects;
-						m_task_queue.slipce(objects);
+						m_task_queue.Slipce(objects);
 
 						for (auto it = objects.begin(); it != objects.end() && m_running; ++it)
 						{

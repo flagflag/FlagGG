@@ -35,7 +35,7 @@ namespace FlagGG
 				Connected	= 2,
 				Connecting	= 3,
 				Closed		= 4,
-				Shutdown	= 5,
+				Shutdown_	= 5,
 			};
 
 			class TCPChannel : public IOChannel, public Handler::IOHandler
@@ -47,19 +47,19 @@ namespace FlagGG
 
 				//IOChannel interface:
 
-				bool write(Buffer::IOBufferPtr buffer) override;
+				bool Write(Buffer::IOBufferPtr buffer) override;
 
-				bool flush() override;
+				bool Flush() override;
 
-				bool connect(const char* ip, uint16_t port) override;
+				bool Connect(const char* ip, uint16_t port) override;
 
-				void close() override;
+				void Close() override;
 
-				void shutdown() override;
+				void Shutdown() override;
 
-				bool isConnected() override;
+				bool IsConnected() override;
 
-				bool isClosed() override;
+				bool IsClosed() override;
 
 				boost::asio::ip::tcp::socket& getSocket();
 
@@ -67,21 +67,21 @@ namespace FlagGG
 				friend class Connector::TCPConnector;
 
 			protected:
-				void handleConnect(const boost::system::error_code& error_code);
+				void HandleConnect(const boost::system::error_code& error_code);
 
-				void handleWrite(const boost::system::error_code& error_code, size_t bytes_transferred);
+				void HandleWrite(const boost::system::error_code& error_code, size_t bytes_transferred);
 
-				void handleRead(const boost::system::error_code& error_code, size_t bytes_transferred);
+				void HandleRead(const boost::system::error_code& error_code, size_t bytes_transferred);
 
-				void startRead();
+				void StartRead();
 
 				//IOHandler interface:
 
-				void onRegisterd(Handler::EventHandlerPtr handler) override;
+				void OnRegisterd(Handler::EventHandlerPtr handler) override;
 
-				void onOpend() override;
+				void OnOpend() override;
 
-				void onClosed() override;
+				void OnClosed() override;
 
 			private:
 				boost::asio::io_service&			m_service;

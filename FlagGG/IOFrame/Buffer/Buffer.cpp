@@ -10,10 +10,10 @@ namespace FlagGG
 		{
 			NetBuffer::NetBuffer()
 			{
-				clearIndex();
+				ClearIndex();
 			}
 
-			bool NetBuffer::checkBuffer(int mode)
+			bool NetBuffer::CheckBuffer(int mode)
 			{
 				if (!m_current_buffer.buffer || m_count >= (int)m_current_buffer.buffer_size)
 				{
@@ -44,7 +44,7 @@ namespace FlagGG
 				return true;
 			}
 
-			void NetBuffer::clearIndex()
+			void NetBuffer::ClearIndex()
 			{
 				m_index = -1;
 				m_count = 0;
@@ -52,9 +52,9 @@ namespace FlagGG
 				m_current_buffer.buffer_size = 0;
 			}
 
-			bool NetBuffer::readByte(uint8_t& byte)
+			bool NetBuffer::ReadByte(uint8_t& byte)
 			{
-				if (!checkBuffer(mode_read))
+				if (!CheckBuffer(mode_read))
 				{
 					return false;
 				}
@@ -65,9 +65,9 @@ namespace FlagGG
 				return true;
 			}
 
-			bool NetBuffer::writeByte(uint8_t byte)
+			bool NetBuffer::WriteByte(uint8_t byte)
 			{
-				if (!checkBuffer(mode_write))
+				if (!CheckBuffer(mode_write))
 				{
 					return false;
 				}
@@ -85,7 +85,7 @@ namespace FlagGG
 				uint8_t byte; \
 				while (_size--) \
 				{ \
-					if (!readByte(byte)) \
+					if (!ReadByte(byte)) \
 					{ \
 						break; \
 					} \
@@ -103,94 +103,94 @@ namespace FlagGG
 				{ \
 					byte = (value >> offset) & 0xff; \
 					offset -= 8; \
-					if (!writeByte(byte)) \
+					if (!WriteByte(byte)) \
 					{ \
 						break; \
 					} \
 				} \
 			}
 
-			void NetBuffer::readInt8(int8_t& value)
+			void NetBuffer::ReadInt8(int8_t& value)
 			{
 				__READ__(value);
 			}
 
-			void NetBuffer::writeInt8(int8_t value)
+			void NetBuffer::WriteInt8(int8_t value)
 			{
 				__WRITE__(value);
 			}
 
-			void NetBuffer::readUInt8(uint8_t& value)
+			void NetBuffer::ReadUInt8(uint8_t& value)
 			{
 				__READ__(value);
 			}
 
-			void NetBuffer::writeUInt8(uint8_t value)
+			void NetBuffer::WriteUInt8(uint8_t value)
 			{
 				__WRITE__(value);
 			}
 
-			void NetBuffer::readInt16(int16_t& value)
+			void NetBuffer::ReadInt16(int16_t& value)
 			{
 				__READ__(value);
 			}
 
-			void NetBuffer::writeInt16(int16_t value)
+			void NetBuffer::WriteInt16(int16_t value)
 			{
 				__WRITE__(value);
 			}
 
-			void NetBuffer::readUInt16(uint16_t& value)
+			void NetBuffer::ReadUInt16(uint16_t& value)
 			{
 				__READ__(value);
 			}
 
-			void NetBuffer::writeUInt16(uint16_t value)
+			void NetBuffer::WriteUInt16(uint16_t value)
 			{
 				__WRITE__(value);
 			}
 
-			void NetBuffer::readInt32(int32_t& value)
+			void NetBuffer::ReadInt32(int32_t& value)
 			{
 				__READ__(value);
 			}
 
-			void NetBuffer::writeInt32(int32_t value)
+			void NetBuffer::WriteInt32(int32_t value)
 			{
 				__WRITE__(value);
 			}
 
-			void NetBuffer::readUInt32(uint32_t& value)
+			void NetBuffer::ReadUInt32(uint32_t& value)
 			{
 				__READ__(value);
 			}
 
-			void NetBuffer::writeUInt32(uint32_t value)
+			void NetBuffer::WriteUInt32(uint32_t value)
 			{
 				__WRITE__(value);
 			}
 
-			void NetBuffer::readInt64(int64_t& value)
+			void NetBuffer::ReadInt64(int64_t& value)
 			{
 				__READ__(value);
 			}
 
-			void NetBuffer::writeInt64(int64_t value)
+			void NetBuffer::WriteInt64(int64_t value)
 			{
 				__WRITE__(value);
 			}
 
-			void NetBuffer::readUInt64(uint64_t& value)
+			void NetBuffer::ReadUInt64(uint64_t& value)
 			{
 				__READ__(value);
 			}
 
-			void NetBuffer::writeUInt64(uint64_t value)
+			void NetBuffer::WriteUInt64(uint64_t value)
 			{
 				__WRITE__(value);
 			}
 
-			void NetBuffer::writeStream(const char* data, size_t data_size)
+			void NetBuffer::WriteStream(const char* data, size_t data_size)
 			{
 				if (!data || data_size == 0) return;
 
@@ -198,7 +198,7 @@ namespace FlagGG
 				size_t left_size = data_size;
 				while (left_size)
 				{
-					checkBuffer(mode_write);
+					CheckBuffer(mode_write);
 
 					size_t write_size = std::min < size_t >(left_size, 
 						m_current_buffer.buffer_size - m_count);
@@ -211,7 +211,7 @@ namespace FlagGG
 				}
 			}
 
-			void NetBuffer::toString(char*& data, size_t& data_size)
+			void NetBuffer::ToString(char*& data, size_t& data_size)
 			{
 				if (m_buffers.size() <= 0)
 				{

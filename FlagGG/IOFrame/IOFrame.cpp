@@ -12,22 +12,22 @@ namespace FlagGG
 	{
 		namespace TCP
 		{
-			IOThreadPoolPtr createThreadPool(size_t thread_count)
+			IOThreadPoolPtr CreateThreadPool(size_t thread_count)
 			{
 				return IOThreadPoolPtr(new NetThreadPool(thread_count));
 			}
 
-			Buffer::IOBufferPtr createBuffer()
+			Buffer::IOBufferPtr CreateBuffer()
 			{
 				return Buffer::IOBufferPtr(new Buffer::NetBuffer());
 			}
 
-			Acceptor::IOAcceptorPtr createAcceptor(Handler::EventHandlerPtr handler, size_t thread_count)
+			Acceptor::IOAcceptorPtr CreateAcceptor(Handler::EventHandlerPtr handler, size_t thread_count)
 			{
 				return Acceptor::IOAcceptorPtr(new Acceptor::TCPAcceptor(handler, thread_count));
 			}
 
-			Connector::IOConnectorPtr createConnector(Handler::EventHandlerPtr handler, IOFrame::IOThreadPoolPtr& thread_pool)
+			Connector::IOConnectorPtr CreateConnector(Handler::EventHandlerPtr handler, IOFrame::IOThreadPoolPtr& thread_pool)
 			{
 				return Connector::IOConnectorPtr(new Connector::TCPConnector(handler, thread_pool));
 			}
@@ -35,22 +35,22 @@ namespace FlagGG
 
 		namespace UDP
 		{
-			IOThreadPoolPtr createThreadPool(size_t thread_count)
+			IOThreadPoolPtr CreateThreadPool(size_t thread_count)
 			{
 				return nullptr;
 			}
 
-			Buffer::IOBufferPtr createBuffer()
+			Buffer::IOBufferPtr CreateBuffer()
 			{
 				return nullptr;
 			}
 
-			Acceptor::IOAcceptorPtr createAcceptor(Handler::EventHandlerPtr handler, size_t thread_count)
+			Acceptor::IOAcceptorPtr CreateAcceptor(Handler::EventHandlerPtr handler, size_t thread_count)
 			{
 				return nullptr;
 			}
 
-			Connector::IOConnectorPtr createConnector(Handler::EventHandlerPtr handler, IOFrame::IOThreadPool& thread_pool)
+			Connector::IOConnectorPtr CreateConnector(Handler::EventHandlerPtr handler, IOFrame::IOThreadPool& thread_pool)
 			{
 				return nullptr;
 			}

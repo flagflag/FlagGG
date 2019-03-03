@@ -19,18 +19,18 @@ namespace FlagGG
 
 			~NetThreadPool() override = default;
 
-			void start() override;
+			void Start() override;
 
-			void stop() override;
+			void Stop() override;
 
-			void waitForStop() override;
+			void WaitForStop() override;
 
 			boost::asio::io_service& getService();
 
 		private:
-			void netThread();
+			void NetThread();
 
-			void waitForStop(uint32_t wait_time) override { };
+			void WaitForStop(uint32_t wait_time) override { };
 
 		private:
 			size_t												m_thread_count;

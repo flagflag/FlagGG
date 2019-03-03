@@ -12,9 +12,9 @@ namespace FlagGG
 	public:
 		virtual ~ErrorCode() {};
 
-		virtual int value() const = 0;
+		virtual int Value() const = 0;
 
-		virtual std::string message() const = 0;
+		virtual std::string Message() const = 0;
 	};
 }
 

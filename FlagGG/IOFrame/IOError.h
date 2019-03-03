@@ -10,7 +10,7 @@
 	{ \
 		IOContextType##Ptr context(new IOContextType(channel)); \
 		FlagGG::IOFrame::Error::IOError error(error_code); \
-		handler->errorCatch(context, error); \
+		handler->ErrorCatch(context, error); \
 	}
 
 namespace FlagGG
@@ -26,9 +26,9 @@ namespace FlagGG
 
 				virtual ~IOError() { }
 
-				virtual int value() const override;
+				virtual int Value() const override;
 
-				virtual std::string message() const override;
+				virtual std::string Message() const override;
 
 			private:
 				boost::system::error_code m_error_code;

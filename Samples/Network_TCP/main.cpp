@@ -11,33 +11,33 @@ class ServerHandler : public FlagGG::IOFrame::Handler::EventHandler
 public:
 	~ServerHandler() override = default;
 
-	void channelRegisterd(FlagGG::IOFrame::Context::IOContextPtr context) override
+	void ChannelRegisterd(FlagGG::IOFrame::Context::IOContextPtr context) override
 	{
 		FLAGGG_LOG_DEBUG("channelCreated");
 	}
 
-	void channelOpend(FlagGG::IOFrame::Context::IOContextPtr context) override
+	void ChannelOpend(FlagGG::IOFrame::Context::IOContextPtr context) override
 	{
 		FLAGGG_LOG_DEBUG("channelOpend");
 	}
 
-	void channelClosed(FlagGG::IOFrame::Context::IOContextPtr context) override
+	void ChannelClosed(FlagGG::IOFrame::Context::IOContextPtr context) override
 	{
 		FLAGGG_LOG_DEBUG("channelClosed");
 	}
 
-	void messageRecived(FlagGG::IOFrame::Context::IOContextPtr context, FlagGG::IOFrame::Buffer::IOBufferPtr buffer) override
+	void MessageRecived(FlagGG::IOFrame::Context::IOContextPtr context, FlagGG::IOFrame::Buffer::IOBufferPtr buffer) override
 	{
 		char* data;
 		size_t data_size = 0;
-		buffer->toString(data, data_size);
+		buffer->ToString(data, data_size);
 
 		std::cout << "recive: " << std::string(data, data_size) << '\n';
 	}
 
-	void errorCatch(FlagGG::IOFrame::Context::IOContextPtr context, const FlagGG::ErrorCode& error_code) override
+	void ErrorCatch(FlagGG::IOFrame::Context::IOContextPtr context, const FlagGG::ErrorCode& error_code) override
 	{
-		FLAGGG_LOG_DEBUG("errorCatch %d %s", error_code.value(), error_code.message().c_str());
+		FLAGGG_LOG_DEBUG("errorCatch %d %s", error_code.Value(), error_code.Message().c_str());
 	}
 };
 
@@ -46,17 +46,17 @@ void StartServer()
 	FLAGGG_LOG_DEBUG("ready start server.");
 
 	FlagGG::IOFrame::Acceptor::IOAcceptorPtr acceptor = 
-		FlagGG::IOFrame::TCP::createAcceptor(
+		FlagGG::IOFrame::TCP::CreateAcceptor(
 		FlagGG::IOFrame::Handler::EventHandlerPtr(new ServerHandler),
 		1);
 
-	if (acceptor->bind("127.0.0.1", 5000))
+	if (acceptor->Bind("127.0.0.1", 5000))
 	{
-		acceptor->start();
+		acceptor->Start();
 
 		FLAGGG_LOG_DEBUG("succeed to startup server");
 
-		acceptor->waitForStop();
+		acceptor->WaitForStop();
 	}
 	else
 	{
@@ -68,29 +68,29 @@ void StartClient()
 {
 	FLAGGG_LOG_DEBUG("ready start client.");
 
-	FlagGG::IOFrame::IOThreadPoolPtr thread_pool = FlagGG::IOFrame::TCP::createThreadPool(1);
+	FlagGG::IOFrame::IOThreadPoolPtr thread_pool = FlagGG::IOFrame::TCP::CreateThreadPool(1);
 
-	thread_pool->start();
+	thread_pool->Start();
 
 	FlagGG::IOFrame::Connector::IOConnectorPtr connector =
-		FlagGG::IOFrame::TCP::createConnector(
+		FlagGG::IOFrame::TCP::CreateConnector(
 		FlagGG::IOFrame::Handler::EventHandlerPtr(new ServerHandler),
 		thread_pool);
 
-	connector->connect("127.0.0.1", 5000);
+	connector->Connect("127.0.0.1", 5000);
 
 	FLAGGG_LOG_DEBUG("succeed to startup client");
 
-	FlagGG::IOFrame::Buffer::IOBufferPtr buffer = FlagGG::IOFrame::TCP::createBuffer();
+	FlagGG::IOFrame::Buffer::IOBufferPtr buffer = FlagGG::IOFrame::TCP::CreateBuffer();
 	std::string content = "test233";
-	buffer->writeStream(content.data(), content.length());
+	buffer->WriteStream(content.data(), content.length());
 	for (int i = 0; i < 3; ++i)
 	{
-		bool result = connector->write(buffer);
+		bool result = connector->Write(buffer);
 		FLAGGG_LOG_DEBUG("write %d result(%d)", i, result ? 1 : 0);
 	}
 
-	thread_pool->waitForStop();
+	thread_pool->WaitForStop();
 }
 
 int main()

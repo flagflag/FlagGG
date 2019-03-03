@@ -15,7 +15,7 @@ namespace FlagGG
 			public:
 				virtual ~IOContext() = default;
 
-				virtual Channel::IOChannelPtr getChannel() = 0;
+				virtual Channel::IOChannelPtr GetChannel() = 0;
 			};
 
 			typedef std::shared_ptr < IOContext > IOContextPtr;

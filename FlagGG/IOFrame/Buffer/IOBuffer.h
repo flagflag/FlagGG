@@ -16,35 +16,35 @@ namespace FlagGG
 			public:
 				virtual ~IOBuffer() = default;
 
-				virtual void clearIndex() = 0;
+				virtual void ClearIndex() = 0;
 
-				virtual void readInt8(int8_t& value) = 0;
-				virtual void writeInt8(int8_t value) = 0;
+				virtual void ReadInt8(int8_t& value) = 0;
+				virtual void WriteInt8(int8_t value) = 0;
 
-				virtual void readUInt8(uint8_t& value) = 0;
-				virtual void writeUInt8(uint8_t value) = 0;
+				virtual void ReadUInt8(uint8_t& value) = 0;
+				virtual void WriteUInt8(uint8_t value) = 0;
 
-				virtual void readInt16(int16_t& value) = 0;
-				virtual void writeInt16(int16_t value) = 0;
+				virtual void ReadInt16(int16_t& value) = 0;
+				virtual void WriteInt16(int16_t value) = 0;
 
-				virtual void readUInt16(uint16_t& value) = 0;
-				virtual void writeUInt16(uint16_t value) = 0;
+				virtual void ReadUInt16(uint16_t& value) = 0;
+				virtual void WriteUInt16(uint16_t value) = 0;
 
-				virtual void readInt32(int32_t& value) = 0;
-				virtual void writeInt32(int32_t value) = 0;
+				virtual void ReadInt32(int32_t& value) = 0;
+				virtual void WriteInt32(int32_t value) = 0;
 
-				virtual void readUInt32(uint32_t& value) = 0;
-				virtual void writeUInt32(uint32_t value) = 0;
+				virtual void ReadUInt32(uint32_t& value) = 0;
+				virtual void WriteUInt32(uint32_t value) = 0;
 
-				virtual void readInt64(int64_t& value) = 0;
-				virtual void writeInt64(int64_t value) = 0;
+				virtual void ReadInt64(int64_t& value) = 0;
+				virtual void WriteInt64(int64_t value) = 0;
 
-				virtual void readUInt64(uint64_t& value) = 0;
-				virtual void writeUInt64(uint64_t value) = 0;
+				virtual void ReadUInt64(uint64_t& value) = 0;
+				virtual void WriteUInt64(uint64_t value) = 0;
 
-				virtual void writeStream(const char* data, size_t data_size) = 0;
+				virtual void WriteStream(const char* data, size_t data_size) = 0;
 
-				virtual void toString(char*& data, size_t& data_size) = 0;
+				virtual void ToString(char*& data, size_t& data_size) = 0;
 			};
 
 			typedef std::shared_ptr < IOBuffer > IOBufferPtr;

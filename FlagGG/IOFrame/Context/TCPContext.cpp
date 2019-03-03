@@ -10,7 +10,7 @@ namespace FlagGG
 				: m_channel(channel)
 			{ }
 
-			Channel::IOChannelPtr TCPContext::getChannel()
+			Channel::IOChannelPtr TCPContext::GetChannel()
 			{
 				return m_channel;
 			}

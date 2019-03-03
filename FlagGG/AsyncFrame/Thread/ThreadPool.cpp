@@ -21,14 +21,14 @@ namespace FlagGG
 				}
 			}
 
-			void ThreadPool::add(ThreadTask task_func)
+			void ThreadPool::Add(ThreadTask task_func)
 			{
 				size_t index = 0;
 				uint32_t min_waiting_time = INT_MAX;
 
 				for (size_t i = 0; i < m_threads.size(); ++i)
 				{
-					uint32_t waiting_time = m_threads[i]->waitingTime();
+					uint32_t waiting_time = m_threads[i]->WaitingTime();
 					if (waiting_time < min_waiting_time)
 					{
 						index = i;
@@ -38,35 +38,35 @@ namespace FlagGG
 
 				if (m_threads.size() > 0)
 				{
-					m_threads[index]->add(task_func);
+					m_threads[index]->Add(task_func);
 				}
 			}
 
-			void ThreadPool::start()
+			void ThreadPool::Start()
 			{
 				for (size_t i = 0; i < m_threads.size(); ++i)
 				{
-					m_threads[i]->start();
+					m_threads[i]->Start();
 				}
 			}
 
-			void ThreadPool::stop()
+			void ThreadPool::Stop()
 			{
 				for (size_t i = 0; i < m_threads.size(); ++i)
 				{
-					m_threads[i]->stop();
+					m_threads[i]->Stop();
 				}
 			};
 
-			void ThreadPool::waitForStop()
+			void ThreadPool::WaitForStop()
 			{
 				for (size_t i = 0; i < m_threads.size(); ++i)
 				{
-					m_threads[i]->waitForStop();
+					m_threads[i]->WaitForStop();
 				}
 			};
 
-			void ThreadPool::waitForStop(uint32_t wait_time)
+			void ThreadPool::WaitForStop(uint32_t wait_time)
 			{
 				Utility::SystemHelper::Sleep(wait_time);
 			}

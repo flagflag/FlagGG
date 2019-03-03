@@ -18,9 +18,9 @@ namespace FlagGG
 			public:
 				virtual ~IOConnector() = default;
 
-				virtual bool connect(const char* ip, uint16_t port) = 0;
+				virtual bool Connect(const char* ip, uint16_t port) = 0;
 
-				virtual bool write(Buffer::IOBufferPtr buffer) = 0;
+				virtual bool Write(Buffer::IOBufferPtr buffer) = 0;
 			};
 
 			typedef std::shared_ptr < IOConnector > IOConnectorPtr;

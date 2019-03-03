@@ -16,11 +16,11 @@ namespace FlagGG
 			public:
 				virtual ~Runtime() = default;
 
-				virtual void stop() = 0;
+				virtual void Stop() = 0;
 
-				virtual void waitForStop() = 0;
+				virtual void WaitForStop() = 0;
 
-				virtual void waitForStop(uint32_t) = 0;
+				virtual void WaitForStop(uint32_t) = 0;
 			};
 		}
 	}

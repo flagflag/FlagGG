@@ -26,31 +26,31 @@ namespace FlagGG
 
 				//--------------------------------- utf-16 -----------------------------
 
-				void add(const std::wstring& param_name);
+				void Add(const std::wstring& param_name);
 
-				void add(const std::wstring& param_name, const std::wstring& param);
+				void Add(const std::wstring& param_name, const std::wstring& param);
 
-				void add(const std::wstring& param_name, int32_t param);
+				void Add(const std::wstring& param_name, int32_t param);
 
-				void add(const std::wstring& param_name, int64_t param);
+				void Add(const std::wstring& param_name, int64_t param);
 
-				void add(const std::wstring& param_name, double param);
+				void Add(const std::wstring& param_name, double param);
 
-				void add(const std::wstring& param_name, long double param);
+				void Add(const std::wstring& param_name, long double param);
 
 				//------------------------------------ utf-8 -----------------------------
 
-				void add(const std::string& param_name);
+				void Add(const std::string& param_name);
 
-				void add(const std::string& param_name, std::string& param);
+				void Add(const std::string& param_name, std::string& param);
 
-				void add(const std::string& param_name, int32_t param);
+				void Add(const std::string& param_name, int32_t param);
 
-				void add(const std::string& param_name, int64_t param);
+				void Add(const std::string& param_name, int64_t param);
 
-				void add(const std::string& param_name, double param);
+				void Add(const std::string& param_name, double param);
 
-				void add(const std::string& param_name, long double param);
+				void Add(const std::string& param_name, long double param);
 
 				friend class Builder;
 
@@ -65,13 +65,13 @@ namespace FlagGG
 
 				~ProcessObject() override = default;
 
-				uint32_t getID();
+				uint32_t GetID();
 
-				void stop() override;
+				void Stop() override;
 
-				void waitForStop() override;
+				void WaitForStop() override;
 
-				void waitForStop(uint32_t wait_time) override;
+				void WaitForStop(uint32_t wait_time) override;
 
 				friend class Builder;
 
@@ -86,19 +86,19 @@ namespace FlagGG
 			public:
 				//--------------------------------- utf-16 ------------------------------------------
 
-				static ProcessObjectPtr createProcess(const std::wstring& proc_path);
+				static ProcessObjectPtr CreateProcess(const std::wstring& proc_path);
 
-				static ProcessObjectPtr createProcess(const std::wstring& proc_path, const std::wstring& param);
+				static ProcessObjectPtr CreateProcess(const std::wstring& proc_path, const std::wstring& param);
 
-				static ProcessObjectPtr createProcess(const std::wstring& proc_path, const ParameterList& param);
+				static ProcessObjectPtr CreateProcess(const std::wstring& proc_path, const ParameterList& param);
 
 				//------------------------------------ utf-8 ----------------------------------------
 
-				static ProcessObjectPtr createProcess(const std::string& proc_path);
+				static ProcessObjectPtr CreateProcess(const std::string& proc_path);
 
-				static ProcessObjectPtr createProcess(const std::string& proc_path, const std::string& param);
+				static ProcessObjectPtr CreateProcess(const std::string& proc_path, const std::string& param);
 
-				static ProcessObjectPtr createProcess(const std::string& proc_path, const ParameterList& param);
+				static ProcessObjectPtr CreateProcess(const std::string& proc_path, const ParameterList& param);
 			};
 		}
 	}

@@ -19,7 +19,7 @@ namespace FlagGG
 				, m_handler(handler)
 			{ }
 
-			bool TCPAcceptor::bind(const char* ip, uint16_t port)
+			bool TCPAcceptor::Bind(const char* ip, uint16_t port)
 			{
 				boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip), port);
 				boost::system::error_code error_code;
@@ -36,52 +36,52 @@ namespace FlagGG
 				return !error_code;
 			}
 
-			void TCPAcceptor::start()
+			void TCPAcceptor::Start()
 			{
-				m_thread_pool->start();
+				m_thread_pool->Start();
 
-				startAccept();
+				StartAccept();
 			}
 
-			void TCPAcceptor::stop()
+			void TCPAcceptor::Stop()
 			{
 				m_acceptor.cancel();
 				m_acceptor.close();
 
-				m_thread_pool->stop();
+				m_thread_pool->Stop();
 			}
 
-			void TCPAcceptor::waitForStop()
+			void TCPAcceptor::WaitForStop()
 			{
-				m_thread_pool->waitForStop();
+				m_thread_pool->WaitForStop();
 			}
 
-			void TCPAcceptor::startAccept()
+			void TCPAcceptor::StartAccept()
 			{
 				Channel::TCPChannelPtr channel(new Channel::TCPChannel(std::dynamic_pointer_cast<IOFrame::NetThreadPool>(m_thread_pool)->getService()));
 
-				channel->onRegisterd(m_handler);
+				channel->OnRegisterd(m_handler);
 
 				m_acceptor.async_accept(
 					channel->getSocket(),
-					boost::bind(&TCPAcceptor::handleAccept, this, channel,
+					boost::bind(&TCPAcceptor::HandleAccept, this, channel,
 					boost::asio::placeholders::error));
 			}
 
-			void TCPAcceptor::handleAccept(Channel::TCPChannelPtr channel, const boost::system::error_code& error_code)
+			void TCPAcceptor::HandleAccept(Channel::TCPChannelPtr channel, const boost::system::error_code& error_code)
 			{
 				if (m_acceptor.is_open())
 				{
 					if (!error_code)
 					{
-						channel->onOpend();
+						channel->OnOpend();
 					}
 					else
 					{
 						THROW_IO_ERROR(Context::TCPContext, channel, m_handler, error_code);
 					}
 
-					startAccept();
+					StartAccept();
 				}
 			}
 		}

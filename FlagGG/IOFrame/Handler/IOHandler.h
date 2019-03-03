@@ -15,11 +15,11 @@ namespace FlagGG
 			public:
 				virtual ~IOHandler() = default;
 
-				virtual void onRegisterd(Handler::EventHandlerPtr handler) = 0;
+				virtual void OnRegisterd(Handler::EventHandlerPtr handler) = 0;
 
-				virtual void onOpend() = 0;
+				virtual void OnOpend() = 0;
 
-				virtual void onClosed() = 0;
+				virtual void OnClosed() = 0;
 			};
 		}
 	}

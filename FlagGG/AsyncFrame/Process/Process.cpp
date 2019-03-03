@@ -25,64 +25,64 @@ namespace FlagGG
 
 			}
 
-			void ParameterList::add(const std::wstring& param_name)
+			void ParameterList::Add(const std::wstring& param_name)
 			{
 				m_list.emplace_back(param_name);
 			}
 
-			void ParameterList::add(const std::wstring& param_name, const std::wstring& param)
+			void ParameterList::Add(const std::wstring& param_name, const std::wstring& param)
 			{
 				m_list.emplace_back(param_name + L"=" + param);
 			}
 
-			void ParameterList::add(const std::wstring& param_name, int32_t param)
+			void ParameterList::Add(const std::wstring& param_name, int32_t param)
 			{
 				m_list.emplace_back(param_name + L"=" + std::to_wstring(param));
 			}
 
-			void ParameterList::add(const std::wstring& param_name, int64_t param)
+			void ParameterList::Add(const std::wstring& param_name, int64_t param)
 			{
 				m_list.emplace_back(param_name + L"=" + std::to_wstring(param));
 			}
 
-			void ParameterList::add(const std::wstring& param_name, double param)
+			void ParameterList::Add(const std::wstring& param_name, double param)
 			{
 				m_list.emplace_back(param_name + L"=" + std::to_wstring(param));
 			}
 
-			void ParameterList::add(const std::wstring& param_name, long double param)
+			void ParameterList::Add(const std::wstring& param_name, long double param)
 			{
 				m_list.emplace_back(param_name + L"=" + std::to_wstring(param));
 			}
 
-			void ParameterList::add(const std::string& param_name)
+			void ParameterList::Add(const std::string& param_name)
 			{
-				add(Code::Utf8ToWide(param_name));
+				Add(Code::Utf8ToWide(param_name));
 			}
 
-			void ParameterList::add(const std::string& param_name, std::string& param)
+			void ParameterList::Add(const std::string& param_name, std::string& param)
 			{
-				add(Code::Utf8ToWide(param_name), Code::Utf8ToWide(param));
+				Add(Code::Utf8ToWide(param_name), Code::Utf8ToWide(param));
 			}
 
-			void ParameterList::add(const std::string& param_name, int32_t param)
+			void ParameterList::Add(const std::string& param_name, int32_t param)
 			{
-				add(Code::Utf8ToWide(param_name), param);
+				Add(Code::Utf8ToWide(param_name), param);
 			}
 
-			void ParameterList::add(const std::string& param_name, int64_t param)
+			void ParameterList::Add(const std::string& param_name, int64_t param)
 			{
-				add(Code::Utf8ToWide(param_name), param);
+				Add(Code::Utf8ToWide(param_name), param);
 			}
 
-			void ParameterList::add(const std::string& param_name, double param)
+			void ParameterList::Add(const std::string& param_name, double param)
 			{
-				add(Code::Utf8ToWide(param_name), param);
+				Add(Code::Utf8ToWide(param_name), param);
 			}
 
-			void ParameterList::add(const std::string& param_name, long double param)
+			void ParameterList::Add(const std::string& param_name, long double param)
 			{
-				add(Code::Utf8ToWide(param_name), param);
+				Add(Code::Utf8ToWide(param_name), param);
 			}
 
 
@@ -90,12 +90,12 @@ namespace FlagGG
 				: m_id(0)
 			{ }
 
-			uint32_t ProcessObject::getID()
+			uint32_t ProcessObject::GetID()
 			{
 				return m_id;
 			}
 
-			void ProcessObject::stop()
+			void ProcessObject::Stop()
 			{
 #if WIN32 || WIN64
 				TerminateProcess(m_handle, -1);
@@ -104,7 +104,7 @@ namespace FlagGG
 #endif
 			}
 
-			void ProcessObject::waitForStop()
+			void ProcessObject::WaitForStop()
 			{
 #if WIN32 || WIN64
 				WaitForSingleObject(m_handle, INFINITE);
@@ -113,7 +113,7 @@ namespace FlagGG
 #endif
 			}
 
-			void ProcessObject::waitForStop(uint32_t wait_time)
+			void ProcessObject::WaitForStop(uint32_t wait_time)
 			{
 #if WIN32 || WIN64
 				WaitForSingleObject(m_handle, wait_time);
@@ -122,13 +122,16 @@ namespace FlagGG
 #endif
 			}
 
+#ifdef CreateProcess
+#undef CreateProcess
+#endif
 
-			ProcessObjectPtr Builder::createProcess(const std::wstring& proc_path)
+			ProcessObjectPtr Builder::CreateProcess(const std::wstring& proc_path)
 			{
-				return createProcess(proc_path, L"");
+				return CreateProcess(proc_path, L"");
 			}
 
-			ProcessObjectPtr Builder::createProcess(const std::wstring& proc_path, const std::wstring& param)
+			ProcessObjectPtr Builder::CreateProcess(const std::wstring& proc_path, const std::wstring& param)
 			{
 #if WIN32 || WIN64
 				STARTUPINFOW startup_info;
@@ -139,7 +142,7 @@ namespace FlagGG
 				ZeroMemory(&process_info, sizeof process_info);
 
 				Allocator::SmartMemory < wchar_t > mry(param.size() + 2);
-				wchar_t* _param = mry.get();
+				wchar_t* _param = mry.Get();
 				wsprintfW(_param, L" %s", param.c_str());
 
 				if (!CreateProcessW(
@@ -187,7 +190,7 @@ namespace FlagGG
 #endif
 			}
 
-			ProcessObjectPtr Builder::createProcess(const std::wstring& proc_path, const ParameterList& param)
+			ProcessObjectPtr Builder::CreateProcess(const std::wstring& proc_path, const ParameterList& param)
 			{
 				std::wstring _param = L"";
 
@@ -197,22 +200,22 @@ namespace FlagGG
 					_param += param.m_list[i];
 				}
 
-				return createProcess(proc_path, _param);
+				return CreateProcess(proc_path, _param);
 			}
 
-			ProcessObjectPtr Builder::createProcess(const std::string& proc_path)
+			ProcessObjectPtr Builder::CreateProcess(const std::string& proc_path)
 			{
-				return createProcess(Code::Utf8ToWide(proc_path));
+				return CreateProcess(Code::Utf8ToWide(proc_path));
 			}
 
-			ProcessObjectPtr Builder::createProcess(const std::string& proc_path, const std::string& param)
+			ProcessObjectPtr Builder::CreateProcess(const std::string& proc_path, const std::string& param)
 			{
-				return createProcess(Code::Utf8ToWide(proc_path), Code::Utf8ToWide(param));
+				return CreateProcess(Code::Utf8ToWide(proc_path), Code::Utf8ToWide(param));
 			}
 
-			ProcessObjectPtr Builder::createProcess(const std::string& proc_path, const ParameterList& param)
+			ProcessObjectPtr Builder::CreateProcess(const std::string& proc_path, const ParameterList& param)
 			{
-				return createProcess(Code::Utf8ToWide(proc_path), param);
+				return CreateProcess(Code::Utf8ToWide(proc_path), param);
 			}
 		}
 	}

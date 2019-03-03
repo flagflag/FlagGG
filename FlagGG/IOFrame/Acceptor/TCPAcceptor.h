@@ -23,18 +23,18 @@ namespace FlagGG
 
 				~TCPAcceptor() override = default;
 
-				bool bind(const char* ip, uint16_t port) override;
+				bool Bind(const char* ip, uint16_t port) override;
 
-				void start() override;
+				void Start() override;
 
-				void stop() override;
+				void Stop() override;
 
-				void waitForStop() override;
+				void WaitForStop() override;
 
 			protected:
-				void startAccept();
+				void StartAccept();
 
-				void handleAccept(Channel::TCPChannelPtr channel, const boost::system::error_code& error_code);
+				void HandleAccept(Channel::TCPChannelPtr channel, const boost::system::error_code& error_code);
 
 			private:
 				//声明顺序不能变，C++初始化列表是按照声明顺序执行的！！！

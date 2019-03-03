@@ -20,9 +20,9 @@ namespace FlagGG
 
 				~TCPConnector() override = default;
 
-				bool connect(const char* ip, uint16_t port) override;
+				bool Connect(const char* ip, uint16_t port) override;
 
-				bool write(Buffer::IOBufferPtr buffer) override;
+				bool Write(Buffer::IOBufferPtr buffer) override;
 
 			private:
 				IOFrame::Channel::TCPChannelPtr		m_channel;

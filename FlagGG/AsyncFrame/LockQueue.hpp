@@ -19,14 +19,14 @@ namespace FlagGG
 
 			typedef std::list < Object > Objects;
 
-			void push(const Object& obj)
+			void Push(const Object& obj)
 			{
 				RecursiveLocker locker(m_mutex);
 
 				m_queue.insert(m_queue.end(), obj);
 			}
 
-			void pop(Object& obj)
+			void Pop(Object& obj)
 			{
 				RecursiveLocker locker(m_mutex);
 
@@ -35,14 +35,14 @@ namespace FlagGG
 				m_queue.erase(it);
 			}
 
-			void slipce(Objects& objs)
+			void Slipce(Objects& objs)
 			{
 				RecursiveLocker locker(m_mutex);
 
 				objs.splice(objs.begin(), m_queue, m_queue.begin(), m_queue.end());
 			}
 
-			size_t size()
+			size_t Size()
 			{
 				RecursiveLocker locker(m_mutex);
 

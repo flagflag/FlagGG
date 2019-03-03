@@ -11,17 +11,17 @@ namespace FlagGG
 				: m_channel(new Channel::TCPChannel(std::dynamic_pointer_cast<IOFrame::NetThreadPool>(thread_pool)->getService()))
 				, m_handler(handler)
 			{ 
-				m_channel->onRegisterd(handler);
+				m_channel->OnRegisterd(handler);
 			}
 
-			bool TCPConnector::connect(const char* ip, uint16_t port)
+			bool TCPConnector::Connect(const char* ip, uint16_t port)
 			{
-				return m_channel->connect(ip, port);
+				return m_channel->Connect(ip, port);
 			}
 
-			bool TCPConnector::write(Buffer::IOBufferPtr buffer)
+			bool TCPConnector::Write(Buffer::IOBufferPtr buffer)
 			{
-				return m_channel->write(buffer);
+				return m_channel->Write(buffer);
 			}
 		}
 	}

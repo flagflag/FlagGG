@@ -27,35 +27,35 @@ namespace FlagGG
 
 				~NetBuffer() override = default;
 
-				void clearIndex() override;
+				void ClearIndex() override;
 
-				void readInt8(int8_t& value) override;
-				void writeInt8(int8_t value) override;
+				void ReadInt8(int8_t& value) override;
+				void WriteInt8(int8_t value) override;
 
-				void readUInt8(uint8_t& value) override;
-				void writeUInt8(uint8_t value) override;
+				void ReadUInt8(uint8_t& value) override;
+				void WriteUInt8(uint8_t value) override;
 
-				void readInt16(int16_t& value) override;
-				void writeInt16(int16_t value) override;
+				void ReadInt16(int16_t& value) override;
+				void WriteInt16(int16_t value) override;
 
-				void readUInt16(uint16_t& value) override;
-				void writeUInt16(uint16_t value) override;
+				void ReadUInt16(uint16_t& value) override;
+				void WriteUInt16(uint16_t value) override;
 
-				void readInt32(int32_t& value) override;
-				void writeInt32(int32_t value) override;
+				void ReadInt32(int32_t& value) override;
+				void WriteInt32(int32_t value) override;
 
-				void readUInt32(uint32_t& value) override;
-				void writeUInt32(uint32_t value) override;
+				void ReadUInt32(uint32_t& value) override;
+				void WriteUInt32(uint32_t value) override;
 
-				void readInt64(int64_t& value) override;
-				void writeInt64(int64_t value) override;
+				void ReadInt64(int64_t& value) override;
+				void WriteInt64(int64_t value) override;
 
-				void readUInt64(uint64_t& value) override;
-				void writeUInt64(uint64_t value) override;
+				void ReadUInt64(uint64_t& value) override;
+				void WriteUInt64(uint64_t value) override;
 
-				void writeStream(const char* data, size_t data_size) override;
+				void WriteStream(const char* data, size_t data_size) override;
 
-				void toString(char*& data, size_t& data_size) override;
+				void ToString(char*& data, size_t& data_size) override;
 
 			protected:
 				enum CheckMode
@@ -64,11 +64,11 @@ namespace FlagGG
 					mode_write = 2,
 				};
 
-				bool checkBuffer(int mode);
+				bool CheckBuffer(int mode);
 
-				bool readByte(uint8_t& byte);
+				bool ReadByte(uint8_t& byte);
 
-				bool writeByte(uint8_t byte);
+				bool WriteByte(uint8_t byte);
 
 			private:
 				std::vector < SimpleBuffer > m_buffers;

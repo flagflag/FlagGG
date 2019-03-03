@@ -20,15 +20,15 @@ namespace FlagGG
 
 				~ThreadPool() override = default;
 
-				void add(ThreadTask task_func);
+				void Add(ThreadTask task_func);
 
-				void start();
+				void Start();
 
-				void stop() override;
+				void Stop() override;
 
-				void waitForStop() override;
+				void WaitForStop() override;
 
-				void waitForStop(uint32_t wait_time) override;
+				void WaitForStop(uint32_t wait_time) override;
 
 			private:
 				std::vector < SharedThreadPtr > m_threads;

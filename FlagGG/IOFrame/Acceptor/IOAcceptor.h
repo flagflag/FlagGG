@@ -17,13 +17,13 @@ namespace FlagGG
 			public:
 				virtual ~IOAcceptor() = default;
 
-				virtual bool bind(const char* ip, uint16_t port) = 0;
+				virtual bool Bind(const char* ip, uint16_t port) = 0;
 
-				virtual void start() = 0;
+				virtual void Start() = 0;
 
-				virtual void stop() = 0;
+				virtual void Stop() = 0;
 
-				virtual void waitForStop() = 0;
+				virtual void WaitForStop() = 0;
 			};
 
 			typedef std::shared_ptr < IOAcceptor > IOAcceptorPtr;

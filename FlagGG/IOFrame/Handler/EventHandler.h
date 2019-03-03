@@ -17,15 +17,15 @@ namespace FlagGG
 			public:
 				virtual ~EventHandler() = default;
 
-				virtual void channelRegisterd(Context::IOContextPtr context) = 0;
+				virtual void ChannelRegisterd(Context::IOContextPtr context) = 0;
 
-				virtual void channelOpend(Context::IOContextPtr context) = 0;
+				virtual void ChannelOpend(Context::IOContextPtr context) = 0;
 
-				virtual void channelClosed(Context::IOContextPtr context) = 0;
+				virtual void ChannelClosed(Context::IOContextPtr context) = 0;
 
-				virtual void messageRecived(Context::IOContextPtr context, Buffer::IOBufferPtr buffer) = 0;
+				virtual void MessageRecived(Context::IOContextPtr context, Buffer::IOBufferPtr buffer) = 0;
 
-				virtual void errorCatch(Context::IOContextPtr context, const ErrorCode& error_code) = 0;
+				virtual void ErrorCatch(Context::IOContextPtr context, const ErrorCode& error_code) = 0;
 			};
 
 			typedef std::shared_ptr < EventHandler > EventHandlerPtr;
@@ -35,15 +35,15 @@ namespace FlagGG
 			public:
 				~NullEventHandler() override = default;
 
-				void channelRegisterd(Context::IOContextPtr context) override {}
+				void ChannelRegisterd(Context::IOContextPtr context) override {}
 
-				void channelOpend(Context::IOContextPtr context) override {}
+				void ChannelOpend(Context::IOContextPtr context) override {}
 
-				void channelClosed(Context::IOContextPtr context) override {}
+				void ChannelClosed(Context::IOContextPtr context) override {}
 
-				void messageRecived(Context::IOContextPtr context, Buffer::IOBufferPtr buffer) override {}
+				void MessageRecived(Context::IOContextPtr context, Buffer::IOBufferPtr buffer) override {}
 
-				void errorCatch(Context::IOContextPtr context, const ErrorCode& error_code) override {}
+				void ErrorCatch(Context::IOContextPtr context, const ErrorCode& error_code) override {}
 			};
 
 			typedef std::shared_ptr < NullEventHandler > NullEventHandlerPtr;

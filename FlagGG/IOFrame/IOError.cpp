@@ -10,12 +10,12 @@ namespace FlagGG
 				: m_error_code(error_code)
 			{ }
 
-			int IOError::value() const
+			int IOError::Value() const
 			{
 				return m_error_code.value();
 			}
 
-			std::string IOError::message() const
+			std::string IOError::Message() const
 			{
 				return std::move(m_error_code.message());
 			}

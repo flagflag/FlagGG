@@ -55,13 +55,13 @@ namespace FlagGG
 			Allocator::SmartMemory<char> sourceCode(sourceCodeSize);
 
 			stream.seekg(0, std::ios::beg);
-			stream.read(sourceCode.get(), sourceCodeSize);
+			stream.read(sourceCode.Get(), sourceCodeSize);
 
 			ID3DBlob* shaderCode = nullptr;
 			ID3DBlob* errorMsgs = nullptr;
 
 			HRESULT hr = D3DCompile(
-				sourceCode.get(),
+				sourceCode.Get(),
 				sourceCodeSize,
 				nullptr,
 				nullptr,

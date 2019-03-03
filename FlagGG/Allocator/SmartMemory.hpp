@@ -15,40 +15,40 @@ namespace FlagGG
 		public:
 			SmartMemory(size_t count,
 			Type* default_memory = nullptr)
-				: m_memory(nullptr)
+				: memory_(nullptr)
 			{
 				if (count > 0)
 				{
 					if (default_memory)
 					{
-						m_memory = default_memory;
+						memory_ = default_memory;
 					}
 					else
 					{
-						m_memory = (Type*)malloc(count * (sizeof (Type)));
+						memory_ = (Type*)malloc(count * (sizeof (Type)));
 					}
 
-					m_default = !!default_memory;			
+					default_ = !!default_memory;			
 				}
 			}
 
 			virtual ~SmartMemory()
 			{
-				if (m_memory && !m_default)
+				if (memory_ && !default_)
 				{
-					free(m_memory);
+					free(memory_);
 				}
 			}
 
-			Type* get()
+			Type* Get()
 			{
-				return m_memory;
+				return memory_;
 			}
 
 		private:
-			Type* m_memory;
+			Type* memory_;
 
-			bool m_default;
+			bool default_;
 		};
 	}
 }
