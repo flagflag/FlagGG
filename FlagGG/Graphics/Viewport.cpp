@@ -5,6 +5,11 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
+		Viewport::~Viewport()
+		{
+			SAFE_RELEASE(depthStencialView_);
+		}
+
 		void Viewport::Initialize()
 		{	
 			CreateSwapChain();
@@ -81,6 +86,33 @@ namespace FlagGG
 
 			renderTarget_ = new RenderTarget(backbufferTexture);
 			renderTarget_->Initialize();
+		}
+
+		void Viewport::CreateDepthStencilView()
+		{
+			D3D11_TEXTURE2D_DESC depthStencilDesc;
+			depthStencilDesc.Width = GetWidth();
+			depthStencilDesc.Height = GetHeight();
+			depthStencilDesc.MipLevels = 1;
+			depthStencilDesc.ArraySize = 1;
+			depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+			depthStencilDesc.SampleDesc.Count = 1;
+			depthStencilDesc.SampleDesc.Quality = 0;
+			depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+			depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL; //°ó¶¨µ½OM
+			depthStencilDesc.CPUAccessFlags = 0;
+			depthStencilDesc.MiscFlags = 0;
+
+			ID3D11Texture2D* depthStencilBuffer;
+			HRESULT hr = RenderEngine::GetDevice()->CreateTexture2D(&depthStencilDesc, nullptr, &depthStencilBuffer);
+			if (hr != 0)
+			{
+				puts("CreateTexture2D failed.");
+
+				return;
+			}
+
+			RenderEngine::GetDevice()->CreateDepthStencilView(depthStencilBuffer, nullptr, &depthStencialView_);
 		}
 
 		void Viewport::SetViewport()

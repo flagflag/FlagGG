@@ -214,7 +214,7 @@ namespace FlagGG
 			ID3D11DeviceContext* deviceContext = RenderEngine::GetDeviceContext();
 
 			ID3D11RenderTargetView* renderTargetView = GetRenderTarget()->GetObject<ID3D11RenderTargetView>();
-			deviceContext->OMSetRenderTargets(1, &renderTargetView, nullptr);
+			deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencialView_);
 
 			float color[] = { 0.0, 0.0f, 0.0f, 1.0f };
 			deviceContext->ClearRenderTargetView(renderTargetView, color);

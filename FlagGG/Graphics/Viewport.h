@@ -4,6 +4,7 @@
 #include "Export.h"
 
 #include "RenderTarget.h"
+#include "Container/Ptr.h"
 
 namespace FlagGG
 {
@@ -13,7 +14,7 @@ namespace FlagGG
 		class FlagGG_API Viewport : public GPUObject
 		{
 		public:
-			virtual ~Viewport() = default;
+			~Viewport() override;
 
 			void Initialize() override;
 
@@ -36,9 +37,14 @@ namespace FlagGG
 
 			void CreateSwapChain();
 
+			void CreateDepthStencilView();
+
 			void SetViewport();
 
-			RenderTarget* renderTarget_{ nullptr };
+			Container::SharedPtr<RenderTarget> renderTarget_;
+
+		protected:
+			ID3D11DepthStencilView* depthStencialView_{ nullptr };
 		};
 	}
 }

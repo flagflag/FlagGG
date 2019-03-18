@@ -6,6 +6,7 @@
 #include <d3d11.h>
 
 #include "Define.h"
+#include "Container/RefCounted.h"
 
 #ifdef USE_DIRECT3D
 typedef IUnknown* GPUHandler;
@@ -17,7 +18,7 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		class FlagGG_API GPUObject
+		class FlagGG_API GPUObject : public Container::RefCounted
 		{
 		public:
 			GPUObject();
