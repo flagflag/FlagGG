@@ -17,7 +17,7 @@ namespace FlagGG
 			const LJSONValue& GetRoot() const;
 
 		protected:
-			bool BeginLoad(IOFrame::Stream::FileStream& fileStream) override;
+			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
 			bool EndLoad() override;
 

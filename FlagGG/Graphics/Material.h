@@ -15,7 +15,7 @@ namespace FlagGG
 			~Material() override = default;
 
 		protected:
-			bool BeginLoad(IOFrame::Stream::FileStream& fileStream) override;
+			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
 			bool EndLoad() override;
 

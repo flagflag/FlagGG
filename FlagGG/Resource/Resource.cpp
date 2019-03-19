@@ -1,4 +1,5 @@
-#include "Resource.h"
+#include "Resource/Resource.h"
+#include "IOFrame/Stream/FileStream.h"
 #include "Log.h"
 
 namespace FlagGG
@@ -16,7 +17,7 @@ namespace FlagGG
 				return false;
 			}
 
-			bool result = BeginLoad(fileStream);
+			bool result = BeginLoad(&fileStream);
 			if (!result)
 			{
 				FLAGGG_LOG_ERROR("BeginLoad[%s] failed.", fileName.CString());
@@ -35,7 +36,7 @@ namespace FlagGG
 			return false;
 		}
 
-		bool Resource::BeginLoad(IOFrame::Stream::FileStream& fileStream)
+		bool Resource::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		{
 			return false;
 		}

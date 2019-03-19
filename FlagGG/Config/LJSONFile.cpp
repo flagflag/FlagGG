@@ -15,11 +15,11 @@ namespace FlagGG
 			return root_;
 		}
 
-		bool LJSONFile::BeginLoad(IOFrame::Stream::FileStream& fileStream)
+		bool LJSONFile::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		{
 			char* buffer = nullptr;
 			size_t bufferSize = 0;
-			fileStream.ToString(buffer, bufferSize);
+			stream->ToString(buffer, bufferSize);
 			Container::SharedArrayPtr<char> autoDelete(buffer);
 
 			LJSONParser parser;
