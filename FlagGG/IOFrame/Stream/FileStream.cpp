@@ -23,8 +23,8 @@ namespace FlagGG
 #define FileAPI_Tell(file) ftell(FileHandler(file))
 #define FileAPI_SimpleRead(file, value) fread(&value, sizeof(value), 1, FileHandler(file))
 #define FileAPI_SimpleWrite(file, value) fwrite(&value, sizeof(value), 1, FileHandler(file))
-#define FileAPI_ReadStream(file, data, dataSize) fread(data, dataSize, 1, FileHandler(file))
-#define FileAPI_WriteStream(file, data, dataSize) fwrite(data, dataSize, 1, FileHandler(file))
+#define FileAPI_ReadStream(file, data, dataSize) (fread(data, dataSize, 1, FileHandler(file)) * dataSize)
+#define FileAPI_WriteStream(file, data, dataSize) (fwrite(data, dataSize, 1, FileHandler(file)) * dataSize)
 #else
 #define FilePathString Container::String
 #define FormatPath(filePath) Container::String(filePath.Replaced('/', '\\'))
@@ -38,8 +38,8 @@ namespace FlagGG
 #define FileAPI_Tell(file) ftell(FileHandler(file))
 #define FileAPI_SimpleRead(file, value) fread(&value, sizeof(value), 1, FileHandler(file))
 #define FileAPI_SimpleWrite(file, value) fwrite(&value, sizeof(value), 1, FileHandler(file))
-#define FileAPI_ReadStream(file, data, dataSize) fread(data, dataSize, 1, FileHandler(file))
-#define FileAPI_WriteStream(file, data, dataSize) fwrite(data, dataSize, 1, FileHandler(file))
+#define FileAPI_ReadStream(file, data, dataSize) (fread(data, dataSize, 1, FileHandler(file)) * dataSize)
+#define FileAPI_WriteStream(file, data, dataSize) (fwrite(data, dataSize, 1, FileHandler(file)) * dataSize)
 #endif
 
 			FileStream::FileStream() :
@@ -175,8 +175,9 @@ namespace FlagGG
 
 			void FileStream::ToString(char*& data, size_t& dataSize)
 			{
-				FileAPI_SeekToBegin(file_);
+				FileAPI_SeekToEnd(file_);
 				dataSize = FileAPI_Tell(file_);
+				FileAPI_SeekToBegin(file_);
 				data = new char[dataSize + 1];
 				dataSize = FileAPI_ReadStream(file_, data, dataSize);
 				data[dataSize] = '\0';

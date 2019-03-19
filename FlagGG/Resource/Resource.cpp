@@ -33,7 +33,7 @@ namespace FlagGG
 				return false;
 			}
 
-			return false;
+			return true;
 		}
 
 		bool Resource::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
