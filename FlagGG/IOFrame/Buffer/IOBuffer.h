@@ -44,9 +44,10 @@ namespace FlagGG
 				virtual void ReadUInt64(uint64_t& value) = 0;
 				virtual void WriteUInt64(uint64_t value) = 0;
 
-				virtual void WriteStream(const char* data, size_t data_size) = 0;
+				virtual uint32_t ReadStream(char* data, size_t dataSize) = 0;
+				virtual void WriteStream(const char* data, size_t dataSize) = 0;
 
-				virtual void ToString(char*& data, size_t& data_size) = 0;
+				virtual void ToString(char*& data, size_t& dataSize) = 0;
 			};
 
 			typedef Container::SharedPtr < IOBuffer > IOBufferPtr;

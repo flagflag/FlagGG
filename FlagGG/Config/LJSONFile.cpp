@@ -1,5 +1,6 @@
 #include "Config/LJSONFile.h"
 #include "Config/LJSONParser.h"
+#include "Container/ArrayPtr.h"
 #include "Log.h"
 
 #include <fstream>
@@ -9,26 +10,20 @@ namespace FlagGG
 {
 	namespace Config
 	{
-		bool LJSONFile::LoadFile(const Container::String& fileName)
+		const LJSONValue& LJSONFile::GetRoot() const
 		{
-			std::ifstream stream;
-			stream.open(fileName.CString(), std::ios::in | std::ios::binary | std::ios::ate);
-			if (!stream.is_open())
-			{
-				FLAGGG_LOG_ERROR("open json file failed.");
+			return root_;
+		}
 
-				return false;
-			}
-
-			size_t fileSize = stream.tellg();
-			std::unique_ptr<char[]> buffer(new char[fileSize + 1]);
-			stream.seekg(0, std::ios::beg);
-
-			stream.read(buffer.get(), fileSize);
-			buffer.get()[fileSize] = '\0';
+		bool LJSONFile::BeginLoad(IOFrame::Stream::FileStream& fileStream)
+		{
+			char* buffer = nullptr;
+			size_t bufferSize = 0;
+			fileStream.ToString(buffer, bufferSize);
+			Container::SharedArrayPtr<char> autoDelete(buffer);
 
 			LJSONParser parser;
-			if (!parser.Load(buffer.get(), fileSize, root_))
+			if (!parser.Load(buffer, bufferSize, root_))
 			{
 				FLAGGG_LOG_ERROR("parse json file failed.");
 
@@ -38,9 +33,9 @@ namespace FlagGG
 			return true;
 		}
 
-		const LJSONValue& LJSONFile::GetRoot() const
+		bool LJSONFile::EndLoad()
 		{
-			return root_;
+			return true;
 		}
 	}
 }

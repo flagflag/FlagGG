@@ -4,6 +4,7 @@
 #include <string>
 #include "Export.h"
 #include "Container/Str.h"
+#include "IOFrame/Stream/FileStream.h"
 
 namespace FlagGG
 {
@@ -14,7 +15,12 @@ namespace FlagGG
 		public:
 			virtual ~Resource() = default;
 
-			virtual bool LoadFile(const Container::String& fileName);
+			bool LoadFile(const Container::String& fileName);
+
+		protected:
+			virtual bool BeginLoad(IOFrame::Stream::FileStream& fileStream);
+
+			virtual bool EndLoad();
 		};
 	}
 }

@@ -1,30 +1,36 @@
-﻿#ifndef __BUFFER__
-#define __BUFFER__
+#ifndef __FILE_STREAM__
+#define __FILE_STREAM__
 
-#include "IOBuffer.h"
-
-#include <vector>
-#include <stdint.h>
+#include "Export.h"
+#include "Container/Str.h"
+#include "IOFrame/Buffer/IOBuffer.h"
 
 namespace FlagGG
 {
 	namespace IOFrame
 	{
-		namespace Buffer
+		namespace Stream
 		{
-			//不区分TCP和UDP，用同一种buffer
-			class NetBuffer : public IOBuffer
+			enum class FileMode
+			{
+				FILE_READ		= 1 << 0,
+				FILE_WRITE		= 1 << 1,
+				FILE_READ_WIRTE = FILE_READ | FILE_WRITE,
+				FILE_DEFAULT	= FILE_READ,
+			};
+
+			class FlagGG_API FileStream : public Buffer::IOBuffer
 			{
 			public:
-				struct SimpleBuffer
-				{
-					char* buffer;
-					size_t bufferSize;
-				};
+				typedef void* FilePoint;
+				
+				FileStream();
 
-				NetBuffer();
+				~FileStream() override;
 
-				~NetBuffer() override = default;
+				void Open(const Container::String& filePath, FileMode fileMode = FileMode::FILE_DEFAULT);
+				void Close();
+				bool IsOpen() const;
 
 				void ClearIndex() override;
 
@@ -52,35 +58,14 @@ namespace FlagGG
 				void ReadUInt64(uint64_t& value) override;
 				void WriteUInt64(uint64_t value) override;
 
-				uint32_t ReadStream(char* data, size_t dataSize) override { return 0u; }
+				uint32_t ReadStream(char* data, size_t dataSize) override;
 				void WriteStream(const char* data, size_t dataSize) override;
 
 				void ToString(char*& data, size_t& dataSize) override;
-
-			protected:
-				enum CheckMode
-				{
-					mode_read = 1,
-					mode_write = 2,
-				};
-
-				bool CheckBuffer(int mode);
-
-				bool ReadByte(uint8_t& byte);
-
-				bool WriteByte(uint8_t byte);
-
-			private:
-				std::vector < SimpleBuffer > buffers_;
-
-				int index_;
-				
-				int count_;
 			
-				SimpleBuffer currentBuffer_;
+			protected:
+				FilePoint file_;
 			};
-
-			typedef Container::SharedPtr < NetBuffer > NetBufferPtr;
 		}
 	}
 }

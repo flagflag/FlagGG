@@ -14,9 +14,12 @@ namespace FlagGG
 		public:
 			~LJSONFile() override = default;
 
-			bool LoadFile(const Container::String& fileName) override;
-
 			const LJSONValue& GetRoot() const;
+
+		protected:
+			bool BeginLoad(IOFrame::Stream::FileStream& fileStream) override;
+
+			bool EndLoad() override;
 
 		private:
 			LJSONValue root_;
