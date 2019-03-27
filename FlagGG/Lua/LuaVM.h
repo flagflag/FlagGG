@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <lualib.h>
 
-class lua_State;
+struct lua_State;
 
 namespace FlagGG
 {
@@ -19,25 +19,26 @@ namespace FlagGG
 		{
 		public:
 			template < class ... Args >
-			bool CallEvent(const Container::String& eventName, Args ... args)
+			bool CallEvent(const Container::String& eventName, Args && ... args)
 			{
-				if (!CheckType(luaState_, -1))
-				{
-					return false;
-				}
-
 				SetFunctionParam(args ...);
 
 				return true;
 			}
 
 		protected:
-			template < class T, class ... Args >
-			void SetFunctionParam(T&& value, Args ... args)
+			template < class T >
+			void SetFunctionParam(T&& value)
 			{
-				Setter::Set(luaState_, value);
+				Set(luaState_, value);
+			}
+			
+			template < class T, class ... Args >
+			void SetFunctionParam(T&& value, Args && ... args)
+			{
+				Set(luaState_, value);
 
-				SetFunctionParam(args ...);
+				SetFunctionParam(args...);
 			}
 
 		private:
