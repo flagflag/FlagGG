@@ -1,7 +1,7 @@
 ﻿# Define target name
 set (TARGET_NAME lua53)
 set (LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../bin)
-# list (APPEND TARGET_PROPERTIES FOLDER "ThirdParty")
+list (APPEND TARGET_PROPERTIES FOLDER "3rd")
 
 setup_lint ()
 

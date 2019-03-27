@@ -1,4 +1,3 @@
-include (${CMAKE_CURRENT_SOURCE_DIR}/../CMake/Common.cmake)
 include (${CMAKE_CURRENT_SOURCE_DIR}/../CMake/ThirdParty.cmake)
 
 # Define target name

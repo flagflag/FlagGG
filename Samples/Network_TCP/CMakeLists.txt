@@ -1,10 +1,7 @@
-cmake_minimum_required(VERSION 3.13)
-
-include (${CMAKE_CURRENT_SOURCE_DIR}/../../CMake/Common.cmake)
-
 set (TARGET_NAME Network_TCP)
 set (EXECUTABLE_OUTPUT_PATH  ${CMAKE_CURRENT_SOURCE_DIR}/../../bin)
 set (FLAGGG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../FlagGG)
+list (APPEND TARGET_PROPERTIES FOLDER "Samples")
 
 setup_lint ()
 

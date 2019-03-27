@@ -1,7 +1,7 @@
-set (TARGET_NAME LuaTest)
+set (TARGET_NAME Client)
 set (EXECUTABLE_OUTPUT_PATH  ${CMAKE_CURRENT_SOURCE_DIR}/../../bin)
 set (FLAGGG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../FlagGG)
-list (APPEND TARGET_PROPERTIES FOLDER "Samples")
+list (APPEND TARGET_PROPERTIES FOLDER "Application")
 
 setup_lint ()
 
