@@ -9,7 +9,6 @@
 #include "Lua/ILua/LuaUtil.h"
 
 #include <stdint.h>
-#include <lualib.h>
 
 struct lua_State;
 

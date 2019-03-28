@@ -9,7 +9,6 @@ else ()
     set (BOOST_LIB libboost_regex.a)
 endif ()
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/lua)
-link_directories (${CMAKE_CURRENT_SOURCE_DIR}/../bin)
 set (LUA_LIB lua53)
 
 # Direct3D

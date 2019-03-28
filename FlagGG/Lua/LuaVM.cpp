@@ -1,6 +1,6 @@
 #include "Lua/LuaVM.h"
 
-#include <lauxlib.h>
+#include <lua.hpp>
 
 namespace FlagGG
 {

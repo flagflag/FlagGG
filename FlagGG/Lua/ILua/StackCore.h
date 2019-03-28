@@ -141,7 +141,7 @@ namespace FlagGG
 			Setter<T>::Set(L, value);
 		}
 
-		struct StackGuard
+		struct FlagGG_API StackGuard
 		{
 		public:
 			StackGuard(lua_State* L) : L_(L), top_(lua_gettop(L_)) { }

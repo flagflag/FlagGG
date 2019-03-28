@@ -25,10 +25,15 @@ define_source_files (EXCLUDE_PATTERNS ${EXCLUDE_PATTERNS} RECURSE GROUP)
 # setup_library (SHARED) 表示动态库(win上*.dll，linux上*.os)
 # setup_main_executable() 表示可执行文件
 # setup_main_executable ()
-setup_library (SHARED)
+if (FLAGGG_LIB_TYPE STREQUAL SHARED)
+    setup_library (SHARED)
+else()
+    setup_library (STATIC)
+endif()
 
 message ("boost lib: ${BOOST_LIB}")
 message ("d3d11 lib: ${D3D11_LIB}")
+message ("lua lib: ${LUA_LIB}")
 
 target_link_libraries(${TARGET_NAME}
     ${BOOST_LIB}

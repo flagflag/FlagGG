@@ -1,7 +1,7 @@
 #include "Lua/ILua/LuaUtil.h"
 #include "Log.h"
 
-#include <lauxlib.h>
+#include <lua.hpp>
 #ifdef WIN32 || WIN64
 #include <windows.h>
 #endif
@@ -14,9 +14,9 @@ namespace FlagGG
 		{
 			lua_getglobal(L, "game_events");
 
-			if (TypeOf(L, -1) != Type::FUNCTION)
+			if (TypeOf(L, -1) != Type::TABLE)
 			{
-				FLAGGG_LOG_ERROR("try call non-function.");
+				FLAGGG_LOG_ERROR("global game_events is ilegall.");
 
 				lua_pop(L, 1);
 
@@ -24,6 +24,16 @@ namespace FlagGG
 			}
 
 			lua_getfield(L, -1, eventName.CString());
+
+			if (TypeOf(L, -1) != Type::FUNCTION)
+			{
+				FLAGGG_LOG_ERROR("try call non-function.");
+
+				lua_pop(L, 2);
+
+				return false;
+			}
+
 			lua_remove(L, -2);
 
 			return true;

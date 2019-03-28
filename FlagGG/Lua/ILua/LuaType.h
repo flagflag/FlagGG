@@ -3,7 +3,7 @@
 
 #include "Container/Str.h"
 
-#include <lua.h>
+#include <lua.hpp>
 #include <stdint.h>
 
 namespace FlagGG
