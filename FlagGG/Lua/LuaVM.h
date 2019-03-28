@@ -2,9 +2,11 @@
 #define __LUA_VM__
 
 #include "Export.h"
+#include "Container/Ptr.h"
 #include "Container/Str.h"
 #include "Log.h"
 #include "Lua/ILua/StackCore.h"
+#include "Lua/ILua/LuaUtil.h"
 
 #include <stdint.h>
 #include <lualib.h>
@@ -15,30 +17,25 @@ namespace FlagGG
 {
 	namespace Lua
 	{
-		class FlagGG_API LuaVM
+		class FlagGG_API LuaVM : public Container::RefCounted
 		{
 		public:
+			LuaVM();
+
+			~LuaVM() override;
+
+			void Open();
+
+			void Close();
+
+			bool IsOpen() const;
+
 			template < class ... Args >
-			bool CallEvent(const Container::String& eventName, Args && ... args)
+			bool CallEvent(const Container::String& eventName, const Args ... args)
 			{
-				SetFunctionParam(args ...);
+				StackGuard guard(luaState_);
 
-				return true;
-			}
-
-		protected:
-			template < class T >
-			void SetFunctionParam(T&& value)
-			{
-				Set(luaState_, value);
-			}
-			
-			template < class T, class ... Args >
-			void SetFunctionParam(T&& value, Args && ... args)
-			{
-				Set(luaState_, value);
-
-				SetFunctionParam(args...);
+				return Call(luaState_, eventName, args ...);
 			}
 
 		private:

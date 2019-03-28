@@ -129,7 +129,7 @@ namespace FlagGG
 		template <>
 		struct Setter<Container::String>
 		{
-			static void Set(lua_State* L, Container::String&& value)
+			static void Set(lua_State* L, const Container::String& value)
 			{
 				lua_pushstring(L, value.CString());
 			}
@@ -140,6 +140,19 @@ namespace FlagGG
 		{
 			Setter<T>::Set(L, value);
 		}
+
+		struct StackGuard
+		{
+		public:
+			StackGuard(lua_State* L) : L_(L), top_(lua_gettop(L_)) { }
+
+			~StackGuard() { lua_settop(L_, top_); }
+
+		private:
+			lua_State* L_;
+
+			int top_;
+		};
 	}
 }
 

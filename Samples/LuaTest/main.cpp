@@ -1,6 +1,7 @@
 #include <Lua/LuaVM.h>
+#include <Log.h>
 
-int main()
+void Run()
 {
 	enum
 	{
@@ -8,6 +9,13 @@ int main()
 	};
 
 	FlagGG::Lua::LuaVM luaVM;
+	luaVM.Open();
+	if (!luaVM.IsOpen())
+	{
+		FLAGGG_LOG_ERROR("open lua vm failed.");
+
+		return;
+	}
 
 	luaVM.CallEvent("2333", true);
 	luaVM.CallEvent("2333", _2333);
@@ -20,6 +28,13 @@ int main()
 	luaVM.CallEvent("2333", temp1);
 	const FlagGG::Container::String temp2("2333");
 	luaVM.CallEvent("2333", temp2);
+}
+
+int main()
+{
+	Run();
+
+	getchar();
 
 	return 0;
 }
