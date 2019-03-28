@@ -3,8 +3,10 @@
 
 #include "Container/Str.h"
 
-#include <lua.hpp>
 #include <stdint.h>
+#include <lua.hpp>
+
+struct lua_State;
 
 namespace FlagGG
 {
@@ -28,7 +30,7 @@ namespace FlagGG
 			typedef int _;
 		}
 
-		inline Type::_ TypeOf(lua_State* L, int index) { return lua_type(L, index); }
+		FlagGG_API inline Type::_ TypeOf(lua_State* L, int index);
 
 		template < class T, class = void >
 		struct LuaTypeOf : std::integral_constant<Type::_, Type::USERDATA> {};

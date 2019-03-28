@@ -27,7 +27,7 @@ namespace FlagGG
 
 			if (TypeOf(L, -1) != Type::FUNCTION)
 			{
-				FLAGGG_LOG_ERROR("try call non-function.");
+				FLAGGG_LOG_ERROR("try call non-function[game_events.%s].", eventName.CString());
 
 				lua_pop(L, 2);
 
@@ -68,5 +68,7 @@ namespace FlagGG
 
 			return ret == LUA_OK;
 		}
+
+		void SetParam(lua_State* L) {}
 	}
 }

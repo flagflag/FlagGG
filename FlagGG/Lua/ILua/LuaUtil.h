@@ -26,6 +26,8 @@ namespace FlagGG
 			return CallImpl(L, eventName, sizeof...(args), returnCount);
 		}
 
+		FlagGG_API void SetParam(lua_State* L);
+
 		template < class T >
 		void SetParam(lua_State* L, const T& value)
 		{
@@ -39,7 +41,34 @@ namespace FlagGG
 
 			SetParam(L, args ...);
 		}
+
+		typedef int(*LuaCFuntion)(lua_State* L);
+
+		struct LuaProxy
+		{
+			const char* name_;
+			LuaCFuntion func_;
+		};
+
+		template < class T, int(T::*func)() >
+		class LuaAPIBinder
+		{
+		public:
+			static LuaProxy Proxy(const char* name)
+			{
+				return { name, &Proxy_ };
+			}
+
+		private:
+			static int Proxy_(lua_State* L)
+			{
+				T* instance = static_cast<T*>(lua_touserdata(L, lua_upvalueindex(1)));
+				return (instance->*func)();
+			}
+		};
 	}
 }
+
+#define LUA_API_PROXY(className, funcName, luaFuncName) FlagGG::Lua::LuaAPIBinder<className, &className::funcName>::Proxy(luaFuncName)
 
 #endif
