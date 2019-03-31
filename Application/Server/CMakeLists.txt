@@ -5,8 +5,6 @@ list (APPEND TARGET_PROPERTIES FOLDER "Application")
 
 setup_lint ()
 
-add_definitions (-D_DEBUG)
-
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
 # find_package (FlagGG REQUIRED)

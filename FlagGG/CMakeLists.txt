@@ -6,7 +6,7 @@ set (LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../bin)
 
 setup_lint ()
 
-add_definitions (-D_DEBUG -DFlagGG_EXPORTS)
+add_definitions (-DFlagGG_EXPORTS)
 
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 message ("include dir: ${CMAKE_CURRENT_SOURCE_DIR}")
