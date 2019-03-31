@@ -3,6 +3,7 @@
 3rd/rapidjson/.git
 FlagGG/project/Debug/*
 FlagGG/project/Release/*
+LuaScript
 *.suo
 *.sdf
 *.opensdf
