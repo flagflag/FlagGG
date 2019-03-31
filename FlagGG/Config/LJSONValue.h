@@ -85,6 +85,12 @@ namespace FlagGG
 			const LJSONArray& GetArray() const;
 			const LJSONObject& GetObject() const;
 
+			// 弱判断的Get方法
+			const bool ToBool() const;
+			const int32_t ToInt() const;
+			const uint32_t ToUInt() const;
+			const double ToDouble() const;
+
 			// 数组操作
 			LJSONValue& Append();
 
@@ -108,7 +114,6 @@ namespace FlagGG
 			static const LJSONArray EMPTY_ARRAY;
 			static const LJSONObject EMPTY_OBJECT;
 
-		private:
 			LJSONValueType type_;
 			union
 			{

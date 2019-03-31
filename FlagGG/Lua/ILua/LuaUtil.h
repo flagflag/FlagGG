@@ -69,6 +69,7 @@ namespace FlagGG
 	}
 }
 
+#define C_LUA_API_PROXY(funcName, luaFuncName) { luaFuncName, funcName }
 #define LUA_API_PROXY(className, funcName, luaFuncName) FlagGG::Lua::LuaAPIBinder<className, &className::funcName>::Proxy(luaFuncName)
 
 #endif

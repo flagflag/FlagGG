@@ -25,14 +25,14 @@ namespace FlagGG
 
 			lua_getfield(L, -1, eventName.CString());
 
-			if (TypeOf(L, -1) != Type::FUNCTION)
-			{
-				FLAGGG_LOG_ERROR("try call non-function[game_events.%s].", eventName.CString());
+			//if (TypeOf(L, -1) != Type::FUNCTION)
+			//{
+			//	FLAGGG_LOG_ERROR("try call non-function[game_events.%s].", eventName.CString());
 
-				lua_pop(L, 2);
+			//	lua_pop(L, 2);
 
-				return false;
-			}
+			//	return false;
+			//}
 
 			lua_remove(L, -2);
 

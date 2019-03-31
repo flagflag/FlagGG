@@ -38,9 +38,9 @@ namespace FlagGG
 				return Call(luaState_, eventName, args ...);
 			}
 
-			void RegisterCEvent(const Container::String& eventName, const LuaProxy& library);
+			void RegisterCEvents(const Container::Vector<LuaProxy>& librarys);
 
-			void RegisterCPPEvent(const Container::String& className, void* instance, const Container::Vector<LuaProxy>& librarys);
+			void RegisterCPPEvents(const Container::String& className, void* instance, const Container::Vector<LuaProxy>& librarys);
 
 			template < class T >
 			const T& Get(int index = -1)

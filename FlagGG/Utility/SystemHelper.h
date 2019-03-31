@@ -2,6 +2,7 @@
 #define __SYSTEM_HELPER__
 
 #include "Export.h"
+#include "Config/LJSONValue.h"
 
 #include <stdint.h>
 #include <string>
@@ -12,10 +13,12 @@ namespace FlagGG
 	{
 		namespace SystemHelper
 		{
-			std::wstring FlagGG_API FormatPath(const std::wstring& in_path);
+			FlagGG_API std::wstring FormatPath(const std::wstring& in_path);
 
 			// 单位：毫秒
-			void FlagGG_API Sleep(uint64_t time);
+			FlagGG_API void Sleep(uint64_t time);
+
+			FlagGG_API bool ParseCommand(const char** argv, uint32_t argc, Config::LJSONValue& result);
 		}
 	}
 }

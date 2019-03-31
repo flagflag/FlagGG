@@ -15,23 +15,10 @@ namespace FlagGG
 			Close();
 		}
 
-		static int LuaTest(lua_State* L)
-		{
-			printf("2333\n");
-
-			return 0;
-		}
-
 		void LuaVM::Open()
 		{
 			luaState_ = luaL_newstate();
 			luaL_openlibs(luaState_);
-
-			lua_newtable(luaState_);
-			lua_setglobal(luaState_, "game_events");
-
-			lua_pushcfunction(luaState_, LuaTest);
-			lua_setglobal(luaState_, "lua_test");
 		}
 
 		void LuaVM::Close()
@@ -48,12 +35,16 @@ namespace FlagGG
 			return !!luaState_;
 		}
 
-		void LuaVM::RegisterCEvent(const Container::String& eventName, const LuaProxy& library)
+		void LuaVM::RegisterCEvents(const Container::Vector<LuaProxy>& librarys)
 		{
-
+			for (uint32_t i = 0; i < librarys.Size(); ++i)
+			{
+				lua_pushcfunction(luaState_, librarys[i].func_);
+				lua_setglobal(luaState_, librarys[i].name_);
+			}
 		}
 
-		void LuaVM::RegisterCPPEvent(const Container::String& className, void* instance, const Container::Vector<LuaProxy>& librarys)
+		void LuaVM::RegisterCPPEvents(const Container::String& className, void* instance, const Container::Vector<LuaProxy>& librarys)
 		{
 			lua_newtable(luaState_);
 			Container::SharedArrayPtr<luaL_Reg> libs(new luaL_Reg[librarys.Size() + 1]);
@@ -69,7 +60,7 @@ namespace FlagGG
 
 		bool LuaVM::Execute(const Container::String& filePath)
 		{
-			if (luaL_loadfile(luaState_, filePath.CString()))
+			if (luaL_dofile(luaState_, filePath.CString()))
 			{
 				FLAGGG_LOG_ERROR("execute lua file failed, error message: %s.", lua_tostring(luaState_, -1));
 

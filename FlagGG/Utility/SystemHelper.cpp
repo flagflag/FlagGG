@@ -1,4 +1,5 @@
 #include "SystemHelper.h"
+#include "Container/Str.h"
 
 #if WIN32 || WIN64
 #include <windows.h>
@@ -58,6 +59,30 @@ namespace FlagGG
 #else
 				usleep(time * 1000);
 #endif
+			}
+
+			bool ParseCommand(const char** argv, uint32_t argc, Config::LJSONValue& result)
+			{
+				for (uint32_t i = 0; i < argc; ++i)
+				{
+					Container::String command = argv[i];
+					if (command.Length() > 0 && command[0] == '-')
+					{
+						uint32_t pos = command.Find('=');
+						if (pos != Container::String::NPOS)
+						{
+							const Container::String key = command.Substring(1, pos - 1);
+							const Container::String value = command.Substring(pos + 1);
+							result[key] = value;
+						}
+						else
+						{
+							result[command.Substring(1)] = true;
+						}
+					}
+				}
+
+				return true;
 			}
 		}
 	}

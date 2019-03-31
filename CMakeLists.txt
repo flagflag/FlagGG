@@ -13,6 +13,10 @@ if ((NOT WIN32) AND (NOT WIN64))
     message ("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 endif ()
 
+if (FLAGGG_LIB_TYPE STREQUAL STATIC)
+	add_definitions (-DFlagGG_STATIC_DEFINE)
+endif()
+
 include (${CMAKE_CURRENT_SOURCE_DIR}/CMake/Common.cmake)
 
 add_subdirectory (3rd)

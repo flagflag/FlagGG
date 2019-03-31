@@ -30,7 +30,7 @@ namespace FlagGG
 			typedef int _;
 		}
 
-		FlagGG_API inline Type::_ TypeOf(lua_State* L, int index);
+		inline Type::_ TypeOf(lua_State* L, int index) { return lua_type(L, index); }
 
 		template < class T, class = void >
 		struct LuaTypeOf : std::integral_constant<Type::_, Type::USERDATA> {};

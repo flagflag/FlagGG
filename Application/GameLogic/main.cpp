@@ -9,6 +9,8 @@
 
 using namespace FlagGG;
 
+Config::LJSONValue commandParam;
+
 class LogModule
 {
 public:
@@ -44,6 +46,18 @@ private:
 	Container::SharedPtr<Lua::LuaVM> luaVM_;
 };
 
+static int Begin(lua_State* L)
+{
+	FLAGGG_LOG_INFO("start excute lua script[main.lua].");
+	return 0;
+}
+
+static int End(lua_State* L)
+{
+	FLAGGG_LOG_INFO("end excute lua script[main.lua].");
+	return 0;
+}
+
 void RunLuaVM()
 {
 	Container::SharedPtr<Lua::LuaVM> luaVM(new Lua::LuaVM);
@@ -55,8 +69,14 @@ void RunLuaVM()
 		return;
 	}
 
+	luaVM->RegisterCEvents(
+	{
+		C_LUA_API_PROXY(Begin, "main_begin"),
+		C_LUA_API_PROXY(Begin, "main_end")
+	});
+
 	LogModule logModule(luaVM);
-	luaVM->RegisterCPPEvent(
+	luaVM->RegisterCPPEvents(
 	"log", &logModule,
 	{
 		LUA_API_PROXY(LogModule, debug, "debug"),
@@ -65,26 +85,40 @@ void RunLuaVM()
 		LUA_API_PROXY(LogModule, error, "error")
 	});
 
-	if (!luaVM->Execute("LuaCode/main.lua"))
+	const Container::String luaCodePath = commandParam["CodePath"].GetString();
+
+	if (!luaVM->Execute(luaCodePath  + "/main.lua"))
 	{
 		return;
 	}
 
 	FLAGGG_LOG_ERROR("start game.");
 
+	double frameRate = commandParam["FrameRate"].ToDouble();
+	uint64_t sleepTime = frameRate == 0.0f ? 32 : (uint64_t)((double)1000 / frameRate);
+
 	while (true)
 	{
 		luaVM->CallEvent("update");
 
-		Utility::SystemHelper::Sleep(30);
+		Utility::SystemHelper::Sleep(sleepTime);
 	}
 
 	FLAGGG_LOG_ERROR("end game.");
 }
 
-int main()
+int main(int argc, const char* argv[])
 {
-	RunLuaVM();
+	if (Utility::SystemHelper::ParseCommand(argv + 1, argc - 1, commandParam))
+	{
+		RunLuaVM();
+	}
+	else
+	{
+		FLAGGG_LOG_ERROR("parse command failed.");
+	}
+
+	getchar();
 
 	return 0;
 }

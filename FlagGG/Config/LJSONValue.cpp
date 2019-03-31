@@ -1,4 +1,5 @@
 #include "LJSONValue.h"
+#include "Utility/Format.h"
 
 namespace FlagGG
 {
@@ -272,6 +273,41 @@ namespace FlagGG
 		const LJSONObject& LJSONValue::GetObject() const
 		{
 			return IsObject() ? (*objectValue_) : EMPTY_OBJECT;
+		}
+
+		const bool LJSONValue::ToBool() const
+		{
+			return IsBool() ? boolValue_ : (IsString() && (*stringValue_) == "true" ? true : false);
+		}
+
+		const int32_t LJSONValue::ToInt() const
+		{
+			if (IsNumber())
+			{
+				return static_cast<int32_t>(numberValue_);
+			}
+
+			return Utility::Format::ToInt(*stringValue_);
+		}
+
+		const uint32_t LJSONValue::ToUInt() const
+		{
+			if (IsNumber())
+			{
+				static_cast<uint32_t>(numberValue_);
+			}
+
+			return Utility::Format::ToUInt(*stringValue_);
+		}
+
+		const double LJSONValue::ToDouble() const
+		{
+			if (IsNumber())
+			{
+				return numberValue_;
+			}
+
+			return Utility::Format::ToDouble(*stringValue_);
 		}
 
 		LJSONValue& LJSONValue::Append()
