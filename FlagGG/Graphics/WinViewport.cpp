@@ -88,8 +88,10 @@ namespace FlagGG
 		}
 
 
-		WinViewport::WinViewport(void* parentWindow, unsigned x, unsigned y, unsigned width, unsigned height) :
-			parentWindow_(parentWindow)
+		WinViewport::WinViewport(Core::Context* context, void* parentWindow, unsigned x, unsigned y, unsigned width, unsigned height) :
+			Viewport(context),
+			parentWindow_(parentWindow),
+			input_(context->GetVariable<Core::Input>("input"))
 		{
 			window = CreateWindowExW(
 				0,
@@ -211,6 +213,8 @@ namespace FlagGG
 		{
 			if (!context || !context->IsValid()) return;
 
+			RenderEngine::UpdateMatrix(GetCamera());
+
 			ID3D11DeviceContext* deviceContext = RenderEngine::GetDeviceContext();
 
 			ID3D11RenderTargetView* renderTargetView = GetRenderTarget()->GetObject<ID3D11RenderTargetView>();
@@ -280,10 +284,10 @@ namespace FlagGG
 			case WM_RBUTTONDOWN:
 			case WM_MBUTTONDOWN:
 				{
-					MouseKey key;
-					if (message == WM_LBUTTONDOWN) key = MOUSE_LEFT;
-					else if (message == WM_RBUTTONDOWN) key = MOUSE_RIGHT;
-					else if (message == WM_MBUTTONDOWN) key = MOUSE_MID;
+					Core::MouseKey key;
+					if (message == WM_LBUTTONDOWN) key = Core::MOUSE_LEFT;
+					else if (message == WM_RBUTTONDOWN) key = Core::MOUSE_RIGHT;
+					else if (message == WM_MBUTTONDOWN) key = Core::MOUSE_MID;
 					
 					input_->OnMouseDown(nullptr, key);
 				}
@@ -293,10 +297,10 @@ namespace FlagGG
 			case WM_RBUTTONUP:
 			case WM_MBUTTONUP:
 				{
-					MouseKey key;
-					if (message == WM_LBUTTONUP) key = MOUSE_LEFT;
-					else if (message == WM_RBUTTONUP) key = MOUSE_RIGHT;
-					else if (message == WM_MBUTTONUP) key = MOUSE_MID;
+					Core::MouseKey key;
+					if (message == WM_LBUTTONUP) key = Core::MOUSE_LEFT;
+					else if (message == WM_RBUTTONUP) key = Core::MOUSE_RIGHT;
+					else if (message == WM_MBUTTONUP) key = Core::MOUSE_MID;
 
 					input_->OnMouseUp(nullptr, key);
 				}
@@ -313,11 +317,6 @@ namespace FlagGG
 
 				break;
 			}
-		}
-
-		void WinViewport::SetInput(Input* input)
-		{
-			input_ = input;
 		}
 	}
 }

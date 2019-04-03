@@ -6,6 +6,7 @@
 #include "Viewport.h"
 #include "Batch.h"
 #include "RenderContext.h"
+#include "Core/DeviceEvent.h"
 
 #include <set>
 
@@ -43,46 +44,10 @@ namespace FlagGG
 			static std::vector<DefferedMessage> defferedMsgs_;
 		};
 
-		class KeyState
-		{
-		public:
-			bool OnCtrl();
-
-			bool OnAlt();
-
-			bool OnShift();
-
-		private:
-			
-		};
-
-		enum MouseKey
-		{
-			MOUSE_LEFT = 0,
-			MOUSE_MID,
-			MOUSE_RIGHT,
-		};
-
-		class FlagGG_API Input
-		{
-		public:
-			virtual ~Input() = default;
-
-			virtual void OnKeyDown(KeyState* keyState, unsigned keyCode) = 0;
-
-			virtual void OnKeyUp(KeyState* keyState, unsigned keyCode) = 0;
-
-			virtual void OnMouseDown(KeyState* keyState, MouseKey mouseKey) = 0;
-
-			virtual void OnMouseUp(KeyState* keyState, MouseKey mouseKey) = 0;
-
-			virtual void OnMouseMove(KeyState* keyState, const Math::Vector2& delta) = 0;
-		};
-
 		class FlagGG_API WinViewport : public Viewport
 		{
 		public:
-			WinViewport(void* parentWindow, unsigned x, unsigned y, unsigned width, unsigned height);
+			WinViewport(Core::Context* context, void* parentWindow, unsigned x, unsigned y, unsigned width, unsigned height);
 
 			~WinViewport() override = default;
 
@@ -102,8 +67,6 @@ namespace FlagGG
 
 			void WinProc(UINT message, WPARAM wParam, LPARAM lParam);
 
-			void SetInput(Input* input);
-
 		private:
 			void UpdateVertexData(const unsigned char* vertexs, unsigned vertexSize, unsigned vertexCount);
 
@@ -116,7 +79,7 @@ namespace FlagGG
 			unsigned vertexSize_{ 0 };
 			unsigned vertexCount_{ 0 };
 
-			Input* input_{ nullptr };
+			Core::Input* input_;
 
 			POINT mousePos_;
 		};

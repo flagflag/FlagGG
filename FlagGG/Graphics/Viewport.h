@@ -5,6 +5,8 @@
 
 #include "RenderTarget.h"
 #include "Container/Ptr.h"
+#include "Core/Contex.h"
+#include "Graphics/Camera.h"
 
 namespace FlagGG
 {
@@ -14,6 +16,8 @@ namespace FlagGG
 		class FlagGG_API Viewport : public GPUObject
 		{
 		public:
+			Viewport(Core::Context* context);
+
 			~Viewport() override;
 
 			void Initialize() override;
@@ -30,6 +34,10 @@ namespace FlagGG
 
 			RenderTarget* GetRenderTarget();
 
+			Camera* GetCamera();
+
+			void SetCamera(Camera* camera);
+
 			bool sRGB_{ true };
 
 		private:
@@ -42,6 +50,10 @@ namespace FlagGG
 			void SetViewport();
 
 			Container::SharedPtr<RenderTarget> renderTarget_;
+
+			Core::Context* context_;
+
+			Container::SharedPtr<Camera> camera_;
 
 		protected:
 			ID3D11DepthStencilView* depthStencialView_{ nullptr };

@@ -1,6 +1,8 @@
 #include "RenderEngine.h"
 #include "Camera.h"
 
+#include <assert.h>
+
 namespace FlagGG
 {
 	namespace Graphics
@@ -128,6 +130,8 @@ namespace FlagGG
 
 		void RenderEngine::UpdateMatrix(Camera* camera)
 		{
+			assert(camera);
+
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 			unsigned int bufferNumber;
 

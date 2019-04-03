@@ -6,11 +6,16 @@
 #include <Graphics/VertexFormat.h>
 #include <Graphics/Camera.h>
 #include <Math/Matrix4.h>
+#include <Core/Contex.h>
+#include <Core/DeviceEvent.h>
+#include <Container/Ptr.h>
 
 #include <fstream>
 
 using namespace FlagGG::Graphics;
 using namespace FlagGG::Math;
+using namespace FlagGG::Core;
+using namespace FlagGG::Container;
 
 void AddGrid(Batch3D& batch)
 {
@@ -164,92 +169,105 @@ struct MatrixBufferType
 	Matrix4 projection;
 };
 
-class InputDemo : public Input
+static void Test(KeyState* keyState, unsigned keyCode)
+{
+
+}
+
+class CameraOperation
 {
 public:
-	InputDemo() :
-		camera_(LAND_OBJECT)
+	CameraOperation(Context* context) :
+		camera_(new Camera(LAND_OBJECT))
 	{
-		camera_.Walk(-5.0);
-		camera_.Fly(1.0);
-		camera_.Strafe(1.0f);
-		camera_.Pitch(-0.005f);
-		camera_.Yaw(0.0025f);
+		camera_->Walk(-5.0);
+		camera_->Fly(1.0);
+		camera_->Strafe(1.0f);
+		camera_->Pitch(-0.005f);
+		camera_->Yaw(0.0025f);
+
+		context->RegisterEvent(InputEvent::KEY_DOWN, EVENT_HANDLER(Test));
+
+		context->RegisterEvent(InputEvent::KEY_DOWN, EVENT_HANDLER(CameraOperation::OnKeyDown, this));
+		context->RegisterEvent(InputEvent::KEY_UP, EVENT_HANDLER(CameraOperation::OnKeyUp, this));
+		context->RegisterEvent(InputEvent::MOUSE_DOWN, EVENT_HANDLER(CameraOperation::OnMouseDown, this));
+		context->RegisterEvent(InputEvent::MOUSE_UP, EVENT_HANDLER(CameraOperation::OnMouseUp, this));
+		context->RegisterEvent(InputEvent::MOUSE_MOVE, EVENT_HANDLER(CameraOperation::OnMouseMove, this));
 	}
 
-	void OnKeyDown(KeyState* keyState, unsigned keyCode) override
+	void OnKeyDown(KeyState* keyState, unsigned keyCode)
 	{
 		printf("OnKeyDown keyCode = %u\n", keyCode);
 
 		if (keyCode == 'W' || keyCode == 'w')
 		{
-			camera_.Walk(0.1f);
+			camera_->Walk(0.1f);
 		}
 
 		if (keyCode == 'S' || keyCode == 's')
 		{
-			camera_.Walk(-0.1f);
+			camera_->Walk(-0.1f);
 		}
 
 		if (keyCode == 'A' || keyCode == 'a')
 		{
-			camera_.Strafe(-0.1f);
+			camera_->Strafe(-0.1f);
 		}
 
 		if (keyCode == 'D' || keyCode == 'd')
 		{
-			camera_.Strafe(0.1f);
+			camera_->Strafe(0.1f);
 		}
 
 		if (keyCode == 'R' || keyCode == 'r')
 		{
-			camera_.Fly(0.1f);
+			camera_->Fly(0.1f);
 		}
 
 		if (keyCode == 'F' || keyCode == 'f')
 		{
-			camera_.Fly(-0.1f);
+			camera_->Fly(-0.1f);
 		}
 
 
 
 		if (keyCode == VK_UP)
 		{
-			camera_.Pitch(0.0025);
+			camera_->Pitch(0.0025);
 		}
 
 		if (keyCode == VK_DOWN)
 		{
-			camera_.Pitch(-0.0025);
+			camera_->Pitch(-0.0025);
 		}
 
 		if (keyCode == VK_LEFT)
 		{
-			camera_.Yaw(0.0025);
+			camera_->Yaw(0.0025);
 		}
 
 		if (keyCode == VK_RIGHT)
 		{
-			camera_.Yaw(-0.0025);
+			camera_->Yaw(-0.0025);
 		}
 
 		if (keyCode == 'N' || keyCode == 'n')
 		{
-			camera_.Roll(0.0025);
+			camera_->Roll(0.0025);
 		}
 
 		if (keyCode == 'M' || keyCode == 'm')
 		{
-			camera_.Roll(-0.0025);
+			camera_->Roll(-0.0025);
 		}
 	}
 
-	void OnKeyUp(KeyState* keyState, unsigned keyCode) override
+	void OnKeyUp(KeyState* keyState, unsigned keyCode)
 	{
 		printf("OnKeyUp keyCode = %u\n", keyCode);
 	}
 
-	void OnMouseDown(KeyState* keyState, MouseKey mouseKey) override
+	void OnMouseDown(KeyState* keyState, MouseKey mouseKey)
 	{
 		if (mouseKey == MOUSE_LEFT)
 		{
@@ -257,7 +275,7 @@ public:
 		}
 	}
 
-	void OnMouseUp(KeyState* keyState, MouseKey mouseKey) override
+	void OnMouseUp(KeyState* keyState, MouseKey mouseKey)
 	{
 		if (mouseKey == MOUSE_LEFT)
 		{
@@ -265,18 +283,18 @@ public:
 		}
 	}
 
-	void OnMouseMove(KeyState* keyState, const Vector2& delta) override
+	void OnMouseMove(KeyState* keyState, const Vector2& delta)
 	{
 		if (mouseDown_)
 		{
 			printf("mouse delta (%lf, %lf)\n", delta.x_, delta.y_);
 
-			camera_.Yaw(-delta.x_ * rate_);
-			camera_.Pitch(-delta.y_ * rate_);
+			camera_->Yaw(-delta.x_ * rate_);
+			camera_->Pitch(-delta.y_ * rate_);
 		}
 	}
 
-	Camera camera_;
+	SharedPtr<Camera> camera_;
 
 private:
 	bool mouseDown_{ false };
@@ -288,6 +306,12 @@ void Run()
 {
 	WindowDevice::Initialize();
 	RenderEngine::Initialize();
+
+	Context context;
+	Input* input = new Input(&context);
+	context.RegisterVariable<Input>(input, "input");
+
+	CameraOperation cameraOpt(&context);
 
 	Texture2D texture(L"../../../Samples/Direct3D_Cube/texture.dds");
 	texture.Initialize();
@@ -304,16 +328,14 @@ void Run()
 	VertexFormat format(vs.GetByteCode(), VERTEX3D);
 	format.Initialize();
 
-	WinViewport viewport(nullptr, 100, 100, 500, 500);
+	WinViewport viewport(&context, nullptr, 100, 100, 500, 500);
 
 	viewport.Initialize();
 	viewport.Show();
+	viewport.SetCamera(cameraOpt.camera_);
 
-	InputDemo inputDemo;
-	viewport.SetInput(&inputDemo);
-
-	RenderContext context(&grid, &vs, &ps, &format);
-	context.batchs_.emplace_back(&batch);
+	RenderContext renderContext(&grid, &vs, &ps, &format);
+	renderContext.batchs_.emplace_back(&batch);
 
 	WindowDevice::RegisterWinMessage(&viewport);
 
@@ -323,9 +345,7 @@ void Run()
 
 		WindowDevice::Update();
 
-		RenderEngine::UpdateMatrix(&inputDemo.camera_);
-
-		viewport.Render(&context);
+		viewport.Render(&renderContext);
 	}
 
 	WindowDevice::UnregisterWinMessage(&viewport);

@@ -5,6 +5,7 @@
 
 #include "Math/Vector3.h"
 #include "Math/Matrix4.h"
+#include "Container/RefCounted.h"
 
 namespace FlagGG
 {
@@ -16,7 +17,7 @@ namespace FlagGG
 			AIRCRAFT,
 		};
 
-		class FlagGG_API Camera
+		class FlagGG_API Camera : public Container::RefCounted
 		{
 		public:
 			Camera(CameraType cameraType);

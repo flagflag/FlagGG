@@ -5,6 +5,10 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
+		Viewport::Viewport(Core::Context* context) :
+			context_(context)
+		{ }
+
 		Viewport::~Viewport()
 		{
 			SAFE_RELEASE(depthStencialView_);
@@ -126,6 +130,16 @@ namespace FlagGG
 			d3d11Viewport.MaxDepth = 1.0f;
 
 			RenderEngine::GetDeviceContext()->RSSetViewports(1, &d3d11Viewport);
+		}
+
+		Camera* Viewport::GetCamera()
+		{
+			return camera_;
+		}
+
+		void Viewport::SetCamera(Camera* camera)
+		{
+			camera_ = camera;
 		}
 	}
 }
