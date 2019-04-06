@@ -9,6 +9,7 @@
 #include <Core/Contex.h>
 #include <Core/DeviceEvent.h>
 #include <Container/Ptr.h>
+#include <Core/Function.h>
 
 #include <fstream>
 
@@ -169,11 +170,6 @@ struct MatrixBufferType
 	Matrix4 projection;
 };
 
-static void Test(KeyState* keyState, unsigned keyCode)
-{
-
-}
-
 class CameraOperation
 {
 public:
@@ -186,13 +182,11 @@ public:
 		camera_->Pitch(-0.005f);
 		camera_->Yaw(0.0025f);
 
-		context->RegisterEvent(InputEvent::KEY_DOWN, EVENT_HANDLER(Test));
-
-		context->RegisterEvent(InputEvent::KEY_DOWN, EVENT_HANDLER(CameraOperation::OnKeyDown, this));
-		context->RegisterEvent(InputEvent::KEY_UP, EVENT_HANDLER(CameraOperation::OnKeyUp, this));
-		context->RegisterEvent(InputEvent::MOUSE_DOWN, EVENT_HANDLER(CameraOperation::OnMouseDown, this));
-		context->RegisterEvent(InputEvent::MOUSE_UP, EVENT_HANDLER(CameraOperation::OnMouseUp, this));
-		context->RegisterEvent(InputEvent::MOUSE_MOVE, EVENT_HANDLER(CameraOperation::OnMouseMove, this));
+		context->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_DOWN, CameraOperation::OnKeyDown, this));
+		context->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, CameraOperation::OnKeyUp, this));
+		context->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_DOWN, CameraOperation::OnMouseDown, this));
+		context->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_UP, CameraOperation::OnMouseUp, this));
+		context->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_MOVE, CameraOperation::OnMouseMove, this));
 	}
 
 	void OnKeyDown(KeyState* keyState, unsigned keyCode)

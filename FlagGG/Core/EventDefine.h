@@ -2,15 +2,16 @@
 #define __EVENT_DEFINE__
 
 #include "Math/Vector2.h"
+#include "Core/Function.h"
 
 #include <stdint.h>
 #include <functional>
 
 #define DEFINE_EVENT(eventId, eventNative) \
-	static const uint32_t eventId  = FlagGG::Core::AddEvent(); \
-	typedef std::function<eventNative> eventId##_HANDLER;
+	static const uint32_t eventId = FlagGG::Core::AddEvent(); \
+	typedef FlagGG::Core::Function<eventNative> eventId##_HANDLER;
 
-#define EVENT_HANDLER(func, ...) std::bind(&func, ##__VA_ARGS__), ##__VA_ARGS__
+#define EVENT_HANDLER(eventId, func, ...) eventId, FlagGG::Core::Function<eventId##_HANDLER::NativeType>(&func, ##__VA_ARGS__), ##__VA_ARGS__
 
 namespace FlagGG
 {
