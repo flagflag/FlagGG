@@ -16,9 +16,9 @@ namespace FlagGG
 		{
 			if (type_ != DRAW_TRIANGLE) return;
 
-			unsigned begin = vertexs_->size();
-			vertexEnd_ = vertexs_->size() + vertexSize_ * 3;
-			vertexs_->resize(vertexEnd_);
+			unsigned begin = vertexs_->Size();
+			vertexEnd_ = vertexs_->Size() + vertexSize_ * 3;
+			vertexs_->Resize(vertexEnd_);
 
 			float* dest = reinterpret_cast<float*>(&(*vertexs_)[begin]);
 			dest[0] = v1.x_;
@@ -55,9 +55,9 @@ namespace FlagGG
 		{
 			if (type_ != DRAW_LINE) return;
 
-			unsigned begin = vertexs_->size();
-			vertexEnd_ = vertexs_->size() + vertexSize_ * 2;
-			vertexs_->resize(vertexEnd_);
+			unsigned begin = vertexs_->Size();
+			vertexEnd_ = vertexs_->Size() + vertexSize_ * 2;
+			vertexs_->Resize(vertexEnd_);
 
 			float* dest = reinterpret_cast<float*>(&(*vertexs_)[begin]);
 			dest[0] = v1.x_;
@@ -81,9 +81,9 @@ namespace FlagGG
 
 		void Batch3D::AddBlob(const void* data, unsigned size)
 		{
-			unsigned begin = vertexs_->size();
-			vertexEnd_ = vertexs_->size() + size;
-			vertexs_->resize(vertexEnd_);
+			unsigned begin = vertexs_->Size();
+			vertexEnd_ = vertexs_->Size() + size;
+			vertexs_->Resize(vertexEnd_);
 
 			void* dest = &(*vertexs_)[begin];
 			memcpy(dest, data, size);

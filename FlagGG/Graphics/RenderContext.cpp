@@ -11,13 +11,13 @@ namespace FlagGG
 		{
 			if (batch)
 			{
-				batchs_.emplace_back(batch);
+				batchs_.Push(Container::SharedPtr<Batch>(batch));
 			}	
 		}
 
 		bool RenderContext::IsValid() const
 		{
-			return batchs_.size() > 0 && VSShader_ != nullptr && PSShader_ != nullptr;
+			return batchs_.Size() > 0 && VSShader_ != nullptr && PSShader_ != nullptr;
 		}
 	}
 }

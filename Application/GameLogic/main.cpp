@@ -7,14 +7,22 @@
 #include <Container/Ptr.h>
 #include <Utility/SystemHelper.h>
 
-using namespace FlagGG;
+#include "DemoScene.h"
 
-Config::LJSONValue commandParam;
+using namespace FlagGG::Graphics;
+using namespace FlagGG::Math;
+using namespace FlagGG::Core;
+using namespace FlagGG::Container;
+using namespace FlagGG::Config;
+using namespace FlagGG::Lua;
+using namespace FlagGG::Utility;
+
+LJSONValue commandParam;
 
 class LogModule
 {
 public:
-	LogModule(Container::SharedPtr<Lua::LuaVM> luaVM) :
+	LogModule(SharedPtr<LuaVM> luaVM) :
 		luaVM_(luaVM)
 	{ }
 
@@ -43,7 +51,7 @@ public:
 	}
 
 private:
-	Container::SharedPtr<Lua::LuaVM> luaVM_;
+	SharedPtr<LuaVM> luaVM_;
 };
 
 static int Begin(lua_State* L)
@@ -58,58 +66,116 @@ static int End(lua_State* L)
 	return 0;
 }
 
+class GameLogic : public DemoScene
+{
+public:
+	GameLogic() :
+		luaVM_(new LuaVM()),
+		logModule_(luaVM_)
+	{ }
+
+protected:
+	void Start() override
+	{
+		DemoScene::Start();
+
+		luaVM_->Open();
+		if (!luaVM_->IsOpen())
+		{
+			FLAGGG_LOG_ERROR("open lua vm failed.");
+
+			return;
+		}
+
+		luaVM_->RegisterCEvents(
+		{
+			C_LUA_API_PROXY(Begin, "main_begin"),
+			C_LUA_API_PROXY(Begin, "main_end")
+		});
+
+		luaVM_->RegisterCPPEvents(
+			"log", &logModule_,
+			{
+			LUA_API_PROXY(LogModule, debug, "debug"),
+			LUA_API_PROXY(LogModule, info, "info"),
+			LUA_API_PROXY(LogModule, warn, "warn"),
+			LUA_API_PROXY(LogModule, error, "error")
+		});
+
+		const String luaCodePath = commandParam["CodePath"].GetString();
+
+		if (!luaVM_->Execute(luaCodePath + "/main.lua"))
+		{
+			return;
+		}
+
+		FLAGGG_LOG_ERROR("start game.");
+
+		double frameRate = commandParam["FrameRate"].ToDouble();
+		sleepTime_ = frameRate == 0.0f ? 32 : (uint64_t)((double)1000 / frameRate);
+
+		context_->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, GameLogic::Update, this));
+		context_->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_DOWN, GameLogic::OnKeyDown, this));
+		context_->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, GameLogic::OnKeyUp, this));
+		context_->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_DOWN, GameLogic::OnMouseDown, this));
+		context_->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_UP, GameLogic::OnMouseUp, this));
+		context_->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_MOVE, GameLogic::OnMouseMove, this));
+	}
+
+	void Stop() override
+	{
+		FLAGGG_LOG_ERROR("end game.");
+	}
+
+	void Update(float timeStep)
+	{
+		luaVM_->CallEvent("update", timeStep);
+
+		SystemHelper::Sleep(sleepTime_);
+	}
+
+	void OnKeyDown(KeyState* keyState, unsigned keyCode)
+	{
+		luaVM_->CallEvent("on_key_down", keyCode);
+	}
+
+	void OnKeyUp(KeyState* keyState, unsigned keyCode)
+	{
+		luaVM_->CallEvent("on_key_up", keyCode);
+	}
+
+	void OnMouseDown(KeyState* keyState, MouseKey mouseKey)
+	{
+		luaVM_->CallEvent("on_mouse_down", static_cast<uint32_t>(mouseKey));
+	}
+
+	void OnMouseUp(KeyState* keyState, MouseKey mouseKey)
+	{
+		luaVM_->CallEvent("on_mouse_up", static_cast<uint32_t>(mouseKey));
+	}
+
+	void OnMouseMove(KeyState* keyState, const Vector2& delta)
+	{
+		luaVM_->CallEvent("on_mouse_move");
+	}
+
+private:
+	SharedPtr<LuaVM> luaVM_;
+
+	LogModule logModule_;
+
+	uint64_t sleepTime_;
+};
+
 void RunLuaVM()
 {
-	Container::SharedPtr<Lua::LuaVM> luaVM(new Lua::LuaVM);
-	luaVM->Open();
-	if (!luaVM->IsOpen())
-	{
-		FLAGGG_LOG_ERROR("open lua vm failed.");
-
-		return;
-	}
-
-	luaVM->RegisterCEvents(
-	{
-		C_LUA_API_PROXY(Begin, "main_begin"),
-		C_LUA_API_PROXY(Begin, "main_end")
-	});
-
-	LogModule logModule(luaVM);
-	luaVM->RegisterCPPEvents(
-	"log", &logModule,
-	{
-		LUA_API_PROXY(LogModule, debug, "debug"),
-		LUA_API_PROXY(LogModule, info, "info"),
-		LUA_API_PROXY(LogModule, warn, "warn"),
-		LUA_API_PROXY(LogModule, error, "error")
-	});
-
-	const Container::String luaCodePath = commandParam["CodePath"].GetString();
-
-	if (!luaVM->Execute(luaCodePath  + "/main.lua"))
-	{
-		return;
-	}
-
-	FLAGGG_LOG_ERROR("start game.");
-
-	double frameRate = commandParam["FrameRate"].ToDouble();
-	uint64_t sleepTime = frameRate == 0.0f ? 32 : (uint64_t)((double)1000 / frameRate);
-
-	while (true)
-	{
-		luaVM->CallEvent("update");
-
-		Utility::SystemHelper::Sleep(sleepTime);
-	}
-
-	FLAGGG_LOG_ERROR("end game.");
+	GameLogic logic;
+	logic.Run();
 }
 
 int main(int argc, const char* argv[])
 {
-	if (Utility::SystemHelper::ParseCommand(argv + 1, argc - 1, commandParam))
+	if (SystemHelper::ParseCommand(argv + 1, argc - 1, commandParam))
 	{
 		RunLuaVM();
 	}

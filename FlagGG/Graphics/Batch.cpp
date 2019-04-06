@@ -21,7 +21,7 @@ namespace FlagGG
 			}
 			else
 			{
-				vertexStart_ = vertexEnd_ = vertexs->size();
+				vertexStart_ = vertexEnd_ = vertexs->Size();
 			}
 		}
 
@@ -46,7 +46,7 @@ namespace FlagGG
 
 		unsigned Batch::GetVertexCount() const
 		{
-			return vertexs_->size() / vertexSize_;
+			return vertexs_->Size() / vertexSize_;
 		}
 
 		Texture* Batch::GetTexture() const

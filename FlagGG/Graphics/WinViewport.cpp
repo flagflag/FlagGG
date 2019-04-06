@@ -224,7 +224,7 @@ namespace FlagGG
 			deviceContext->ClearRenderTargetView(renderTargetView, color);
 			deviceContext->ClearDepthStencilView(depthStencialView_, D3D11_CLEAR_DEPTH, 1.0, 0);
 
-			for (int i = 0; i < context->batchs_.size(); ++i)
+			for (int i = 0; i < context->batchs_.Size(); ++i)
 			{
 				Batch* batch = context->batchs_[i];
 

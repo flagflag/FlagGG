@@ -2,6 +2,9 @@
 #define __BATCH__
 
 #include "Export.h"
+#include "Container/RefCounted.h"
+#include "Container/Ptr.h"
+#include "Container/Vector.h"
 
 #include <vector>
 
@@ -11,7 +14,7 @@ namespace FlagGG
 	{
 		class Texture;
 
-		typedef std::vector <unsigned char> VertexVector;
+		typedef Container::Vector <unsigned char> VertexVector;
 
 		enum BatchType
 		{
@@ -19,7 +22,7 @@ namespace FlagGG
 			DRAW_TRIANGLE = 1,
 		};
 
-		class FlagGG_API Batch
+		class FlagGG_API Batch : public Container::RefCounted
 		{
 		public:
 			Batch(BatchType type, Texture* texture, VertexVector* vertexs, unsigned vertexSize);
@@ -46,7 +49,7 @@ namespace FlagGG
 
 			unsigned vertexEnd_;
 
-			Texture* texture_;
+			Container::SharedPtr<Texture> texture_;
 
 			BatchType type_;
 		};

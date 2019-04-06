@@ -13,9 +13,9 @@ namespace FlagGG
 		void Batch2D::AddTriangle(const Math::Vector2& v1, const Math::Vector2& v2, const Math::Vector2& v3,
 			const Math::Vector2& uv1, const Math::Vector2& uv2, const Math::Vector2& uv3, unsigned color)
 		{
-			unsigned begin = vertexs_->size();
-			vertexEnd_ = vertexs_->size() + vertexSize_ * 3;
-			vertexs_->resize(vertexEnd_);
+			unsigned begin = vertexs_->Size();
+			vertexEnd_ = vertexs_->Size() + vertexSize_ * 3;
+			vertexs_->Resize(vertexEnd_);
 
 			float* dest = reinterpret_cast<float*>(&(*vertexs_)[begin]);
 			dest[0] = v1.x_;
