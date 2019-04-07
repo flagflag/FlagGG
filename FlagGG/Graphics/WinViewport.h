@@ -3,12 +3,12 @@
 
 #include "Export.h"
 
-#include "Viewport.h"
-#include "Batch.h"
-#include "RenderContext.h"
+#include "Graphics/Viewport.h"
+#include "Graphics/Batch.h"
+#include "Graphics/RenderContext.h"
 #include "Core/DeviceEvent.h"
-
-#include <set>
+#include "Container/Ptr.h"
+#include "Container/Vector.h"
 
 namespace FlagGG
 {
@@ -39,9 +39,9 @@ namespace FlagGG
 
 			static const wchar_t* className_;
 
-			static std::set<WinViewport*> recivers_;
+			static Container::Vector<Container::SharedPtr<WinViewport>> recivers_;
 
-			static std::vector<DefferedMessage> defferedMsgs_;
+			static Container::PODVector<DefferedMessage> defferedMsgs_;
 		};
 
 		class FlagGG_API WinViewport : public Viewport

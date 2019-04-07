@@ -10,9 +10,9 @@ namespace FlagGG
 	{
 		const wchar_t* WindowDevice::className_ = L"Custom D3D11 Window";
 
-		std::set<WinViewport*> WindowDevice::recivers_;
+		Container::Vector<Container::SharedPtr<WinViewport>> WindowDevice::recivers_;
 
-		std::vector<DefferedMessage> WindowDevice::defferedMsgs_;
+		Container::PODVector<DefferedMessage> WindowDevice::defferedMsgs_;
 
 		static LRESULT APIENTRY StaticWndProc(HWND handler, UINT message, WPARAM wParam, LPARAM lParam)
 		{
@@ -28,7 +28,7 @@ namespace FlagGG
 			msg.message_ = message;
 			msg.wParam_ = wParam;
 			msg.lParam_ = lParam;
-			WindowDevice::defferedMsgs_.push_back(msg);
+			WindowDevice::defferedMsgs_.Push(msg);
 
 			return DefWindowProc(handler, message, wParam, lParam);
 		}
@@ -63,9 +63,9 @@ namespace FlagGG
 				DispatchMessage(&msg);
 			}
 
-			for (auto msg = defferedMsgs_.begin(); msg != defferedMsgs_.end(); ++msg)
+			for (auto msg = defferedMsgs_.Begin(); msg != defferedMsgs_.End(); ++msg)
 			{
-				for (auto rec = recivers_.begin(); rec != recivers_.end(); ++rec)
+				for (auto rec = recivers_.Begin(); rec != recivers_.End(); ++rec)
 				{
 					if ((*rec)->GetWindow() == msg->handler_)
 					{
@@ -74,17 +74,25 @@ namespace FlagGG
 				}
 			}
 
-			defferedMsgs_.clear();
+			defferedMsgs_.Clear();
 		}
 
 		void WindowDevice::RegisterWinMessage(WinViewport* wv)
 		{
-			recivers_.insert(wv);
+			for (const auto& reciver : recivers_)
+			{
+				if (reciver.Get() == wv)
+				{
+					return;
+				}
+			}
+
+			recivers_.Push(Container::SharedPtr<WinViewport>(wv));
 		}
 
 		void WindowDevice::UnregisterWinMessage(WinViewport* wv)
 		{
-			recivers_.erase(wv);
+			recivers_.Remove(Container::SharedPtr<WinViewport>(wv));
 		}
 
 
