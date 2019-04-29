@@ -1,0 +1,4 @@
+{
+	shader = "Shader/Model",
+	texture = "Textures/Model.dds"
+}

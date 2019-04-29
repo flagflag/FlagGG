@@ -1,6 +1,10 @@
-#include "Material.h"
 #include "Log.h"
 #include "Code/Code.h"
+#include "Graphics/Material.h"
+#include "Graphics/Shader.h"
+#include "Graphics/Texture.h"
+#include "Graphics/Texture2D.h"
+#include "Config/LJSONFile.h"
 
 #include <fstream>
 
@@ -10,33 +14,15 @@ namespace FlagGG
 	{
 		bool Material::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		{
-			// 现在没有具体配置，所以随便写一下，等后面加了json、xml等在改
-			unsigned r, g, b, a;
-			stream->ReadUInt32(r);
-			stream->ReadUInt32(g);
-			stream->ReadUInt32(b);
-			stream->ReadUInt32(a);
-			diffuse_ = Math::Color(r, g, b, a);
+			Config::LJSONFile file;
+			if (!file.LoadFile(stream))
+			{
+				FLAGGG_LOG_ERROR("Load LJSON failed.");
 
-			stream->ReadUInt32(r);
-			stream->ReadUInt32(g);
-			stream->ReadUInt32(b);
-			stream->ReadUInt32(a);
-			ambient_ = Math::Color(r, g, b, a);
+				return false;
+			}
 
-			stream->ReadUInt32(r);
-			stream->ReadUInt32(g);
-			stream->ReadUInt32(b);
-			stream->ReadUInt32(a);
-			specular_ = Math::Color(r, g, b, a);
 
-			stream->ReadUInt32(r);
-			stream->ReadUInt32(g);
-			stream->ReadUInt32(b);
-			stream->ReadUInt32(a);
-			emissive_ = Math::Color(r, g, b, a);
-
-			stream->ReadStream((char*)(&power_), sizeof(power_));
 
 			return true;
 		}

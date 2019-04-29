@@ -17,10 +17,15 @@ namespace FlagGG
 				return false;
 			}
 
-			bool result = BeginLoad(&fileStream);
+			return LoadFile(&fileStream);
+		}
+
+		bool Resource::LoadFile(IOFrame::Buffer::IOBuffer* stream)
+		{
+			bool result = BeginLoad(stream);
 			if (!result)
 			{
-				FLAGGG_LOG_ERROR("BeginLoad[%s] failed.", fileName.CString());
+				FLAGGG_LOG_ERROR("LoadFile ==> BeginLoad failed.");
 
 				return false;
 			}
@@ -28,7 +33,7 @@ namespace FlagGG
 			result = EndLoad();
 			if (!result)
 			{
-				FLAGGG_LOG_ERROR("EndLoad[%s] failed.", fileName.CString());
+				FLAGGG_LOG_ERROR("LoadFile ==> EndLoad failed.");
 
 				return false;
 			}

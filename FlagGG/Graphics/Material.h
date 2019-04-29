@@ -2,12 +2,14 @@
 
 #include "Resource/Resource.h"
 #include "Math/Color.h"
+#include "Container/Ptr.h"
 
 namespace FlagGG
 {
 	namespace Graphics
 	{
 		class Texture;
+		class Shader;
 
 		class Material : public Resource::Resource
 		{
@@ -19,18 +21,10 @@ namespace FlagGG
 
 			bool EndLoad() override;
 
-		private:
-			Math::Color diffuse_;
+		protected:
+			Container::SharedPtr<Texture> texture_;
 
-			Math::Color ambient_;
-
-			Math::Color specular_;
-
-			Math::Color emissive_;
-
-			float power_;
-
-			Texture* texture_;
+			Container::SharedPtr<Shader> shader_;
 		};
 	}
 }
