@@ -47,7 +47,8 @@ void Print(const LJSONValue& root, const std::string& t = "")
 
 void Run()
 {
-	LJSONFile jsonFile;
+	FlagGG::Core::Context context;
+	LJSONFile jsonFile(&context);
 	if (!jsonFile.LoadFile("../../../Samples/Test/TestConfig.ljson"))
 	{
 		FLAGGG_LOG_DEBUG("fuck.");

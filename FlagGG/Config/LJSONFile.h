@@ -12,6 +12,8 @@ namespace FlagGG
 		class FlagGG_API LJSONFile : public Resource::Resource
 		{
 		public:
+			LJSONFile(Core::Context* context);
+
 			~LJSONFile() override = default;
 
 			const LJSONValue& GetRoot() const;

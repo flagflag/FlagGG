@@ -6,6 +6,7 @@
 #include "Container/Str.h"
 #include "Container/RefCounted.h"
 #include "IOFrame/Buffer/IOBuffer.h"
+#include "Core/Contex.h"
 
 namespace FlagGG
 {
@@ -14,6 +15,8 @@ namespace FlagGG
 		class FlagGG_API Resource : public Container::RefCounted
 		{
 		public:
+			Resource(Core::Context* context);
+
 			virtual ~Resource() = default;
 
 			bool LoadFile(const Container::String& fileName);
@@ -25,6 +28,8 @@ namespace FlagGG
 			virtual bool BeginLoad(IOFrame::Buffer::IOBuffer* stream);
 
 			virtual bool EndLoad();
+
+			Core::Context* context_;
 		};
 	}
 }

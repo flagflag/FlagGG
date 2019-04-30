@@ -10,10 +10,12 @@
 #include <Core/Contex.h>
 #include <Container/Ptr.h>
 #include <Core/Function.h>
+#include <Resource/ResourceCache.h>
 
 using namespace FlagGG::Graphics;
 using namespace FlagGG::Math;
 using namespace FlagGG::Core;
+using namespace FlagGG::Resource;
 
 void AddGrid(Batch3D& batch)
 {
@@ -141,7 +143,9 @@ void DemoScene::Start()
 
 	context_ = new Context();
 	Input* input = new Input(context_);
+	ResourceCache* cache = new ResourceCache;
 	context_->RegisterVariable<Input>(input, "input");
+	context_->RegisterVariable<ResourceCache>(cache, "ResourceCache");
 
 	cameraOpt_ = new CameraOperation(context_);
 

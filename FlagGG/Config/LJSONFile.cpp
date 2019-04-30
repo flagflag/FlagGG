@@ -10,6 +10,10 @@ namespace FlagGG
 {
 	namespace Config
 	{
+		LJSONFile::LJSONFile(Core::Context* context) :
+			Resource(context)
+		{ }
+
 		const LJSONValue& LJSONFile::GetRoot() const
 		{
 			return root_;

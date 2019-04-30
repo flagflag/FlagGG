@@ -6,6 +6,10 @@ namespace FlagGG
 {
 	namespace Resource
 	{
+		Resource::Resource(Core::Context* context) :
+			context_(context)
+		{ }
+
 		bool Resource::LoadFile(const Container::String& fileName)
 		{
 			IOFrame::Stream::FileStream fileStream;

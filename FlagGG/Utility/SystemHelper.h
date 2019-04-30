@@ -3,6 +3,7 @@
 
 #include "Export.h"
 #include "Config/LJSONValue.h"
+#include "Container/Str.h"
 
 #include <stdint.h>
 #include <string>
@@ -13,12 +14,16 @@ namespace FlagGG
 	{
 		namespace SystemHelper
 		{
-			FlagGG_API std::wstring FormatPath(const std::wstring& in_path);
+			FlagGG_API Container::String FormatPath(const Container::String& path);
 
 			// 单位：毫秒
 			FlagGG_API void Sleep(uint64_t time);
 
 			FlagGG_API bool ParseCommand(const char** argv, uint32_t argc, Config::LJSONValue& result);
+
+			FlagGG_API bool DirExists(const Container::String& path);
+
+			FlagGG_API bool FileExists(const Container::String& path);
 		}
 	}
 }
