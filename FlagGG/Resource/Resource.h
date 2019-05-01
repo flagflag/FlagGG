@@ -1,7 +1,6 @@
 #ifndef __RESOURCE__
 #define __RESOURCE__
 
-#include <string>
 #include "Export.h"
 #include "Container/Str.h"
 #include "Container/RefCounted.h"
@@ -17,7 +16,7 @@ namespace FlagGG
 		public:
 			Resource(Core::Context* context);
 
-			virtual ~Resource() = default;
+			~Resource() override = default;
 
 			bool LoadFile(const Container::String& fileName);
 

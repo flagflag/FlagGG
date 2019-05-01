@@ -3,13 +3,15 @@
 #include <Core/EventDefine.h>
 #include <Graphics/WinViewport.h>
 #include <Container/Ptr.h>
-#include "CameraOperation.h"
-
 #include <Core/Contex.h>
+#include <Core/DeviceEvent.h>
+#include <Resource/ResourceCache.h>
+#include "CameraOperation.h"
 
 using namespace FlagGG::Core;
 using namespace FlagGG::Container;
 using namespace FlagGG::Graphics;
+using namespace FlagGG::Resource;
 
 namespace Frame
 {
@@ -30,6 +32,10 @@ protected:
 	virtual void Stop();
 
 	SharedPtr<Context> context_;
+
+	SharedPtr<Input> input_;
+
+	SharedPtr<ResourceCache> cache_;
 
 	SharedPtr<WinViewport> viewport_;
 

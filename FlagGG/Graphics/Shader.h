@@ -3,7 +3,9 @@
 
 #include "Export.h"
 
-#include "GPUObject.h"
+#include "Graphics/GPUObject.h"
+#include "Resource/Resource.h"
+#include "Container/ArrayPtr.h"
 
 #include <string>
 
@@ -13,29 +15,41 @@ namespace FlagGG
 	{
 		enum ShaderType
 		{
-			VS = 0,
-			PS = 1
+			None	= 0,
+			VS		= 1,
+			PS		= 2
 		};
 
-		class FlagGG_API Shader : public GPUObject
+		class FlagGG_API Shader : public GPUObject, public Resource::Resource
 		{
 		public:
-			Shader(const std::wstring& shaderPath, ShaderType shaderType);
+			Shader(Core::Context* context);
 
 			~Shader() override;
 
+			bool IsValid() override;
+
 			void Initialize() override;
 
-			bool IsValid() override;
+			void SetType(ShaderType type);
+
+			ShaderType GetType();
 
 			ID3DBlob* GetByteCode();
 
+		protected:
+			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
+
+			bool EndLoad() override;
+
 		private:
-			std::wstring shaderPath_;
+			// shader代码
+			Container::SharedArrayPtr<char> buffer_;
+			size_t bufferSize_{ 0 };
 
 			ID3DBlob* shaderCode_{ nullptr };
 
-			ShaderType shaderType_;
+			ShaderType shaderType_{ None };
 		};
 	}
 }

@@ -5,6 +5,7 @@
 #include "Core/Contex.h"
 #include "Core/EventDefine.h"
 #include "Math/Vector2.h"
+#include "Container/RefCounted.h"
 
 namespace FlagGG
 {
@@ -25,12 +26,12 @@ namespace FlagGG
 
 		};
 
-		class FlagGG_API Input
+		class FlagGG_API Input : public Container::RefCounted
 		{
 		public:
 			Input(Context* context);
 
-			virtual ~Input() = default;
+			~Input() override = default;
 
 			void OnKeyDown(KeyState* keyState, uint32_t keyCode);
 

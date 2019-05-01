@@ -3,15 +3,18 @@
 
 #include "Container/Str.h"
 #include "Container/HashMap.h"
+#include "Container/RefCounted.h"
 #include "Resource/Resource.h"
 
 namespace FlagGG
 {
 	namespace Resource
 	{
-		class ResourceCache
+		class ResourceCache : public Container::RefCounted
 		{
 		public:
+			ResourceCache(Core::Context* context);
+
 			template < class T >
 			Container::SharedPtr<T> GetResource(const Container::String& path)
 			{
@@ -27,14 +30,14 @@ namespace FlagGG
 				// 存在资源，但没加载过
 				if (!res)
 				{
-					res = new T();
+					res = new T(context_);
 					if (!LoadResource(formatPath, res))
 					{
 						return nullptr;
 					}
 				}
 
-				return StaticCast<T>(res);
+				return Container::StaticCast<T>(res);
 			}
 
 			void AddResourceDir(const Container::String& path);
@@ -47,6 +50,8 @@ namespace FlagGG
 			bool LoadResource(const Container::String& path, Container::SharedPtr<Resource>& res);
 
 		private:
+			Core::Context* context_;
+
 			Container::String resourceDir_;
 
 			Container::HashMap<Container::String, Container::SharedPtr<Resource>> resources_;

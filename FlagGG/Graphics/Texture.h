@@ -3,19 +3,20 @@
 
 #include "Export.h"
 
-#include "GPUObject.h"
+#include "Graphics/GPUObject.h"
+#include "Resource/Resource.h"
 
 namespace FlagGG
 {
 	namespace Graphics
 	{
 		//Base Class, ID3D11Texture2D or ID3D11Texture3D
-		class FlagGG_API Texture : public GPUObject
+		class FlagGG_API Texture : public GPUObject, public Resource::Resource
 		{
 		public:
-			~Texture() override;
+			Texture(Core::Context* context);
 
-			void Initialize() override;
+			~Texture() override;
 
 			bool IsValid() override;
 
@@ -24,8 +25,13 @@ namespace FlagGG
 			friend class WinViewport;
 
 		protected:
-			virtual bool Create(ID3D11Resource*& resource, ID3D11ShaderResourceView*& resourceView) = 0;
+			void Initialize() override;
 
+			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
+
+			bool EndLoad() override;
+
+			virtual bool Create(ID3D11Resource*& resource, ID3D11ShaderResourceView*& resourceView) = 0;
 
 		private:
 			ID3D11ShaderResourceView* shaderResourceView_{ nullptr };

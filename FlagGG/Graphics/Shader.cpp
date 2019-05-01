@@ -1,6 +1,8 @@
-#include "Shader.h"
-#include "RenderEngine.h"
+#include "Graphics/Shader.h"
+#include "Graphics/RenderEngine.h"
 #include "Allocator/SmartMemory.hpp"
+#include "Container/ArrayPtr.h"
+#include "Log.h"
 
 #include <d3dcompiler.h>
 
@@ -10,18 +12,17 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		Shader::Shader(const std::wstring& shaderPath, ShaderType shaderType) :
-			shaderPath_(shaderPath),
-			shaderType_(shaderType)
-		{
-		}
+		Shader::Shader(Core::Context* context) :
+			GPUObject(),
+			Resource(context)
+		{ }
 
 		Shader::~Shader()
 		{
 			SAFE_RELEASE(shaderCode_);
 		}
 
-		static ID3DBlob* GetShaderCode(const std::wstring& path, ShaderType type)
+		static ID3DBlob* CompileShader(const char* buffer, size_t bufferSize, ShaderType type)
 		{
 			char* entryPoint = nullptr;
 			char* profile = nullptr;
@@ -44,25 +45,12 @@ namespace FlagGG
 				//flags |= D3DCOMPILE_PREFER_FLOW_CONTROL;
 			}
 
-			std::ifstream stream;
-			stream.open(path, std::ios::in | std::ios::binary | std::ios::ate);
-			if (!stream.is_open())
-			{
-				return nullptr;
-			}
-
-			std::streamoff sourceCodeSize = stream.tellg();
-			Allocator::SmartMemory<char> sourceCode(sourceCodeSize);
-
-			stream.seekg(0, std::ios::beg);
-			stream.read(sourceCode.Get(), sourceCodeSize);
-
 			ID3DBlob* shaderCode = nullptr;
 			ID3DBlob* errorMsgs = nullptr;
 
 			HRESULT hr = D3DCompile(
-				sourceCode.Get(),
-				sourceCodeSize,
+				buffer,
+				bufferSize,
 				nullptr,
 				nullptr,
 				nullptr,
@@ -105,7 +93,15 @@ namespace FlagGG
 
 		void Shader::Initialize()
 		{
-			shaderCode_ = GetShaderCode(shaderPath_, shaderType_);
+			if (shaderType_ == None)
+			{
+				FLAGGG_LOG_WARN("Shader type is None, so initialize failed.");
+
+				return;
+			}
+
+			shaderCode_ = CompileShader(buffer_.Get(), bufferSize_, shaderType_);
+
 			if (shaderCode_)
 			{
 				if (shaderType_ == VS)
@@ -156,6 +152,31 @@ namespace FlagGG
 		bool Shader::IsValid()
 		{
 			return GetHandler() != nullptr && shaderCode_ != nullptr;
+		}
+
+		bool Shader::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
+		{
+			char* buffer = nullptr;
+			bufferSize_ = 0;
+			stream->ToString(buffer, bufferSize_);
+			buffer_ = buffer;
+
+			return true;
+		}
+
+		bool Shader::EndLoad()
+		{
+			return true;
+		}
+
+		void Shader::SetType(ShaderType type)
+		{
+			shaderType_ = type;
+		}
+
+		ShaderType Shader::GetType()
+		{
+			return shaderType_;
 		}
 
 		ID3DBlob* Shader::GetByteCode()

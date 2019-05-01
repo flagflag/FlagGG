@@ -1,4 +1,9 @@
 {
-	shader = "Shader/Model",
-	texture = "Textures/Model.dds"
+	vsshader = "Shader/Model_PS",
+	psshader = "Shader/Model_VS",
+	texture =
+	{
+		type = "texture2d", //texturecube => 3d
+		path = "Textures/Model.dds",
+	}
 }

@@ -3,7 +3,7 @@
 
 #include "Export.h"
 
-#include "RenderTarget.h"
+#include "Graphics/RenderTarget.h"
 #include "Container/Ptr.h"
 #include "Core/Contex.h"
 #include "Graphics/Camera.h"
@@ -13,7 +13,7 @@ namespace FlagGG
 	namespace Graphics
 	{
 		// IDXGISwapChain*;
-		class FlagGG_API Viewport : public GPUObject
+		class FlagGG_API Viewport : public GPUObject, public Container::RefCounted
 		{
 		public:
 			Viewport(Core::Context* context);

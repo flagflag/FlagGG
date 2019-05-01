@@ -6,6 +6,7 @@
 #include <Graphics/Shader.h>
 #include <Graphics/VertexFormat.h>
 #include <Graphics/Camera.h>
+#include <Graphics/Material.h>
 #include <Math/Matrix4.h>
 #include <Core/Contex.h>
 #include <Container/Ptr.h>
@@ -142,24 +143,23 @@ void DemoScene::Start()
 	RenderEngine::Initialize();
 
 	context_ = new Context();
-	Input* input = new Input(context_);
-	ResourceCache* cache = new ResourceCache;
-	context_->RegisterVariable<Input>(input, "input");
-	context_->RegisterVariable<ResourceCache>(cache, "ResourceCache");
+	input_ = new Input(context_);
+	cache_ = new ResourceCache(context_);
+	context_->RegisterVariable<Input>(input_.Get(), "input");
+	context_->RegisterVariable<ResourceCache>(cache_.Get(), "ResourceCache");
+
+	cache_->AddResourceDir("../../Res");
 
 	cameraOpt_ = new CameraOperation(context_);
 
-	SharedPtr<Texture2D> texture(new Texture2D(L"../../../Samples/Direct3D_Cube/texture.dds"));
-	texture->Initialize();
+	SharedPtr<Material> material = cache_->GetResource<Material>("Material/Model.ljson");
+	SharedPtr<Texture> texture = material->GetTexture();
+	SharedPtr<Shader> vs = material->GetVSShader();
+	SharedPtr<Shader> ps = material->GetPSShader();
 
 	SharedPtr<Batch3D> batch(new Batch3D(DRAW_TRIANGLE, texture, nullptr));
 	SharedPtr<Batch3D> grid(new Batch3D(DRAW_LINE, texture, nullptr)); //µØ°åµÄbatch
 	LoadVertexData(*batch, *grid);
-
-	SharedPtr<Shader> vs(new Shader(L"../../../FlagGG/Shader/3D_VS.hlsl", VS));
-	SharedPtr<Shader> ps(new Shader(L"../../../FlagGG/Shader/3D_PS.hlsl", PS));
-	vs->Initialize();
-	ps->Initialize();
 
 	SharedPtr<VertexFormat> format(new VertexFormat(vs->GetByteCode(), VERTEX3D));
 	format->Initialize();

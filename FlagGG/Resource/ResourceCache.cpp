@@ -6,6 +6,10 @@ namespace FlagGG
 {
 	namespace Resource
 	{
+		ResourceCache::ResourceCache(Core::Context* context) :
+			context_(context)
+		{ }
+
 		void ResourceCache::AddResourceDir(const Container::String& path)
 		{
 			resourceDir_ = Utility::SystemHelper::FormatPath(path).ToLower() + "/";

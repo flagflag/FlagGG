@@ -1,10 +1,16 @@
-#include "Texture.h"
-#include "RenderEngine.h"
+#include "Graphics/Texture.h"
+#include "Graphics/RenderEngine.h"
+#include "Log.h"
 
 namespace FlagGG
 {
 	namespace Graphics
 	{
+		Texture::Texture(Core::Context* context) :
+			GPUObject(),
+			Resource(context)
+		{ }
+
 		Texture::~Texture()
 		{
 			SAFE_RELEASE(sampler_);
@@ -26,7 +32,7 @@ namespace FlagGG
 			HRESULT hr = RenderEngine::GetDevice()->CreateSamplerState(&samplerDesc, &sampler_);
 			if (hr != 0)
 			{
-				puts("CreateSamplerState failed.");
+				FLAGGG_LOG_ERROR("CreateSamplerState failed.");
 
 				SAFE_RELEASE(sampler_);
 
@@ -43,6 +49,18 @@ namespace FlagGG
 		bool Texture::IsValid()
 		{
 			return GetHandler() != nullptr && shaderResourceView_ != nullptr && sampler_ != nullptr;
+		}
+
+		bool Texture::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
+		{
+			Initialize();
+
+			return true;
+		}
+
+		bool Texture::EndLoad()
+		{
+			return true;
 		}
 	}
 }

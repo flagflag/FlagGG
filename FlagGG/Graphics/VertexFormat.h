@@ -3,7 +3,8 @@
 
 #include "Export.h"
 
-#include "GPUObject.h"
+#include "Graphics/GPUObject.h"
+#include "Container/RefCounted.h"
 
 namespace FlagGG
 {
@@ -15,7 +16,7 @@ namespace FlagGG
 			VERTEX3D = 1,
 		};
 
-		class FlagGG_API VertexFormat : public GPUObject
+		class FlagGG_API VertexFormat : public GPUObject, public Container::RefCounted
 		{
 		public:
 			VertexFormat(ID3DBlob* shaderCode, VertexType vertexType);

@@ -1,5 +1,6 @@
-#include "Texture2D.h"
-#include "RenderEngine.h"
+#include "Graphics/Texture2D.h"
+#include "Graphics/RenderEngine.h"
+#include "Log.h"
 
 #include "DDS/DDSTextureLoader.h"
 
@@ -9,10 +10,9 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		Texture2D::Texture2D(const std::wstring& texturePath) :
-			texturePath_(texturePath)
-		{
-		}
+		Texture2D::Texture2D(Core::Context* context) :
+			Texture(context)
+		{ }
 
 		bool Texture2D::Create(ID3D11Resource*& resource, ID3D11ShaderResourceView*& resourceView)
 		{
@@ -31,14 +31,14 @@ namespace FlagGG
 				textureDesc.CPUAccessFlags = 0;
 				textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 				
-				// Ä¿Ç°»¹²»ÖªµÀ¶¯Ì¬´óĞ¡µÄÍ¼Æ¬ÒªÔõÃ´¸ã¡£¡£¡£¡£
+				// ç›®å‰è¿˜ä¸çŸ¥é“åŠ¨æ€å¤§å°çš„å›¾ç‰‡è¦æ€ä¹ˆæã€‚ã€‚ã€‚ã€‚
 				textureDesc.Width = 100;
 				textureDesc.Height = 100;
 
 				HRESULT hr = RenderEngine::GetDevice()->CreateTexture2D(&textureDesc, nullptr, (ID3D11Texture2D**)&resource);
 				if (hr != 0)
 				{
-					puts("CreateTexture2D failed.");
+					FLAGGG_LOG_ERROR("CreateTexture2D failed.");
 
 					SAFE_RELEASE(resource);
 
@@ -64,7 +64,7 @@ namespace FlagGG
 					);
 				if (hr != 0)
 				{
-					puts("D3DX11CreateTextureFromFile failed.");
+					FLAGGG_LOG_ERROR("D3DX11CreateTextureFromFile failed.");
 
 					SAFE_RELEASE(resource);
 
@@ -79,7 +79,7 @@ namespace FlagGG
 			HRESULT hr = RenderEngine::GetDevice()->CreateShaderResourceView(resource, &shaderResourceViewDesc, &resourceView);
 			if (hr != 0)
 			{
-				puts("CreateShaderResourceView failed.");
+				FLAGGG_LOG_ERROR("CreateShaderResourceView failed.");
 
 				SAFE_RELEASE(resourceView);
 
@@ -95,7 +95,7 @@ namespace FlagGG
 				);
 			if (hr != 0)
 			{
-				puts("CreateDDSTextureFromFile failed.");
+				FLAGGG_LOG_ERROR("CreateDDSTextureFromFile failed.");
 
 				return false;
 			}
@@ -109,7 +109,7 @@ namespace FlagGG
 			ID3D11Texture2D* resource = GetObject<ID3D11Texture2D>();
 			if (resource)
 			{
-				// ÏÂÃæÕâ¶ÎÏ¹¼¸°ÑĞ´µÄ£¬»¹²»ÖªµÀÓÃ·¨ÊÇÉ¶
+				// ä¸‹é¢è¿™æ®µçå‡ æŠŠå†™çš„ï¼Œè¿˜ä¸çŸ¥é“ç”¨æ³•æ˜¯å•¥
 				D3D11_BOX destBox;
 				destBox.left = x;
 				destBox.top = y;
