@@ -145,8 +145,7 @@ namespace FlagGG
 				return DXGI_FORMAT_BC2_UNORM_SRGB;
 			else if (format == DXGI_FORMAT_BC3_UNORM)
 				return DXGI_FORMAT_BC3_UNORM_SRGB;
-			else
-				return format;
+			return format;
 		}
 
 		uint32_t Texture::GetDSVFormat(uint32_t format)
@@ -157,8 +156,18 @@ namespace FlagGG
 				return DXGI_FORMAT_D16_UNORM;
 			else if (format == DXGI_FORMAT_R32_TYPELESS)
 				return DXGI_FORMAT_D32_FLOAT;
-			else
-				return format;
+			return format;
+		}
+
+		uint32_t Texture::GetSRVFormat(uint32_t format)
+		{
+			if (format == DXGI_FORMAT_R24G8_TYPELESS)
+				return DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+			else if (format == DXGI_FORMAT_R16_TYPELESS)
+				return DXGI_FORMAT_R16_UNORM;
+			else if (format == DXGI_FORMAT_R32_TYPELESS)
+				return DXGI_FORMAT_R32_FLOAT;
+			return format;
 		}
 
 		void Texture::Initialize()

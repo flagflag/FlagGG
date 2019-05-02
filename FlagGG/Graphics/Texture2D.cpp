@@ -104,7 +104,7 @@ namespace FlagGG
 			{
 				D3D11_SHADER_RESOURCE_VIEW_DESC resourceViewDesc;
 				memset(&resourceViewDesc, 0, sizeof resourceViewDesc);
-				resourceViewDesc.Format = (DXGI_FORMAT)GetSRGBFormat(textureDesc.Format);
+				resourceViewDesc.Format = (DXGI_FORMAT)GetSRVFormat(textureDesc.Format);
 				resourceViewDesc.ViewDimension = (multiSample_ > 1 && !autoResolve_) ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
 				resourceViewDesc.Texture2D.MipLevels = usage_ != TEXTURE_DYNAMIC ? (UINT)levels_ : 1;
 
@@ -139,7 +139,7 @@ namespace FlagGG
 			{
 				D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 				memset(&depthStencilViewDesc, 0, sizeof depthStencilViewDesc);
-				depthStencilViewDesc.Format = (DXGI_FORMAT)GetDSVFormat(format_);
+				depthStencilViewDesc.Format = (DXGI_FORMAT)GetDSVFormat(textureDesc.Format);
 				depthStencilViewDesc.ViewDimension = multiSample_ > 1 ? D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D;
 
 				ID3D11DepthStencilView* depthStencilView;
@@ -152,7 +152,7 @@ namespace FlagGG
 				}
 				renderTarget_->ResetHandler(depthStencilView);
 
-				if (RenderEngine::GetDevice()->GetFeatureLevel() >= D3D_FEATURE_LEVEL_10_1)
+				if (RenderEngine::GetDevice()->GetFeatureLevel() >= D3D_FEATURE_LEVEL_11_0)
 				{
 					depthStencilViewDesc.Flags = D3D11_DSV_READ_ONLY_DEPTH;
 					hr = RenderEngine::GetDevice()->CreateDepthStencilView(GetObject<ID3D11Resource>(), &depthStencilViewDesc,
@@ -353,7 +353,10 @@ namespace FlagGG
 				// If image was previously compressed, reset number of requested levels to avoid error if level count is too high for new size
 				if (IsCompressed() && requestedLevels_ > 1)
 					requestedLevels_ = 0;
-				SetSize(levelWidth, levelHeight, format);
+				if (!SetSize(levelWidth, levelHeight, format))
+				{
+					return false;
+				}
 
 				for (unsigned i = 0; i < levels_; ++i)
 				{
@@ -392,7 +395,10 @@ namespace FlagGG
 				height /= (1 << mipsToSkip);
 
 				SetNumLevels(Math::Max((levels - mipsToSkip), 1U));
-				SetSize(width, height, format);
+				if (!SetSize(width, height, format))
+				{
+					return false;
+				}
 
 				for (unsigned i = 0; i < levels_ && i < levels - mipsToSkip; ++i)
 				{
@@ -429,7 +435,7 @@ namespace FlagGG
 				return false;
 			}
 
-			return SetData(&image);;
+			return SetData(&image);
 		}
 
 		bool Texture2D::EndLoad()

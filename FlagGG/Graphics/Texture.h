@@ -61,6 +61,7 @@ namespace FlagGG
 			static uint32_t CheckMaxLevels(int32_t width, int32_t height, uint32_t requestedLevels);
 			static uint32_t Texture::GetSRGBFormat(uint32_t format);
 			static uint32_t GetDSVFormat(uint32_t format);
+			static uint32_t GetSRVFormat(uint32_t format);
 
 		protected:
 			uint32_t levels_{ 0 };
