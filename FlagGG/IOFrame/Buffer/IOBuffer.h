@@ -16,9 +16,14 @@ namespace FlagGG
 			class FlagGG_API IOBuffer : public Container::RefCounted
 			{
 			public:
-				virtual ~IOBuffer() = default;
+				~IOBuffer() override = default;
+
+				virtual uint32_t GetIndex() const = 0;
+				virtual uint32_t GetSize() const = 0;
 
 				virtual void ClearIndex() = 0;
+
+				virtual void Seek(uint32_t pos) = 0;
 
 				virtual void ReadInt8(int8_t& value) = 0;
 				virtual void WriteInt8(int8_t value) = 0;
@@ -44,8 +49,8 @@ namespace FlagGG
 				virtual void ReadUInt64(uint64_t& value) = 0;
 				virtual void WriteUInt64(uint64_t value) = 0;
 
-				virtual uint32_t ReadStream(char* data, size_t dataSize) = 0;
-				virtual void WriteStream(const char* data, size_t dataSize) = 0;
+				virtual uint32_t ReadStream(void* data, size_t dataSize) = 0;
+				virtual uint32_t WriteStream(const void* data, size_t dataSize) = 0;
 
 				virtual void ToString(char*& data, size_t& dataSize) = 0;
 			};

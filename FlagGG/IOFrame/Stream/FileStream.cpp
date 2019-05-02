@@ -78,9 +78,28 @@ namespace FlagGG
 				return FileAPI_IsOpen(file_);
 			}
 
+			uint32_t FileStream::GetIndex() const
+			{
+				return FileAPI_Tell(file_);
+			}
+
+			uint32_t FileStream::GetSize() const
+			{
+				uint32_t index = FileAPI_Tell(file_);
+				FileAPI_SeekToEnd(file_);
+				uint32_t fileSize = FileAPI_Tell(file_);
+				FileAPI_SeekFromBegin(file_, index);
+				return fileSize;
+			}
+
 			void FileStream::ClearIndex()
 			{
 				FileAPI_SeekToBegin(file_);
+			}
+
+			void FileStream::Seek(uint32_t pos)
+			{
+				FileAPI_SeekFromBegin(file_, pos);
 			}
 
 			void FileStream::ReadInt8(int8_t& value) 
@@ -163,21 +182,19 @@ namespace FlagGG
 				FileAPI_SimpleWrite(file_, value);
 			}
 
-			uint32_t FileStream::ReadStream(char* data, size_t dataSize)
+			uint32_t FileStream::ReadStream(void* data, size_t dataSize)
 			{
 				return FileAPI_ReadStream(file_, data, dataSize);
 			}
 
-			void FileStream::WriteStream(const char* data, size_t dataSize)
+			uint32_t FileStream::WriteStream(const void* data, size_t dataSize)
 			{
-				FileAPI_WriteStream(file_, data, dataSize);
+				return FileAPI_WriteStream(file_, data, dataSize);
 			}
 
 			void FileStream::ToString(char*& data, size_t& dataSize)
 			{
-				FileAPI_SeekToEnd(file_);
-				dataSize = FileAPI_Tell(file_);
-				FileAPI_SeekToBegin(file_);
+				dataSize = GetSize();
 				data = new char[dataSize + 1];
 				dataSize = FileAPI_ReadStream(file_, data, dataSize);
 				data[dataSize] = '\0';

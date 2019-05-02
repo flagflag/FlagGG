@@ -1,9 +1,9 @@
 ﻿#ifndef __BUFFER__
 #define __BUFFER__
 
-#include "IOBuffer.h"
+#include "IOFrame/Buffer/IOBuffer.h"
+#include "Container/Vector.h"
 
-#include <vector>
 #include <stdint.h>
 
 namespace FlagGG
@@ -26,7 +26,14 @@ namespace FlagGG
 
 				~NetBuffer() override = default;
 
+				// 先暂时留空，等需要用的时候在补上
+				uint32_t GetIndex() const override { }
+				uint32_t GetSize() const override { }
+
 				void ClearIndex() override;
+
+				// 先暂时留空，等需要用的时候在补上
+				void Seek(uint32_t pos) override { }
 
 				void ReadInt8(int8_t& value) override;
 				void WriteInt8(int8_t value) override;
@@ -52,8 +59,8 @@ namespace FlagGG
 				void ReadUInt64(uint64_t& value) override;
 				void WriteUInt64(uint64_t value) override;
 
-				uint32_t ReadStream(char* data, size_t dataSize) override { return 0u; }
-				void WriteStream(const char* data, size_t dataSize) override;
+				uint32_t ReadStream(void* data, size_t dataSize) override { return 0u; }
+				uint32_t WriteStream(const void* data, size_t dataSize) override;
 
 				void ToString(char*& data, size_t& dataSize) override;
 
@@ -71,7 +78,7 @@ namespace FlagGG
 				bool WriteByte(uint8_t byte);
 
 			private:
-				std::vector < SimpleBuffer > buffers_;
+				Container::PODVector < SimpleBuffer > buffers_;
 
 				int index_;
 				

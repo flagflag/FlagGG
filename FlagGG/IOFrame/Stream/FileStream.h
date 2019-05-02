@@ -32,7 +32,12 @@ namespace FlagGG
 				void Close();
 				bool IsOpen() const;
 
+				uint32_t GetIndex() const override;
+				uint32_t GetSize() const override;
+
 				void ClearIndex() override;
+
+				void Seek(uint32_t pos) override;
 
 				void ReadInt8(int8_t& value) override;
 				void WriteInt8(int8_t value) override;
@@ -58,8 +63,8 @@ namespace FlagGG
 				void ReadUInt64(uint64_t& value) override;
 				void WriteUInt64(uint64_t value) override;
 
-				uint32_t ReadStream(char* data, size_t dataSize) override;
-				void WriteStream(const char* data, size_t dataSize) override;
+				uint32_t ReadStream(void* data, size_t dataSize) override;
+				uint32_t WriteStream(const void* data, size_t dataSize) override;
 
 				void ToString(char*& data, size_t& dataSize) override;
 			

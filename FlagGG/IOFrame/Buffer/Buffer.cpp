@@ -17,7 +17,7 @@ namespace FlagGG
 			{
 				if (!currentBuffer_.buffer || count_ >= (int)currentBuffer_.bufferSize)
 				{
-					if (index_ + 1 >= (int)buffers_.size())
+					if (index_ + 1 >= (int)buffers_.Size())
 					{
 						if (mode == mode_read) //读模式，不会开辟内存
 						{
@@ -27,10 +27,10 @@ namespace FlagGG
 						currentBuffer_.buffer = new char[ONE_KB];
 						currentBuffer_.bufferSize = ONE_KB;
 
-						index_ = buffers_.size();
+						index_ = buffers_.Size();
 						count_ = 0;
 
-						buffers_.emplace_back(currentBuffer_);
+						buffers_.Push(currentBuffer_);
 					}
 					else
 					{
@@ -190,11 +190,11 @@ namespace FlagGG
 				__WRITE__(value);
 			}
 
-			void NetBuffer::WriteStream(const char* data, size_t data_size)
+			uint32_t NetBuffer::WriteStream(const void* data, size_t data_size)
 			{
-				if (!data || data_size == 0) return;
+				if (!data || data_size == 0) return 0;
 
-				const char* index = data;
+				const char* index = (const char*)data;
 				size_t left_size = data_size;
 				while (left_size)
 				{
@@ -209,11 +209,12 @@ namespace FlagGG
 
 					left_size -= write_size;
 				}
+				return data_size;
 			}
 
 			void NetBuffer::ToString(char*& data, size_t& data_size)
 			{
-				if (buffers_.size() <= 0)
+				if (buffers_.Size() <= 0)
 				{
 					data = nullptr;
 					data_size = 0;
@@ -221,16 +222,16 @@ namespace FlagGG
 				}
 
 				data_size = 0;
-				for (size_t i = 0; i < buffers_.size(); ++i)
+				for (size_t i = 0; i < buffers_.Size(); ++i)
 				{
-					data_size += (i + 1 == buffers_.size() ? count_ : buffers_[i].bufferSize);
+					data_size += (i + 1 == buffers_.Size() ? count_ : buffers_[i].bufferSize);
 				}
 
 				data = new char[data_size];
 				char* index = data;
-				for (size_t i = 0; i < buffers_.size(); ++i)
+				for (size_t i = 0; i < buffers_.Size(); ++i)
 				{
-					size_t real_size = (i + 1 == buffers_.size() ? count_ : buffers_[i].bufferSize);
+					size_t real_size = (i + 1 == buffers_.Size() ? count_ : buffers_[i].bufferSize);
 					memcpy(index, buffers_[i].buffer, real_size);
 					index += real_size;
 				}
