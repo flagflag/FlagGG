@@ -10,7 +10,28 @@ namespace FlagGG
 {
 	namespace Math
 	{
+		enum Intersection
+		{
+			OUTSIDE,
+			INTERSECTS,
+			INSIDE
+		};
+
 		extern const float PI;
+		extern const float EPS;
+		extern const float F_INFINITY;
+
+		template < class T >
+		inline T Max(T value1, T value2)
+		{
+			return value1 > value2 ? value1 : value2;
+		}
+
+		template < class T >
+		inline T Min(T value1, T value2)
+		{
+			return value1 < value2 ? value1 : value2;
+		}
 
 		bool FlagGG_API IsNaN(float number);
 
@@ -30,6 +51,8 @@ namespace FlagGG
 		float FlagGG_API Abs(float number);
 
 		float FlagGG_API Sqrt(float number);
+
+		float FlagGG_API Fract(float number);
 
 
 		int FlagGG_API Compare(float _1, float _2);

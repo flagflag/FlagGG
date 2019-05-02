@@ -4,41 +4,32 @@ namespace FlagGG
 {
 	namespace Math
 	{
-		IntVector2::IntVector2() :
-			x_(0),
-			y_(0)
+		const Vector2 Vector2::ZERO;
+		const Vector2 Vector2::LEFT(-1.0f, 0.0f);
+		const Vector2 Vector2::RIGHT(1.0f, 0.0f);
+		const Vector2 Vector2::UP(0.0f, 1.0f);
+		const Vector2 Vector2::DOWN(0.0f, -1.0f);
+		const Vector2 Vector2::ONE(1.0f, 1.0f);
+
+		const IntVector2 IntVector2::ZERO;
+		const IntVector2 IntVector2::LEFT(-1, 0);
+		const IntVector2 IntVector2::RIGHT(1, 0);
+		const IntVector2 IntVector2::UP(0, 1);
+		const IntVector2 IntVector2::DOWN(0, -1);
+		const IntVector2 IntVector2::ONE(1, 1);
+
+		Container::String Vector2::ToString() const
 		{
+			char tempBuffer[Container::CONVERSION_BUFFER_LENGTH];
+			sprintf(tempBuffer, "%g %g", x_, y_);
+			return Container::String(tempBuffer);
 		}
 
-		IntVector2::IntVector2(int x, int y) :
-			x_(x),
-			y_(y)
+		Container::String IntVector2::ToString() const
 		{
-
-		}
-
-		IntVector2::IntVector2(const IntVector2& other)
-		{
-			x_ = other.x_;
-			y_ = other.y_;
-		}
-
-		Vector2::Vector2() :
-			x_(0.0f),
-			y_(0.0f)
-		{
-		}
-
-		Vector2::Vector2(float x, float y) :
-			x_(x),
-			y_(y)
-		{
-		}
-
-		Vector2::Vector2(const Vector2& other)
-		{
-			x_ = other.x_;
-			y_ = other.y_;
+			char tempBuffer[Container::CONVERSION_BUFFER_LENGTH];
+			sprintf(tempBuffer, "%d %d", x_, y_);
+			return Container::String(tempBuffer);
 		}
 	}
 }

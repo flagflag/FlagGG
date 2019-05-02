@@ -10,8 +10,9 @@ namespace FlagGG
 {
 	namespace Math
 	{
-		const float EPS = 1e-5;
 		const float PI = asin(1.0f) * 2;
+		const float EPS = 1e-6;
+		const float F_INFINITY = (float)HUGE_VAL;
 
 		bool IsNaN(float number)
 		{
@@ -56,6 +57,11 @@ namespace FlagGG
 		float Sqrt(float number)
 		{
 			return sqrt(number);
+		}
+
+		float Fract(float number)
+		{
+			return number - floor(number);
 		}
 
 		int Compare(float _1, float _2)
