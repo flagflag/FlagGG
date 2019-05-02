@@ -1,5 +1,7 @@
 #include "Graphics/Texture2D.h"
 #include "Graphics/RenderEngine.h"
+#include "Graphics/GraphicsDef.h"
+#include "Math/Math.h"
 #include "Log.h"
 
 #include "DDS/DDSTextureLoader.h"
@@ -14,111 +16,425 @@ namespace FlagGG
 			Texture(context)
 		{ }
 
-		bool Texture2D::Create(ID3D11Resource*& resource, ID3D11ShaderResourceView*& resourceView)
+		bool Texture2D::Create()
 		{
-#ifndef USE_DDS
-			if (texturePath_.empty())
+			Release();
+
+			if (!width_ || !height_)
 			{
-				D3D11_TEXTURE2D_DESC textureDesc;
-				memset(&textureDesc, 0, sizeof(textureDesc));
-				textureDesc.MipLevels = 1;
-				textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+				return false;
+			}
+
+			levels_ = CheckMaxLevels(width_, height_, requestedLevels_);
+
+			D3D11_TEXTURE2D_DESC textureDesc;
+			memset(&textureDesc, 0, sizeof textureDesc);
+			textureDesc.Format = (DXGI_FORMAT)(sRGB_ ? GetSRGBFormat(format_) : format_);
+
+			if (multiSample_ > 1 && RenderEngine::CheckMultiSampleSupport(textureDesc.Format, multiSample_))
+			{
+				multiSample_ = 1;
+				autoResolve_ = false;
+			}
+
+			if (usage_ == TEXTURE_DEPTHSTENCIL)
+			{
+				levels_ = 1;
+			}
+			else if (usage_ == TEXTURE_RENDERTARGET && levels_ != 1 && multiSample_ == 1)
+			{
+				textureDesc.MiscFlags |= D3D11_RESOURCE_MISC_GENERATE_MIPS;
+			}
+
+			textureDesc.Width = (UINT)width_;
+			textureDesc.Height = (UINT)height_;
+			textureDesc.MipLevels = (multiSample_ == 1 && usage_ != TEXTURE_DYNAMIC) ? levels_ : 1;
+			textureDesc.ArraySize = 1;
+			textureDesc.SampleDesc.Count = (UINT)multiSample_;
+			textureDesc.SampleDesc.Quality = RenderEngine::GetMultiSampleQuality(textureDesc.Format, multiSample_);
+
+			textureDesc.Usage = usage_ == TEXTURE_DYNAMIC ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
+			textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+			if (usage_ == TEXTURE_RENDERTARGET)
+			{
+				textureDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
+			}
+			else if (usage_ == TEXTURE_DEPTHSTENCIL)
+			{
+				textureDesc.BindFlags |= D3D11_BIND_DEPTH_STENCIL;
+			}
+			textureDesc.CPUAccessFlags = usage_ == TEXTURE_DYNAMIC ? D3D11_CPU_ACCESS_WRITE : 0;
+
+			if (usage_ == TEXTURE_DEPTHSTENCIL && multiSample_ > 1 && RenderEngine::GetDevice()->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_1)
+			{
+				textureDesc.BindFlags &= ~D3D11_BIND_SHADER_RESOURCE;
+			}
+
+			ID3D11Texture2D* texture2D = nullptr;
+			HRESULT hr = RenderEngine::GetDevice()->CreateTexture2D(&textureDesc, nullptr, &texture2D);
+			if (FAILED(hr))
+			{
+				FLAGGG_LOG_ERROR("Failed to create texture2d.");
+				SAFE_RELEASE(texture2D);
+				return false;
+			}
+
+			ResetHandler(texture2D);
+
+			if (multiSample_ > 1 && autoResolve_)
+			{
+				textureDesc.MipLevels = levels_;
 				textureDesc.SampleDesc.Count = 1;
 				textureDesc.SampleDesc.Quality = 0;
-				textureDesc.Usage = D3D11_USAGE_DEFAULT; // D3D11_USAGE_DYNAMIC D3D11_USAGE_DEFAULT
-				textureDesc.ArraySize = 1;
-				textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
-				textureDesc.CPUAccessFlags = 0;
-				textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
-				
-				// 目前还不知道动态大小的图片要怎么搞。。。。
-				textureDesc.Width = 100;
-				textureDesc.Height = 100;
-
-				HRESULT hr = RenderEngine::GetDevice()->CreateTexture2D(&textureDesc, nullptr, (ID3D11Texture2D**)&resource);
-				if (hr != 0)
+				if (levels_ != 1)
 				{
-					FLAGGG_LOG_ERROR("CreateTexture2D failed.");
-
-					SAFE_RELEASE(resource);
-
-					return false;
+					textureDesc.MiscFlags |= D3D11_RESOURCE_MISC_GENERATE_MIPS;
 				}
-			}
-			else
-			{
-				D3DX11_IMAGE_LOAD_INFO loadInfo;
-				memset(&loadInfo, 0, sizeof(loadInfo));
-				loadInfo.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-				loadInfo.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-				loadInfo.MipLevels = D3DX11_DEFAULT;
-				loadInfo.MipFilter = D3DX11_FILTER_LINEAR;
 
-				HRESULT hr = D3DX11CreateTextureFromFileW(
-					RenderEngine::GetDevice(),
-					texturePath_.data(),
-					&loadInfo,
-					nullptr,
-					&resource,
-					nullptr
-					);
-				if (hr != 0)
+				HRESULT hr = RenderEngine::GetDevice()->CreateTexture2D(&textureDesc, nullptr, (ID3D11Texture2D**)&resolveTexture_);
+				if (FAILED(hr))
 				{
-					FLAGGG_LOG_ERROR("D3DX11CreateTextureFromFile failed.");
-
-					SAFE_RELEASE(resource);
-
+					FLAGGG_LOG_ERROR("Failed to create resolve texture.");
+					SAFE_RELEASE(resolveTexture_);
 					return false;
 				}
 			}
 
-			D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-			memset(&shaderResourceViewDesc, 0, sizeof(shaderResourceViewDesc));
-			shaderResourceViewDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
-			shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-			HRESULT hr = RenderEngine::GetDevice()->CreateShaderResourceView(resource, &shaderResourceViewDesc, &resourceView);
-			if (hr != 0)
+			if (textureDesc.BindFlags & D3D11_BIND_SHADER_RESOURCE)
 			{
-				FLAGGG_LOG_ERROR("CreateShaderResourceView failed.");
+				D3D11_SHADER_RESOURCE_VIEW_DESC resourceViewDesc;
+				memset(&resourceViewDesc, 0, sizeof resourceViewDesc);
+				resourceViewDesc.Format = (DXGI_FORMAT)GetSRGBFormat(textureDesc.Format);
+				resourceViewDesc.ViewDimension = (multiSample_ > 1 && !autoResolve_) ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
+				resourceViewDesc.Texture2D.MipLevels = usage_ != TEXTURE_DYNAMIC ? (UINT)levels_ : 1;
 
-				SAFE_RELEASE(resourceView);
-
-				return false;
+				ID3D11Resource* viewObject = resolveTexture_ ? resolveTexture_ : GetObject<ID3D11Resource>();
+				hr = RenderEngine::GetDevice()->CreateShaderResourceView(viewObject, &resourceViewDesc, &shaderResourceView_);
+				if (FAILED(hr))
+				{
+					FLAGGG_LOG_ERROR("Failed to create shader resource view.");
+					SAFE_RELEASE(shaderResourceView_);
+					return false;
+				}
 			}
-#else
-			HRESULT hr = DirectX::CreateDDSTextureFromFile(
-				RenderEngine::GetDevice(),
-				RenderEngine::GetDeviceContext(),
-				texturePath_.data(),
-				&resource,
-				&resourceView
-				);
-			if (hr != 0)
+
+			if (usage_ == TEXTURE_RENDERTARGET)
 			{
-				FLAGGG_LOG_ERROR("CreateDDSTextureFromFile failed.");
+				D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+				memset(&renderTargetViewDesc, 0, sizeof renderTargetViewDesc);
+				renderTargetViewDesc.Format = textureDesc.Format;
+				renderTargetViewDesc.ViewDimension = multiSample_ > 1 ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
 
-				return false;
+				ID3D11RenderTargetView* renderTargetView;
+				hr = RenderEngine::GetDevice()->CreateRenderTargetView(GetObject<ID3D11Resource>(), &renderTargetViewDesc, &renderTargetView);
+				if (FAILED(hr))
+				{
+					FLAGGG_LOG_ERROR("Failed to create rendertarget view.");
+					SAFE_RELEASE(renderTargetView);
+					return false;
+				}
+				renderTarget_->ResetHandler(renderTargetView);
 			}
-#endif
+			else if (usage_ == TEXTURE_DEPTHSTENCIL)
+			{
+				D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+				memset(&depthStencilViewDesc, 0, sizeof depthStencilViewDesc);
+				depthStencilViewDesc.Format = (DXGI_FORMAT)GetDSVFormat(format_);
+				depthStencilViewDesc.ViewDimension = multiSample_ > 1 ? D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D;
+
+				ID3D11DepthStencilView* depthStencilView;
+				hr = RenderEngine::GetDevice()->CreateDepthStencilView(GetObject<ID3D11Resource>(), &depthStencilViewDesc, &depthStencilView);
+				if (FAILED(hr))
+				{
+					FLAGGG_LOG_ERROR("Failed to create depth-stencil view.");
+					SAFE_RELEASE(depthStencilView);
+					return false;
+				}
+				renderTarget_->ResetHandler(depthStencilView);
+
+				if (RenderEngine::GetDevice()->GetFeatureLevel() >= D3D_FEATURE_LEVEL_10_1)
+				{
+					depthStencilViewDesc.Flags = D3D11_DSV_READ_ONLY_DEPTH;
+					hr = RenderEngine::GetDevice()->CreateDepthStencilView(GetObject<ID3D11Resource>(), &depthStencilViewDesc,
+						(ID3D11DepthStencilView**)&renderTarget_->readOnlyView_);
+					if (FAILED(hr))
+					{
+						FLAGGG_LOG_ERROR("Failed to create read-only depth-stencil view.");
+						SAFE_RELEASE(renderTarget_->readOnlyView_);
+					}
+				}
+			}
 
 			return true;
 		}
 
-		void Texture2D::SetData(int x, int y, unsigned width, unsigned height, const void* data)
+		void Texture2D::Release()
 		{
-			ID3D11Texture2D* resource = GetObject<ID3D11Texture2D>();
-			if (resource)
+			SAFE_RELEASE(resolveTexture_);
+			SAFE_RELEASE(shaderResourceView_);
+		}
+
+		bool Texture2D::SetSize(int32_t width, int32_t height, uint32_t format,
+			TextureUsage usage/* = TEXTURE_STATIC*/, int32_t multiSample/* = 1*/, bool autoResolve/* = true*/)
+		{
+			if (width <= 0 || height <= 0)
 			{
-				// 下面这段瞎几把写的，还不知道用法是啥
+				FLAGGG_LOG_ERROR("Zero or negative texture dimensions.");
+				return false;
+			}
+
+			multiSample = Math::Clamp(multiSample, 1, 16);
+			if (multiSample == 1)
+			{
+				autoResolve = false;
+			}
+			else if (multiSample > 1 && usage < TEXTURE_RENDERTARGET)
+			{
+				FLAGGG_LOG_ERROR("Multisampling is only supported for rendertarget or depth-stencil textures");
+				return false;
+			}
+
+			if (multiSample > 1 && !autoResolve)
+			{
+				requestedLevels_ = 1;
+			}
+
+			renderTarget_.Reset();
+			
+			usage_ = usage;
+
+			if (usage >= TEXTURE_RENDERTARGET)
+			{
+				renderTarget_ = new RenderTarget();
+			}
+
+			width_ = width;
+			height_ = height;
+			format_ = format;
+			depth_ = 1;
+			multiSample_ = multiSample;
+			autoResolve_ = autoResolve;
+
+			return Create();
+		}
+
+		bool Texture2D::SetData(uint32_t level, int32_t x, int32_t y, int32_t width, int32_t height, const void* data)
+		{
+			if (!data)
+			{
+				FLAGGG_LOG_ERROR("Texture2D ==> set nullptr data.");
+				return false;
+			}
+
+			if (level >= levels_)
+			{
+				FLAGGG_LOG_ERROR("Texture2D ==> illegal mip level.");
+				return false;
+			}
+
+			int32_t levelWidth = GetLevelWidth(level);
+			int32_t levelHeight = GetLevelHeight(level);
+			if (x < 0 || x + width > levelWidth || y < 0 || y + height > levelHeight || width <= 0 || height <= 0)
+			{
+				FLAGGG_LOG_ERROR("Texture2D ==> illegal dimensions.");
+				return false;
+			}
+
+			if (IsCompressed())
+			{
+				x &= ~3;
+				y &= ~3;
+				width += 3;
+				width &= 0xfffffffc;
+				height += 3;
+				height &= 0xfffffffc;
+			}
+
+			const uint8_t* src = static_cast<const uint8_t*>(data);
+			uint32_t rowSize = GetRowDataSize(width);
+			uint32_t rowStart = GetRowDataSize(x);
+			uint32_t subResource = D3D11CalcSubresource(level, 0, levels_);
+
+			if (usage_ == TEXTURE_DYNAMIC)
+			{
+				if (IsCompressed())
+				{
+					height = (height + 3) >> 2;
+					y >>= 2;
+				}
+
+				D3D11_MAPPED_SUBRESOURCE mappedData;
+				mappedData.pData = nullptr;
+
+				HRESULT hr = RenderEngine::GetDeviceContext()->Map(GetObject<ID3D11Resource>(),
+					subResource, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+
+				if (FAILED(hr) || !mappedData.pData)
+				{
+					FLAGGG_LOG_ERROR("Failed to update texture resource.", hr);
+					return false;
+				}
+				else
+				{
+					for (int32_t row = 0; row < height; ++row)
+					{
+						memcpy((uint8_t*)mappedData.pData + (row + y) * mappedData.RowPitch + rowStart, src + row * rowSize, rowSize);
+						RenderEngine::GetDeviceContext()->Unmap(GetObject<ID3D11Resource>(), subResource);
+					}
+				}
+			}
+			else
+			{
 				D3D11_BOX destBox;
-				destBox.left = x;
-				destBox.top = y;
-				destBox.right = x + width;
-				destBox.bottom = y + height;
+				destBox.left = (UINT)x;
+				destBox.right = (UINT)(x + width);
+				destBox.top = (UINT)y;
+				destBox.bottom = (UINT)(y + height);
 				destBox.front = 0;
 				destBox.back = 1;
-				RenderEngine::GetDeviceContext()->UpdateSubresource(resource, 1, &destBox, data, width * 16, 0);
+
+				RenderEngine::GetDeviceContext()->UpdateSubresource(GetObject<ID3D11Resource>(), subResource, &destBox, data, rowSize, 0);
 			}
+
+			return true;
+		}
+
+		bool Texture2D::SetData(FlagGG::Resource::Image* image, bool useAlpha/* = false*/)
+		{
+			if (!image)
+			{
+				FLAGGG_LOG_ERROR("Null image, can not load texture.");
+				return false;
+			}
+
+			Container::SharedPtr<FlagGG::Resource::Image> mipImage;
+			uint32_t memoryUse = sizeof(Texture2D);
+			MaterialQuality quality = RenderEngine::GetTextureQuality();
+
+			if (!image->IsCompressed())
+			{
+				// Convert unsuitable formats to RGBA
+				unsigned components = image->GetComponents();
+				if ((components == 1 && !useAlpha) || components == 2 || components == 3)
+				{
+					mipImage = image->ConvertToRGBA(); image = mipImage;
+					if (!image)
+						return false;
+					components = image->GetComponents();
+				}
+
+				unsigned char* levelData = image->GetData();
+				int levelWidth = image->GetWidth();
+				int levelHeight = image->GetHeight();
+				unsigned format = 0;
+
+				// Discard unnecessary mip levels
+				for (unsigned i = 0; i < mipsToSkip_[quality]; ++i)
+				{
+					mipImage = image->GetNextLevel(); image = mipImage;
+					levelData = image->GetData();
+					levelWidth = image->GetWidth();
+					levelHeight = image->GetHeight();
+				}
+
+				switch (components)
+				{
+				case 1:
+					format = RenderEngine::GetAlphaFormat();
+					break;
+
+				case 4:
+					format = RenderEngine::GetRGBAFormat();
+					break;
+
+				default: break;
+				}
+
+				// If image was previously compressed, reset number of requested levels to avoid error if level count is too high for new size
+				if (IsCompressed() && requestedLevels_ > 1)
+					requestedLevels_ = 0;
+				SetSize(levelWidth, levelHeight, format);
+
+				for (unsigned i = 0; i < levels_; ++i)
+				{
+					SetData(i, 0, 0, levelWidth, levelHeight, levelData);
+					memoryUse += levelWidth * levelHeight * components;
+
+					if (i < levels_ - 1)
+					{
+						mipImage = image->GetNextLevel(); image = mipImage;
+						levelData = image->GetData();
+						levelWidth = image->GetWidth();
+						levelHeight = image->GetHeight();
+					}
+				}
+			}
+			else
+			{
+				int width = image->GetWidth();
+				int height = image->GetHeight();
+				unsigned levels = image->GetNumCompressedLevels();
+				unsigned format = RenderEngine::GetFormat(image->GetCompressedFormat());
+				bool needDecompress = false;
+
+				if (!format)
+				{
+					format = RenderEngine::GetRGBAFormat();
+					needDecompress = true;
+				}
+
+				unsigned mipsToSkip = mipsToSkip_[quality];
+				if (mipsToSkip >= levels)
+					mipsToSkip = levels - 1;
+				while (mipsToSkip && (width / (1 << mipsToSkip) < 4 || height / (1 << mipsToSkip) < 4))
+					--mipsToSkip;
+				width /= (1 << mipsToSkip);
+				height /= (1 << mipsToSkip);
+
+				SetNumLevels(Math::Max((levels - mipsToSkip), 1U));
+				SetSize(width, height, format);
+
+				for (unsigned i = 0; i < levels_ && i < levels - mipsToSkip; ++i)
+				{
+					FlagGG::Resource::CompressedLevel level = image->GetCompressedLevel(i + mipsToSkip);
+					if (!needDecompress)
+					{
+						SetData(i, 0, 0, level.width_, level.height_, level.data_);
+						memoryUse += level.rows_ * level.rowSize_;
+					}
+					else
+					{
+						unsigned char* rgbaData = new unsigned char[level.width_ * level.height_ * 4];
+						level.Decompress(rgbaData);
+						SetData(i, 0, 0, level.width_, level.height_, rgbaData);
+						memoryUse += level.width_ * level.height_ * 4;
+						delete[] rgbaData;
+					}
+				}
+			}
+
+			SetMemoryUse(memoryUse);
+
+			return true;
+		}
+
+		bool Texture2D::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
+		{
+			Initialize();
+
+			FlagGG::Resource::Image image(context_);
+			if (!image.LoadFile(stream))
+			{
+				FLAGGG_LOG_ERROR("Failed to load image.");
+				return false;
+			}
+
+			return SetData(&image);;
+		}
+
+		bool Texture2D::EndLoad()
+		{
+			return true;
 		}
 	}
 }

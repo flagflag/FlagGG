@@ -12,7 +12,7 @@ namespace FlagGG
 
 		void ResourceCache::AddResourceDir(const Container::String& path)
 		{
-			resourceDir_ = Utility::SystemHelper::FormatPath(path).ToLower() + "/";
+			resourceDir_ = Utility::SystemHelper::FormatPath(path).ToLower() + Utility::SystemHelper::PATH_SEPARATOR;
 		}
 
 		Container::String ResourceCache::FormatReousrcePath(const Container::String& path)
@@ -38,7 +38,7 @@ namespace FlagGG
 
 		bool ResourceCache::LoadResource(const Container::String& path, Container::SharedPtr<Resource>& res)
 		{
-			if (!res->LoadFile(path))
+			if (!res->LoadFile(resourceDir_ + path))
 			{
 				FLAGGG_LOG_ERROR("Load Resource[%s] failed.", path.CString());
 

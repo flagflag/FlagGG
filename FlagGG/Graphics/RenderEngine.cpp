@@ -15,6 +15,8 @@ namespace FlagGG
 
 		ID3D11Buffer* RenderEngine::matrixData_ = nullptr;
 
+		MaterialQuality RenderEngine::textureQuality_ = QUALITY_HIGH;
+
 		struct MatrixData
 		{
 			Math::Matrix4 world;
@@ -126,6 +128,84 @@ namespace FlagGG
 		ID3D11DeviceContext* RenderEngine::GetDeviceContext()
 		{
 			return deviceContext_;
+		}
+
+		bool RenderEngine::CheckMultiSampleSupport(DXGI_FORMAT format, uint32_t sampleCount)
+		{
+			if (sampleCount < 2)
+			{
+				return true;
+			}
+
+			UINT numLevels = 0;
+			if (FAILED(GetDevice()->CheckMultisampleQualityLevels(format, sampleCount, &numLevels)))
+			{
+				return false;
+			}
+
+			return numLevels > 0;
+		}
+
+		uint32_t RenderEngine::GetMultiSampleQuality(DXGI_FORMAT format, uint32_t sampleCount)
+		{
+			if (sampleCount < 2)
+			{
+				return 0;
+			}
+
+			if (GetDevice()->GetFeatureLevel() >= D3D_FEATURE_LEVEL_10_1)
+			{
+				return 0xffffffff;
+			}
+
+			UINT numLevels = 0;
+			if (FAILED(GetDevice()->CheckMultisampleQualityLevels(format, sampleCount, &numLevels)) || !numLevels)
+			{
+				return 0;
+			}
+
+			return numLevels - 1;
+		}
+
+		void RenderEngine::SetTextureQuality(MaterialQuality quality)
+		{
+			textureQuality_ = quality;
+		}
+
+		MaterialQuality RenderEngine::GetTextureQuality()
+		{
+			return textureQuality_;
+		}
+
+		uint32_t RenderEngine::GetAlphaFormat()
+		{
+			return DXGI_FORMAT_A8_UNORM;
+		}
+
+		uint32_t RenderEngine::GetRGBAFormat()
+		{
+			return DXGI_FORMAT_R8G8B8A8_UNORM;
+		}
+
+		uint32_t RenderEngine::GetFormat(Resource::CompressedFormat format)
+		{
+			switch (format)
+			{
+			case Resource::CF_RGBA:
+				return DXGI_FORMAT_R8G8B8A8_UNORM;
+
+			case Resource::CF_DXT1:
+				return DXGI_FORMAT_BC1_UNORM;
+
+			case Resource::CF_DXT3:
+				return DXGI_FORMAT_BC2_UNORM;
+
+			case Resource::CF_DXT5:
+				return DXGI_FORMAT_BC3_UNORM;
+
+			default:
+				return 0;
+			}
 		}
 
 		void RenderEngine::UpdateMatrix(Camera* camera)

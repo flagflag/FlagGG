@@ -2,6 +2,7 @@
 #define __TEXTURE2D__
 
 #include "Graphics/Texture.h"
+#include "Resource/Image.h"
 
 #include <string>
 
@@ -18,12 +19,20 @@ namespace FlagGG
 
 			~Texture2D() override = default;
 
-			void SetData(int x, int y, unsigned width, unsigned height, const void* data) override;
+			bool SetSize(int32_t width, int32_t height, uint32_t format, TextureUsage usage = TEXTURE_STATIC, int32_t multiSample = 1, bool autoResolve = true);
 
-		private:
-			bool Create(ID3D11Resource*& resource, ID3D11ShaderResourceView*& resourceView) override;
+			bool SetData(uint32_t level, int32_t x, int32_t y, int32_t width, int32_t height, const void* data);
 
-			std::wstring texturePath_;
+			bool SetData(FlagGG::Resource::Image* image, bool useAlpha = false);
+
+		protected:
+			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
+
+			bool EndLoad() override;
+
+			bool Create() override;
+
+			void Release();
 		};
 	}
 }

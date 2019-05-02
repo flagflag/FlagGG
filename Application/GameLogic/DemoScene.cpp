@@ -148,11 +148,11 @@ void DemoScene::Start()
 	context_->RegisterVariable<Input>(input_.Get(), "input");
 	context_->RegisterVariable<ResourceCache>(cache_.Get(), "ResourceCache");
 
-	cache_->AddResourceDir("../../Res");
+	cache_->AddResourceDir("C:/MyC++Projects/flag/Res");
 
 	cameraOpt_ = new CameraOperation(context_);
 
-	SharedPtr<Material> material = cache_->GetResource<Material>("Material/Model.ljson");
+	SharedPtr<Material> material = cache_->GetResource<Material>("Materials/Model.ljson");
 	SharedPtr<Texture> texture = material->GetTexture();
 	SharedPtr<Shader> vs = material->GetVSShader();
 	SharedPtr<Shader> ps = material->GetPSShader();

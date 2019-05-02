@@ -63,11 +63,11 @@ namespace FlagGG
 				);
 			if (hr != 0)
 			{
-				puts("D3DCompile failed.");
+				FLAGGG_LOG_ERROR("D3DCompile failed.");
 
 				if (errorMsgs)
 				{
-					printf("%s\n", errorMsgs->GetBufferPointer());
+					FLAGGG_LOG_ERROR("Error code: %s", errorMsgs->GetBufferPointer());
 
 					SAFE_RELEASE(errorMsgs);
 				}

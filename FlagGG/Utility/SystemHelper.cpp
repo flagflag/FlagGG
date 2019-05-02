@@ -18,6 +18,12 @@ namespace FlagGG
 	{
 		namespace SystemHelper
 		{
+#ifdef WIN32 || WIN64
+			const char* const PATH_SEPARATOR = "\\";
+#else
+			const char* const PATH_SEPARATOR = "/";
+#endif
+
 			Container::String FormatPath(const Container::String& path)
 			{
 				Container::WString wPath(path);
@@ -26,8 +32,13 @@ namespace FlagGG
 				wchar_t buffer[MAX_PATH] = { 0 };
 				uint32_t cur = 0;
 				bool lastMatch = false;
+#ifdef WIN32 || WIN64
 				char match1 = wchar_t('\\');
 				char match2 = wchar_t('/');
+#else
+				char match1 = wchar_t('/');
+				char match2 = wchar_t('\\');
+#endif
 
 				for (uint32_t i = 0; i < wPath.Length(); ++i)
 				{
@@ -112,13 +123,18 @@ namespace FlagGG
 			{
 #ifdef WIN32 || WIN64
 				DWORD attributes = GetFileAttributesW(Container::WString(path).CString());
-				if (attributes == INVALID_FILE_ATTRIBUTES || !(attributes & FILE_ATTRIBUTE_DIRECTORY))
+				if (attributes == INVALID_FILE_ATTRIBUTES || (attributes & FILE_ATTRIBUTE_DIRECTORY))
 					return false;
 #else
 				struct stat st{};
 				if (stat(fixedName.CString(), &st) || !(st.st_mode & S_IFDIR))
 					return false;
 #endif
+				return true;
+			}
+
+			bool HasAccess(const Container::String& path)
+			{
 				return true;
 			}
 		}

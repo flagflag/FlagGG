@@ -38,7 +38,6 @@ namespace FlagGG
 				return static_cast<Type*>(GetHandler());
 			}
 
-		protected:
 			void ResetHandler(GPUHandler handler);
 
 		private:

@@ -5,6 +5,10 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
+		RenderTarget::RenderTarget() :
+			resource_(nullptr)
+		{ }
+
 		RenderTarget::RenderTarget(ID3D11Resource* resource) :
 			resource_(resource)
 		{

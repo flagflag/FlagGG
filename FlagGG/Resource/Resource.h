@@ -22,6 +22,10 @@ namespace FlagGG
 
 			bool LoadFile(IOFrame::Buffer::IOBuffer* stream);
 
+			void SetMemoryUse(uint32_t memoryUse);
+
+			uint32_t GetMemoryUse() const;
+
 		protected:
 			// 至于BeginLoad为什么定义成非共享指针的原因：LoadFile是在栈上创建IOBuffer的子类
 			virtual bool BeginLoad(IOFrame::Buffer::IOBuffer* stream);
@@ -29,6 +33,8 @@ namespace FlagGG
 			virtual bool EndLoad();
 
 			Core::Context* context_;
+
+			uint32_t memoryUse_{ 0 };
 		};
 	}
 }

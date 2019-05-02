@@ -27,8 +27,8 @@ namespace FlagGG
 				~NetBuffer() override = default;
 
 				// 先暂时留空，等需要用的时候在补上
-				uint32_t GetIndex() const override { }
-				uint32_t GetSize() const override { }
+				uint32_t GetIndex() const override { return 0; }
+				uint32_t GetSize() const override { return 0; }
 
 				void ClearIndex() override;
 

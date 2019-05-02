@@ -14,6 +14,8 @@ namespace FlagGG
 	{
 		namespace SystemHelper
 		{
+			extern const char* const PATH_SEPARATOR;
+
 			FlagGG_API Container::String FormatPath(const Container::String& path);
 
 			// 单位：毫秒
@@ -24,6 +26,8 @@ namespace FlagGG
 			FlagGG_API bool DirExists(const Container::String& path);
 
 			FlagGG_API bool FileExists(const Container::String& path);
+
+			FlagGG_API bool HasAccess(const Container::String& path);
 		}
 	}
 }

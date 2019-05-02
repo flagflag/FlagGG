@@ -54,5 +54,15 @@ namespace FlagGG
 		{
 			return false;
 		}
+
+		void Resource::SetMemoryUse(uint32_t memoryUse)
+		{
+			memoryUse_ = memoryUse;
+		}
+
+		uint32_t Resource::GetMemoryUse() const
+		{
+			return memoryUse_;
+		}
 	}
 }

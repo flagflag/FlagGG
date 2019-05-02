@@ -15,6 +15,8 @@ namespace FlagGG
 		class FlagGG_API RenderTarget : public GPUObject, public Container::RefCounted
 		{
 		public:
+			RenderTarget();
+
 			RenderTarget(ID3D11Resource* resource);
 
 			virtual ~RenderTarget() override;
@@ -23,8 +25,12 @@ namespace FlagGG
 
 			bool IsValid() override;
 
+			friend class Texture2D;
+
 		private:
 			ID3D11Resource* resource_{ nullptr };
+
+			void* readOnlyView_{ nullptr };
 		};
 	}
 }
