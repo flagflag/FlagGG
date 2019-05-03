@@ -7,24 +7,20 @@
 #include <Core/Contex.h>
 #include <Core/DeviceEvent.h>
 #include <Resource/ResourceCache.h>
+#include <Utility/SystemHelper.h>
 #include "CameraOperation.h"
 
 using namespace FlagGG::Core;
 using namespace FlagGG::Container;
 using namespace FlagGG::Graphics;
 using namespace FlagGG::Resource;
-
-namespace Frame
-{
-	DEFINE_EVENT(FRAME_BEGIN, void(float));
-	DEFINE_EVENT(FRAME_END, void(float));
-	DEFINE_EVENT(LOGIC_UPDATE, void(float));
-	DEFINE_EVENT(RENDER_UPDATE, void(float));
-}
+using namespace FlagGG::Utility;
 
 class GameEngine
 {
 public:
+	void SetFrameRate(float rate);
+
 	virtual void Run();
 
 protected:
@@ -49,4 +45,8 @@ protected:
 	SharedPtr<CameraOperation> cameraOpt_;
 
 	SharedPtr<Texture2D> renderTexture[2];
+
+	SystemHelper::Timer timer_;
+
+	float frameRate_{ 99999.0f }; // 先设置成不限帧数把
 };

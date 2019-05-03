@@ -26,10 +26,14 @@ public:
 
 	void OnMouseMove(KeyState* keyState, const Vector2& delta);
 
+	void HandleUpdate(float timeStep);
+
 	SharedPtr<Camera> camera_;
 
 private:
 	bool mouseDown_{ false };
 
-	float rate_{ 0.0001 };
+	float rate_{ 0.00005 };
+
+	float walkSpeed_{ 5.0f };
 };

@@ -5,10 +5,12 @@
 #include <windows.h>
 #include <shlwapi.h>
 #pragma comment(lib, "shlwapi.lib")
+#pragma comment(lib, "winmm.lib")
 #else
 #include <unistd.h>
 #include <limits.h>
 #include <dirent.h>
+#include <sys/time.h>
 #define MAX_PATH NAME_MAX
 #endif
 
@@ -81,6 +83,17 @@ namespace FlagGG
 #endif
 			}
 
+			uint32_t Tick()
+			{
+#if WIN32 || WIN64
+				return (uint32_t)timeGetTime();
+#else
+				struct timeval time{};
+				gettimeofday(&time, nullptr);
+				return (uint32_t)(time.tv_sec * 1000 + time.tv_usec / 1000);
+#endif
+			}
+
 			bool ParseCommand(const char** argv, uint32_t argc, Config::LJSONValue& result)
 			{
 				for (uint32_t i = 0; i < argc; ++i)
@@ -136,6 +149,28 @@ namespace FlagGG
 			bool HasAccess(const Container::String& path)
 			{
 				return true;
+			}
+
+
+			Timer::Timer()
+			{
+				Reset();
+			}
+
+			uint32_t Timer::GetMilliSeconds(bool reset)
+			{
+				uint32_t curTime = Tick();
+				uint32_t deltaTime = curTime - startTime_;
+				if (reset)
+				{
+					startTime_ = curTime;
+				}
+				return deltaTime;
+			}
+
+			void Timer::Reset()
+			{
+				startTime_ = Tick();
 			}
 		}
 	}

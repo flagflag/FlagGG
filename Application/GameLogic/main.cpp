@@ -112,7 +112,7 @@ protected:
 		FLAGGG_LOG_ERROR("start game.");
 
 		double frameRate = commandParam["FrameRate"].ToDouble();
-		sleepTime_ = frameRate == 0.0f ? 32 : (uint64_t)((double)1000 / frameRate);
+		SetFrameRate(frameRate);
 
 		context_->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, GameLogic::Update, this));
 		context_->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_DOWN, GameLogic::OnKeyDown, this));
@@ -130,8 +130,6 @@ protected:
 	void Update(float timeStep)
 	{
 		luaVM_->CallEvent("update", timeStep);
-
-		SystemHelper::Sleep(sleepTime_);
 	}
 
 	void OnKeyDown(KeyState* keyState, unsigned keyCode)
@@ -163,8 +161,6 @@ private:
 	SharedPtr<LuaVM> luaVM_;
 
 	LogModule logModule_;
-
-	uint64_t sleepTime_;
 };
 
 void RunLuaVM()

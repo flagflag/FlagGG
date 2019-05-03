@@ -11,6 +11,7 @@
 #include <Container/Ptr.h>
 #include <Core/Function.h>
 #include <Resource/ResourceCache.h>
+#include <Utility/SystemHelper.h>
 
 using namespace FlagGG::Graphics;
 using namespace FlagGG::Math;
@@ -136,6 +137,11 @@ void LoadVertexData(Batch3D& batch, Batch3D& grid)
 	}
 }
 
+void GameEngine::SetFrameRate(float rate)
+{
+	frameRate_ = rate;
+}
+
 void GameEngine::Start()
 {
 	WindowDevice::Initialize();
@@ -197,13 +203,10 @@ void GameEngine::Run()
 {
 	Start();
 
-	auto lastTime = GetTickCount();
-
 	while (true)
 	{
-		auto currTime = GetTickCount();
-		float timeStep = ((float)currTime - lastTime) / 1000.0f;
-		lastTime = currTime;
+		uint32_t deltaTime = timer_.GetMilliSeconds(true);
+		float timeStep = (float)deltaTime / 1000.0f;
 
 		context_->SendEvent<Frame::FRAME_BEGIN_HANDLER>(Frame::FRAME_BEGIN, timeStep);
 
@@ -219,6 +222,12 @@ void GameEngine::Run()
 		}
 
 		context_->SendEvent<Frame::FRAME_END_HANDLER>(Frame::FRAME_END, timeStep);
+
+		float sleepTime = 1000.0f / frameRate_ - timer_.GetMilliSeconds(false);
+		if (sleepTime > 0.0f)
+		{
+			SystemHelper::Sleep(sleepTime);
+		}
 	}
 
 	Stop();

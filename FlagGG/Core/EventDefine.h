@@ -40,6 +40,14 @@ namespace FlagGG
 			DEFINE_EVENT(MOUSE_UP,		void(KeyState*, MouseKey));
 			DEFINE_EVENT(MOUSE_MOVE,	void(KeyState*, const Math::Vector2&));
 		}
+
+		namespace Frame
+		{
+			DEFINE_EVENT(FRAME_BEGIN,	void(float));
+			DEFINE_EVENT(FRAME_END,		void(float));
+			DEFINE_EVENT(LOGIC_UPDATE,	void(float));
+			DEFINE_EVENT(RENDER_UPDATE, void(float));
+		}
 	}
 }
 
