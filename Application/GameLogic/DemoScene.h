@@ -1,7 +1,8 @@
 #pragma once
 
 #include <Core/EventDefine.h>
-#include <Graphics/WinViewport.h>
+#include <Graphics/Window.h>
+#include <Graphics/Texture2D.h>
 #include <Container/Ptr.h>
 #include <Core/Contex.h>
 #include <Core/DeviceEvent.h>
@@ -31,15 +32,21 @@ protected:
 
 	virtual void Stop();
 
+	void OnKeyUp(KeyState* keyState, unsigned keyCode);
+
 	SharedPtr<Context> context_;
 
 	SharedPtr<Input> input_;
 
 	SharedPtr<ResourceCache> cache_;
 
-	SharedPtr<WinViewport> viewport_;
+	Vector<SharedPtr<Viewport>> viewports_;
+
+	SharedPtr<Window> window_;
 
 	SharedPtr<RenderContext> renderContext_;
 
 	SharedPtr<CameraOperation> cameraOpt_;
+
+	SharedPtr<Texture2D> renderTexture[2];
 };

@@ -1,7 +1,6 @@
 #include "DemoScene.h"
 
 #include <Graphics/RenderEngine.h>
-#include <Graphics/Texture2D.h>
 #include <Graphics/Batch3D.h>
 #include <Graphics/Shader.h>
 #include <Graphics/VertexFormat.h>
@@ -164,16 +163,34 @@ void DemoScene::Start()
 	SharedPtr<VertexFormat> format(new VertexFormat(vs->GetByteCode(), VERTEX3D));
 	format->Initialize();
 
-	viewport_ = new WinViewport(context_, nullptr, 100, 100, 500, 500);
-
-	viewport_->Initialize();
-	viewport_->Show();
-	viewport_->SetCamera(cameraOpt_->camera_);
-
 	renderContext_ = new RenderContext(grid, vs, ps, format);
 	renderContext_->batchs_.Push(batch);
 
-	WindowDevice::RegisterWinMessage(viewport_.Get());
+	IntRect rect(100, 100, 1000, 1000);
+
+	renderTexture[0] = new Texture2D(context_);
+	renderTexture[0]->SetNumLevels(1);
+	renderTexture[0]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetRGBFormat(), TEXTURE_RENDERTARGET);
+	renderTexture[1] = new Texture2D(context_);
+	renderTexture[1]->SetNumLevels(1);
+	renderTexture[1]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetDepthStencilFormat(), TEXTURE_DEPTHSTENCIL);
+
+	SharedPtr<Viewport> viewport(new Viewport());
+	viewport->Resize(rect);
+	viewport->SetCamera(cameraOpt_->camera_);
+	viewport->SetRenderContext(renderContext_);
+	viewport->SetRenderTarget(renderTexture[0]->GetRenderSurface());
+	viewport->SetDepthStencil(renderTexture[1]->GetRenderSurface());
+	viewports_.Push(viewport);
+
+	window_ = new Window(context_, nullptr, rect);
+	window_->Show();
+	window_->GetViewport()->SetCamera(cameraOpt_->camera_);
+	window_->GetViewport()->SetRenderContext(renderContext_);
+
+	WindowDevice::RegisterWinMessage(window_);
+
+	context_->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, DemoScene::OnKeyUp, this));
 }
 
 void DemoScene::Run()
@@ -194,7 +211,12 @@ void DemoScene::Run()
 
 		context_->SendEvent<Frame::LOGIC_UPDATE_HANDLER>(Frame::LOGIC_UPDATE, timeStep);
 
-		viewport_->Render(renderContext_);
+		window_->Render();
+
+		for (const auto& viewport : viewports_)
+		{
+			RenderEngine::Render(viewport);
+		}
 
 		context_->SendEvent<Frame::FRAME_END_HANDLER>(Frame::FRAME_END, timeStep);
 	}
@@ -202,9 +224,18 @@ void DemoScene::Run()
 	Stop();
 }
 
+void DemoScene::OnKeyUp(KeyState* keyState, unsigned keyCode)
+{
+	if (keyCode == VK_F11)
+	{
+		SharedPtr<Image> image = renderTexture[0]->GetImage();
+		image->SavePNG("E:\\FlagGG_Scene.png");
+	}
+}
+
 void DemoScene::Stop()
 {
-	WindowDevice::UnregisterWinMessage(viewport_.Get());
+	WindowDevice::UnregisterWinMessage(window_);
 
 	WindowDevice::Uninitialize();
 	RenderEngine::Uninitialize();

@@ -117,6 +117,21 @@ namespace FlagGG
 			return format_ == DXGI_FORMAT_BC1_UNORM || format_ == DXGI_FORMAT_BC2_UNORM || format_ == DXGI_FORMAT_BC3_UNORM;
 		}
 
+		RenderSurface* Texture::GetRenderSurface() const
+		{
+			return renderSurface_;
+		}
+
+		uint32_t Texture::GetComponents() const
+		{
+			if (!width_ || IsCompressed())
+			{
+				return 0;
+			}
+
+			return GetRowDataSize(width_) / width_;
+		}
+
 		uint32_t Texture::CheckMaxLevels(int32_t width, int32_t height, uint32_t requestedLevels)
 		{
 			uint32_t maxLevels = 1;

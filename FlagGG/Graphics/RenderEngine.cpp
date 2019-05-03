@@ -1,5 +1,6 @@
-#include "RenderEngine.h"
-#include "Camera.h"
+#include "Graphics/RenderEngine.h"
+#include "Graphics/Camera.h"
+#include "Graphics/Texture.h"
 
 #include <assert.h>
 
@@ -16,6 +17,8 @@ namespace FlagGG
 		ID3D11Buffer* RenderEngine::matrixData_ = nullptr;
 
 		MaterialQuality RenderEngine::textureQuality_ = QUALITY_HIGH;
+
+		ID3D11Buffer* RenderEngine::d3d11Buffer_ = nullptr;
 
 		struct MatrixData
 		{
@@ -177,16 +180,6 @@ namespace FlagGG
 			return textureQuality_;
 		}
 
-		uint32_t RenderEngine::GetAlphaFormat()
-		{
-			return DXGI_FORMAT_A8_UNORM;
-		}
-
-		uint32_t RenderEngine::GetRGBAFormat()
-		{
-			return DXGI_FORMAT_R8G8B8A8_UNORM;
-		}
-
 		uint32_t RenderEngine::GetFormat(Resource::CompressedFormat format)
 		{
 			switch (format)
@@ -208,9 +201,129 @@ namespace FlagGG
 			}
 		}
 
+		uint32_t RenderEngine::GetAlphaFormat()
+		{
+			return DXGI_FORMAT_A8_UNORM;
+		}
+
+		uint32_t RenderEngine::GetLuminanceFormat()
+		{
+			return DXGI_FORMAT_R8_UNORM;
+		}
+
+		uint32_t RenderEngine::GetLuminanceAlphaFormat()
+		{
+			return DXGI_FORMAT_R8G8_UNORM;
+		}
+
+		uint32_t RenderEngine::GetRGBFormat()
+		{
+			return DXGI_FORMAT_R8G8B8A8_UNORM;
+		}
+
+		uint32_t RenderEngine::GetRGBAFormat()
+		{
+			return DXGI_FORMAT_R8G8B8A8_UNORM;
+		}
+
+		uint32_t RenderEngine::GetRGBA16Format()
+		{
+			return DXGI_FORMAT_R16G16B16A16_UNORM;
+		}
+
+		uint32_t RenderEngine::GetRGBAFloat16Format()
+		{
+			return DXGI_FORMAT_R16G16B16A16_FLOAT;
+		}
+
+		uint32_t RenderEngine::GetRGBAFloat32Format()
+		{
+			return DXGI_FORMAT_R32G32B32A32_FLOAT;
+		}
+
+		uint32_t RenderEngine::GetRG16Format()
+		{
+			return DXGI_FORMAT_R16G16_UNORM;
+		}
+
+		uint32_t RenderEngine::GetRGFloat16Format()
+		{
+			return DXGI_FORMAT_R16G16_FLOAT;
+		}
+
+		uint32_t RenderEngine::GetRGFloat32Format()
+		{
+			return DXGI_FORMAT_R32G32_FLOAT;
+		}
+
+		uint32_t RenderEngine::GetFloat16Format()
+		{
+			return DXGI_FORMAT_R16_FLOAT;
+		}
+
+		uint32_t RenderEngine::GetFloat32Format()
+		{
+			return DXGI_FORMAT_R32_FLOAT;
+		}
+
+		uint32_t RenderEngine::GetLinearDepthFormat()
+		{
+			return DXGI_FORMAT_R32_FLOAT;
+		}
+
+		uint32_t RenderEngine::GetDepthStencilFormat()
+		{
+			return DXGI_FORMAT_R24G8_TYPELESS;
+		}
+
+		uint32_t RenderEngine::GetReadableDepthFormat()
+		{
+			return DXGI_FORMAT_R24G8_TYPELESS;
+		}
+
+		uint32_t RenderEngine::GetFormat(const Container::String& formatName)
+		{
+			Container::String nameLower = formatName.ToLower().Trimmed();
+
+			if (nameLower == "a")
+				return GetAlphaFormat();
+			if (nameLower == "l")
+				return GetLuminanceFormat();
+			if (nameLower == "la")
+				return GetLuminanceAlphaFormat();
+			if (nameLower == "rgb")
+				return GetRGBFormat();
+			if (nameLower == "rgba")
+				return GetRGBAFormat();
+			if (nameLower == "rgba16")
+				return GetRGBA16Format();
+			if (nameLower == "rgba16f")
+				return GetRGBAFloat16Format();
+			if (nameLower == "rgba32f")
+				return GetRGBAFloat32Format();
+			if (nameLower == "rg16")
+				return GetRG16Format();
+			if (nameLower == "rg16f")
+				return GetRGFloat16Format();
+			if (nameLower == "rg32f")
+				return GetRGFloat32Format();
+			if (nameLower == "r16f")
+				return GetFloat16Format();
+			if (nameLower == "r32f" || nameLower == "float")
+				return GetFloat32Format();
+			if (nameLower == "lineardepth" || nameLower == "depth")
+				return GetLinearDepthFormat();
+			if (nameLower == "d24s8")
+				return GetDepthStencilFormat();
+			if (nameLower == "readabledepth" || nameLower == "hwdepth")
+				return GetReadableDepthFormat();
+
+			return GetRGBFormat();
+		}
+
 		void RenderEngine::UpdateMatrix(Camera* camera)
 		{
-			assert(camera);
+			if (!camera) return;
 
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 			unsigned int bufferNumber;
@@ -225,6 +338,114 @@ namespace FlagGG
 			RenderEngine::GetDeviceContext()->Unmap(matrixData_, 0);
 
 			RenderEngine::GetDeviceContext()->VSSetConstantBuffers(0, 1, &matrixData_);
+		}
+
+		void RenderEngine::Render(Viewport* viewport)
+		{
+			if (!viewport) return;
+
+			const RenderContext* context = viewport->GetRenderContext();
+			if (!context || !context->IsValid()) return;
+
+			viewport->SetViewport();
+
+			RenderEngine::UpdateMatrix(viewport->GetCamera());
+
+			ID3D11DeviceContext* deviceContext = RenderEngine::GetDeviceContext();
+
+			ID3D11RenderTargetView* renderTargetView = viewport->GetRenderTarget()->GetObject<ID3D11RenderTargetView>();
+			ID3D11DepthStencilView* depthStencilView = viewport->GetDepthStencil()->GetObject<ID3D11DepthStencilView>();
+			deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+
+			float color[] = { 0.0, 0.0f, 0.0f, 1.0f };
+			deviceContext->ClearRenderTargetView(renderTargetView, color);
+			deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0, 0);
+
+			for (int i = 0; i < context->batchs_.Size(); ++i)
+			{
+				Batch* batch = context->batchs_[i];
+
+				unsigned vertexSize = batch->GetVertexSize();
+				unsigned vertexCount = batch->GetVertexCount();
+				unsigned vertexOffset = 0;
+				if (vertexCount > 0)
+				{
+					UpdateVertexData(&(*batch->GetVertexs())[0], vertexSize, vertexCount);
+				}
+				deviceContext->IASetVertexBuffers(0, 1, &d3d11Buffer_, &vertexSize, &vertexOffset);
+
+				//deviceContext->VSSetSamplers(0, 1, &batch.GetTexture()->sampler_);
+
+				deviceContext->IASetInputLayout(context->format_->GetObject<ID3D11InputLayout>());
+				deviceContext->VSSetShader(context->VSShader_->GetObject<ID3D11VertexShader>(), nullptr, 0);
+				deviceContext->PSSetShader(context->PSShader_->GetObject<ID3D11PixelShader>(), nullptr, 0);
+				deviceContext->PSSetShaderResources(0, 1, &batch->GetTexture()->shaderResourceView_);
+				deviceContext->PSSetSamplers(0, 1, &batch->GetTexture()->sampler_);
+
+				switch (batch->GetType())
+				{
+				case DRAW_LINE:
+					deviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+
+					break;
+
+				case DRAW_TRIANGLE:
+					deviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+					break;
+				}
+
+				deviceContext->Draw(vertexCount, 0);
+			}
+		}
+
+		void RenderEngine::UpdateVertexData(const uint8_t* vertexs, uint32_t vertexSize, uint32_t vertexCount)
+		{
+			static uint32_t vertexSize_ = 0;
+			static uint32_t vertexCount_ = 0;
+
+			if (vertexSize != vertexSize_ || vertexCount != vertexCount_)
+			{
+				SAFE_RELEASE(d3d11Buffer_);
+			}
+
+			if (!d3d11Buffer_)
+			{
+				D3D11_BUFFER_DESC bufferDesc;
+				memset(&bufferDesc, 0, sizeof(bufferDesc));
+				bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+				bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+				bufferDesc.Usage = D3D11_USAGE_DYNAMIC; //D3D11_USAGE_DEFAULT
+				bufferDesc.ByteWidth = vertexSize * vertexCount;
+
+				HRESULT hr = RenderEngine::GetDevice()->CreateBuffer(&bufferDesc, nullptr, (ID3D11Buffer**)&d3d11Buffer_);
+				if (hr != 0)
+				{
+					puts("Device CreateBuffer failed.");
+
+					SAFE_RELEASE(d3d11Buffer_);
+
+					return;
+				}
+
+				vertexSize_ = vertexSize;
+				vertexCount_ = vertexCount;
+			}
+
+			D3D11_MAPPED_SUBRESOURCE mappedData;
+			mappedData.pData = nullptr;
+
+			HRESULT hr = RenderEngine::GetDeviceContext()->Map(d3d11Buffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData); //D3D11_MAP_WRITE
+			if (hr != 0 || !mappedData.pData)
+			{
+				puts("Map Data failed.");
+
+				return;
+			}
+
+			memcpy(mappedData.pData, vertexs, vertexSize * vertexCount);
+
+			RenderEngine::GetDeviceContext()->Unmap(d3d11Buffer_, 0);
 		}
 	}
 }

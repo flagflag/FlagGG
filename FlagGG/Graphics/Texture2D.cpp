@@ -133,7 +133,7 @@ namespace FlagGG
 					SAFE_RELEASE(renderTargetView);
 					return false;
 				}
-				renderTarget_->ResetHandler(renderTargetView);
+				renderSurface_->ResetHandler(renderTargetView);
 			}
 			else if (usage_ == TEXTURE_DEPTHSTENCIL)
 			{
@@ -150,17 +150,17 @@ namespace FlagGG
 					SAFE_RELEASE(depthStencilView);
 					return false;
 				}
-				renderTarget_->ResetHandler(depthStencilView);
+				renderSurface_->ResetHandler(depthStencilView);
 
 				if (RenderEngine::GetDevice()->GetFeatureLevel() >= D3D_FEATURE_LEVEL_11_0)
 				{
 					depthStencilViewDesc.Flags = D3D11_DSV_READ_ONLY_DEPTH;
 					hr = RenderEngine::GetDevice()->CreateDepthStencilView(GetObject<ID3D11Resource>(), &depthStencilViewDesc,
-						(ID3D11DepthStencilView**)&renderTarget_->readOnlyView_);
+						(ID3D11DepthStencilView**)&renderSurface_->readOnlyView_);
 					if (FAILED(hr))
 					{
 						FLAGGG_LOG_ERROR("Failed to create read-only depth-stencil view.");
-						SAFE_RELEASE(renderTarget_->readOnlyView_);
+						SAFE_RELEASE(renderSurface_->readOnlyView_);
 					}
 				}
 			}
@@ -199,13 +199,13 @@ namespace FlagGG
 				requestedLevels_ = 1;
 			}
 
-			renderTarget_.Reset();
+			renderSurface_.Reset();
 			
 			usage_ = usage;
 
 			if (usage >= TEXTURE_RENDERTARGET)
 			{
-				renderTarget_ = new RenderTarget();
+				renderSurface_ = new RenderSurface();
 			}
 
 			width_ = width;
@@ -441,6 +441,108 @@ namespace FlagGG
 		bool Texture2D::EndLoad()
 		{
 			return true;
+		}
+
+		bool Texture2D::GetData(uint32_t level, void* dest)
+		{
+			if (!Texture::IsValid())
+			{
+				FLAGGG_LOG_ERROR("Invalid Texture2D cannot get data.");
+				return false;
+			}
+
+			if (!dest)
+			{
+				FLAGGG_LOG_ERROR("Null destination for getting data.");
+				return false;
+			}
+
+			if (level >= levels_)
+			{
+				FLAGGG_LOG_ERROR("Illegal mip level for getting data.");
+				return false;
+			}
+
+			if (multiSample_ > 1 && !autoResolve_)
+			{
+				FLAGGG_LOG_ERROR("Can not get data from multisampled texture without autoresolve.");
+				return false;
+			}
+
+			int32_t levelWidth = GetLevelWidth(level);
+			int32_t levelHeight = GetLevelHeight(level);
+
+			D3D11_TEXTURE2D_DESC textureDesc;
+			memset(&textureDesc, 0, sizeof textureDesc);
+			textureDesc.Width = (UINT)levelWidth;
+			textureDesc.Height = (UINT)levelHeight;
+			textureDesc.MipLevels = 1;
+			textureDesc.ArraySize = 1;
+			textureDesc.Format = (DXGI_FORMAT)format_;
+			textureDesc.SampleDesc.Count = 1;
+			textureDesc.SampleDesc.Quality = 0;
+			textureDesc.Usage = D3D11_USAGE_STAGING;
+			textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+
+			ID3D11Texture2D* stagingTexture = nullptr;
+			HRESULT hr = RenderEngine::GetDevice()->CreateTexture2D(&textureDesc, nullptr, &stagingTexture);
+			if (FAILED(hr))
+			{
+				FLAGGG_LOG_ERROR("Failed to create staging texture for GetData", hr);
+				SAFE_RELEASE(stagingTexture);
+				return false;
+			}
+
+			ID3D11Resource* srcResource = (ID3D11Resource*)(resolveTexture_ ? resolveTexture_ : GetObject<ID3D11Resource>());
+			unsigned srcSubResource = D3D11CalcSubresource(level, 0, levels_);
+
+			D3D11_BOX srcBox;
+			srcBox.left = 0;
+			srcBox.right = (UINT)levelWidth;
+			srcBox.top = 0;
+			srcBox.bottom = (UINT)levelHeight;
+			srcBox.front = 0;
+			srcBox.back = 1;
+			RenderEngine::GetDeviceContext()->CopySubresourceRegion(stagingTexture, 0, 0, 0, 0, srcResource,
+				srcSubResource, &srcBox);
+
+			D3D11_MAPPED_SUBRESOURCE mappedData;
+			mappedData.pData = nullptr;
+			unsigned rowSize = GetRowDataSize(levelWidth);
+			unsigned numRows = (unsigned)(IsCompressed() ? (levelHeight + 3) >> 2 : levelHeight);
+
+			hr = RenderEngine::GetDeviceContext()->Map((ID3D11Resource*)stagingTexture, 0, D3D11_MAP_READ, 0, &mappedData);
+			if (FAILED(hr) || !mappedData.pData)
+			{
+				FLAGGG_LOG_ERROR("Failed to map staging texture for GetData", hr);
+				SAFE_RELEASE(stagingTexture);
+				return false;
+			}
+			
+			for (unsigned row = 0; row < numRows; ++row)
+			{
+				memcpy((unsigned char*)dest + row * rowSize, (unsigned char*)mappedData.pData + row * mappedData.RowPitch, rowSize);
+			}
+
+			RenderEngine::GetDeviceContext()->Unmap((ID3D11Resource*)stagingTexture, 0);
+			SAFE_RELEASE(stagingTexture);
+
+			return true;		
+		}
+
+		Container::SharedPtr<FlagGG::Resource::Image> Texture2D::GetImage()
+		{
+			Container::SharedPtr<FlagGG::Resource::Image> image(new FlagGG::Resource::Image(context_));
+			if (format_ != RenderEngine::GetRGBAFormat() && format_ != RenderEngine::GetRGBFormat())
+			{
+				FLAGGG_LOG_ERROR("Unsupported texture format, can not convert to Image");
+				return nullptr;
+			}
+
+			image->SetSize(width_, height_, GetComponents());
+			GetData(0, image->GetData());
+
+			return image;
 		}
 	}
 }

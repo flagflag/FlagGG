@@ -4,7 +4,7 @@
 #include "Export.h"
 
 #include "Graphics/GPUObject.h"
-#include "Graphics/RenderTarget.h"
+#include "Graphics/RenderSurface.h"
 #include "Resource/Resource.h"
 
 #include <stdint.h>
@@ -51,7 +51,11 @@ namespace FlagGG
 
 			bool IsCompressed() const;
 
-			friend class WinViewport;
+			RenderSurface* GetRenderSurface() const;
+
+			uint32_t GetComponents() const;
+
+			friend class RenderEngine;
 
 		protected:
 			void Initialize() override;
@@ -78,7 +82,7 @@ namespace FlagGG
 
 			TextureUsage usage_{ TEXTURE_STATIC };
 
-			Container::SharedPtr<RenderTarget> renderTarget_;
+			Container::SharedPtr<RenderSurface> renderSurface_;
 
 			uint32_t mipsToSkip_[MAX_TEXTURE_QUALITY_LEVELS];
 

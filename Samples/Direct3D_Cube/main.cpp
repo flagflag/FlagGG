@@ -1,4 +1,4 @@
-﻿#include <Graphics/WinViewport.h>
+﻿#include <Graphics/Window.h>
 #include <Graphics/RenderEngine.h>
 #include <Graphics/Texture2D.h>
 #include <Graphics/Batch3D.h>
@@ -322,7 +322,7 @@ void Run()
 	VertexFormat format(vs.GetByteCode(), VERTEX3D);
 	format.Initialize();
 
-	WinViewport viewport(&context, nullptr, 100, 100, 500, 500);
+	Window viewport(&context, nullptr, 100, 100, 500, 500);
 
 	viewport.Initialize();
 	viewport.Show();

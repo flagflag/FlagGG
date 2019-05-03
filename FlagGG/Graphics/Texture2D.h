@@ -25,6 +25,10 @@ namespace FlagGG
 
 			bool SetData(FlagGG::Resource::Image* image, bool useAlpha = false);
 
+			bool GetData(uint32_t level, void* dest);
+
+			Container::SharedPtr<FlagGG::Resource::Image> GetImage();
+
 		protected:
 			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
