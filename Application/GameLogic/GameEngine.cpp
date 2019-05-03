@@ -1,4 +1,4 @@
-#include "DemoScene.h"
+#include "GameEngine.h"
 
 #include <Graphics/RenderEngine.h>
 #include <Graphics/Batch3D.h>
@@ -136,7 +136,7 @@ void LoadVertexData(Batch3D& batch, Batch3D& grid)
 	}
 }
 
-void DemoScene::Start()
+void GameEngine::Start()
 {
 	WindowDevice::Initialize();
 	RenderEngine::Initialize();
@@ -190,10 +190,10 @@ void DemoScene::Start()
 
 	WindowDevice::RegisterWinMessage(window_);
 
-	context_->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, DemoScene::OnKeyUp, this));
+	context_->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, GameEngine::OnKeyUp, this));
 }
 
-void DemoScene::Run()
+void GameEngine::Run()
 {
 	Start();
 
@@ -224,7 +224,7 @@ void DemoScene::Run()
 	Stop();
 }
 
-void DemoScene::OnKeyUp(KeyState* keyState, unsigned keyCode)
+void GameEngine::OnKeyUp(KeyState* keyState, unsigned keyCode)
 {
 	if (keyCode == VK_F11)
 	{
@@ -233,7 +233,7 @@ void DemoScene::OnKeyUp(KeyState* keyState, unsigned keyCode)
 	}
 }
 
-void DemoScene::Stop()
+void GameEngine::Stop()
 {
 	WindowDevice::UnregisterWinMessage(window_);
 

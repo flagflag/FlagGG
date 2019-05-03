@@ -7,7 +7,7 @@
 #include <Container/Ptr.h>
 #include <Utility/SystemHelper.h>
 
-#include "DemoScene.h"
+#include "GameEngine.h"
 
 using namespace FlagGG::Graphics;
 using namespace FlagGG::Math;
@@ -66,7 +66,7 @@ static int End(lua_State* L)
 	return 0;
 }
 
-class GameLogic : public DemoScene
+class GameLogic : public GameEngine
 {
 public:
 	GameLogic() :
@@ -77,7 +77,7 @@ public:
 protected:
 	void Start() override
 	{
-		DemoScene::Start();
+		GameEngine::Start();
 
 		luaVM_->Open();
 		if (!luaVM_->IsOpen())

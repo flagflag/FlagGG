@@ -22,7 +22,7 @@ namespace Frame
 	DEFINE_EVENT(RENDER_UPDATE, void(float));
 }
 
-class DemoScene
+class GameEngine
 {
 public:
 	virtual void Run();
