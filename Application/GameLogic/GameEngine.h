@@ -3,6 +3,7 @@
 #include <Core/EventDefine.h>
 #include <Graphics/Window.h>
 #include <Graphics/Texture2D.h>
+#include <Graphics/Model.h>
 #include <Container/Ptr.h>
 #include <Core/Contex.h>
 #include <Core/DeviceEvent.h>
@@ -45,6 +46,8 @@ protected:
 	SharedPtr<CameraOperation> cameraOpt_;
 
 	SharedPtr<Texture2D> renderTexture[2];
+
+	SharedPtr<Model> model_;
 
 	SystemHelper::Timer timer_;
 

@@ -162,15 +162,20 @@ void GameEngine::Start()
 	SharedPtr<Shader> vs = material->GetVSShader();
 	SharedPtr<Shader> ps = material->GetPSShader();
 
-	SharedPtr<Batch3D> batch(new Batch3D(DRAW_TRIANGLE, texture, nullptr));
-	SharedPtr<Batch3D> grid(new Batch3D(DRAW_LINE, texture, nullptr)); //地板的batch
-	LoadVertexData(*batch, *grid);
+	//SharedPtr<Batch3D> batch(new Batch3D(DRAW_TRIANGLE, texture, nullptr));
+	//SharedPtr<Batch3D> grid(new Batch3D(DRAW_LINE, texture, nullptr)); //地板的batch
+	//LoadVertexData(*batch, *grid);
+
+	model_ = cache_->GetResource<Model>("Model/Kachujin.mdl");
+
+	Batch3D* batch = model_->GetBatch();
+	batch->SetTexture(cache_->GetResource<Texture2D>("Textures/Kachujin_diffuse.png"));
 
 	SharedPtr<VertexFormat> format(new VertexFormat(vs->GetByteCode(), VERTEX3D));
 	format->Initialize();
 
-	renderContext_ = new RenderContext(grid, vs, ps, format);
-	renderContext_->batchs_.Push(batch);
+	renderContext_ = new RenderContext(batch, vs, ps, format);
+	//renderContext_->batchs_.Push(batch);
 
 	IntRect rect(100, 100, 1000, 1000);
 

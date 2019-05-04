@@ -54,6 +54,11 @@ namespace FlagGG
 			return texture_;
 		}
 
+		void Batch::SetTexture(Texture* texture)
+		{
+			texture_ = texture;
+		}
+
 		BatchType Batch::GetType() const
 		{
 			return type_;

@@ -37,6 +37,8 @@ namespace FlagGG
 
 			Texture* GetTexture() const;
 
+			void SetTexture(Texture* texture);
+
 			BatchType GetType() const;
 
 		protected:
