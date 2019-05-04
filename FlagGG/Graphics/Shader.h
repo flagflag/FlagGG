@@ -4,6 +4,7 @@
 #include "Export.h"
 
 #include "Graphics/GPUObject.h"
+#include "Graphics/GraphicsDef.h"
 #include "Resource/Resource.h"
 #include "Container/ArrayPtr.h"
 
@@ -13,13 +14,6 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		enum ShaderType
-		{
-			None	= 0,
-			VS		= 1,
-			PS		= 2
-		};
-
 		class FlagGG_API Shader : public GPUObject, public Resource::Resource
 		{
 		public:
