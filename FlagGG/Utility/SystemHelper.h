@@ -30,6 +30,8 @@ namespace FlagGG
 
 			FlagGG_API bool FileExists(const Container::String& path);
 
+			FlagGG_API bool CreateDir(const Container::String& path);
+
 			FlagGG_API bool HasAccess(const Container::String& path);
 
 			class FlagGG_API Timer

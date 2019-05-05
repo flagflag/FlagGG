@@ -146,6 +146,17 @@ namespace FlagGG
 				return true;
 			}
 
+			bool CreateDir(const Container::String& path)
+			{
+#ifdef WIN32 || WIN64
+				Container::WString wPath(path);
+				bool success = CreateDirectoryW(wPath.CString(), nullptr) == TRUE || GetLastError() == ERROR_ALREADY_EXISTS;
+#else
+				bool success = mkdir(path.CString(), S_IRWXU) == 0 || errno == EEXIST;
+#endif
+				return success;
+			}
+
 			bool HasAccess(const Container::String& path)
 			{
 				return true;
