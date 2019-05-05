@@ -3,7 +3,7 @@
 #include <Graphics/Camera.h>
 #include <Core/DeviceEvent.h>
 #include <Container/Ptr.h>
-#include <Core/Contex.h>
+#include <Core/Context.h>
 #include <Math/Vector2.h>
 
 using namespace FlagGG::Core;

@@ -7,7 +7,7 @@
 #include <Graphics/Camera.h>
 #include <Graphics/Material.h>
 #include <Math/Matrix4.h>
-#include <Core/Contex.h>
+#include <Core/Context.h>
 #include <Container/Ptr.h>
 #include <Core/Function.h>
 #include <Resource/ResourceCache.h>

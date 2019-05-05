@@ -6,7 +6,7 @@
 #include <Graphics/VertexFormat.h>
 #include <Graphics/Camera.h>
 #include <Math/Matrix4.h>
-#include <Core/Contex.h>
+#include <Core/Context.h>
 #include <Core/DeviceEvent.h>
 #include <Container/Ptr.h>
 #include <Core/Function.h>

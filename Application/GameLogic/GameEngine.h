@@ -5,7 +5,7 @@
 #include <Graphics/Texture2D.h>
 #include <Graphics/Model.h>
 #include <Container/Ptr.h>
-#include <Core/Contex.h>
+#include <Core/Context.h>
 #include <Core/DeviceEvent.h>
 #include <Resource/ResourceCache.h>
 #include <Utility/SystemHelper.h>
