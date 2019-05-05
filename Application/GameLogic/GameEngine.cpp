@@ -153,7 +153,7 @@ void GameEngine::Start()
 	context_->RegisterVariable<Input>(input_.Get(), "input");
 	context_->RegisterVariable<ResourceCache>(cache_.Get(), "ResourceCache");
 
-	cache_->AddResourceDir("C:/MyC++Projects/flag/Res");
+	cache_->AddResourceDir("../../../Res");
 
 	cameraOpt_ = new CameraOperation(context_);
 
