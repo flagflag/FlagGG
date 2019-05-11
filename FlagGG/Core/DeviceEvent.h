@@ -2,7 +2,7 @@
 #define __DEVICE_EVENT__
 
 #include "Export.h"
-#include "Core/Contex.h"
+#include "Core/Context.h"
 #include "Core/EventDefine.h"
 #include "Math/Vector2.h"
 #include "Container/RefCounted.h"

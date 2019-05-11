@@ -4,7 +4,7 @@
 #include "Resource/Resource.h"
 #include "Math/Color.h"
 #include "Container/Ptr.h"
-#include "Core/Contex.h"
+#include "Core/Context.h"
 
 namespace FlagGG
 {

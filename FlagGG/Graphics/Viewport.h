@@ -7,7 +7,7 @@
 #include "Graphics/Camera.h"
 #include "Graphics/RenderContext.h"
 #include "Container/Ptr.h"
-#include "Core/Contex.h"
+#include "Core/Context.h"
 #include "Math/Rect.h"
 
 namespace FlagGG

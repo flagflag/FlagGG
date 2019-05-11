@@ -5,7 +5,7 @@
 #include "Container/Str.h"
 #include "Container/RefCounted.h"
 #include "IOFrame/Buffer/IOBuffer.h"
-#include "Core/Contex.h"
+#include "Core/Context.h"
 
 namespace FlagGG
 {
