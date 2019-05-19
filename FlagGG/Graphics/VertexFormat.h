@@ -12,12 +12,6 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		enum VertexType
-		{
-			VERTEX2D = 0,
-			VERTEX3D = 1,
-		};
-
 		class FlagGG_API VertexFormat : public GPUObject, public Container::RefCounted
 		{
 		public:
