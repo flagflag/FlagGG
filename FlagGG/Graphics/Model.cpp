@@ -8,14 +8,8 @@ namespace FlagGG
 	namespace Graphics
 	{
 		Model::Model(Core::Context* context) :
-			Resource(context),
-			batch_(new Batch3D(DRAW_TRIANGLE, nullptr))
+			Resource(context)
 		{ }
-
-		Batch3D* Model::GetBatch() const
-		{
-			return batch_;
-		}
 
 		Container::Vector<Container::SharedPtr<VertexBuffer>>& Model::GetVertexBuffers()
 		{
@@ -70,15 +64,6 @@ namespace FlagGG
 				stream->ReadUInt32(ignore);
 				stream->ReadUInt32(ignore);
 
-				//uint32_t vertexSize = 68;
-				//Container::SharedArrayPtr<char> buffer(new char[vertexCount * vertexSize]);
-				//stream->ReadStream(buffer.Get(), vertexCount * vertexSize);
-				//for (uint32_t j = 0; j < vertexCount; ++j)
-				//{
-				//	batch_->AddBlob(buffer.Get() + j * vertexSize, 12);
-				//	batch_->AddBlob(buffer.Get() + j * vertexSize + 12 + 12, 8);
-				//	batch_->AddBlob(buffer.Get() + j * vertexSize + 12, 12);
-				//}
 				Container::SharedPtr<VertexBuffer> buffer(new VertexBuffer());
 				uint32_t vertexSize = VertexBuffer::GetVertexSize(vertexElements);
 				buffer->SetSize(vertexCount, vertexElements);

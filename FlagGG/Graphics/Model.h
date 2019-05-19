@@ -15,8 +15,6 @@ namespace FlagGG
 		public:
 			Model(Core::Context* context);
 
-			Batch3D* GetBatch() const;
-
 			Container::Vector<Container::SharedPtr<VertexBuffer>>& GetVertexBuffers();
 
 		protected:
@@ -25,8 +23,6 @@ namespace FlagGG
 			bool EndLoad() override;
 
 		private:
-			Container::SharedPtr<Batch3D> batch_;
-
 			Container::Vector<Container::SharedPtr<VertexBuffer>> vertexBuffers_;
 		};
 	}
