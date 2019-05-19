@@ -10,6 +10,8 @@ struct VertexInput
 	float3 pos : POSITION;
 	float2 tex0 : TEXCOORD0;
 	float3 nor : NORMAL;
+	float4 blendWeights : BLEND_WEIGHTS;
+	int4 blendIndices : BLEND_INDICES;
 };
 
 struct PixelInput
