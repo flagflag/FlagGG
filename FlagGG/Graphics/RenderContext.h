@@ -3,9 +3,9 @@
 
 #include "Export.h"
 
-#include "Batch.h"
-#include "Shader.h"
-#include "VertexFormat.h"
+#include "Graphics/VertexBuffer.h"
+#include "Graphics/Texture.h"
+#include "Graphics/Shader.h"
 #include "Container/RefCounted.h"
 #include "Container/Ptr.h"
 #include "Container/Vector.h"
@@ -16,21 +16,17 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		struct FlagGG_API RenderContext : public Container::RefCounted
+		struct FlagGG_API RenderContext
 		{
-			RenderContext(Batch* batch, Shader* VS, Shader* PS, VertexFormat* format);
+			PrimitiveType primitiveType_{ PRIMITIVE_TRIANGLE };
 
-			~RenderContext() = default;
+			Container::Vector<Container::SharedPtr<VertexBuffer>>* vertexBuffers_;
 
-			bool IsValid() const;
-
-			Container::Vector<Container::SharedPtr<Batch>> batchs_;
+			Container::SharedPtr<Texture> texture_;
 
 			Container::SharedPtr<Shader> VSShader_;
 
 			Container::SharedPtr<Shader> PSShader_;
-
-			Container::SharedPtr<VertexFormat> format_;
 		};
 	}
 }

@@ -6,16 +6,6 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		VertexElement::VertexElement() :
-			vertexElementType_(VE_INT),
-			vertexElementSemantic_(SEM_POSITION)
-		{ }
-
-		VertexElement::VertexElement(VertexElementType vertexElementType, VertexElementSemantic vertexElementSemantic) :
-			vertexElementType_(vertexElementType),
-			vertexElementSemantic_(vertexElementSemantic)
-		{ }
-
 		bool VertexBuffer::IsValid()
 		{
 			return !!GetHandler();
@@ -27,14 +17,9 @@ namespace FlagGG
 
 		bool VertexBuffer::SetSize(uint32_t vertexCount, const Container::PODVector<VertexElement>& vertexElements)
 		{
-			vertexSize_ = 0;
+			vertexSize_ = GetVertexSize(vertexElements);
 			vertexCount_ = vertexCount;
 			vertexElements_ = vertexElements;
-
-			for (const auto& vertexElement : vertexElements)
-			{
-				vertexSize_ += VERTEX_ELEMENT_TYPE_SIZE[vertexElement.vertexElementType_];
-			}
 
 			D3D11_BUFFER_DESC bufferDesc;
 			memset(&bufferDesc, 0, sizeof(bufferDesc));
@@ -71,6 +56,44 @@ namespace FlagGG
 		void VertexBuffer::Unlock()
 		{
 			RenderEngine::GetDeviceContext()->Unmap(GetObject<ID3D11Buffer>(), 0);
+		}
+
+		uint32_t VertexBuffer::GetVertexSize() const
+		{
+			return vertexSize_;
+		}
+
+		uint32_t VertexBuffer::GetVertexCount() const
+		{
+			return vertexCount_;
+		}
+
+		const Container::PODVector<VertexElement>& VertexBuffer::GetElements() const
+		{
+			return vertexElements_;
+		}
+
+		Container::PODVector<VertexElement> VertexBuffer::GetElements(uint32_t elementMask)
+		{
+			Container::PODVector<VertexElement> vertexElements;
+			for (uint32_t i = 0; i < MAX_DEFAULT_VERTEX_ELEMENT; ++i)
+			{
+				if (elementMask & (1u << i))
+				{
+					vertexElements.Push(DEFAULT_VERTEX_ELEMENT[i]);
+				}
+			}
+			return vertexElements;
+		}
+
+		uint32_t VertexBuffer::GetVertexSize(const Container::PODVector<VertexElement>& elements)
+		{
+			uint32_t vertexSize = 0u;
+			for (const auto& element : elements)
+			{
+				vertexSize += VERTEX_ELEMENT_TYPE_SIZE[element.vertexElementType_];
+			}
+			return vertexSize;
 		}
 	}
 }

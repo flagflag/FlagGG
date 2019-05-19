@@ -4,6 +4,7 @@
 #include <Graphics/Window.h>
 #include <Graphics/Texture2D.h>
 #include <Graphics/Model.h>
+#include <Scene/Scene.h>
 #include <Container/Ptr.h>
 #include <Core/Context.h>
 #include <Core/DeviceEvent.h>
@@ -16,6 +17,7 @@ using namespace FlagGG::Container;
 using namespace FlagGG::Graphics;
 using namespace FlagGG::Resource;
 using namespace FlagGG::Utility;
+using namespace FlagGG::Scene;
 
 class GameEngine
 {
@@ -29,6 +31,12 @@ protected:
 
 	virtual void Stop();
 
+	void CreateCoreObject();
+
+	void CreateScene();
+
+	void SetupWindow();
+
 	void OnKeyUp(KeyState* keyState, unsigned keyCode);
 
 	SharedPtr<Context> context_;
@@ -39,15 +47,13 @@ protected:
 
 	Vector<SharedPtr<Viewport>> viewports_;
 
-	SharedPtr<Window> window_;
+	SharedPtr<Scene> scene_;
 
-	SharedPtr<RenderContext> renderContext_;
+	SharedPtr<Window> window_;
 
 	SharedPtr<CameraOperation> cameraOpt_;
 
 	SharedPtr<Texture2D> renderTexture[2];
-
-	SharedPtr<Model> model_;
 
 	SystemHelper::Timer timer_;
 

@@ -4,7 +4,9 @@
 #include "Export.h"
 #include "Graphics/GraphicsDef.h"
 #include "Graphics/Viewport.h"
+#include "Graphics/VertexFormat.h"
 #include "Resource/Image.h"
+#include "Container/HashMap.h"
 
 #include <d3d11.h>
 
@@ -83,7 +85,7 @@ namespace FlagGG
 
 			static void Render(Viewport* viewport);
 
-			static void UpdateVertexData(const uint8_t* vertexs, uint32_t vertexSize, uint32_t vertexCount);
+			static VertexFormat* CacheVertexFormat(Shader* VSShader, VertexBuffer** vertexBuffer);
 
 		private:
 			static void CreateDevice();
@@ -102,7 +104,9 @@ namespace FlagGG
 
 			static MaterialQuality textureQuality_;
 
-			static ID3D11Buffer* d3d11Buffer_;
+			static ID3D11Buffer* vertexBuffers_[MAX_VERTEX_BUFFER_COUNT];
+
+			static Container::HashMap<uint64_t, Container::SharedPtr<VertexFormat>> vertexFormatCache_;
 		};
 	}
 }

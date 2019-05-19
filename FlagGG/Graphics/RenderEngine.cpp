@@ -1,6 +1,7 @@
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Camera.h"
 #include "Graphics/Texture.h"
+#include "Math/Math.h"
 
 #include <assert.h>
 
@@ -18,7 +19,9 @@ namespace FlagGG
 
 		MaterialQuality RenderEngine::textureQuality_ = QUALITY_HIGH;
 
-		ID3D11Buffer* RenderEngine::d3d11Buffer_ = nullptr;
+		ID3D11Buffer* RenderEngine::vertexBuffers_[MAX_VERTEX_BUFFER_COUNT];
+
+		Container::HashMap<uint64_t, Container::SharedPtr<VertexFormat>> RenderEngine::vertexFormatCache_;
 
 		struct MatrixData
 		{
@@ -344,9 +347,6 @@ namespace FlagGG
 		{
 			if (!viewport) return;
 
-			const RenderContext* context = viewport->GetRenderContext();
-			if (!context || !context->IsValid()) return;
-
 			viewport->SetViewport();
 
 			RenderEngine::UpdateMatrix(viewport->GetCamera());
@@ -361,37 +361,48 @@ namespace FlagGG
 			deviceContext->ClearRenderTargetView(renderTargetView, color);
 			deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0, 0);
 
-			for (int i = 0; i < context->batchs_.Size(); ++i)
+			Scene::Scene* scene = viewport->GetScene();
+			Container::Vector<RenderContext> renderContexts;
+			scene->Render(renderContexts);
+
+			for (const auto& renderContext : renderContexts)
 			{
-				Batch* batch = context->batchs_[i];
-
-				unsigned vertexSize = batch->GetVertexSize();
-				unsigned vertexCount = batch->GetVertexCount();
-				unsigned vertexOffset = 0;
-				if (vertexCount > 0)
+				uint32_t vertexCount = 0;
+				uint32_t vertexSize = 0;
+				uint32_t vertexOffset = 0;
+				uint32_t vertexBufferCount = Math::Min<uint32_t>(renderContext.vertexBuffers_->Size(), MAX_VERTEX_BUFFER_COUNT);
+				
+				VertexBuffer* tempBuffer[MAX_VERTEX_BUFFER_COUNT + 1] = { 0 };
+				
+				for (uint32_t i = 0; i < vertexBufferCount; ++i)
 				{
-					UpdateVertexData(&(*batch->GetVertexs())[0], vertexSize, vertexCount);
+					const Container::SharedPtr<VertexBuffer>& vertexBuffer = (*renderContext.vertexBuffers_)[i];
+					vertexBuffers_[i] = vertexBuffer->GetObject<ID3D11Buffer>();
+					vertexSize = vertexBuffer->GetVertexSize();
+					vertexCount += vertexBuffer->GetVertexCount();
+
+					tempBuffer[i] = vertexBuffer.Get();
 				}
-				deviceContext->IASetVertexBuffers(0, 1, &d3d11Buffer_, &vertexSize, &vertexOffset);
 
+				VertexFormat* vertexFormat = CacheVertexFormat(renderContext.VSShader_, tempBuffer);
+
+				deviceContext->IASetVertexBuffers(0, vertexBufferCount, vertexBuffers_, &vertexSize, &vertexOffset);			
+				//deviceContext->VSSetShaderResources(0, 1, &renderContext.texture_->shaderResourceView_);
 				//deviceContext->VSSetSamplers(0, 1, &batch.GetTexture()->sampler_);
+				deviceContext->IASetInputLayout(vertexFormat->GetObject<ID3D11InputLayout>());
+				deviceContext->VSSetShader(renderContext.VSShader_->GetObject<ID3D11VertexShader>(), nullptr, 0);
+				deviceContext->PSSetShader(renderContext.PSShader_->GetObject<ID3D11PixelShader>(), nullptr, 0);
+				deviceContext->PSSetShaderResources(0, 1, &renderContext.texture_->shaderResourceView_);
+				deviceContext->PSSetSamplers(0, 1, &renderContext.texture_->sampler_);
 
-				deviceContext->IASetInputLayout(context->format_->GetObject<ID3D11InputLayout>());
-				deviceContext->VSSetShader(context->VSShader_->GetObject<ID3D11VertexShader>(), nullptr, 0);
-				deviceContext->PSSetShader(context->PSShader_->GetObject<ID3D11PixelShader>(), nullptr, 0);
-				deviceContext->PSSetShaderResources(0, 1, &batch->GetTexture()->shaderResourceView_);
-				deviceContext->PSSetSamplers(0, 1, &batch->GetTexture()->sampler_);
-
-				switch (batch->GetType())
+				switch (renderContext.primitiveType_)
 				{
-				case DRAW_LINE:
+				case PRIMITIVE_LINE:
 					deviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-
 					break;
 
-				case DRAW_TRIANGLE:
+				case PRIMITIVE_TRIANGLE:
 					deviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 					break;
 				}
 
@@ -399,53 +410,19 @@ namespace FlagGG
 			}
 		}
 
-		void RenderEngine::UpdateVertexData(const uint8_t* vertexs, uint32_t vertexSize, uint32_t vertexCount)
+		VertexFormat* RenderEngine::CacheVertexFormat(Shader* VSShader, VertexBuffer** vertexBuffer)
 		{
-			static uint32_t vertexSize_ = 0;
-			static uint32_t vertexCount_ = 0;
-
-			if (vertexSize != vertexSize_ || vertexCount != vertexCount_)
+			auto hashValue = reinterpret_cast<uint64_t>(VSShader);
+			auto it = vertexFormatCache_.Find(hashValue);
+			if (it != vertexFormatCache_.End())
 			{
-				SAFE_RELEASE(d3d11Buffer_);
+				return it->second_;
 			}
 
-			if (!d3d11Buffer_)
-			{
-				D3D11_BUFFER_DESC bufferDesc;
-				memset(&bufferDesc, 0, sizeof(bufferDesc));
-				bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-				bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-				bufferDesc.Usage = D3D11_USAGE_DYNAMIC; //D3D11_USAGE_DEFAULT
-				bufferDesc.ByteWidth = vertexSize * vertexCount;
+			Container::SharedPtr<VertexFormat> vertexFormat(new VertexFormat(VSShader, vertexBuffer));
+			vertexFormatCache_[hashValue] = vertexFormat;
 
-				HRESULT hr = RenderEngine::GetDevice()->CreateBuffer(&bufferDesc, nullptr, (ID3D11Buffer**)&d3d11Buffer_);
-				if (hr != 0)
-				{
-					puts("Device CreateBuffer failed.");
-
-					SAFE_RELEASE(d3d11Buffer_);
-
-					return;
-				}
-
-				vertexSize_ = vertexSize;
-				vertexCount_ = vertexCount;
-			}
-
-			D3D11_MAPPED_SUBRESOURCE mappedData;
-			mappedData.pData = nullptr;
-
-			HRESULT hr = RenderEngine::GetDeviceContext()->Map(d3d11Buffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData); //D3D11_MAP_WRITE
-			if (hr != 0 || !mappedData.pData)
-			{
-				puts("Map Data failed.");
-
-				return;
-			}
-
-			memcpy(mappedData.pData, vertexs, vertexSize * vertexCount);
-
-			RenderEngine::GetDeviceContext()->Unmap(d3d11Buffer_, 0);
+			return vertexFormat;
 		}
 	}
 }

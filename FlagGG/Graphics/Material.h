@@ -1,4 +1,5 @@
 #ifndef __MATERIAL__
+#define __MATERIAL__
 
 #include "Export.h"
 #include "Resource/Resource.h"

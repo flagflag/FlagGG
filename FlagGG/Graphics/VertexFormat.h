@@ -4,6 +4,8 @@
 #include "Export.h"
 
 #include "Graphics/GPUObject.h"
+#include "Graphics/Shader.h"
+#include "Graphics/VertexBuffer.h"
 #include "Container/RefCounted.h"
 
 namespace FlagGG
@@ -19,19 +21,12 @@ namespace FlagGG
 		class FlagGG_API VertexFormat : public GPUObject, public Container::RefCounted
 		{
 		public:
-			VertexFormat(ID3DBlob* shaderCode, VertexType vertexType);
-
-			~VertexFormat() override = default;
-
-			void Initialize() override;
+			VertexFormat(Shader* VSShader, VertexBuffer** vertexBuffer);
 
 			bool IsValid() override;
 
 		private:
-			// 这个以后要改成共享指针，现在先这样吧
-			ID3DBlob* shaderCode_{ nullptr };
-
-			VertexType vertexType_;
+			void Initialize() override;
 		};
 	}
 }

@@ -9,6 +9,7 @@
 #include "Container/Ptr.h"
 #include "Core/Context.h"
 #include "Math/Rect.h"
+#include "Scene/Scene.h"
 
 namespace FlagGG
 {
@@ -44,9 +45,9 @@ namespace FlagGG
 
 			void SetCamera(Camera* camera);
 
-			const RenderContext* GetRenderContext() const;
+			Scene::Scene* GetScene() const;
 
-			void SetRenderContext(RenderContext* renderContext);
+			void SetScene(Scene::Scene* scene);
 
 			void SetViewport();
 
@@ -63,7 +64,7 @@ namespace FlagGG
 
 			Container::SharedPtr<Camera> camera_;
 
-			Container::SharedPtr<RenderContext> renderContext_;
+			Container::SharedPtr<Scene::Scene> scene_;
 
 			ID3D11DepthStencilView* depthStencialView_{ nullptr };
 

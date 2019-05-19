@@ -6,6 +6,7 @@
 #include <Graphics/VertexFormat.h>
 #include <Graphics/Camera.h>
 #include <Graphics/Material.h>
+#include <Scene/StaticMeshComponent.h>
 #include <Math/Matrix4.h>
 #include <Core/Context.h>
 #include <Container/Ptr.h>
@@ -13,169 +14,39 @@
 #include <Resource/ResourceCache.h>
 #include <Utility/SystemHelper.h>
 
-using namespace FlagGG::Graphics;
 using namespace FlagGG::Math;
-using namespace FlagGG::Core;
-using namespace FlagGG::Resource;
-
-void AddGrid(Batch3D& batch)
-{
-	float lineWidth = 0.01;
-	float space = 0.1;
-	int count = 1.0f / space * 2;
-
-	Vector3 v1(-1.0f, -1.0f, -1.0f);
-	Vector3 v2(-1.0f, -1.0f, 1.0f);
-
-	Vector3 v3(-1.0f, -1.0f, -1.0f);
-	Vector3 v4(1.0f, -1.0f, -1.0f);
-
-	for (int i = 0; i < count; ++i)
-	{
-		Vector3 d1(space * i, 0.0f, 0.0f);
-
-		batch.AddLine(
-			v1 + d1, v2 + d1,
-			Vector2(0.5f, 0.5f), Vector2(0.5f, 0.5f),
-			0);
-
-		Vector3 d2(0.0f, 0.0f, space * i);
-
-		batch.AddLine(
-			v3 + d2, v4 + d2,
-			Vector2(0.5f, 0.5f), Vector2(0.5f, 0.5f),
-			0);
-	}
-}
-
-void LoadVertexData(Batch3D& batch, Batch3D& grid)
-{
-	AddGrid(grid);
-
-	// 正面
-	{
-		batch.AddTriangle(
-			Vector3(0.5f, 0.5f, -0.5f), Vector3(0.5f, -0.5f, -0.5f), Vector3(-0.5f, -0.5f, -0.5f),
-			Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
-			Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 0.0f, -1.0f),
-			0);
-		batch.AddTriangle(
-			Vector3(-0.5f, -0.5f, -0.5f), Vector3(-0.5f, 0.5f, -0.5f), Vector3(0.5f, 0.5f, -0.5f),
-			Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
-			Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 0.0f, -1.0f),
-			0);
-	}
-
-	// 上面
-	{
-		batch.AddTriangle(
-			Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, -0.5f), Vector3(-0.5f, 0.5f, -0.5f),
-			Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
-			Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f),
-			0);
-		batch.AddTriangle(
-			Vector3(-0.5f, 0.5f, -0.5f), Vector3(-0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f),
-			Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
-			Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f),
-			0);
-	}
-
-	// 右面
-	{
-		batch.AddTriangle(
-			Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, -0.5f, 0.5f), Vector3(0.5f, -0.5f, -0.5f),
-			Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
-			Vector3(1.0f, 0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f),
-			0);
-		batch.AddTriangle(
-			Vector3(0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f),
-			Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
-			Vector3(1.0f, 0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f),
-			0);
-	}
-
-	// 背面
-	{
-		batch.AddTriangle(
-			Vector3(-0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, 0.5f), Vector3(0.5f, -0.5f, 0.5f),
-			Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
-			Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
-			0);
-		batch.AddTriangle(
-			Vector3(0.5f, -0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, 0.5f, 0.5f),
-			Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
-			Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f),
-			0);
-	}
-
-	// 下面
-	{
-		batch.AddTriangle(
-			Vector3(-0.5f, -0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, -0.5f, -0.5f),
-			Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
-			Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f),
-			0);
-		batch.AddTriangle(
-			Vector3(0.5f, -0.5f, -0.5f), Vector3(0.5f, -0.5f, 0.5f), Vector3(-0.5f, -0.5f, 0.5f),
-			Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
-			Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f),
-			0);
-	}
-
-	// 左面
-	{
-		batch.AddTriangle(
-			Vector3(-0.5f, 0.5f, -0.5f), Vector3(-0.5f, -0.5f, -0.5f), Vector3(-0.5f, -0.5f, 0.5f),
-			Vector2(1.0f, 1.0f), Vector2(1.0f, 0.0f), Vector2(0.0f, 0.0f),
-			Vector3(-1.0f, 0.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f),
-			0);
-		batch.AddTriangle(
-			Vector3(-0.5f, -0.5f, 0.5f), Vector3(-0.5f, 0.5f, 0.5f), Vector3(-0.5f, 0.5f, -0.5f),
-			Vector2(0.0f, 0.0f), Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f),
-			Vector3(-1.0f, 0.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f),
-			0);
-	}
-}
 
 void GameEngine::SetFrameRate(float rate)
 {
 	frameRate_ = rate;
 }
 
-void GameEngine::Start()
+void GameEngine::CreateCoreObject()
 {
-	WindowDevice::Initialize();
-	RenderEngine::Initialize();
-
 	context_ = new Context();
 	input_ = new Input(context_);
 	cache_ = new ResourceCache(context_);
+	cache_->AddResourceDir("../../../Res");
 	context_->RegisterVariable<Input>(input_.Get(), "input");
 	context_->RegisterVariable<ResourceCache>(cache_.Get(), "ResourceCache");
+}
 
-	cache_->AddResourceDir("../../../Res");
-
-	cameraOpt_ = new CameraOperation(context_);
-
+void GameEngine::CreateScene()
+{
+	SharedPtr<Model> model = cache_->GetResource<Model>("Model/Kachujin.mdl");
 	SharedPtr<Material> material = cache_->GetResource<Material>("Materials/Model.ljson");
-	SharedPtr<Texture> texture = material->GetTexture();
-	SharedPtr<Shader> vs = material->GetVSShader();
-	SharedPtr<Shader> ps = material->GetPSShader();
+	SharedPtr<StaticMeshComponent> staticMeshComponent(new StaticMeshComponent());
+	staticMeshComponent->SetModel(model);
+	staticMeshComponent->SetMaterial(material);
+	SharedPtr<Node> node(new Node());
+	node->AddComponent(staticMeshComponent);
+	scene_ = new Scene();
+	scene_->AddChild(node);
+}
 
-	//SharedPtr<Batch3D> batch(new Batch3D(DRAW_TRIANGLE, texture, nullptr));
-	//SharedPtr<Batch3D> grid(new Batch3D(DRAW_LINE, texture, nullptr)); //地板的batch
-	//LoadVertexData(*batch, *grid);
-
-	model_ = cache_->GetResource<Model>("Model/Kachujin.mdl");
-
-	Batch3D* batch = model_->GetBatch();
-	batch->SetTexture(cache_->GetResource<Texture2D>("Textures/Kachujin_diffuse.png"));
-
-	SharedPtr<VertexFormat> format(new VertexFormat(vs->GetByteCode(), VERTEX3D));
-	format->Initialize();
-
-	renderContext_ = new RenderContext(batch, vs, ps, format);
-	//renderContext_->batchs_.Push(batch);
+void GameEngine::SetupWindow()
+{
+	cameraOpt_ = new CameraOperation(context_);
 
 	IntRect rect(100, 100, 1000, 1000);
 
@@ -189,7 +60,7 @@ void GameEngine::Start()
 	SharedPtr<Viewport> viewport(new Viewport());
 	viewport->Resize(rect);
 	viewport->SetCamera(cameraOpt_->camera_);
-	viewport->SetRenderContext(renderContext_);
+	viewport->SetScene(scene_);
 	viewport->SetRenderTarget(renderTexture[0]->GetRenderSurface());
 	viewport->SetDepthStencil(renderTexture[1]->GetRenderSurface());
 	viewports_.Push(viewport);
@@ -197,9 +68,19 @@ void GameEngine::Start()
 	window_ = new Window(context_, nullptr, rect);
 	window_->Show();
 	window_->GetViewport()->SetCamera(cameraOpt_->camera_);
-	window_->GetViewport()->SetRenderContext(renderContext_);
+	window_->GetViewport()->SetScene(scene_);
 
 	WindowDevice::RegisterWinMessage(window_);
+}
+
+void GameEngine::Start()
+{
+	WindowDevice::Initialize();
+	RenderEngine::Initialize();
+
+	CreateCoreObject();
+	CreateScene();
+	SetupWindow();
 
 	context_->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, GameEngine::OnKeyUp, this));
 }

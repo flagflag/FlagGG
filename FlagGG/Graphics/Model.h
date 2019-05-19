@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Resource/Resource.h"
+#include "Graphics/VertexBuffer.h"
 #include "Graphics/Batch3D.h"
 #include "Container/Ptr.h"
+#include "Container/Vector.h"
 
 namespace FlagGG
 {
@@ -15,6 +17,8 @@ namespace FlagGG
 
 			Batch3D* GetBatch() const;
 
+			Container::Vector<Container::SharedPtr<VertexBuffer>>& GetVertexBuffers();
+
 		protected:
 			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
@@ -22,6 +26,8 @@ namespace FlagGG
 
 		private:
 			Container::SharedPtr<Batch3D> batch_;
+
+			Container::Vector<Container::SharedPtr<VertexBuffer>> vertexBuffers_;
 		};
 	}
 }

@@ -78,14 +78,14 @@ namespace FlagGG
 			camera_ = camera;
 		}
 
-		void Viewport::SetRenderContext(RenderContext* renderContext)
+		Scene::Scene* Viewport::GetScene() const
 		{
-			renderContext_ = renderContext;
+			return scene_;
 		}
 
-		const RenderContext* Viewport::GetRenderContext() const
+		void Viewport::SetScene(Scene::Scene* scene)
 		{
-			return renderContext_;
+			scene_ = scene;
 		}
 	}
 }

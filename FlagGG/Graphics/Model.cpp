@@ -17,6 +17,11 @@ namespace FlagGG
 			return batch_;
 		}
 
+		Container::Vector<Container::SharedPtr<VertexBuffer>>& Model::GetVertexBuffers()
+		{
+			return vertexBuffers_;
+		}
+
 		bool Model::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		{
 			Container::String fileID;
@@ -35,6 +40,7 @@ namespace FlagGG
 			stream->ReadUInt32(numVertexBuffers);
 			for (uint32_t i = 0; i < numVertexBuffers; ++i)
 			{
+				Container::PODVector<VertexElement> vertexElements;
 				uint32_t vertexCount = 0;
 				stream->ReadUInt32(vertexCount);
 
@@ -44,13 +50,7 @@ namespace FlagGG
 				{
 					uint32_t elementMask;
 					stream->ReadUInt32(elementMask);
-					for (uint32_t j = 0; j < 14; ++j)
-					{
-						if (elementMask & (1u << j))
-						{
-							printf("%d\n", j);
-						}
-					}
+					vertexElements = VertexBuffer::GetElements(elementMask);
 				}
 				else
 				{
@@ -60,24 +60,33 @@ namespace FlagGG
 					{
 						uint32_t elementDesc;
 						stream->ReadUInt32(elementDesc);
-						uint32_t type = elementDesc & 0xffu;
-						uint32_t semantic = (elementDesc >> 8u) & 0xffu;
-						uint32_t index = (uint8_t)((elementDesc >> 16u) & 0xffu);
+						auto type = static_cast<VertexElementType>(elementDesc & 0xffu);
+						auto semantic = static_cast<VertexElementSemantic>((elementDesc >> 8u) & 0xffu);
+						auto index = static_cast<uint8_t>((elementDesc >> 16u) & 0xffu);
+						vertexElements.Push(VertexElement(type, semantic, index));
 					}
 				}
 
 				stream->ReadUInt32(ignore);
 				stream->ReadUInt32(ignore);
 
-				uint32_t vertexSize = 68;
-				Container::SharedArrayPtr<char> buffer(new char[vertexCount * vertexSize]);
-				stream->ReadStream(buffer.Get(), vertexCount * vertexSize);
-				for (uint32_t j = 0; j < vertexCount; ++j)
-				{
-					batch_->AddBlob(buffer.Get() + j * vertexSize, 12);
-					batch_->AddBlob(buffer.Get() + j * vertexSize + 12 + 12, 8);
-					batch_->AddBlob(buffer.Get() + j * vertexSize + 12, 12);
-				}
+				//uint32_t vertexSize = 68;
+				//Container::SharedArrayPtr<char> buffer(new char[vertexCount * vertexSize]);
+				//stream->ReadStream(buffer.Get(), vertexCount * vertexSize);
+				//for (uint32_t j = 0; j < vertexCount; ++j)
+				//{
+				//	batch_->AddBlob(buffer.Get() + j * vertexSize, 12);
+				//	batch_->AddBlob(buffer.Get() + j * vertexSize + 12 + 12, 8);
+				//	batch_->AddBlob(buffer.Get() + j * vertexSize + 12, 12);
+				//}
+				Container::SharedPtr<VertexBuffer> buffer(new VertexBuffer());
+				uint32_t vertexSize = VertexBuffer::GetVertexSize(vertexElements);
+				buffer->SetSize(vertexCount, vertexElements);
+				void* data = buffer->Lock(0, vertexCount);
+				stream->ReadStream(data, vertexCount * vertexSize);
+				buffer->Unlock();
+
+				vertexBuffers_.Push(buffer);
 			}
 			
 			return true;
