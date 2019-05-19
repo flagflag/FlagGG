@@ -4,8 +4,6 @@
 #include "Math/Math.h"
 #include "Log.h"
 
-#include "DDS/DDSTextureLoader.h"
-
 #include <d3dx11.h>
 
 namespace FlagGG
