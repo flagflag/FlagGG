@@ -33,6 +33,8 @@ namespace FlagGG
 		protected:
 			void Initialize() override;
 
+			void UpdateOffset();
+
 		private:
 			Container::PODVector<VertexElement> vertexElements_;
 

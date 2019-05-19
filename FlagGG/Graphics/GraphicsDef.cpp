@@ -2,14 +2,18 @@
 
 VertexElement::VertexElement() :
 vertexElementType_(VE_INT),
-vertexElementSemantic_(SEM_POSITION)
+vertexElementSemantic_(SEM_POSITION),
+index_(0),
+perInstance_(false),
+offset_(0)
 { }
 
 VertexElement::VertexElement(VertexElementType vertexElementType, VertexElementSemantic vertexElementSemantic, uint8_t index, bool perInstance) :
 vertexElementType_(vertexElementType),
 vertexElementSemantic_(vertexElementSemantic),
 index_(index),
-perInstance_(perInstance)
+perInstance_(perInstance),
+offset_(0)
 { }
 
 uint32_t VERTEX_ELEMENT_TYPE_SIZE[MAX_VERTEX_ELEMENT_TYPE] =

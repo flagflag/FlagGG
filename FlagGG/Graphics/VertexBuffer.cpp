@@ -38,6 +38,18 @@ namespace FlagGG
 			}
 
 			ResetHandler(buffer);
+
+			UpdateOffset();
+		}
+
+		void VertexBuffer::UpdateOffset()
+		{
+			uint32_t offset = 0;
+			for (auto& element : vertexElements_)
+			{
+				element.offset_ = offset;
+				offset += VERTEX_ELEMENT_TYPE_SIZE[element.vertexElementType_];
+			}
 		}
 
 		void* VertexBuffer::Lock(uint32_t start, uint32_t count)
