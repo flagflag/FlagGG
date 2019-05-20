@@ -180,7 +180,5 @@ int main(int argc, const char* argv[])
 		FLAGGG_LOG_ERROR("parse command failed.");
 	}
 
-	getchar();
-
 	return 0;
 }

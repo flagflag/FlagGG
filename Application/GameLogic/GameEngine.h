@@ -37,6 +37,8 @@ protected:
 
 	void SetupWindow();
 
+	void WindowClose(void* window);
+
 	void OnKeyUp(KeyState* keyState, unsigned keyCode);
 
 	SharedPtr<Context> context_;
@@ -56,6 +58,8 @@ protected:
 	SharedPtr<Texture2D> renderTexture[2];
 
 	SystemHelper::Timer timer_;
+
+	bool isRunning_{ false };
 
 	float frameRate_{ 99999.0f }; // 先设置成不限帧数把
 };

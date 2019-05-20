@@ -82,6 +82,7 @@ void GameEngine::Start()
 	CreateScene();
 	SetupWindow();
 
+	context_->RegisterEvent(EVENT_HANDLER(Application::WINDOW_CLOSE, GameEngine::WindowClose, this));
 	context_->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, GameEngine::OnKeyUp, this));
 }
 
@@ -89,7 +90,9 @@ void GameEngine::Run()
 {
 	Start();
 
-	while (true)
+	isRunning_ = true;
+
+	while (isRunning_)
 	{
 		uint32_t deltaTime = timer_.GetMilliSeconds(true);
 		float timeStep = (float)deltaTime / 1000.0f;
@@ -117,6 +120,11 @@ void GameEngine::Run()
 	}
 
 	Stop();
+}
+
+void GameEngine::WindowClose(void* window)
+{
+	isRunning_ = false;
 }
 
 void GameEngine::OnKeyUp(KeyState* keyState, unsigned keyCode)

@@ -102,6 +102,7 @@ namespace FlagGG
 			window(nullptr),
 			parentWindow_(parentWindow),
 			rect_(rect),
+			context_(context),
 			input_(context->GetVariable<Core::Input>("input"))
 		{
 
@@ -350,6 +351,11 @@ namespace FlagGG
 					Math::Vector2(mousePos.x - mousePos_.x, mousePos.y - mousePos_.y));
 
 				mousePos_ = mousePos;
+
+				break;
+
+			case WM_CLOSE:
+				context_->SendEvent<Core::Application::WINDOW_CLOSE_HANDLER>(Core::Application::WINDOW_CLOSE, window);
 
 				break;
 			}

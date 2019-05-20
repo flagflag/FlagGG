@@ -48,6 +48,11 @@ namespace FlagGG
 			DEFINE_EVENT(LOGIC_UPDATE,	void(float));
 			DEFINE_EVENT(RENDER_UPDATE, void(float));
 		}
+
+		namespace Application
+		{
+			DEFINE_EVENT(WINDOW_CLOSE, void(void*));
+		}
 	}
 }
 

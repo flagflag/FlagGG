@@ -84,6 +84,7 @@ namespace FlagGG
 			void UpdateSwapChain(uint32_t width, uint32_t height);
 
 		private:
+			Core::Context* context_;
 			Core::Input* input_;
 
 			ID3D11Texture2D* depthTexture_;
