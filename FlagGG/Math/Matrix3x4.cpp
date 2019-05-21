@@ -1,4 +1,5 @@
 #include "Math/Matrix3x4.h"
+#include "Math/Math.h"
 
 #include <cstdio>
 
@@ -471,7 +472,7 @@ namespace FlagGG
 
 		Container::String Matrix3x4::ToString() const
 		{
-			char tempBuffer[MATRIX_CONVERSION_BUFFER_LENGTH];
+			char tempBuffer[Container::MATRIX_CONVERSION_BUFFER_LENGTH];
 			sprintf(tempBuffer, "%g %g %g %g %g %g %g %g %g %g %g %g", m00_, m01_, m02_, m03_, m10_, m11_, m12_, m13_, m20_, m21_, m22_,
 				m23_);
 			return Container::String(tempBuffer);

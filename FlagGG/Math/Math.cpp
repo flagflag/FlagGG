@@ -13,6 +13,9 @@ namespace FlagGG
 		const float PI = asin(1.0f) * 2;
 		const float EPS = 1e-6;
 		const float F_INFINITY = (float)HUGE_VAL;
+		const float DEGTORAD = PI / 180.0f;
+		const float DEGTORAD_2 = PI / 360.0f;
+		const float RADTODEG = 1.0f / DEGTORAD;
 
 		bool IsNaN(float number)
 		{
@@ -83,6 +86,11 @@ namespace FlagGG
 				return max;
 			else
 				return target;
+		}
+
+		uint32_t FlagGG_API FloatToRawIntBits(float value)
+		{
+			return *((uint32_t*)&value);
 		}
 
 		Matrix4 MatrixTranslation(float dx, float dy, float dz)

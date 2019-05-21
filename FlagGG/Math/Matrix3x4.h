@@ -2,8 +2,11 @@
 
 #include "Export.h"
 #include "Define.h"
+#include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Math/Vector3.h"
+#include "Math/Vector4.h"
+#include "Math/Quaternion.h"
 #include "Container/Str.h"
 
 namespace FlagGG
@@ -109,9 +112,7 @@ namespace FlagGG
 			float m22_;
 			float m23_;
 
-			/// Zero matrix.
 			static const Matrix3x4 ZERO;
-			/// Identity matrix.
 			static const Matrix3x4 IDENTITY;
 		};
 

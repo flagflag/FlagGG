@@ -6,6 +6,8 @@
 #include "Vector3.h"
 #include "Matrix4.h"
 
+#include <stdint.h>
+
 namespace FlagGG
 {
 	namespace Math
@@ -20,6 +22,9 @@ namespace FlagGG
 		extern const float PI;
 		extern const float EPS;
 		extern const float F_INFINITY;
+		extern const float DEGTORAD;
+		extern const float DEGTORAD_2;
+		extern const float RADTODEG;
 
 		template < class T >
 		inline T Max(T value1, T value2)
@@ -60,6 +65,8 @@ namespace FlagGG
 		float FlagGG_API Equals(float _1, float _2);
 
 		float FlagGG_API Clamp(float target, float min, float max);
+
+		uint32_t FlagGG_API FloatToRawIntBits(float value);
 
 
 		// Œª“∆æÿ’Û
