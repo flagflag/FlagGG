@@ -2,7 +2,7 @@
 #define __MATRIX4__
 
 #include "Export.h"
-
+#include "Define.h"
 #include "Math/Vector3.h"
 
 namespace FlagGG
@@ -13,17 +13,17 @@ namespace FlagGG
 		class FlagGG_API Matrix4
 		{
 		public:
-			Matrix4();
+			Matrix4() NOEXCEPT;
 
-			Matrix4(const Matrix4& matrix);
+			Matrix4(const Matrix4& matrix) NOEXCEPT;
 
 			Matrix4(
 				float v00, float v01, float v02, float v03,
 				float v10, float v11, float v12, float v13,
 				float v20, float v21, float v22, float v23,
-				float v30, float v31, float v32, float v33);
+				float v30, float v31, float v32, float v33) NOEXCEPT;
 
-			explicit Matrix4(const float* data);
+			explicit Matrix4(const float* data) NOEXCEPT;
 
 			Matrix4& operator =(const Matrix4& rhs);
 
