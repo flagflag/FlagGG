@@ -15,13 +15,13 @@ namespace FlagGG
 		};
 
 		/// Enable enum for using in FlagSet. Shall be called within Urho3D namespace.
-#define URHO3D_ENABLE_FLAGSET(enumName) \
+#define FLAGGG_ENABLE_FLAGSET(enumName) \
 	template<> struct IsFlagSet<enumName> { constexpr static bool value_ = true; } \
 
 		/// Enable enum for using in FlagSet and declare FlagSet specialization. Shall be called within Urho3D namespace.
-#define URHO3D_FLAGSET(enumName, flagsetName) \
-	URHO3D_ENABLE_FLAGSET(enumName); \
-	using flagsetName = FlagSet<enumName>
+#define FLAGGG_FLAGSET(enumName, flagsetName) \
+	FLAGGG_ENABLE_FLAGSET(enumName); \
+	using flagsetName = FlagGG::Container::FlagSet<enumName>
 
 		/// A set of flags defined by an Enum.
 		template <class E, class = typename std::enable_if<IsFlagSet<E>::value_>::type>
