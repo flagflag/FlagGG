@@ -16,6 +16,11 @@ namespace FlagGG
 			return vertexBuffers_;
 		}
 
+		const Container::Vector<Container::PODVector<uint32_t>>& Model::GetBoneMappings() const
+		{
+			return boneMappings_;
+		}
+
 		bool Model::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		{
 			Container::String fileID;
@@ -72,6 +77,39 @@ namespace FlagGG
 				buffer->Unlock();
 
 				vertexBuffers_.Push(buffer);
+			}
+
+			uint32_t numIndexBuffers = 0;
+			stream->ReadUInt32(numIndexBuffers);
+			for (uint32_t i = 0; i < numIndexBuffers; ++i)
+			{
+				uint32_t indexCount = 0;
+				uint32_t indexSize = 0;
+				stream->ReadUInt32(indexCount);
+				stream->ReadUInt32(indexSize);
+				stream->Seek(stream->GetIndex() + indexCount* indexSize);
+			}
+
+			uint32_t numGeometries = 0;
+			stream->ReadUInt32(numGeometries);
+			boneMappings_.Reserve(numGeometries);
+			for (uint32_t i = 0; i < numGeometries; ++i)
+			{
+				uint32_t boneMappingCount = 0;
+				stream->ReadUInt32(boneMappingCount);
+				Container::PODVector<unsigned> boneMapping(boneMappingCount);
+				for (uint32_t j = 0; j < boneMappingCount; ++j)
+				{
+					stream->ReadUInt32(boneMapping[j]);
+				}
+				boneMappings_.Push(boneMapping);
+
+				uint32_t numLodLevels = 0;
+				stream->ReadUInt32(numLodLevels);
+				for (uint32_t j = 0; j < numLodLevels; ++j)
+				{
+					stream->Seek(stream->GetIndex() + 5 * 4);
+				}
 			}
 			
 			return true;

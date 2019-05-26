@@ -6,6 +6,9 @@
 #include "Container/Ptr.h"
 #include "Scene/Component.h"
 #include "Graphics/RenderContext.h"
+#include "Math/Vector3.h"
+#include "Math/Quaternion.h"
+#include "Math/Matrix3x4.h"
 
 namespace FlagGG
 {

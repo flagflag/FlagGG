@@ -17,6 +17,8 @@ namespace FlagGG
 
 			Container::Vector<Container::SharedPtr<VertexBuffer>>& GetVertexBuffers();
 
+			const Container::Vector<Container::PODVector<uint32_t>>& GetBoneMappings() const;
+
 		protected:
 			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
@@ -24,6 +26,8 @@ namespace FlagGG
 
 		private:
 			Container::Vector<Container::SharedPtr<VertexBuffer>> vertexBuffers_;
+
+			Container::Vector<Container::PODVector<uint32_t>> boneMappings_;
 		};
 	}
 }

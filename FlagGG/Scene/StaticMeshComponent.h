@@ -16,11 +16,11 @@ namespace FlagGG
 
 			void Render(Graphics::RenderContext& renderContext) override;
 
-			void SetModel(Graphics::Model* model);
+			virtual void SetModel(Graphics::Model* model);
 
 			void SetMaterial(Graphics::Material* material);
 
-		private:
+		protected:
 			Container::SharedPtr<Graphics::Model> model_;
 
 			Container::SharedPtr<Graphics::Material> material_;
