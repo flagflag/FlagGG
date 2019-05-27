@@ -4,6 +4,15 @@ namespace FlagGG
 {
 	namespace Scene
 	{
+		Node::Node() :
+			parent_(nullptr),
+			dirty_(true),
+			position_(Math::Vector3::ZERO),
+			rotation_(Math::Quaternion::IDENTITY),
+			scale_(Math::Vector3::ONE),
+			worldTransform_(Math::Matrix3x4::IDENTITY)
+		{ }
+
 		void Node::Update(float timeStep)
 		{
 			for (const auto& compoment : components_)
@@ -56,17 +65,89 @@ namespace FlagGG
 				}
 			}
 			children_.Push(sharedNode);
+			if (node->parent_)
+			{
+				node->RemoveFromParent();
+			}
+			node->parent_ = this;
 		}
 
 		void Node::RemoveChild(Node* node)
 		{
-			children_.Remove(Container::SharedPtr<Node>(node));
+			Container::SharedPtr<Node> sharedNode(node);
+			children_.Remove(sharedNode); 
+			node->parent_ = nullptr;
 		}
 
+		void Node::RemoveFromParent()
+		{
+			if (parent_)
+			{
+				parent_->RemoveChild(this);
+			}
+		}
 
 		Container::Vector<Container::SharedPtr<Node>>& Node::GetChildren()
 		{
 			return children_;
+		}
+
+		void Node::SetPosition(const Math::Vector3& position)
+		{
+			position_ = position;
+		}
+
+		const Math::Vector3& Node::GetPosition() const
+		{
+			return position_;
+		}
+
+		void Node::SetRotation(const Math::Quaternion& rotation)
+		{
+			rotation_ = rotation;
+		}
+
+		const Math::Quaternion& Node::GetRotation() const
+		{
+			return rotation_;
+		}
+
+		void Node::SetScale(const Math::Vector3& scale)
+		{
+			scale_ = scale;
+		}
+
+		const Math::Vector3& Node::GetScale() const
+		{
+			return scale_;
+		}
+
+		Math::Matrix3x4 Node::GetTransform() const
+		{
+			return Math::Matrix3x4(position_, rotation_, scale_);
+		}
+
+		Math::Matrix3x4 Node::GetWorldTransform() const
+		{
+			if (dirty_)
+				UpdateWorldTransform();
+			return worldTransform_;
+		}
+
+		void Node::UpdateWorldTransform() const
+		{
+			Math::Matrix3x4 transform = GetTransform();
+			
+			if (!parent_)
+			{
+				worldTransform_ = transform;
+			}
+			else
+			{
+				worldTransform_ = parent_->GetWorldTransform() * transform;
+			}
+
+			dirty_ = false;
 		}
 	}
 }
