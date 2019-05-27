@@ -17,6 +17,8 @@ if (FLAGGG_LIB_TYPE STREQUAL STATIC)
 	add_definitions (-DFlagGG_STATIC_DEFINE)
 endif()
 
+project(FlagGG)
+
 include (${CMAKE_CURRENT_SOURCE_DIR}/CMake/Common.cmake)
 
 add_subdirectory (3rd)
