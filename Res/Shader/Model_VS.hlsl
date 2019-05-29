@@ -26,7 +26,7 @@ struct PixelInput
 	float3 nor : NORMAL;
 };
 
-float4x3 GetSkinMatrix(float4 blendWeights, float4 blendIndices)
+float4x3 GetSkinMatrix(float4 blendWeights, int4 blendIndices)
 {
 	return 
 	skinMatrices[blendIndices.x] * blendWeights.x +
