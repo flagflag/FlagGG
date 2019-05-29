@@ -4,7 +4,6 @@
 #include "Container/RefCounted.h"
 #include "Container/Vector.h"
 #include "Container/Ptr.h"
-#include "Scene/Component.h"
 #include "Graphics/RenderContext.h"
 #include "Math/Vector3.h"
 #include "Math/Quaternion.h"
@@ -14,6 +13,8 @@ namespace FlagGG
 {
 	namespace Scene
 	{
+		class Component;
+
 		class FlagGG_API Node : public Container::RefCounted
 		{
 		public:
@@ -49,9 +50,14 @@ namespace FlagGG
 
 			const Math::Vector3& GetScale() const;
 
+			void SetTransform(const Math::Vector3& position, const Math::Quaternion& rotation, const Math::Vector3& scale);
+
 			Math::Matrix3x4 GetTransform() const;
 
 			Math::Matrix3x4 GetWorldTransform() const;
+
+			// 更新节点属性结构dirty状态
+			virtual void UpdateTreeDirty();
 
 		protected:
 			void UpdateWorldTransform() const;

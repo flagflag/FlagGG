@@ -81,13 +81,23 @@ namespace FlagGG
 			/// Return the API-specific texture format from a textual description, for example "rgb".
 			static uint32_t GetFormat(const Container::String& formatName);
 
-			static void UpdateMatrix(Camera* camera);
+			// ×î´ó¹Ç÷ÀÊý
+			static uint32_t GetMaxBonesNum();
+
+			static void UpdateMatrix(Camera* camera, const Math::Matrix3x4* worldTransform, uint32_t num);
 
 			static void Render(Viewport* viewport);
 
 			static VertexFormat* CacheVertexFormat(Shader* VSShader, VertexBuffer** vertexBuffer);
 
 		private:
+			enum ConstBufferType
+			{
+				CONST_BUFFER_MATRIX = 0,
+				CONST_BUFFER_SKIN,
+				MAX_CONST_BUFFER,
+			};
+
 			static void CreateDevice();
 
 			static void CreateRasterizerState();
@@ -100,7 +110,7 @@ namespace FlagGG
 
 			static ID3D11RasterizerState* rasterizerState_;
 
-			static ID3D11Buffer* matrixData_;
+			static ID3D11Buffer* constBuffer_[MAX_CONST_BUFFER_COUNT];
 
 			static MaterialQuality textureQuality_;
 

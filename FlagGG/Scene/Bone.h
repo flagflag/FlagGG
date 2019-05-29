@@ -52,6 +52,12 @@ namespace FlagGG
 		public:
 			void Load(IOFrame::Buffer::IOBuffer* stream);
 
+			const Container::Vector<Bone>& GetBones() const;
+
+			Container::Vector<Bone>& GetBones();
+
+			void ResetNode();
+
 		private:
 			Container::Vector<Bone> bones_;
 

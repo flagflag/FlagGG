@@ -20,6 +20,8 @@ namespace FlagGG
 
 			const Container::Vector<Container::PODVector<uint32_t>>& GetBoneMappings() const;
 
+			const Scene::Skeleton& GetSkeleton() const;
+
 		protected:
 			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 

@@ -1,4 +1,5 @@
 #include "Scene/Node.h"
+#include "Scene/Component.h"
 
 namespace FlagGG
 {
@@ -42,6 +43,7 @@ namespace FlagGG
 				}
 			}
 			components_.Push(sharedComponent);
+			sharedComponent->SetNode(this);
 		}
 
 		void Node::RemoveComponent(Component* component)
@@ -64,12 +66,15 @@ namespace FlagGG
 					return;
 				}
 			}
-			children_.Push(sharedNode);
 			if (node->parent_)
 			{
 				node->RemoveFromParent();
 			}
+			children_.Push(sharedNode);
 			node->parent_ = this;
+			
+			// 更新dirty，类似的会去更新直接矩阵等
+			node->UpdateTreeDirty();
 		}
 
 		void Node::RemoveChild(Node* node)
@@ -77,6 +82,7 @@ namespace FlagGG
 			Container::SharedPtr<Node> sharedNode(node);
 			children_.Remove(sharedNode); 
 			node->parent_ = nullptr;
+			node->UpdateTreeDirty();
 		}
 
 		void Node::RemoveFromParent()
@@ -95,6 +101,8 @@ namespace FlagGG
 		void Node::SetPosition(const Math::Vector3& position)
 		{
 			position_ = position;
+
+			UpdateTreeDirty();
 		}
 
 		const Math::Vector3& Node::GetPosition() const
@@ -105,6 +113,8 @@ namespace FlagGG
 		void Node::SetRotation(const Math::Quaternion& rotation)
 		{
 			rotation_ = rotation;
+
+			UpdateTreeDirty();
 		}
 
 		const Math::Quaternion& Node::GetRotation() const
@@ -115,11 +125,22 @@ namespace FlagGG
 		void Node::SetScale(const Math::Vector3& scale)
 		{
 			scale_ = scale;
+
+			UpdateTreeDirty();
 		}
 
 		const Math::Vector3& Node::GetScale() const
 		{
 			return scale_;
+		}
+
+		void Node::SetTransform(const Math::Vector3& position, const Math::Quaternion& rotation, const Math::Vector3& scale)
+		{
+			position_ = position;
+			rotation_ = rotation;
+			scale_ = scale;
+
+			UpdateTreeDirty();
 		}
 
 		Math::Matrix3x4 Node::GetTransform() const
@@ -148,6 +169,23 @@ namespace FlagGG
 			}
 
 			dirty_ = false;
+		}
+
+		void Node::UpdateTreeDirty()
+		{
+			if (dirty_) return;
+
+			dirty_ = true;
+
+			for (auto& component : components_)
+			{
+				component->UpdateTreeDirty();
+			}
+			
+			for (auto& child : children_)
+			{
+				child->UpdateTreeDirty();
+			}
 		}
 	}
 }

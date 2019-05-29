@@ -1,6 +1,7 @@
 #ifndef __CONTEXT__
 #define __CONTEXT__
 
+#include "Export.h"
 #include "Container/Ptr.h"
 #include "Container/Str.h"
 #include "Container/HashMap.h"
@@ -73,7 +74,7 @@ namespace FlagGG
 			T* eventEntry_;
 		};
 
-		class Context : public Container::RefCounted
+		class FlagGG_API Context : public Container::RefCounted
 		{
 		public:
 			template < class VariableType >

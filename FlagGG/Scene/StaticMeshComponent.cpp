@@ -7,7 +7,6 @@ namespace FlagGG
 	{
 		void StaticMeshComponent::Update(float timeStep)
 		{
-
 		}
 
 		void StaticMeshComponent::Render(Graphics::RenderContext& renderContext)
@@ -17,6 +16,8 @@ namespace FlagGG
 			renderContext.texture_ = material_->GetTexture();
 			renderContext.VSShader_ = material_->GetVSShader();
 			renderContext.PSShader_ = material_->GetPSShader();
+			renderContext.worldTransform_ = &node_->GetWorldTransform();
+			renderContext.numWorldTransform_ = 1;
 		}
 
 		void StaticMeshComponent::SetModel(Graphics::Model* model)

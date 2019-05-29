@@ -6,7 +6,7 @@
 #include <Graphics/VertexFormat.h>
 #include <Graphics/Camera.h>
 #include <Graphics/Material.h>
-#include <Scene/StaticMeshComponent.h>
+#include <Scene/SkeletonMeshComponent.h>
 #include <Math/Matrix4.h>
 #include <Core/Context.h>
 #include <Container/Ptr.h>
@@ -35,13 +35,14 @@ void GameEngine::CreateScene()
 {
 	SharedPtr<Model> model = cache_->GetResource<Model>("Model/Kachujin.mdl");
 	SharedPtr<Material> material = cache_->GetResource<Material>("Materials/Model.ljson");
-	SharedPtr<StaticMeshComponent> staticMeshComponent(new StaticMeshComponent());
-	staticMeshComponent->SetModel(model);
-	staticMeshComponent->SetMaterial(material);
+	SharedPtr<SkeletonMeshComponent> skeletonMeshComponent(new SkeletonMeshComponent());
 	SharedPtr<Node> node(new Node());
-	node->AddComponent(staticMeshComponent);
-	scene_ = new Scene();
+	node->AddComponent(skeletonMeshComponent);
+	skeletonMeshComponent->SetModel(model);
+	skeletonMeshComponent->SetMaterial(material);
+	scene_ = new Scene(context_);
 	scene_->AddChild(node);
+	scene_->Start();
 }
 
 void GameEngine::SetupWindow()

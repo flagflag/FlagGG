@@ -2,6 +2,7 @@
 #include "Graphics/Camera.h"
 #include "Graphics/Texture.h"
 #include "Math/Math.h"
+#include "Log.h"
 
 #include <assert.h>
 
@@ -15,11 +16,11 @@ namespace FlagGG
 
 		ID3D11RasterizerState* RenderEngine::rasterizerState_ = nullptr;
 
-		ID3D11Buffer* RenderEngine::matrixData_ = nullptr;
+		ID3D11Buffer* RenderEngine::constBuffer_[MAX_CONST_BUFFER_COUNT] = { 0 };
 
 		MaterialQuality RenderEngine::textureQuality_ = QUALITY_HIGH;
 
-		ID3D11Buffer* RenderEngine::vertexBuffers_[MAX_VERTEX_BUFFER_COUNT];
+		ID3D11Buffer* RenderEngine::vertexBuffers_[MAX_VERTEX_BUFFER_COUNT] = { 0 };
 
 		Container::HashMap<uint64_t, Container::SharedPtr<VertexFormat>> RenderEngine::vertexFormatCache_;
 
@@ -98,13 +99,21 @@ namespace FlagGG
 			bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 			bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 			bufferDesc.ByteWidth = sizeof(MatrixData);
-			HRESULT hr = RenderEngine::GetDevice()->CreateBuffer(&bufferDesc, NULL, &matrixData_);
-			if (hr != 0)
+			HRESULT hr = RenderEngine::GetDevice()->CreateBuffer(&bufferDesc, nullptr, &constBuffer_[CONST_BUFFER_MATRIX]);
+			if (FAILED(hr))
 			{
-				puts("MatrixData CreateBuffer failed.");
+				FLAGGG_LOG_ERROR("Failed to Create ConstBuffer for Normal MatrixData.");
+				SAFE_RELEASE(constBuffer_[CONST_BUFFER_MATRIX]);
+				return;
+			}
 
-				SAFE_RELEASE(matrixData_);
-
+			// Ä¬ÈÏ×î´ó¹Ç÷ÀÊý
+			bufferDesc.ByteWidth = sizeof(Math::Matrix3x4) * GetMaxBonesNum();
+			hr = RenderEngine::GetDevice()->CreateBuffer(&bufferDesc, nullptr, &constBuffer_[CONST_BUFFER_SKIN]);
+			if (FAILED(hr))
+			{
+				FLAGGG_LOG_ERROR("Failed to Create ConstBuffer for Skin MatrixData.");
+				SAFE_RELEASE(constBuffer_[CONST_BUFFER_SKIN]);
 				return;
 			}
 		}
@@ -123,7 +132,10 @@ namespace FlagGG
 			SAFE_RELEASE(device_);
 			SAFE_RELEASE(deviceContext_);
 			SAFE_RELEASE(rasterizerState_);
-			SAFE_RELEASE(matrixData_);
+			for (uint32_t i = 0; i < MAX_CONST_BUFFER_COUNT; ++i)
+			{
+				SAFE_RELEASE(constBuffer_[i]);
+			}
 		}
 
 		ID3D11Device* RenderEngine::GetDevice()
@@ -324,23 +336,34 @@ namespace FlagGG
 			return GetRGBFormat();
 		}
 
-		void RenderEngine::UpdateMatrix(Camera* camera)
+		uint32_t RenderEngine::GetMaxBonesNum()
+		{
+			return 64;
+		}
+
+		void RenderEngine::UpdateMatrix(Camera* camera, const Math::Matrix3x4* worldTransform, uint32_t num)
 		{
 			if (!camera) return;
+			if (!worldTransform || !num) return;
 
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
-			unsigned int bufferNumber;
 
-			RenderEngine::GetDeviceContext()->Map(matrixData_, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-
+			// ÆÕÍ¨×ø±ê¾ØÕó
+			RenderEngine::GetDeviceContext()->Map(constBuffer_[CONST_BUFFER_MATRIX], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 			MatrixData* dataPtr = static_cast<MatrixData*>(mappedResource.pData);
-			dataPtr->world		= Math::Matrix4::IDENTITY.Transpose();
-			dataPtr->view		= camera->GetViewMatrix().Transpose();
+			dataPtr->world = Math::Matrix4::IDENTITY.Transpose();
+			dataPtr->view = camera->GetViewMatrix().Transpose();
 			dataPtr->projection = camera->GetProjectionMatrix().Transpose();
+			RenderEngine::GetDeviceContext()->Unmap(constBuffer_[CONST_BUFFER_MATRIX], 0);
 
-			RenderEngine::GetDeviceContext()->Unmap(matrixData_, 0);
+			// ÃÉÆ¤¾ØÕó
+			RenderEngine::GetDeviceContext()->Map(constBuffer_[CONST_BUFFER_SKIN], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+			uint32_t realNum = Math::Min(GetMaxBonesNum(), num);
+			memcpy(mappedResource.pData, worldTransform, sizeof(Math::Matrix3x4) * realNum);
+			RenderEngine::GetDeviceContext()->Unmap(constBuffer_[CONST_BUFFER_SKIN], 0);
 
-			RenderEngine::GetDeviceContext()->VSSetConstantBuffers(0, 1, &matrixData_);
+			unsigned int bufferNumber = MAX_CONST_BUFFER;
+			RenderEngine::GetDeviceContext()->VSSetConstantBuffers(0, bufferNumber, constBuffer_);
 		}
 
 		void RenderEngine::Render(Viewport* viewport)
@@ -348,8 +371,6 @@ namespace FlagGG
 			if (!viewport) return;
 
 			viewport->SetViewport();
-
-			RenderEngine::UpdateMatrix(viewport->GetCamera());
 
 			ID3D11DeviceContext* deviceContext = RenderEngine::GetDeviceContext();
 
@@ -367,6 +388,8 @@ namespace FlagGG
 
 			for (const auto& renderContext : renderContexts)
 			{
+				RenderEngine::UpdateMatrix(viewport->GetCamera(), renderContext.worldTransform_, renderContext.numWorldTransform_);
+
 				uint32_t vertexCount = 0;
 				uint32_t vertexSize = 0;
 				uint32_t vertexOffset = 0;

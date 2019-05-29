@@ -9,6 +9,7 @@
 #include "Container/RefCounted.h"
 #include "Container/Ptr.h"
 #include "Container/Vector.h"
+#include "Math/Matrix3x4.h"
 
 #include <vector>
 
@@ -27,6 +28,9 @@ namespace FlagGG
 			Container::SharedPtr<Shader> VSShader_;
 
 			Container::SharedPtr<Shader> PSShader_;
+
+			const Math::Matrix3x4* worldTransform_{ nullptr };
+			uint32_t numWorldTransform_{ 0 };
 		};
 	}
 }

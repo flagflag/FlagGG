@@ -22,6 +22,11 @@ namespace FlagGG
 			return boneMappings_;
 		}
 
+		const Scene::Skeleton& Model::GetSkeleton() const
+		{
+			return skeleton_;
+		}
+
 		bool Model::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		{
 			Container::String fileID;

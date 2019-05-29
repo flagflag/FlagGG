@@ -9,12 +9,12 @@ namespace FlagGG
 		/// Type trait which enables Enum to be used as FlagSet template parameter. Bitwise operators (| & ^ ~) over enabled Enum will result in FlagSet<Enum>.
 		template <typename T> struct IsFlagSet
 		{
-			constexpr static bool value_ = false;
+			/*constexpr*/const static bool value_ = false;
 		};
 
 		/// Enable enum for using in FlagSet. Shall be called within Urho3D namespace.
 #define FLAGGG_ENABLE_FLAGSET(enumName) \
-	template<> struct IsFlagSet<enumName> { constexpr static bool value_ = true; } \
+	template<> struct IsFlagSet<enumName> { /*constexpr*/const static bool value_ = true; } \
 
 		/// Enable enum for using in FlagSet and declare FlagSet specialization. Shall be called within Urho3D namespace.
 #define FLAGGG_FLAGSET(enumName, flagsetName) \

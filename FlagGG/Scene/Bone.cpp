@@ -39,5 +39,23 @@ namespace FlagGG
 				bones_.Push(bone);
 			}
 		}
+
+		const Container::Vector<Bone>& Skeleton::GetBones() const
+		{
+			return  bones_;
+		}
+
+		Container::Vector<Bone>& Skeleton::GetBones()
+		{
+			return bones_;
+		}
+
+		void Skeleton::ResetNode()
+		{
+			for (auto& bone : bones_)
+			{
+				bone.node_.Reset();
+			}
+		}
 	}
 }

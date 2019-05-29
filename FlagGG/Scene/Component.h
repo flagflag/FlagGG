@@ -8,6 +8,8 @@ namespace FlagGG
 {
 	namespace Scene
 	{
+		class Node;
+
 		class FlagGG_API Component : public Container::RefCounted
 		{
 		public:
@@ -15,8 +17,14 @@ namespace FlagGG
 
 			virtual void Render(Graphics::RenderContext& renderContext) = 0;
 
-		private:
+			virtual void UpdateTreeDirty() {}
 
+			void SetNode(Node* node);
+
+			Node* GetNode() const;
+
+		protected:
+			Container::WeakPtr<Node> node_;
 		};
 	}
 }
