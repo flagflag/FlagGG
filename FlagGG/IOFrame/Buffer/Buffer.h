@@ -59,10 +59,16 @@ namespace FlagGG
 				void ReadUInt64(uint64_t& value) override;
 				void WriteUInt64(uint64_t value) override;
 
+				void ReadFloat(float& value) override;
+				void WriteFloat(float value) override;
+
 				uint32_t ReadStream(void* data, size_t dataSize) override { return 0u; }
 				uint32_t WriteStream(const void* data, size_t dataSize) override;
 
 				void ToString(char*& data, size_t& dataSize) override;
+
+				// 先暂时留空，等需要用的时候在补上
+				bool IsEof() override { return false; }
 
 			protected:
 				enum CheckMode

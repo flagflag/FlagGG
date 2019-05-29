@@ -2,10 +2,14 @@
 
 #include "Export.h"
 #include "Container/Str.h"
+#include "Container/Ptr.h"
 #include "Container/FlagSet.h"
+#include "Container/Vector.h"
+#include "Scene/Node.h"
 #include "Math/Vector3.h"
 #include "Math/Quaternion.h"
 #include "Math/Matrix3x4.h"
+#include "IOFrame/Buffer/IOBuffer.h"
 
 #include <stdint.h>
 
@@ -15,35 +19,43 @@ namespace FlagGG
 	{
 		enum BoneCollisionShape : uint8_t
 		{
-			BONE_COLLISION_NONE		= 0,
-			BONE_COLISSION_SPHERE	= 1,
-			BONE_COLLISION_BOX		= 2,
+			BONE_COLLISSION_NONE = 0,
+			BONE_COLLISSION_SPHERE = 1,
+			BONE_COLLISSION_BOX = 2,
 		};
+	}
 
-		FLAGGG_FLAGSET(BoneCollisionShape, BoneCollisionShapeFlags);
+	namespace Container
+	{
+		FLAGGG_FLAGSET(Scene::BoneCollisionShape, BoneCollisionShapeFlags);
+	}
 
-		namespace Container
-		{
-			template<> struct IsFlagSet<BoneCollisionShape> { constexpr static bool value_ = true; };
-		}
-		using flagsetName = FlagGG::Container::FlagSet<BoneCollisionShape>;
-
+	namespace Scene
+	{
 		struct FlagGG_API Bone
 		{
 			Container::String name_;
-			uint32_t parentIndex_;
+			uint32_t parentIndex_{ 0 };
 			
-			Math::Vector3 initPosition_;
-			Math::Quaternion initRotation_;
-			Math::Vector3 initScale_;
-			Math::Matrix3x4 offsetMatrix;
-
-
+			Math::Vector3 initPosition_{ Math::Vector3::ZERO };
+			Math::Quaternion initRotation_{ Math::Quaternion::IDENTITY };
+			Math::Vector3 initScale_{ Math::Vector3::ONE };
+			Math::Matrix3x4 offsetMatrix{ Math::Matrix3x4::IDENTITY };
+			bool animated_{ true };
+			Container::BoneCollisionShapeFlags collisionMask_{ BONE_COLLISSION_NONE };
+			float radius_{ 0.0f };
+			Container::WeakPtr<Node> node_;
 		};
 
 		class FlagGG_API Skeleton
 		{
+		public:
+			void Load(IOFrame::Buffer::IOBuffer* stream);
 
+		private:
+			Container::Vector<Bone> bones_;
+
+			uint32_t rootBoneIndex_;
 		};
 	}
 }

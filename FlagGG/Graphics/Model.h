@@ -5,6 +5,7 @@
 #include "Graphics/Batch3D.h"
 #include "Container/Ptr.h"
 #include "Container/Vector.h"
+#include "Scene/Bone.h"
 
 namespace FlagGG
 {
@@ -28,6 +29,8 @@ namespace FlagGG
 			Container::Vector<Container::SharedPtr<VertexBuffer>> vertexBuffers_;
 
 			Container::Vector<Container::PODVector<uint32_t>> boneMappings_;
+		
+			Scene::Skeleton skeleton_;
 		};
 	}
 }

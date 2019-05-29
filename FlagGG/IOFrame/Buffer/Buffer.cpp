@@ -190,6 +190,26 @@ namespace FlagGG
 				__WRITE__(value);
 			}
 
+			void NetBuffer::ReadFloat(float& value)
+			{
+				uint8_t byte[4];
+				ReadByte(byte[0]);
+				ReadByte(byte[1]);
+				ReadByte(byte[2]);
+				ReadByte(byte[3]);
+				memcpy(&value, byte, 4);
+			}
+
+			void NetBuffer::WriteFloat(float value)
+			{
+				uint8_t byte[4];
+				memcpy(byte, &value, 4);
+				WriteByte(byte[0]);
+				WriteByte(byte[1]);
+				WriteByte(byte[2]);
+				WriteByte(byte[3]);
+			}
+
 			uint32_t NetBuffer::WriteStream(const void* data, size_t data_size)
 			{
 				if (!data || data_size == 0) return 0;

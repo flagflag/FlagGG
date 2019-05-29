@@ -25,6 +25,7 @@ namespace FlagGG
 #define FileAPI_SimpleWrite(file, value) fwrite(&value, sizeof(value), 1, FileHandler(file))
 #define FileAPI_ReadStream(file, data, dataSize) (fread(data, dataSize, 1, FileHandler(file)) * dataSize)
 #define FileAPI_WriteStream(file, data, dataSize) (fwrite(data, dataSize, 1, FileHandler(file)) * dataSize)
+#define FileAPI_IsEof(file) (!!feof(FileHandler(file)))
 #else
 #define FilePathString Container::String
 #define FormatPath(filePath) Container::String(filePath.Replaced('/', '\\'))
@@ -40,6 +41,7 @@ namespace FlagGG
 #define FileAPI_SimpleWrite(file, value) fwrite(&value, sizeof(value), 1, FileHandler(file))
 #define FileAPI_ReadStream(file, data, dataSize) (fread(data, dataSize, 1, FileHandler(file)) * dataSize)
 #define FileAPI_WriteStream(file, data, dataSize) (fwrite(data, dataSize, 1, FileHandler(file)) * dataSize)
+#define FileAPI_IsEof(file) (!!feof(FileHandler(file))))
 #endif
 
 			FileStream::FileStream() :
@@ -182,6 +184,16 @@ namespace FlagGG
 				FileAPI_SimpleWrite(file_, value);
 			}
 
+			void FileStream::ReadFloat(float& value)
+			{
+				FileAPI_SimpleRead(file_, value);
+			}
+
+			void FileStream::WriteFloat(float value)
+			{
+				FileAPI_SimpleWrite(file_, value);
+			}
+
 			uint32_t FileStream::ReadStream(void* data, size_t dataSize)
 			{
 				return FileAPI_ReadStream(file_, data, dataSize);
@@ -198,6 +210,11 @@ namespace FlagGG
 				data = new char[dataSize + 1];
 				dataSize = FileAPI_ReadStream(file_, data, dataSize);
 				data[dataSize] = '\0';
+			}
+
+			bool FileStream::IsEof()
+			{
+				return FileAPI_IsEof(file_);
 			}
 		}
 	}

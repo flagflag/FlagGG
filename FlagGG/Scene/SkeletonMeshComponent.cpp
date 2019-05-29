@@ -6,9 +6,15 @@ namespace FlagGG
 	{
 		void SkeletonMeshComponent::SetModel(Graphics::Model* model)
 		{
+			if (model_ == model)
+			{
+				return;
+			}
+
 			StaticMeshComponent::SetModel(model);
 
 			const auto& boneMappings = model->GetBoneMappings();
+
 		}
 	}
 }

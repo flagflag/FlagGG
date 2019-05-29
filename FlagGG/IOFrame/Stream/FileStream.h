@@ -66,7 +66,12 @@ namespace FlagGG
 				uint32_t ReadStream(void* data, size_t dataSize) override;
 				uint32_t WriteStream(const void* data, size_t dataSize) override;
 
+				void ReadFloat(float& value) override;
+				void WriteFloat(float value) override;
+
 				void ToString(char*& data, size_t& dataSize) override;
+
+				bool IsEof() override;
 			
 			protected:
 				FilePoint file_;

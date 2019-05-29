@@ -2,8 +2,6 @@
 
 #include <type_traits>
 
-#include "Export.h"
-
 namespace FlagGG
 {
 	namespace Container
@@ -21,7 +19,7 @@ namespace FlagGG
 		/// Enable enum for using in FlagSet and declare FlagSet specialization. Shall be called within Urho3D namespace.
 #define FLAGGG_FLAGSET(enumName, flagsetName) \
 	FLAGGG_ENABLE_FLAGSET(enumName); \
-	using flagsetName = FlagGG::Container::FlagSet<enumName>
+	using flagsetName = FlagSet<enumName>
 
 		/// A set of flags defined by an Enum.
 		template <class E, class = typename std::enable_if<IsFlagSet<E>::value_>::type>

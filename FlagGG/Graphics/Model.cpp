@@ -1,6 +1,7 @@
 #include "Graphics/Model.h"
 #include "Container/Str.h"
 #include "Container/ArrayPtr.h"
+#include "IOFrame/Buffer/IOBufferAux.h"
 #include "Log.h"
 
 namespace FlagGG
@@ -37,13 +38,12 @@ namespace FlagGG
 
 			uint32_t numVertexBuffers = 0;
 			stream->ReadUInt32(numVertexBuffers);
+			uint32_t ignore;
 			for (uint32_t i = 0; i < numVertexBuffers; ++i)
 			{
 				Container::PODVector<VertexElement> vertexElements;
 				uint32_t vertexCount = 0;
 				stream->ReadUInt32(vertexCount);
-
-				uint32_t ignore;
 
 				if (!hasVertexDeclarations)
 				{
@@ -108,9 +108,29 @@ namespace FlagGG
 				stream->ReadUInt32(numLodLevels);
 				for (uint32_t j = 0; j < numLodLevels; ++j)
 				{
-					stream->Seek(stream->GetIndex() + 5 * 4);
+					stream->Seek(stream->GetIndex() + 6 * sizeof(uint32_t));
 				}
 			}
+
+			uint32_t numMorphs = 0;
+			stream->ReadUInt32(numMorphs);
+			for (uint32_t i = 0; i < numMorphs; ++i)
+			{
+				Container::String ignoreStr;
+				IOFrame::Buffer::ReadString(stream, ignoreStr);
+				uint32_t numBuffers = 0;
+				stream->ReadUInt32(numBuffers);
+				for (uint32_t i = 0; i < numBuffers; ++i)
+				{
+					stream->ReadUInt32(ignore);
+					uint32_t vertexCount = 0;
+					uint32_t vertexSize = sizeof(uint32_t);
+					stream->ReadUInt32(vertexCount);
+					stream->Seek(stream->GetIndex() + vertexCount * vertexSize);
+				}
+			}
+
+			skeleton_.Load(stream);
 			
 			return true;
 		}
