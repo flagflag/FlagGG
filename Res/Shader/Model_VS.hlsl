@@ -7,7 +7,7 @@ cbuffer MatrixBuffer : register(c0)
 
 cbuffer SkinMatrixBuffer : register(c1)
 {
-	float4x3 skinMatrices[64];
+	uniform float4x3 skinMatrices[64];
 }
 
 struct VertexInput
