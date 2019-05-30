@@ -26,9 +26,9 @@ namespace FlagGG
 
 		struct MatrixData
 		{
-			Math::Matrix4 world;
-			Math::Matrix4 view;
-			Math::Matrix4 projection;
+			Math::Matrix3x4 world_;
+			Math::Matrix4	view_;
+			Math::Matrix4	projection_;
 		};
 
 		void RenderEngine::CreateDevice()
@@ -340,28 +340,31 @@ namespace FlagGG
 			return 64;
 		}
 
-		void RenderEngine::UpdateMatrix(Camera* camera, const Math::Matrix3x4* worldTransform, uint32_t num)
+		void RenderEngine::UpdateMatrix(Camera* camera, const RenderContext& renderContext)
 		{
 			if (!camera) return;
-			if (!worldTransform || !num) return;
+			if (!renderContext.worldTransform_ || !renderContext.numWorldTransform_) return;
 
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 
-			// ÆÕÍ¨×ø±ê¾ØÕó
+			// æ™®é€šåæ ‡çŸ©é˜µ
 			RenderEngine::GetDeviceContext()->Map(constBuffer_[CONST_BUFFER_MATRIX], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 			MatrixData* dataPtr = static_cast<MatrixData*>(mappedResource.pData);
-			dataPtr->world = Math::Matrix4::IDENTITY.Transpose();
-			dataPtr->view = camera->GetViewMatrix().Transpose();
-			dataPtr->projection = camera->GetProjectionMatrix().Transpose();
+			dataPtr->world_			= renderContext.geometryType_ == GEOMETRY_STATIC ? *renderContext.worldTransform_ : Math::Matrix3x4::IDENTITY;
+			dataPtr->view_			= camera->GetViewMatrix().Transpose();
+			dataPtr->projection_	= camera->GetProjectionMatrix().Transpose();
 			RenderEngine::GetDeviceContext()->Unmap(constBuffer_[CONST_BUFFER_MATRIX], 0);
 
-			// ÃÉÆ¤¾ØÕó
-			RenderEngine::GetDeviceContext()->Map(constBuffer_[CONST_BUFFER_SKIN], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-			uint32_t realNum = Math::Min(GetMaxBonesNum(), num);
-			memcpy(mappedResource.pData, worldTransform, sizeof(Math::Matrix3x4) * realNum);
-			RenderEngine::GetDeviceContext()->Unmap(constBuffer_[CONST_BUFFER_SKIN], 0);
+			if (renderContext.geometryType_ == GEOMETRY_SKINNED)
+			{
+				// è’™çš®çŸ©é˜µ
+				RenderEngine::GetDeviceContext()->Map(constBuffer_[CONST_BUFFER_SKIN], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+				uint32_t realNum = Math::Min(GetMaxBonesNum(), renderContext.numWorldTransform_);
+				memcpy(mappedResource.pData, renderContext.worldTransform_, sizeof(Math::Matrix3x4) * realNum);
+				RenderEngine::GetDeviceContext()->Unmap(constBuffer_[CONST_BUFFER_SKIN], 0);
+			}
 
-			uint32_t bufferNumber = MAX_CONST_BUFFER;
+			uint32_t bufferNumber = renderContext.geometryType_ == GEOMETRY_STATIC ? 1 : 2;
 			RenderEngine::GetDeviceContext()->VSSetConstantBuffers(0, bufferNumber, constBuffer_);
 		}
 
@@ -387,7 +390,7 @@ namespace FlagGG
 
 			for (const auto& renderContext : renderContexts)
 			{
-				RenderEngine::UpdateMatrix(viewport->GetCamera(), renderContext.worldTransform_, renderContext.numWorldTransform_);
+				RenderEngine::UpdateMatrix(viewport->GetCamera(),  renderContext);
 
 				uint32_t vertexCount = 0;
 				uint32_t vertexSize = 0;

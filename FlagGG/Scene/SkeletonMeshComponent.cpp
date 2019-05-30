@@ -24,6 +24,7 @@ namespace FlagGG
 		void SkeletonMeshComponent::Render(Graphics::RenderContext& renderContext)
 		{
 			StaticMeshComponent::Render(renderContext);
+			renderContext.geometryType_ = GEOMETRY_SKINNED;
 			renderContext.worldTransform_ = &skinMatrices_[0];
 			renderContext.numWorldTransform_ = skinMatrices_.Size();
 		}

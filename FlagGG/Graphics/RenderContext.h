@@ -19,6 +19,8 @@ namespace FlagGG
 	{
 		struct FlagGG_API RenderContext
 		{
+			GeometryType geometryType_{ GEOMETRY_STATIC };
+
 			PrimitiveType primitiveType_{ PRIMITIVE_TRIANGLE };
 
 			Container::Vector<Container::SharedPtr<VertexBuffer>>* vertexBuffers_;

@@ -11,6 +11,7 @@ namespace FlagGG
 
 		void StaticMeshComponent::Render(Graphics::RenderContext& renderContext)
 		{
+			renderContext.geometryType_ = GEOMETRY_STATIC;
 			renderContext.primitiveType_ = PRIMITIVE_TRIANGLE;
 			renderContext.vertexBuffers_ = &model_->GetVertexBuffers();
 			renderContext.texture_ = material_->GetTexture();

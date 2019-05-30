@@ -5,6 +5,7 @@
 #include "Graphics/GraphicsDef.h"
 #include "Graphics/Viewport.h"
 #include "Graphics/VertexFormat.h"
+#include "Graphics/RenderContext.h"
 #include "Resource/Image.h"
 #include "Container/HashMap.h"
 
@@ -84,7 +85,7 @@ namespace FlagGG
 			// ×î´ó¹Ç÷ÀÊý
 			static uint32_t GetMaxBonesNum();
 
-			static void UpdateMatrix(Camera* camera, const Math::Matrix3x4* worldTransform, uint32_t num);
+			static void UpdateMatrix(Camera* camera, const RenderContext& renderContext);
 
 			static void Render(Viewport* viewport);
 

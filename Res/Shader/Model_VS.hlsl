@@ -1,11 +1,11 @@
-cbuffer MatrixBuffer : register(c0)
+cbuffer MatrixBuffer : register(b0)
 {
-	float4x4 worldMatrix;
+	float4x3 worldMatrix;
 	float4x4 viewMatrix;
 	float4x4 projectionMatrix;
 }
 
-cbuffer SkinMatrixBuffer : register(c1)
+cbuffer SkinMatrixBuffer : register(b1)
 {
 	uniform float4x3 skinMatrices[64];
 }

@@ -51,6 +51,14 @@ enum VertexElementSemantic
 	MAX_VERTEX_ELEMENT_SEMANTIC
 };
 
+enum GeometryType
+{
+	GEOMETRY_STATIC = 0,
+	GEOMETRY_SKINNED,
+	GEOMETRY_INSTANCE,
+	GEOMETRY_BILLBOARD,
+};
+
 struct VertexElement
 {
 	VertexElement();
