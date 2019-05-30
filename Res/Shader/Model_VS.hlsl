@@ -12,7 +12,7 @@ cbuffer SkinMatrixBuffer : register(c1)
 
 struct VertexInput
 {
-	float3 pos : POSITION;
+	float4 pos : POSITION;
 	float2 tex0 : TEXCOORD0;
 	float3 nor : NORMAL;
 	float4 blendWeights : BLEND_WEIGHTS;
@@ -37,19 +37,15 @@ float4x3 GetSkinMatrix(float4 blendWeights, int4 blendIndices)
 
 PixelInput VS(VertexInput input)
 {
-	PixelInput output = (PixelInput)0;
-
-	output.pos.xzy = input.pos.xzy;
-	output.pos.w = 1.0;
-	output.tex0 = input.tex0;
-	output.nor = mul(input.nor, (float3x3)worldMatrix);
-	output.nor = normalize(output.nor);
-
-	// output.pos = mul(output.pos, worldMatrix);
 	float4x3 skinWorldMatrix = GetSkinMatrix(input.blendWeights, input.blendIndices);
-	output.pos = float4(mul(output.pos, skinWorldMatrix), 1.0);
-	output.pos = mul(output.pos, viewMatrix);
-	output.pos = mul(output.pos, projectionMatrix);
+	float3 worldPos = mul(input.pos, skinWorldMatrix);
+	float3 worldNor = normalize(mul(input.nor, (float3x3)skinWorldMatrix));
+	float4 clipPos = mul(float4(worldPos, 1.0), viewMatrix);
+	
+	PixelInput output;
+	output.pos = mul(clipPos, projectionMatrix);
+	output.tex0 = input.tex0;
+	output.nor = worldNor;
 
 	return output;
 }
