@@ -107,7 +107,6 @@ namespace FlagGG
 				return;
 			}
 
-			// 默认最大骨骼数
 			bufferDesc.ByteWidth = sizeof(Math::Matrix3x4) * GetMaxBonesNum();
 			hr = RenderEngine::GetDevice()->CreateBuffer(&bufferDesc, nullptr, &constBuffer_[CONST_BUFFER_SKIN]);
 			if (FAILED(hr))
@@ -362,7 +361,7 @@ namespace FlagGG
 			memcpy(mappedResource.pData, worldTransform, sizeof(Math::Matrix3x4) * realNum);
 			RenderEngine::GetDeviceContext()->Unmap(constBuffer_[CONST_BUFFER_SKIN], 0);
 
-			unsigned int bufferNumber = MAX_CONST_BUFFER;
+			uint32_t bufferNumber = MAX_CONST_BUFFER;
 			RenderEngine::GetDeviceContext()->VSSetConstantBuffers(0, bufferNumber, constBuffer_);
 		}
 
