@@ -36,7 +36,7 @@ namespace FlagGG
 
 					for (uint32_t j = 0; j < preSize; ++j)
 					{
-						if (elementDescs[i].SemanticName == semName && elementDescs[j].SemanticIndex == element.index_)
+						if (elementDescs[j].SemanticName == semName && elementDescs[j].SemanticIndex == element.index_)
 						{
 							isExisting = true;
 							elementDescs[j].InputSlot = i;
