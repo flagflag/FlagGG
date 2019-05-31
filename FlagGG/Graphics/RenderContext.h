@@ -4,6 +4,7 @@
 #include "Export.h"
 
 #include "Graphics/VertexBuffer.h"
+#include "Graphics/IndexBuffer.h"
 #include "Graphics/Texture.h"
 #include "Graphics/Shader.h"
 #include "Container/RefCounted.h"
@@ -23,7 +24,9 @@ namespace FlagGG
 
 			PrimitiveType primitiveType_{ PRIMITIVE_TRIANGLE };
 
-			Container::Vector<Container::SharedPtr<VertexBuffer>>* vertexBuffers_;
+			Container::Vector<Container::SharedPtr<VertexBuffer>>* vertexBuffers_{ nullptr };
+
+			Container::Vector <Container::SharedPtr<IndexBuffer>>* indexBuffers_{ nullptr };
 
 			Container::SharedPtr<Texture> texture_;
 

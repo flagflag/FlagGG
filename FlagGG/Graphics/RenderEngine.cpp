@@ -409,9 +409,14 @@ namespace FlagGG
 					tempBuffer[i] = vertexBuffer.Get();
 				}
 
+				IndexBuffer* indexBuffer = (*renderContext.indexBuffers_)[0];
+				uint32_t indexCount = indexBuffer->GetIndexCount();
+
 				VertexFormat* vertexFormat = CacheVertexFormat(renderContext.VSShader_, tempBuffer);
 
-				deviceContext->IASetVertexBuffers(0, vertexBufferCount, vertexBuffers_, &vertexSize, &vertexOffset);			
+				deviceContext->IASetIndexBuffer(indexBuffer->GetObject<ID3D11Buffer>(),
+					indexBuffer->GetIndexSize() == sizeof(uint16_t) ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
+				deviceContext->IASetVertexBuffers(0, vertexBufferCount, vertexBuffers_, &vertexSize, &vertexOffset);
 				//deviceContext->VSSetShaderResources(0, 1, &renderContext.texture_->shaderResourceView_);
 				//deviceContext->VSSetSamplers(0, 1, &batch.GetTexture()->sampler_);
 				deviceContext->IASetInputLayout(vertexFormat->GetObject<ID3D11InputLayout>());
@@ -431,7 +436,7 @@ namespace FlagGG
 					break;
 				}
 
-				deviceContext->Draw(vertexCount, 0);
+				deviceContext->DrawIndexed(indexCount, 0, 0);
 			}
 		}
 

@@ -2,6 +2,7 @@
 
 #include "Resource/Resource.h"
 #include "Graphics/VertexBuffer.h"
+#include "Graphics/IndexBuffer.h"
 #include "Graphics/Batch3D.h"
 #include "Container/Ptr.h"
 #include "Container/Vector.h"
@@ -18,6 +19,8 @@ namespace FlagGG
 
 			Container::Vector<Container::SharedPtr<VertexBuffer>>& GetVertexBuffers();
 
+			Container::Vector<Container::SharedPtr<IndexBuffer>>& GetIndexBuffers();
+
 			const Container::Vector<Container::PODVector<uint32_t>>& GetBoneMappings() const;
 
 			const Scene::Skeleton& GetSkeleton() const;
@@ -29,6 +32,8 @@ namespace FlagGG
 
 		private:
 			Container::Vector<Container::SharedPtr<VertexBuffer>> vertexBuffers_;
+
+			Container::Vector<Container::SharedPtr<IndexBuffer>> indexBuffers_;
 
 			Container::Vector<Container::PODVector<uint32_t>> boneMappings_;
 		

@@ -37,6 +37,7 @@ void GameEngine::CreateScene()
 	SharedPtr<Material> material = cache_->GetResource<Material>("Materials/Model.ljson");
 	SharedPtr<SkeletonMeshComponent> skeletonMeshComponent(new SkeletonMeshComponent());
 	SharedPtr<Node> node(new Node());
+	node->SetRotation(Quaternion(180, Vector3(0, 1, 0)));
 	node->AddComponent(skeletonMeshComponent);
 	skeletonMeshComponent->SetModel(model);
 	skeletonMeshComponent->SetMaterial(material);

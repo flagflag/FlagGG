@@ -17,6 +17,11 @@ namespace FlagGG
 			return vertexBuffers_;
 		}
 
+		Container::Vector<Container::SharedPtr<IndexBuffer>>& Model::GetIndexBuffers()
+		{
+			return indexBuffers_;
+		}
+
 		const Container::Vector<Container::PODVector<uint32_t>>& Model::GetBoneMappings() const
 		{
 			return boneMappings_;
@@ -92,7 +97,14 @@ namespace FlagGG
 				uint32_t indexSize = 0;
 				stream->ReadUInt32(indexCount);
 				stream->ReadUInt32(indexSize);
-				stream->Seek(stream->GetIndex() + indexCount* indexSize);
+
+				Container::SharedPtr<IndexBuffer> buffer(new IndexBuffer());
+				buffer->SetSize(indexSize, indexCount);
+				void* data = buffer->Lock(0, indexCount);
+				stream->ReadStream(data, indexCount * indexSize);
+				buffer->Unlock();
+
+				indexBuffers_.Push(buffer);
 			}
 
 			uint32_t numGeometries = 0;

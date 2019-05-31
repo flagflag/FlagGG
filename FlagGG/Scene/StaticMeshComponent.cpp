@@ -14,6 +14,7 @@ namespace FlagGG
 			renderContext.geometryType_ = GEOMETRY_STATIC;
 			renderContext.primitiveType_ = PRIMITIVE_TRIANGLE;
 			renderContext.vertexBuffers_ = &model_->GetVertexBuffers();
+			renderContext.indexBuffers_ = &model_->GetIndexBuffers();
 			renderContext.texture_ = material_->GetTexture();
 			renderContext.VSShader_ = material_->GetVSShader();
 			renderContext.PSShader_ = material_->GetPSShader();
