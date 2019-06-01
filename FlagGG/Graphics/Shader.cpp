@@ -2,6 +2,7 @@
 #include "Graphics/RenderEngine.h"
 #include "Allocator/SmartMemory.hpp"
 #include "Container/ArrayPtr.h"
+#include "Container/Sort.h"
 #include "Log.h"
 
 #include <d3dcompiler.h>
@@ -12,9 +13,62 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		Shader::Shader(Core::Context* context) :
-			GPUObject(),
+		static Container::String HashVectorString(Container::Vector<Container::String> vecStr)
+		{
+			Container::Sort(vecStr.Begin(), vecStr.End());
+			Container::String hash;
+			for (const auto& str : vecStr)
+			{
+				hash += str;
+			}
+			return hash;
+		}
+
+		ShaderCode::ShaderCode(Core::Context* context) :
 			Resource(context)
+		{ }
+
+		Shader* ShaderCode::GetShader(ShaderType type, const Container::Vector<Container::String>& defines)
+		{
+			Container::String definesStr = HashVectorString(defines);
+			for (const auto& shader : shaders_)
+			{
+				if (shader->GetType() == type && shader->GetDefinesString() == definesStr)
+				{
+					return shader;
+				}
+			}
+			
+			Container::SharedPtr<Shader> shader(new Shader(buffer_, bufferSize_));
+			shader->SetType(type);
+			shader->SetDefines(defines);
+			shader->Initialize();
+			shaders_.Push(shader);
+
+			return shader;
+		}
+
+		bool ShaderCode::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
+		{
+			char* buffer = nullptr;
+			bufferSize_ = 0;
+			stream->ToString(buffer, bufferSize_);
+			buffer_ = buffer;
+
+			return true;
+		}
+
+		bool ShaderCode::EndLoad()
+		{
+			return true;
+		}
+
+// --------------------------------------------------------------------------------------------------------------
+
+		Shader::Shader(Container::SharedArrayPtr<char> buffer, uint32_t bufferSize) :
+			GPUObject(),
+			buffer_(buffer),
+			bufferSize_(bufferSize)
 		{ }
 
 		Shader::~Shader()
@@ -22,7 +76,7 @@ namespace FlagGG
 			SAFE_RELEASE(shaderCode_);
 		}
 
-		static ID3DBlob* CompileShader(const char* buffer, size_t bufferSize, ShaderType type)
+		static ID3DBlob* CompileShader(const char* buffer, size_t bufferSize, ShaderType type, const Container::Vector<Container::String>& defines)
 		{
 			char* entryPoint = nullptr;
 			char* profile = nullptr;
@@ -48,11 +102,26 @@ namespace FlagGG
 			ID3DBlob* shaderCode = nullptr;
 			ID3DBlob* errorMsgs = nullptr;
 
+			Container::PODVector<D3D_SHADER_MACRO> macros;
+
+			for (uint32_t i = 0; i < defines.Size(); ++i)
+			{
+				D3D_SHADER_MACRO macro;
+				macro.Name = defines[i].CString();
+				macro.Definition = "1";
+				macros.Push(macro);
+			}
+
+			D3D_SHADER_MACRO emptyMacro;
+			emptyMacro.Name = nullptr;
+			emptyMacro.Definition = nullptr;
+			macros.Push(emptyMacro);
+
 			HRESULT hr = D3DCompile(
 				buffer,
 				bufferSize,
 				nullptr,
-				nullptr,
+				&macros[0],
 				nullptr,
 				entryPoint,
 				profile,
@@ -61,7 +130,7 @@ namespace FlagGG
 				&shaderCode,
 				&errorMsgs
 				);
-			if (hr != 0)
+			if (FAILED(hr))
 			{
 				FLAGGG_LOG_ERROR("D3DCompile failed.");
 
@@ -78,9 +147,9 @@ namespace FlagGG
 			ID3DBlob* strippedCode = nullptr;
 			hr = D3DStripShader(shaderCode->GetBufferPointer(), shaderCode->GetBufferSize(),
 				D3DCOMPILER_STRIP_REFLECTION_DATA | D3DCOMPILER_STRIP_DEBUG_INFO | D3DCOMPILER_STRIP_TEST_BLOBS, &strippedCode);
-			if (hr != 0)
+			if (FAILED(hr))
 			{
-				puts("D3DStripShader failed.");
+				FLAGGG_LOG_ERROR("D3DStripShader failed.");
 
 				return nullptr;
 			}
@@ -100,7 +169,7 @@ namespace FlagGG
 				return;
 			}
 
-			shaderCode_ = CompileShader(buffer_.Get(), bufferSize_, shaderType_);
+			shaderCode_ = CompileShader(buffer_.Get(), bufferSize_, shaderType_, defines_);
 
 			if (shaderCode_)
 			{
@@ -154,24 +223,21 @@ namespace FlagGG
 			return GetHandler() != nullptr && shaderCode_ != nullptr;
 		}
 
-		bool Shader::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
-		{
-			char* buffer = nullptr;
-			bufferSize_ = 0;
-			stream->ToString(buffer, bufferSize_);
-			buffer_ = buffer;
-
-			return true;
-		}
-
-		bool Shader::EndLoad()
-		{
-			return true;
-		}
-
 		void Shader::SetType(ShaderType type)
 		{
 			shaderType_ = type;
+		}
+
+		void Shader::SetDefines(const Container::Vector<Container::String> &defines)
+		{
+			defines_ = defines;
+
+			definesString_ = HashVectorString(defines_);
+		}
+
+		Container::String Shader::GetDefinesString() const
+		{
+			return definesString_;
 		}
 
 		ShaderType Shader::GetType()

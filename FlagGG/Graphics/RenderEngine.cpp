@@ -489,14 +489,14 @@ namespace FlagGG
 			for (const auto& renderContext : renderContexts)
 			{
 				UpdateMatrix(viewport->GetCamera(),  renderContext);
+				SetVertexShader(renderContext->VSShader_);
+				SetPixelShader(renderContext->PSShader_);
+				SetTexture(renderContext->texture_);
 
 				for (const auto& geometry : renderContext->geometries_)
 				{
 					SetVertexBuffers(geometry->GetVertexBuffers());
 					SetIndexBuffer(geometry->GetIndexBuffer());
-					SetVertexShader(renderContext->VSShader_);
-					SetPixelShader(renderContext->PSShader_);
-					SetTexture(renderContext->texture_);
 					SetPrimitiveType(geometry->GetPrimitiveType());
 					DrawCall(geometry->GetIndexStart(), geometry->GetIndexCount());
 				}

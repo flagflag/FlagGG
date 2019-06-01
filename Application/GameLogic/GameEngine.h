@@ -33,7 +33,9 @@ protected:
 
 	void CreateCoreObject();
 
-	SharedPtr<Node> CreateUnit();
+	SharedPtr<Node> CreateStaticUnit();
+
+	SharedPtr<Node> CreateSkeletonUnit();
 
 	void CreateScene();
 

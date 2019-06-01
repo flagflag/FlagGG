@@ -1,9 +1,0 @@
-{
-	vsshader = "Shader/Model_VS.hlsl",
-	psshader = "Shader/Model_PS.hlsl",
-	texture =
-	{
-		type = "texture2d", //texturecube => 3d
-		path = "Textures/Kachujin_diffuse.png"
-	}
-}

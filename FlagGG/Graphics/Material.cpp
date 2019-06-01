@@ -5,6 +5,7 @@
 #include "Graphics/Texture.h"
 #include "Graphics/Texture2D.h"
 #include "Config/LJSONFile.h"
+#include "Config/LJSONAux.h"
 #include "Resource/ResourceCache.h"
 
 #include <fstream>
@@ -55,39 +56,46 @@ namespace FlagGG
 						if (!texture_)
 						{
 							FLAGGG_LOG_ERROR("Material ==> load texture failed.");
+							return false;
 						}
 					}
 					else
 					{
 						// CubeÌùÍ¼
+						return false; // ÔÝÊ±Ã»ÓÐCubeÌùÍ¼£¬Ö±½Ó·µ»ØÊ§°Ü
 					}
 				}
 
-				vsShader_ = cache->GetResource<Shader>(root["vsshader"].GetString());
-				if (vsShader_)
+				Container::Vector<Container::String> defines;
+
+				ShaderCode* vsShaderCode = cache->GetResource<ShaderCode>(root["vsshader"]["path"].GetString());
+				if (vsShaderCode)
 				{
-					vsShader_->SetType(VS);
-					vsShader_->Initialize(); //±àÒë
+					Config::ParseStringVector(root["vsshader"]["defines"], defines);
+					vsShader_ = vsShaderCode->GetShader(VS, defines);
 				}
 				else
 				{
 					FLAGGG_LOG_ERROR("Material ==> load vs shader failed.");
+					return false;
 				}
 
-				psShader_ = cache->GetResource<Shader>(root["psshader"].GetString());
-				if (psShader_)
+				ShaderCode* psShaderCode = cache->GetResource<ShaderCode>(root["psshader"]["path"].GetString());
+				if (psShaderCode)
 				{
-					psShader_->SetType(PS);
-					psShader_->Initialize(); //±àÒë
+					Config::ParseStringVector(root["psshader"]["defines"], defines);
+					psShader_ = psShaderCode->GetShader(PS, defines);
 				}
 				else
 				{
 					FLAGGG_LOG_ERROR("Material ==> load ps shader failed.");
+					return false;
 				}
 			}
 			else
 			{
 				FLAGGG_LOG_ERROR("Material ==> config has something wrong.");
+				return false;
 			}
 
 			return true;

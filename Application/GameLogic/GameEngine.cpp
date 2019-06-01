@@ -31,24 +31,40 @@ void GameEngine::CreateCoreObject()
 	context_->RegisterVariable<ResourceCache>(cache_.Get(), "ResourceCache");
 }
 
-SharedPtr<Node> GameEngine::CreateUnit()
+SharedPtr<Node> GameEngine::CreateStaticUnit()
+{
+	SharedPtr<Model> model = cache_->GetResource<Model>("Model/Mushroom.mdl");
+	SharedPtr<Material> material = cache_->GetResource<Material>("Materials/StaticModel.ljson");
+	SharedPtr<StaticMeshComponent> meshComponent(new StaticMeshComponent());
+	SharedPtr<Node> node(new Node());
+	node->AddComponent(meshComponent);
+	meshComponent->SetModel(model);
+	meshComponent->SetMaterial(material);
+	return node;
+}
+
+SharedPtr<Node> GameEngine::CreateSkeletonUnit()
 {
 	SharedPtr<Model> model = cache_->GetResource<Model>("Model/Captain.mdl");
 	SharedPtr<Material> material = cache_->GetResource<Material>("Materials/Captain.ljson");
-	SharedPtr<SkeletonMeshComponent> skeletonMeshComponent(new SkeletonMeshComponent());
+	SharedPtr<SkeletonMeshComponent> meshComponent(new SkeletonMeshComponent());
 	SharedPtr<Node> node(new Node());
-	node->AddComponent(skeletonMeshComponent);
-	skeletonMeshComponent->SetModel(model);
-	skeletonMeshComponent->SetMaterial(material);
+	node->AddComponent(meshComponent);
+	meshComponent->SetModel(model);
+	meshComponent->SetMaterial(material);
 	return node;
 }
 
 void GameEngine::CreateScene()
 {
 	scene_ = new Scene(context_);
+	SharedPtr<Node> node = CreateStaticUnit();
+	node->SetRotation(Quaternion(180, Vector3(0, -1, -1)));
+	node->SetPosition(Vector3(0, 0, -2));
+	scene_->AddChild(node);
 	for (int32_t i = -1; i <= 3; ++i)
 	{
-		SharedPtr<Node> node = CreateUnit();
+		SharedPtr<Node> node = CreateSkeletonUnit();
 		node->SetRotation(Quaternion(180, Vector3(0, -1, -1)));
 		node->SetPosition(Vector3(i * 0.5, -1.5, i * 0.5));
 		node->SetScale(Vector3(0.01, 0.01, 0.01));

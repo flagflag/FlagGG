@@ -7,6 +7,8 @@
 #include "Graphics/GraphicsDef.h"
 #include "Resource/Resource.h"
 #include "Container/ArrayPtr.h"
+#include "Container/Vector.h"
+#include "Container/Str.h"
 
 #include <string>
 
@@ -14,10 +16,34 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		class FlagGG_API Shader : public GPUObject, public Resource::Resource
+		class Shader;
+
+		// shader源码
+		class FlagGG_API ShaderCode : public Resource::Resource
 		{
 		public:
-			Shader(Core::Context* context);
+			ShaderCode(Core::Context* context);
+
+			Shader* GetShader(ShaderType type, const Container::Vector<Container::String>& defines);
+
+		protected:
+			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
+
+			bool EndLoad() override;
+
+		private:
+			Container::Vector<Container::SharedPtr<Shader>> shaders_;
+
+			// shader代码
+			Container::SharedArrayPtr<char> buffer_;
+			uint32_t bufferSize_{ 0 };
+		};
+
+		// 经过编译的shader，是GPU对象
+		class FlagGG_API Shader : public GPUObject, public Container::RefCounted
+		{
+		public:
+			Shader(Container::SharedArrayPtr<char> buffer, uint32_t bufferSize);
 
 			~Shader() override;
 
@@ -27,23 +53,25 @@ namespace FlagGG
 
 			void SetType(ShaderType type);
 
+			void SetDefines(const Container::Vector<Container::String>& defines);
+
+			Container::String GetDefinesString() const;
+
 			ShaderType GetType();
 
 			ID3DBlob* GetByteCode();
 
-		protected:
-			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
-
-			bool EndLoad() override;
-
 		private:
 			// shader代码
 			Container::SharedArrayPtr<char> buffer_;
-			size_t bufferSize_{ 0 };
+			uint32_t bufferSize_{ 0 };
 
 			ID3DBlob* shaderCode_{ nullptr };
 
 			ShaderType shaderType_{ None };
+
+			Container::Vector<Container::String> defines_;
+			Container::String definesString_;
 		};
 	}
 }
