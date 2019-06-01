@@ -32,6 +32,10 @@ namespace FlagGG
 
 			PrimitiveType GetPrimitiveType() const;
 
+			uint32_t GetIndexStart() const;
+
+			uint32_t GetIndexCount() const;
+
 		private:
 			PrimitiveType primitiveType_;
 

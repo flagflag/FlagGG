@@ -87,6 +87,24 @@ namespace FlagGG
 
 			static void UpdateMatrix(Camera* camera, const RenderContext& renderContext);
 
+			static void SetVertexBuffers(const Container::Vector<Container::SharedPtr<VertexBuffer>>& vertexBuffers);
+
+			static void SetIndexBuffer(IndexBuffer* indexBuffer);
+
+			static void SetVertexShader(Shader* shader);
+
+			static void SetPixelShader(Shader* shader);
+
+			static void SetTexture(Texture* texture);
+
+			static void SetPrimitiveType(PrimitiveType primitiveType);
+
+			static void DrawCall(uint32_t indexStart, uint32_t indexCount);
+
+			static void RenderBegin(Viewport* viewport);
+
+			static void RenderEnd(Viewport* viewport);
+
 			static void Render(Viewport* viewport);
 
 			static VertexFormat* CacheVertexFormat(Shader* VSShader, VertexBuffer** vertexBuffer);
@@ -116,6 +134,11 @@ namespace FlagGG
 			static MaterialQuality textureQuality_;
 
 			static ID3D11Buffer* vertexBuffers_[MAX_VERTEX_BUFFER_COUNT];
+			static uint32_t vertexSize_[MAX_VERTEX_BUFFER_COUNT];
+			static uint32_t vertexOffset_[MAX_VERTEX_BUFFER_COUNT];
+
+			static const Container::Vector<Container::SharedPtr<VertexBuffer>>* cacheVertexBuffers_;
+			static Shader* cacheVSShader_;
 
 			static Container::HashMap<uint64_t, Container::SharedPtr<VertexFormat>> vertexFormatCache_;
 		};

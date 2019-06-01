@@ -26,6 +26,8 @@ namespace FlagGG
 
 			const Scene::Skeleton& GetSkeleton() const;
 
+			const Container::Vector <Container::Vector<Container::SharedPtr<Geometry>>>& GetGeometries() const;
+
 		protected:
 			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 

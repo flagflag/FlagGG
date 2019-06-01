@@ -33,8 +33,8 @@ void GameEngine::CreateCoreObject()
 
 SharedPtr<Node> GameEngine::CreateUnit()
 {
-	SharedPtr<Model> model = cache_->GetResource<Model>("Model/Kachujin.mdl");
-	SharedPtr<Material> material = cache_->GetResource<Material>("Materials/Model.ljson");
+	SharedPtr<Model> model = cache_->GetResource<Model>("Model/Captain.mdl");
+	SharedPtr<Material> material = cache_->GetResource<Material>("Materials/Captain.ljson");
 	SharedPtr<SkeletonMeshComponent> skeletonMeshComponent(new SkeletonMeshComponent());
 	SharedPtr<Node> node(new Node());
 	node->AddComponent(skeletonMeshComponent);
@@ -49,8 +49,9 @@ void GameEngine::CreateScene()
 	for (int32_t i = -1; i <= 3; ++i)
 	{
 		SharedPtr<Node> node = CreateUnit();
-		node->SetRotation(Quaternion(180, Vector3(0, 1, 0)));
+		node->SetRotation(Quaternion(180, Vector3(0, -1, -1)));
 		node->SetPosition(Vector3(i * 0.5, -1.5, i * 0.5));
+		node->SetScale(Vector3(0.01, 0.01, 0.01));
 		scene_->AddChild(node);
 	}
 	scene_->Start();

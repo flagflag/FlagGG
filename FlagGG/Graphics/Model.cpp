@@ -32,6 +32,11 @@ namespace FlagGG
 			return skeleton_;
 		}
 
+		const Container::Vector <Container::Vector<Container::SharedPtr<Geometry>>>& Model::GetGeometries() const
+		{
+			return geometries_;
+		}
+
 		bool Model::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		{
 			Container::String fileID;

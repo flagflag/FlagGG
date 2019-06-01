@@ -24,7 +24,10 @@ namespace FlagGG
 
 		void Geometry::SetDataRange(uint32_t indexStart, uint32_t indexCount)
 		{
-
+			indexStart_ = indexStart;
+			indexCount_ = indexCount;
+			vertexStart_ = 0;
+			vertexCount_ = 0;
 		}
 
 		void Geometry::SetLodDistance(float distance)
@@ -57,6 +60,16 @@ namespace FlagGG
 		PrimitiveType Geometry::GetPrimitiveType() const
 		{
 			return primitiveType_;
+		}
+
+		uint32_t Geometry::GetIndexStart() const
+		{
+			return indexStart_;
+		}
+
+		uint32_t Geometry::GetIndexCount() const
+		{
+			return indexCount_;
 		}
 	}
 }

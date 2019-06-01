@@ -6,8 +6,8 @@
 
 enum PrimitiveType
 {
-	PRIMITIVE_LINE		= 0,
-	PRIMITIVE_TRIANGLE,
+	PRIMITIVE_TRIANGLE	= 0,
+	PRIMITIVE_LINE,
 };
 
 enum ShaderType

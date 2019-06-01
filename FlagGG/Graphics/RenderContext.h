@@ -3,8 +3,7 @@
 
 #include "Export.h"
 
-#include "Graphics/VertexBuffer.h"
-#include "Graphics/IndexBuffer.h"
+#include "Graphics/Geometry.h"
 #include "Graphics/Texture.h"
 #include "Graphics/Shader.h"
 #include "Container/RefCounted.h"
@@ -22,11 +21,7 @@ namespace FlagGG
 		{
 			GeometryType geometryType_{ GEOMETRY_STATIC };
 
-			PrimitiveType primitiveType_{ PRIMITIVE_TRIANGLE };
-
-			Container::Vector<Container::SharedPtr<VertexBuffer>>* vertexBuffers_{ nullptr };
-
-			Container::Vector <Container::SharedPtr<IndexBuffer>>* indexBuffers_{ nullptr };
+			Container::Vector<Container::SharedPtr<Geometry>> geometries_;
 
 			Container::SharedPtr<Texture> texture_;
 

@@ -21,6 +21,11 @@ namespace FlagGG
 		MaterialQuality RenderEngine::textureQuality_ = QUALITY_HIGH;
 
 		ID3D11Buffer* RenderEngine::vertexBuffers_[MAX_VERTEX_BUFFER_COUNT] = { 0 };
+		uint32_t RenderEngine::vertexSize_[MAX_VERTEX_BUFFER_COUNT] = { 0 };
+		uint32_t RenderEngine::vertexOffset_[MAX_VERTEX_BUFFER_COUNT] = { 0 };
+
+		const Container::Vector<Container::SharedPtr<VertexBuffer>>* RenderEngine::cacheVertexBuffers_ = nullptr;
+		Shader* RenderEngine::cacheVSShader_ = nullptr;
 
 		Container::HashMap<uint64_t, Container::SharedPtr<VertexFormat>> RenderEngine::vertexFormatCache_;
 
@@ -365,78 +370,62 @@ namespace FlagGG
 			}
 
 			uint32_t bufferNumber = renderContext.geometryType_ == GEOMETRY_STATIC ? 1 : 2;
-			RenderEngine::GetDeviceContext()->VSSetConstantBuffers(0, bufferNumber, constBuffer_);
+			deviceContext_->VSSetConstantBuffers(0, bufferNumber, constBuffer_);
 		}
 
-		void RenderEngine::Render(Viewport* viewport)
+		void RenderEngine::SetVertexBuffers(const Container::Vector<Container::SharedPtr<VertexBuffer>>& vertexBuffers)
 		{
-			if (!viewport) return;
+			cacheVertexBuffers_ = &vertexBuffers;
 
-			viewport->SetViewport();
+			auto vertexBufferCount = Math::Min<uint32_t>(vertexBuffers.Size(), MAX_VERTEX_BUFFER_COUNT);
 
-			ID3D11DeviceContext* deviceContext = RenderEngine::GetDeviceContext();
-
-			ID3D11RenderTargetView* renderTargetView = viewport->GetRenderTarget()->GetObject<ID3D11RenderTargetView>();
-			ID3D11DepthStencilView* depthStencilView = viewport->GetDepthStencil()->GetObject<ID3D11DepthStencilView>();
-			deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
-
-			float color[] = { 0.0, 0.0f, 0.0f, 1.0f };
-			deviceContext->ClearRenderTargetView(renderTargetView, color);
-			deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0, 0);
-
-			Scene::Scene* scene = viewport->GetScene();
-			Container::Vector<RenderContext> renderContexts;
-			scene->Render(renderContexts);
-
-			for (const auto& renderContext : renderContexts)
+			for (uint32_t i = 0; i < vertexBufferCount; ++i)
 			{
-				RenderEngine::UpdateMatrix(viewport->GetCamera(),  renderContext);
+				const Container::SharedPtr<VertexBuffer>& vertexBuffer = vertexBuffers[i];
+				vertexBuffers_[i] = vertexBuffer->GetObject<ID3D11Buffer>();
+				vertexSize_[i] = vertexBuffer->GetVertexSize();
+				vertexOffset_[i] = 0;
+			}
 
-				uint32_t vertexCount = 0;
-				uint32_t vertexSize = 0;
-				uint32_t vertexOffset = 0;
-				uint32_t vertexBufferCount = Math::Min<uint32_t>(renderContext.vertexBuffers_->Size(), MAX_VERTEX_BUFFER_COUNT);
-				
-				VertexBuffer* tempBuffer[MAX_VERTEX_BUFFER_COUNT + 1] = { 0 };
-				
-				for (uint32_t i = 0; i < vertexBufferCount; ++i)
-				{
-					const Container::SharedPtr<VertexBuffer>& vertexBuffer = (*renderContext.vertexBuffers_)[i];
-					vertexBuffers_[i] = vertexBuffer->GetObject<ID3D11Buffer>();
-					vertexSize = vertexBuffer->GetVertexSize();
-					vertexCount += vertexBuffer->GetVertexCount();
+			deviceContext_->IASetVertexBuffers(0, vertexBufferCount, vertexBuffers_, vertexSize_, vertexOffset_);
+		}
 
-					tempBuffer[i] = vertexBuffer.Get();
-				}
+		void RenderEngine::SetIndexBuffer(IndexBuffer* indexBuffer)
+		{
+			deviceContext_->IASetIndexBuffer(indexBuffer->GetObject<ID3D11Buffer>(),
+				indexBuffer->GetIndexSize() == sizeof(uint16_t) ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
+		}
 
-				IndexBuffer* indexBuffer = (*renderContext.indexBuffers_)[0];
-				uint32_t indexCount = indexBuffer->GetIndexCount();
+		void RenderEngine::SetVertexShader(Shader* shader)
+		{
+			cacheVSShader_ = shader;
+			deviceContext_->VSSetShader(shader->GetObject<ID3D11VertexShader>(), nullptr, 0);
+		}
 
-				VertexFormat* vertexFormat = CacheVertexFormat(renderContext.VSShader_, tempBuffer);
+		void RenderEngine::SetPixelShader(Shader* shader)
+		{
+			deviceContext_->PSSetShader(shader->GetObject<ID3D11PixelShader>(), nullptr, 0);
+		}
 
-				deviceContext->IASetIndexBuffer(indexBuffer->GetObject<ID3D11Buffer>(),
-					indexBuffer->GetIndexSize() == sizeof(uint16_t) ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
-				deviceContext->IASetVertexBuffers(0, vertexBufferCount, vertexBuffers_, &vertexSize, &vertexOffset);
-				//deviceContext->VSSetShaderResources(0, 1, &renderContext.texture_->shaderResourceView_);
-				//deviceContext->VSSetSamplers(0, 1, &batch.GetTexture()->sampler_);
-				deviceContext->IASetInputLayout(vertexFormat->GetObject<ID3D11InputLayout>());
-				deviceContext->VSSetShader(renderContext.VSShader_->GetObject<ID3D11VertexShader>(), nullptr, 0);
-				deviceContext->PSSetShader(renderContext.PSShader_->GetObject<ID3D11PixelShader>(), nullptr, 0);
-				deviceContext->PSSetShaderResources(0, 1, &renderContext.texture_->shaderResourceView_);
-				deviceContext->PSSetSamplers(0, 1, &renderContext.texture_->sampler_);
+		void RenderEngine::SetTexture(Texture* texture)
+		{
+			//deviceContext->VSSetShaderResources(0, 1, &texture->shaderResourceView_);
+			//deviceContext->VSSetSamplers(0, 1, &texture->sampler_);	
+			deviceContext_->PSSetShaderResources(0, 1, &texture->shaderResourceView_);
+			deviceContext_->PSSetSamplers(0, 1, &texture->sampler_);
+		}
 
-				switch (renderContext.primitiveType_)
-				{
-				case PRIMITIVE_LINE:
-					deviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-					break;
+		void RenderEngine::SetPrimitiveType(PrimitiveType primitiveType)
+		{
+			switch (primitiveType)
+			{
+			case PRIMITIVE_LINE:
+				deviceContext_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+				break;
 
-				case PRIMITIVE_TRIANGLE:
-					deviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-					break;
-				}
-
-				deviceContext->DrawIndexed(indexCount, 0, 0);
+			case PRIMITIVE_TRIANGLE:
+				deviceContext_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				break;
 			}
 		}
 
@@ -453,6 +442,67 @@ namespace FlagGG
 			vertexFormatCache_[hashValue] = vertexFormat;
 
 			return vertexFormat;
+		}
+
+		void RenderEngine::DrawCall(uint32_t indexStart, uint32_t indexCount)
+		{
+			auto vertexBufferCount = Math::Min<uint32_t>(cacheVertexBuffers_->Size(), MAX_VERTEX_BUFFER_COUNT);
+			VertexBuffer* tempBuffer[MAX_VERTEX_BUFFER_COUNT + 1] = { 0 };
+			for (uint32_t i = 0; i < vertexBufferCount; ++i)
+			{
+				tempBuffer[i] = (*cacheVertexBuffers_)[i].Get();
+			}
+			VertexFormat* vertexFormat = CacheVertexFormat(cacheVSShader_, tempBuffer);
+
+			deviceContext_->IASetInputLayout(vertexFormat->GetObject<ID3D11InputLayout>());
+			deviceContext_->DrawIndexed(indexCount, indexStart, 0);
+		}
+
+		void RenderEngine::RenderBegin(Viewport* viewport)
+		{
+			viewport->SetViewport();
+
+			auto* renderTargetView = viewport->GetRenderTarget()->GetObject<ID3D11RenderTargetView>();
+			auto* depthStencilView = viewport->GetDepthStencil()->GetObject<ID3D11DepthStencilView>();
+			float color[] = { 0.0, 0.0f, 0.0f, 1.0f };
+
+			deviceContext_->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+			deviceContext_->ClearRenderTargetView(renderTargetView, color);
+			deviceContext_->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0, 0);
+		}
+
+		void RenderEngine::RenderEnd(Viewport* viewport)
+		{
+
+		}
+
+		void RenderEngine::Render(Viewport* viewport)
+		{
+			if (!viewport) return;
+
+			RenderBegin(viewport);
+
+			Scene::Scene* scene = viewport->GetScene();
+			Container::Vector<RenderContext> renderContexts;
+			scene->Render(renderContexts);
+
+			for (const auto& renderContext : renderContexts)
+			{
+				UpdateMatrix(viewport->GetCamera(),  renderContext);
+
+				for (const auto& geometry : renderContext.geometries_)
+				{
+					SetVertexBuffers(geometry->GetVertexBuffers());
+					SetIndexBuffer(geometry->GetIndexBuffer());
+					SetVertexShader(renderContext.VSShader_);
+					SetPixelShader(renderContext.PSShader_);
+					SetTexture(renderContext.texture_);
+					SetPrimitiveType(geometry->GetPrimitiveType());
+					DrawCall(geometry->GetIndexStart(), geometry->GetIndexCount());
+				}
+			}
+
+			RenderEnd(viewport);
 		}
 	}
 }

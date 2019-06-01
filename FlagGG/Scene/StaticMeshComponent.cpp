@@ -12,9 +12,12 @@ namespace FlagGG
 		void StaticMeshComponent::Render(Graphics::RenderContext& renderContext)
 		{
 			renderContext.geometryType_ = GEOMETRY_STATIC;
-			renderContext.primitiveType_ = PRIMITIVE_TRIANGLE;
-			renderContext.vertexBuffers_ = &model_->GetVertexBuffers();
-			renderContext.indexBuffers_ = &model_->GetIndexBuffers();
+			renderContext.geometries_.Clear();
+			const auto& geometries_ = model_->GetGeometries();
+			for (uint32_t i = 0; i < geometries_.Size(); ++i)
+			{
+				renderContext.geometries_.Push(geometries_[i][0]);
+			}
 			renderContext.texture_ = material_->GetTexture();
 			renderContext.VSShader_ = material_->GetVSShader();
 			renderContext.PSShader_ = material_->GetPSShader();
