@@ -20,9 +20,9 @@ namespace FlagGG
 
 			Buffer::IOBufferPtr FlagGG_API CreateBuffer();
 
-			Acceptor::IOAcceptorPtr FlagGG_API CreateAcceptor(Handler::EventHandlerPtr handler, size_t thread_count);
+			Acceptor::IOAcceptorPtr FlagGG_API CreateAcceptor(Handler::EventHandler* handler, size_t thread_count);
 
-			Connector::IOConnectorPtr FlagGG_API CreateConnector(Handler::EventHandlerPtr handler, IOFrame::IOThreadPoolPtr& thread_pool);
+			Connector::IOConnectorPtr FlagGG_API CreateConnector(Handler::EventHandler* handler, IOFrame::IOThreadPoolPtr& thread_pool);
 		}
 
 		namespace UDP
@@ -31,9 +31,9 @@ namespace FlagGG
 
 			Buffer::IOBufferPtr FlagGG_API CreateBuffer();
 
-			Acceptor::IOAcceptorPtr FlagGG_API CreateAcceptor(Handler::EventHandlerPtr handler, size_t thread_count);
+			Acceptor::IOAcceptorPtr FlagGG_API CreateAcceptor(Handler::EventHandler* handler, size_t thread_count);
 
-			Connector::IOConnectorPtr FlagGG_API CreateConnector(Handler::EventHandlerPtr handler, IOFrame::IOThreadPoolPtr& thread_pool);
+			Connector::IOConnectorPtr FlagGG_API CreateConnector(Handler::EventHandler* handler, IOFrame::IOThreadPoolPtr& thread_pool);
 		}
 	}
 }

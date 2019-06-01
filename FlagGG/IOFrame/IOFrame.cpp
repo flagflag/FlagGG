@@ -22,14 +22,14 @@ namespace FlagGG
 				return Buffer::IOBufferPtr(new Buffer::NetBuffer());
 			}
 
-			Acceptor::IOAcceptorPtr CreateAcceptor(Handler::EventHandlerPtr handler, size_t thread_count)
+			Acceptor::IOAcceptorPtr CreateAcceptor(Handler::EventHandler* handler, size_t thread_count)
 			{
-				return Acceptor::IOAcceptorPtr(new Acceptor::TCPAcceptor(handler, thread_count));
+				return Acceptor::IOAcceptorPtr(new Acceptor::TCPAcceptor(Handler::EventHandlerPtr(handler), thread_count));
 			}
 
-			Connector::IOConnectorPtr CreateConnector(Handler::EventHandlerPtr handler, IOFrame::IOThreadPoolPtr& thread_pool)
+			Connector::IOConnectorPtr CreateConnector(Handler::EventHandler* handler, IOFrame::IOThreadPoolPtr& thread_pool)
 			{
-				return Connector::IOConnectorPtr(new Connector::TCPConnector(handler, thread_pool));
+				return Connector::IOConnectorPtr(new Connector::TCPConnector(Handler::EventHandlerPtr(handler), thread_pool));
 			}
 		}
 
@@ -45,12 +45,12 @@ namespace FlagGG
 				return nullptr;
 			}
 
-			Acceptor::IOAcceptorPtr CreateAcceptor(Handler::EventHandlerPtr handler, size_t thread_count)
+			Acceptor::IOAcceptorPtr CreateAcceptor(Handler::EventHandler* handler, size_t thread_count)
 			{
 				return nullptr;
 			}
 
-			Connector::IOConnectorPtr CreateConnector(Handler::EventHandlerPtr handler, IOFrame::IOThreadPool& thread_pool)
+			Connector::IOConnectorPtr CreateConnector(Handler::EventHandler* handler, IOFrame::IOThreadPool& thread_pool)
 			{
 				return nullptr;
 			}

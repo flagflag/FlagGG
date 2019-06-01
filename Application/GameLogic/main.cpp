@@ -8,6 +8,12 @@
 #include <Utility/SystemHelper.h>
 
 #include "GameEngine.h"
+#include "Network/NetworkAdaptor.h"
+#include "Unit/Unit.h"
+#include "LuaInterface/LuaCommon.h"
+#include "LuaInterface/LuaGame.h"
+#include "LuaInterface/LuaUI.h"
+#include "LuaInterface/LuaNetwork.h"
 
 using namespace FlagGG::Graphics;
 using namespace FlagGG::Math;
@@ -71,7 +77,8 @@ class GameLogic : public GameEngine
 public:
 	GameLogic() :
 		luaVM_(new LuaVM()),
-		logModule_(luaVM_)
+		logModule_(luaVM_),
+		network_(new Network())
 	{ }
 
 protected:
@@ -113,6 +120,8 @@ protected:
 
 		double frameRate = commandParam["FrameRate"].ToDouble();
 		SetFrameRate(frameRate);
+
+		context_->RegisterVariable<Network>(network_, "network");
 
 		context_->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, GameLogic::Update, this));
 		context_->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_DOWN, GameLogic::OnKeyDown, this));
@@ -161,6 +170,8 @@ private:
 	SharedPtr<LuaVM> luaVM_;
 
 	LogModule logModule_;
+
+	SharedPtr<Network> network_;
 };
 
 void RunLuaVM()
