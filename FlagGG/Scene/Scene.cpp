@@ -60,12 +60,12 @@ namespace FlagGG
 			}
 		}
 
-		void Scene::Render(Container::Vector<Graphics::RenderContext>& renderContexts)
+		void Scene::Render(Container::PODVector<Graphics::RenderContext*>& renderContexts)
 		{
 			Render(this, renderContexts);
 		}
 
-		void Scene::Render(Node* node, Container::Vector<Graphics::RenderContext>& renderContexts)
+		void Scene::Render(Node* node, Container::PODVector<Graphics::RenderContext*>& renderContexts)
 		{
 			auto& children = node->GetChildren();
 			

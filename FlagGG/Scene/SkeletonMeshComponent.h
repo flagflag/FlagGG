@@ -17,13 +17,11 @@ namespace FlagGG
 
 			void Update(float timeStep) override;
 
-			void Render(Graphics::RenderContext& renderContext) override;
-
-			void SetModel(Graphics::Model* model) override;
-
 			void UpdateTreeDirty() override;
 
 		protected:
+			void OnModel() override;
+
 			void SetSkeleton(const Skeleton& skeleton);
 
 			void SetBoneMappings(const Container::Vector<Container::PODVector<uint32_t>>& boneMappings);

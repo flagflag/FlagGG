@@ -345,31 +345,31 @@ namespace FlagGG
 			return 64;
 		}
 
-		void RenderEngine::UpdateMatrix(Camera* camera, const RenderContext& renderContext)
+		void RenderEngine::UpdateMatrix(Camera* camera, const RenderContext* renderContext)
 		{
 			if (!camera) return;
-			if (!renderContext.worldTransform_ || !renderContext.numWorldTransform_) return;
+			if (!renderContext || !renderContext->worldTransform_ || !renderContext->numWorldTransform_) return;
 
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 			// 普通坐标矩阵
 			RenderEngine::GetDeviceContext()->Map(constBuffer_[CONST_BUFFER_MATRIX], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 			MatrixData* dataPtr = static_cast<MatrixData*>(mappedResource.pData);
-			dataPtr->world_			= renderContext.geometryType_ == GEOMETRY_STATIC ? *renderContext.worldTransform_ : Math::Matrix3x4::IDENTITY;
+			dataPtr->world_			= renderContext->geometryType_ == GEOMETRY_STATIC ? *renderContext->worldTransform_ : Math::Matrix3x4::IDENTITY;
 			dataPtr->view_			= camera->GetViewMatrix().Transpose();
 			dataPtr->projection_	= camera->GetProjectionMatrix().Transpose();
 			RenderEngine::GetDeviceContext()->Unmap(constBuffer_[CONST_BUFFER_MATRIX], 0);
 
-			if (renderContext.geometryType_ == GEOMETRY_SKINNED)
+			if (renderContext->geometryType_ == GEOMETRY_SKINNED)
 			{
 				// 蒙皮矩阵
 				RenderEngine::GetDeviceContext()->Map(constBuffer_[CONST_BUFFER_SKIN], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-				uint32_t realNum = Math::Min(GetMaxBonesNum(), renderContext.numWorldTransform_);
-				memcpy(mappedResource.pData, renderContext.worldTransform_, sizeof(Math::Matrix3x4) * realNum);
+				uint32_t realNum = Math::Min(GetMaxBonesNum(), renderContext->numWorldTransform_);
+				memcpy(mappedResource.pData, renderContext->worldTransform_, sizeof(Math::Matrix3x4) * realNum);
 				RenderEngine::GetDeviceContext()->Unmap(constBuffer_[CONST_BUFFER_SKIN], 0);
 			}
 
-			uint32_t bufferNumber = renderContext.geometryType_ == GEOMETRY_STATIC ? 1 : 2;
+			uint32_t bufferNumber = renderContext->geometryType_ == GEOMETRY_STATIC ? 1 : 2;
 			deviceContext_->VSSetConstantBuffers(0, bufferNumber, constBuffer_);
 		}
 
@@ -483,20 +483,20 @@ namespace FlagGG
 			RenderBegin(viewport);
 
 			Scene::Scene* scene = viewport->GetScene();
-			Container::Vector<RenderContext> renderContexts;
+			Container::PODVector<RenderContext*> renderContexts;
 			scene->Render(renderContexts);
 
 			for (const auto& renderContext : renderContexts)
 			{
 				UpdateMatrix(viewport->GetCamera(),  renderContext);
 
-				for (const auto& geometry : renderContext.geometries_)
+				for (const auto& geometry : renderContext->geometries_)
 				{
 					SetVertexBuffers(geometry->GetVertexBuffers());
 					SetIndexBuffer(geometry->GetIndexBuffer());
-					SetVertexShader(renderContext.VSShader_);
-					SetPixelShader(renderContext.PSShader_);
-					SetTexture(renderContext.texture_);
+					SetVertexShader(renderContext->VSShader_);
+					SetPixelShader(renderContext->PSShader_);
+					SetTexture(renderContext->texture_);
 					SetPrimitiveType(geometry->GetPrimitiveType());
 					DrawCall(geometry->GetIndexStart(), geometry->GetIndexCount());
 				}

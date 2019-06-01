@@ -22,12 +22,11 @@ namespace FlagGG
 			}
 		}
 
-		void Node::Render(Container::Vector<Graphics::RenderContext>& renderContexts)
+		void Node::Render(Container::PODVector<Graphics::RenderContext*>& renderContexts)
 		{
 			for (const auto& compoment : components_)
 			{
-				Graphics::RenderContext renderContext;
-				compoment->Render(renderContext);
+				Graphics::RenderContext* renderContext = compoment->GetRenderContext();
 				renderContexts.Push(renderContext);
 			}
 		}

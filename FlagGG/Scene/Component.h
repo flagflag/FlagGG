@@ -15,7 +15,7 @@ namespace FlagGG
 		public:
 			virtual void Update(float timeStep) = 0;
 
-			virtual void Render(Graphics::RenderContext& renderContext) = 0;
+			virtual Graphics::RenderContext* GetRenderContext() = 0;
 
 			virtual void UpdateTreeDirty() {}
 

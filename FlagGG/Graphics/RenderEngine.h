@@ -85,7 +85,7 @@ namespace FlagGG
 			// ×î´ó¹Ç÷ÀÊý
 			static uint32_t GetMaxBonesNum();
 
-			static void UpdateMatrix(Camera* camera, const RenderContext& renderContext);
+			static void UpdateMatrix(Camera* camera, const RenderContext* renderContext);
 
 			static void SetVertexBuffers(const Container::Vector<Container::SharedPtr<VertexBuffer>>& vertexBuffers);
 

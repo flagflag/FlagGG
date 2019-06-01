@@ -22,7 +22,7 @@ namespace FlagGG
 
 			virtual void Update(float timeStep);
 
-			virtual void Render(Container::Vector<Graphics::RenderContext>& renderContexts);
+			virtual void Render(Container::PODVector<Graphics::RenderContext*>& renderContexts);
 
 			void AddComponent(Component* component);
 

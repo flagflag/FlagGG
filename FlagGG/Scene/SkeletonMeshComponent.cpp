@@ -21,29 +21,21 @@ namespace FlagGG
 			}
 		}
 
-		void SkeletonMeshComponent::Render(Graphics::RenderContext& renderContext)
+		void SkeletonMeshComponent::OnModel()
 		{
-			StaticMeshComponent::Render(renderContext);
-			renderContext.geometryType_ = GEOMETRY_SKINNED;
-			renderContext.worldTransform_ = &skinMatrices_[0];
-			renderContext.numWorldTransform_ = skinMatrices_.Size();
-		}
-
-		void SkeletonMeshComponent::SetModel(Graphics::Model* model)
-		{
-			if (model_ == model)
-			{
-				return;
-			}
-
-			StaticMeshComponent::SetModel(model);
+			StaticMeshComponent::OnModel();
 
 			// 设置骨骼
-			SetSkeleton(model->GetSkeleton());
+			SetSkeleton(model_->GetSkeleton());
 			// 分配蒙皮矩阵，设置图形和骨骼的映射‘
-			SetBoneMappings(model->GetBoneMappings());
+			SetBoneMappings(model_->GetBoneMappings());
 			// 更新下dirty
 			UpdateTreeDirty();
+
+			// 设置渲染Context
+			renderContext_.geometryType_ = GEOMETRY_SKINNED;
+			renderContext_.worldTransform_ = &skinMatrices_[0];
+			renderContext_.numWorldTransform_ = skinMatrices_.Size();
 		}
 
 		void SkeletonMeshComponent::SetSkeleton(const Skeleton& skeleton)

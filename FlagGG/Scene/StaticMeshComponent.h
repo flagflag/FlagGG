@@ -14,16 +14,22 @@ namespace FlagGG
 		public:
 			void Update(float timeStep) override;
 
-			void Render(Graphics::RenderContext& renderContext) override;
+			Graphics::RenderContext* GetRenderContext() override;
 
-			virtual void SetModel(Graphics::Model* model);
+			void SetModel(Graphics::Model* model);
 
 			void SetMaterial(Graphics::Material* material);
 
 		protected:
+			virtual void OnModel();
+
+			virtual void OnMaterial();
+
 			Container::SharedPtr<Graphics::Model> model_;
 
 			Container::SharedPtr<Graphics::Material> material_;
+
+			Graphics::RenderContext renderContext_;
 		};
 	}
 }

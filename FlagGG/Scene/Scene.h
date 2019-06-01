@@ -23,12 +23,12 @@ namespace FlagGG
 
 			void Update(Node* node, float timeStep);
 
-			void Render(Container::Vector<Graphics::RenderContext>& renderContexts) override;
+			void Render(Container::PODVector<Graphics::RenderContext*>& renderContexts) override;
 
 			void HandleUpdate(float timeStep);
 
 		protected:
-			void Render(Node* node, Container::Vector<Graphics::RenderContext>& renderContexts);
+			void Render(Node* node, Container::PODVector<Graphics::RenderContext*>& renderContexts);
 
 			Core::Context* context_;
 

@@ -9,30 +9,48 @@ namespace FlagGG
 		{
 		}
 
-		void StaticMeshComponent::Render(Graphics::RenderContext& renderContext)
+		Graphics::RenderContext* StaticMeshComponent::GetRenderContext()
 		{
-			renderContext.geometryType_ = GEOMETRY_STATIC;
-			renderContext.geometries_.Clear();
-			const auto& geometries_ = model_->GetGeometries();
-			for (uint32_t i = 0; i < geometries_.Size(); ++i)
-			{
-				renderContext.geometries_.Push(geometries_[i][0]);
-			}
-			renderContext.texture_ = material_->GetTexture();
-			renderContext.VSShader_ = material_->GetVSShader();
-			renderContext.PSShader_ = material_->GetPSShader();
-			renderContext.worldTransform_ = &node_->GetWorldTransform();
-			renderContext.numWorldTransform_ = 1;
+			return &renderContext_;
 		}
 
 		void StaticMeshComponent::SetModel(Graphics::Model* model)
 		{
+			if (model_ == model)
+			{
+				return;
+			}
+
 			model_ = model;
+
+			OnModel();
 		}
 
 		void StaticMeshComponent::SetMaterial(Graphics::Material* material)
 		{
 			material_ = material;
+
+			OnMaterial();
+		}
+
+		void StaticMeshComponent::OnModel()
+		{
+			renderContext_.geometryType_ = GEOMETRY_STATIC;
+			renderContext_.geometries_.Clear();
+			const auto& geometries_ = model_->GetGeometries();
+			for (uint32_t i = 0; i < geometries_.Size(); ++i)
+			{
+				renderContext_.geometries_.Push(geometries_[i][0]);
+			}
+			renderContext_.worldTransform_ = &node_->GetWorldTransform();
+			renderContext_.numWorldTransform_ = 1;
+		}
+
+		void StaticMeshComponent::OnMaterial()
+		{
+			renderContext_.texture_ = material_->GetTexture();
+			renderContext_.VSShader_ = material_->GetVSShader();
+			renderContext_.PSShader_ = material_->GetPSShader();
 		}
 	}
 }
