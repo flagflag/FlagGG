@@ -103,11 +103,12 @@ protected:
 		luaVM_->RegisterCPPEvents(
 			"log", &logModule_,
 			{
-			LUA_API_PROXY(LogModule, debug, "debug"),
-			LUA_API_PROXY(LogModule, info, "info"),
-			LUA_API_PROXY(LogModule, warn, "warn"),
-			LUA_API_PROXY(LogModule, error, "error")
-		});
+				LUA_API_PROXY(LogModule, debug, "debug"),
+				LUA_API_PROXY(LogModule, info, "info"),
+				LUA_API_PROXY(LogModule, warn, "warn"),
+				LUA_API_PROXY(LogModule, error, "error")
+			}
+		);
 
 		const String luaCodePath = commandParam["CodePath"].GetString();
 
