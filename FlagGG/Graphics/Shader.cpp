@@ -185,7 +185,7 @@ namespace FlagGG
 						);
 					if (hr != 0)
 					{
-						puts("CreateVertexShader failed.");
+						FLAGGG_LOG_ERROR("CreateVertexShader failed.");
 
 						SAFE_RELEASE(vertexShader);
 
@@ -206,7 +206,7 @@ namespace FlagGG
 						);
 					if (hr != 0)
 					{
-						puts("CreatePixelShader failed.");
+						FLAGGG_LOG_ERROR("CreatePixelShader failed.");
 
 						SAFE_RELEASE(pixelShader);
 
