@@ -33,6 +33,8 @@ protected:
 
 	void CreateCoreObject();
 
+	SharedPtr<Node> CreateUnit();
+
 	void CreateScene();
 
 	void SetupWindow();

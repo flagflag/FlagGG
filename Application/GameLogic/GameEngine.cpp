@@ -31,18 +31,28 @@ void GameEngine::CreateCoreObject()
 	context_->RegisterVariable<ResourceCache>(cache_.Get(), "ResourceCache");
 }
 
-void GameEngine::CreateScene()
+SharedPtr<Node> GameEngine::CreateUnit()
 {
 	SharedPtr<Model> model = cache_->GetResource<Model>("Model/Kachujin.mdl");
 	SharedPtr<Material> material = cache_->GetResource<Material>("Materials/Model.ljson");
 	SharedPtr<SkeletonMeshComponent> skeletonMeshComponent(new SkeletonMeshComponent());
 	SharedPtr<Node> node(new Node());
-	node->SetRotation(Quaternion(180, Vector3(0, 1, 0)));
 	node->AddComponent(skeletonMeshComponent);
 	skeletonMeshComponent->SetModel(model);
 	skeletonMeshComponent->SetMaterial(material);
+	return node;
+}
+
+void GameEngine::CreateScene()
+{
 	scene_ = new Scene(context_);
-	scene_->AddChild(node);
+	for (int32_t i = -1; i <= 3; ++i)
+	{
+		SharedPtr<Node> node = CreateUnit();
+		node->SetRotation(Quaternion(180, Vector3(0, 1, 0)));
+		node->SetPosition(Vector3(i * 0.5, -1.5, i * 0.5));
+		scene_->AddChild(node);
+	}
 	scene_->Start();
 }
 

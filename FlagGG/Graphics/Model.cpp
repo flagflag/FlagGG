@@ -121,12 +121,48 @@ namespace FlagGG
 				}
 				boneMappings_.Push(boneMapping);
 
+				// lod的图形，远近看到的是不同细节的模型
 				uint32_t numLodLevels = 0;
 				stream->ReadUInt32(numLodLevels);
+				Container::Vector<Container::SharedPtr<Geometry>> lodGeometry;
+				lodGeometry.Reserve(numLodLevels);
+
 				for (uint32_t j = 0; j < numLodLevels; ++j)
 				{
-					stream->Seek(stream->GetIndex() + 6 * sizeof(uint32_t));
+					float distance = 0.0f;
+					uint32_t type = 0;
+					uint32_t vertexBufferRef = 0;
+					uint32_t indexBufferRef = 0;
+					uint32_t indexStart = 0;
+					uint32_t indexCount = 0;
+					stream->ReadFloat(distance);
+					stream->ReadUInt32(type);
+					stream->ReadUInt32(vertexBufferRef);
+					stream->ReadUInt32(indexBufferRef);
+					stream->ReadUInt32(indexStart);
+					stream->ReadUInt32(indexCount);
+
+					if (vertexBufferRef > vertexBuffers_.Size())
+					{
+						FLAGGG_LOG_ERROR("vertex buffer ref out of bounds.");
+						return false;
+					}
+					if (indexBufferRef > indexBuffers_.Size())
+					{
+						FLAGGG_LOG_ERROR("index buffer ref out of bounds.");
+						return false;
+					}
+
+					Container::SharedPtr<Geometry> geometry(new Geometry());
+					geometry->SetPrimitiveType(static_cast<PrimitiveType>(type));
+					geometry->SetVertexBuffer(0, vertexBuffers_[vertexBufferRef]);
+					geometry->SetIndexBuffer(indexBuffers_[indexBufferRef]);
+					geometry->SetDataRange(indexStart, indexCount);
+					geometry->SetLodDistance(distance);
+
+					lodGeometry.Push(geometry);
 				}
+				geometries_.Push(lodGeometry);
 			}
 
 			uint32_t numMorphs = 0;

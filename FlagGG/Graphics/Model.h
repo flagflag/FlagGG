@@ -3,6 +3,7 @@
 #include "Resource/Resource.h"
 #include "Graphics/VertexBuffer.h"
 #include "Graphics/IndexBuffer.h"
+#include "Geometry.h"
 #include "Graphics/Batch3D.h"
 #include "Container/Ptr.h"
 #include "Container/Vector.h"
@@ -35,8 +36,11 @@ namespace FlagGG
 
 			Container::Vector<Container::SharedPtr<IndexBuffer>> indexBuffers_;
 
+			// 每个数组表示不同lod下的图形
+			Container::Vector <Container::Vector<Container::SharedPtr<Geometry>>> geometries_;
+
 			Container::Vector<Container::PODVector<uint32_t>> boneMappings_;
-		
+
 			Scene::Skeleton skeleton_;
 		};
 	}
