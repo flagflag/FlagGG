@@ -1,0 +1,16 @@
+{
+	vsshader = 
+	{
+		path = "Shader/Model_VS.hlsl",
+		defines =  [ "STATIC" ]
+	},
+	psshader = 
+	{
+		path = "Shader/Model_PS.hlsl"
+	},
+	texture =
+	{
+		type = "texture2d", //texturecube => 3d
+		path = "Textures/StoneDiffuse.dds"
+	}
+}
