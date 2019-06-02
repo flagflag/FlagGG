@@ -48,6 +48,7 @@ PixelInput VS(VertexInput input)
 #else
 	float4x3 iWorldMatrix = GetSkinMatrix(input.blendWeights, input.blendIndices);
 #endif
+	input.pos.w = 1.0;
 	float3 worldPos = mul(input.pos, iWorldMatrix);
 	float3 worldNor = normalize(mul(input.nor, (float3x3)iWorldMatrix));
 	float4 clipPos = mul(float4(worldPos, 1.0), viewMatrix);

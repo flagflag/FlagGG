@@ -147,11 +147,32 @@ namespace FlagGG
 			return Math::Matrix3x4(position_, rotation_, scale_);
 		}
 
-		Math::Matrix3x4 Node::GetWorldTransform() const
+		const Math::Matrix3x4& Node::GetWorldTransform() const
 		{
 			if (dirty_)
 				UpdateWorldTransform();
 			return worldTransform_;
+		}
+
+		Math::Vector3 Node::GetWorldPosition() const
+		{
+			if (dirty_)
+				UpdateWorldTransform();
+			return worldTransform_.Translation();
+		}
+
+		Math::Quaternion Node::GetWorldRotation() const
+		{
+			if (dirty_)
+				UpdateWorldTransform();
+			return worldTransform_.Rotation();
+		}
+
+		Math::Vector3 Node::GetWorldScale() const
+		{
+			if (dirty_)
+				UpdateWorldTransform();
+			return worldTransform_.Scale();
 		}
 
 		void Node::UpdateWorldTransform() const

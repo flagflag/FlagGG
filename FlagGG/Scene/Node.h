@@ -54,7 +54,13 @@ namespace FlagGG
 
 			Math::Matrix3x4 GetTransform() const;
 
-			Math::Matrix3x4 GetWorldTransform() const;
+			const Math::Matrix3x4& GetWorldTransform() const;
+
+			Math::Vector3 GetWorldPosition() const;
+
+			Math::Quaternion GetWorldRotation() const;
+
+			Math::Vector3 GetWorldScale() const;
 
 			// 更新节点属性结构dirty状态
 			virtual void UpdateTreeDirty();
