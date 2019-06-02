@@ -11,6 +11,6 @@
 	texture =
 	{
 		type = "texture2d", //texturecube => 3d
-		path = "Textures/default.png"
+		path = "Textures/Kachujin_diffuse.png"
 	}
 }

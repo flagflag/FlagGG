@@ -51,7 +51,7 @@ enum VertexElementSemantic
 	MAX_VERTEX_ELEMENT_SEMANTIC
 };
 
-enum GeometryType
+enum GeometryType : unsigned
 {
 	GEOMETRY_STATIC = 0,
 	GEOMETRY_SKINNED,

@@ -16,6 +16,9 @@ namespace FlagGG
 
 		void Node::Update(float timeStep)
 		{
+			if (dirty_)
+				UpdateWorldTransform();
+
 			for (const auto& compoment : components_)
 			{
 				compoment->Update(timeStep);
@@ -90,6 +93,16 @@ namespace FlagGG
 			{
 				parent_->RemoveChild(this);
 			}
+		}
+
+		void Node::RemoveAllChild()
+		{
+			for (const auto& child : children_)
+			{
+				child->parent_ = nullptr;
+				child->UpdateTreeDirty();
+			}
+			children_.Clear();
 		}
 
 		Container::Vector<Container::SharedPtr<Node>>& Node::GetChildren()

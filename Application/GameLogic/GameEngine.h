@@ -10,7 +10,10 @@
 #include <Core/DeviceEvent.h>
 #include <Resource/ResourceCache.h>
 #include <Utility/SystemHelper.h>
+
 #include "CameraOperation.h"
+#include "Unit/Unit.h"
+#include "Unit/Terrain.h"
 
 using namespace FlagGG::Core;
 using namespace FlagGG::Container;
@@ -33,10 +36,6 @@ protected:
 
 	void CreateCoreObject();
 
-	SharedPtr<Node> CreateStaticUnit();
-
-	SharedPtr<Node> CreateSkeletonUnit();
-
 	void CreateScene();
 
 	void SetupWindow();
@@ -54,6 +53,9 @@ protected:
 	Vector<SharedPtr<Viewport>> viewports_;
 
 	SharedPtr<Scene> scene_;
+
+	SharedPtr<Unit> mainHero_;
+	SharedPtr<Terrain> terrain_;
 
 	SharedPtr<Window> window_;
 

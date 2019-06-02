@@ -2,7 +2,7 @@
 	vsshader = 
 	{
 		path = "Shader/Model_VS.hlsl",
-		defines =  [ "SKINNED" ]
+		defines =  [ "STATIC" ]
 	},
 	psshader = 
 	{
@@ -11,6 +11,6 @@
 	texture =
 	{
 		type = "texture2d", //texturecube => 3d
-		path = "Textures/default.png"
+		path = "Textures/Mushroom.dds"
 	}
 }

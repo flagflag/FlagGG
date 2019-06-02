@@ -36,6 +36,8 @@ namespace FlagGG
 
 			void RemoveFromParent();
 
+			void RemoveAllChild();
+
 			Container::Vector<Container::SharedPtr<Node>>& GetChildren();
 
 			void SetPosition(const Math::Vector3& position);
