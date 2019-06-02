@@ -45,8 +45,6 @@ void GameApplication::Start()
 		return;
 	}
 
-	FLAGGG_LOG_INFO("start game.");
-
 	context_->RegisterVariable<LuaVM>(luaVM_, "LuaVM");
 	context_->RegisterVariable<Network>(network_, "Network");
 
@@ -61,11 +59,13 @@ void GameApplication::Start()
 	context_->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_MOVE, GameApplication::OnMouseMove, this));
 
 	SetFrameRate(commandParam_["FrameRate"].ToDouble());
+
+	FLAGGG_LOG_INFO("start application.");
 }
 
 void GameApplication::Stop()
 {
-	FLAGGG_LOG_ERROR("end game.");
+	FLAGGG_LOG_INFO("end application.");
 }
 
 void GameApplication::Update(float timeStep)
