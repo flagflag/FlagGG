@@ -10,7 +10,8 @@ namespace FlagGG
         LOG_DEBUG = 0,
         LOG_INFO,
 		LOG_WARN,
-        LOG_ERROR
+        LOG_ERROR,
+		LOG_CRITICAL
     };
 
     void FlagGG_API Log(LogType log_type, const char* format, ...);
@@ -23,5 +24,7 @@ namespace FlagGG
 #define FLAGGG_LOG_WARN(format, ...) FlagGG::Log(FlagGG::LOG_WARN, format, ##__VA_ARGS__)
 
 #define FLAGGG_LOG_ERROR(format, ...) FlagGG::Log(FlagGG::LOG_ERROR, format, ##__VA_ARGS__)
+
+#define FLAGG_LOG_CRITICAL(format, ...) FlagGG::Log(FlagGG::LOG_CRITICAL, format, ##__VA_ARGS__)
 
 #endif

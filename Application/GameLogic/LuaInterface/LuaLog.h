@@ -8,15 +8,21 @@ using namespace FlagGG::Core;
 using namespace FlagGG::Lua;
 using namespace FlagGG::Container;
 
-class LuaNetwork : public RefCounted
+class LuaLog : public RefCounted
 {
 public:
-	LuaNetwork(Context* context);
-
+	LuaLog(Context* context);
+	
 protected:
-	int Connect();
+	int Debug();
 
-	int Disconnect();
+	int Info();
+
+	int Warn();
+
+	int Error();
+
+	int Critical();
 
 private:
 	Context* context_;
