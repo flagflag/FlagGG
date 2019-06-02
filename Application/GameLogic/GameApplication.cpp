@@ -27,27 +27,7 @@ void GameApplication::Start()
 
 	CreateScene();
 	SetupWindow();
-
-	luaVM_->Open();
-	if (!luaVM_->IsOpen())
-	{
-		FLAGGG_LOG_ERROR("open lua vm failed.");
-
-		return;
-	}
-
-	luaVM_->RegisterCEvents(
-	{
-		C_LUA_API_PROXY(Begin, "main_begin"),
-		C_LUA_API_PROXY(Begin, "main_end")
-	});
-
-	const String luaCodePath = commandParam_["CodePath"].GetString();
-
-	if (!luaVM_->Execute(luaCodePath + "/main.lua"))
-	{
-		return;
-	}
+	OpenLuaVM();
 
 	context_->RegisterVariable<LuaVM>(luaVM_, "LuaVM");
 	context_->RegisterVariable<Network>(network_, "Network");
@@ -63,7 +43,10 @@ void GameApplication::Start()
 	context_->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_MOVE, GameApplication::OnMouseMove, this));
 	context_->RegisterEvent(EVENT_HANDLER(Application::WINDOW_CLOSE, GameApplication::WindowClose, this));
 
-	SetFrameRate(commandParam_["FrameRate"].ToDouble());
+	if (commandParam_.Contains("FrameRate"))
+	{
+		SetFrameRate(commandParam_["FrameRate"].ToDouble());
+	}
 
 	FLAGGG_LOG_INFO("start application.");
 }
@@ -125,6 +108,30 @@ void GameApplication::SetupWindow()
 	window_->GetViewport()->SetScene(scene_);
 
 	WindowDevice::RegisterWinMessage(window_);
+}
+
+void GameApplication::OpenLuaVM()
+{
+	luaVM_->Open();
+	if (!luaVM_->IsOpen())
+	{
+		FLAGGG_LOG_ERROR("open lua vm failed.");
+
+		return;
+	}
+
+	luaVM_->RegisterCEvents(
+	{
+		C_LUA_API_PROXY(Begin, "main_begin"),
+		C_LUA_API_PROXY(Begin, "main_end")
+	});
+
+	const String luaCodePath = commandParam_["CodePath"].GetString();
+
+	if (!luaVM_->Execute(luaCodePath + "/main.lua"))
+	{
+		return;
+	}
 }
 
 void GameApplication::OnKeyDown(KeyState* keyState, unsigned keyCode)

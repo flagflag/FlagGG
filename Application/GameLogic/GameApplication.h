@@ -34,6 +34,7 @@ protected:
 
 	void CreateScene();
 	void SetupWindow();
+	void OpenLuaVM();
 
 	void OnKeyDown(KeyState* keyState, unsigned keyCode);
 	void OnKeyUp(KeyState* keyState, unsigned keyCode);
