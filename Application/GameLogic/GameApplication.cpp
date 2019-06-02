@@ -1,3 +1,4 @@
+#include <Graphics/RenderEngine.h>
 #include <Log.h>
 
 #include "GameApplication.h"
@@ -23,6 +24,9 @@ GameApplication::GameApplication(LJSONValue commandParam) :
 void GameApplication::Start()
 {
 	GameEngine::Start();
+
+	CreateScene();
+	SetupWindow();
 
 	luaVM_->Open();
 	if (!luaVM_->IsOpen())
@@ -57,6 +61,7 @@ void GameApplication::Start()
 	context_->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_DOWN, GameApplication::OnMouseDown, this));
 	context_->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_UP, GameApplication::OnMouseUp, this));
 	context_->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_MOVE, GameApplication::OnMouseMove, this));
+	context_->RegisterEvent(EVENT_HANDLER(Application::WINDOW_CLOSE, GameApplication::WindowClose, this));
 
 	SetFrameRate(commandParam_["FrameRate"].ToDouble());
 
@@ -65,12 +70,61 @@ void GameApplication::Start()
 
 void GameApplication::Stop()
 {
+	WindowDevice::UnregisterWinMessage(window_);
+
+	GameEngine::Stop();
+
 	FLAGGG_LOG_INFO("end application.");
 }
 
 void GameApplication::Update(float timeStep)
 {
 	luaVM_->CallEvent("update", timeStep);
+}
+
+void GameApplication::CreateScene()
+{
+	scene_ = new FlagGG::Scene::Scene(context_);
+	scene_->Start();
+
+	mainHero_ = new Unit(context_);
+	mainHero_->Load("Unit/MainHero.ljson");
+	mainHero_->SetPosition(Vector3(0, -5, 5));
+	scene_->AddChild(mainHero_);
+
+	terrain_ = new Terrain(context_);
+	terrain_->SetRange(20, 20);
+	terrain_->SetPosition(Vector3(-10, -5, 0));
+	scene_->AddChild(terrain_);
+}
+
+void GameApplication::SetupWindow()
+{
+	cameraOpt_ = new CameraOperation(context_);
+
+	IntRect rect(100, 100, 1000, 1000);
+
+	renderTexture_[0] = new Texture2D(context_);
+	renderTexture_[0]->SetNumLevels(1);
+	renderTexture_[0]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetRGBFormat(), TEXTURE_RENDERTARGET);
+	renderTexture_[1] = new Texture2D(context_);
+	renderTexture_[1]->SetNumLevels(1);
+	renderTexture_[1]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetDepthStencilFormat(), TEXTURE_DEPTHSTENCIL);
+
+	SharedPtr<Viewport> viewport(new Viewport());
+	viewport->Resize(rect);
+	viewport->SetCamera(cameraOpt_->camera_);
+	viewport->SetScene(scene_);
+	viewport->SetRenderTarget(renderTexture_[0]->GetRenderSurface());
+	viewport->SetDepthStencil(renderTexture_[1]->GetRenderSurface());
+	viewports_.Push(viewport);
+
+	window_ = new Window(context_, nullptr, rect);
+	window_->Show();
+	window_->GetViewport()->SetCamera(cameraOpt_->camera_);
+	window_->GetViewport()->SetScene(scene_);
+
+	WindowDevice::RegisterWinMessage(window_);
 }
 
 void GameApplication::OnKeyDown(KeyState* keyState, unsigned keyCode)
@@ -80,6 +134,12 @@ void GameApplication::OnKeyDown(KeyState* keyState, unsigned keyCode)
 
 void GameApplication::OnKeyUp(KeyState* keyState, unsigned keyCode)
 {
+	if (keyCode == VK_F11)
+	{
+		SharedPtr<Image> image = renderTexture_[0]->GetImage();
+		image->SavePNG("E:\\FlagGG_Scene.png");
+	}
+
 	luaVM_->CallEvent("on_key_up", keyCode);
 }
 
@@ -96,4 +156,9 @@ void GameApplication::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
 void GameApplication::OnMouseMove(KeyState* keyState, const Vector2& delta)
 {
 	luaVM_->CallEvent("on_mouse_move");
+}
+
+void GameApplication::WindowClose(void* window)
+{
+	isRunning_ = false;
 }

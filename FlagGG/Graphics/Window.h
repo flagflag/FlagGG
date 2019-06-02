@@ -35,6 +35,8 @@ namespace FlagGG
 
 			static void Update();
 
+			static void Render();
+
 			static void RegisterWinMessage(Window* wv);
 
 			static void UnregisterWinMessage(Window* wv);

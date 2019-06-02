@@ -79,6 +79,14 @@ namespace FlagGG
 			defferedMsgs_.Clear();
 		}
 
+		void WindowDevice::Render()
+		{
+			for (auto& window : recivers_)
+			{
+				window->Render();
+			}
+		}
+
 		void WindowDevice::RegisterWinMessage(Window* wv)
 		{
 			for (const auto& reciver : recivers_)
