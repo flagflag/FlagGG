@@ -9,6 +9,11 @@ namespace FlagGG
 		{
 		}
 
+		bool StaticMeshComponent::IsDrawable()
+		{
+			return true;
+		}
+
 		Graphics::RenderContext* StaticMeshComponent::GetRenderContext()
 		{
 			return &renderContext_;

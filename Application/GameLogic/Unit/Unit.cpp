@@ -1,6 +1,7 @@
 #include <Scene/Component.h>
 #include <Scene/StaticMeshComponent.h>
 #include <Scene/SkeletonMeshComponent.h>
+#include <Scene/AnimationComponent.h>
 #include <Resource/ResourceCache.h>
 #include <Graphics/Model.h>
 #include <Graphics/Material.h>
@@ -31,13 +32,25 @@ bool Unit::Load(const String& path)
 	const LJSONValue& root = jsonFile->GetRoot();
 	String type = root["geometrytype"].GetString();
 
-	SharedPtr<StaticMeshComponent> meshComp;
+	StaticMeshComponent* meshComp = nullptr;
 	if (type == "STATIC")
-		meshComp = new StaticMeshComponent();
+	{
+		meshComp = GetComponent<StaticMeshComponent>();
+		if (!meshComp)
+			meshComp = CreateComponent<StaticMeshComponent>();
+	}
 	else if (type == "SKINNED")
-		meshComp = new SkeletonMeshComponent();
+	{
+		meshComp = GetComponent <SkeletonMeshComponent>();
+		if (!meshComp)
+			meshComp = CreateComponent<SkeletonMeshComponent>();
+	}
+	else
+	{
+		FLAGGG_LOG_WARN("known model type.");
+		return false;
+	}
 
-	AddComponent(meshComp);
 	meshComp->SetModel(cache->GetResource<Model>(root["model"].GetString()));
 	meshComp->SetMaterial(cache->GetResource<Material>(root["material"].GetString()));
 
@@ -60,3 +73,23 @@ float Unit::GetSpeed() const
 	return speed_;
 }
 
+void Unit::PlayAnimation(const String& path)
+{
+	AnimationComponent* animComp = GetComponent<AnimationComponent>();
+	if (!animComp)
+	{
+		animComp = CreateComponent<AnimationComponent>();
+	}
+	auto* cache = context_->GetVariable<ResourceCache>("ResourceCache");
+	animComp->SetAnimation(cache->GetResource<Animation>(path));
+	animComp->Play();
+}
+
+void Unit::StopAnimation()
+{
+	AnimationComponent* animComp = GetComponent<AnimationComponent>();
+	if (animComp)
+	{
+		animComp->Stop();
+	}
+}

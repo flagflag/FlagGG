@@ -12,6 +12,7 @@ namespace FlagGG
 	{
 		class FlagGG_API SkeletonMeshComponent : public StaticMeshComponent
 		{
+			OBJECT_OVERRIDE(SkeletonMeshComponent);
 		public:
 			SkeletonMeshComponent();
 

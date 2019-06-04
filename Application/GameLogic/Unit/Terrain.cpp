@@ -28,8 +28,7 @@ void Terrain::SetRange(uint32_t xCount, uint32_t yCount)
 		for (uint32_t y = 0; y < yCount; ++y)
 		{
 			SharedPtr<Node> node(new Node());
-			SharedPtr<StaticMeshComponent> meshComp(new StaticMeshComponent());
-			node->AddComponent(meshComp);
+			StaticMeshComponent* meshComp = node->CreateComponent<StaticMeshComponent>();
 			meshComp->SetModel(cache->GetResource<Model>("Model/Plane.mdl"));
 			meshComp->SetMaterial(cache->GetResource<Material>("Materials/Plane.ljson"));
 			// 设置相对位置

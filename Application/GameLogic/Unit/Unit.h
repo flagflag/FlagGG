@@ -23,6 +23,10 @@ public:
 
 	float GetSpeed() const;
 
+	void PlayAnimation(const String& path);
+
+	void StopAnimation();
+
 protected:
 	Context* context_;
 

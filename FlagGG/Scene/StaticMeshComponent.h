@@ -11,8 +11,11 @@ namespace FlagGG
 	{
 		class FlagGG_API StaticMeshComponent : public Component
 		{
+			OBJECT_OVERRIDE(StaticMeshComponent);
 		public:
 			void Update(float timeStep) override;
+
+			bool IsDrawable() override;
 
 			Graphics::RenderContext* GetRenderContext() override;
 

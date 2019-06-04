@@ -88,9 +88,22 @@ namespace FlagGG
 				return target;
 		}
 
-		uint32_t FlagGG_API FloatToRawIntBits(float value)
+		uint32_t FloatToRawIntBits(float value)
 		{
 			return *((uint32_t*)&value);
+		}
+
+		uint32_t HashString(const char* str)
+		{
+			uint32_t hash = 0;
+			while (*str)
+			{
+				// SDBM Hash
+				hash = static_cast<uint32_t>(*str) + (hash << 6u) + (hash << 16u) - hash;
+				++str;
+			}
+
+			return hash;
 		}
 
 		Matrix4 MatrixTranslation(float dx, float dy, float dz)

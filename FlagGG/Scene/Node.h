@@ -24,9 +24,25 @@ namespace FlagGG
 
 			virtual void Render(Container::PODVector<Graphics::RenderContext*>& renderContexts);
 
+			template < class ComponentType, class ... Args >
+			ComponentType* CreateComponent(Args ... args)
+			{
+				Container::SharedPtr<ComponentType> comp(new ComponentType(args...));
+				AddComponent(comp);
+				return comp;
+			}
+
 			void AddComponent(Component* component);
 
 			void RemoveComponent(Component* component);
+
+			template < class ComponentType >
+			ComponentType* GetComponent()
+			{
+				return static_cast<ComponentType*>(GetComponent(ComponentType::StaticClass()));
+			}
+
+			Component* GetComponent(Container::StringHash compClass);
 
 			void RemoveAllComponent();
 

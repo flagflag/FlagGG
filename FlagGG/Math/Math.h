@@ -5,6 +5,7 @@
 
 #include "Vector3.h"
 #include "Matrix4.h"
+#include "Container/Str.h"
 
 #include <stdint.h>
 
@@ -68,6 +69,7 @@ namespace FlagGG
 
 		uint32_t FlagGG_API FloatToRawIntBits(float value);
 
+		uint32_t FlagGG_API HashString(const char* str);
 
 		// Œª“∆æÿ’Û
 		Matrix4 FlagGG_API MatrixTranslation(float dx, float dy, float dz);

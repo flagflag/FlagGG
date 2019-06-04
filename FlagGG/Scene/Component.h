@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Export.h"
-#include "Container/RefCounted.h"
+#include "Core/Object.h"
 #include "Graphics/RenderContext.h"
 
 namespace FlagGG
@@ -10,12 +10,15 @@ namespace FlagGG
 	{
 		class Node;
 
-		class FlagGG_API Component : public Container::RefCounted
+		class FlagGG_API Component : public Core::Object
 		{
+			OBJECT_OVERRIDE(Component);
 		public:
-			virtual void Update(float timeStep) = 0;
+			virtual void Update(float timeStep) {};
 
-			virtual Graphics::RenderContext* GetRenderContext() = 0;
+			virtual bool IsDrawable() { return false; };
+
+			virtual Graphics::RenderContext* GetRenderContext() { return nullptr; };
 
 			virtual void UpdateTreeDirty() {}
 

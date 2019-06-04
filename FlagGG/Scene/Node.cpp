@@ -29,8 +29,11 @@ namespace FlagGG
 		{
 			for (const auto& compoment : components_)
 			{
-				Graphics::RenderContext* renderContext = compoment->GetRenderContext();
-				renderContexts.Push(renderContext);
+				if (compoment->IsDrawable())
+				{
+					Graphics::RenderContext* renderContext = compoment->GetRenderContext();
+					renderContexts.Push(renderContext);
+				}
 			}
 		}
 
@@ -46,6 +49,18 @@ namespace FlagGG
 			}
 			components_.Push(sharedComponent);
 			sharedComponent->SetNode(this);
+		}
+
+		Component* Node::GetComponent(Container::StringHash compClass)
+		{
+			for (const auto& comp : components_)
+			{
+				if (comp->Class() == compClass)
+				{
+					return comp;
+				}
+			}
+			return nullptr;
 		}
 
 		void Node::RemoveComponent(Component* component)
