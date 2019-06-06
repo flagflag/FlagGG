@@ -64,5 +64,10 @@ namespace FlagGG
 		{
 			return value_ != 0;
 		}
+
+		uint32_t StringHash::ToHash() const
+		{
+			return value_;
+		}
 	}
 }

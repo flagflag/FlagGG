@@ -1,3 +1,4 @@
+#pragma once
 #include "Container/Str.h"
 
 namespace FlagGG
@@ -32,6 +33,8 @@ namespace FlagGG
 			bool operator>(const StringHash& rhs) const;
 
 			explicit operator bool() const;
+
+			uint32_t ToHash() const;
 
 			static const StringHash ZERO;
 
