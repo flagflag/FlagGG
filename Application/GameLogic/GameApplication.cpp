@@ -73,6 +73,7 @@ void GameApplication::CreateScene()
 	mainHero_ = new Unit(context_);
 	mainHero_->Load("Unit/MainHero.ljson");
 	mainHero_->SetPosition(Vector3(0, -5, 5));
+	mainHero_->PlayAnimation("Animation/Kachujin_Walk.ani");
 	scene_->AddChild(mainHero_);
 
 	terrain_ = new Terrain(context_);

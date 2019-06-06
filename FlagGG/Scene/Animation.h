@@ -4,6 +4,7 @@
 #include "Resource/Resource.h"
 #include "Container/FlagSet.h"
 #include "Container/HashMap.h"
+#include "Container/StringHash.h"
 #include "Math/Vector3.h"
 #include "Math/Quaternion.h"
 
@@ -40,6 +41,7 @@ namespace FlagGG
 			AnimationKeyFrame* GetKeyFrame(float time) const;
 
 			Container::String name_;
+			Container::StringHash nameHash_;
 			Container::AnimationChannelFlags channelMask_{};
 			Container::Vector<AnimationKeyFrame> keyFrames_;
 		};
@@ -57,10 +59,11 @@ namespace FlagGG
 		private:
 			// 动画名字
 			Container::String name_;
+			Container::StringHash nameHash_;
 			// 动画时长
 			float length_;
 			// 动画轨迹
-			Container::HashMap<Container::String, AnimationTrack> tracks_;
+			Container::HashMap<Container::StringHash, AnimationTrack> tracks_;
 		};
 	}
 }

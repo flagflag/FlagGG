@@ -21,6 +21,10 @@ namespace FlagGG
 
 		private:
 			Container::SharedPtr<Animation> animation_;
+
+			float animTime_{ 0.0f };
+
+			bool isPaused_{ false };
 		};
 	}
 }

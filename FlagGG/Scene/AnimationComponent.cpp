@@ -1,4 +1,5 @@
 #include "Scene/AnimationComponent.h"
+#include "Graphics/Model.h"
 
 namespace FlagGG
 {
@@ -6,7 +7,9 @@ namespace FlagGG
 	{
 		void AnimationComponent::Update(float timeStep)
 		{
+			if (isPaused_) return;
 
+			animTime_ += timeStep;
 		}
 
 		void AnimationComponent::SetAnimation(Animation* animtion)
@@ -26,7 +29,7 @@ namespace FlagGG
 
 		void AnimationComponent::Pause(bool pause)
 		{
-
+			isPaused_ = pause;
 		}
 	}
 }

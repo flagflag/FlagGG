@@ -28,6 +28,7 @@ namespace FlagGG
 			}
 
 			IOFrame::Buffer::ReadString(stream, name_);
+			nameHash_ = Container::StringHash(name_);
 			stream->ReadFloat(length_);
 			tracks_.Clear();
 
@@ -37,7 +38,11 @@ namespace FlagGG
 			{
 				Container::String trackName;
 				IOFrame::Buffer::ReadString(stream, trackName);
-				AnimationTrack& track = tracks_[trackName];
+				Container::StringHash trackNameHash(trackName);
+				AnimationTrack& track = tracks_[trackNameHash];
+				track.name_ = trackName;
+				track.nameHash_ = trackNameHash;
+
 				uint8_t flag;
 				stream->ReadUInt8(flag);
 				track.channelMask_ = Container::AnimationChannelFlags(flag);
@@ -46,7 +51,7 @@ namespace FlagGG
 				stream->ReadUInt32(keyFramesCount);
 				track.keyFrames_.Resize(keyFramesCount);
 
-				for (uint32_t j = 0; j > keyFramesCount; ++j)
+				for (uint32_t j = 0; j < keyFramesCount; ++j)
 				{
 					AnimationKeyFrame& keyFrame = track.keyFrames_[j];
 					stream->ReadFloat(keyFrame.time_);
