@@ -54,7 +54,8 @@ namespace FlagGG
 			}
 			libs[librarys.Size()] = { nullptr, nullptr };
 			lua_pushlightuserdata(luaState_, (void*)instance);
-			luaL_setfuncs(luaState_, libs.Get(), 1);
+			lua_pushlightuserdata(luaState_, (void*)this);
+			luaL_setfuncs(luaState_, libs.Get(), 2);
 			lua_setglobal(luaState_, className.CString());
 		}
 
@@ -70,6 +71,15 @@ namespace FlagGG
 			}
 
 			return true;
+		}
+
+		void LuaVM::SetLoaderPath(const Container::String& loaderPath)
+		{
+			Container::String modePath = loaderPath + "?.lua";
+			lua_getglobal(luaState_, "package");
+			lua_pushstring(luaState_, modePath.CString());
+			lua_setfield(luaState_, -2, "path");
+			lua_pop(luaState_, 1);
 		}
 	}
 }

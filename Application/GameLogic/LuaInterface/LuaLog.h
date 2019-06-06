@@ -14,18 +14,16 @@ public:
 	LuaLog(Context* context);
 	
 protected:
-	int Debug();
+	int Debug(LuaVM* luaVM);
 
-	int Info();
+	int Info(LuaVM* luaVM);
 
-	int Warn();
+	int Warn(LuaVM* luaVM);
 
-	int Error();
+	int Error(LuaVM* luaVM);
 
-	int Critical();
+	int Critical(LuaVM* luaVM);
 
 private:
 	Context* context_;
-
-	WeakPtr<LuaVM> luaVM_;
 };

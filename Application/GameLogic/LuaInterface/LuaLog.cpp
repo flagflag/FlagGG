@@ -3,10 +3,10 @@
 #include "LuaInterface/LuaLog.h"
 
 LuaLog::LuaLog(Context* context) :
-	context_(context),
-	luaVM_(context->GetVariable<LuaVM>("LuaVM"))
+	context_(context)
 {
-	luaVM_->RegisterCPPEvents(
+	LuaVM* luaVM = context->GetVariable<LuaVM>("LuaVM");
+	luaVM->RegisterCPPEvents(
 		"log",
 		this,
 		{
@@ -19,32 +19,32 @@ LuaLog::LuaLog(Context* context) :
 	);
 }
 
-int LuaLog::Debug()
+int LuaLog::Debug(LuaVM* luaVM)
 {
-	FLAGGG_LOG_DEBUG(luaVM_->Get<const char*>(1));
+	FLAGGG_LOG_DEBUG(luaVM->Get<const char*>(1));
 	return 0;
 }
 
-int LuaLog::Info()
+int LuaLog::Info(LuaVM* luaVM)
 {
-	FLAGGG_LOG_INFO(luaVM_->Get<const char*>(1));
+	FLAGGG_LOG_INFO(luaVM->Get<const char*>(1));
 	return 0;
 }
 
-int LuaLog::Warn()
+int LuaLog::Warn(LuaVM* luaVM)
 {
-	FLAGGG_LOG_WARN(luaVM_->Get<const char*>(1));
+	FLAGGG_LOG_WARN(luaVM->Get<const char*>(1));
 	return 0;
 }
 
-int LuaLog::Error()
+int LuaLog::Error(LuaVM* luaVM)
 {
-	FLAGGG_LOG_ERROR(luaVM_->Get<const char*>(1));
+	FLAGGG_LOG_ERROR(luaVM->Get<const char*>(1));
 	return 0;
 }
 
-int LuaLog::Critical()
+int LuaLog::Critical(LuaVM* luaVM)
 {
-	FLAGG_LOG_CRITICAL(luaVM_->Get<const char*>(1));
+	FLAGG_LOG_CRITICAL(luaVM->Get<const char*>(1));
 	return 0;
 }

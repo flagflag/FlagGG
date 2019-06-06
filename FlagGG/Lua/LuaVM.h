@@ -43,7 +43,7 @@ namespace FlagGG
 			void RegisterCPPEvents(const Container::String& className, void* instance, const Container::Vector<LuaProxy>& librarys);
 
 			template < class T >
-			const T& Get(int index = -1)
+			T Get(int index = -1)
 			{
 				return FlagGG::Lua::Get<T>(luaState_, index);
 			}
@@ -55,6 +55,8 @@ namespace FlagGG
 			}
 
 			bool Execute(const Container::String& filePath);
+
+			void SetLoaderPath(const Container::String& loaderPath);
 
 		private:
 			lua_State* luaState_;

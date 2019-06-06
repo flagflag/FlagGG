@@ -30,6 +30,37 @@ namespace FlagGG
 			typedef int _;
 		}
 
+		class LuaFunction
+		{
+		public:
+			LuaFunction();
+
+			LuaFunction(lua_State* luaState, int32_t idx);
+
+			LuaFunction(const LuaFunction& func);
+
+			~LuaFunction();
+
+			LuaFunction& operator=(const LuaFunction& func);
+
+			template < int returnCount = 0, class ... Args >
+			void operator()(Args ... args)
+			{
+				lua_rawgeti(luaState_, LUA_REGISTRYINDEX, ref_);
+				SetParam(luaState_, args ...);
+				CallImpl(luaState_, sizeof...(args), returnCount);
+			}
+
+		protected:
+			void Release();
+
+		private:
+			lua_State* luaState_;
+
+			int32_t ref_;
+			int32_t* refCount_;
+		};
+
 		inline Type::_ TypeOf(lua_State* L, int index) { return lua_type(L, index); }
 
 		template < class T, class = void >

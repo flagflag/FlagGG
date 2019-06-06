@@ -2,10 +2,10 @@
 #include "Network/NetworkAdaptor.h"
 
 LuaNetwork::LuaNetwork(Context* context) :
-	context_(context),
-	luaVM_(context->GetVariable<LuaVM>("LuaVM"))
+	context_(context)
 {
-	luaVM_->RegisterCPPEvents(
+	LuaVM* luaVM = context->GetVariable<LuaVM>("LuaVM");
+	luaVM->RegisterCPPEvents(
 		"network",
 		this,
 		{
@@ -15,16 +15,16 @@ LuaNetwork::LuaNetwork(Context* context) :
 	);
 }
 
-int LuaNetwork::Connect()
+int LuaNetwork::Connect(LuaVM* luaVM)
 {
-	const char* ip = luaVM_->Get<const char*>(1);
-	auto port = luaVM_->Get<uint16_t>(2);
+	const char* ip = luaVM->Get<const char*>(1);
+	auto port = luaVM->Get<uint16_t>(2);
 	auto* network = context_->GetVariable<Network>("Network");
 	network->Connect(ip, port);
 	return 0;
 }
 
-int LuaNetwork::Disconnect()
+int LuaNetwork::Disconnect(LuaVM* luaVM)
 {
 	auto* network = context_->GetVariable<Network>("Network");
 	network->Disconnect();

@@ -71,6 +71,15 @@ namespace FlagGG
 			}
 		};
 
+		template <>
+		struct Getter<LuaFunction>
+		{
+			static LuaFunction Get(lua_State* L, int index)
+			{
+				return LuaFunction(L, index);
+			}
+		};
+
 		template < class T >
 		T Get(lua_State* L, int index = -1)
 		{

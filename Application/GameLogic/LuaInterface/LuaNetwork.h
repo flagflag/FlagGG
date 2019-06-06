@@ -14,12 +14,10 @@ public:
 	LuaNetwork(Context* context);
 
 protected:
-	int Connect();
+	int Connect(LuaVM* luaVM);
 
-	int Disconnect();
+	int Disconnect(LuaVM* luaVM);
 
 private:
 	Context* context_;
-
-	WeakPtr<LuaVM> luaVM_;
 };

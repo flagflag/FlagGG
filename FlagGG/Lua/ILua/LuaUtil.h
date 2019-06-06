@@ -50,7 +50,9 @@ namespace FlagGG
 			LuaCFuntion func_;
 		};
 
-		template < class T, int(T::*func)() >
+		class LuaVM;
+
+		template < class T, int(T::*func)(LuaVM*) >
 		class LuaAPIBinder
 		{
 		public:
@@ -63,7 +65,8 @@ namespace FlagGG
 			static int Proxy_(lua_State* L)
 			{
 				T* instance = static_cast<T*>(lua_touserdata(L, lua_upvalueindex(1)));
-				return (instance->*func)();
+				LuaVM* luaVM = static_cast<LuaVM*>(lua_touserdata(L, lua_upvalueindex(2)));
+				return (instance->*func)(luaVM);
 			}
 		};
 	}
