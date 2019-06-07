@@ -23,7 +23,7 @@ public:
 
 	float GetSpeed() const;
 
-	void PlayAnimation(const String& path);
+	void PlayAnimation(const String& path, bool isLoop);
 
 	void StopAnimation();
 

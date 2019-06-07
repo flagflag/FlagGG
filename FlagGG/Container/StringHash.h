@@ -1,6 +1,8 @@
 #pragma once
 #include "Container/Str.h"
 
+#include <stdint.h>
+
 namespace FlagGG
 {
 	namespace Container

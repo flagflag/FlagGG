@@ -4,6 +4,8 @@
 #include "Container/RefCounted.h"
 #include "Container/Vector.h"
 #include "Container/Ptr.h"
+#include "Container/Str.h"
+#include "Container/StringHash.h"
 #include "Graphics/RenderContext.h"
 #include "Math/Vector3.h"
 #include "Math/Quaternion.h"
@@ -54,7 +56,13 @@ namespace FlagGG
 
 			void RemoveAllChild();
 
+			Node* GetChild(const Container::String& name, bool recursive = false);
+
+			Node* GetChild(Container::StringHash nameHash, bool recursive = false);
+
 			Container::Vector<Container::SharedPtr<Node>>& GetChildren();
+
+			void SetName(const Container::String& name);
 
 			void SetPosition(const Math::Vector3& position);
 
@@ -69,6 +77,10 @@ namespace FlagGG
 			const Math::Vector3& GetScale() const;
 
 			void SetTransform(const Math::Vector3& position, const Math::Quaternion& rotation, const Math::Vector3& scale);
+
+			const Container::String& GetName() const;
+
+			Container::StringHash GetNameHash() const;
 
 			Math::Matrix3x4 GetTransform() const;
 
@@ -85,6 +97,10 @@ namespace FlagGG
 
 		protected:
 			void UpdateWorldTransform() const;
+
+			// node名
+			Container::String name_;
+			Container::StringHash nameHash_;
 
 			// 相对父节点的位置、旋转、缩放
 			Math::Vector3		position_;

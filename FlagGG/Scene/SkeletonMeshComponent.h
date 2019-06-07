@@ -20,6 +20,8 @@ namespace FlagGG
 
 			void UpdateTreeDirty() override;
 
+			Skeleton& GetSkeleton();
+
 		protected:
 			void OnModel() override;
 

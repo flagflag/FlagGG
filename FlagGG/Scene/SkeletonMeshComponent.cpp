@@ -21,6 +21,11 @@ namespace FlagGG
 			}
 		}
 
+		Skeleton& SkeletonMeshComponent::GetSkeleton()
+		{
+			return skeleton_;
+		}
+
 		void SkeletonMeshComponent::OnModel()
 		{
 			StaticMeshComponent::OnModel();
@@ -49,6 +54,7 @@ namespace FlagGG
 			{
 				Bone& bone = bones[i];
 				Container::SharedPtr<Node> node(new Node());
+				node->SetName(bone.name_);
 				node->SetTransform(bone.initPosition_, bone.initRotation_, bone.initScale_);
 				boneNodes.Push(node);
 				bone.node_ = node;

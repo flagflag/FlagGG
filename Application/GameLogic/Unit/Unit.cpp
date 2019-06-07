@@ -73,7 +73,7 @@ float Unit::GetSpeed() const
 	return speed_;
 }
 
-void Unit::PlayAnimation(const String& path)
+void Unit::PlayAnimation(const String& path, bool isLoop)
 {
 	AnimationComponent* animComp = GetComponent<AnimationComponent>();
 	if (!animComp)
@@ -82,7 +82,7 @@ void Unit::PlayAnimation(const String& path)
 	}
 	auto* cache = context_->GetVariable<ResourceCache>("ResourceCache");
 	animComp->SetAnimation(cache->GetResource<Animation>(path));
-	animComp->Play();
+	animComp->Play(isLoop);
 }
 
 void Unit::StopAnimation()

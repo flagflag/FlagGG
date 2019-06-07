@@ -5,6 +5,7 @@
 #include "Container/FlagSet.h"
 #include "Container/HashMap.h"
 #include "Container/StringHash.h"
+#include "Container/Vector.h"
 #include "Math/Vector3.h"
 #include "Math/Quaternion.h"
 
@@ -36,14 +37,25 @@ namespace FlagGG
 			Math::Vector3 scale_{ Math::Vector3::ONE };
 		};
 
+		struct FlagGG_API AnimationKeyFrameInterval
+		{
+			Math::Vector3 GetPosition(float time);
+			Math::Quaternion GetRotation(float time);
+			Math::Vector3 GetScale(float time);
+
+			const AnimationKeyFrame* left_{ nullptr };
+			const AnimationKeyFrame* right_{ nullptr };
+			float timeInterval_{ 1e6 };
+		};
+
 		struct FlagGG_API AnimationTrack
 		{
-			AnimationKeyFrame* GetKeyFrame(float time) const;
+			AnimationKeyFrameInterval GetKeyFrameInterval(float currentTime, float totalTime) const;
 
 			Container::String name_;
 			Container::StringHash nameHash_;
-			Container::AnimationChannelFlags channelMask_{};
-			Container::Vector<AnimationKeyFrame> keyFrames_;
+			Container::AnimationChannelFlags channelMask_;
+			Container::PODVector<AnimationKeyFrame> keyFrames_;
 		};
 
 		class FlagGG_API Animation : public Resource::Resource
@@ -51,12 +63,6 @@ namespace FlagGG
 		public:
 			Animation(Core::Context* context);
 
-		protected:
-			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
-
-			bool EndLoad() override;
-
-		private:
 			// 动画名字
 			Container::String name_;
 			Container::StringHash nameHash_;
@@ -64,6 +70,11 @@ namespace FlagGG
 			float length_;
 			// 动画轨迹
 			Container::HashMap<Container::StringHash, AnimationTrack> tracks_;
+
+		protected:
+			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
+
+			bool EndLoad() override;
 		};
 	}
 }

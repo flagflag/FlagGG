@@ -3,6 +3,7 @@
 #include "Export.h"
 #include "Container/Str.h"
 #include "Container/Ptr.h"
+#include "Container/StringHash.h"
 #include "Container/FlagSet.h"
 #include "Container/Vector.h"
 #include "Scene/Node.h"
@@ -35,6 +36,7 @@ namespace FlagGG
 		struct FlagGG_API Bone
 		{
 			Container::String name_;
+			Container::StringHash nameHash_;
 			uint32_t parentIndex_{ 0 };
 			
 			Math::Vector3 initPosition_{ Math::Vector3::ZERO };
@@ -52,9 +54,15 @@ namespace FlagGG
 		public:
 			void Load(IOFrame::Buffer::IOBuffer* stream);
 
+			Bone* GetBone(const Container::String& name);
+
+			Bone* GetBone(Container::StringHash nameHash);
+
 			const Container::Vector<Bone>& GetBones() const;
 
 			Container::Vector<Bone>& GetBones();
+
+			Bone* GetRootBone();
 
 			void ResetNode();
 

@@ -6,6 +6,8 @@ namespace FlagGG
 	namespace Scene
 	{
 		Node::Node() :
+			name_(""),
+			nameHash_(0u),
 			parent_(nullptr),
 			dirty_(true),
 			position_(Math::Vector3::ZERO),
@@ -120,9 +122,55 @@ namespace FlagGG
 			children_.Clear();
 		}
 
+		Node* Node::GetChild(const Container::String& name, bool recursive)
+		{
+			return GetChild(Container::StringHash(name), recursive);
+		}
+
+		Node* Node::GetChild(Container::StringHash nameHash, bool recursive)
+		{
+			for (const auto& child : children_)
+			{
+				if (child->GetNameHash() == nameHash)
+				{
+					return child;
+				}
+			}
+
+			if (recursive)
+			{
+				for (const auto& child : children_)
+				{
+					Node* node = child->GetChild(nameHash, true);
+					if (node)
+					{
+						return node;
+					}
+				}
+			}
+
+			return nullptr;
+		}
+
 		Container::Vector<Container::SharedPtr<Node>>& Node::GetChildren()
 		{
 			return children_;
+		}
+
+		void Node::SetName(const Container::String& name)
+		{
+			name_ = name;
+			nameHash_ = name_;
+		}
+
+		const Container::String& Node::GetName() const
+		{
+			return name_;
+		}
+
+		Container::StringHash Node::GetNameHash() const
+		{
+			return nameHash_;
 		}
 
 		void Node::SetPosition(const Math::Vector3& position)

@@ -7,9 +7,58 @@ namespace FlagGG
 {
 	namespace Scene
 	{
-		AnimationKeyFrame* AnimationTrack::GetKeyFrame(float time) const
+		Math::Vector3 AnimationKeyFrameInterval::GetPosition(float time)
 		{
-			return nullptr;
+			if (left_ && right_)
+			{
+				float t = (time - left_->time_) / timeInterval_;
+				return left_->position_.Lerp(right_->position_, t);
+			}
+
+			return Math::Vector3::ZERO;
+		}
+
+		Math::Quaternion AnimationKeyFrameInterval::GetRotation(float time)
+		{
+			if (left_ && right_)
+			{
+				float t = (time - left_->time_) / timeInterval_;
+				return left_->rotation_.Slerp(right_->rotation_, t);
+			}
+
+			return Math::Quaternion::IDENTITY;
+		}
+
+		Math::Vector3 AnimationKeyFrameInterval::GetScale(float time)
+		{
+			if (left_ && right_)
+			{
+				float t = (time - left_->time_) / timeInterval_;
+				return left_->scale_.Lerp(right_->scale_, t);
+			}
+
+			return Math::Vector3::ONE;
+		}
+
+		AnimationKeyFrameInterval AnimationTrack::GetKeyFrameInterval(float currentTime, float totalTime) const
+		{
+			AnimationKeyFrameInterval interval;
+			uint32_t index = 0;
+			while (index < keyFrames_.Size() && currentTime > keyFrames_[index].time_) ++index;
+			--index;
+			if (index >= 0)
+			{
+				assert(currentTime > keyFrames_[index].time_);
+				interval.left_ = &keyFrames_[index];
+				index = (index + 1) % keyFrames_.Size();
+				interval.right_ = &keyFrames_[index];
+				interval.timeInterval_ = interval.right_->time_ - interval.left_->time_;
+				if (interval.timeInterval_ < 0.0f)
+				{
+					interval.timeInterval_ += totalTime;
+				}
+			}
+			return interval;
 		}
 
 		Animation::Animation(Core::Context* context) :

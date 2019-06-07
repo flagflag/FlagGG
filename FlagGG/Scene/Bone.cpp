@@ -15,6 +15,7 @@ namespace FlagGG
 			{
 				Bone bone;
 				IOFrame::Buffer::ReadString(stream, bone.name_);
+				bone.nameHash_ = bone.name_;
 				stream->ReadUInt32(bone.parentIndex_);
 				IOFrame::Buffer::ReadVector3(stream, bone.initPosition_);
 				IOFrame::Buffer::ReadQuaternion(stream, bone.initRotation_);
@@ -40,6 +41,23 @@ namespace FlagGG
 			}
 		}
 
+		Bone* Skeleton::GetBone(const Container::String& name)
+		{
+			return GetBone(Container::StringHash(name));
+		}
+
+		Bone* Skeleton::GetBone(Container::StringHash nameHash)
+		{
+			for (auto& bone : bones_)
+			{
+				if (bone.nameHash_ == nameHash)
+				{
+					return &bone;
+				}
+			}
+			return nullptr;
+		}
+
 		const Container::Vector<Bone>& Skeleton::GetBones() const
 		{
 			return  bones_;
@@ -48,6 +66,11 @@ namespace FlagGG
 		Container::Vector<Bone>& Skeleton::GetBones()
 		{
 			return bones_;
+		}
+
+		Bone* Skeleton::GetRootBone()
+		{
+			return &bones_[rootBoneIndex_];
 		}
 
 		void Skeleton::ResetNode()
