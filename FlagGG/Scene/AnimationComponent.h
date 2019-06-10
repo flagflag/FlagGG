@@ -10,8 +10,8 @@ namespace FlagGG
 	{
 		struct BoneTrack
 		{
-			Bone* bone_;
-			const AnimationTrack* track_;
+			Bone* bone_{ nullptr };
+			const AnimationTrack* track_{ nullptr };
 		};
 
 		class AnimationComponent : public Component
