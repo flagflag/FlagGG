@@ -14,13 +14,34 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
+		static const char* TEXTURE_CLASS[MAX_TEXTURE_CLASS] =
+		{
+			"diffuse",
+			"normal",
+			"specular",
+			"emissive",
+			"environment"
+		};
+
+		TextureClass ToTextureClass(const Container::String& name)
+		{
+			for (uint32_t i = 0; i < MAX_TEXTURE_CLASS; ++i)
+			{
+				if (name == TEXTURE_CLASS[i])
+				{
+					return static_cast<TextureClass>(i);
+				}
+			}
+			return TEXTURE_CLASS_UNIVERSAL;
+		}
+
 		Material::Material(Core::Context* context) :
 			Resource(context)
 		{ }
 
 		Container::SharedPtr<Texture> Material::GetTexture()
 		{
-			return texture_;
+			return textures_[TEXTURE_CLASS_UNIVERSAL];
 		}
 
 		Container::SharedPtr<Shader> Material::GetVSShader()
@@ -31,6 +52,25 @@ namespace FlagGG
 		Container::SharedPtr<Shader> Material::GetPSShader()
 		{
 			return psShader_;
+		}
+
+		static Container::SharedPtr<Texture> LoadTexture(Resource::ResourceCache* cache, const Config::LJSONValue& textureConfig)
+		{
+			Container::SharedPtr<Texture> texture;
+			const Container::String& type = textureConfig["type"].GetString();
+			if (type == "texture2d")
+			{
+				texture = cache->GetResource<Texture2D>(textureConfig["path"].GetString());
+				if (!texture)
+				{
+					FLAGGG_LOG_ERROR("Material ==> load texture failed.");
+				}
+			}
+			else
+			{
+				// CubeÌùÍ¼
+			}
+			return texture;
 		}
 
 		bool Material::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
@@ -47,22 +87,20 @@ namespace FlagGG
 			if (root.IsObject())
 			{
 				auto* cache = context_->GetVariable<FlagGG::Resource::ResourceCache>("ResourceCache");
-				if (root["texture"].IsObject())
+				const auto& textureConfig = root["texture"];
+				if (textureConfig.IsObject())
 				{
-					const Container::String& type = root["texture"]["type"].GetString();
-					if (type == "texture2d")
+					textures_[TEXTURE_CLASS_UNIVERSAL] = LoadTexture(cache, textureConfig);
+				}
+				
+				const auto& texturesConfig = root["textures"];
+				if (texturesConfig.IsArray())
+				{
+					for (auto& it = texturesConfig.Begin(); it != texturesConfig.End(); ++it)
 					{
-						texture_ = cache->GetResource<Texture2D>(root["texture"]["path"].GetString());
-						if (!texture_)
-						{
-							FLAGGG_LOG_ERROR("Material ==> load texture failed.");
-							return false;
-						}
-					}
-					else
-					{
-						// CubeÌùÍ¼
-						return false; // ÔÝÊ±Ã»ÓÐCubeÌùÍ¼£¬Ö±½Ó·µ»ØÊ§°Ü
+						const Container::String& name = it->first_;
+						TextureClass TC = ToTextureClass(name);
+						textures_[TC] = LoadTexture(cache, it->second_);
 					}
 				}
 

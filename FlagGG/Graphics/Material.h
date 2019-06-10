@@ -2,6 +2,7 @@
 #define __MATERIAL__
 
 #include "Export.h"
+#include "Graphics/GraphicsDef.h"
 #include "Resource/Resource.h"
 #include "Math/Color.h"
 #include "Container/Ptr.h"
@@ -33,7 +34,7 @@ namespace FlagGG
 			bool EndLoad() override;
 
 		protected:
-			Container::SharedPtr<Texture> texture_;
+			Container::SharedPtr<Texture> textures_[MAX_TEXTURE_CLASS];
 
 			Container::SharedPtr<Shader> vsShader_;
 
