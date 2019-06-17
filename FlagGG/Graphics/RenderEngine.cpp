@@ -24,6 +24,9 @@ namespace FlagGG
 		uint32_t RenderEngine::vertexSize_[MAX_VERTEX_BUFFER_COUNT] = { 0 };
 		uint32_t RenderEngine::vertexOffset_[MAX_VERTEX_BUFFER_COUNT] = { 0 };
 
+		ID3D11ShaderResourceView* RenderEngine::shaderResourceView_[MAX_TEXTURE_CLASS] = { 0 };
+		ID3D11SamplerState* RenderEngine::samplerState_[MAX_TEXTURE_CLASS] = { 0 };
+
 		const Container::Vector<Container::SharedPtr<VertexBuffer>>* RenderEngine::cacheVertexBuffers_ = nullptr;
 		Shader* RenderEngine::cacheVSShader_ = nullptr;
 
@@ -415,6 +418,20 @@ namespace FlagGG
 			deviceContext_->PSSetSamplers(0, 1, &texture->sampler_);
 		}
 
+		void RenderEngine::SetTextures(const Container::Vector<Container::SharedPtr<Texture>>& textures)
+		{
+			auto maxNumTextures = Math::Min<uint32_t>(MAX_TEXTURE_CLASS, textures.Size());
+			for (uint32_t i = 0; i < maxNumTextures; ++i)
+			{
+				shaderResourceView_[i] = textures[i]->shaderResourceView_;
+				samplerState_[i] = textures[i]->sampler_;
+			}
+			//deviceContext->VSSetShaderResources(0, maxNumTextures, shaderResourceView_);
+			//deviceContext->VSSetSamplers(0, maxNumTextures, samplerState_);
+			deviceContext_->PSSetShaderResources(0, maxNumTextures, shaderResourceView_);
+			deviceContext_->PSSetSamplers(0, maxNumTextures, samplerState_);
+		}
+
 		void RenderEngine::SetPrimitiveType(PrimitiveType primitiveType)
 		{
 			switch (primitiveType)
@@ -491,7 +508,10 @@ namespace FlagGG
 				UpdateMatrix(viewport->GetCamera(),  renderContext);
 				SetVertexShader(renderContext->VSShader_);
 				SetPixelShader(renderContext->PSShader_);
-				SetTexture(renderContext->texture_);
+				if (renderContext->texture_)
+					SetTexture(renderContext->texture_);
+				else
+					SetTextures(renderContext->textures_);
 
 				for (const auto& geometry : renderContext->geometries_)
 				{

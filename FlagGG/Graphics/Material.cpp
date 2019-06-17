@@ -7,6 +7,7 @@
 #include "Config/LJSONFile.h"
 #include "Config/LJSONAux.h"
 #include "Resource/ResourceCache.h"
+#include "Utility/Format.h"
 
 #include <fstream>
 
@@ -16,6 +17,7 @@ namespace FlagGG
 	{
 		static const char* TEXTURE_CLASS[MAX_TEXTURE_CLASS] =
 		{
+			"universal",
 			"diffuse",
 			"normal",
 			"specular",
@@ -30,6 +32,14 @@ namespace FlagGG
 				if (name == TEXTURE_CLASS[i])
 				{
 					return static_cast<TextureClass>(i);
+				}
+			}
+			if (Utility::Format::IsInterger(name))
+			{
+				uint32_t index = Utility::Format::ToInt(name);
+				if (index < MAX_TEXTURE_CLASS)
+				{
+					return static_cast<TextureClass>(index);
 				}
 			}
 			return TEXTURE_CLASS_UNIVERSAL;
@@ -94,7 +104,7 @@ namespace FlagGG
 				}
 				
 				const auto& texturesConfig = root["textures"];
-				if (texturesConfig.IsArray())
+				if (texturesConfig.IsObject())
 				{
 					for (auto& it = texturesConfig.Begin(); it != texturesConfig.End(); ++it)
 					{

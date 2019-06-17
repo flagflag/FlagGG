@@ -1,0 +1,33 @@
+{
+	vsshader = 
+	{
+		path = "Shader/Model_VS.hlsl"
+	},
+	psshader = 
+	{
+		path = "Shader/Model_PS.hlsl"
+	},
+	textures =
+	{
+        "0" =
+        {
+            type = "texture2d", //texturecube => 3d
+            path = "Textures/TerrainWeights.dds"
+        },
+        "1" =
+        {
+            type = "texture2d",
+            path = "Textures/TerrainDetail1.dds"
+        },
+        "2" =
+        {
+            type = "texture2d",
+            path = "Textures/TerrainDetail2.dds"
+        },
+        "3" =
+        {
+            type = "texture2d",
+            path = "Textures/TerrainDetail3.dds"
+        }
+	}
+}

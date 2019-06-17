@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Scene/Component.h"
 #include "Scene/Animation.h"
 #include "Scene/Bone.h"
@@ -16,6 +18,7 @@ namespace FlagGG
 
 		class AnimationComponent : public Component
 		{
+			OBJECT_OVERRIDE(AnimationComponent)
 		public:
 			void Update(float timeStep) override;
 

@@ -23,6 +23,18 @@ namespace FlagGG
 				return buffer;
 			}
 
+			bool IsInterger(const Container::String& content)
+			{
+				for (uint32_t i = 0; i < content.Length(); ++i)
+				{
+					if (content[i] < '0' || content[i] > '9')
+					{
+						return false;
+					}
+				}
+				return true;
+			}
+
 			int32_t ToInt(const Container::String& content)
 			{
 				int32_t result;

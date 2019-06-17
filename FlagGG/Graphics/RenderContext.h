@@ -24,6 +24,7 @@ namespace FlagGG
 			Container::Vector<Container::SharedPtr<Geometry>> geometries_;
 
 			Container::SharedPtr<Texture> texture_;
+			Container::Vector<Container::SharedPtr<Texture>> textures_;
 
 			Container::SharedPtr<Shader> VSShader_;
 
