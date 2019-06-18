@@ -46,12 +46,18 @@ namespace FlagGG
 		}
 
 		Material::Material(Core::Context* context) :
-			Resource(context)
+			Resource(context),
+			textures_{}
 		{ }
 
 		Container::SharedPtr<Texture> Material::GetTexture()
 		{
 			return textures_[TEXTURE_CLASS_UNIVERSAL];
+		}
+
+		Container::SharedPtr<Texture> Material::GetTexture(uint32_t index)
+		{
+			return index < MAX_TEXTURE_CLASS ? textures_[index] : nullptr;
 		}
 
 		Container::SharedPtr<Shader> Material::GetVSShader()

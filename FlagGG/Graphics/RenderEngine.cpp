@@ -423,8 +423,16 @@ namespace FlagGG
 			auto maxNumTextures = Math::Min<uint32_t>(MAX_TEXTURE_CLASS, textures.Size());
 			for (uint32_t i = 0; i < maxNumTextures; ++i)
 			{
-				shaderResourceView_[i] = textures[i]->shaderResourceView_;
-				samplerState_[i] = textures[i]->sampler_;
+				if (textures[i])
+				{
+					shaderResourceView_[i] = textures[i]->shaderResourceView_;
+					samplerState_[i] = textures[i]->sampler_;
+				}
+				else
+				{
+					shaderResourceView_[i] = nullptr;
+					samplerState_[i] = nullptr;
+				}
 			}
 			//deviceContext->VSSetShaderResources(0, maxNumTextures, shaderResourceView_);
 			//deviceContext->VSSetSamplers(0, maxNumTextures, samplerState_);

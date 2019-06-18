@@ -33,7 +33,10 @@ namespace FlagGG
 				material_ = material;
 
 				renderContext_.texture_ = nullptr;
-				renderContext_.textures_.Push(material_->GetTexture());
+				for (uint32_t i = 0; i < MAX_TEXTURE_CLASS; ++i)
+				{
+					renderContext_.textures_.Push(material_->GetTexture(i));
+				}
 				renderContext_.VSShader_ = material_->GetVSShader();
 				renderContext_.PSShader_ = material_->GetPSShader();
 			}
@@ -86,6 +89,8 @@ namespace FlagGG
 				for (uint32_t y = 0; y < verticesNum_.y_; ++y)
 				{
 					IOFrame::Buffer::WriteVector3(&buffer1, Math::Vector3(x, 0, y));
+					IOFrame::Buffer::WriteVector3(&buffer1, Math::Vector3(1, 1, 1));
+					IOFrame::Buffer::WriteVector2(&buffer1, Math::Vector2(x, y));
 
 					if (x != verticesNum_.x_ - 1 && y != verticesNum_.y_ - 1)
 					{
