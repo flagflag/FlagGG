@@ -21,7 +21,7 @@ CameraOperation::CameraOperation(FlagGG::Core::Context* context) :
 
 void CameraOperation::OnKeyDown(KeyState* keyState, unsigned keyCode)
 {
-	printf("OnKeyDown keyCode = %u\n", keyCode);
+	// printf("OnKeyDown keyCode = %u\n", keyCode);
 
 	//if (keyCode == 'W' || keyCode == 'w')
 	//{
@@ -88,7 +88,7 @@ void CameraOperation::OnKeyDown(KeyState* keyState, unsigned keyCode)
 
 void CameraOperation::OnKeyUp(KeyState* keyState, unsigned keyCode)
 {
-	printf("OnKeyUp keyCode = %u\n", keyCode);
+	// printf("OnKeyUp keyCode = %u\n", keyCode);
 }
 
 void CameraOperation::OnMouseDown(KeyState* keyState, MouseKey mouseKey)
@@ -111,7 +111,7 @@ void CameraOperation::OnMouseMove(KeyState* keyState, const Vector2& delta)
 {
 	if (mouseDown_)
 	{
-		printf("mouse delta (%lf, %lf)\n", delta.x_, delta.y_);
+		// printf("mouse delta (%lf, %lf)\n", delta.x_, delta.y_);
 
 		camera_->Yaw(-delta.x_ * rate_);
 		camera_->Pitch(-delta.y_ * rate_);

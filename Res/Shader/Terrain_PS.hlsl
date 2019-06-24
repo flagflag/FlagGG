@@ -25,7 +25,7 @@ float4 PS(PixelInput input) : SV_TARGET
     weight /= sumWeight;
     float4 diffColor = weight.x * Sample2D(detail1, input.detailTex) +
                         weight.y * Sample2D(detail2, input.detailTex) +
-                        weight.z * Sample2D(detail3, input.detailText);
+                        weight.z * Sample2D(detail3, input.detailTex);
 
     float4 color = diffColor;
 

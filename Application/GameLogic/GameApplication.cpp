@@ -62,7 +62,7 @@ void GameApplication::Stop()
 
 void GameApplication::Update(float timeStep)
 {
-	luaVM_->CallEvent("update", timeStep);
+	// luaVM_->CallEvent("update", timeStep);
 }
 
 void GameApplication::CreateScene()
@@ -138,7 +138,7 @@ void GameApplication::OpenLuaVM()
 
 void GameApplication::OnKeyDown(KeyState* keyState, unsigned keyCode)
 {
-	luaVM_->CallEvent("on_key_down", keyCode);
+	// luaVM_->CallEvent("on_key_down", keyCode);
 }
 
 void GameApplication::OnKeyUp(KeyState* keyState, unsigned keyCode)
@@ -149,22 +149,22 @@ void GameApplication::OnKeyUp(KeyState* keyState, unsigned keyCode)
 		image->SavePNG("E:\\FlagGG_Scene.png");
 	}
 
-	luaVM_->CallEvent("on_key_up", keyCode);
+	// luaVM_->CallEvent("on_key_up", keyCode);
 }
 
 void GameApplication::OnMouseDown(KeyState* keyState, MouseKey mouseKey)
 {
-	luaVM_->CallEvent("on_mouse_down", static_cast<uint32_t>(mouseKey));
+	// luaVM_->CallEvent("on_mouse_down", static_cast<uint32_t>(mouseKey));
 }
 
 void GameApplication::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
 {
-	luaVM_->CallEvent("on_mouse_up", static_cast<uint32_t>(mouseKey));
+	// luaVM_->CallEvent("on_mouse_up", static_cast<uint32_t>(mouseKey));
 }
 
 void GameApplication::OnMouseMove(KeyState* keyState, const Vector2& delta)
 {
-	luaVM_->CallEvent("on_mouse_move");
+	// luaVM_->CallEvent("on_mouse_move");
 }
 
 void GameApplication::WindowClose(void* window)
