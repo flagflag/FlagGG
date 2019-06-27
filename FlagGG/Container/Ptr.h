@@ -566,7 +566,7 @@ namespace FlagGG
 			operator bool() const { return !!ptr_; }    // NOLINT(google-explicit-constructor)
 
 			/// Swap with another UniquePtr.
-			void Swap(UniquePtr& up) { Urho3D::Swap(ptr_, up.ptr_); }
+			void Swap(UniquePtr& up) { FlagGG::Container::Swap(ptr_, up.ptr_); }
 
 			/// Detach pointer from UniquePtr without destroying.
 			T* Detach()

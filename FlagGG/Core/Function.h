@@ -60,8 +60,8 @@ namespace FlagGG
 			Function()
 			{ }
 
-			Function(nullptr_t) :
-				funcWrapper_(nullptr_t)
+			Function(std::nullptr_t null) :
+				funcWrapper_(null)
 			{ }
 
 			Function(const Type& value)

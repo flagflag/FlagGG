@@ -5,6 +5,8 @@
 #include "Container/Str.h"
 #include "Math/Math.h"
 
+#include <math.h>
+
 namespace FlagGG
 {
 	namespace Math

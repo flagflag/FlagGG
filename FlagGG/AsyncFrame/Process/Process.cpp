@@ -109,7 +109,7 @@ namespace FlagGG
 #if WIN32 || WIN64
 				WaitForSingleObject(handle_, INFINITE);
 #else
-				waitpid(*((pid_t*)m_handle), nullptr, 0);
+				waitpid(*((pid_t*)handle_), nullptr, 0);
 #endif
 			}
 
@@ -183,7 +183,7 @@ namespace FlagGG
 				{
 					ProcessObjectPtr proc_obj = ProcessObjectPtr(new ProcessObject());
 					proc_obj->id_ = pid;
-					proc_obj->m_handle = &(proc_obj->id_);
+					proc_obj->handle_ = &(proc_obj->id_);
 
 					return proc_obj;
 				}

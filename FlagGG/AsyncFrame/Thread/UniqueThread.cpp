@@ -60,9 +60,9 @@ namespace FlagGG
 					pthread_cond_init(&cond_, nullptr);
 					param->pcond = &cond_;
 					pthread_t thread_id;
-					if (0 == pthread_create((pthread_t*)m_handle, nullptr, ThreadFunc, param))
+					if (0 == pthread_create((pthread_t*)handle_, nullptr, ThreadFunc, param))
 					{
-						m_handle = &thread_id;
+						handle_ = &thread_id;
 					}
 					else
 					{
@@ -86,9 +86,9 @@ namespace FlagGG
 #if WIN32 || WIN64
 				TerminateThread(handle_, -1);
 #else
-				if (!m_handle)
+				if (!handle_)
 				{
-					pthread_cancel(*((pthread_t*)m_handle));
+					pthread_cancel(*((pthread_t*)handle_));
 				}
 #endif
 			}
@@ -98,9 +98,9 @@ namespace FlagGG
 #if WIN32 || WIN64
 				WaitForSingleObject(handle_, INFINITE);
 #else
-				if(!m_handle)
+				if(!handle_)
 				{
-					pthread_join(*((pthread_t*)m_handle), nullptr);
+					pthread_join(*((pthread_t*)handle_), nullptr);
 				}
 #endif
 			}
