@@ -73,6 +73,20 @@ namespace FlagGG
 			return true;
 		}
 
+		bool LuaVM::ExecuteScript(const Container::String& scriptCode)
+		{
+			if (luaL_dostring(luaState_, scriptCode.CString()))
+			{
+				FLAGGG_LOG_ERROR("execute lua code failed, error message: %s.", lua_tostring(luaState_, -1));
+
+				lua_pop(luaState_, 1);
+
+				return false;
+			}
+
+			return true;
+		}
+
 		void LuaVM::SetLoaderPath(const Container::String& loaderPath)
 		{
 			Container::String modePath = loaderPath + "?.lua";

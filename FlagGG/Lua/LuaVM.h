@@ -56,6 +56,8 @@ namespace FlagGG
 
 			bool Execute(const Container::String& filePath);
 
+			bool ExecuteScript(const Container::String& scriptCode);
+
 			void SetLoaderPath(const Container::String& loaderPath);
 
 		private:
