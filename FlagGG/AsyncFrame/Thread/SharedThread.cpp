@@ -66,32 +66,28 @@ namespace FlagGG
 			{
 				if (running_ && thread_)
 				{
-					task_queue_.Push(task_func);
+					taskQueue_.PushBack(task_func);
 				}
 			}
 
 			uint32_t SharedThread::WaitingTime()
 			{
-				return (uint32_t)task_queue_.Size();
+				return (uint32_t)taskQueue_.Size();
 			}
 
 			void SharedThread::WorkThread()
 			{
 				while (running_)
 				{
-					Utility::SystemHelper::Sleep(16);
+					taskQueue_.Wait();
 
-					if (task_queue_.Size() > 0)
+					auto& objects = taskQueue_.Swap();
+
+					for (auto it = objects.Begin(); it != objects.End() && running_; ++it)
 					{
-						LockQueue < ThreadTask >::Objects objects;
-						task_queue_.Slipce(objects);
-
-						for (auto it = objects.begin(); it != objects.end() && running_; ++it)
+						if ((*it))
 						{
-							if ((*it))
-							{
-								(*it)();
-							}
+							(*it)();
 						}
 					}
 				}

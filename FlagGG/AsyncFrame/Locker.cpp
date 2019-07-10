@@ -4,15 +4,15 @@ namespace FlagGG
 {
 	namespace AsyncFrame
 	{
-		Locker::Locker(std::mutex& mutex) :
+		Locker::Locker(Mutex& mutex) :
 			mutex_(mutex)
 		{
-			mutex_.lock();
+			mutex_.Lock();
 		}
 
 		Locker::~Locker()
 		{
-			mutex_.unlock();
+			mutex_.UnLock();
 		}
 
 

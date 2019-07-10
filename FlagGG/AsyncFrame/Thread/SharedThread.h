@@ -3,7 +3,7 @@
 
 #include "Export.h"
 
-#include "AsyncFrame/LockQueue.hpp"
+#include "AsyncFrame/ConditionQueue.hpp"
 #include "AsyncFrame/Thread/UniqueThread.h"
 #include "AsyncFrame/KernelObject/Runtime.h"
 
@@ -44,11 +44,11 @@ namespace FlagGG
 				void WorkThread();
 
 			private:
-				LockQueue < ThreadTask >	task_queue_;
+				ConditionQueue<ThreadTask>	taskQueue_;
 
 				UniqueThreadPtr				thread_;
 
-				std::atomic < bool >		running_;
+				std::atomic<bool>			running_;
 			};
 
 			typedef Container::SharedPtr < SharedThread > SharedThreadPtr;

@@ -2,6 +2,7 @@
 #define __LOCKER__
 
 #include "Export.h"
+#include "AsyncFrame/Mutex.h"
 
 #include <mutex>
 
@@ -12,12 +13,12 @@ namespace FlagGG
 		class FlagGG_API Locker
 		{
 		public:
-			Locker(std::mutex& mutex);
+			Locker(Mutex& mutex);
 
 			virtual ~Locker();
 
 		private:
-			std::mutex& mutex_;
+			Mutex& mutex_;
 		};
 
 		class FlagGG_API RecursiveLocker
