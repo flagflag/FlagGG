@@ -17,6 +17,7 @@ namespace FlagGG
 		{
 #ifdef _WIN32
 			handle_ = new CONDITION_VARIABLE;
+			InitializeConditionVariable(GetObject<CONDITION_VARIABLE>());
 #else
 			handle_ = new pthread_cond_t;
 			pthread_cond_init(GetObject<pthread_cond_t>(), nullptr);
@@ -35,7 +36,7 @@ namespace FlagGG
 				delete cnd;
 				pthread_cond_destroy(cnd);
 #endif
-				handle_ = nullptr;
+				handle_ = NULL_HANDLE;
 			}
 		}
 
@@ -56,7 +57,7 @@ namespace FlagGG
 			timespec timeout;
 			timeout.tv_sec = 0;
 			timeout.tv_nsec = static_cast<uint64_t>(waitTime) * 1000000u; // ∑¿÷π±¨int
-			pthread_cond_timedwait(GetObject<pthread_cond_t>(), object->GetObject<CRITICAL_SECTION>(), &timeout);
+			pthread_cond_timedwait(GetObject<pthread_cond_t>(), object->GetObject<pthread_mutex_t>(), &timeout);
 #endif
 		}
 

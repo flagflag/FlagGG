@@ -75,21 +75,34 @@ namespace FlagGG
 				return (uint32_t)taskQueue_.Size();
 			}
 
+#define CHECK_EXIT() if (!running_) return;
+
 			void SharedThread::WorkThread()
 			{
 				while (running_)
 				{
 					taskQueue_.Wait();
 
-					auto& objects = taskQueue_.Swap();
+					CHECK_EXIT();
 
-					for (auto it = objects.Begin(); it != objects.End() && running_; ++it)
+					while (!taskQueue_.IsEmpty())
 					{
-						if ((*it))
+						auto& objects = taskQueue_.Swap();
+
+						CHECK_EXIT();
+
+						for (auto it = objects.Begin(); it != objects.End(); ++it)
 						{
-							(*it)();
+							CHECK_EXIT();
+
+							if ((*it))
+							{
+								(*it)();
+							}
 						}
 					}
+
+					CHECK_EXIT();
 				}
 			}
 		}

@@ -40,7 +40,7 @@ namespace FlagGG
 				pthread_mutex_destroy(mutex);
 				delete mutex;
 #endif
-				handle_ = nullptr;
+				handle_ = NULL_HANDLE;
 			}
 		}
 

@@ -24,15 +24,15 @@ namespace FlagGG
 			void ThreadPool::Add(ThreadTask task_func)
 			{
 				size_t index = 0;
-				uint32_t min_waiting_time = INT_MAX;
+				uint32_t minWaitingTime = INT_MAX;
 
 				for (size_t i = 0; i < threads_.size(); ++i)
 				{
-					uint32_t waiting_time = threads_[i]->WaitingTime();
-					if (waiting_time < min_waiting_time)
+					uint32_t waitingTime = threads_[i]->WaitingTime();
+					if (waitingTime < minWaitingTime)
 					{
 						index = i;
-						min_waiting_time = waiting_time;
+						minWaitingTime = waitingTime;
 					}
 				}
 

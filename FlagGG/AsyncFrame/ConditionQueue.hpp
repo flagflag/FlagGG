@@ -32,18 +32,22 @@ namespace FlagGG
 
 			void PushBack(const Object& obj)
 			{
-				Locker locker(mutex_);
+				{
+					Locker locker(mutex_);
 
-				queue_[queueIndex_].Insert(queue_[queueIndex_].End(), obj);
+					queue_[queueIndex_].Insert(queue_[queueIndex_].End(), obj);
+				}
 
 				cnd_.Trigger();
 			}
 
 			void PushFront(const Object& obj)
 			{
-				Locker locker(mutex_);
+				{
+					Locker locker(mutex_);
 
-				queue_[queueIndex_].Insert(queue_[queueIndex_].Begin(), obj);
+					queue_[queueIndex_].Insert(queue_[queueIndex_].Begin(), obj);
+				}
 
 				cnd_.Trigger();
 			}
@@ -63,6 +67,11 @@ namespace FlagGG
 				Locker locker(mutex_);
 
 				return queue_[queueIndex_].Size();
+			}
+
+			bool IsEmpty()
+			{
+				return Size() == 0u;
 			}
 
 		private:
