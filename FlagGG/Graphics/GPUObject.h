@@ -10,7 +10,7 @@
 #include "Define.h"
 
 #ifdef USE_DIRECT3D
-typedef IUnknown* GPUHandler;
+typedef void* GPUHandler;
 #else
 typedef std::string GPUHandler;
 #endif
