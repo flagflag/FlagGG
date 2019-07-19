@@ -48,8 +48,8 @@ void MultiThreadTest()
 
 int main()
 {
-	// OneThreadTest();
-	MultiThreadTest();
+	OneThreadTest();
+	// MultiThreadTest();
 
 	return 0;
 }
