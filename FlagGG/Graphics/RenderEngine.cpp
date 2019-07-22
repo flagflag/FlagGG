@@ -514,8 +514,8 @@ namespace FlagGG
 			for (const auto& renderContext : renderContexts)
 			{
 				UpdateMatrix(viewport->GetCamera(),  renderContext);
-				SetVertexShader(renderContext->VSShader_);
-				SetPixelShader(renderContext->PSShader_);
+				SetVertexShader(renderContext->vertexShader_);
+				SetPixelShader(renderContext->pixelShader_);
 				if (renderContext->texture_)
 					SetTexture(renderContext->texture_);
 				else

@@ -26,9 +26,9 @@ namespace FlagGG
 
 			Container::SharedPtr<Texture> GetTexture(uint32_t index);
 
-			Container::SharedPtr<Shader> GetVSShader();
+			Container::SharedPtr<Shader> GetVertexShader();
 
-			Container::SharedPtr<Shader> GetPSShader();
+			Container::SharedPtr<Shader> GetPixelShader();
 
 		protected:
 			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;

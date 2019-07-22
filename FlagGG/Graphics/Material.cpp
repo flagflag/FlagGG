@@ -60,12 +60,12 @@ namespace FlagGG
 			return index < MAX_TEXTURE_CLASS ? textures_[index] : nullptr;
 		}
 
-		Container::SharedPtr<Shader> Material::GetVSShader()
+		Container::SharedPtr<Shader> Material::GetVertexShader()
 		{
 			return vsShader_;
 		}
 
-		Container::SharedPtr<Shader> Material::GetPSShader()
+		Container::SharedPtr<Shader> Material::GetPixelShader()
 		{
 			return psShader_;
 		}

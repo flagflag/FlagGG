@@ -26,9 +26,9 @@ namespace FlagGG
 			Container::SharedPtr<Texture> texture_;
 			Container::Vector<Container::SharedPtr<Texture>> textures_;
 
-			Container::SharedPtr<Shader> VSShader_;
+			Container::SharedPtr<Shader> vertexShader_;
 
-			Container::SharedPtr<Shader> PSShader_;
+			Container::SharedPtr<Shader> pixelShader_;
 
 			const Math::Matrix3x4* worldTransform_{ nullptr };
 			uint32_t numWorldTransform_{ 0 };

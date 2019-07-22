@@ -38,8 +38,8 @@ namespace FlagGG
 				{
 					renderContext_.textures_.Push(material_->GetTexture(i));
 				}
-				renderContext_.VSShader_ = material_->GetVSShader();
-				renderContext_.PSShader_ = material_->GetPSShader();
+				renderContext_.vertexShader_ = material_->GetVertexShader();
+				renderContext_.pixelShader_ = material_->GetPixelShader();
 			}
 		}
 
