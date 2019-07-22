@@ -80,7 +80,7 @@ namespace FlagGG
 			auto* vertexData = vertexBuffer_->Lock(0, vertexDataSize);
 			IOFrame::Buffer::StringBuffer buffer1(vertexData, vertexDataSize);
 
-			indexBuffer_->SetSize(sizeof(uint16_t), (verticesNum_.x_ - 1) * (verticesNum_.y_ - 1) * 6);
+			indexBuffer_->SetSize(sizeof(uint32_t), (verticesNum_.x_ - 1) * (verticesNum_.y_ - 1) * 6);
 			uint32_t indexDataSize = indexBuffer_->GetIndexCount() * indexBuffer_->GetIndexSize();
 			auto* indexData = indexBuffer_->Lock(0, indexDataSize);
 			IOFrame::Buffer::StringBuffer buffer2(indexData, indexDataSize);
@@ -89,19 +89,19 @@ namespace FlagGG
 			{
 				for (uint32_t y = 0; y < verticesNum_.y_; ++y)
 				{
-					IOFrame::Buffer::WriteVector3(&buffer1, Math::Vector3(x, 0, y));
+					IOFrame::Buffer::WriteVector3(&buffer1, Math::Vector3(x, rand() % 3, y));
 					IOFrame::Buffer::WriteVector3(&buffer1, Math::Vector3(1, 1, 1));
 					IOFrame::Buffer::WriteVector2(&buffer1, Math::Vector2(x, y));
 
 					if (x != verticesNum_.x_ - 1 && y != verticesNum_.y_ - 1)
 					{
-						buffer2.WriteInt16(x * verticesNum_.x_ + y);
-						buffer2.WriteInt16((x + 1) * verticesNum_.x_ + y);
-						buffer2.WriteInt16((x + 1) * verticesNum_.x_ + y + 1);
+						buffer2.WriteInt32(x * verticesNum_.x_ + y);
+						buffer2.WriteInt32(x * verticesNum_.x_ + y + 1);
+						buffer2.WriteInt32((x + 1) * verticesNum_.x_ + y + 1);
 
-						buffer2.WriteInt16(x * verticesNum_.x_ + y);
-						buffer2.WriteInt16((x + 1) * verticesNum_.x_ + y + 1);
-						buffer2.WriteInt16(x * verticesNum_.x_ + y + 1);
+						buffer2.WriteInt32(x * verticesNum_.x_ + y);
+						buffer2.WriteInt32((x + 1) * verticesNum_.x_ + y + 1);
+						buffer2.WriteInt32((x + 1) * verticesNum_.x_ + y);
 					}
 				}
 			}
