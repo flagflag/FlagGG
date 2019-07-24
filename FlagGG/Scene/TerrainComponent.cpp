@@ -85,23 +85,29 @@ namespace FlagGG
 			auto* indexData = indexBuffer_->Lock(0, indexDataSize);
 			IOFrame::Buffer::StringBuffer buffer2(indexData, indexDataSize);
 
+			// 地形高度图相关
+			const unsigned char* src = heightMap_->GetData();
+			unsigned imgComps = heightMap_->GetComponents();
+			unsigned imgRow = heightMap_->GetWidth() * imgComps;
+
 			for (uint32_t x = 0; x < verticesNum_.x_; ++x)
 			{
 				for (uint32_t y = 0; y < verticesNum_.y_; ++y)
 				{
-					IOFrame::Buffer::WriteVector3(&buffer1, Math::Vector3(x, rand() % 3, y));
+					float height = src[imgRow * (verticesNum_.x_ - 1 - x) + y];
+					IOFrame::Buffer::WriteVector3(&buffer1, Math::Vector3(x, height, y));
 					IOFrame::Buffer::WriteVector3(&buffer1, Math::Vector3(1, 1, 1));
 					IOFrame::Buffer::WriteVector2(&buffer1, Math::Vector2(x, y));
 
 					if (x != verticesNum_.x_ - 1 && y != verticesNum_.y_ - 1)
 					{
-						buffer2.WriteInt32(x * verticesNum_.x_ + y);
-						buffer2.WriteInt32(x * verticesNum_.x_ + y + 1);
-						buffer2.WriteInt32((x + 1) * verticesNum_.x_ + y + 1);
+						buffer2.WriteInt32(x * verticesNum_.y_ + y);
+						buffer2.WriteInt32(x * verticesNum_.y_ + y + 1);
+						buffer2.WriteInt32((x + 1) * verticesNum_.y_ + y + 1);
 
-						buffer2.WriteInt32(x * verticesNum_.x_ + y);
-						buffer2.WriteInt32((x + 1) * verticesNum_.x_ + y + 1);
-						buffer2.WriteInt32((x + 1) * verticesNum_.x_ + y);
+						buffer2.WriteInt32(x * verticesNum_.y_ + y);
+						buffer2.WriteInt32((x + 1) * verticesNum_.y_ + y + 1);
+						buffer2.WriteInt32((x + 1) * verticesNum_.y_ + y);
 					}
 				}
 			}
