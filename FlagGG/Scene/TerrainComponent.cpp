@@ -97,7 +97,7 @@ namespace FlagGG
 					float height = src[imgRow * (verticesNum_.x_ - 1 - x) + y];
 					IOFrame::Buffer::WriteVector3(&buffer1, Math::Vector3(x, height, y));
 					IOFrame::Buffer::WriteVector3(&buffer1, Math::Vector3(1, 1, 1));
-					IOFrame::Buffer::WriteVector2(&buffer1, Math::Vector2(x, y));
+					IOFrame::Buffer::WriteVector2(&buffer1, Math::Vector2(1.0f * x / verticesNum_.x_, 1.0f * y / verticesNum_.y_));
 
 					if (x != verticesNum_.x_ - 1 && y != verticesNum_.y_ - 1)
 					{

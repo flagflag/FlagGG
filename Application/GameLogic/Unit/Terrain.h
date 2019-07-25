@@ -11,7 +11,7 @@ class Terrain : public Node
 public:
 	Terrain(Context* context);
 
-	void SetRange(uint32_t xCount, uint32_t yCount);
+	void Create(uint32_t pathSize);
 
 private:
 	Context* context_;

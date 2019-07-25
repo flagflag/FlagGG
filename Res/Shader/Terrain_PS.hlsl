@@ -20,14 +20,15 @@ struct PixelInput
 
 float4 PS(PixelInput input) : SV_TARGET
 {
-    float4 weight = Sample2D(weight, input.weightTex);
+    float3 weight = Sample2D(weight, input.weightTex).xyz;
     float sumWeight = weight.x + weight.y + weight.z;
     weight /= sumWeight;
     float4 diffColor = weight.x * Sample2D(detail1, input.detailTex) +
                         weight.y * Sample2D(detail2, input.detailTex) +
                         weight.z * Sample2D(detail3, input.detailTex);
 
-    float4 color = diffColor;
+    float4 matDiffColor = float4(0.5, 0.5, 0.5, 16);
+    float4 color = matDiffColor * diffColor;
 
 	return color;
 }

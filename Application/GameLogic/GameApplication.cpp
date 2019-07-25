@@ -78,7 +78,7 @@ void GameApplication::CreateScene()
 	scene_->AddChild(mainHero_);
 
 	terrain_ = new Terrain(context_);
-	terrain_->SetRange(20, 20);
+	terrain_->Create(64);
 	terrain_->SetPosition(Vector3(-80, -30, 10));
 	scene_->AddChild(terrain_);
 }

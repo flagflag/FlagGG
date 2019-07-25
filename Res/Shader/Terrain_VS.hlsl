@@ -30,7 +30,7 @@ PixelInput VS(VertexInput input)
 	PixelInput output;
 	output.pos = mul(clipPos, projectionMatrix);
 	output.weightTex = input.tex0;
-    output.detailTex = 32.0 * output.weightTex;
+    output.detailTex = float2(32.0, 32.0) * output.weightTex;
 	output.nor = worldNor;
 
 	return output;
