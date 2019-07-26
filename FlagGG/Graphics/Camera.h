@@ -41,6 +41,14 @@ namespace FlagGG
 			const Math::Vector3& GetPosition() const;
 			void SetPosition(const Math::Vector3& pos);
 
+			// 远裁剪面
+			void SetFarClip(float farClip);
+			float GetFarClip() const;
+
+			// 近裁剪面
+			void SetNearClip(float nearClip);
+			float GetNearClip() const;
+
 			const Math::Vector3& GetRight() const;
 			const Math::Vector3& GetUp() const;
 			const Math::Vector3& GetLook() const;
@@ -51,7 +59,10 @@ namespace FlagGG
 			Math::Vector3 pos_;
 			Math::Vector3 right_;
 			Math::Vector3 up_;
-			Math::Vector3 look_;		
+			Math::Vector3 look_;
+
+			float farClip_;
+			float nearClip_;
 		};
 	}
 }

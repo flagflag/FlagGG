@@ -11,7 +11,9 @@ namespace FlagGG
 			pos_(0.0f, 0.0f, 0.0f),
 			right_(1.0f, 0.0f, 0.0f),
 			up_(0.0f, 1.0f, 0.0f),
-			look_(0.0f, 0.0f, 1.0f)
+			look_(0.0f, 0.0f, 1.0f),
+			nearClip_(1.0f),
+			farClip_(100.0f)
 		{
 		}
 
@@ -118,8 +120,8 @@ namespace FlagGG
 			return Math::MatrixPerspectiveFovLH(
 				Math::PI / 4,
 				1.0f,
-				1.0f,
-				100.0f
+				nearClip_,
+				farClip_
 				);
 		}
 
@@ -141,6 +143,26 @@ namespace FlagGG
 		void Camera::SetPosition(const Math::Vector3& pos)
 		{
 			pos_ = pos;
+		}
+
+		void Camera::SetFarClip(float farClip)
+		{
+			farClip_ = farClip;
+		}
+
+		float Camera::GetFarClip() const
+		{
+			return farClip_;
+		}
+
+		void Camera::SetNearClip(float nearClip)
+		{
+			nearClip_ = nearClip;
+		}
+
+		float Camera::GetNearClip() const
+		{
+			return nearClip_;
 		}
 
 		const Math::Vector3& Camera::GetRight() const

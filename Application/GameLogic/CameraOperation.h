@@ -16,6 +16,8 @@ class CameraOperation : public RefCounted
 public:
 	CameraOperation(FlagGG::Core::Context* context);
 
+	SharedPtr<Camera> GetCamera();
+
 	void OnKeyDown(KeyState* keyState, unsigned keyCode);
 
 	void OnKeyUp(KeyState* keyState, unsigned keyCode);
@@ -28,9 +30,9 @@ public:
 
 	void HandleUpdate(float timeStep);
 
+private:
 	SharedPtr<Camera> camera_;
 
-private:
 	bool mouseDown_{ false };
 
 	float rate_{ 0.00005 };

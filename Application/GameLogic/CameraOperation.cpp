@@ -19,6 +19,11 @@ CameraOperation::CameraOperation(FlagGG::Core::Context* context) :
 	context->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, CameraOperation::HandleUpdate, this));
 }
 
+SharedPtr<Camera> CameraOperation::GetCamera()
+{
+	return camera_;
+}
+
 void CameraOperation::OnKeyDown(KeyState* keyState, unsigned keyCode)
 {
 	// printf("OnKeyDown keyCode = %u\n", keyCode);

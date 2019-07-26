@@ -98,7 +98,7 @@ void GameApplication::SetupWindow()
 
 	SharedPtr<Viewport> viewport(new Viewport());
 	viewport->Resize(rect);
-	viewport->SetCamera(cameraOpt_->camera_);
+	viewport->SetCamera(cameraOpt_->GetCamera());
 	viewport->SetScene(scene_);
 	viewport->SetRenderTarget(renderTexture_[0]->GetRenderSurface());
 	viewport->SetDepthStencil(renderTexture_[1]->GetRenderSurface());
@@ -106,8 +106,11 @@ void GameApplication::SetupWindow()
 
 	window_ = new Window(context_, nullptr, rect);
 	window_->Show();
-	window_->GetViewport()->SetCamera(cameraOpt_->camera_);
+	window_->GetViewport()->SetCamera(cameraOpt_->GetCamera());
 	window_->GetViewport()->SetScene(scene_);
+
+	cameraOpt_->GetCamera()->SetNearClip(1.0f);
+	cameraOpt_->GetCamera()->SetFarClip(1000000000.0f);
 
 	WindowDevice::RegisterWinMessage(window_);
 }
