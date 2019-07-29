@@ -211,7 +211,7 @@ namespace FlagGG
 
 		bool Texture::IsValid()
 		{
-			return GetHandler() != nullptr && shaderResourceView_ != nullptr && sampler_ != nullptr;
+			return GetHandler() != nullptr && shaderResourceView_ != nullptr /*&& sampler_ != nullptr*/;
 		}
 	}
 }

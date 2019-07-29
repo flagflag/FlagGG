@@ -97,7 +97,7 @@ void GameApplication::SetupWindow()
 	renderTexture_[1]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetDepthStencilFormat(), TEXTURE_DEPTHSTENCIL);
 
 	SharedPtr<Viewport> viewport(new Viewport());
-	viewport->Resize(rect);
+	viewport->Resize(IntRect(0, 0, rect.Width(), rect.Height()));
 	viewport->SetCamera(cameraOpt_->GetCamera());
 	viewport->SetScene(scene_);
 	viewport->SetRenderTarget(renderTexture_[0]->GetRenderSurface());
