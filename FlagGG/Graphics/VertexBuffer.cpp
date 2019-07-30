@@ -5,6 +5,11 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
+		uint32_t VertexBuffer::GetBindFlags()
+		{
+			return D3D11_BIND_VERTEX_BUFFER;
+		}
+
 		bool VertexBuffer::SetSize(uint32_t vertexCount, const Container::PODVector<VertexElement>& vertexElements)
 		{
 			vertexSize_ = GetVertexSize(vertexElements);

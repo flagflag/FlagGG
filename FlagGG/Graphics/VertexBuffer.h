@@ -10,6 +10,8 @@ namespace FlagGG
 		class VertexBuffer : public GPUBuffer
 		{
 		public:
+			uint32_t GetBindFlags() override;
+
 			bool SetSize(uint32_t vertexCount, const Container::PODVector<VertexElement>& vertexElements);
 
 			uint32_t GetVertexSize() const;

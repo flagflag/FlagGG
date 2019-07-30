@@ -19,7 +19,7 @@ namespace FlagGG
 		{
 			D3D11_BUFFER_DESC bufferDesc;
 			memset(&bufferDesc, 0, sizeof(bufferDesc));
-			bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			bufferDesc.BindFlags = GetBindFlags();
 			bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 			bufferDesc.Usage = D3D11_USAGE_DYNAMIC; //D3D11_USAGE_DEFAULT
 			bufferDesc.ByteWidth = byteCount;

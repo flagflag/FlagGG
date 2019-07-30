@@ -9,6 +9,8 @@ namespace FlagGG
 		class IndexBuffer : public GPUBuffer
 		{
 		public:
+			uint32_t GetBindFlags() override;
+
 			bool SetSize(uint32_t indexSize, uint32_t indexCount);
 
 			uint32_t GetIndexSize() const;

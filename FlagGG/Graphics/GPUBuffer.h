@@ -18,6 +18,8 @@ namespace FlagGG
 
 			void Unlock();
 
+			virtual uint32_t GetBindFlags() = 0;
+
 		protected:
 			void Initialize() override;
 		};
