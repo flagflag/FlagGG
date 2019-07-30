@@ -1,6 +1,9 @@
 Texture2D normalMap : register(t0);
 SamplerState normalSampler : register(s0);
 
+Texture2D envMap : register(t5);
+SamplerState envSampler : register(s5);
+
 struct PixelInput
 {
 	float4 pos : SV_POSITION;
