@@ -1,0 +1,15 @@
+{
+	vsshader = 
+	{
+		path = "Shader/Water_VS.hlsl"
+	},
+	psshader = 
+	{
+		path = "Shader/Water_PS.hlsl"
+	},
+	texture =
+	{
+		type = "texture2d", //texturecube => 3d
+		path = "Textures/WaterNoise.dds"
+	}
+}

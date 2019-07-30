@@ -54,6 +54,7 @@ private:
 
 	SharedPtr<Unit> mainHero_;
 	SharedPtr<Terrain> terrain_;
+	SharedPtr<Unit> water_;
 
 	SharedPtr<LuaVM> luaVM_;
 	SharedPtr<LuaLog> logModule_;

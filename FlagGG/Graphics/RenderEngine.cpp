@@ -24,6 +24,7 @@ namespace FlagGG
 		uint32_t RenderEngine::vertexSize_[MAX_VERTEX_BUFFER_COUNT] = { 0 };
 		uint32_t RenderEngine::vertexOffset_[MAX_VERTEX_BUFFER_COUNT] = { 0 };
 
+		Container::SharedPtr<Texture> RenderEngine::defaultTextures[MAX_TEXTURE_CLASS];
 		ID3D11ShaderResourceView* RenderEngine::shaderResourceView_[MAX_TEXTURE_CLASS] = { 0 };
 		ID3D11SamplerState* RenderEngine::samplerState_[MAX_TEXTURE_CLASS] = { 0 };
 
@@ -420,24 +421,28 @@ namespace FlagGG
 
 		void RenderEngine::SetTextures(const Container::Vector<Container::SharedPtr<Texture>>& textures)
 		{
-			auto maxNumTextures = Math::Min<uint32_t>(MAX_TEXTURE_CLASS, textures.Size());
-			for (uint32_t i = 0; i < maxNumTextures; ++i)
+			for (uint32_t i = 0; i < MAX_TEXTURE_CLASS; ++i)
 			{
-				if (textures[i])
+				if (i < textures.Size() && textures[i])
 				{
 					shaderResourceView_[i] = textures[i]->shaderResourceView_;
 					samplerState_[i] = textures[i]->sampler_;
 				}
 				else
 				{
-					shaderResourceView_[i] = nullptr;
-					samplerState_[i] = nullptr;
+					shaderResourceView_[i] = defaultTextures[i] ? defaultTextures[i]->shaderResourceView_ : nullptr;
+					samplerState_[i] = defaultTextures[i] ? defaultTextures[i]->sampler_ : nullptr;
 				}
 			}
-			//deviceContext->VSSetShaderResources(0, maxNumTextures, shaderResourceView_);
-			//deviceContext->VSSetSamplers(0, maxNumTextures, samplerState_);
-			deviceContext_->PSSetShaderResources(0, maxNumTextures, shaderResourceView_);
-			deviceContext_->PSSetSamplers(0, maxNumTextures, samplerState_);
+			//deviceContext->VSSetShaderResources(0, MAX_TEXTURE_CLASS, shaderResourceView_);
+			//deviceContext->VSSetSamplers(0, MAX_TEXTURE_CLASS, samplerState_);
+			deviceContext_->PSSetShaderResources(0, MAX_TEXTURE_CLASS, shaderResourceView_);
+			deviceContext_->PSSetSamplers(0, MAX_TEXTURE_CLASS, samplerState_);
+		}
+
+		void RenderEngine::SetDefaultTextures(TextureClass index, Texture* texture)
+		{
+			defaultTextures[index] = texture;
 		}
 
 		void RenderEngine::SetPrimitiveType(PrimitiveType primitiveType)

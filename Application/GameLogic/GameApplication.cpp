@@ -81,6 +81,12 @@ void GameApplication::CreateScene()
 	terrain_->Create(64);
 	terrain_->SetPosition(Vector3(-80, -30, 10));
 	scene_->AddChild(terrain_);
+
+	water_ = new Unit(context_);
+	water_->Load("Unit/Water.ljson");
+	water_->SetPosition(Vector3(0, -5, 10));
+	water_->SetScale(Vector3(1000, 1000, 1000));
+	scene_->AddChild(water_);
 }
 
 void GameApplication::SetupWindow()
@@ -103,6 +109,7 @@ void GameApplication::SetupWindow()
 	viewport->SetRenderTarget(renderTexture_[0]->GetRenderSurface());
 	viewport->SetDepthStencil(renderTexture_[1]->GetRenderSurface());
 	viewports_.Push(viewport);
+	RenderEngine::SetDefaultTextures(TEXTURE_CLASS_ENVIRONMENT, renderTexture_[0]);
 
 	window_ = new Window(context_, nullptr, rect);
 	window_->Show();

@@ -99,6 +99,8 @@ namespace FlagGG
 
 			static void SetTextures(const Container::Vector<Container::SharedPtr<Texture>>& textures);
 
+			static void SetDefaultTextures(TextureClass index, Texture* texture);
+
 			static void SetPrimitiveType(PrimitiveType primitiveType);
 
 			static void DrawCall(uint32_t indexStart, uint32_t indexCount);
@@ -139,6 +141,7 @@ namespace FlagGG
 			static uint32_t vertexSize_[MAX_VERTEX_BUFFER_COUNT];
 			static uint32_t vertexOffset_[MAX_VERTEX_BUFFER_COUNT];
 
+			static Container::SharedPtr<Texture> defaultTextures[MAX_TEXTURE_CLASS];
 			static ID3D11ShaderResourceView* shaderResourceView_[MAX_TEXTURE_CLASS];
 			static ID3D11SamplerState* samplerState_[MAX_TEXTURE_CLASS];
 
