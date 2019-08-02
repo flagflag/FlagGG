@@ -21,13 +21,11 @@ namespace FlagGG
 
 		bool LJSONFile::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		{
-			char* buffer = nullptr;
-			size_t bufferSize = 0;
-			stream->ToString(buffer, bufferSize);
-			Container::SharedArrayPtr<char> autoDelete(buffer);
+			Container::String buffer;
+			stream->ToString(buffer);
 
 			LJSONParser parser;
-			if (!parser.Load(buffer, bufferSize, root_))
+			if (!parser.Load(buffer.CString(), buffer.Length(), root_))
 			{
 				FLAGGG_LOG_ERROR("parse json file failed.");
 

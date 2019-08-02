@@ -50,10 +50,7 @@ namespace FlagGG
 
 		bool ShaderCode::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		{
-			char* buffer = nullptr;
-			bufferSize_ = 0;
-			stream->ToString(buffer, bufferSize_);
-			buffer_ = buffer;
+			stream->ToBuffer(buffer_, bufferSize_);
 
 			return true;
 		}

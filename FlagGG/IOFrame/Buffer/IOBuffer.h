@@ -4,6 +4,8 @@
 #include "Export.h"
 #include "Container/Ptr.h"
 #include "Container/RefCounted.h"
+#include "Container/Str.h"
+#include "Container/ArrayPtr.h"
 
 #include <stdint.h>
 
@@ -16,14 +18,14 @@ namespace FlagGG
 			class FlagGG_API IOBuffer : public Container::RefCounted
 			{
 			public:
-				~IOBuffer() override = default;
-
 				virtual uint32_t GetIndex() const = 0;
 				virtual uint32_t GetSize() const = 0;
-
 				virtual void ClearIndex() = 0;
-
 				virtual void Seek(uint32_t pos) = 0;
+				virtual bool IsEof() = 0;
+
+				virtual uint32_t ReadStream(void* data, uint32_t dataSize) = 0;
+				virtual uint32_t WriteStream(const void* data, uint32_t dataSize) = 0;
 
 				virtual void ReadInt8(int8_t& value) = 0;
 				virtual void WriteInt8(int8_t value) = 0;
@@ -52,12 +54,8 @@ namespace FlagGG
 				virtual void ReadFloat(float& value) = 0;
 				virtual void WriteFloat(float value) = 0;
 
-				virtual uint32_t ReadStream(void* data, size_t dataSize) = 0;
-				virtual uint32_t WriteStream(const void* data, size_t dataSize) = 0;
-
-				virtual void ToString(char*& data, size_t& dataSize) = 0;
-
-				virtual bool IsEof() = 0;
+				virtual void ToString(Container::String& result) = 0;
+				virtual void ToBuffer(Container::SharedArrayPtr<char>& buffer, uint32_t& bufferSize) = 0;
 			};
 
 			typedef Container::SharedPtr < IOBuffer > IOBufferPtr;

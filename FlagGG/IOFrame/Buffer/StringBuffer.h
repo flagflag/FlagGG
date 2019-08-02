@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Export.h"
-#include "IOFrame/Buffer/IOBuffer.h"
+#include "IOFrame/Buffer/IOBufferAdaptor.h"
 #include "Container/Str.h"
 
 namespace FlagGG
@@ -10,7 +10,7 @@ namespace FlagGG
 	{
 		namespace Buffer
 		{
-			class FlagGG_API StringBuffer : public IOBuffer
+			class FlagGG_API StringBuffer : public IOBufferAdaptor
 			{
 			public:
 				StringBuffer();
@@ -26,37 +26,8 @@ namespace FlagGG
 
 				void Seek(uint32_t pos) override;
 
-				void ReadInt8(int8_t& value) override;
-				void WriteInt8(int8_t value) override;
-
-				void ReadUInt8(uint8_t& value) override;
-				void WriteUInt8(uint8_t value) override;
-
-				void ReadInt16(int16_t& value) override;
-				void WriteInt16(int16_t value) override;
-
-				void ReadUInt16(uint16_t& value) override;
-				void WriteUInt16(uint16_t value) override;
-
-				void ReadInt32(int32_t& value) override;
-				void WriteInt32(int32_t value) override;
-
-				void ReadUInt32(uint32_t& value) override;
-				void WriteUInt32(uint32_t value) override;
-
-				void ReadInt64(int64_t& value) override;
-				void WriteInt64(int64_t value) override;
-
-				void ReadUInt64(uint64_t& value) override;
-				void WriteUInt64(uint64_t value) override;
-
-				uint32_t ReadStream(void* data, size_t dataSize) override;
-				uint32_t WriteStream(const void* data, size_t dataSize) override;
-
-				void ReadFloat(float& value) override;
-				void WriteFloat(float value) override;
-
-				void ToString(char*& data, size_t& dataSize) override;
+				uint32_t ReadStream(void* data, uint32_t dataSize) override;
+				uint32_t WriteStream(const void* data, uint32_t dataSize) override;
 
 				bool IsEof() override;
 			

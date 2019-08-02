@@ -1,4 +1,4 @@
-﻿#include "Buffer.h"
+﻿#include "IOFrame/Buffer/NetBuffer.h"
 #include "Define.h"
 #include <algorithm>
 
@@ -42,6 +42,16 @@ namespace FlagGG
 				}
 
 				return true;
+			}
+
+			uint32_t NetBuffer::GetSize() const
+			{
+				uint32_t dataSize = 0;
+				for (uint32_t i = 0; i < buffers_.Size(); ++i)
+				{
+					dataSize += (i + 1 == buffers_.Size() ? count_ : buffers_[i].bufferSize);
+				}
+				return dataSize;
 			}
 
 			void NetBuffer::ClearIndex()
@@ -210,50 +220,66 @@ namespace FlagGG
 				WriteByte(byte[3]);
 			}
 
-			uint32_t NetBuffer::WriteStream(const void* data, size_t data_size)
+			uint32_t NetBuffer::WriteStream(const void* data, uint32_t dataSize)
 			{
-				if (!data || data_size == 0) return 0;
+				if (!data || dataSize == 0) return 0;
 
 				const char* index = (const char*)data;
-				size_t left_size = data_size;
-				while (left_size)
+				size_t leftSize = dataSize;
+				while (leftSize)
 				{
 					CheckBuffer(mode_write);
 
-					size_t write_size = std::min < size_t >(left_size, 
+					size_t writeSize = std::min < size_t >(leftSize,
 						currentBuffer_.bufferSize - count_);
 
-					memcpy(currentBuffer_.buffer, index, write_size);
-					index += write_size;
-					count_ += write_size;
+					memcpy(currentBuffer_.buffer, index, writeSize);
+					index += writeSize;
+					count_ += writeSize;
 
-					left_size -= write_size;
+					leftSize -= writeSize;
 				}
-				return data_size;
+				return dataSize;
 			}
 
-			void NetBuffer::ToString(char*& data, size_t& data_size)
+			void NetBuffer::ToString(Container::String& result)
 			{
 				if (buffers_.Size() <= 0)
 				{
-					data = nullptr;
-					data_size = 0;
+					result.Reserve(0);
 					return;
 				}
 
-				data_size = 0;
-				for (size_t i = 0; i < buffers_.Size(); ++i)
+				uint32_t dataSize = GetSize();
+				result.Resize(dataSize);
+
+				char* index = &result[0];
+				for (uint32_t i = 0; i < buffers_.Size(); ++i)
 				{
-					data_size += (i + 1 == buffers_.Size() ? count_ : buffers_[i].bufferSize);
+					uint32_t realSize = (i + 1 == buffers_.Size() ? count_ : buffers_[i].bufferSize);
+					memcpy(index, buffers_[i].buffer, realSize);
+					index += realSize;
+				}
+			}
+
+			void NetBuffer::ToBuffer(Container::SharedArrayPtr<char>& buffer, uint32_t& bufferSize)
+			{
+				if (buffers_.Size() <= 0)
+				{
+					buffer = nullptr;
+					bufferSize = 0u;
+					return;
 				}
 
-				data = new char[data_size];
-				char* index = data;
-				for (size_t i = 0; i < buffers_.Size(); ++i)
+				bufferSize = GetSize();
+				buffer = new char[bufferSize];
+
+				char* index = buffer.Get();
+				for (uint32_t i = 0; i < buffers_.Size(); ++i)
 				{
-					size_t real_size = (i + 1 == buffers_.Size() ? count_ : buffers_[i].bufferSize);
-					memcpy(index, buffers_[i].buffer, real_size);
-					index += real_size;
+					uint32_t realSize = (i + 1 == buffers_.Size() ? count_ : buffers_[i].bufferSize);
+					memcpy(index, buffers_[i].buffer, realSize);
+					index += realSize;
 				}
 			}
 		}

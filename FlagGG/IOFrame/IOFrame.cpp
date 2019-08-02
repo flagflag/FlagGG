@@ -1,5 +1,5 @@
 #include "IOFrame/IOFrame.h"
-#include "IOFrame/Buffer/Buffer.h"
+#include "IOFrame/Buffer/NetBuffer.h"
 #include "IOFrame/Acceptor/TCPAcceptor.h"
 #include "IOFrame/Connector/TCPConnector.h"
 #include "IOFrame/Channel/TCPChannel.h"

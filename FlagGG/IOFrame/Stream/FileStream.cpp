@@ -104,112 +104,14 @@ namespace FlagGG
 				FileAPI_SeekFromBegin(file_, pos);
 			}
 
-			void FileStream::ReadInt8(int8_t& value) 
-			{
-				FileAPI_SimpleRead(file_, value);
-			}
-
-			void FileStream::WriteInt8(int8_t value)
-			{
-				fwrite(&value, sizeof(value), 1, FileHandler(file_));
-			}
-
-			void FileStream::ReadUInt8(uint8_t& value)
-			{
-				FileAPI_SimpleRead(file_, value);
-			}
-
-			void FileStream::WriteUInt8(uint8_t value)
-			{
-				FileAPI_SimpleWrite(file_, value);
-			}
-
-			void FileStream::ReadInt16(int16_t& value)
-			{
-				FileAPI_SimpleRead(file_, value);
-			}
-
-			void FileStream::WriteInt16(int16_t value)
-			{
-				FileAPI_SimpleWrite(file_, value);
-			}
-
-			void FileStream::ReadUInt16(uint16_t& value)
-			{
-				FileAPI_SimpleRead(file_, value);
-			}
-
-			void FileStream::WriteUInt16(uint16_t value)
-			{
-				FileAPI_SimpleWrite(file_, value);
-			}
-
-			void FileStream::ReadInt32(int32_t& value)
-			{
-				FileAPI_SimpleRead(file_, value);
-			}
-
-			void FileStream::WriteInt32(int32_t value)
-			{
-				FileAPI_SimpleWrite(file_, value);
-			}
-
-			void FileStream::ReadUInt32(uint32_t& value)
-			{
-				FileAPI_SimpleRead(file_, value);
-			}
-
-			void FileStream::WriteUInt32(uint32_t value)
-			{
-				FileAPI_SimpleWrite(file_, value);
-			}
-
-			void FileStream::ReadInt64(int64_t& value)
-			{
-				FileAPI_SimpleRead(file_, value);
-			}
-
-			void FileStream::WriteInt64(int64_t value)
-			{
-				FileAPI_SimpleWrite(file_, value);
-			}
-
-			void FileStream::ReadUInt64(uint64_t& value)
-			{
-				FileAPI_SimpleRead(file_, value);
-			}
-
-			void FileStream::WriteUInt64(uint64_t value)
-			{
-				FileAPI_SimpleWrite(file_, value);
-			}
-
-			void FileStream::ReadFloat(float& value)
-			{
-				FileAPI_SimpleRead(file_, value);
-			}
-
-			void FileStream::WriteFloat(float value)
-			{
-				FileAPI_SimpleWrite(file_, value);
-			}
-
-			uint32_t FileStream::ReadStream(void* data, size_t dataSize)
+			uint32_t FileStream::ReadStream(void* data, uint32_t dataSize)
 			{
 				return FileAPI_ReadStream(file_, data, dataSize);
 			}
 
-			uint32_t FileStream::WriteStream(const void* data, size_t dataSize)
+			uint32_t FileStream::WriteStream(const void* data, uint32_t dataSize)
 			{
 				return FileAPI_WriteStream(file_, data, dataSize);
-			}
-
-			void FileStream::ToString(char*& data, size_t& dataSize)
-			{
-				dataSize = GetSize();
-				data = new char[dataSize + 1];
-				dataSize = FileAPI_ReadStream(file_, data, dataSize);
-				data[dataSize] = '\0';
 			}
 
 			bool FileStream::IsEof()

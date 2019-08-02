@@ -4,7 +4,7 @@
 #include "TCPChannel.h"
 #include "IOFrame/Context/TCPContext.h"
 #include "IOFrame/IOError.h"
-#include "IOFrame/Buffer/Buffer.h"
+#include "IOFrame/Buffer/NetBuffer.h"
 
 namespace FlagGG
 {
@@ -45,11 +45,11 @@ namespace FlagGG
 					return false;
 				}
 
-				char* data = nullptr;
-				size_t data_size = 0;
-				buffer->ToString(data, data_size);
+				Container::SharedArrayPtr<char> data;
+				uint32_t dataSize;
+				buffer->ToBuffer(data, dataSize);
 
-				if (!data || data_size == 0)
+				if (!data || dataSize == 0)
 				{
 					return false;
 				}
@@ -57,7 +57,7 @@ namespace FlagGG
 				try
 				{
 					socket_.async_send(
-						boost::asio::buffer(data, data_size),
+						boost::asio::buffer(data.Get(), dataSize),
 						strand_.wrap(boost::bind(&TCPChannel::HandleWrite, 
 						Container::SharedPtr<TCPChannel>(this),
 						boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred)));

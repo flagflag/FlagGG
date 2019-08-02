@@ -28,7 +28,7 @@ namespace FlagGG
 
 				// 先暂时留空，等需要用的时候在补上
 				uint32_t GetIndex() const override { return 0; }
-				uint32_t GetSize() const override { return 0; }
+				uint32_t GetSize() const override;
 
 				void ClearIndex() override;
 
@@ -62,10 +62,11 @@ namespace FlagGG
 				void ReadFloat(float& value) override;
 				void WriteFloat(float value) override;
 
-				uint32_t ReadStream(void* data, size_t dataSize) override { return 0u; }
-				uint32_t WriteStream(const void* data, size_t dataSize) override;
+				uint32_t ReadStream(void* data, uint32_t dataSize) override { return 0u; }
+				uint32_t WriteStream(const void* data, uint32_t dataSize) override;
 
-				void ToString(char*& data, size_t& dataSize) override;
+				void ToString(Container::String& result) override;
+				void ToBuffer(Container::SharedArrayPtr<char>& buffer, uint32_t& bufferSize) override;
 
 				// 先暂时留空，等需要用的时候在补上
 				bool IsEof() override { return false; }
