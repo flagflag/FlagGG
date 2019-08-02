@@ -24,7 +24,7 @@ namespace FlagGG
         Allocator::SmartMemory <char> temp(len + 1, len <= ONE_KB ? _buffer : nullptr);
         char* buffer = temp.Get();
 
-        vsnprintf(buffer, len, format, va);
+        vsnprintf(buffer, len + 1, format, va);
         va_end(va);
 		
 
