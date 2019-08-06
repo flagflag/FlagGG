@@ -42,6 +42,10 @@ namespace FlagGG
 				stream->ReadStream(&mat.m00_, sizeof(Math::Matrix3x4));
 			}
 
+			void ReadMatrix4x4(IOBuffer* stream, Math::Matrix4& mat)
+			{
+				stream->ReadStream(&mat.m00_, sizeof(Math::Matrix4));
+			}
 
 			void WriteString(IOBuffer* stream, const Container::String& str)
 			{
@@ -67,6 +71,11 @@ namespace FlagGG
 			void WriteMatrix3x4(IOBuffer* stream, const Math::Matrix3x4& mat)
 			{
 				stream->WriteStream(&mat.m00_, sizeof(Math::Matrix3x4));
+			}
+
+			void WriteMatrix4x4(IOBuffer* stream, const Math::Matrix4& mat)
+			{
+				stream->WriteStream(&mat.m00_, sizeof(Math::Matrix4));
 			}
 		}
 	}

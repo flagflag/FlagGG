@@ -58,7 +58,7 @@ namespace FlagGG
 
 			uint32_t StringBuffer::ReadStream(void* data, uint32_t dataSize)
 			{
-				if (index_ + dataSize < bufferSize_)
+				if (index_ + dataSize <= bufferSize_)
 				{
 					memcpy(data, ccBuffer_ + index_, dataSize);
 					index_ += dataSize;
@@ -69,7 +69,7 @@ namespace FlagGG
 			uint32_t StringBuffer::WriteStream(const void* data, uint32_t dataSize)
 			{
 				if (readOnly_) return 0;
-				if (index_ + dataSize >= capacity_)
+				if (index_ + dataSize > capacity_)
 				{
 					if (sizeFixed_) return 0;
 					capacity_ = (index_ + dataSize) << 1u;

@@ -6,6 +6,7 @@
 #include "Graphics/Viewport.h"
 #include "Graphics/VertexFormat.h"
 #include "Graphics/RenderContext.h"
+#include "Graphics/ConstBuffer.h"
 #include "Resource/Image.h"
 #include "Container/HashMap.h"
 
@@ -118,7 +119,7 @@ namespace FlagGG
 		private:
 			enum ConstBufferType
 			{
-				CONST_BUFFER_MATRIX = 0,
+				CONST_SHADER_PARAM = 0,
 				CONST_BUFFER_SKIN,
 				MAX_CONST_BUFFER,
 			};
@@ -127,13 +128,12 @@ namespace FlagGG
 
 			void CreateRasterizerState();
 
-			void CreateMatrixData();
-
 			ID3D11Device* device_{ nullptr };
 			ID3D11DeviceContext* deviceContext_{ nullptr };
 			ID3D11RasterizerState* rasterizerState_{ nullptr };
 
-			ID3D11Buffer* constBuffer_[MAX_CONST_BUFFER_COUNT]{ 0 };
+			ConstBuffer constBuffer_[MAX_CONST_BUFFER_COUNT];
+			ID3D11Buffer* constGPUBuffer_[MAX_CONST_BUFFER_COUNT]{ 0 };
 
 			MaterialQuality textureQuality_{ QUALITY_HIGH };
 

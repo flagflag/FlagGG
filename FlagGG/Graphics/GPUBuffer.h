@@ -33,6 +33,8 @@ namespace FlagGG
 			void Initialize() override;
 
 			Container::SharedPtr<IOFrame::Buffer::IOBuffer> buffer_;
+
+			uint32_t gpuBufferSize_{ 0 };
 		};
 	}
 }

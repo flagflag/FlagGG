@@ -18,6 +18,11 @@ namespace FlagGG
 
 		bool GPUBuffer::SetSize(uint32_t byteCount)
 		{
+			if (gpuBufferSize_ == byteCount)
+				return true;
+
+			gpuBufferSize_ = byteCount;
+
 			D3D11_BUFFER_DESC bufferDesc;
 			memset(&bufferDesc, 0, sizeof(bufferDesc));
 			bufferDesc.BindFlags = GetBindFlags();
@@ -78,7 +83,9 @@ namespace FlagGG
 
 		void GPUBuffer::UnlockDynamicBuffer()
 		{
+			SetSize(buffer_->GetSize());
 			void* data = Lock(0, buffer_->GetSize());
+			buffer_->ClearIndex();
 			buffer_->ReadStream(data, buffer_->GetSize());
 			Unlock();
 			buffer_.Reset();

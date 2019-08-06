@@ -3,6 +3,7 @@
 #include "Graphics/Texture.h"
 #include "Math/Math.h"
 #include "Log.h"
+#include "IOFrame/Buffer/IOBufferAux.h"
 
 #include <assert.h>
 
@@ -77,39 +78,11 @@ namespace FlagGG
 			deviceContext_->RSSetState(rasterizerState_);
 		}
 
-		void RenderEngine::CreateMatrixData()
-		{
-			D3D11_BUFFER_DESC bufferDesc;
-			memset(&bufferDesc, 0, sizeof(bufferDesc));
-			bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-			bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-			bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-			bufferDesc.ByteWidth = sizeof(MatrixData);
-			HRESULT hr = RenderEngine::GetDevice()->CreateBuffer(&bufferDesc, nullptr, &constBuffer_[CONST_BUFFER_MATRIX]);
-			if (FAILED(hr))
-			{
-				FLAGGG_LOG_ERROR("Failed to Create ConstBuffer for Normal MatrixData.");
-				SAFE_RELEASE(constBuffer_[CONST_BUFFER_MATRIX]);
-				return;
-			}
-
-			bufferDesc.ByteWidth = sizeof(Math::Matrix3x4) * GetMaxBonesNum();
-			hr = RenderEngine::GetDevice()->CreateBuffer(&bufferDesc, nullptr, &constBuffer_[CONST_BUFFER_SKIN]);
-			if (FAILED(hr))
-			{
-				FLAGGG_LOG_ERROR("Failed to Create ConstBuffer for Skin MatrixData.");
-				SAFE_RELEASE(constBuffer_[CONST_BUFFER_SKIN]);
-				return;
-			}
-		}
-
 		void RenderEngine::Initialize()
 		{
 			CreateDevice();
 
 			CreateRasterizerState();
-
-			CreateMatrixData();
 		}
 
 		void RenderEngine::Uninitialize()
@@ -117,10 +90,6 @@ namespace FlagGG
 			SAFE_RELEASE(device_);
 			SAFE_RELEASE(deviceContext_);
 			SAFE_RELEASE(rasterizerState_);
-			for (uint32_t i = 0; i < MAX_CONST_BUFFER_COUNT; ++i)
-			{
-				SAFE_RELEASE(constBuffer_[i]);
-			}
 		}
 
 		ID3D11Device* RenderEngine::GetDevice()
@@ -331,27 +300,26 @@ namespace FlagGG
 			if (!camera) return;
 			if (!renderContext || !renderContext->worldTransform_ || !renderContext->numWorldTransform_) return;
 
-			D3D11_MAPPED_SUBRESOURCE mappedResource;
-
-			// 普通坐标矩阵
-			RenderEngine::GetDeviceContext()->Map(constBuffer_[CONST_BUFFER_MATRIX], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-			MatrixData* dataPtr = static_cast<MatrixData*>(mappedResource.pData);
-			dataPtr->world_			= renderContext->geometryType_ == GEOMETRY_STATIC ? *renderContext->worldTransform_ : Math::Matrix3x4::IDENTITY;
-			dataPtr->view_			= camera->GetViewMatrix().Transpose();
-			dataPtr->projection_	= camera->GetProjectionMatrix().Transpose();
-			RenderEngine::GetDeviceContext()->Unmap(constBuffer_[CONST_BUFFER_MATRIX], 0);
+			auto* buffer = constBuffer_[CONST_SHADER_PARAM].LockDynamicBuffer();
+			IOFrame::Buffer::WriteMatrix3x4(buffer, *renderContext->worldTransform_);
+			IOFrame::Buffer::WriteMatrix4x4(buffer, camera->GetViewMatrix().Transpose());
+			IOFrame::Buffer::WriteMatrix4x4(buffer, camera->GetProjectionMatrix().Transpose());
+			constBuffer_[CONST_SHADER_PARAM].UnlockDynamicBuffer();
+			constGPUBuffer_[CONST_SHADER_PARAM] = constBuffer_[CONST_SHADER_PARAM].GetObject<ID3D11Buffer>();
 
 			if (renderContext->geometryType_ == GEOMETRY_SKINNED)
-			{
-				// 蒙皮矩阵
-				RenderEngine::GetDeviceContext()->Map(constBuffer_[CONST_BUFFER_SKIN], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+			{			
 				uint32_t realNum = Math::Min(GetMaxBonesNum(), renderContext->numWorldTransform_);
-				memcpy(mappedResource.pData, renderContext->worldTransform_, sizeof(Math::Matrix3x4) * realNum);
-				RenderEngine::GetDeviceContext()->Unmap(constBuffer_[CONST_BUFFER_SKIN], 0);
+				uint32_t dataSize = realNum * sizeof(Math::Matrix3x4);
+				constBuffer_[CONST_BUFFER_SKIN].SetSize(dataSize);
+				auto* buffer = constBuffer_[CONST_BUFFER_SKIN].LockStaticBuffer(0, dataSize);
+				buffer->WriteStream(renderContext->worldTransform_, dataSize);
+				constBuffer_[CONST_BUFFER_SKIN].UnlockStaticBuffer();
+				constGPUBuffer_[CONST_BUFFER_SKIN] = constBuffer_[CONST_BUFFER_SKIN].GetObject<ID3D11Buffer>();
 			}
 
 			uint32_t bufferNumber = renderContext->geometryType_ == GEOMETRY_STATIC ? 1 : 2;
-			deviceContext_->VSSetConstantBuffers(0, bufferNumber, constBuffer_);
+			deviceContext_->VSSetConstantBuffers(0, bufferNumber, constGPUBuffer_);
 		}
 
 		void RenderEngine::SetVertexBuffers(const Container::Vector<Container::SharedPtr<VertexBuffer>>& vertexBuffers)
