@@ -25,7 +25,7 @@ namespace FlagGG
 			bufferDesc.ByteWidth = byteCount;
 
 			ID3D11Buffer* buffer;
-			HRESULT hr = RenderEngine::GetDevice()->CreateBuffer(&bufferDesc, nullptr, &buffer);
+			HRESULT hr = RenderEngine::Instance()->GetDevice()->CreateBuffer(&bufferDesc, nullptr, &buffer);
 			if (FAILED(hr))
 			{
 				SAFE_RELEASE(buffer);
@@ -42,7 +42,7 @@ namespace FlagGG
 		{
 			D3D11_MAPPED_SUBRESOURCE mappedData;
 			memset(&mappedData, 0, sizeof mappedData);
-			HRESULT hr = RenderEngine::GetDeviceContext()->Map(GetObject<ID3D11Buffer>(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+			HRESULT hr = RenderEngine::Instance()->GetDeviceContext()->Map(GetObject<ID3D11Buffer>(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 			if (FAILED(hr) || !mappedData.pData)
 			{
 				FLAGGG_LOG_ERROR("Failed to Map buffer data.");
@@ -53,7 +53,7 @@ namespace FlagGG
 
 		void GPUBuffer::Unlock()
 		{
-			RenderEngine::GetDeviceContext()->Unmap(GetObject<ID3D11Buffer>(), 0);
+			RenderEngine::Instance()->GetDeviceContext()->Unmap(GetObject<ID3D11Buffer>(), 0);
 		}
 	}
 }

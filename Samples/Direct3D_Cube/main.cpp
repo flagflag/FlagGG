@@ -299,7 +299,7 @@ private:
 void Run()
 {
 	WindowDevice::Initialize();
-	RenderEngine::Initialize();
+	RenderEngine::Instance()->Initialize();
 
 	Context context;
 	Input* input = new Input(&context);
@@ -345,7 +345,7 @@ void Run()
 	WindowDevice::UnregisterWinMessage(&viewport);
 
 	WindowDevice::Uninitialize();
-	RenderEngine::Uninitialize();
+	RenderEngine::Instance()->Uninitialize();
 }
 
 int main()

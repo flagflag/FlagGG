@@ -29,21 +29,21 @@ namespace FlagGG
 		class FlagGG_API RenderEngine
 		{
 		public:
-			static void Initialize();
+			void Initialize();
 
-			static void Uninitialize();
+			void Uninitialize();
 
-			static ID3D11Device* GetDevice();
+			ID3D11Device* GetDevice();
 
-			static ID3D11DeviceContext* GetDeviceContext();
+			ID3D11DeviceContext* GetDeviceContext();
 
-			static bool CheckMultiSampleSupport(DXGI_FORMAT format, uint32_t sampleCount);
+			bool CheckMultiSampleSupport(DXGI_FORMAT format, uint32_t sampleCount);
 
-			static uint32_t GetMultiSampleQuality(DXGI_FORMAT format, uint32_t sampleCount);
+			uint32_t GetMultiSampleQuality(DXGI_FORMAT format, uint32_t sampleCount);
 
-			static void SetTextureQuality(MaterialQuality quality);
+			void SetTextureQuality(MaterialQuality quality);
 
-			static MaterialQuality GetTextureQuality();
+			MaterialQuality GetTextureQuality();
 
 			static uint32_t GetFormat(Resource::CompressedFormat format);
 
@@ -85,33 +85,35 @@ namespace FlagGG
 			// ×î´ó¹Ç÷ÀÊý
 			static uint32_t GetMaxBonesNum();
 
-			static void UpdateMatrix(Camera* camera, const RenderContext* renderContext);
+			void UpdateMatrix(Camera* camera, const RenderContext* renderContext);
 
-			static void SetVertexBuffers(const Container::Vector<Container::SharedPtr<VertexBuffer>>& vertexBuffers);
+			void SetVertexBuffers(const Container::Vector<Container::SharedPtr<VertexBuffer>>& vertexBuffers);
 
-			static void SetIndexBuffer(IndexBuffer* indexBuffer);
+			void SetIndexBuffer(IndexBuffer* indexBuffer);
 
-			static void SetVertexShader(Shader* shader);
+			void SetVertexShader(Shader* shader);
 
-			static void SetPixelShader(Shader* shader);
+			void SetPixelShader(Shader* shader);
 
-			static void SetTexture(Texture* texture);
+			void SetTexture(Texture* texture);
 
-			static void SetTextures(const Container::Vector<Container::SharedPtr<Texture>>& textures);
+			void SetTextures(const Container::Vector<Container::SharedPtr<Texture>>& textures);
 
-			static void SetDefaultTextures(TextureClass index, Texture* texture);
+			void SetDefaultTextures(TextureClass index, Texture* texture);
 
-			static void SetPrimitiveType(PrimitiveType primitiveType);
+			void SetPrimitiveType(PrimitiveType primitiveType);
 
-			static void DrawCall(uint32_t indexStart, uint32_t indexCount);
+			void DrawCall(uint32_t indexStart, uint32_t indexCount);
 
-			static void RenderBegin(Viewport* viewport);
+			void RenderBegin(Viewport* viewport);
 
-			static void RenderEnd(Viewport* viewport);
+			void RenderEnd(Viewport* viewport);
 
-			static void Render(Viewport* viewport);
+			void Render(Viewport* viewport);
 
-			static VertexFormat* CacheVertexFormat(Shader* VSShader, VertexBuffer** vertexBuffer);
+			VertexFormat* CacheVertexFormat(Shader* VSShader, VertexBuffer** vertexBuffer);
+
+			static RenderEngine* Instance();
 
 		private:
 			enum ConstBufferType
@@ -121,34 +123,34 @@ namespace FlagGG
 				MAX_CONST_BUFFER,
 			};
 
-			static void CreateDevice();
+			void CreateDevice();
 
-			static void CreateRasterizerState();
+			void CreateRasterizerState();
 
-			static void CreateMatrixData();
+			void CreateMatrixData();
 
-			static ID3D11Device* device_;
+			ID3D11Device* device_{ nullptr };
+			ID3D11DeviceContext* deviceContext_{ nullptr };
+			ID3D11RasterizerState* rasterizerState_{ nullptr };
 
-			static ID3D11DeviceContext* deviceContext_;
+			ID3D11Buffer* constBuffer_[MAX_CONST_BUFFER_COUNT]{ 0 };
 
-			static ID3D11RasterizerState* rasterizerState_;
+			MaterialQuality textureQuality_{ QUALITY_HIGH };
 
-			static ID3D11Buffer* constBuffer_[MAX_CONST_BUFFER_COUNT];
+			ID3D11Buffer* vertexBuffers_[MAX_VERTEX_BUFFER_COUNT]{ 0 };
+			uint32_t vertexSize_[MAX_VERTEX_BUFFER_COUNT]{ 0 };
+			uint32_t vertexOffset_[MAX_VERTEX_BUFFER_COUNT]{ 0 };
 
-			static MaterialQuality textureQuality_;
+			Container::SharedPtr<Texture> defaultTextures[MAX_TEXTURE_CLASS];
+			ID3D11ShaderResourceView* shaderResourceView_[MAX_TEXTURE_CLASS]{ 0 };
+			ID3D11SamplerState* samplerState_[MAX_TEXTURE_CLASS]{ 0 };
 
-			static ID3D11Buffer* vertexBuffers_[MAX_VERTEX_BUFFER_COUNT];
-			static uint32_t vertexSize_[MAX_VERTEX_BUFFER_COUNT];
-			static uint32_t vertexOffset_[MAX_VERTEX_BUFFER_COUNT];
+			const Container::Vector<Container::SharedPtr<VertexBuffer>>* cacheVertexBuffers_{ nullptr };
+			Shader* cacheVSShader_{ nullptr };
 
-			static Container::SharedPtr<Texture> defaultTextures[MAX_TEXTURE_CLASS];
-			static ID3D11ShaderResourceView* shaderResourceView_[MAX_TEXTURE_CLASS];
-			static ID3D11SamplerState* samplerState_[MAX_TEXTURE_CLASS];
+			Container::HashMap<uint64_t, Container::SharedPtr<VertexFormat>> vertexFormatCache_;
 
-			static const Container::Vector<Container::SharedPtr<VertexBuffer>>* cacheVertexBuffers_;
-			static Shader* cacheVSShader_;
-
-			static Container::HashMap<uint64_t, Container::SharedPtr<VertexFormat>> vertexFormatCache_;
+			static RenderEngine* renderEngine_;
 		};
 	}
 }

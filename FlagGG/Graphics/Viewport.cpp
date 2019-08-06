@@ -65,7 +65,7 @@ namespace FlagGG
 			d3d11Viewport.MinDepth = 0.0f;
 			d3d11Viewport.MaxDepth = 1.0f;
 
-			RenderEngine::GetDeviceContext()->RSSetViewports(1, &d3d11Viewport);
+			RenderEngine::Instance()->GetDeviceContext()->RSSetViewports(1, &d3d11Viewport);
 		}
 
 		Camera* Viewport::GetCamera() const

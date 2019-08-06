@@ -10,29 +10,6 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		ID3D11Device* RenderEngine::device_ = nullptr;
-
-		ID3D11DeviceContext* RenderEngine::deviceContext_ = nullptr;
-
-		ID3D11RasterizerState* RenderEngine::rasterizerState_ = nullptr;
-
-		ID3D11Buffer* RenderEngine::constBuffer_[MAX_CONST_BUFFER_COUNT] = { 0 };
-
-		MaterialQuality RenderEngine::textureQuality_ = QUALITY_HIGH;
-
-		ID3D11Buffer* RenderEngine::vertexBuffers_[MAX_VERTEX_BUFFER_COUNT] = { 0 };
-		uint32_t RenderEngine::vertexSize_[MAX_VERTEX_BUFFER_COUNT] = { 0 };
-		uint32_t RenderEngine::vertexOffset_[MAX_VERTEX_BUFFER_COUNT] = { 0 };
-
-		Container::SharedPtr<Texture> RenderEngine::defaultTextures[MAX_TEXTURE_CLASS];
-		ID3D11ShaderResourceView* RenderEngine::shaderResourceView_[MAX_TEXTURE_CLASS] = { 0 };
-		ID3D11SamplerState* RenderEngine::samplerState_[MAX_TEXTURE_CLASS] = { 0 };
-
-		const Container::Vector<Container::SharedPtr<VertexBuffer>>* RenderEngine::cacheVertexBuffers_ = nullptr;
-		Shader* RenderEngine::cacheVSShader_ = nullptr;
-
-		Container::HashMap<uint64_t, Container::SharedPtr<VertexFormat>> RenderEngine::vertexFormatCache_;
-
 		struct MatrixData
 		{
 			Math::Matrix3x4 world_;
@@ -537,5 +514,12 @@ namespace FlagGG
 
 			RenderEnd(viewport);
 		}
+
+		RenderEngine* RenderEngine::Instance()
+		{
+			return renderEngine_;
+		}
+
+		RenderEngine* RenderEngine::renderEngine_ = new RenderEngine();
 	}
 }

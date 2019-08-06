@@ -198,7 +198,7 @@ namespace FlagGG
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 
-			HRESULT hr = RenderEngine::GetDevice()->CreateSamplerState(&samplerDesc, &sampler_);
+			HRESULT hr = RenderEngine::Instance()->GetDevice()->CreateSamplerState(&samplerDesc, &sampler_);
 			if (hr != 0)
 			{
 				FLAGGG_LOG_ERROR("CreateSamplerState failed.");

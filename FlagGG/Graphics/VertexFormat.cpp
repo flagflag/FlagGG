@@ -68,7 +68,7 @@ namespace FlagGG
 
 			ID3DBlob* shaderBlob = VSShader->GetByteCode();
 			ID3D11InputLayout* inputLayout;
-			HRESULT hr = RenderEngine::GetDevice()->CreateInputLayout(&elementDescs[0], elementDescs.Size(),
+			HRESULT hr = RenderEngine::Instance()->GetDevice()->CreateInputLayout(&elementDescs[0], elementDescs.Size(),
 				shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &inputLayout);
 			if (FAILED(hr))
 			{

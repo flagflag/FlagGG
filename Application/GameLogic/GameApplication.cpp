@@ -109,7 +109,7 @@ void GameApplication::SetupWindow()
 	viewport->SetRenderTarget(renderTexture_[0]->GetRenderSurface());
 	viewport->SetDepthStencil(renderTexture_[1]->GetRenderSurface());
 	viewports_.Push(viewport);
-	RenderEngine::SetDefaultTextures(TEXTURE_CLASS_ENVIRONMENT, renderTexture_[0]);
+	RenderEngine::Instance()->SetDefaultTextures(TEXTURE_CLASS_ENVIRONMENT, renderTexture_[0]);
 
 	window_ = new Window(context_, nullptr, rect);
 	window_->Show();

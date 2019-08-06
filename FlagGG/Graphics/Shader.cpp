@@ -174,7 +174,7 @@ namespace FlagGG
 				{
 					ID3D11VertexShader* vertexShader;
 
-					HRESULT hr = RenderEngine::GetDevice()->CreateVertexShader(
+					HRESULT hr = RenderEngine::Instance()->GetDevice()->CreateVertexShader(
 						shaderCode_->GetBufferPointer(),
 						shaderCode_->GetBufferSize(),
 						nullptr,
@@ -195,7 +195,7 @@ namespace FlagGG
 				{
 					ID3D11PixelShader* pixelShader;
 
-					HRESULT hr = RenderEngine::GetDevice()->CreatePixelShader(
+					HRESULT hr = RenderEngine::Instance()->GetDevice()->CreatePixelShader(
 						shaderCode_->GetBufferPointer(),
 						shaderCode_->GetBufferSize(),
 						nullptr,

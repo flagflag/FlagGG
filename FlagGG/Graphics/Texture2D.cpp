@@ -29,7 +29,7 @@ namespace FlagGG
 			memset(&textureDesc, 0, sizeof textureDesc);
 			textureDesc.Format = (DXGI_FORMAT)(sRGB_ ? GetSRGBFormat(format_) : format_);
 
-			if (multiSample_ > 1 && RenderEngine::CheckMultiSampleSupport(textureDesc.Format, multiSample_))
+			if (multiSample_ > 1 && RenderEngine::Instance()->CheckMultiSampleSupport(textureDesc.Format, multiSample_))
 			{
 				multiSample_ = 1;
 				autoResolve_ = false;
@@ -49,7 +49,7 @@ namespace FlagGG
 			textureDesc.MipLevels = (multiSample_ == 1 && usage_ != TEXTURE_DYNAMIC) ? levels_ : 1;
 			textureDesc.ArraySize = 1;
 			textureDesc.SampleDesc.Count = (UINT)multiSample_;
-			textureDesc.SampleDesc.Quality = RenderEngine::GetMultiSampleQuality(textureDesc.Format, multiSample_);
+			textureDesc.SampleDesc.Quality = RenderEngine::Instance()->GetMultiSampleQuality(textureDesc.Format, multiSample_);
 
 			textureDesc.Usage = usage_ == TEXTURE_DYNAMIC ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
 			textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
@@ -63,13 +63,13 @@ namespace FlagGG
 			}
 			textureDesc.CPUAccessFlags = usage_ == TEXTURE_DYNAMIC ? D3D11_CPU_ACCESS_WRITE : 0;
 
-			if (usage_ == TEXTURE_DEPTHSTENCIL && multiSample_ > 1 && RenderEngine::GetDevice()->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_1)
+			if (usage_ == TEXTURE_DEPTHSTENCIL && multiSample_ > 1 && RenderEngine::Instance()->GetDevice()->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_1)
 			{
 				textureDesc.BindFlags &= ~D3D11_BIND_SHADER_RESOURCE;
 			}
 
 			ID3D11Texture2D* texture2D = nullptr;
-			HRESULT hr = RenderEngine::GetDevice()->CreateTexture2D(&textureDesc, nullptr, &texture2D);
+			HRESULT hr = RenderEngine::Instance()->GetDevice()->CreateTexture2D(&textureDesc, nullptr, &texture2D);
 			if (FAILED(hr))
 			{
 				FLAGGG_LOG_ERROR("Failed to create texture2d.");
@@ -89,7 +89,7 @@ namespace FlagGG
 					textureDesc.MiscFlags |= D3D11_RESOURCE_MISC_GENERATE_MIPS;
 				}
 
-				HRESULT hr = RenderEngine::GetDevice()->CreateTexture2D(&textureDesc, nullptr, (ID3D11Texture2D**)&resolveTexture_);
+				HRESULT hr = RenderEngine::Instance()->GetDevice()->CreateTexture2D(&textureDesc, nullptr, (ID3D11Texture2D**)&resolveTexture_);
 				if (FAILED(hr))
 				{
 					FLAGGG_LOG_ERROR("Failed to create resolve texture.");
@@ -107,7 +107,7 @@ namespace FlagGG
 				resourceViewDesc.Texture2D.MipLevels = usage_ != TEXTURE_DYNAMIC ? (UINT)levels_ : 1;
 
 				ID3D11Resource* viewObject = resolveTexture_ ? resolveTexture_ : GetObject<ID3D11Resource>();
-				hr = RenderEngine::GetDevice()->CreateShaderResourceView(viewObject, &resourceViewDesc, &shaderResourceView_);
+				hr = RenderEngine::Instance()->GetDevice()->CreateShaderResourceView(viewObject, &resourceViewDesc, &shaderResourceView_);
 				if (FAILED(hr))
 				{
 					FLAGGG_LOG_ERROR("Failed to create shader resource view.");
@@ -124,7 +124,7 @@ namespace FlagGG
 				renderTargetViewDesc.ViewDimension = multiSample_ > 1 ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
 
 				ID3D11RenderTargetView* renderTargetView;
-				hr = RenderEngine::GetDevice()->CreateRenderTargetView(GetObject<ID3D11Resource>(), &renderTargetViewDesc, &renderTargetView);
+				hr = RenderEngine::Instance()->GetDevice()->CreateRenderTargetView(GetObject<ID3D11Resource>(), &renderTargetViewDesc, &renderTargetView);
 				if (FAILED(hr))
 				{
 					FLAGGG_LOG_ERROR("Failed to create rendertarget view.");
@@ -141,7 +141,7 @@ namespace FlagGG
 				depthStencilViewDesc.ViewDimension = multiSample_ > 1 ? D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D;
 
 				ID3D11DepthStencilView* depthStencilView;
-				hr = RenderEngine::GetDevice()->CreateDepthStencilView(GetObject<ID3D11Resource>(), &depthStencilViewDesc, &depthStencilView);
+				hr = RenderEngine::Instance()->GetDevice()->CreateDepthStencilView(GetObject<ID3D11Resource>(), &depthStencilViewDesc, &depthStencilView);
 				if (FAILED(hr))
 				{
 					FLAGGG_LOG_ERROR("Failed to create depth-stencil view.");
@@ -150,10 +150,10 @@ namespace FlagGG
 				}
 				renderSurface_->ResetHandler(depthStencilView);
 
-				if (RenderEngine::GetDevice()->GetFeatureLevel() >= D3D_FEATURE_LEVEL_11_0)
+				if (RenderEngine::Instance()->GetDevice()->GetFeatureLevel() >= D3D_FEATURE_LEVEL_11_0)
 				{
 					depthStencilViewDesc.Flags = D3D11_DSV_READ_ONLY_DEPTH;
-					hr = RenderEngine::GetDevice()->CreateDepthStencilView(GetObject<ID3D11Resource>(), &depthStencilViewDesc,
+					hr = RenderEngine::Instance()->GetDevice()->CreateDepthStencilView(GetObject<ID3D11Resource>(), &depthStencilViewDesc,
 						(ID3D11DepthStencilView**)&renderSurface_->readOnlyView_);
 					if (FAILED(hr))
 					{
@@ -264,7 +264,7 @@ namespace FlagGG
 				D3D11_MAPPED_SUBRESOURCE mappedData;
 				mappedData.pData = nullptr;
 
-				HRESULT hr = RenderEngine::GetDeviceContext()->Map(GetObject<ID3D11Resource>(),
+				HRESULT hr = RenderEngine::Instance()->GetDeviceContext()->Map(GetObject<ID3D11Resource>(),
 					subResource, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 
 				if (FAILED(hr) || !mappedData.pData)
@@ -277,7 +277,7 @@ namespace FlagGG
 					for (int32_t row = 0; row < height; ++row)
 					{
 						memcpy((uint8_t*)mappedData.pData + (row + y) * mappedData.RowPitch + rowStart, src + row * rowSize, rowSize);
-						RenderEngine::GetDeviceContext()->Unmap(GetObject<ID3D11Resource>(), subResource);
+						RenderEngine::Instance()->GetDeviceContext()->Unmap(GetObject<ID3D11Resource>(), subResource);
 					}
 				}
 			}
@@ -291,7 +291,7 @@ namespace FlagGG
 				destBox.front = 0;
 				destBox.back = 1;
 
-				RenderEngine::GetDeviceContext()->UpdateSubresource(GetObject<ID3D11Resource>(), subResource, &destBox, data, rowSize, 0);
+				RenderEngine::Instance()->GetDeviceContext()->UpdateSubresource(GetObject<ID3D11Resource>(), subResource, &destBox, data, rowSize, 0);
 			}
 
 			return true;
@@ -307,7 +307,7 @@ namespace FlagGG
 
 			Container::SharedPtr<FlagGG::Resource::Image> mipImage;
 			uint32_t memoryUse = sizeof(Texture2D);
-			MaterialQuality quality = RenderEngine::GetTextureQuality();
+			MaterialQuality quality = RenderEngine::Instance()->GetTextureQuality();
 
 			if (!image->IsCompressed())
 			{
@@ -483,7 +483,7 @@ namespace FlagGG
 			textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 
 			ID3D11Texture2D* stagingTexture = nullptr;
-			HRESULT hr = RenderEngine::GetDevice()->CreateTexture2D(&textureDesc, nullptr, &stagingTexture);
+			HRESULT hr = RenderEngine::Instance()->GetDevice()->CreateTexture2D(&textureDesc, nullptr, &stagingTexture);
 			if (FAILED(hr))
 			{
 				FLAGGG_LOG_ERROR("Failed to create staging texture for GetData", hr);
@@ -501,7 +501,7 @@ namespace FlagGG
 			srcBox.bottom = (UINT)levelHeight;
 			srcBox.front = 0;
 			srcBox.back = 1;
-			RenderEngine::GetDeviceContext()->CopySubresourceRegion(stagingTexture, 0, 0, 0, 0, srcResource,
+			RenderEngine::Instance()->GetDeviceContext()->CopySubresourceRegion(stagingTexture, 0, 0, 0, 0, srcResource,
 				srcSubResource, &srcBox);
 
 			D3D11_MAPPED_SUBRESOURCE mappedData;
@@ -509,7 +509,7 @@ namespace FlagGG
 			unsigned rowSize = GetRowDataSize(levelWidth);
 			unsigned numRows = (unsigned)(IsCompressed() ? (levelHeight + 3) >> 2 : levelHeight);
 
-			hr = RenderEngine::GetDeviceContext()->Map((ID3D11Resource*)stagingTexture, 0, D3D11_MAP_READ, 0, &mappedData);
+			hr = RenderEngine::Instance()->GetDeviceContext()->Map((ID3D11Resource*)stagingTexture, 0, D3D11_MAP_READ, 0, &mappedData);
 			if (FAILED(hr) || !mappedData.pData)
 			{
 				FLAGGG_LOG_ERROR("Failed to map staging texture for GetData", hr);
@@ -522,7 +522,7 @@ namespace FlagGG
 				memcpy((unsigned char*)dest + row * rowSize, (unsigned char*)mappedData.pData + row * mappedData.RowPitch, rowSize);
 			}
 
-			RenderEngine::GetDeviceContext()->Unmap((ID3D11Resource*)stagingTexture, 0);
+			RenderEngine::Instance()->GetDeviceContext()->Unmap((ID3D11Resource*)stagingTexture, 0);
 			SAFE_RELEASE(stagingTexture);
 
 			return true;		

@@ -26,7 +26,7 @@ namespace FlagGG
 	void GameEngine::Start()
 	{
 		WindowDevice::Initialize();
-		RenderEngine::Initialize();
+		RenderEngine::Instance()->Initialize();
 
 		CreateCoreObject();
 
@@ -53,7 +53,7 @@ namespace FlagGG
 
 		for (const auto& viewport : viewports_)
 		{
-			RenderEngine::Render(viewport);
+			RenderEngine::Instance()->Render(viewport);
 		}
 
 		context_->SendEvent<Frame::FRAME_END_HANDLER>(Frame::FRAME_END, timeStep);
@@ -72,6 +72,6 @@ namespace FlagGG
 		isRunning_ = false;
 
 		WindowDevice::Uninitialize();
-		RenderEngine::Uninitialize();
+		RenderEngine::Instance()->Uninitialize();
 	}
 }
