@@ -1,5 +1,6 @@
 #include "GPUBuffer.h"
 #include "Graphics/RenderEngine.h"
+#include "IOFrame/Buffer/StringBuffer.h"
 #include "Log.h"
 
 namespace FlagGG
@@ -48,12 +49,39 @@ namespace FlagGG
 				FLAGGG_LOG_ERROR("Failed to Map buffer data.");
 				return nullptr;
 			}
-			return mappedData.pData;
+			return (char*)mappedData.pData + start;
 		}
 
 		void GPUBuffer::Unlock()
 		{
 			RenderEngine::Instance()->GetDeviceContext()->Unmap(GetObject<ID3D11Buffer>(), 0);
+		}
+
+		IOFrame::Buffer::IOBuffer* GPUBuffer::LockStaticBuffer(uint32_t start, uint32_t count)
+		{
+			void* data = Lock(start, count);
+			buffer_ = new IOFrame::Buffer::StringBuffer(data, count);
+			return buffer_;
+		}
+
+		void GPUBuffer::UnlockStaticBuffer()
+		{
+			buffer_.Reset();
+			Unlock();
+		}
+
+		IOFrame::Buffer::IOBuffer* GPUBuffer::LockDynamicBuffer()
+		{
+			buffer_ = new IOFrame::Buffer::StringBuffer();
+			return buffer_;
+		}
+
+		void GPUBuffer::UnlockDynamicBuffer()
+		{
+			void* data = Lock(0, buffer_->GetSize());
+			buffer_->ReadStream(data, buffer_->GetSize());
+			Unlock();
+			buffer_.Reset();
 		}
 	}
 }

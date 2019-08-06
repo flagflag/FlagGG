@@ -2,6 +2,7 @@
 #include "Graphics/GraphicsDef.h"
 #include "Graphics/GPUObject.h"
 #include "Container/RefCounted.h"
+#include "IOFrame/Buffer/IOBuffer.h"
 
 namespace FlagGG
 {
@@ -18,10 +19,20 @@ namespace FlagGG
 
 			void Unlock();
 
+			IOFrame::Buffer::IOBuffer* LockStaticBuffer(uint32_t start, uint32_t count);
+
+			void UnlockStaticBuffer();
+
+			IOFrame::Buffer::IOBuffer* LockDynamicBuffer();
+
+			void UnlockDynamicBuffer();
+
 			virtual uint32_t GetBindFlags() = 0;
 
 		protected:
 			void Initialize() override;
+
+			Container::SharedPtr<IOFrame::Buffer::IOBuffer> buffer_;
 		};
 	}
 }

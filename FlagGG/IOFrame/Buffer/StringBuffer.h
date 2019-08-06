@@ -40,6 +40,7 @@ namespace FlagGG
 
 				uint32_t index_;
 				uint32_t bufferSize_;
+				uint32_t capacity_;
 			};
 		}
 	}

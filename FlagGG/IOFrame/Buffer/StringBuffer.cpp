@@ -12,7 +12,8 @@ namespace FlagGG
 				cBuffer_(nullptr),
 				ccBuffer_(nullptr),
 				index_(0u),
-				bufferSize_(0u)
+				bufferSize_(0u),
+				capacity_(0u)
 			{ }
 
 			StringBuffer::StringBuffer(void* data, uint32_t length) :
@@ -21,7 +22,8 @@ namespace FlagGG
 				cBuffer_(static_cast<char*>(data)),
 				ccBuffer_(static_cast<char*>(data)),
 				index_(0u),
-				bufferSize_(length)
+				bufferSize_(length),
+				capacity_(length)
 			{ }
 
 			StringBuffer::StringBuffer(const void* data, uint32_t length) :
@@ -30,7 +32,8 @@ namespace FlagGG
 				cBuffer_(nullptr),
 				ccBuffer_(static_cast<const char*>(data)),
 				index_(0u),
-				bufferSize_(length)
+				bufferSize_(length),
+				capacity_(length)
 			{ }
 
 			uint32_t StringBuffer::GetIndex() const
@@ -66,11 +69,11 @@ namespace FlagGG
 			uint32_t StringBuffer::WriteStream(const void* data, uint32_t dataSize)
 			{
 				if (readOnly_) return 0;
-				if (index_ + dataSize >= bufferSize_)
+				if (index_ + dataSize >= capacity_)
 				{
 					if (sizeFixed_) return 0;
-					bufferSize_ <<= 1u;
-					auto* newBuffer = static_cast<char*>(realloc(cBuffer_, sizeof(char)* bufferSize_));
+					capacity_ = (index_ + dataSize) << 1u;
+					auto* newBuffer = static_cast<char*>(realloc(cBuffer_, sizeof(char)* capacity_));
 					if (!newBuffer)
 					{
 						throw "Failed to realloc buffer!";
@@ -79,6 +82,7 @@ namespace FlagGG
 				}
 				memcpy(cBuffer_ + index_, data, dataSize);
 				index_ += dataSize;
+				bufferSize_ = index_;
 				return dataSize;
 			}
 
