@@ -31,6 +31,8 @@ namespace FlagGG
 		CreateCoreObject();
 
 		isRunning_ = true;
+		elapsedTime_ = 0.0f;
+		timer_.Reset();
 	}
 
 	bool GameEngine::IsRunning()
@@ -42,6 +44,7 @@ namespace FlagGG
 	{
 		uint32_t deltaTime = timer_.GetMilliSeconds(true);
 		float timeStep = (float)deltaTime / 1000.0f;
+		elapsedTime_ += timeStep;
 
 		context_->SendEvent<Frame::FRAME_BEGIN_HANDLER>(Frame::FRAME_BEGIN, timeStep);
 
@@ -50,6 +53,9 @@ namespace FlagGG
 		context_->SendEvent<Frame::LOGIC_UPDATE_HANDLER>(Frame::LOGIC_UPDATE, timeStep);
 
 		WindowDevice::Render();
+
+		RenderEngine::Instance()->GetShaderParameters().SetValue(SP_DELTA_TIME, timeStep);
+		RenderEngine::Instance()->GetShaderParameters().SetValue(SP_ELAPSED_TIME, elapsedTime_);
 
 		for (const auto& viewport : viewports_)
 		{

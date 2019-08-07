@@ -34,7 +34,7 @@ namespace FlagGG
 
 			Container::SharedPtr<IOFrame::Buffer::IOBuffer> buffer_;
 
-			uint32_t gpuBufferSize_{ 0 };
+			uint32_t gpuBufferSize_{ 0u };
 		};
 	}
 }

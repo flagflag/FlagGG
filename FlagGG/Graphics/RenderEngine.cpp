@@ -18,6 +18,15 @@ namespace FlagGG
 			Math::Matrix4	projection_;
 		};
 
+		RenderEngine::RenderEngine()
+		{
+			shaderParameters_.AddParametersDefine<float>(SP_DELTA_TIME);
+			shaderParameters_.AddParametersDefine<float>(SP_ELAPSED_TIME);
+			shaderParameters_.AddParametersDefine<Math::Vector3>(SP_CAMERA_POS);
+			shaderParameters_.AddParametersDefine<Math::Vector3>(SP_LIGHT_POS);
+			shaderParameters_.AddParametersDefine<Math::Vector3>(SP_LIGHT_DIR);
+		}
+
 		void RenderEngine::CreateDevice()
 		{
 			unsigned createDeviceFlags = 0;
@@ -295,31 +304,48 @@ namespace FlagGG
 			return 64;
 		}
 
-		void RenderEngine::UpdateMatrix(Camera* camera, const RenderContext* renderContext)
+		ShaderParameters& RenderEngine::GetShaderParameters()
 		{
-			if (!camera) return;
-			if (!renderContext || !renderContext->worldTransform_ || !renderContext->numWorldTransform_) return;
+			return shaderParameters_;
+		}
 
-			auto* buffer = constBuffer_[CONST_SHADER_PARAM].LockDynamicBuffer();
-			IOFrame::Buffer::WriteMatrix3x4(buffer, *renderContext->worldTransform_);
-			IOFrame::Buffer::WriteMatrix4x4(buffer, camera->GetViewMatrix().Transpose());
-			IOFrame::Buffer::WriteMatrix4x4(buffer, camera->GetProjectionMatrix().Transpose());
-			constBuffer_[CONST_SHADER_PARAM].UnlockDynamicBuffer();
-			constGPUBuffer_[CONST_SHADER_PARAM] = constBuffer_[CONST_SHADER_PARAM].GetObject<ID3D11Buffer>();
+		void RenderEngine::SetShaderParameter(Camera* camera, const RenderContext* renderContext)
+		{
+			if (!renderContext)
+				return;
 
-			if (renderContext->geometryType_ == GEOMETRY_SKINNED)
-			{			
-				uint32_t realNum = Math::Min(GetMaxBonesNum(), renderContext->numWorldTransform_);
-				uint32_t dataSize = realNum * sizeof(Math::Matrix3x4);
-				constBuffer_[CONST_BUFFER_SKIN].SetSize(dataSize);
-				auto* buffer = constBuffer_[CONST_BUFFER_SKIN].LockStaticBuffer(0, dataSize);
-				buffer->WriteStream(renderContext->worldTransform_, dataSize);
-				constBuffer_[CONST_BUFFER_SKIN].UnlockStaticBuffer();
-				constGPUBuffer_[CONST_BUFFER_SKIN] = constBuffer_[CONST_BUFFER_SKIN].GetObject<ID3D11Buffer>();
+			for (uint32_t i = 0; i < MAX_CONST_BUFFER; ++i)
+			{
+				constGPUBuffer_[i] = nullptr;
 			}
 
-			uint32_t bufferNumber = renderContext->geometryType_ == GEOMETRY_STATIC ? 1 : 2;
-			deviceContext_->VSSetConstantBuffers(0, bufferNumber, constGPUBuffer_);
+			// 世界信息，蒙皮信息
+			if (camera && renderContext->worldTransform_ && renderContext->numWorldTransform_)
+			{
+				auto* buffer = constBuffer_[CONST_BUFFER_WORLD].LockDynamicBuffer();
+				IOFrame::Buffer::WriteMatrix3x4(buffer, *renderContext->worldTransform_);
+				IOFrame::Buffer::WriteMatrix4x4(buffer, camera->GetViewMatrix().Transpose());
+				IOFrame::Buffer::WriteMatrix4x4(buffer, camera->GetProjectionMatrix().Transpose());
+				constBuffer_[CONST_BUFFER_WORLD].UnlockDynamicBuffer();
+				constGPUBuffer_[CONST_BUFFER_WORLD] = constBuffer_[CONST_BUFFER_WORLD].GetObject<ID3D11Buffer>();
+
+				if (renderContext->geometryType_ == GEOMETRY_SKINNED)
+				{
+					uint32_t realNum = Math::Min(GetMaxBonesNum(), renderContext->numWorldTransform_);
+					uint32_t dataSize = realNum * sizeof(Math::Matrix3x4);
+					constBuffer_[CONST_BUFFER_SKIN].SetSize(dataSize);
+					auto* buffer = constBuffer_[CONST_BUFFER_SKIN].LockStaticBuffer(0, dataSize);
+					buffer->WriteStream(renderContext->worldTransform_, dataSize);
+					constBuffer_[CONST_BUFFER_SKIN].UnlockStaticBuffer();
+					constGPUBuffer_[CONST_BUFFER_SKIN] = constBuffer_[CONST_BUFFER_SKIN].GetObject<ID3D11Buffer>();
+				}
+			}
+
+			// 通用的Shader参数
+			shaderParameters_.WriteToBuffer(&constBuffer_[CONST_BUFFER_COMMON]);
+			constGPUBuffer_[CONST_BUFFER_COMMON] = constBuffer_[CONST_BUFFER_COMMON].GetObject<ID3D11Buffer>();
+
+			deviceContext_->VSSetConstantBuffers(0, MAX_CONST_BUFFER, constGPUBuffer_);
 		}
 
 		void RenderEngine::SetVertexBuffers(const Container::Vector<Container::SharedPtr<VertexBuffer>>& vertexBuffers)
@@ -463,7 +489,7 @@ namespace FlagGG
 
 			for (const auto& renderContext : renderContexts)
 			{
-				UpdateMatrix(viewport->GetCamera(),  renderContext);
+				SetShaderParameter(viewport->GetCamera(), renderContext);
 				SetVertexShader(renderContext->vertexShader_);
 				SetPixelShader(renderContext->pixelShader_);
 				if (renderContext->texture_)
@@ -485,9 +511,12 @@ namespace FlagGG
 
 		RenderEngine* RenderEngine::Instance()
 		{
+			if (!renderEngine_)
+				renderEngine_ = new RenderEngine();
+
 			return renderEngine_;
 		}
 
-		RenderEngine* RenderEngine::renderEngine_ = new RenderEngine();
+		RenderEngine* RenderEngine::renderEngine_ = nullptr;
 	}
 }

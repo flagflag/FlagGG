@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Export.h"
+#include "Container/StringHash.h"
 
 #include <stdint.h>
 
@@ -95,3 +96,9 @@ enum
 };
 
 extern FlagGG_API VertexElement DEFAULT_VERTEX_ELEMENT[MAX_DEFAULT_VERTEX_ELEMENT];
+
+extern FlagGG_API const FlagGG::Container::StringHash SP_DELTA_TIME;
+extern FlagGG_API const FlagGG::Container::StringHash SP_ELAPSED_TIME;
+extern FlagGG_API const FlagGG::Container::StringHash SP_CAMERA_POS;
+extern FlagGG_API const FlagGG::Container::StringHash SP_LIGHT_POS;
+extern FlagGG_API const FlagGG::Container::StringHash SP_LIGHT_DIR;

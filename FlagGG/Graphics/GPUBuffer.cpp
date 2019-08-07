@@ -23,6 +23,12 @@ namespace FlagGG
 
 			gpuBufferSize_ = byteCount;
 
+			if (byteCount == 0)
+			{
+				ResetHandler(nullptr);
+				return false;
+			}
+
 			D3D11_BUFFER_DESC bufferDesc;
 			memset(&bufferDesc, 0, sizeof(bufferDesc));
 			bufferDesc.BindFlags = GetBindFlags();
@@ -46,6 +52,9 @@ namespace FlagGG
 
 		void* GPUBuffer::Lock(uint32_t start, uint32_t count)
 		{
+			if (gpuBufferSize_ == 0)
+				return nullptr;
+
 			D3D11_MAPPED_SUBRESOURCE mappedData;
 			memset(&mappedData, 0, sizeof mappedData);
 			HRESULT hr = RenderEngine::Instance()->GetDeviceContext()->Map(GetObject<ID3D11Buffer>(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
@@ -59,6 +68,9 @@ namespace FlagGG
 
 		void GPUBuffer::Unlock()
 		{
+			if (gpuBufferSize_ == 0)
+				return;
+
 			RenderEngine::Instance()->GetDeviceContext()->Unmap(GetObject<ID3D11Buffer>(), 0);
 		}
 

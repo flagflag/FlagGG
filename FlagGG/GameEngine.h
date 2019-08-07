@@ -42,6 +42,7 @@ namespace FlagGG
 		Vector<SharedPtr<Viewport>> viewports_;
 
 		SystemHelper::Timer timer_;
+		float elapsedTime_{ 0.0f };
 
 		bool isRunning_{ false };
 

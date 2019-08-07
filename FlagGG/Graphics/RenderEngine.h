@@ -7,6 +7,7 @@
 #include "Graphics/VertexFormat.h"
 #include "Graphics/RenderContext.h"
 #include "Graphics/ConstBuffer.h"
+#include "Graphics/ShaderParameter.h"
 #include "Resource/Image.h"
 #include "Container/HashMap.h"
 
@@ -30,6 +31,8 @@ namespace FlagGG
 		class FlagGG_API RenderEngine
 		{
 		public:
+			RenderEngine();
+
 			void Initialize();
 
 			void Uninitialize();
@@ -83,10 +86,19 @@ namespace FlagGG
 			/// Return the API-specific texture format from a textual description, for example "rgb".
 			static uint32_t GetFormat(const Container::String& formatName);
 
-			// ×î´ó¹Ç÷ÀÊý
+			// æœ€å¤§éª¨éª¼æ•°
 			static uint32_t GetMaxBonesNum();
 
-			void UpdateMatrix(Camera* camera, const RenderContext* renderContext);
+			ShaderParameters& GetShaderParameters();
+
+			void SetDefaultTextures(TextureClass index, Texture* texture);
+
+			void Render(Viewport* viewport);
+
+			static RenderEngine* Instance();
+
+		protected:
+			void SetShaderParameter(Camera* camera, const RenderContext* renderContext);
 
 			void SetVertexBuffers(const Container::Vector<Container::SharedPtr<VertexBuffer>>& vertexBuffers);
 
@@ -100,8 +112,6 @@ namespace FlagGG
 
 			void SetTextures(const Container::Vector<Container::SharedPtr<Texture>>& textures);
 
-			void SetDefaultTextures(TextureClass index, Texture* texture);
-
 			void SetPrimitiveType(PrimitiveType primitiveType);
 
 			void DrawCall(uint32_t indexStart, uint32_t indexCount);
@@ -110,17 +120,14 @@ namespace FlagGG
 
 			void RenderEnd(Viewport* viewport);
 
-			void Render(Viewport* viewport);
-
 			VertexFormat* CacheVertexFormat(Shader* VSShader, VertexBuffer** vertexBuffer);
-
-			static RenderEngine* Instance();
 
 		private:
 			enum ConstBufferType
 			{
-				CONST_SHADER_PARAM = 0,
+				CONST_BUFFER_WORLD = 0,
 				CONST_BUFFER_SKIN,
+				CONST_BUFFER_COMMON,
 				MAX_CONST_BUFFER,
 			};
 
@@ -149,6 +156,8 @@ namespace FlagGG
 			Shader* cacheVSShader_{ nullptr };
 
 			Container::HashMap<uint64_t, Container::SharedPtr<VertexFormat>> vertexFormatCache_;
+
+			ShaderParameters shaderParameters_;
 
 			static RenderEngine* renderEngine_;
 		};

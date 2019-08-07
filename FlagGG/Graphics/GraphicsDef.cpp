@@ -57,3 +57,10 @@ VertexElement DEFAULT_VERTEX_ELEMENT[] =
 	VertexElement(VE_VECTOR4, SEM_TEXCOORD, 6, true),			// instance matrix3
 	VertexElement(VE_INT, SEM_OBJECT_INDEX, 0, false),			// object index
 };
+
+const FlagGG::Container::StringHash SP_DELTA_TIME("DeltaTime");
+const FlagGG::Container::StringHash SP_ELAPSED_TIME("ElapsedTime");
+const FlagGG::Container::StringHash SP_CAMERA_POS("CameraPos");
+const FlagGG::Container::StringHash SP_LIGHT_POS("LightPos");
+const FlagGG::Container::StringHash SP_LIGHT_DIR("LightDir");
+
