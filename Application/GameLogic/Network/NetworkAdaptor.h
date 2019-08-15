@@ -44,6 +44,8 @@ public:
 
 	void SendMessage(const void* data, uint32_t dataSize);
 
+	bool IsActive() const;
+
 protected:
 	void ChannelRegisterd(IOFrame::Context::IOContextPtr context) override;
 

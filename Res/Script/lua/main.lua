@@ -1,22 +1,28 @@
---require 'LAS'
+require 'LAS.init'
 
 log.info('finish loading LAS.')
 
-network.init(0, 
-function()
-    log.info('network opend.')
-    network.send(0, '2333', 4)
-end,
-function()
-    log.info('network closed.')
-end,
-function(error_code, error_message)
-    log.info('network error[' .. error_code .. ',' .. error_message .. '].')
-end,
-function(buffer)
-    log.info('network message[' .. buffer .. '].')
+las.tcp.opend = function()
+
+end
+
+las.tcp.closed = function()
+
+end
+
+las.tcp.error = function()
+
+end
+
+las.tcp.message = function()
+
+end
+
+las.run(function()
+    las.tcp.init()
+    las.wait(las.tcp.connect)('127.0.0.1', 5000)
+    log.info('connect result: ' .. las.tcp.is_active())
 end)
 
-network.connect(0, '127.0.0.1', 5000)
 
 

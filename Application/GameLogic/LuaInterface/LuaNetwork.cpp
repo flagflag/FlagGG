@@ -16,6 +16,7 @@ LuaNetwork::LuaNetwork(Context* context) :
 			LUA_API_PROXY(LuaNetwork, Connect, "connect"),
 			LUA_API_PROXY(LuaNetwork, Disconnect, "disconnect"),
 			LUA_API_PROXY(LuaNetwork, Send, "send"),
+			LUA_API_PROXY(LuaNetwork, IsActive, "is_active"),
 		}
 	);
 
@@ -66,6 +67,14 @@ int LuaNetwork::Send(LuaVM* luaVM)
 	if (network)
 		network->SendMessage(data, dataSize);
 	return 0;
+}
+
+int LuaNetwork::IsActive(LuaVM* luaVM)
+{
+	uint32_t networkType = luaVM->Get<uint32_t>(1);
+	auto* network = network_[networkType];
+	luaVM->Set<bool>(network && network->IsActive());
+	return 1;
 }
 
 void LuaNetwork::OnOpend(NetworkType type, IOFrame::Context::IOContextPtr context)

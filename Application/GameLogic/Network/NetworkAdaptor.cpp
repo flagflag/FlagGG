@@ -47,6 +47,11 @@ void Network::SendMessage(const void* data, uint32_t dataSize)
 	connector_->Write(buffer);
 }
 
+bool Network::IsActive() const
+{
+	return true;
+}
+
 void Network::ChannelRegisterd(IOFrame::Context::IOContextPtr context)
 {
 

@@ -24,6 +24,8 @@ protected:
 	
 	int Send(LuaVM* luaVM);
 
+	int IsActive(LuaVM* luaVM);
+
 	void OnOpend(NetworkType type, IOFrame::Context::IOContextPtr context);
 
 	void OnClosed(NetworkType type, IOFrame::Context::IOContextPtr context);
