@@ -140,17 +140,17 @@ namespace FlagGG
 			ID3D11RasterizerState* rasterizerState_{ nullptr };
 
 			ConstBuffer constBuffer_[MAX_CONST_BUFFER_COUNT];
-			ID3D11Buffer* constGPUBuffer_[MAX_CONST_BUFFER_COUNT]{ 0 };
+			ID3D11Buffer* constGPUBuffer_[MAX_CONST_BUFFER_COUNT];
 
 			MaterialQuality textureQuality_{ QUALITY_HIGH };
 
-			ID3D11Buffer* vertexBuffers_[MAX_VERTEX_BUFFER_COUNT]{ 0 };
-			uint32_t vertexSize_[MAX_VERTEX_BUFFER_COUNT]{ 0 };
-			uint32_t vertexOffset_[MAX_VERTEX_BUFFER_COUNT]{ 0 };
+			ID3D11Buffer* vertexBuffers_[MAX_VERTEX_BUFFER_COUNT];
+			uint32_t vertexSize_[MAX_VERTEX_BUFFER_COUNT];
+			uint32_t vertexOffset_[MAX_VERTEX_BUFFER_COUNT];
 
 			Container::SharedPtr<Texture> defaultTextures[MAX_TEXTURE_CLASS];
-			ID3D11ShaderResourceView* shaderResourceView_[MAX_TEXTURE_CLASS]{ 0 };
-			ID3D11SamplerState* samplerState_[MAX_TEXTURE_CLASS]{ 0 };
+			ID3D11ShaderResourceView* shaderResourceView_[MAX_TEXTURE_CLASS];
+			ID3D11SamplerState* samplerState_[MAX_TEXTURE_CLASS];
 
 			const Container::Vector<Container::SharedPtr<VertexBuffer>>* cacheVertexBuffers_{ nullptr };
 			Shader* cacheVSShader_{ nullptr };
