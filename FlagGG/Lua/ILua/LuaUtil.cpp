@@ -52,7 +52,7 @@ namespace FlagGG
 			return 0;
 		}
 
-		bool CallImpl(lua_State *L, const Container::String& eventName, int paramCount, int returnCount)
+		bool CallImpl(lua_State *L, int paramCount, int returnCount)
 		{
 			int pos = lua_gettop(L) - paramCount;
 			lua_pushcfunction(L, TrackBack);

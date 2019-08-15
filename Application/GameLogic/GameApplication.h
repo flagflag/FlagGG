@@ -35,6 +35,7 @@ protected:
 	void CreateScene();
 	void SetupWindow();
 	void OpenLuaVM();
+	void CreateNetwork();
 
 	void OnKeyDown(KeyState* keyState, unsigned keyCode);
 	void OnKeyUp(KeyState* keyState, unsigned keyCode);
@@ -60,5 +61,7 @@ private:
 	SharedPtr<LuaLog> logModule_;
 	SharedPtr<LuaNetwork> networkModule_;
 
-	SharedPtr<Network> network_;
+	SharedPtr<Network> tcpNetwork_;
+	SharedPtr<Network> udpNetwork_;
+	SharedPtr<Network> webNetwork_;
 };

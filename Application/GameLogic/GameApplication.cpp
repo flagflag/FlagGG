@@ -17,8 +17,7 @@ static int End(lua_State* L)
 
 GameApplication::GameApplication(LJSONValue commandParam) :
 	commandParam_(commandParam),
-	luaVM_(new LuaVM()),
-	network_(new Network())
+	luaVM_(new LuaVM())
 { }
 
 void GameApplication::Start()
@@ -28,9 +27,12 @@ void GameApplication::Start()
 	CreateScene();
 	SetupWindow();
 	OpenLuaVM();
+	CreateNetwork();
 
 	context_->RegisterVariable<LuaVM>(luaVM_, "LuaVM");
-	context_->RegisterVariable<Network>(network_, "Network");
+	context_->RegisterVariable<Network>(tcpNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_TCP]);
+	context_->RegisterVariable<Network>(udpNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_UDP]);
+	context_->RegisterVariable<Network>(webNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_WEB]);
 
 	logModule_ = new LuaLog(context_);
 	networkModule_ = new LuaNetwork(context_);
@@ -144,6 +146,13 @@ void GameApplication::OpenLuaVM()
 	{
 		return;
 	}
+}
+
+void GameApplication::CreateNetwork()
+{
+	tcpNetwork_ = new Network(context_, NETWORK_TYPE_TCP);
+	udpNetwork_ = new Network(context_, NETWORK_TYPE_UDP);
+	webNetwork_ = new Network(context_, NETWORK_TYPE_WEB);
 }
 
 void GameApplication::OnKeyDown(KeyState* keyState, unsigned keyCode)

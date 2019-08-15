@@ -2,8 +2,7 @@
 #define __ERROR_CODE__
 
 #include "Export.h"
-
-#include <string>
+#include "Container/Str.h"
 
 namespace FlagGG
 {
@@ -14,7 +13,7 @@ namespace FlagGG
 
 		virtual int Value() const = 0;
 
-		virtual std::string Message() const = 0;
+		virtual Container::String Message() const = 0;
 	};
 }
 

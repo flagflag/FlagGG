@@ -24,11 +24,11 @@ namespace FlagGG
 			public:
 				IOError(boost::system::error_code error_code);
 
-				virtual ~IOError() { }
+				~IOError() { }
 
-				virtual int Value() const override;
+				int Value() const override;
 
-				virtual std::string Message() const override;
+				Container::String Message() const override;
 
 			private:
 				boost::system::error_code errorCode_;

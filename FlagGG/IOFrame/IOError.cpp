@@ -15,9 +15,9 @@ namespace FlagGG
 				return errorCode_.value();
 			}
 
-			std::string IOError::Message() const
+			Container::String IOError::Message() const
 			{
-				return std::move(errorCode_.message());
+				return errorCode_.message().c_str();
 			}
 		}
 	}

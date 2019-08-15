@@ -2,14 +2,39 @@
 
 #include <IOFrame/IOFrame.h>
 #include <Container/Str.h>
+#include <Core/EventDefine.h>
+#include <Core/Context.h>
 
 using namespace FlagGG;
 using namespace FlagGG::Container;
+using namespace FlagGG::Core;
+
+enum NetworkType
+{
+	NETWORK_TYPE_TCP = 0,
+	NETWORK_TYPE_UDP,
+	NETWORK_TYPE_WEB,
+	NETWORK_TYPE_MAX,
+};
+
+static const char* NETWORK_TYPE_NAME[] = {
+	"TCPNetwork",
+	"UDPNetwork",
+	"WebNetwork",
+};
+
+namespace NetworkEvent
+{
+	DEFINE_EVENT(OPEND, void(NetworkType, IOFrame::Context::IOContextPtr));
+	DEFINE_EVENT(CLOSED, void(NetworkType, IOFrame::Context::IOContextPtr));
+	DEFINE_EVENT(CATCH_ERROR, void(NetworkType, IOFrame::Context::IOContextPtr, const ErrorCode*));
+	DEFINE_EVENT(MESSAGE_RECIVED, void(NetworkType, IOFrame::Context::IOContextPtr, IOFrame::Buffer::IOBufferPtr));
+}
 
 class Network : public IOFrame::Handler::EventHandler
 {
 public:
-	Network();
+	Network(Context* context_, NetworkType type);
 
 	~Network() override;
 
@@ -28,10 +53,14 @@ protected:
 
 	void MessageRecived(IOFrame::Context::IOContextPtr context, IOFrame::Buffer::IOBufferPtr buffer) override;
 
-	void ErrorCatch(IOFrame::Context::IOContextPtr context, const ErrorCode& error_code) override;
+	void ErrorCatch(IOFrame::Context::IOContextPtr context, const ErrorCode& errorCode) override;
 
 private:
+	Context* context_;
+
 	IOFrame::IOThreadPoolPtr threadPool_;
 
 	IOFrame::Connector::IOConnectorPtr connector_;
+
+	NetworkType type_;
 };

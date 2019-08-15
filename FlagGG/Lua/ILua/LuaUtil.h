@@ -11,7 +11,7 @@ namespace FlagGG
 	{
 		FlagGG_API bool GetGameEvent(lua_State* L, const Container::String& eventName);
 
-		FlagGG_API bool CallImpl(lua_State* L, const Container::String& eventName, int paramCount, int returnCount);
+		FlagGG_API bool CallImpl(lua_State* L, int paramCount, int returnCount);
 
 		template < int returnCount = 0, class ... Args >
 		bool Call(lua_State *L, const Container::String& eventName, const Args& ... args)
@@ -23,7 +23,7 @@ namespace FlagGG
 
 			SetParam(L, args ...);
 
-			return CallImpl(L, eventName, sizeof...(args), returnCount);
+			return CallImpl(L, sizeof...(args), returnCount);
 		}
 
 		FlagGG_API void SetParam(lua_State* L);
