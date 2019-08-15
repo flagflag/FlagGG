@@ -13,4 +13,6 @@
 #define NOEXCEPT
 #endif
 
+#define INIT_ARRAY(ARRAY, VALUE) for (auto& ITEM : ARRAY) ITEM = VALUE;
+
 #endif

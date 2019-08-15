@@ -51,6 +51,12 @@ void GameApplication::Start()
 	}
 
 	FLAGGG_LOG_INFO("start application.");
+
+	const String luaCodePath = commandParam_["CodePath"].GetString();
+	if (!luaVM_->Execute(luaCodePath + "/main.lua"))
+	{
+		FLAGGG_LOG_ERROR("Failed to execute main.lua.");
+	}
 }
 
 void GameApplication::Stop()
@@ -139,13 +145,6 @@ void GameApplication::OpenLuaVM()
 		C_LUA_API_PROXY(Begin, "main_begin"),
 		C_LUA_API_PROXY(Begin, "main_end")
 	});
-
-	const String luaCodePath = commandParam_["CodePath"].GetString();
-
-	if (!luaVM_->Execute(luaCodePath + "/main.lua"))
-	{
-		return;
-	}
 }
 
 void GameApplication::CreateNetwork()

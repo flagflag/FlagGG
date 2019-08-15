@@ -21,6 +21,8 @@ protected:
 	int Connect(LuaVM* luaVM);
 
 	int Disconnect(LuaVM* luaVM);
+	
+	int Send(LuaVM* luaVM);
 
 	void OnOpend(NetworkType type, IOFrame::Context::IOContextPtr context);
 
@@ -33,11 +35,12 @@ protected:
 private:
 	Context* context_;
 
-	bool initialized[NETWORK_TYPE_MAX]{ false };
+	bool initialized[NETWORK_TYPE_MAX];
 	LuaFunction openCall[NETWORK_TYPE_MAX];
 	LuaFunction closeCall[NETWORK_TYPE_MAX];
 	LuaFunction errorCall[NETWORK_TYPE_MAX];
 	LuaFunction messageCall[NETWORK_TYPE_MAX];
+	Network* network_[NETWORK_TYPE_MAX];
 
 	String messageBuffer_;
 };

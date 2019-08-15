@@ -8,6 +8,7 @@ Network::Network(Context* context, NetworkType type) :
 	{
 	case NETWORK_TYPE_TCP:
 		threadPool_ = IOFrame::TCP::CreateThreadPool(1);
+		threadPool_->Start();
 		connector_ = IOFrame::TCP::CreateConnector(this, threadPool_);
 		break;
 

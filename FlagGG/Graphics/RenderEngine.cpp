@@ -18,14 +18,15 @@ namespace FlagGG
 			Math::Matrix4	projection_;
 		};
 
-		RenderEngine::RenderEngine() :
-			constGPUBuffer_{ 0 },
-			vertexBuffers_{ 0 },
-			vertexSize_{ 0 },
-			vertexOffset_{ 0 },
-			shaderResourceView_{ 0 },
-			samplerState_{ 0 }
+		RenderEngine::RenderEngine()
 		{
+			INIT_ARRAY(constGPUBuffer_, nullptr);
+			INIT_ARRAY(vertexBuffers_, nullptr);
+			INIT_ARRAY(vertexSize_, 0);
+			INIT_ARRAY(vertexOffset_, 0);
+			INIT_ARRAY(shaderResourceView_, nullptr);
+			INIT_ARRAY(samplerState_, nullptr);
+
 			shaderParameters_.AddParametersDefine<float>(SP_DELTA_TIME);
 			shaderParameters_.AddParametersDefine<float>(SP_ELAPSED_TIME);
 			shaderParameters_.AddParametersDefine<Math::Vector3>(SP_CAMERA_POS);

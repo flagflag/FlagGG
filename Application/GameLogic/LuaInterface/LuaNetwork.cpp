@@ -4,6 +4,9 @@
 LuaNetwork::LuaNetwork(Context* context) :
 	context_(context)
 {
+	INIT_ARRAY(initialized, false);
+	INIT_ARRAY(network_, nullptr);
+
 	LuaVM* luaVM = context->GetVariable<LuaVM>("LuaVM");
 	luaVM->RegisterCPPEvents(
 		"network",
@@ -11,7 +14,8 @@ LuaNetwork::LuaNetwork(Context* context) :
 		{
 			LUA_API_PROXY(LuaNetwork, Init, "init"),
 			LUA_API_PROXY(LuaNetwork, Connect, "connect"),
-			LUA_API_PROXY(LuaNetwork, Disconnect, "disconnect")
+			LUA_API_PROXY(LuaNetwork, Disconnect, "disconnect"),
+			LUA_API_PROXY(LuaNetwork, Send, "send"),
 		}
 	);
 
@@ -29,6 +33,7 @@ int LuaNetwork::Init(LuaVM* luaVM)
 	closeCall[networkType] = luaVM->Get<LuaFunction>(3);
 	errorCall[networkType] = luaVM->Get<LuaFunction>(4);
 	messageCall[networkType] = luaVM->Get<LuaFunction>(5);
+	network_[networkType] = context_->GetVariable<Network>(NETWORK_TYPE_NAME[networkType]);
 	return 0;
 }
 
@@ -37,15 +42,29 @@ int LuaNetwork::Connect(LuaVM* luaVM)
 	uint32_t networkType = luaVM->Get<uint32_t>(1);
 	const char* ip = luaVM->Get<const char*>(2);
 	auto port = luaVM->Get<uint16_t>(3);
-	auto* network = context_->GetVariable<Network>(NETWORK_TYPE_NAME[networkType]);
-	network->Connect(ip, port);
+	auto* network = network_[networkType];
+	if (network)
+		network->Connect(ip, port);
 	return 0;
 }
 
 int LuaNetwork::Disconnect(LuaVM* luaVM)
 {
-	auto* network = context_->GetVariable<Network>("Network");
-	network->Disconnect();
+	uint32_t networkType = luaVM->Get<uint32_t>(1);
+	auto* network = network_[networkType];
+	if (network)
+		network->Disconnect();
+	return 0;
+}
+
+int LuaNetwork::Send(LuaVM* luaVM)
+{
+	uint32_t networkType = luaVM->Get<uint32_t>(1);
+	const char* data = luaVM->Get<const char*>(2);
+	uint32_t dataSize = luaVM->Get<uint32_t>(3);
+	auto* network = network_[networkType];
+	if (network)
+		network->SendMessage(data, dataSize);
 	return 0;
 }
 
