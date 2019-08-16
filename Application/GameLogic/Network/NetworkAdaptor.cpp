@@ -37,7 +37,7 @@ void Network::Connect(const String& ip, uint16_t port)
 
 void Network::Disconnect()
 {
-	
+	connector_->Disconnect();
 }
 
 void Network::SendMessage(const void* data, uint32_t dataSize)

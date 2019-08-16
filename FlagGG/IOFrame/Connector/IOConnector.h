@@ -19,6 +19,8 @@ namespace FlagGG
 
 				virtual bool Connect(const char* ip, uint16_t port) = 0;
 
+				virtual bool Disconnect() = 0;
+
 				virtual bool Write(Buffer::IOBufferPtr buffer) = 0;
 			};
 

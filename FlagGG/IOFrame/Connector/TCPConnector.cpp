@@ -19,6 +19,12 @@ namespace FlagGG
 				return channel_->Connect(ip, port);
 			}
 
+			bool TCPConnector::Disconnect()
+			{
+				channel_->Close();
+				return true;
+			}
+
 			bool TCPConnector::Write(Buffer::IOBufferPtr buffer)
 			{
 				return channel_->Write(buffer);

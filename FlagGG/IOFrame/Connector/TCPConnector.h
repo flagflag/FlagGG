@@ -22,6 +22,8 @@ namespace FlagGG
 
 				bool Connect(const char* ip, uint16_t port) override;
 
+				bool Disconnect() override;
+
 				bool Write(Buffer::IOBufferPtr buffer) override;
 
 			private:
