@@ -5,47 +5,54 @@ local NETWORK_TYPE = {
     WEB = 2,
 }
 
-las.tcp = {
-    init = function()
-        network.init(NETWORK_TYPE.TCP,
+local function create_network(net_type)
+    local object = {}
+    object.init = function()
+        network.init(net_type,
             function()
-                if las.tcp.opend then
-                    las.tcp.opend()
-                    las.tcp.co_opend()
+                if object.opend then
+                    object.opend()
+                    object.co_opend()
                 end
             end,
             function()
-                if las.tcp.closed then
-                    las.tcp.closed()
+                if object.closed then
+                    object.closed()
                 end
             end,
             function(error_code, error_message)
-                if las.tcp.error then
-                    las.tcp.error()
+                if object.error then
+                    object.error()
                 end
             end,
             function()
-                if las.tcp.message then
-                    las.tcp.message()
+                if object.message then
+                    object.message()
                 end
             end
         )
-    end,
-
-    connect = function(ip, port, callback)
-        las.tcp.co_opend = callback
-        network.connect(NETWORK_TYPE.TCP, ip, port)
-    end,
-
-    disconnect = function()
-        network.disconnect(NETWORK_TYPE.TCP)
-    end,
-
-    send = function(buffer)
-        network.send(NETWORK_TYPE.TCP, buffer, len(buffer))
+    end
+    
+    object.connect = function(ip, port, callback)
+        object.co_opend = callback
+        network.connect(net_type, ip, port)
+    end
+    
+    object.disconnect = function()
+        network.disconnect(net_type)
+    end
+    
+    object.send = function(buffer)
+        network.send(net_type, buffer, len(buffer))
+    end
+    
+    object.is_active = function()
+        return network.is_active(net_type)
     end
 
-    is_active = function()
-        return network.is_active(NETWORK_TYPE.TCP)
-    end
-}
+    return object
+end
+
+las.tcp = create_network(NETWORK_TYPE.TCP)
+las.udp = create_network(NETWORK_TYPE.UDP)
+las.web = create_network(NETWORK_TYPE.WEB)

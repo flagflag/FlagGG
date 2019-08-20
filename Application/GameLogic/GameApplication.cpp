@@ -53,7 +53,8 @@ void GameApplication::Start()
 	FLAGGG_LOG_INFO("start application.");
 
 	const String luaCodePath = commandParam_["CodePath"].GetString();
-	if (!luaVM_->Execute(luaCodePath + "/main.lua"))
+	luaVM_->SetLoaderPath(luaCodePath);
+	if (!luaVM_->Execute(luaCodePath + "main.lua"))
 	{
 		FLAGGG_LOG_ERROR("Failed to execute main.lua.");
 	}
@@ -99,6 +100,9 @@ void GameApplication::CreateScene()
 
 void GameApplication::SetupWindow()
 {
+	if (commandParam_.Contains("NoWindow"))
+		return;
+
 	cameraOpt_ = new CameraOperation(context_);
 
 	IntRect rect(100, 100, 1000, 1000);
