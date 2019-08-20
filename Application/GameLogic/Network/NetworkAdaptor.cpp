@@ -23,8 +23,11 @@ Network::Network(Context* context, NetworkType type) :
 
 Network::~Network()
 {
-	threadPool_->Stop();
-	threadPool_->WaitForStop();
+	if (threadPool_)
+	{
+		threadPool_->Stop();
+		threadPool_->WaitForStop();
+	}
 
 	threadPool_.Reset();
 	connector_.Reset();
