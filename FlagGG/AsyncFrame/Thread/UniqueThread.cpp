@@ -29,7 +29,6 @@ namespace FlagGG
 			static THREAD_RETURN THREAD_MARK ThreadFunc(THREAD_PARAM inParam)
 			{
 				ThreadParam* param = (ThreadParam*)inParam;
-				
 				if (param && param->thread_func)
 				{
 					param->thread_func();
@@ -59,13 +58,14 @@ namespace FlagGG
 					pthread_mutex_init(&mutex_, nullptr);
 					pthread_cond_init(&cond_, nullptr);
 					param->pcond = &cond_;
-					pthread_t thread_id;
-					if (0 == pthread_create((pthread_t*)handle_, nullptr, ThreadFunc, param))
+					pthread_t* thread_id = new pthread_t();
+					if (0 == pthread_create(thread_id, nullptr, ThreadFunc, param))
 					{
-						handle_ = &thread_id;
+						handle_ = thread_id;
 					}
 					else
 					{
+						delete thread_id;
 						FLAGGG_LOG_ERROR("create thread failed!");
 					}
 #endif
@@ -77,6 +77,11 @@ namespace FlagGG
 #if !WIN32 && !WIN64
 				pthread_mutex_destroy(&mutex_);
 				pthread_cond_destroy(&cond_);
+				if (handle_)
+				{
+					delete handle_;
+					handle_ = nullptr;
+				}
 #endif
 			}
 
@@ -86,7 +91,7 @@ namespace FlagGG
 #if WIN32 || WIN64
 				TerminateThread(handle_, -1);
 #else
-				if (!handle_)
+				if (handle_)
 				{
 					pthread_cancel(*((pthread_t*)handle_));
 				}
@@ -98,7 +103,7 @@ namespace FlagGG
 #if WIN32 || WIN64
 				WaitForSingleObject(handle_, INFINITE);
 #else
-				if(!handle_)
+				if (handle_)
 				{
 					pthread_join(*((pthread_t*)handle_), nullptr);
 				}
