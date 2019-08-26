@@ -1,4 +1,6 @@
+#ifdef WIN32
 #include <Graphics/RenderEngine.h>
+#endif
 #include <Log.h>
 
 #include "GameApplication.h"
@@ -38,12 +40,14 @@ void GameApplication::Start()
 	networkModule_ = new LuaNetwork(context_);
 
 	context_->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, GameApplication::Update, this));
+#ifdef WIN32
 	context_->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_DOWN, GameApplication::OnKeyDown, this));
 	context_->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, GameApplication::OnKeyUp, this));
 	context_->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_DOWN, GameApplication::OnMouseDown, this));
 	context_->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_UP, GameApplication::OnMouseUp, this));
 	context_->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_MOVE, GameApplication::OnMouseMove, this));
 	context_->RegisterEvent(EVENT_HANDLER(Application::WINDOW_CLOSE, GameApplication::WindowClose, this));
+#endif
 
 	if (commandParam_.Contains("FrameRate"))
 	{
@@ -62,7 +66,9 @@ void GameApplication::Start()
 
 void GameApplication::Stop()
 {
+#ifdef WIN32
 	WindowDevice::UnregisterWinMessage(window_);
+#endif
 
 	GameEngine::Stop();
 
@@ -76,6 +82,7 @@ void GameApplication::Update(float timeStep)
 
 void GameApplication::CreateScene()
 {
+#ifdef WIN32
 	scene_ = new FlagGG::Scene::Scene(context_);
 	scene_->Start();
 
@@ -96,10 +103,12 @@ void GameApplication::CreateScene()
 	water_->SetPosition(Vector3(0, -5, 10));
 	water_->SetScale(Vector3(1000, 1000, 1000));
 	scene_->AddChild(water_);
+#endif
 }
 
 void GameApplication::SetupWindow()
 {
+#ifdef WIN32
 	if (commandParam_.Contains("NoWindow"))
 		return;
 
@@ -132,6 +141,7 @@ void GameApplication::SetupWindow()
 	cameraOpt_->GetCamera()->SetFarClip(1000000000.0f);
 
 	WindowDevice::RegisterWinMessage(window_);
+#endif
 }
 
 void GameApplication::OpenLuaVM()
@@ -158,6 +168,7 @@ void GameApplication::CreateNetwork()
 	webNetwork_ = new Network(context_, NETWORK_TYPE_WEB);
 }
 
+#ifdef WIN32
 void GameApplication::OnKeyDown(KeyState* keyState, unsigned keyCode)
 {
 	// luaVM_->CallEvent("on_key_down", keyCode);
@@ -170,7 +181,6 @@ void GameApplication::OnKeyUp(KeyState* keyState, unsigned keyCode)
 		SharedPtr<Image> image = renderTexture_[0]->GetImage();
 		image->SavePNG("E:\\FlagGG_Scene.png");
 	}
-
 	// luaVM_->CallEvent("on_key_up", keyCode);
 }
 
@@ -193,3 +203,4 @@ void GameApplication::WindowClose(void* window)
 {
 	isRunning_ = false;
 }
+#endif

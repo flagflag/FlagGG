@@ -3,7 +3,7 @@
 
 #include "Export.h"
 #include "Container/Str.h"
-#include "Lua/ILua/StackCore.h"
+#include "Lua/ILua/StackSet.h"
 
 namespace FlagGG
 {

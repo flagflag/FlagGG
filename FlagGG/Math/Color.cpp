@@ -1,6 +1,7 @@
 #include "Color.h"
 #include "Math/Math.h"
 
+#include <math.h>
 #include <assert.h>
 
 namespace FlagGG

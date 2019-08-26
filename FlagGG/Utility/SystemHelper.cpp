@@ -11,6 +11,8 @@
 #include <limits.h>
 #include <dirent.h>
 #include <sys/time.h>
+#include <sys/stat.h>
+#include <errno.h>
 #define MAX_PATH NAME_MAX
 #endif
 
@@ -126,7 +128,7 @@ namespace FlagGG
 					return false;
 #else
 				struct stat st{};
-				if (stat(fixedName.CString(), &st) || st.st_mode & S_IFDIR)
+				if (stat(path.CString(), &st) || st.st_mode & S_IFDIR)
 					return false;
 #endif
 				return true;
@@ -140,7 +142,7 @@ namespace FlagGG
 					return false;
 #else
 				struct stat st{};
-				if (stat(fixedName.CString(), &st) || !(st.st_mode & S_IFDIR))
+				if (stat(path.CString(), &st) || !(st.st_mode & S_IFDIR))
 					return false;
 #endif
 				return true;

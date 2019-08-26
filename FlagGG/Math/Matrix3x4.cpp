@@ -1,6 +1,7 @@
 #include "Math/Matrix3x4.h"
 #include "Math/Math.h"
 
+#include <math.h>
 #include <cstdio>
 
 namespace FlagGG

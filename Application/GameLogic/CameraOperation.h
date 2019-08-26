@@ -1,3 +1,4 @@
+#ifdef WIN32
 #pragma once
 
 #include <Graphics/Camera.h>
@@ -39,3 +40,4 @@ private:
 
 	float walkSpeed_{ 5.0f };
 };
+#endif

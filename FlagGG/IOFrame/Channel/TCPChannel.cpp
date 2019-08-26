@@ -1,4 +1,7 @@
-﻿#include <boost/bind.hpp>
+﻿//linux可能会编译不过，所以把头文件引用放在这里！！！很关键！！！
+#include "Container/Ptr.h"
+
+#include <boost/bind.hpp>
 #include <boost/asio/placeholders.hpp>
 
 #include "TCPChannel.h"
@@ -232,7 +235,7 @@ namespace FlagGG
 
 			void TCPChannel::OnRegisterd(Handler::EventHandlerPtr handler)
 			{
-				handler_ = handler ? handler : Handler::NullEventHandlerPtr(new Handler::NullEventHandler);
+				handler_ = handler ? handler : Handler::EventHandlerPtr(new Handler::NullEventHandler);
 
 				Context::TCPContextPtr context(new Context::TCPContext(Container::SharedPtr<IOChannel>(this)));
 				handler_->ChannelRegisterd(context);

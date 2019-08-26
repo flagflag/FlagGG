@@ -34,14 +34,14 @@ namespace FlagGG
 #define FileAPI_Close(file) { fclose(FileHandler(file)); file = nullptr; }
 #define FileAPI_IsOpen(file) (file && !feof(FileHandler(file_)))
 #define FileAPI_SeekFromBegin(file, delta) fseek(FileHandler(file), delta, SEEK_SET)
-#define FileAPI_SeekToBegin(file) seek(FileHandler(file), 0, SEEK_SET)
+#define FileAPI_SeekToBegin(file) fseek(FileHandler(file), 0, SEEK_SET)
 #define FileAPI_SeekToEnd(file) fseek(FileHandler(file), 0, SEEK_END)
 #define FileAPI_Tell(file) ftell(FileHandler(file))
 #define FileAPI_SimpleRead(file, value) fread(&value, sizeof(value), 1, FileHandler(file))
 #define FileAPI_SimpleWrite(file, value) fwrite(&value, sizeof(value), 1, FileHandler(file))
 #define FileAPI_ReadStream(file, data, dataSize) (fread(data, dataSize, 1, FileHandler(file)) * dataSize)
 #define FileAPI_WriteStream(file, data, dataSize) (fwrite(data, dataSize, 1, FileHandler(file)) * dataSize)
-#define FileAPI_IsEof(file) (!!feof(FileHandler(file))))
+#define FileAPI_IsEof(file) (!!feof(FileHandler(file)))
 #endif
 
 			FileStream::FileStream() :

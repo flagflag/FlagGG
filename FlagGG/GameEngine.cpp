@@ -1,8 +1,9 @@
 #include "GameEngine.h"
-
+#ifdef WIN32
 #include "Graphics/RenderEngine.h"
-#include <Graphics/Camera.h>
 #include "Graphics/Window.h"
+#endif
+#include "Graphics/Camera.h"
 
 using namespace FlagGG::Math;
 
@@ -25,8 +26,10 @@ namespace FlagGG
 
 	void GameEngine::Start()
 	{
+#ifdef WIN32
 		WindowDevice::Initialize();
 		RenderEngine::Instance()->Initialize();
+#endif
 
 		CreateCoreObject();
 
@@ -48,10 +51,13 @@ namespace FlagGG
 
 		context_->SendEvent<Frame::FRAME_BEGIN_HANDLER>(Frame::FRAME_BEGIN, timeStep);
 
+#ifdef WIN32
 		WindowDevice::Update();
+#endif
 
 		context_->SendEvent<Frame::LOGIC_UPDATE_HANDLER>(Frame::LOGIC_UPDATE, timeStep);
 
+#ifdef WIN32
 		WindowDevice::Render();
 
 		RenderEngine::Instance()->GetShaderParameters().SetValue(SP_DELTA_TIME, timeStep);
@@ -61,6 +67,7 @@ namespace FlagGG
 		{
 			RenderEngine::Instance()->Render(viewport);
 		}
+#endif
 
 		context_->SendEvent<Frame::FRAME_END_HANDLER>(Frame::FRAME_END, timeStep);
 
@@ -77,7 +84,9 @@ namespace FlagGG
 	{
 		isRunning_ = false;
 
+#ifdef WIN32
 		WindowDevice::Uninitialize();
 		RenderEngine::Instance()->Uninitialize();
+#endif
 	}
 }

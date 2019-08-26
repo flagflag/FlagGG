@@ -15,6 +15,7 @@ message ("include dir: ${CMAKE_CURRENT_SOURCE_DIR}")
 # 在非windows上把Graphics排除，因为目前Graphics只写了windows的部分
 if (NOT FLAGGG_D3D11)
     list (APPEND EXCLUDED_SOURCE_DIRS Graphics)
+    list (APPEND EXCLUDED_SOURCE_DIRS Scene)
 endif ()
 # 输出排除的目录
 message ("exclude folder: ${EXCLUDED_SOURCE_DIRS}")

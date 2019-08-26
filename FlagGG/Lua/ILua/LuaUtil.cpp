@@ -1,4 +1,5 @@
 #include "Lua/ILua/LuaUtil.h"
+#include "Lua/ILua/LuaType.h"
 #include "Log.h"
 
 #include <lua.hpp>

@@ -1,3 +1,4 @@
+#ifdef WIN32
 #include "CameraOperation.h"
 
 #include <Windows.h>
@@ -167,4 +168,4 @@ void CameraOperation::HandleUpdate(float timeStep)
 		camera_->Roll(-0.000020);
 	}
 }
-
+#endif

@@ -10,7 +10,13 @@ include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 # find_package (FlagGG REQUIRED)
 include_directories (${FLAGGG_DIR})
 
-define_source_files (RECURSE GROUP)
+if (NOT FLAGGG_D3D11)
+    list (APPEND EXCLUDED_SOURCE_DIRS Unit)
+endif ()
+# 输出排除的目录
+message ("exclude folder: ${EXCLUDED_SOURCE_DIRS}")
+string (REPLACE ";" "/[^;]+;" EXCLUDE_PATTERNS "${EXCLUDED_SOURCE_DIRS};")
+define_source_files (EXCLUDE_PATTERNS ${EXCLUDE_PATTERNS} RECURSE GROUP)
 
 setup_main_executable ()
 

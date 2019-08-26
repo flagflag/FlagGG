@@ -2,6 +2,7 @@
 #define __LUA_TYPE__
 
 #include "Container/Str.h"
+#include "Lua/ILua/LuaUtil.h"
 
 #include <stdint.h>
 #include <lua.hpp>
@@ -39,7 +40,7 @@ namespace FlagGG
 
 			LuaFunction(const LuaFunction& func);
 
-			~LuaFunction();
+			virtual ~LuaFunction();
 
 			LuaFunction& operator=(const LuaFunction& func);
 

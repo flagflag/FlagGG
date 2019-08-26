@@ -5,8 +5,8 @@
 #include "Container/Ptr.h"
 #include "Container/Str.h"
 #include "Container/Vector.h"
+#include "Lua/ILua/LuaType.h"
 #include "Lua/ILua/StackCore.h"
-#include "Lua/ILua/LuaUtil.h"
 
 #include <stdint.h>
 #include <lua.hpp>
