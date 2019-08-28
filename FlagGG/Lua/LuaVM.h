@@ -60,6 +60,8 @@ namespace FlagGG
 
 			void SetLoaderPath(const Container::String& loaderPath);
 
+			friend class LuaVMGuard;
+
 		private:
 			lua_State* luaState_;
 		};

@@ -1,5 +1,6 @@
 #include "Lua/ILua/LuaUtil.h"
 #include "Lua/ILua/LuaType.h"
+#include "Lua/LuaVM.h"
 #include "Log.h"
 
 #include <lua.hpp>
@@ -71,5 +72,18 @@ namespace FlagGG
 		}
 
 		void SetParam(lua_State* L) {}
+
+
+		LuaVMGuard::LuaVMGuard(LuaVM* luaVM, lua_State* luaState) :
+			luaVM_(luaVM),
+			orginLuaState_(luaVM->luaState_)
+		{
+			luaVM_->luaState_ = luaState;
+		}
+
+		LuaVMGuard::~LuaVMGuard()
+		{
+			luaVM_->luaState_ = orginLuaState_;
+		}
 	}
 }

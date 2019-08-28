@@ -52,6 +52,18 @@ namespace FlagGG
 
 		class LuaVM;
 
+		class FlagGG_API LuaVMGuard
+		{
+		public:
+			LuaVMGuard(LuaVM* luaVM, lua_State* luaState);
+
+			~LuaVMGuard();
+
+		private:
+			LuaVM* luaVM_;
+			lua_State* orginLuaState_;
+		};
+
 		template < class T, int(T::*func)(LuaVM*) >
 		class LuaAPIBinder
 		{
@@ -66,6 +78,7 @@ namespace FlagGG
 			{
 				T* instance = static_cast<T*>(lua_touserdata(L, lua_upvalueindex(1)));
 				LuaVM* luaVM = static_cast<LuaVM*>(lua_touserdata(L, lua_upvalueindex(2)));
+				LuaVMGuard luaVMGuard(luaVM, L);
 				return (instance->*func)(luaVM);
 			}
 		};

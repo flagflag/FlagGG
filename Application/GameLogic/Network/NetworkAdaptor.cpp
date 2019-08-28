@@ -19,6 +19,8 @@ Network::Network(Context* context, NetworkType type) :
 
 		break;
 	}
+
+	context_->RegisterEvent(EVENT_HANDLER(Frame::FRAME_BEGIN, Network::HandleFrameBegin, this));
 }
 
 Network::~Network()
@@ -62,20 +64,43 @@ void Network::ChannelRegisterd(IOFrame::Context::IOContextPtr context)
 
 void Network::ChannelOpend(IOFrame::Context::IOContextPtr context)
 {
-	context_->SendEvent<NetworkEvent::OPEND_HANDLER>(NetworkEvent::OPEND, type_, context);
+	mainThreadFunc_.Push([=]()
+	{
+		context_->SendEvent<NetworkEvent::OPEND_HANDLER>(NetworkEvent::OPEND, type_, context);
+	});
 }
 
 void Network::ChannelClosed(IOFrame::Context::IOContextPtr context)
 {
-	context_->SendEvent<NetworkEvent::CLOSED_HANDLER>(NetworkEvent::CLOSED, type_, context);
+	mainThreadFunc_.Push([=]()
+	{
+		context_->SendEvent<NetworkEvent::CLOSED_HANDLER>(NetworkEvent::CLOSED, type_, context);
+	});
 }
 
 void Network::MessageRecived(IOFrame::Context::IOContextPtr context, IOFrame::Buffer::IOBufferPtr buffer)
 {
-	context_->SendEvent<NetworkEvent::MESSAGE_RECIVED_HANDLER>(NetworkEvent::MESSAGE_RECIVED, type_, context, buffer);
+	mainThreadFunc_.Push([=]()
+	{
+		context_->SendEvent<NetworkEvent::MESSAGE_RECIVED_HANDLER>(NetworkEvent::MESSAGE_RECIVED, type_, context, buffer);
+	});
 }
 
 void Network::ErrorCatch(IOFrame::Context::IOContextPtr context, const ErrorCode& errorCode)
 {
-	context_->SendEvent<NetworkEvent::CATCH_ERROR_HANDLER>(NetworkEvent::CATCH_ERROR, type_, context, &errorCode);
+	int value = errorCode.Value();
+	auto msg = errorCode.Message();
+	mainThreadFunc_.Push([=]()
+	{
+		context_->SendEvent<NetworkEvent::CATCH_ERROR_HANDLER>(NetworkEvent::CATCH_ERROR, type_, context, value, msg);
+	});
+}
+
+void Network::HandleFrameBegin(float timeStep)
+{
+	for (auto it = mainThreadFunc_.Begin(); it != mainThreadFunc_.End();)
+	{
+		(*it)();
+		it = mainThreadFunc_.Erase(it);
+	}
 }

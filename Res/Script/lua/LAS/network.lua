@@ -12,7 +12,10 @@ local function create_network(net_type)
             function()
                 if object.opend then
                     object.opend()
-                    object.co_opend()
+                end
+                if object.co_opend then
+                    object.co_opend(true)
+                    object.co_opend = nil
                 end
             end,
             function()
@@ -24,6 +27,10 @@ local function create_network(net_type)
                 if object.error then
                     object.error()
                 end
+                if object.co_opend then
+                    object.co_opend(false)
+                    object.co_opend = nil
+                end
             end,
             function()
                 if object.message then
@@ -34,8 +41,13 @@ local function create_network(net_type)
     end
     
     object.connect = function(ip, port, callback)
+        if object.co_opend then
+            log.info('is connecting...')
+            return false
+        end
         object.co_opend = callback
         network.connect(net_type, ip, port)
+        return true
     end
     
     object.disconnect = function()

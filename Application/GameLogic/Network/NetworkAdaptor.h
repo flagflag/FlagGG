@@ -2,6 +2,7 @@
 
 #include <IOFrame/IOFrame.h>
 #include <Container/Str.h>
+#include <Container/List.h>
 #include <Core/EventDefine.h>
 #include <Core/Context.h>
 
@@ -27,7 +28,7 @@ namespace NetworkEvent
 {
 	DEFINE_EVENT(OPEND, void(NetworkType, IOFrame::Context::IOContextPtr));
 	DEFINE_EVENT(CLOSED, void(NetworkType, IOFrame::Context::IOContextPtr));
-	DEFINE_EVENT(CATCH_ERROR, void(NetworkType, IOFrame::Context::IOContextPtr, const ErrorCode*));
+	DEFINE_EVENT(CATCH_ERROR, void(NetworkType, IOFrame::Context::IOContextPtr, int, Container::String));
 	DEFINE_EVENT(MESSAGE_RECIVED, void(NetworkType, IOFrame::Context::IOContextPtr, IOFrame::Buffer::IOBufferPtr));
 }
 
@@ -57,6 +58,8 @@ protected:
 
 	void ErrorCatch(IOFrame::Context::IOContextPtr context, const ErrorCode& errorCode) override;
 
+	void HandleFrameBegin(float timeStep);
+
 private:
 	Context* context_;
 
@@ -65,4 +68,6 @@ private:
 	IOFrame::Connector::IOConnectorPtr connector_;
 
 	NetworkType type_;
+
+	List<std::function<void()>> mainThreadFunc_;
 };

@@ -30,7 +30,7 @@ protected:
 
 	void OnClosed(NetworkType type, IOFrame::Context::IOContextPtr context);
 
-	void OnError(NetworkType type, IOFrame::Context::IOContextPtr context, const ErrorCode* error);
+	void OnError(NetworkType type, IOFrame::Context::IOContextPtr context, int errorCode, Container::String errorMsg);
 
 	void OnMessageRecived(NetworkType type, IOFrame::Context::IOContextPtr context, IOFrame::Buffer::IOBufferPtr buffer);
 
