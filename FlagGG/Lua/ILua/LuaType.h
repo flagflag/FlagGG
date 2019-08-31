@@ -47,6 +47,8 @@ namespace FlagGG
 			template < int returnCount = 0, class ... Args >
 			void operator()(Args ... args)
 			{
+				StackGuard guard(luaState_);
+
 				lua_rawgeti(luaState_, LUA_REGISTRYINDEX, ref_);
 				SetParam(luaState_, args ...);
 				CallImpl(luaState_, sizeof...(args), returnCount);
