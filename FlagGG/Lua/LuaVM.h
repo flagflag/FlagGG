@@ -4,6 +4,7 @@
 #include "Export.h"
 #include "Container/Ptr.h"
 #include "Container/Str.h"
+#include "Container/List.h"
 #include "Container/Vector.h"
 #include "Lua/ILua/LuaType.h"
 #include "Lua/ILua/StackCore.h"
@@ -64,6 +65,8 @@ namespace FlagGG
 
 		private:
 			lua_State* luaState_;
+
+			Container::List<lua_State*> callHistory_;
 		};
 	}
 }

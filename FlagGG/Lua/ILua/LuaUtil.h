@@ -61,7 +61,6 @@ namespace FlagGG
 
 		private:
 			LuaVM* luaVM_;
-			lua_State* orginLuaState_;
 		};
 
 		template < class T, int(T::*func)(LuaVM*) >

@@ -75,15 +75,16 @@ namespace FlagGG
 
 
 		LuaVMGuard::LuaVMGuard(LuaVM* luaVM, lua_State* luaState) :
-			luaVM_(luaVM),
-			orginLuaState_(luaVM->luaState_)
+			luaVM_(luaVM)
 		{
+			luaVM_->callHistory_.Push(luaState);
 			luaVM_->luaState_ = luaState;
 		}
 
 		LuaVMGuard::~LuaVMGuard()
 		{
-			luaVM_->luaState_ = orginLuaState_;
+			luaVM_->callHistory_.Pop();
+			luaVM_->luaState_ = luaVM_->callHistory_.Back();
 		}
 	}
 }

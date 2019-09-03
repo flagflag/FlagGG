@@ -19,6 +19,9 @@ namespace FlagGG
 		{
 			luaState_ = luaL_newstate();
 			luaL_openlibs(luaState_);
+
+			callHistory_.Clear();
+			callHistory_.Push(luaState_);
 		}
 
 		void LuaVM::Close()
@@ -28,6 +31,8 @@ namespace FlagGG
 				lua_close(luaState_);
 				luaState_ = nullptr;
 			}
+
+			callHistory_.Clear();
 		}
 
 		bool LuaVM::IsOpen() const
