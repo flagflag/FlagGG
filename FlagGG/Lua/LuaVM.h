@@ -49,6 +49,14 @@ namespace FlagGG
 				return FlagGG::Lua::Get<T>(luaState_, index);
 			}
 
+			template <>
+			LuaFunction Get<LuaFunction>(int index)
+			{
+				LuaFunction func = FlagGG::Lua::Get<LuaFunction>(luaState_, index);
+				func.luaState_ = callHistory_.Front();
+				return func;
+			}
+
 			template < class T >
 			void Set(const T& value)
 			{

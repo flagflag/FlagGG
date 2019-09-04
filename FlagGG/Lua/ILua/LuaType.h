@@ -54,6 +54,8 @@ namespace FlagGG
 				CallImpl(luaState_, sizeof...(args), returnCount);
 			}
 
+			friend class LuaVM;
+
 		protected:
 			void Release();
 

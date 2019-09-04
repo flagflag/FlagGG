@@ -21,8 +21,11 @@ end
 local result = las.run(function()
     las.tcp.init()
     local result = las.await(las.tcp.connect)('127.0.0.1', 5000)
-    log.info('connect result: ' .. result)
-    log.info('connect state: ' .. las.tcp.is_active())
+    if result then
+        log.info('connect result: true')
+    else
+        log.info('connect result: false')
+    end
 end)
 if not result then
     log.info('las.run ==> failed.')
