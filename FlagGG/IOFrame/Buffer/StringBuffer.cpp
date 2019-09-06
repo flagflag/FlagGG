@@ -1,4 +1,5 @@
 #include "IOFrame/Buffer/StringBuffer.h"
+#include "Math/Math.h"
 
 namespace FlagGG
 {
@@ -82,7 +83,7 @@ namespace FlagGG
 				}
 				memcpy(cBuffer_ + index_, data, dataSize);
 				index_ += dataSize;
-				bufferSize_ = index_;
+				bufferSize_ = Math::Max(bufferSize_, index_);
 				return dataSize;
 			}
 

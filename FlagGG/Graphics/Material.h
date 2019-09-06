@@ -3,6 +3,7 @@
 
 #include "Export.h"
 #include "Graphics/GraphicsDef.h"
+#include "Graphics/ShaderParameter.h"
 #include "Resource/Resource.h"
 #include "Math/Color.h"
 #include "Container/Ptr.h"
@@ -41,6 +42,8 @@ namespace FlagGG
 			Container::SharedPtr<Shader> vsShader_;
 
 			Container::SharedPtr<Shader> psShader_;
+
+			Container::SharedPtr<ShaderParameters> shaderParameters_;
 		};
 	}
 }
