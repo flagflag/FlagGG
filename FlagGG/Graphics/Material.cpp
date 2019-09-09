@@ -63,35 +63,47 @@ namespace FlagGG
 			{ T_MATRIX4,	sizeof(Matrix4) },
 		};
 
+		static const Container::HashMap<Container::StringHash, uint32_t> TYPE_COUNT =
+		{
+			{ T_INT,		1 },
+			{ T_INT32,		1 },
+			{ T_UINT32,		1 },
+			{ T_FLOAT,		1 },
+			{ T_COLOR,		4 },
+			{ T_RECT,		4 },
+			{ T_VECTOR2,	2 },
+			{ T_VECTOR3,	3 },
+			{ T_VECTOR4,	4 },
+			{ T_MATRIX3,	3 * 3 },
+			{ T_MATRIX3X4,	3 * 4 },
+			{ T_MATRIX4,	4 * 4 },
+		};
+
+		template < class Type >
+		void ToStream(const Config::LJSONValue& value, uint32_t count, IOFrame::Buffer::IOBuffer* stream)
+		{
+			if (value.IsNumber())
+			{
+				stream->WriteFloat(static_cast<Type>(value.GetFloat()));
+			}
+			else if (value.IsArray())
+			{
+				for (uint32_t i = 0; i < value.Size() && i < count; ++i)
+				{
+					stream->WriteFloat(static_cast<Type>(value[i].GetFloat()));
+				}
+			}
+		}
+
 		static void ToBuffer(const Container::String& typeStr, const Config::LJSONValue& value, Container::String& buffer)
 		{
 			uint32_t type = Container::StringHash(typeStr).ToHash();
 			uint32_t size = *TYPE_SIZE[type];
-			if (type == T_INT)
-			{
 
-			}
-			else if (type == T_INT32)
-			{
-
-			}
-			else if (type == T_UINT32)
-			{
-
-			}
-			else if (type == T_FLOAT)
-			{
-
-			}
-			else if (type == T_COLOR)
-			{
-
-			}
-			else if (type == T_RECT)
-			{
-
-			}
-			else if()
+			static IOFrame::Buffer::StringBuffer steam;
+			steam.Clear();
+			ToStream<float>(value, *TYPE_COUNT[type], &steam);
+			steam.ToString(buffer);
 		}
 
 		TextureClass ToTextureClass(const Container::String& name)

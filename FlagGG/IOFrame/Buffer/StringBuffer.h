@@ -26,6 +26,8 @@ namespace FlagGG
 
 				void Seek(uint32_t pos) override;
 
+				void Clear() override;
+
 				uint32_t ReadStream(void* data, uint32_t dataSize) override;
 				uint32_t WriteStream(const void* data, uint32_t dataSize) override;
 

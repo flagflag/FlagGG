@@ -23,6 +23,7 @@ namespace FlagGG
 				virtual void ClearIndex() = 0;
 				virtual void Seek(uint32_t pos) = 0;
 				virtual bool IsEof() = 0;
+				virtual void Clear() = 0;
 
 				virtual uint32_t ReadStream(void* data, uint32_t dataSize) = 0;
 				virtual uint32_t WriteStream(const void* data, uint32_t dataSize) = 0;

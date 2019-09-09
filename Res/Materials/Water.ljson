@@ -22,7 +22,7 @@
 		{
 			name = "speed",
 			type = vector2,
-			value = "20 20"
+			value = { 20 20 }
 		}
 	}
 }

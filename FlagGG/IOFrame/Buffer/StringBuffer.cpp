@@ -57,6 +57,14 @@ namespace FlagGG
 				index_ = pos;
 			}
 
+			void StringBuffer::Clear()
+			{
+				index_ = 0;
+				// 动态buffer，则重置下bufferSize
+				if (!sizeFixed_)
+					bufferSize_ = 0;
+			}
+
 			uint32_t StringBuffer::ReadStream(void* data, uint32_t dataSize)
 			{
 				if (index_ + dataSize <= bufferSize_)

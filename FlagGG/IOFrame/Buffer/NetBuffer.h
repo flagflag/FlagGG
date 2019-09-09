@@ -35,6 +35,9 @@ namespace FlagGG
 				// 先暂时留空，等需要用的时候在补上
 				void Seek(uint32_t pos) override { }
 
+				// 先暂时留空，等需要用的时候在补上
+				void Clear() override {}
+
 				void ReadInt8(int8_t& value) override;
 				void WriteInt8(int8_t value) override;
 

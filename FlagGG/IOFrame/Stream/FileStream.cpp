@@ -104,6 +104,11 @@ namespace FlagGG
 				FileAPI_SeekFromBegin(file_, pos);
 			}
 
+			void FileStream::Clear()
+			{
+				// ½«ÎÄ¼şÖÃ¿Õ£¬´ıÌî¿Ó
+			}
+
 			uint32_t FileStream::ReadStream(void* data, uint32_t dataSize)
 			{
 				return FileAPI_ReadStream(file_, data, dataSize);
