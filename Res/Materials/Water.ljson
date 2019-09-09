@@ -13,16 +13,16 @@
 		path = "Textures/WaterNoise.dds"
 	},
 	shader_parameters = 
-	{
+	[
 		{
 			name = "noise",
-			type = float,
+			type = "float",
 			value = 1
 		},
 		{
 			name = "speed",
-			type = vector2,
-			value = { 20 20 }
+			type = "vector2",
+			value = [ 20, 20 ]
 		}
-	}
+	]
 }

@@ -53,14 +53,14 @@ namespace FlagGG
 			{ T_INT32,		4 },
 			{ T_UINT32,		4 },
 			{ T_FLOAT,		4 },
-			{ T_COLOR,		sizeof(Color) },
-			{ T_RECT,		sizeof(Rect) },
-			{ T_VECTOR2,	sizeof(Vector2) },
-			{ T_VECTOR3,	sizeof(Vector3) },
-			{ T_VECTOR4,	sizeof(Vector4) },
-			{ T_MATRIX3,	sizeof(Matrix3) },
-			{ T_MATRIX3X4,	sizeof(Matrix3x4) },
-			{ T_MATRIX4,	sizeof(Matrix4) },
+			{ T_COLOR,		sizeof(Math::Color) },
+			{ T_RECT,		sizeof(Math::Rect) },
+			{ T_VECTOR2,	sizeof(Math::Vector2) },
+			{ T_VECTOR3,	sizeof(Math::Vector3) },
+			{ T_VECTOR4,	sizeof(Math::Vector4) },
+			{ T_MATRIX3,	sizeof(Math::Matrix3) },
+			{ T_MATRIX3X4,	sizeof(Math::Matrix3x4) },
+			{ T_MATRIX4,	sizeof(Math::Matrix4) },
 		};
 
 		static const Container::HashMap<Container::StringHash, uint32_t> TYPE_COUNT =
@@ -84,13 +84,13 @@ namespace FlagGG
 		{
 			if (value.IsNumber())
 			{
-				stream->WriteFloat(static_cast<Type>(value.GetFloat()));
+				stream->WriteFloat(static_cast<Type>(value.GetDouble()));
 			}
 			else if (value.IsArray())
 			{
 				for (uint32_t i = 0; i < value.Size() && i < count; ++i)
 				{
-					stream->WriteFloat(static_cast<Type>(value[i].GetFloat()));
+					stream->WriteFloat(static_cast<Type>(value[i].GetDouble()));
 				}
 			}
 		}
@@ -98,12 +98,13 @@ namespace FlagGG
 		static void ToBuffer(const Container::String& typeStr, const Config::LJSONValue& value, Container::String& buffer)
 		{
 			uint32_t type = Container::StringHash(typeStr).ToHash();
-			uint32_t size = *TYPE_SIZE[type];
 
 			static IOFrame::Buffer::StringBuffer steam;
 			steam.Clear();
 			ToStream<float>(value, *TYPE_COUNT[type], &steam);
-			steam.ToString(buffer);
+			buffer.Resize(*TYPE_SIZE[type]);
+			assert(steam.GetSize() <= buffer.Length());
+			steam.ReadStream(&buffer[0], steam.GetSize());
 		}
 
 		TextureClass ToTextureClass(const Container::String& name)
@@ -227,11 +228,11 @@ namespace FlagGG
 					return false;
 				}
 
-				shaderParameters_ = new ShaderParameters();
 				if (root.Contains("shader_parameters"))
 				{
+					shaderParameters_ = new ShaderParameters();
 					const Config::LJSONValue& parameter = root["shader_parameters"];
-					if (parameter.IsObject())
+					if (parameter.IsArray())
 					{
 						Container::String buffer;
 						for (uint32_t i = 0; i < parameter.Size(); ++i)
@@ -241,8 +242,8 @@ namespace FlagGG
 							auto type = item["type"].GetString().ToLower();
 
 							ToBuffer(type, item["value"], buffer);
-							shaderParameters_->AddParametersDefine(name, *TYPE_SIZE[type]);
-							shaderParameters_->SetValue(name, buffer.CString(), buffer.Length());
+							shaderParameters_->AddParametersDefineImpl(name, *TYPE_SIZE[type]);
+							shaderParameters_->SetValueImpl(name, buffer.CString(), buffer.Length());
 						}
 					}
 					else

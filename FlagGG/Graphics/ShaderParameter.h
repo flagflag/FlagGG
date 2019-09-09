@@ -25,18 +25,18 @@ namespace FlagGG
 			template < class Type >
 			bool AddParametersDefine(Container::StringHash key)
 			{
-				return AddParametersDefine(key, sizeof(Type));
+				return AddParametersDefineImpl(key, sizeof(Type));
 			}
 
-			bool AddParametersDefine(Container::StringHash key, uint32_t typeSize);
+			bool AddParametersDefineImpl(Container::StringHash key, uint32_t typeSize);
 
 			template < class Type >
 			bool SetValue(Container::StringHash key, Type value)
 			{
-				return SetValue(&value, sizeof(Type));
+				return SetValueImpl(key, &value, sizeof(Type));
 			}
 
-			bool SetValue(Container::StringHash key, const char* buffer, uint32_t bufferSize);
+			bool SetValueImpl(Container::StringHash key, const void* buffer, uint32_t bufferSize);
 
 		private:
 			Container::HashMap<Container::StringHash, ShaderParameterDesc> descs;

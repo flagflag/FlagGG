@@ -4,7 +4,7 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		bool ShaderParameters::AddParametersDefine(Container::StringHash key, uint32_t typeSize)
+		bool ShaderParameters::AddParametersDefineImpl(Container::StringHash key, uint32_t typeSize)
 		{
 			if (descs.Contains(key))
 				return false;
@@ -24,7 +24,7 @@ namespace FlagGG
 			return true;
 		}
 
-		bool ShaderParameters::SetValue(Container::StringHash key, const char* buffer, uint32_t bufferSize)
+		bool ShaderParameters::SetValueImpl(Container::StringHash key, const void* buffer, uint32_t bufferSize)
 		{
 			if (!dataBuffer_)
 				return false;
