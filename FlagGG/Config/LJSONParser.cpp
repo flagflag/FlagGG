@@ -1,5 +1,6 @@
 #include "LJSONParser.h"
 #include "Utility/Format.h"
+#include "Log.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
@@ -29,7 +30,7 @@ namespace FlagGG
 		{
 			for (uint32_t i = 0; i < errors_.Size(); ++i)
 			{
-				puts(errors_[i].CString());
+				FLAGGG_LOG_ERROR(errors_[i].CString());
 			}
 		}
 

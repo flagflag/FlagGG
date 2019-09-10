@@ -56,7 +56,7 @@ namespace FlagGG
 
 			if (hr != 0)
 			{
-				puts("D3D11CreateDevice failed.");
+				FLAGGG_LOG_ERROR("D3D11CreateDevice failed.");
 
 				SAFE_RELEASE(device_);
 				SAFE_RELEASE(deviceContext_);
@@ -84,7 +84,7 @@ namespace FlagGG
 			HRESULT hr = device_->CreateRasterizerState(&stateDesc, &rasterizerState_);
 			if (hr != 0)
 			{
-				puts("CreateRasterizerState failed.");
+				FLAGGG_LOG_ERROR("CreateRasterizerState failed.");
 
 				SAFE_RELEASE(rasterizerState_);
 
@@ -472,10 +472,10 @@ namespace FlagGG
 
 			auto* renderTargetView = viewport->GetRenderTarget()->GetObject<ID3D11RenderTargetView>();
 			auto* depthStencilView = viewport->GetDepthStencil()->GetObject<ID3D11DepthStencilView>();
-			float color[] = { 0.0, 0.0f, 0.0f, 1.0f };
+			static const Math::Color color(0.0f, 0.0f, 0.0f, 1.0f);
 
 			deviceContext_->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
-			deviceContext_->ClearRenderTargetView(renderTargetView, color);
+			deviceContext_->ClearRenderTargetView(renderTargetView, color.Data());
 			deviceContext_->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0, 0);
 		}
 

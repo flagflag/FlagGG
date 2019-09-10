@@ -21,7 +21,7 @@ namespace FlagGG
 			switch (message)
 			{
 			case WM_CREATE:
-				puts("create window success.");
+				FLAGGG_LOG_ERROR("create window success.");
 				break;
 			}
 
