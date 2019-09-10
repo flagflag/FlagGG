@@ -67,6 +67,12 @@ namespace FlagGG
 				return;
 
 			ID3DBlob* shaderBlob = VSShader->GetByteCode();
+			if (!shaderBlob)
+			{
+				FLAGGG_LOG_ERROR("Failed to create vertext layout, shader code is nullptr.");
+				return;
+			}
+
 			ID3D11InputLayout* inputLayout;
 			HRESULT hr = RenderEngine::Instance()->GetDevice()->CreateInputLayout(&elementDescs[0], elementDescs.Size(),
 				shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &inputLayout);
