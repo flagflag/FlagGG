@@ -14,15 +14,15 @@ namespace FlagGG
 {
 	namespace Core
 	{
-		struct VariableWrapperBase : public Container::RefCounted
+		struct VariableWrapper : public Container::RefCounted
 		{
 			virtual void* GetVariable() = 0;
 		};
 
 		template < class T >
-		struct VariableWrapper : public VariableWrapperBase
+		struct VariableWrapperImpl : public VariableWrapper
 		{
-			explicit VariableWrapper(T* value) :
+			explicit VariableWrapperImpl(T* value) :
 				value_(value)
 			{ }
 
@@ -34,33 +34,25 @@ namespace FlagGG
 			T* value_;
 		};
 
-		struct EventWrapperBase : public Container::RefCounted
+		struct EventWrapper : public Container::RefCounted
 		{
-			virtual ~EventWrapperBase() = default;
-			virtual void* GetInstance() = 0;
 			virtual void* GetEvent() = 0;
 		};
 
 		template < class T >
-		struct EventWrapper : public EventWrapperBase
+		struct EventWrapperImpl : public EventWrapper
 		{
-			explicit EventWrapper(void* instance, T* eventEntry) :
-				instance_(instance),
+			explicit EventWrapperImpl(T* eventEntry) :
 				eventEntry_(eventEntry)
 			{ }
 
-			~EventWrapper() override
+			~EventWrapperImpl() override
 			{
 				if (eventEntry_)
 				{
 					delete eventEntry_;
 					eventEntry_ = nullptr;
 				}
-			}
-
-			void* GetInstance() override
-			{
-				return instance_;
 			}
 
 			void* GetEvent() override
@@ -80,8 +72,8 @@ namespace FlagGG
 			template < class VariableType >
 			void RegisterVariable(VariableType* variable, const Container::String& variableName)
 			{
-				Container::SharedPtr<VariableWrapperBase> wrapper(new VariableWrapper<VariableType>(variable));
-				wrappers_.Insert(Container::Pair<Container::String, Container::SharedPtr<VariableWrapperBase>>(variableName, wrapper));
+				Container::SharedPtr<VariableWrapper> wrapper(new VariableWrapperImpl<VariableType>(variable));
+				wrappers_.Insert(Container::Pair<Container::String, Container::SharedPtr<VariableWrapper>>(variableName, wrapper));
 			}
 
 #ifdef WIN32
@@ -110,15 +102,7 @@ namespace FlagGG
 			void RegisterEvent(uint32_t eventId, const FunctionType& func)
 			{
 				FunctionType* pFunc = new FunctionType(func);
-				Container::SharedPtr<EventWrapperBase> wrapper(new EventWrapper<FunctionType>(nullptr, pFunc));
-				evnets_[eventId].Push(wrapper);
-			}
-
-			template < class FunctionType >
-			void RegisterEvent(uint32_t eventId, const FunctionType& func, void* instance)
-			{
-				FunctionType* pFunc = new FunctionType(func);
-				Container::SharedPtr<EventWrapperBase> wrapper(new EventWrapper<FunctionType>(instance, pFunc));
+				Container::SharedPtr<EventWrapper> wrapper(new EventWrapperImpl<FunctionType>(pFunc));
 				evnets_[eventId].Push(wrapper);
 			}
 
@@ -128,7 +112,7 @@ namespace FlagGG
 				auto it = evnets_.Find(eventId);
 				if (it != evnets_.End())
 				{
-					Container::Vector<Container::SharedPtr<EventWrapperBase>>& wrappers = it->second_;
+					Container::Vector<Container::SharedPtr<EventWrapper>>& wrappers = it->second_;
 					for (auto itWrapper = wrappers.Begin(); itWrapper != wrappers.End(); ++itWrapper)
 					{
 						(*static_cast<FunctionType*>((*itWrapper)->GetEvent()))(args ...);
@@ -137,8 +121,8 @@ namespace FlagGG
 			}
 
 		private:
-			Container::HashMap<Container::String, Container::SharedPtr<VariableWrapperBase>> wrappers_;
-			Container::HashMap<uint32_t, Container::Vector<Container::SharedPtr<EventWrapperBase>>> evnets_;
+			Container::HashMap<Container::String, Container::SharedPtr<VariableWrapper>> wrappers_;
+			Container::HashMap<uint32_t, Container::Vector<Container::SharedPtr<EventWrapper>>> evnets_;
 		};
 	}
 }
