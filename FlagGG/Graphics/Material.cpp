@@ -35,6 +35,11 @@ namespace FlagGG
 			"shadowmap"
 		};
 
+		static const char* RENDER_PASS_TYPE[MAX_RENDER_PASS_TYPE] =
+		{
+			"shadow",
+		};
+
 		static const uint32_t T_INT = Container::StringHash("int").ToHash();
 		static const uint32_t T_INT32 = Container::StringHash("int32").ToHash();
 		static const uint32_t T_UINT32 = Container::StringHash("uint32").ToHash();
@@ -108,7 +113,7 @@ namespace FlagGG
 			steam.ReadStream(&buffer[0], steam.GetSize());
 		}
 
-		TextureClass ToTextureClass(const Container::String& name)
+		static TextureClass ToTextureClass(const Container::String& name)
 		{
 			for (uint32_t i = 0; i < MAX_TEXTURE_CLASS; ++i)
 			{
@@ -126,6 +131,18 @@ namespace FlagGG
 				}
 			}
 			return TEXTURE_CLASS_UNIVERSAL;
+		}
+
+		static RenderPassType ToRenderPassType(const Container::String& name)
+		{
+			for (uint32_t i = 0; i < MAX_RENDER_PASS_TYPE; ++i)
+			{
+				if (name == RENDER_PASS_TYPE[i])
+				{
+					return static_cast<RenderPassType>(i);
+				}
+			}
+			return RENDER_PASS_TYPE_SHADOW;
 		}
 
 		Material::Material(Core::Context* context) :
@@ -278,8 +295,11 @@ namespace FlagGG
 							if (psShaderCode)
 							{
 								Config::ParseStringVector(pass[i]["psshader"]["defines"], defines);
-								psShader_ = psShaderCode->GetShader(PS, defines);
+								renderPass.pixelShader_ = psShaderCode->GetShader(PS, defines);
 							}
+
+							const Container::String& name = pass[i]["name"].GetString();
+							renderPass_.Insert(Container::MakePair(ToRenderPassType(name), renderPass));
 						}
 					}
 				}
