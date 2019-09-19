@@ -1,5 +1,6 @@
 #ifdef WIN32
 #include <Graphics/RenderEngine.h>
+#include <Scene/Light.h>
 #endif
 #include <Log.h>
 
@@ -103,6 +104,11 @@ void GameApplication::CreateScene()
 	water_->SetPosition(Vector3(0, -5, 10));
 	water_->SetScale(Vector3(1000, 1000, 1000));
 	scene_->AddChild(water_);
+
+	Node* lightNode = new Node();
+	Light* light = lightNode->CreateComponent<Light>();
+	lightNode->SetRotation(Quaternion(45.0f, Vector3(1.0f, 0.0f, 0.0f))); // 绕着x轴旋转45度，朝下
+	scene_->AddChild(lightNode);
 #endif
 }
 

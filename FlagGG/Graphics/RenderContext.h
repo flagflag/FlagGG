@@ -6,6 +6,7 @@
 #include "Graphics/Geometry.h"
 #include "Graphics/Texture.h"
 #include "Graphics/Shader.h"
+#include "Graphics/Material.h"
 #include "Container/RefCounted.h"
 #include "Container/Ptr.h"
 #include "Container/Vector.h"
@@ -27,11 +28,12 @@ namespace FlagGG
 			Container::Vector<Container::SharedPtr<Texture>> textures_;
 
 			Container::SharedPtr<Shader> vertexShader_;
-
 			Container::SharedPtr<Shader> pixelShader_;
 
 			const Math::Matrix3x4* worldTransform_{ nullptr };
 			uint32_t numWorldTransform_{ 0 };
+
+			Container::HashMap<RenderPassType, RenderPass>* renderPass_;
 		};
 	}
 }

@@ -8,6 +8,8 @@ namespace FlagGG
 {
 	namespace Scene
 	{
+		class Light;
+
 		class FlagGG_API Scene : public Node
 		{
 		public:
@@ -26,6 +28,8 @@ namespace FlagGG
 			void Render(Container::PODVector<Graphics::RenderContext*>& renderContexts) override;
 
 			void HandleUpdate(float timeStep);
+
+			void GetLights(Container::PODVector<Light*>& lights);
 
 		protected:
 			void Render(Node* node, Container::PODVector<Graphics::RenderContext*>& renderContexts);

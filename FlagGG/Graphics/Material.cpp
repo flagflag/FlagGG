@@ -153,6 +153,11 @@ namespace FlagGG
 			return psShader_;
 		}
 
+		Container::HashMap<RenderPassType, RenderPass>& Material::GetRenderPass()
+		{
+			return renderPass_;
+		}
+
 		static Container::SharedPtr<Texture> LoadTexture(Resource::ResourceCache* cache, const Config::LJSONValue& textureConfig)
 		{
 			Container::SharedPtr<Texture> texture;
@@ -251,6 +256,31 @@ namespace FlagGG
 					{
 						FLAGGG_LOG_ERROR("Material ==> load shader parameter failed.");
 						return false;
+					}
+				}
+
+				if (root.Contains("pass"))
+				{
+					const Config::LJSONValue& pass = root["pass"];
+					if (pass.IsArray())
+					{
+						for (uint32_t i = 0; i < pass.Size(); ++i)
+						{
+							RenderPass renderPass;
+							vsShaderCode = cache->GetResource<ShaderCode>(pass[i]["vsshader"]["path"].GetString());
+							if (vsShaderCode)
+							{
+								Config::ParseStringVector(pass[i]["vsshader"]["defines"], defines);
+								renderPass.vertexShader_ = vsShaderCode->GetShader(VS, defines);
+							}
+
+							psShaderCode = cache->GetResource<ShaderCode>(pass[i]["psshader"]["path"].GetString());
+							if (psShaderCode)
+							{
+								Config::ParseStringVector(pass[i]["psshader"]["defines"], defines);
+								psShader_ = psShaderCode->GetShader(PS, defines);
+							}
+						}
 					}
 				}
 			}

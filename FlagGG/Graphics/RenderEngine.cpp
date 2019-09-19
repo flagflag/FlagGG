@@ -1,6 +1,7 @@
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Camera.h"
 #include "Graphics/Texture.h"
+#include "Scene/Light.h"
 #include "Math/Math.h"
 #include "Log.h"
 #include "IOFrame/Buffer/IOBufferAux.h"
@@ -468,8 +469,6 @@ namespace FlagGG
 
 		void RenderEngine::SetRenderTarget(Viewport* viewport)
 		{
-			viewport->SetViewport();
-
 			auto* renderTargetView = viewport->GetRenderTarget()->GetObject<ID3D11RenderTargetView>();
 			auto* depthStencilView = viewport->GetDepthStencil()->GetObject<ID3D11DepthStencilView>();
 			static const Math::Color color(0.0f, 0.0f, 0.0f, 1.0f);
@@ -497,6 +496,34 @@ namespace FlagGG
 			Container::PODVector<RenderContext*> renderContexts;
 			scene->Render(renderContexts);
 
+			viewport->SetViewport();
+
+			Container::PODVector<Scene::Light*> lights;
+			scene->GetLights(lights);
+			for (auto light : lights)
+			{
+				SetShaderMap();
+				for (const auto& renderContext : renderContexts)
+				{
+					if (!renderContext->renderPass_)
+						continue;
+					auto it = renderContext->renderPass_->Find(RENDER_PASS_TYPE_SHADOW);
+					if (it != renderContext->renderPass_->End())
+					{
+						SetShaderParameter(light->GetCamera(), renderContext);
+						SetVertexShader(it->second_.vertexShader_);
+						SetPixelShader(it->second_.pixelShader_);
+						for (const auto& geometry : renderContext->geometries_)
+						{
+							SetVertexBuffers(geometry->GetVertexBuffers());
+							SetIndexBuffer(geometry->GetIndexBuffer());
+							SetPrimitiveType(geometry->GetPrimitiveType());
+							DrawCall(geometry->GetIndexStart(), geometry->GetIndexCount());
+						}
+					}
+				}
+			}
+
 			SetRenderTarget(viewport);
 			for (const auto& renderContext : renderContexts)
 			{
@@ -515,12 +542,6 @@ namespace FlagGG
 					SetPrimitiveType(geometry->GetPrimitiveType());
 					DrawCall(geometry->GetIndexStart(), geometry->GetIndexCount());
 				}
-			}
-
-			SetShaderMap();
-			for (const auto& renderContext : renderContexts)
-			{
-
 			}
 		}
 

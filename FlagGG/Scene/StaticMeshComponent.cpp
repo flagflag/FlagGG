@@ -56,6 +56,7 @@ namespace FlagGG
 			renderContext_.texture_ = material_->GetTexture();
 			renderContext_.vertexShader_ = material_->GetVertexShader();
 			renderContext_.pixelShader_ = material_->GetPixelShader();
+			renderContext_.renderPass_ = &material_->GetRenderPass();
 		}
 	}
 }

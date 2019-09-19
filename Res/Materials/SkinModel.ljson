@@ -12,5 +12,20 @@
 	{
 		type = "texture2d", //texturecube => 3d
 		path = "Textures/default.png"
-	}
+	},
+	pass =
+	[
+		{
+			name = "shadow",
+			vsshader = 
+			{
+				path = "Shader/Model_VS.hlsl",
+				defines = [ "SKINNED" ]
+			},
+			psshader =
+			{
+				path = "Shader/Shadow_PS.hlsl"
+			}
+		}
+	]
 }

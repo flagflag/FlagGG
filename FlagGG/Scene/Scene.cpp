@@ -79,5 +79,10 @@ namespace FlagGG
 				Render(child, renderContexts);
 			}
 		}
+
+		void Scene::GetLights(Container::PODVector<Light*>& ligthts)
+		{
+
+		}
 	}
 }

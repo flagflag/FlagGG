@@ -41,6 +41,9 @@ namespace FlagGG
 			const Math::Vector3& GetPosition() const;
 			void SetPosition(const Math::Vector3& pos);
 
+			const Math::Quaternion& GetRotation() const;
+			void SetRotation(const Math::Quaternion& rot);
+
 			// 远裁剪面
 			void SetFarClip(float farClip);
 			float GetFarClip() const;

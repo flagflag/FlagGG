@@ -12,5 +12,20 @@
 	{
 		type = "texture2d", //texturecube => 3d
 		path = "Textures/default.dds"
-	}
+	},
+	pass =
+	[
+		{
+			name = "shadow",
+			vsshader = 
+			{
+				path = "Shader/Model_VS.hlsl",
+				defines = [ "STATIC" ]
+			},
+			psshader =
+			{
+				path = "Shader/Shadow_PS.hlsl"
+			}
+		}
+	]
 }

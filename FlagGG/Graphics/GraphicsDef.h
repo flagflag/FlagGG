@@ -30,6 +30,11 @@ enum TextureClass : uint32_t
 	MAX_TEXTURE_CLASS
 };
 
+enum RenderPassType : uint32_t
+{
+	RENDER_PASS_TYPE_SHADOW = 0,
+};
+
 enum MaterialQuality : unsigned
 {
 	QUALITY_LOW = 0,

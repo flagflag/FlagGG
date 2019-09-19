@@ -16,6 +16,12 @@ namespace FlagGG
 		class Texture;
 		class Shader;
 
+		struct FlagGG_API RenderPass
+		{
+			Container::SharedPtr<Shader> vertexShader_;
+			Container::SharedPtr<Shader> pixelShader_;
+		};
+
 		class FlagGG_API Material : public Resource::Resource
 		{
 		public:
@@ -31,6 +37,8 @@ namespace FlagGG
 
 			Container::SharedPtr<Shader> GetPixelShader();
 
+			Container::HashMap<RenderPassType, RenderPass>& GetRenderPass();
+
 		protected:
 			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
@@ -44,6 +52,8 @@ namespace FlagGG
 			Container::SharedPtr<Shader> psShader_;
 
 			Container::SharedPtr<ShaderParameters> shaderParameters_;
+
+			Container::HashMap<RenderPassType, RenderPass> renderPass_;
 		};
 	}
 }

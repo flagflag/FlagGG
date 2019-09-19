@@ -145,6 +145,16 @@ namespace FlagGG
 			pos_ = pos;
 		}
 
+		const Math::Quaternion& Camera::GetRotation() const
+		{
+
+		}
+
+		void Camera::SetRotation(const Math::Quaternion& rot)
+		{
+
+		}
+
 		void Camera::SetFarClip(float farClip)
 		{
 			farClip_ = farClip;
