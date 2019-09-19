@@ -116,9 +116,9 @@ namespace FlagGG
 
 			void DrawCall(uint32_t indexStart, uint32_t indexCount);
 
-			void RenderBegin(Viewport* viewport);
+			void SetRenderTarget(Viewport* viewport);
 
-			void RenderEnd(Viewport* viewport);
+			void SetShaderMap();
 
 			VertexFormat* CacheVertexFormat(Shader* VSShader, VertexBuffer** vertexBuffer);
 

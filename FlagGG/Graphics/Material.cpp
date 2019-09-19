@@ -31,7 +31,8 @@ namespace FlagGG
 			"normal",
 			"specular",
 			"emissive",
-			"environment"
+			"environment",
+			"shadowmap"
 		};
 
 		static const uint32_t T_INT = Container::StringHash("int").ToHash();

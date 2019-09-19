@@ -466,7 +466,7 @@ namespace FlagGG
 			deviceContext_->DrawIndexed(indexCount, indexStart, 0);
 		}
 
-		void RenderEngine::RenderBegin(Viewport* viewport)
+		void RenderEngine::SetRenderTarget(Viewport* viewport)
 		{
 			viewport->SetViewport();
 
@@ -479,21 +479,25 @@ namespace FlagGG
 			deviceContext_->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0, 0);
 		}
 
-		void RenderEngine::RenderEnd(Viewport* viewport)
+		void RenderEngine::SetShaderMap()
 		{
-
+			if (defaultTextures[TEXTURE_CLASS_SHADOWMAP])
+			{
+				auto* shadowMap = defaultTextures[TEXTURE_CLASS_SHADOWMAP]->GetObject<ID3D11DepthStencilView>();
+				deviceContext_->OMSetRenderTargets(1, nullptr, shadowMap);
+				deviceContext_->ClearDepthStencilView(shadowMap, D3D11_CLEAR_DEPTH, 1.0, 0);
+			}
 		}
 
 		void RenderEngine::Render(Viewport* viewport)
 		{
 			if (!viewport) return;
 
-			RenderBegin(viewport);
-
 			Scene::Scene* scene = viewport->GetScene();
 			Container::PODVector<RenderContext*> renderContexts;
 			scene->Render(renderContexts);
 
+			SetRenderTarget(viewport);
 			for (const auto& renderContext : renderContexts)
 			{
 				SetShaderParameter(viewport->GetCamera(), renderContext);
@@ -513,7 +517,11 @@ namespace FlagGG
 				}
 			}
 
-			RenderEnd(viewport);
+			SetShaderMap();
+			for (const auto& renderContext : renderContexts)
+			{
+
+			}
 		}
 
 		RenderEngine* RenderEngine::Instance()
