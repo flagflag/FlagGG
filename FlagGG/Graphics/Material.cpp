@@ -170,7 +170,7 @@ namespace FlagGG
 			return psShader_;
 		}
 
-		Container::HashMap<RenderPassType, RenderPass>& Material::GetRenderPass()
+		Container::HashMap<uint32_t, RenderPass>& Material::GetRenderPass()
 		{
 			return renderPass_;
 		}
@@ -299,7 +299,7 @@ namespace FlagGG
 							}
 
 							const Container::String& name = pass[i]["name"].GetString();
-							renderPass_.Insert(Container::MakePair(ToRenderPassType(name), renderPass));
+							renderPass_.Insert(Container::MakePair(static_cast<uint32_t>(ToRenderPassType(name)), renderPass));
 						}
 					}
 				}

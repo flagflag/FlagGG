@@ -34,6 +34,8 @@ namespace FlagGG
 		protected:
 			void Render(Node* node, Container::PODVector<Graphics::RenderContext*>& renderContexts);
 
+			void GetLights(Node* node, Container::PODVector<Light*>& lights);
+
 			Core::Context* context_;
 
 			bool isRunning_;

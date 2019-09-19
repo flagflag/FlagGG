@@ -5,6 +5,7 @@
 
 #include "Math/Vector3.h"
 #include "Math/Matrix4.h"
+#include "Math/Quaternion.h"
 #include "Container/RefCounted.h"
 
 namespace FlagGG
@@ -41,7 +42,7 @@ namespace FlagGG
 			const Math::Vector3& GetPosition() const;
 			void SetPosition(const Math::Vector3& pos);
 
-			const Math::Quaternion& GetRotation() const;
+			Math::Quaternion GetRotation() const;
 			void SetRotation(const Math::Quaternion& rot);
 
 			// 远裁剪面

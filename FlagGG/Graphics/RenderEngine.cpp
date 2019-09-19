@@ -482,8 +482,8 @@ namespace FlagGG
 		{
 			if (defaultTextures[TEXTURE_CLASS_SHADOWMAP])
 			{
-				auto* shadowMap = defaultTextures[TEXTURE_CLASS_SHADOWMAP]->GetObject<ID3D11DepthStencilView>();
-				deviceContext_->OMSetRenderTargets(1, nullptr, shadowMap);
+				auto* shadowMap = defaultTextures[TEXTURE_CLASS_SHADOWMAP]->GetRenderSurface()->GetObject<ID3D11DepthStencilView>();
+				deviceContext_->OMSetRenderTargets(0, nullptr, shadowMap);
 				deviceContext_->ClearDepthStencilView(shadowMap, D3D11_CLEAR_DEPTH, 1.0, 0);
 			}
 		}

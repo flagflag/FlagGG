@@ -145,14 +145,20 @@ namespace FlagGG
 			pos_ = pos;
 		}
 
-		const Math::Quaternion& Camera::GetRotation() const
+		Math::Quaternion Camera::GetRotation() const
 		{
-
+			return Math::Quaternion(look_.x_, look_.y_, look_.z_);
 		}
 
 		void Camera::SetRotation(const Math::Quaternion& rot)
 		{
+			look_ = Math::Vector3(0.0f, 0.0f, 1.0f);
+			right_ = Math::Vector3(1.0f, 0.0f, 0.0f);
+			up_ = Math::Vector3(0.0f, 1.0f, 0.0f);
 
+			Pitch(rot.PitchAngle());
+			Yaw(rot.YawAngle());
+			Roll(rot.RollAngle());
 		}
 
 		void Camera::SetFarClip(float farClip)

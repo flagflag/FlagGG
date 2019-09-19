@@ -51,6 +51,7 @@ namespace FlagGG
 			}
 			components_.Push(sharedComponent);
 			sharedComponent->SetNode(this);
+			sharedComponent->UpdateTreeDirty();
 		}
 
 		Component* Node::GetComponent(Container::StringHash compClass)

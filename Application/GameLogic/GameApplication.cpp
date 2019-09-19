@@ -105,8 +105,15 @@ void GameApplication::CreateScene()
 	water_->SetScale(Vector3(1000, 1000, 1000));
 	scene_->AddChild(water_);
 
-	Node* lightNode = new Node();
-	Light* light = lightNode->CreateComponent<Light>();
+#if 0
+	auto* lightNode = new Unit(context_);
+	lightNode->Load("Unit/MainHero.ljson");
+	lightNode->PlayAnimation("Animation/Kachujin_Walk.ani", true);
+#else
+	auto* lightNode = new Node();
+#endif
+	lightNode->CreateComponent<Light>();
+	lightNode->SetPosition(Vector3(0, 5, 0));
 	lightNode->SetRotation(Quaternion(45.0f, Vector3(1.0f, 0.0f, 0.0f))); // 绕着x轴旋转45度，朝下
 	scene_->AddChild(lightNode);
 #endif
@@ -137,6 +144,7 @@ void GameApplication::SetupWindow()
 	viewport->SetDepthStencil(renderTexture_[1]->GetRenderSurface());
 	viewports_.Push(viewport);
 	RenderEngine::Instance()->SetDefaultTextures(TEXTURE_CLASS_ENVIRONMENT, renderTexture_[0]);
+	RenderEngine::Instance()->SetDefaultTextures(TEXTURE_CLASS_SHADOWMAP, renderTexture_[1]);
 
 	window_ = new Window(context_, nullptr, rect);
 	window_->Show();

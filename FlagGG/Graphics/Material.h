@@ -37,7 +37,7 @@ namespace FlagGG
 
 			Container::SharedPtr<Shader> GetPixelShader();
 
-			Container::HashMap<RenderPassType, RenderPass>& GetRenderPass();
+			Container::HashMap<uint32_t, RenderPass>& GetRenderPass();
 
 		protected:
 			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
@@ -53,7 +53,7 @@ namespace FlagGG
 
 			Container::SharedPtr<ShaderParameters> shaderParameters_;
 
-			Container::HashMap<RenderPassType, RenderPass> renderPass_;
+			Container::HashMap<uint32_t, RenderPass> renderPass_;
 		};
 	}
 }

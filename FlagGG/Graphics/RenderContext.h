@@ -33,7 +33,7 @@ namespace FlagGG
 			const Math::Matrix3x4* worldTransform_{ nullptr };
 			uint32_t numWorldTransform_{ 0 };
 
-			Container::HashMap<RenderPassType, RenderPass>* renderPass_;
+			Container::HashMap<uint32_t, RenderPass>* renderPass_{ nullptr };
 		};
 	}
 }

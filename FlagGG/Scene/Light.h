@@ -10,7 +10,7 @@ namespace FlagGG
 {
 	namespace Scene
 	{
-		class Light : public Component
+		class FlagGG_API Light : public Component
 		{
 			OBJECT_OVERRIDE(Light);
 		public:
@@ -20,8 +20,12 @@ namespace FlagGG
 
 			void UpdateTreeDirty() override;
 
+			void Update(float timeStep) override;
+
 		private:
 			Graphics::Camera camera_;
+
+			bool cameraDirty_;
 		};
 	}
 }

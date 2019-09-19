@@ -1,6 +1,7 @@
 #include "Scene/Scene.h"
 #include "Core/EventDefine.h"
 #include "Scene/Component.h"
+#include "Scene/Light.h"
 
 namespace FlagGG
 {
@@ -80,9 +81,23 @@ namespace FlagGG
 			}
 		}
 
-		void Scene::GetLights(Container::PODVector<Light*>& ligthts)
+		void Scene::GetLights(Container::PODVector<Light*>& lights)
 		{
+			GetLights(this, lights);
+		}
 
+		void Scene::GetLights(Node* node, Container::PODVector<Light*>& lights)
+		{
+			auto* light = node->GetComponent<Light>();
+			if (light)
+			{
+				lights.Push(light);
+			}
+
+			for (const auto& child : node->GetChildren())
+			{
+				GetLights(child, lights);
+			}
 		}
 	}
 }

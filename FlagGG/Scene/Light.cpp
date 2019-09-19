@@ -6,7 +6,8 @@ namespace FlagGG
 	namespace Scene
 	{
 		Light::Light() :
-			camera_(Graphics::AIRCRAFT)
+			camera_(Graphics::AIRCRAFT),
+			cameraDirty_(false)
 		{ }
 
 		Graphics::Camera* Light::GetCamera()
@@ -16,9 +17,19 @@ namespace FlagGG
 
 		void Light::UpdateTreeDirty()
 		{
-			Node* node = GetNode();
-			camera_.SetPosition(node->GetPosition());
-			camera_.SetRotation(node->GetRotation());
+			cameraDirty_ = true;
+		}
+
+		void Light::Update(float timeStep)
+		{
+			if (cameraDirty_)
+			{
+				Node* node = GetNode();
+				camera_.SetPosition(node->GetPosition());
+				camera_.SetRotation(node->GetRotation());
+
+				cameraDirty_ = false;
+			}
 		}
 	}
 }
