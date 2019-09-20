@@ -30,9 +30,10 @@ float4 PS(PixelInput input) : SV_TARGET
 
 #ifdef SHADOW
 	float bias = 0.001;
-	float shadowDepth = shadowPos.z / shadowPos.w + bias;
+	float2 shadowTex = float2(shadowPos.x / shadowPos.z, shadowPos.y / shadowPos.z);
+	float shadowDepth = shadowMap.Sample(shadowSampler, shadowTex).x + bias;
 	float depth = pos.z / pos.w;
-	if (shadowDepth <= depth)
+	if (shadowDepth < depth)
 	{
 		color = 1.0;
 	}
