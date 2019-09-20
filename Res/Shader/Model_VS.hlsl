@@ -12,6 +12,17 @@ cbuffer SkinMatrixBuffer : register(b1)
 }
 #endif
 
+cbuffer ParamBuffer : register(b2)
+{
+	float deltaTime;
+	float elapsedTime;
+	float cameraPos;
+	float lightPos;
+	float lightDir;
+	float4x4 lightViewMatrix;
+	float4x4 lightProjMatrix;
+};
+
 struct VertexInput
 {
 	float4 pos : POSITION;
@@ -28,6 +39,9 @@ struct PixelInput
 	float4 pos : SV_POSITION;
 	float2 tex0 : TEXCOORD0;
 	float3 nor : NORMAL;
+#ifdef SHADOW
+	float4 shadowPos : POSITION;
+#endif
 };
 
 #ifdef SKINNED
@@ -57,6 +71,11 @@ PixelInput VS(VertexInput input)
 	output.pos = mul(clipPos, projectionMatrix);
 	output.tex0 = input.tex0;
 	output.nor = worldNor;
+
+#ifdef SHADOW
+	float4 shadowClipPos = mul(float4(worldPos, 1.0), lightViewMatrix);
+	output.shadowPos = mul(shadowClipPos, lightProjMatrix);
+#endif
 
 	return output;
 }

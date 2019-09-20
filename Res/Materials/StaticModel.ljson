@@ -2,7 +2,7 @@
 	vsshader = 
 	{
 		path = "Shader/Model_VS.hlsl",
-		defines =  [ "STATIC" ]
+		defines =  [ "STATIC", "SHADOW" ]
 	},
 	psshader = 
 	{

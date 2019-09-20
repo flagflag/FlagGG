@@ -63,4 +63,6 @@ const FlagGG::Container::StringHash SP_ELAPSED_TIME("ElapsedTime");
 const FlagGG::Container::StringHash SP_CAMERA_POS("CameraPos");
 const FlagGG::Container::StringHash SP_LIGHT_POS("LightPos");
 const FlagGG::Container::StringHash SP_LIGHT_DIR("LightDir");
+const FlagGG::Container::StringHash SP_SHADOW_VIEW("ShadowView");
+const FlagGG::Container::StringHash SP_SHADOW_PROJ("ShadowProj");
 

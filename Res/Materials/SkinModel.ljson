@@ -2,7 +2,7 @@
 	vsshader = 
 	{
 		path = "Shader/Model_VS.hlsl",
-		defines =  [ "SKINNED" ]
+		defines =  [ "SKINNED", "SHADOW" ]
 	},
 	psshader = 
 	{

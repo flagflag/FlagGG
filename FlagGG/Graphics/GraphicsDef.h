@@ -109,3 +109,5 @@ extern FlagGG_API const FlagGG::Container::StringHash SP_ELAPSED_TIME;
 extern FlagGG_API const FlagGG::Container::StringHash SP_CAMERA_POS;
 extern FlagGG_API const FlagGG::Container::StringHash SP_LIGHT_POS;
 extern FlagGG_API const FlagGG::Container::StringHash SP_LIGHT_DIR;
+extern FlagGG_API const FlagGG::Container::StringHash SP_SHADOW_VIEW;
+extern FlagGG_API const FlagGG::Container::StringHash SP_SHADOW_PROJ;

@@ -1,6 +1,8 @@
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Camera.h"
 #include "Graphics/Texture.h"
+#include "Scene/Node.h"
+#include "Scene/Component.h"
 #include "Scene/Light.h"
 #include "Math/Math.h"
 #include "Log.h"
@@ -33,6 +35,8 @@ namespace FlagGG
 			shaderParameters_.AddParametersDefine<Math::Vector3>(SP_CAMERA_POS);
 			shaderParameters_.AddParametersDefine<Math::Vector3>(SP_LIGHT_POS);
 			shaderParameters_.AddParametersDefine<Math::Vector3>(SP_LIGHT_DIR);
+			shaderParameters_.AddParametersDefine<Math::Matrix4>(SP_SHADOW_VIEW);
+			shaderParameters_.AddParametersDefine<Math::Matrix4>(SP_SHADOW_PROJ);
 		}
 
 		void RenderEngine::CreateDevice()
@@ -327,7 +331,7 @@ namespace FlagGG
 				constGPUBuffer_[i] = nullptr;
 			}
 
-			// ÊÀ½çÐÅÏ¢£¬ÃÉÆ¤ÐÅÏ¢
+			// ä¸–ç•Œä¿¡æ¯ï¼Œè’™çš®ä¿¡æ¯
 			if (camera && renderContext->worldTransform_ && renderContext->numWorldTransform_)
 			{
 				auto* buffer = constBuffer_[CONST_BUFFER_WORLD].LockDynamicBuffer();
@@ -349,7 +353,8 @@ namespace FlagGG
 				}
 			}
 
-			// Í¨ÓÃµÄShader²ÎÊý
+			// é€šç”¨çš„Shaderå‚æ•°
+			shaderParameters_.SetValue(SP_CAMERA_POS, camera->GetPosition());
 			shaderParameters_.WriteToBuffer(&constBuffer_[CONST_BUFFER_COMMON]);
 			constGPUBuffer_[CONST_BUFFER_COMMON] = constBuffer_[CONST_BUFFER_COMMON].GetObject<ID3D11Buffer>();
 
@@ -500,9 +505,9 @@ namespace FlagGG
 
 			Container::PODVector<Scene::Light*> lights;
 			scene->GetLights(lights);
+			SetShaderMap();
 			for (auto light : lights)
 			{
-				SetShaderMap();
 				for (const auto& renderContext : renderContexts)
 				{
 					if (!renderContext->renderPass_)
@@ -527,6 +532,18 @@ namespace FlagGG
 			SetRenderTarget(viewport);
 			for (const auto& renderContext : renderContexts)
 			{
+				if (lights.Size() > 0 &&
+					renderContext->renderPass_ &&
+					renderContext->renderPass_->Contains(RENDER_PASS_TYPE_SHADOW))
+				{
+					Scene::Node* lightNode = lights[0]->GetNode();
+					Camera* lightCamera = lights[0]->GetCamera();
+					shaderParameters_.SetValue(SP_LIGHT_POS, lightNode->GetPosition());
+					shaderParameters_.SetValue(SP_LIGHT_DIR, lightNode->GetRotation().EulerAngles());
+					shaderParameters_.SetValue(SP_SHADOW_VIEW, lightCamera->GetViewMatrix().Transpose());
+					shaderParameters_.SetValue(SP_SHADOW_PROJ, lightCamera->GetProjectionMatrix().Transpose());
+				}
+
 				SetShaderParameter(viewport->GetCamera(), renderContext);
 				SetVertexShader(renderContext->vertexShader_);
 				SetPixelShader(renderContext->pixelShader_);
