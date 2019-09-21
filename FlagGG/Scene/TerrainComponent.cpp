@@ -33,13 +33,13 @@ namespace FlagGG
 			{
 				material_ = material;
 
-				renderContext_.texture_ = nullptr;
 				for (uint32_t i = 0; i < MAX_TEXTURE_CLASS; ++i)
 				{
 					renderContext_.textures_.Push(material_->GetTexture(i));
 				}
 				renderContext_.vertexShader_ = material_->GetVertexShader();
 				renderContext_.pixelShader_ = material_->GetPixelShader();
+				renderContext_.renderPass_ = &material_->GetRenderPass();
 			}
 		}
 

@@ -47,6 +47,7 @@ namespace FlagGG
 			if (buffer->SetSize(dataSize))
 			{
 				void* data = buffer->Lock(0, dataSize);
+				dataBuffer_->ClearIndex();
 				dataBuffer_->ReadStream(data, dataSize);
 				buffer->Unlock();
 			}

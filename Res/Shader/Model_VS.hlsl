@@ -16,12 +16,12 @@ cbuffer ParamBuffer : register(b2)
 {
 	float deltaTime;
 	float elapsedTime;
-	float cameraPos;
-	float lightPos;
-	float lightDir;
+	float3 cameraPos;
+	float3 lightPos;
+	float3 lightDir;
 	float4x4 lightViewMatrix;
 	float4x4 lightProjMatrix;
-};
+}
 
 struct VertexInput
 {

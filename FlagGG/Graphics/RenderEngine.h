@@ -108,17 +108,13 @@ namespace FlagGG
 
 			void SetPixelShader(Shader* shader);
 
-			void SetTexture(Texture* texture);
-
 			void SetTextures(const Container::Vector<Container::SharedPtr<Texture>>& textures);
 
 			void SetPrimitiveType(PrimitiveType primitiveType);
 
 			void DrawCall(uint32_t indexStart, uint32_t indexCount);
 
-			void SetRenderTarget(Viewport* viewport);
-
-			void SetShaderMap();
+			void SetRenderTarget(Viewport* viewport, bool renderShadowMap = false);
 
 			VertexFormat* CacheVertexFormat(Shader* VSShader, VertexBuffer** vertexBuffer);
 

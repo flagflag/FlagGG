@@ -96,16 +96,16 @@ void GameApplication::CreateScene()
 
 	terrain_ = new Terrain(context_);
 	terrain_->Create(64);
-	terrain_->SetPosition(Vector3(-80, -30, 10));
+	terrain_->SetPosition(Vector3(-80, -5, 0));
 	scene_->AddChild(terrain_);
 
-	water_ = new Unit(context_);
-	water_->Load("Unit/Water.ljson");
-	water_->SetPosition(Vector3(0, -5, 10));
-	water_->SetScale(Vector3(1000, 1000, 1000));
-	scene_->AddChild(water_);
+	//water_ = new Unit(context_);
+	//water_->Load("Unit/Water.ljson");
+	//water_->SetPosition(Vector3(0, -5, 10));
+	//water_->SetScale(Vector3(1000, 1000, 1000));
+	//scene_->AddChild(water_);
 
-#if 0
+#if 1
 	auto* lightNode = new Unit(context_);
 	lightNode->Load("Unit/MainHero.ljson");
 	lightNode->PlayAnimation("Animation/Kachujin_Walk.ani", true);
@@ -113,7 +113,7 @@ void GameApplication::CreateScene()
 	auto* lightNode = new Node();
 #endif
 	lightNode->CreateComponent<Light>();
-	lightNode->SetPosition(Vector3(0, 5, 0));
+	lightNode->SetPosition(Vector3(0, 20, 0));
 	lightNode->SetRotation(Quaternion(45.0f, Vector3(1.0f, 0.0f, 0.0f))); // 绕着x轴旋转45度，朝下
 	scene_->AddChild(lightNode);
 #endif
@@ -129,6 +129,13 @@ void GameApplication::SetupWindow()
 
 	IntRect rect(100, 100, 1000, 1000);
 
+	// 创建一张shaderMap
+	shadowMap_ = new Texture2D(context_);
+	shadowMap_->SetNumLevels(1);
+	shadowMap_->SetSize(rect.Width(), rect.Height(), RenderEngine::GetRGBFormat(), TEXTURE_RENDERTARGET);
+	shadowMap_->Initialize();
+	RenderEngine::Instance()->SetDefaultTextures(TEXTURE_CLASS_SHADOWMAP, shadowMap_);
+
 	renderTexture_[0] = new Texture2D(context_);
 	renderTexture_[0]->SetNumLevels(1);
 	renderTexture_[0]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetRGBFormat(), TEXTURE_RENDERTARGET);
@@ -143,8 +150,6 @@ void GameApplication::SetupWindow()
 	viewport->SetRenderTarget(renderTexture_[0]->GetRenderSurface());
 	viewport->SetDepthStencil(renderTexture_[1]->GetRenderSurface());
 	viewports_.Push(viewport);
-	RenderEngine::Instance()->SetDefaultTextures(TEXTURE_CLASS_ENVIRONMENT, renderTexture_[0]);
-	RenderEngine::Instance()->SetDefaultTextures(TEXTURE_CLASS_SHADOWMAP, renderTexture_[1]);
 
 	window_ = new Window(context_, nullptr, rect);
 	window_->Show();

@@ -152,13 +152,9 @@ namespace FlagGG
 
 		void Camera::SetRotation(const Math::Quaternion& rot)
 		{
-			look_ = Math::Vector3(0.0f, 0.0f, 1.0f);
-			right_ = Math::Vector3(1.0f, 0.0f, 0.0f);
-			up_ = Math::Vector3(0.0f, 1.0f, 0.0f);
-
-			Pitch(rot.PitchAngle());
-			Yaw(rot.YawAngle());
-			Roll(rot.RollAngle());
+			look_ = rot * Math::Vector3::FORWARD;
+			right_ = rot * Math::Vector3::RIGHT;
+			up_ = rot * Math::Vector3::UP;
 		}
 
 		void Camera::SetFarClip(float farClip)

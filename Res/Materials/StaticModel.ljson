@@ -24,7 +24,8 @@
 			},
 			psshader =
 			{
-				path = "Shader/Shadow_PS.hlsl"
+				path = "Shader/Shadow_PS.hlsl",
+				defines = [ "MODEL_SHADOW" ]
 			}
 		}
 	]

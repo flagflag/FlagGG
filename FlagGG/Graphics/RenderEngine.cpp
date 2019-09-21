@@ -14,13 +14,6 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		struct MatrixData
-		{
-			Math::Matrix3x4 world_;
-			Math::Matrix4	view_;
-			Math::Matrix4	projection_;
-		};
-
 		RenderEngine::RenderEngine()
 		{
 			INIT_ARRAY(constGPUBuffer_, nullptr);
@@ -331,7 +324,7 @@ namespace FlagGG
 				constGPUBuffer_[i] = nullptr;
 			}
 
-			// 世界信息，蒙皮信息
+			// 世界信息，蒙皮信�?
 			if (camera && renderContext->worldTransform_ && renderContext->numWorldTransform_)
 			{
 				auto* buffer = constBuffer_[CONST_BUFFER_WORLD].LockDynamicBuffer();
@@ -359,6 +352,7 @@ namespace FlagGG
 			constGPUBuffer_[CONST_BUFFER_COMMON] = constBuffer_[CONST_BUFFER_COMMON].GetObject<ID3D11Buffer>();
 
 			deviceContext_->VSSetConstantBuffers(0, MAX_CONST_BUFFER, constGPUBuffer_);
+			deviceContext_->PSSetConstantBuffers(0, MAX_CONST_BUFFER, constGPUBuffer_);
 		}
 
 		void RenderEngine::SetVertexBuffers(const Container::Vector<Container::SharedPtr<VertexBuffer>>& vertexBuffers)
@@ -393,14 +387,6 @@ namespace FlagGG
 		void RenderEngine::SetPixelShader(Shader* shader)
 		{
 			deviceContext_->PSSetShader(shader->GetObject<ID3D11PixelShader>(), nullptr, 0);
-		}
-
-		void RenderEngine::SetTexture(Texture* texture)
-		{
-			//deviceContext->VSSetShaderResources(0, 1, &texture->shaderResourceView_);
-			//deviceContext->VSSetSamplers(0, 1, &texture->sampler_);	
-			deviceContext_->PSSetShaderResources(0, 1, &texture->shaderResourceView_);
-			deviceContext_->PSSetSamplers(0, 1, &texture->sampler_);
 		}
 
 		void RenderEngine::SetTextures(const Container::Vector<Container::SharedPtr<Texture>>& textures)
@@ -472,25 +458,21 @@ namespace FlagGG
 			deviceContext_->DrawIndexed(indexCount, indexStart, 0);
 		}
 
-		void RenderEngine::SetRenderTarget(Viewport* viewport)
+		void RenderEngine::SetRenderTarget(Viewport* viewport, bool renderShadowMap)
 		{
 			auto* renderTargetView = viewport->GetRenderTarget()->GetObject<ID3D11RenderTargetView>();
 			auto* depthStencilView = viewport->GetDepthStencil()->GetObject<ID3D11DepthStencilView>();
-			static const Math::Color color(0.0f, 0.0f, 0.0f, 1.0f);
+			Math::Color color(0.0f, 0.0f, 0.0f, 1.0f);
+
+			if (renderShadowMap)
+			{
+				renderTargetView = defaultTextures[TEXTURE_CLASS_SHADOWMAP]->GetRenderSurface()->GetObject<ID3D11RenderTargetView>();
+				color = Math::Color(1.0f, 1.0f, 1.0f, 1.0f);
+			}
 
 			deviceContext_->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 			deviceContext_->ClearRenderTargetView(renderTargetView, color.Data());
 			deviceContext_->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0, 0);
-		}
-
-		void RenderEngine::SetShaderMap()
-		{
-			if (defaultTextures[TEXTURE_CLASS_SHADOWMAP])
-			{
-				auto* shadowMap = defaultTextures[TEXTURE_CLASS_SHADOWMAP]->GetRenderSurface()->GetObject<ID3D11DepthStencilView>();
-				deviceContext_->OMSetRenderTargets(0, nullptr, shadowMap);
-				deviceContext_->ClearDepthStencilView(shadowMap, D3D11_CLEAR_DEPTH, 1.0, 0);
-			}
 		}
 
 		void RenderEngine::Render(Viewport* viewport)
@@ -505,7 +487,7 @@ namespace FlagGG
 
 			Container::PODVector<Scene::Light*> lights;
 			scene->GetLights(lights);
-			SetShaderMap();
+			SetRenderTarget(viewport, true);
 			for (auto light : lights)
 			{
 				for (const auto& renderContext : renderContexts)
@@ -529,7 +511,7 @@ namespace FlagGG
 				}
 			}
 
-			SetRenderTarget(viewport);
+			SetRenderTarget(viewport, false);
 			for (const auto& renderContext : renderContexts)
 			{
 				if (lights.Size() > 0 &&
@@ -538,8 +520,8 @@ namespace FlagGG
 				{
 					Scene::Node* lightNode = lights[0]->GetNode();
 					Camera* lightCamera = lights[0]->GetCamera();
-					shaderParameters_.SetValue(SP_LIGHT_POS, lightNode->GetPosition());
-					shaderParameters_.SetValue(SP_LIGHT_DIR, lightNode->GetRotation().EulerAngles());
+					shaderParameters_.SetValue(SP_LIGHT_POS, lightNode->GetWorldPosition());
+					shaderParameters_.SetValue(SP_LIGHT_DIR, lightNode->GetWorldRotation().EulerAngles().Normalized());
 					shaderParameters_.SetValue(SP_SHADOW_VIEW, lightCamera->GetViewMatrix().Transpose());
 					shaderParameters_.SetValue(SP_SHADOW_PROJ, lightCamera->GetProjectionMatrix().Transpose());
 				}
@@ -547,10 +529,7 @@ namespace FlagGG
 				SetShaderParameter(viewport->GetCamera(), renderContext);
 				SetVertexShader(renderContext->vertexShader_);
 				SetPixelShader(renderContext->pixelShader_);
-				if (renderContext->texture_)
-					SetTexture(renderContext->texture_);
-				else
-					SetTextures(renderContext->textures_);
+				SetTextures(renderContext->textures_);
 
 				for (const auto& geometry : renderContext->geometries_)
 				{

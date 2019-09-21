@@ -8,7 +8,10 @@ namespace FlagGG
 		Light::Light() :
 			camera_(Graphics::AIRCRAFT),
 			cameraDirty_(false)
-		{ }
+		{ 
+			camera_.SetNearClip(1.0f);
+			camera_.SetFarClip(1000000000.0f);
+		}
 
 		Graphics::Camera* Light::GetCamera()
 		{
@@ -25,8 +28,8 @@ namespace FlagGG
 			if (cameraDirty_)
 			{
 				Node* node = GetNode();
-				camera_.SetPosition(node->GetPosition());
-				camera_.SetRotation(node->GetRotation());
+				camera_.SetPosition(node->GetWorldPosition());
+				camera_.SetRotation(node->GetWorldRotation());
 
 				cameraDirty_ = false;
 			}

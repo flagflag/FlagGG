@@ -15,7 +15,7 @@ using namespace FlagGG::Math;
 class CameraOperation : public RefCounted
 {
 public:
-	CameraOperation(FlagGG::Core::Context* context);
+	CameraOperation(FlagGG::Core::Context* context, Camera* inCamera = nullptr);
 
 	SharedPtr<Camera> GetCamera();
 

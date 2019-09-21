@@ -59,6 +59,7 @@ private:
 	SharedPtr<FlagGG::Scene::Scene> scene_;
 
 	SharedPtr<Texture2D> renderTexture_[2];
+	SharedPtr<Texture2D> shadowMap_;
 
 	SharedPtr<Unit> mainHero_;
 	SharedPtr<Terrain> terrain_;

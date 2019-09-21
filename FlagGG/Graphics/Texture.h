@@ -33,6 +33,8 @@ namespace FlagGG
 
 			bool IsValid() override;
 
+			void Initialize() override;
+
 			void SetNumLevels(uint32_t levels);
 
 			int32_t GetWidth() const;
@@ -58,7 +60,6 @@ namespace FlagGG
 			friend class RenderEngine;
 
 		protected:
-			void Initialize() override;
 
 			virtual bool Create() { return false; }
 

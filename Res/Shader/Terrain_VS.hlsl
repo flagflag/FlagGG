@@ -5,6 +5,17 @@ cbuffer MatrixBuffer : register(b0)
 	float4x4 projectionMatrix;
 }
 
+cbuffer ParamBuffer : register(b2)
+{
+	float deltaTime;
+	float elapsedTime;
+	float3 cameraPos;
+	float3 lightPos;
+	float3 lightDir;
+	float4x4 lightViewMatrix;
+	float4x4 lightProjMatrix;
+}
+
 struct VertexInput
 {
 	float4 pos : POSITION;
@@ -18,6 +29,9 @@ struct PixelInput
 	float2 weightTex : TEXCOORD0;
     float2 detailTex : TEXCOORD1;
 	float3 nor : NORMAL;
+#ifdef SHADOW
+	float4 shadowPos : POSITION;
+#endif
 };
 
 PixelInput VS(VertexInput input)
@@ -32,6 +46,11 @@ PixelInput VS(VertexInput input)
 	output.weightTex = input.tex0;
     output.detailTex = float2(32.0, 32.0) * output.weightTex;
 	output.nor = worldNor;
+
+#ifdef SHADOW
+	float4 shadowClipPos = mul(float4(worldPos, 1.0), lightViewMatrix);
+	output.shadowPos = mul(shadowClipPos, lightProjMatrix);
+#endif
 
 	return output;
 }
