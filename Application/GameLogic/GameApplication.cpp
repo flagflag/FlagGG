@@ -127,7 +127,10 @@ void GameApplication::SetupWindow()
 
 	cameraOpt_ = new CameraOperation(context_);
 
-	IntRect rect(100, 100, 1000, 1000);
+	IntRect desktopRect = SystemHelper::GetDesktopRect();
+	uint32_t length = Min(desktopRect.Width(), desktopRect.Height());
+	IntRect rect(IntVector2(0, 0), IntVector2(length, length));
+	
 
 	// 创建一张shaderMap
 	shadowMap_ = new Texture2D(context_);

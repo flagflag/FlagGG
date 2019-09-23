@@ -24,7 +24,6 @@ if (WIN32 OR WIN64)
     d3dx11d
     dxerr
     d3dcompiler
-    Effects11
     dxgi
     dxguid)
 endif ()

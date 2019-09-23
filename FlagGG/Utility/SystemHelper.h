@@ -4,6 +4,7 @@
 #include "Export.h"
 #include "Config/LJSONValue.h"
 #include "Container/Str.h"
+#include "Math/Rect.h"
 
 #include <stdint.h>
 #include <string>
@@ -33,6 +34,8 @@ namespace FlagGG
 			FlagGG_API bool CreateDir(const Container::String& path);
 
 			FlagGG_API bool HasAccess(const Container::String& path);
+
+			FlagGG_API Math::IntRect GetDesktopRect();
 
 			class FlagGG_API Timer
 			{

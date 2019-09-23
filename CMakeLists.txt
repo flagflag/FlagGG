@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.13)
+﻿cmake_minimum_required(VERSION 3.11)
 SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
 if ((NOT WIN32) AND (NOT WIN64))
     set(CMAKE_CXX_STANDARD 11)

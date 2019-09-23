@@ -164,6 +164,17 @@ namespace FlagGG
 				return true;
 			}
 
+			Math::IntRect GetDesktopRect()
+			{
+#if WIN32 || WIN64
+				RECT rect;
+				SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
+				return Math::IntRect(Math::IntVector2(rect.left, rect.top), Math::IntVector2(rect.right, rect.bottom));
+#else
+				return Mach::IntRect::ZERO;
+#endif
+			}
+
 
 			Timer::Timer()
 			{
