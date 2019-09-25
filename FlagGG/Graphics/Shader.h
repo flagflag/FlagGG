@@ -5,6 +5,7 @@
 
 #include "Graphics/GPUObject.h"
 #include "Graphics/GraphicsDef.h"
+#include "Graphics/ShaderParameter.h"
 #include "Resource/Resource.h"
 #include "Container/ArrayPtr.h"
 #include "Container/Vector.h"
@@ -39,6 +40,20 @@ namespace FlagGG
 			uint32_t bufferSize_{ 0 };
 		};
 
+		struct ConstantBufferVariableDesc
+		{
+			Container::String name_;
+			uint32_t offset_;
+			uint32_t size_;
+		};
+
+		struct ConstantBufferDesc
+		{
+			Container::String name_;
+			uint32_t size_;
+			Container::Vector<ConstantBufferVariableDesc> variableDescs_;
+		};
+
 		// 经过编译的shader，是GPU对象
 		class FlagGG_API Shader : public GPUObject, public Container::RefCounted
 		{
@@ -61,6 +76,11 @@ namespace FlagGG
 
 			ID3DBlob* GetByteCode();
 
+			const Container::HashMap<uint32_t, ConstantBufferDesc>& GetContantBufferVariableDesc() const;
+
+		protected:
+			void AnalysisReflection(ID3DBlob* compileCode);
+
 		private:
 			// shader代码
 			Container::SharedArrayPtr<char> buffer_;
@@ -72,6 +92,8 @@ namespace FlagGG
 
 			Container::Vector<Container::String> defines_;
 			Container::String definesString_;
+
+			Container::HashMap<uint32_t, ConstantBufferDesc> constantBufferDescs_;
 		};
 	}
 }

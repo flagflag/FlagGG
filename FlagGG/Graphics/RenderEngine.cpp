@@ -16,20 +16,16 @@ namespace FlagGG
 	{
 		RenderEngine::RenderEngine()
 		{
-			INIT_ARRAY(constGPUBuffer_, nullptr);
-			INIT_ARRAY(vertexBuffers_, nullptr);
-			INIT_ARRAY(vertexSize_, 0);
-			INIT_ARRAY(vertexOffset_, 0);
-			INIT_ARRAY(shaderResourceView_, nullptr);
-			INIT_ARRAY(samplerState_, nullptr);
-
+			shaderParameters_.AddParametersDefine<Math::Matrix3x4>(SP_WORLD_MATRIX);
+			shaderParameters_.AddParametersDefine<Math::Matrix4>(SP_VIEW_MATRIX);
+			shaderParameters_.AddParametersDefine<Math::Matrix4>(SP_PROJECTION_MATRIX);
 			shaderParameters_.AddParametersDefine<float>(SP_DELTA_TIME);
 			shaderParameters_.AddParametersDefine<float>(SP_ELAPSED_TIME);
 			shaderParameters_.AddParametersDefine<Math::Vector3>(SP_CAMERA_POS);
 			shaderParameters_.AddParametersDefine<Math::Vector3>(SP_LIGHT_POS);
 			shaderParameters_.AddParametersDefine<Math::Vector3>(SP_LIGHT_DIR);
-			shaderParameters_.AddParametersDefine<Math::Matrix4>(SP_SHADOW_VIEW);
-			shaderParameters_.AddParametersDefine<Math::Matrix4>(SP_SHADOW_PROJ);
+			shaderParameters_.AddParametersDefine<Math::Matrix4>(SP_LIGHT_VIEW_MATRIX);
+			shaderParameters_.AddParametersDefine<Math::Matrix4>(SP_LIGHT_PROJ_MATRIX);
 		}
 
 		void RenderEngine::CreateDevice()
@@ -319,114 +315,65 @@ namespace FlagGG
 			if (!renderContext)
 				return;
 
-			for (uint32_t i = 0; i < MAX_CONST_BUFFER; ++i)
-			{
-				constGPUBuffer_[i] = nullptr;
-			}
-
-			// 世界信息，蒙皮信�?
+			// 视图矩阵，投影矩阵，蒙皮矩阵等
 			if (camera && renderContext->worldTransform_ && renderContext->numWorldTransform_)
 			{
-				auto* buffer = constBuffer_[CONST_BUFFER_WORLD].LockDynamicBuffer();
-				IOFrame::Buffer::WriteMatrix3x4(buffer, *renderContext->worldTransform_);
-				IOFrame::Buffer::WriteMatrix4x4(buffer, camera->GetViewMatrix().Transpose());
-				IOFrame::Buffer::WriteMatrix4x4(buffer, camera->GetProjectionMatrix().Transpose());
-				constBuffer_[CONST_BUFFER_WORLD].UnlockDynamicBuffer();
-				constGPUBuffer_[CONST_BUFFER_WORLD] = constBuffer_[CONST_BUFFER_WORLD].GetObject<ID3D11Buffer>();
+				shaderParameters_.SetValue(SP_WORLD_MATRIX, *renderContext->worldTransform_);
+				shaderParameters_.SetValue(SP_VIEW_MATRIX, camera->GetViewMatrix().Transpose());
+				shaderParameters_.SetValue(SP_PROJECTION_MATRIX, camera->GetProjectionMatrix().Transpose());
+				shaderParameters_.SetValue(SP_CAMERA_POS, camera->GetPosition());
 
 				if (renderContext->geometryType_ == GEOMETRY_SKINNED)
 				{
-					uint32_t realNum = Math::Min(GetMaxBonesNum(), renderContext->numWorldTransform_);
-					uint32_t dataSize = realNum * sizeof(Math::Matrix3x4);
-					constBuffer_[CONST_BUFFER_SKIN].SetSize(dataSize);
-					auto* buffer = constBuffer_[CONST_BUFFER_SKIN].LockStaticBuffer(0, dataSize);
-					buffer->WriteStream(renderContext->worldTransform_, dataSize);
-					constBuffer_[CONST_BUFFER_SKIN].UnlockStaticBuffer();
-					constGPUBuffer_[CONST_BUFFER_SKIN] = constBuffer_[CONST_BUFFER_SKIN].GetObject<ID3D11Buffer>();
+					skinMatrix_ = renderContext->worldTransform_;
+					numSkinMatrix_ = renderContext->numWorldTransform_;
 				}
 			}
-
-			// 通用的Shader参数
-			shaderParameters_.SetValue(SP_CAMERA_POS, camera->GetPosition());
-			shaderParameters_.WriteToBuffer(&constBuffer_[CONST_BUFFER_COMMON]);
-			constGPUBuffer_[CONST_BUFFER_COMMON] = constBuffer_[CONST_BUFFER_COMMON].GetObject<ID3D11Buffer>();
-
-			deviceContext_->VSSetConstantBuffers(0, MAX_CONST_BUFFER, constGPUBuffer_);
-			deviceContext_->PSSetConstantBuffers(0, MAX_CONST_BUFFER, constGPUBuffer_);
 		}
 
 		void RenderEngine::SetVertexBuffers(const Container::Vector<Container::SharedPtr<VertexBuffer>>& vertexBuffers)
 		{
-			cacheVertexBuffers_ = &vertexBuffers;
-
-			auto vertexBufferCount = Math::Min<uint32_t>(vertexBuffers.Size(), MAX_VERTEX_BUFFER_COUNT);
-
-			for (uint32_t i = 0; i < vertexBufferCount; ++i)
-			{
-				const Container::SharedPtr<VertexBuffer>& vertexBuffer = vertexBuffers[i];
-				vertexBuffers_[i] = vertexBuffer->GetObject<ID3D11Buffer>();
-				vertexSize_[i] = vertexBuffer->GetVertexSize();
-				vertexOffset_[i] = 0;
-			}
-
-			deviceContext_->IASetVertexBuffers(0, vertexBufferCount, vertexBuffers_, vertexSize_, vertexOffset_);
+			for (auto vertexBuffer : vertexBuffers)
+				vertexBuffers_.Push(vertexBuffer);
+			vertexBufferDirty_ = true;
 		}
 
 		void RenderEngine::SetIndexBuffer(IndexBuffer* indexBuffer)
 		{
-			deviceContext_->IASetIndexBuffer(indexBuffer->GetObject<ID3D11Buffer>(),
-				indexBuffer->GetIndexSize() == sizeof(uint16_t) ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
+			indexBuffer_ = indexBuffer;
+			indexBufferDirty_ = true;
 		}
 
 		void RenderEngine::SetVertexShader(Shader* shader)
 		{
-			cacheVSShader_ = shader;
-			deviceContext_->VSSetShader(shader->GetObject<ID3D11VertexShader>(), nullptr, 0);
+			vertexShader_ = shader;
+			vertexShaderDirty_ = true;
 		}
 
 		void RenderEngine::SetPixelShader(Shader* shader)
 		{
-			deviceContext_->PSSetShader(shader->GetObject<ID3D11PixelShader>(), nullptr, 0);
+			pixelShader_ = shader;
+			pixelShaderDirty_ = true;
 		}
 
 		void RenderEngine::SetTextures(const Container::Vector<Container::SharedPtr<Texture>>& textures)
 		{
 			for (uint32_t i = 0; i < MAX_TEXTURE_CLASS; ++i)
 			{
-				if (i < textures.Size() && textures[i])
-				{
-					shaderResourceView_[i] = textures[i]->shaderResourceView_;
-					samplerState_[i] = textures[i]->sampler_;
-				}
-				else
-				{
-					shaderResourceView_[i] = defaultTextures[i] ? defaultTextures[i]->shaderResourceView_ : nullptr;
-					samplerState_[i] = defaultTextures[i] ? defaultTextures[i]->sampler_ : nullptr;
-				}
+				textures_[i] = i < textures.Size() && textures[i] ? textures[i] : defaultTextures_[i];
 			}
-			//deviceContext->VSSetShaderResources(0, MAX_TEXTURE_CLASS, shaderResourceView_);
-			//deviceContext->VSSetSamplers(0, MAX_TEXTURE_CLASS, samplerState_);
-			deviceContext_->PSSetShaderResources(0, MAX_TEXTURE_CLASS, shaderResourceView_);
-			deviceContext_->PSSetSamplers(0, MAX_TEXTURE_CLASS, samplerState_);
+
+			texturesDirty_ = true;
 		}
 
 		void RenderEngine::SetDefaultTextures(TextureClass index, Texture* texture)
 		{
-			defaultTextures[index] = texture;
+			defaultTextures_[index] = texture;
 		}
 
 		void RenderEngine::SetPrimitiveType(PrimitiveType primitiveType)
 		{
-			switch (primitiveType)
-			{
-			case PRIMITIVE_LINE:
-				deviceContext_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-				break;
-
-			case PRIMITIVE_TRIANGLE:
-				deviceContext_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-				break;
-			}
+			primitiveType_ = primitiveType;
 		}
 
 		VertexFormat* RenderEngine::CacheVertexFormat(Shader* VSShader, VertexBuffer** vertexBuffer)
@@ -446,33 +393,174 @@ namespace FlagGG
 
 		void RenderEngine::DrawCall(uint32_t indexStart, uint32_t indexCount)
 		{
-			auto vertexBufferCount = Math::Min<uint32_t>(cacheVertexBuffers_->Size(), MAX_VERTEX_BUFFER_COUNT);
-			VertexBuffer* tempBuffer[MAX_VERTEX_BUFFER_COUNT + 1] = { 0 };
-			for (uint32_t i = 0; i < vertexBufferCount; ++i)
-			{
-				tempBuffer[i] = (*cacheVertexBuffers_)[i].Get();
-			}
-			VertexFormat* vertexFormat = CacheVertexFormat(cacheVSShader_, tempBuffer);
+			static VertexBuffer* vertexBuffers[MAX_VERTEX_BUFFER_COUNT + 1] = { 0 };
 
+			// 设置图元类型
+			switch (primitiveType_)
+			{
+			case PRIMITIVE_LINE:
+				deviceContext_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+				break;
+
+			case PRIMITIVE_TRIANGLE:
+				deviceContext_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				break;
+			}
+
+			// 设置vertexBuffer
+			if (vertexBufferDirty_)
+			{
+				static ID3D11Buffer* d3dVertexBuffers[MAX_VERTEX_BUFFER_COUNT] = { nullptr };
+				static uint32_t d3dVertexBufferCount{ 0 };
+				static uint32_t d3dVertexSize[MAX_VERTEX_BUFFER_COUNT] = { 0 };
+				static uint32_t d3dVertexOffset[MAX_VERTEX_BUFFER_COUNT] = { 0 };
+
+				d3dVertexBufferCount = Math::Min<uint32_t>(vertexBuffers_.Size(), MAX_VERTEX_BUFFER_COUNT);
+
+				for (uint32_t i = 0; i < d3dVertexBufferCount; ++i)
+				{
+					const Container::SharedPtr<VertexBuffer>& vertexBuffer = vertexBuffers_[i];
+					vertexBuffers[i] = vertexBuffer;
+					d3dVertexBuffers[i] = vertexBuffer->GetObject<ID3D11Buffer>();
+					d3dVertexSize[i] = vertexBuffer->GetVertexSize();
+					d3dVertexOffset[i] = 0;
+				}
+
+				deviceContext_->IASetVertexBuffers(0, d3dVertexBufferCount, d3dVertexBuffers, d3dVertexSize, d3dVertexOffset);
+				vertexBufferDirty_ = false;
+			}
+
+
+			// 设置indexBuffer
+			if (indexBufferDirty_)
+			{
+				deviceContext_->IASetIndexBuffer(indexBuffer_->GetObject<ID3D11Buffer>(),
+					indexBuffer_->GetIndexSize() == sizeof(uint16_t) ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
+				indexBufferDirty_ = false;
+			}
+
+			// 设置vertexShader
+			if (vertexShaderDirty_)
+			{
+				deviceContext_->VSSetShader(vertexShader_->GetObject<ID3D11VertexShader>(), nullptr, 0);
+				vertexShaderDirty_ = false;
+			}
+
+			// 设置pxielShader
+			if (pixelShaderDirty_)
+			{
+				deviceContext_->PSSetShader(pixelShader_->GetObject<ID3D11PixelShader>(), nullptr, 0);
+				pixelShaderDirty_ = false;
+			}
+
+			// 设置constBuffer
+			{
+				CopyShaderParameterToBuffer(vertexShader_, vsConstantBuffer_);
+				CopyShaderParameterToBuffer(pixelShader_, psConstantBuffer_);
+
+				static ID3D11Buffer* d3dVSConstantBuffer[MAX_CONST_BUFFER_COUNT] = { nullptr };
+				static ID3D11Buffer* d3dPSConstantBuffer[MAX_CONST_BUFFER_COUNT] = { nullptr };
+				for (uint32_t i = 0; i < MAX_CONST_BUFFER; ++i)
+				{
+					d3dVSConstantBuffer[i] = vsConstantBuffer_[i].GetObject<ID3D11Buffer>();
+					d3dPSConstantBuffer[i] = psConstantBuffer_[i].GetObject<ID3D11Buffer>();
+				}
+
+				deviceContext_->VSSetConstantBuffers(0, MAX_CONST_BUFFER, d3dVSConstantBuffer);
+				deviceContext_->PSSetConstantBuffers(0, MAX_CONST_BUFFER, d3dPSConstantBuffer);
+			}
+
+			// 设置vertex格式
+			VertexFormat* vertexFormat = CacheVertexFormat(vertexShader_, vertexBuffers);
 			deviceContext_->IASetInputLayout(vertexFormat->GetObject<ID3D11InputLayout>());
+
+			// 设置纹理
+			if (texturesDirty_)
+			{
+				static ID3D11ShaderResourceView* shaderResourceView[MAX_TEXTURE_CLASS] = { nullptr };
+				static ID3D11SamplerState* samplerState[MAX_TEXTURE_CLASS] = { nullptr };
+
+				for (uint32_t i = 0; i < MAX_TEXTURE_CLASS; ++i)
+				{
+					if (textures_[i])
+					{
+						shaderResourceView[i] = textures_[i]->shaderResourceView_;
+						samplerState[i] = textures_[i]->sampler_;
+					}
+					else
+					{
+						shaderResourceView[i] = nullptr;
+						samplerState[i] = nullptr;
+					}
+				}
+
+				//deviceContext->VSSetShaderResources(0, MAX_TEXTURE_CLASS, shaderResourceView_);
+				//deviceContext->VSSetSamplers(0, MAX_TEXTURE_CLASS, samplerState_);
+				deviceContext_->PSSetShaderResources(0, MAX_TEXTURE_CLASS, shaderResourceView);
+				deviceContext_->PSSetSamplers(0, MAX_TEXTURE_CLASS, samplerState);
+				texturesDirty_ = false;
+			}
+
+			// 设置渲染表面和深度模板
+			if (renderTargetDirty_)
+			{
+				auto* renderTargetView = renderTarget_->GetObject<ID3D11RenderTargetView>();
+				auto* depthStencilView = depthStencil_->GetObject<ID3D11DepthStencilView>();
+				Math::Color color(0.0f, 0.0f, 0.0f, 1.0f);
+
+				if (renderShadowMap_)
+				{
+					renderTargetView = defaultTextures_[TEXTURE_CLASS_SHADOWMAP]->GetRenderSurface()->GetObject<ID3D11RenderTargetView>();
+					color = Math::Color(1.0f, 1.0f, 1.0f, 1.0f);
+				}
+
+				deviceContext_->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+				deviceContext_->ClearRenderTargetView(renderTargetView, color.Data());
+				deviceContext_->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0, 0);
+				renderTargetDirty_ = false;
+			}
+
+			// draw call
 			deviceContext_->DrawIndexed(indexCount, indexStart, 0);
+		}
+
+		void RenderEngine::CopyShaderParameterToBuffer(Shader* shader, ConstantBuffer* buffer)
+		{
+			const auto& constantBufferVariableDesc = shader->GetContantBufferVariableDesc();
+			for (auto it = constantBufferVariableDesc.Begin(); it != constantBufferVariableDesc.End(); ++it)
+			{
+				if (it->first_ < MAX_CONST_BUFFER)
+				{
+					auto& constantBuffer = buffer[it->first_];
+					const auto& bufferDesc = it->second_;
+					constantBuffer.SetSize(bufferDesc.size_);
+					char* data = static_cast<char*>(constantBuffer.Lock(0, bufferDesc.size_));
+					for (const auto& variableDesc : bufferDesc.variableDescs_)
+					{
+						auto it2 = shaderParameters_.descs.Find(variableDesc.name_);
+						if (it2 != shaderParameters_.descs.End())
+						{
+							shaderParameters_.dataBuffer_->Seek(it2->second_.offset_);
+							shaderParameters_.dataBuffer_->ReadStream(data + variableDesc.offset_,
+								Math::Min(variableDesc.size_, it2->second_.size_));
+						}
+						else if (Container::StringHash(variableDesc.name_) == SP_SKIN_MATRICES)
+						{
+							memcpy(data + variableDesc.offset_, skinMatrix_,
+								Math::Min(variableDesc.size_, numSkinMatrix_ * sizeof(Math::Matrix3x4)));
+						}
+					}
+					constantBuffer.Unlock();
+				}
+			}
 		}
 
 		void RenderEngine::SetRenderTarget(Viewport* viewport, bool renderShadowMap)
 		{
-			auto* renderTargetView = viewport->GetRenderTarget()->GetObject<ID3D11RenderTargetView>();
-			auto* depthStencilView = viewport->GetDepthStencil()->GetObject<ID3D11DepthStencilView>();
-			Math::Color color(0.0f, 0.0f, 0.0f, 1.0f);
-
-			if (renderShadowMap)
-			{
-				renderTargetView = defaultTextures[TEXTURE_CLASS_SHADOWMAP]->GetRenderSurface()->GetObject<ID3D11RenderTargetView>();
-				color = Math::Color(1.0f, 1.0f, 1.0f, 1.0f);
-			}
-
-			deviceContext_->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
-			deviceContext_->ClearRenderTargetView(renderTargetView, color.Data());
-			deviceContext_->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0, 0);
+			renderTarget_ = viewport->GetRenderTarget();
+			depthStencil_ = viewport->GetDepthStencil();
+			renderShadowMap_ = renderShadowMap;
+			renderTargetDirty_ = true;
 		}
 
 		void RenderEngine::Render(Viewport* viewport)
@@ -522,8 +610,8 @@ namespace FlagGG
 					Camera* lightCamera = lights[0]->GetCamera();
 					shaderParameters_.SetValue(SP_LIGHT_POS, lightNode->GetWorldPosition());
 					shaderParameters_.SetValue(SP_LIGHT_DIR, lightNode->GetWorldRotation().EulerAngles().Normalized());
-					shaderParameters_.SetValue(SP_SHADOW_VIEW, lightCamera->GetViewMatrix().Transpose());
-					shaderParameters_.SetValue(SP_SHADOW_PROJ, lightCamera->GetProjectionMatrix().Transpose());
+					shaderParameters_.SetValue(SP_LIGHT_VIEW_MATRIX, lightCamera->GetViewMatrix().Transpose());
+					shaderParameters_.SetValue(SP_LIGHT_PROJ_MATRIX, lightCamera->GetProjectionMatrix().Transpose());
 				}
 
 				SetShaderParameter(viewport->GetCamera(), renderContext);

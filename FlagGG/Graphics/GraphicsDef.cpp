@@ -58,11 +58,15 @@ VertexElement DEFAULT_VERTEX_ELEMENT[] =
 	VertexElement(VE_INT, SEM_OBJECT_INDEX, 0, false),			// object index
 };
 
-const FlagGG::Container::StringHash SP_DELTA_TIME("DeltaTime");
-const FlagGG::Container::StringHash SP_ELAPSED_TIME("ElapsedTime");
-const FlagGG::Container::StringHash SP_CAMERA_POS("CameraPos");
-const FlagGG::Container::StringHash SP_LIGHT_POS("LightPos");
-const FlagGG::Container::StringHash SP_LIGHT_DIR("LightDir");
-const FlagGG::Container::StringHash SP_SHADOW_VIEW("ShadowView");
-const FlagGG::Container::StringHash SP_SHADOW_PROJ("ShadowProj");
+const FlagGG::Container::StringHash SP_WORLD_MATRIX("worldMatrix");
+const FlagGG::Container::StringHash SP_VIEW_MATRIX("viewMatrix");
+const FlagGG::Container::StringHash SP_PROJECTION_MATRIX("projectionMatrix");
+const FlagGG::Container::StringHash SP_SKIN_MATRICES("skinMatrices");
+const FlagGG::Container::StringHash SP_DELTA_TIME("deltaTime");
+const FlagGG::Container::StringHash SP_ELAPSED_TIME("elapsedTime");
+const FlagGG::Container::StringHash SP_CAMERA_POS("cameraPos");
+const FlagGG::Container::StringHash SP_LIGHT_POS("lightPos");
+const FlagGG::Container::StringHash SP_LIGHT_DIR("lightDir");
+const FlagGG::Container::StringHash SP_LIGHT_VIEW_MATRIX("lightViewMatrix");
+const FlagGG::Container::StringHash SP_LIGHT_PROJ_MATRIX("lightProjMatrix");
 

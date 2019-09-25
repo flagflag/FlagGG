@@ -104,10 +104,14 @@ enum
 
 extern FlagGG_API VertexElement DEFAULT_VERTEX_ELEMENT[MAX_DEFAULT_VERTEX_ELEMENT];
 
+extern FlagGG_API const FlagGG::Container::StringHash SP_WORLD_MATRIX;
+extern FlagGG_API const FlagGG::Container::StringHash SP_VIEW_MATRIX;
+extern FlagGG_API const FlagGG::Container::StringHash SP_PROJECTION_MATRIX;
+extern FlagGG_API const FlagGG::Container::StringHash SP_SKIN_MATRICES;
 extern FlagGG_API const FlagGG::Container::StringHash SP_DELTA_TIME;
 extern FlagGG_API const FlagGG::Container::StringHash SP_ELAPSED_TIME;
 extern FlagGG_API const FlagGG::Container::StringHash SP_CAMERA_POS;
 extern FlagGG_API const FlagGG::Container::StringHash SP_LIGHT_POS;
 extern FlagGG_API const FlagGG::Container::StringHash SP_LIGHT_DIR;
-extern FlagGG_API const FlagGG::Container::StringHash SP_SHADOW_VIEW;
-extern FlagGG_API const FlagGG::Container::StringHash SP_SHADOW_PROJ;
+extern FlagGG_API const FlagGG::Container::StringHash SP_LIGHT_VIEW_MATRIX;
+extern FlagGG_API const FlagGG::Container::StringHash SP_LIGHT_PROJ_MATRIX;

@@ -31,21 +31,5 @@
             type = "texture2d",
             path = "Textures/TerrainDetail3.dds"
         }
-	},
-	pass =
-	[
-		{
-			name = "shadow",
-			vsshader = 
-			{
-				path = "Shader/Terrain_VS.hlsl",
-				defines = [ "STATIC" ]
-			},
-			psshader =
-			{
-				path = "Shader/Shadow_PS.hlsl",
-                defines = [ "TERRAIN_SHADOW" ]
-			}
-		}
-	]
+	}
 }

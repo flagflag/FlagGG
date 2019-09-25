@@ -73,7 +73,7 @@ namespace FlagGG
 			SAFE_RELEASE(shaderCode_);
 		}
 
-		static ID3DBlob* CompileShader(const char* buffer, size_t bufferSize, ShaderType type, const Container::Vector<Container::String>& defines)
+		static bool CompileShader(const char* buffer, size_t bufferSize, ShaderType type, const Container::Vector<Container::String>& defines, ID3DBlob*& outCompileCode, ID3DBlob*& outStrippedCode)
 		{
 			char* entryPoint = nullptr;
 			char* profile = nullptr;
@@ -138,7 +138,7 @@ namespace FlagGG
 					SAFE_RELEASE(errorMsgs);
 				}
 
-				return nullptr;
+				return false;
 			}
 
 			ID3DBlob* strippedCode = nullptr;
@@ -148,13 +148,15 @@ namespace FlagGG
 			{
 				FLAGGG_LOG_ERROR("D3DStripShader failed.");
 
-				return nullptr;
+				return false;
 			}
 
-			SAFE_RELEASE(shaderCode);
 			SAFE_RELEASE(errorMsgs);
 
-			return strippedCode;
+			outCompileCode = shaderCode;
+			outStrippedCode = strippedCode;
+
+			return true;
 		}
 
 		void Shader::Initialize()
@@ -166,7 +168,15 @@ namespace FlagGG
 				return;
 			}
 
-			shaderCode_ = CompileShader(buffer_.Get(), bufferSize_, shaderType_, defines_);
+			ID3DBlob* compileCode = nullptr;
+			if (!CompileShader(buffer_.Get(), bufferSize_, shaderType_, defines_, compileCode, shaderCode_))
+			{
+				FLAGGG_LOG_ERROR("Failed to compile shader.");
+				return;
+			}
+
+			AnalysisReflection(compileCode);
+			SAFE_RELEASE(compileCode);
 
 			if (shaderCode_)
 			{
@@ -245,6 +255,72 @@ namespace FlagGG
 		ID3DBlob* Shader::GetByteCode()
 		{
 			return shaderCode_;
+		}
+
+		const Container::HashMap<uint32_t, ConstantBufferDesc>& Shader::GetContantBufferVariableDesc() const
+		{
+			return constantBufferDescs_;
+		}
+
+		void Shader::AnalysisReflection(ID3DBlob* compileCode)
+		{
+			ID3D11ShaderReflection* reflector = nullptr;
+			HRESULT hr = D3DReflect(compileCode->GetBufferPointer(), compileCode->GetBufferSize(),
+				IID_ID3D11ShaderReflection, (void**)&reflector);
+
+			if (FAILED(hr))
+			{
+				FLAGGG_LOG_ERROR("Failed to reflect shader.");
+				return;
+			}
+
+			D3D11_SHADER_DESC shaderDesc;
+			hr = reflector->GetDesc(&shaderDesc);
+			if (FAILED(hr))
+			{
+				FLAGGG_LOG_ERROR("Failed to get shader desc.");
+				return;
+			}
+
+			Container::HashMap<Container::StringHash, uint32_t> bindMap;
+			for (uint32_t i = 0; i < shaderDesc.BoundResources; ++i)
+			{
+				D3D11_SHADER_INPUT_BIND_DESC bindDesc;
+				hr = reflector->GetResourceBindingDesc(i, &bindDesc);
+				if (FAILED(hr))
+				{
+					FLAGGG_LOG_ERROR("Failed to get resource bind desc.");
+					return;
+				}
+				bindMap[bindDesc.Name] = bindDesc.BindPoint;
+			}
+
+			for (uint32_t i = 0; i < shaderDesc.ConstantBuffers; ++i)
+			{
+				ID3D11ShaderReflectionConstantBuffer* rConstantBuffer = reflector->GetConstantBufferByIndex(i);
+				D3D11_SHADER_BUFFER_DESC d3dBufferDesc;
+				rConstantBuffer->GetDesc(&d3dBufferDesc);
+
+				uint32_t index = bindMap[d3dBufferDesc.Name];
+				auto& bufferDesc = constantBufferDescs_[index];
+				bufferDesc.name_ = d3dBufferDesc.Name;
+				bufferDesc.size_ = d3dBufferDesc.Size;
+
+				for (uint32_t j = 0; j < d3dBufferDesc.Variables; ++j)
+				{
+					ID3D11ShaderReflectionVariable* variable = rConstantBuffer->GetVariableByIndex(j);
+					D3D11_SHADER_VARIABLE_DESC d3dVariableDesc;
+					variable->GetDesc(&d3dVariableDesc);
+
+					ConstantBufferVariableDesc variableDesc;
+					variableDesc.name_ = d3dVariableDesc.Name;
+					variableDesc.offset_ = d3dVariableDesc.StartOffset;
+					variableDesc.size_ = d3dVariableDesc.Size;
+					bufferDesc.variableDescs_.Push(variableDesc);
+				}
+			}
+
+			SAFE_RELEASE(reflector);
 		}
 	}
 }

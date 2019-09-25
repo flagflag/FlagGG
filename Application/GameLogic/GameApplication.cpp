@@ -105,7 +105,7 @@ void GameApplication::CreateScene()
 	//water_->SetScale(Vector3(1000, 1000, 1000));
 	//scene_->AddChild(water_);
 
-#if 1
+#if 0
 	auto* lightNode = new Unit(context_);
 	lightNode->Load("Unit/MainHero.ljson");
 	lightNode->PlayAnimation("Animation/Kachujin_Walk.ani", true);

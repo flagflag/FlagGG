@@ -38,6 +38,8 @@ namespace FlagGG
 
 			bool SetValueImpl(Container::StringHash key, const void* buffer, uint32_t bufferSize);
 
+			friend class RenderEngine;
+
 		private:
 			Container::HashMap<Container::StringHash, ShaderParameterDesc> descs;
 

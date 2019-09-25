@@ -5,15 +5,12 @@ Texture2D shadowMap : register(t6);
 SamplerState shadowSampler : register(s6);
 #endif
 
-cbuffer ParamBuffer : register(b2)
+cbuffer ParamBuffer : register(b0)
 {
 	float deltaTime;
 	float elapsedTime;
-	float3 cameraPos;
 	float3 lightPos;
 	float3 lightDir;
-	float4x4 lightViewMatrix;
-	float4x4 lightProjMatrix;
 }
 
 struct PixelInput
@@ -48,7 +45,7 @@ float4 PS(PixelInput input) : SV_TARGET
 		float depth = input.shadowPos.z / input.shadowPos.w;
 		if (shadowDepth < depth)
 		{
-			color = float4(1, 1, 1, 1);
+			//color = float4(0, 0, 0, 1);
 		}
 	}
 #endif

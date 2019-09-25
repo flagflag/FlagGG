@@ -49,7 +49,7 @@ float4 PS(PixelInput input) : SV_TARGET
 		float depth = input.shadowPos.z / input.shadowPos.w;
 		if (shadowDepth < depth)
 		{
-			color = float4(1, 1, 1, 1);
+			color = float4(0, 0, 0, 1);
 		}
 	}
 #endif
