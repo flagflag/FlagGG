@@ -4,8 +4,8 @@
 #include "Export.h"
 
 #include "Graphics/RenderSurface.h"
-#include "Graphics/Camera.h"
 #include "Graphics/RenderContext.h"
+#include "Scene/Camera.h"
 #include "Container/Ptr.h"
 #include "Core/Context.h"
 #include "Math/Rect.h"
@@ -41,9 +41,9 @@ namespace FlagGG
 
 			void SetDepthStencil(RenderSurface* depthStencil);
 
-			Camera* GetCamera() const;
+			Scene::Camera* GetCamera() const;
 
-			void SetCamera(Camera* camera);
+			void SetCamera(Scene::Camera* camera);
 
 			Scene::Scene* GetScene() const;
 
@@ -62,7 +62,7 @@ namespace FlagGG
 			Container::SharedPtr<RenderSurface> renderTarget_;
 			Container::SharedPtr<RenderSurface> depthStencil_;
 
-			Container::SharedPtr<Camera> camera_;
+			Container::SharedPtr<Scene::Camera> camera_;
 
 			Container::SharedPtr<Scene::Scene> scene_;
 

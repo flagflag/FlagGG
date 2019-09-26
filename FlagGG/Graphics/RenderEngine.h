@@ -8,6 +8,7 @@
 #include "Graphics/RenderContext.h"
 #include "Graphics/ConstantBuffer.h"
 #include "Graphics/ShaderParameter.h"
+#include "Scene/Camera.h"
 #include "Resource/Image.h"
 #include "Container/HashMap.h"
 
@@ -26,8 +27,6 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		class Camera;
-
 		class FlagGG_API RenderEngine
 		{
 		public:
@@ -93,7 +92,7 @@ namespace FlagGG
 
 			void SetDefaultTextures(TextureClass index, Texture* texture);
 
-			void SetShaderParameter(Camera* camera, const RenderContext* renderContext);
+			void SetShaderParameter(Scene::Camera* camera, const RenderContext* renderContext);
 
 			void SetVertexBuffers(const Container::Vector<Container::SharedPtr<VertexBuffer>>& vertexBuffers);
 

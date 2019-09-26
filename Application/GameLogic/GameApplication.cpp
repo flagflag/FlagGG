@@ -87,6 +87,11 @@ void GameApplication::CreateScene()
 	scene_ = new FlagGG::Scene::Scene(context_);
 	scene_->Start();
 
+	auto* cameraNode = new Node();
+	scene_->AddChild(cameraNode);
+	Camera* camera = cameraNode->CreateComponent<Camera>();
+	cameraOpt_ = new CameraOperation(context_, camera);
+
 	mainHero_ = new Unit(context_);
 	mainHero_->Load("Unit/MainHero.ljson");
 	mainHero_->SetPosition(Vector3(0, -5, 10));
@@ -113,7 +118,7 @@ void GameApplication::CreateScene()
 	auto* lightNode = new Node();
 #endif
 	lightNode->CreateComponent<Light>();
-	lightNode->SetPosition(Vector3(0, 20, 0));
+	lightNode->SetPosition(Vector3(0, 20, -20));
 	lightNode->SetRotation(Quaternion(45.0f, Vector3(1.0f, 0.0f, 0.0f))); // 绕着x轴旋转45度，朝下
 	scene_->AddChild(lightNode);
 #endif
@@ -124,8 +129,6 @@ void GameApplication::SetupWindow()
 #ifdef WIN32
 	if (commandParam_.Contains("NoWindow"))
 		return;
-
-	cameraOpt_ = new CameraOperation(context_);
 
 	IntRect desktopRect = SystemHelper::GetDesktopRect();
 	uint32_t length = Min(desktopRect.Width(), desktopRect.Height());

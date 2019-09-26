@@ -3,7 +3,6 @@
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Window.h"
 #endif
-#include "Graphics/Camera.h"
 
 using namespace FlagGG::Math;
 

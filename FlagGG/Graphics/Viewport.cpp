@@ -68,12 +68,12 @@ namespace FlagGG
 			RenderEngine::Instance()->GetDeviceContext()->RSSetViewports(1, &d3d11Viewport);
 		}
 
-		Camera* Viewport::GetCamera() const
+		Scene::Camera* Viewport::GetCamera() const
 		{
 			return camera_;
 		}
 
-		void Viewport::SetCamera(Camera* camera)
+		void Viewport::SetCamera(Scene::Camera* camera)
 		{
 			camera_ = camera;
 		}

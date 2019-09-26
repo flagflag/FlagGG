@@ -1,5 +1,4 @@
 #include "Graphics/RenderEngine.h"
-#include "Graphics/Camera.h"
 #include "Graphics/Texture.h"
 #include "Scene/Node.h"
 #include "Scene/Component.h"
@@ -310,7 +309,7 @@ namespace FlagGG
 			return shaderParameters_;
 		}
 
-		void RenderEngine::SetShaderParameter(Camera* camera, const RenderContext* renderContext)
+		void RenderEngine::SetShaderParameter(Scene::Camera* camera, const RenderContext* renderContext)
 		{
 			if (!renderContext)
 				return;
@@ -321,7 +320,7 @@ namespace FlagGG
 				shaderParameters_.SetValue(SP_WORLD_MATRIX, *renderContext->worldTransform_);
 				shaderParameters_.SetValue(SP_VIEW_MATRIX, camera->GetViewMatrix().Transpose());
 				shaderParameters_.SetValue(SP_PROJECTION_MATRIX, camera->GetProjectionMatrix().Transpose());
-				shaderParameters_.SetValue(SP_CAMERA_POS, camera->GetPosition());
+				shaderParameters_.SetValue(SP_CAMERA_POS, camera->GetNode()->GetPosition());
 
 				if (renderContext->geometryType_ == GEOMETRY_SKINNED)
 				{
@@ -585,7 +584,7 @@ namespace FlagGG
 					auto it = renderContext->renderPass_->Find(RENDER_PASS_TYPE_SHADOW);
 					if (it != renderContext->renderPass_->End())
 					{
-						SetShaderParameter(light->GetCamera(), renderContext);
+						SetShaderParameter(light, renderContext);
 						SetVertexShader(it->second_.vertexShader_);
 						SetPixelShader(it->second_.pixelShader_);
 						for (const auto& geometry : renderContext->geometries_)
@@ -607,11 +606,10 @@ namespace FlagGG
 					renderContext->renderPass_->Contains(RENDER_PASS_TYPE_SHADOW))
 				{
 					Scene::Node* lightNode = lights[0]->GetNode();
-					Camera* lightCamera = lights[0]->GetCamera();
 					shaderParameters_.SetValue(SP_LIGHT_POS, lightNode->GetWorldPosition());
-					shaderParameters_.SetValue(SP_LIGHT_DIR, lightNode->GetWorldRotation().EulerAngles().Normalized());
-					shaderParameters_.SetValue(SP_LIGHT_VIEW_MATRIX, lightCamera->GetViewMatrix().Transpose());
-					shaderParameters_.SetValue(SP_LIGHT_PROJ_MATRIX, lightCamera->GetProjectionMatrix().Transpose());
+					shaderParameters_.SetValue(SP_LIGHT_DIR, lightNode->GetWorldRotation() * Math::Vector3::FORWARD);
+					shaderParameters_.SetValue(SP_LIGHT_VIEW_MATRIX, lights[0]->GetViewMatrix().Transpose());
+					shaderParameters_.SetValue(SP_LIGHT_PROJ_MATRIX, lights[0]->GetProjectionMatrix().Transpose());
 				}
 
 				SetShaderParameter(viewport->GetCamera(), renderContext);

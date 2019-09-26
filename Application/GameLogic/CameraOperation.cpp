@@ -4,7 +4,7 @@
 #include <Windows.h>
 
 CameraOperation::CameraOperation(FlagGG::Core::Context* context, Camera* inCamera) :
-	camera_(inCamera ? inCamera : new Camera(LAND_OBJECT))
+	camera_(inCamera)
 {
 	camera_->Walk(-5.0);
 	camera_->Fly(1.0);

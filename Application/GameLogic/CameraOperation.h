@@ -1,21 +1,21 @@
 #ifdef WIN32
 #pragma once
 
-#include <Graphics/Camera.h>
+#include <Scene/Camera.h>
 #include <Core/DeviceEvent.h>
 #include <Container/Ptr.h>
 #include <Core/Context.h>
 #include <Math/Vector2.h>
 
 using namespace FlagGG::Core;
-using namespace FlagGG::Graphics;
+using namespace FlagGG::Scene;
 using namespace FlagGG::Container;
 using namespace FlagGG::Math;
 
 class CameraOperation : public RefCounted
 {
 public:
-	CameraOperation(FlagGG::Core::Context* context, Camera* inCamera = nullptr);
+	CameraOperation(FlagGG::Core::Context* context, Camera* inCamera);
 
 	SharedPtr<Camera> GetCamera();
 
