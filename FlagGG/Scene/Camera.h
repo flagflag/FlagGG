@@ -46,6 +46,9 @@ namespace FlagGG
 			Math::Vector3 GetUp() const;
 			Math::Vector3 GetLook() const;
 
+		protected:
+			void Correct(Math::Vector3& right, Math::Vector3& up, Math::Vector3& look);
+
 		private:
 			CameraType cameraType_{ LAND_OBJECT };
 

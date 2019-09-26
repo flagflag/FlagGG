@@ -55,6 +55,17 @@ namespace FlagGG
 			}
 		}
 
+		void Camera::Correct(Math::Vector3& right, Math::Vector3& up, Math::Vector3& look)
+		{
+			look.Normalize();
+
+			up = look.CrossProduct(right);
+			up.Normalize();
+
+			right = up.CrossProduct(look);
+			right.Normalize();
+		}
+
 		void Camera::Pitch(float angle)
 		{
 			auto matrix = GetNode()->GetRotation().RotationMatrix();
@@ -66,6 +77,8 @@ namespace FlagGG
 			Math::Matrix4 T = Math::MatrixRotationAxis(right, angle);
 			up = Math::Vector3TransformCoord(up, T);
 			look = Math::Vector3TransformCoord(look, T);
+
+			Correct(right, up, look);
 			
 			GetNode()->SetRotation(Math::Quaternion(Math::Matrix3(
 				right.x_, up.x_, look.x_,
@@ -97,6 +110,8 @@ namespace FlagGG
 			right = Math::Vector3TransformCoord(right, T);
 			look = Math::Vector3TransformCoord(look, T);
 
+			Correct(right, up, look);
+
 			GetNode()->SetRotation(Math::Quaternion(Math::Matrix3(
 				right.x_, up.x_, look.x_,
 				right.y_, up.y_, look.y_,
@@ -117,6 +132,8 @@ namespace FlagGG
 				Math::Matrix4 T = Math::MatrixRotationAxis(look, angle);
 				right = Math::Vector3TransformCoord(right, T);
 				up = Math::Vector3TransformCoord(up, T);
+
+				Correct(right, up, look);
 
 				GetNode()->SetRotation(Math::Quaternion(Math::Matrix3(
 					right.x_, up.x_, look.x_,
