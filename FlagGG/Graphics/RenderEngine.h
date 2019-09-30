@@ -165,6 +165,7 @@ namespace FlagGG
 			Container::HashMap<uint64_t, Container::SharedPtr<VertexFormat>> vertexFormatCache_;
 
 			ShaderParameters shaderParameters_;
+			Container::SharedPtr<ShaderParameters> inShaderParameters_;
 
 			Container::SharedPtr<RenderSurface> renderTarget_;
 			Container::SharedPtr<RenderSurface> depthStencil_;

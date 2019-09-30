@@ -39,6 +39,8 @@ namespace FlagGG
 
 			Container::HashMap<uint32_t, RenderPass>& GetRenderPass();
 
+			Container::SharedPtr<ShaderParameters> GetShaderParameters();
+
 		protected:
 			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 

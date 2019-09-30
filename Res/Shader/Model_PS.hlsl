@@ -11,6 +11,13 @@ cbuffer ParamBuffer : register(b0)
 	float elapsedTime;
 	float3 lightPos;
 	float3 lightDir;
+	float3 cameraPos;
+
+	// 材质参数
+	float4 ambientColor;
+	float4 diffuseColor;
+	float4 specularColor;
+	float emissivePower;
 }
 
 struct PixelInput
@@ -18,6 +25,7 @@ struct PixelInput
 	float4 pos : SV_POSITION;
 	float2 tex0 : TEXCOORD0;
 	float3 nor : NORMAL;
+	float3 worldPos : WORLD_POS;
 #ifdef SHADOW
 	float4 shadowPos : POSITION;
 #endif
@@ -25,14 +33,14 @@ struct PixelInput
 
 float4 PS(PixelInput input) : SV_TARGET
 {
-	float4 textureColor = colorMap.Sample(colorSampler, input.tex0);
-
-	float4 diffuseColor = { 1.0, 1.0, 1.0, 1.0 };
-
 	float lightIntensity = saturate(dot(input.nor, -lightDir));
-	float4 color = saturate(diffuseColor * lightIntensity);
+	float3 diffColor = saturate(diffuseColor.rgb * lightIntensity);
+	float3 textureColor = colorMap.Sample(colorSampler, input.tex0).rgb;
+	diffColor = diffColor * textureColor;
 
-	color = color * textureColor;
+	float3 reflectDir = (input.nor * -lightDir * 2.0) * input.nor - (-lightDir);
+	float3 eyeDir = cameraPos - input.worldPos;
+	float3 specColor = specularColor.rgb * pow(saturate(dot(eyeDir, reflectDir)), emissivePower);
 
 #ifdef SHADOW
 	float bias = 0.001;
@@ -45,10 +53,15 @@ float4 PS(PixelInput input) : SV_TARGET
 		float depth = input.shadowPos.z / input.shadowPos.w;
 		if (shadowDepth < depth)
 		{
-			//color = float4(0, 0, 0, 1);
+			// diffColor = float3(0, 0, 0);
 		}
 	}
 #endif
+
+	float ambiPower = ambientColor.a / 255.0;
+	float diffPower = diffuseColor.a / 255.0;
+	float specPower = specularColor.a / 255.0;
+	float4 color = float4(ambientColor.rgb * ambiPower + diffColor * diffPower + specColor * specPower, 1.0);
 
 	return color;
 }

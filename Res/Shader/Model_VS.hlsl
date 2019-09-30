@@ -39,6 +39,7 @@ struct PixelInput
 	float4 pos : SV_POSITION;
 	float2 tex0 : TEXCOORD0;
 	float3 nor : NORMAL;
+	float3 worldPos : WORLD_POS;
 #ifdef SHADOW
 	float4 shadowPos : POSITION;
 #endif
@@ -71,6 +72,7 @@ PixelInput VS(VertexInput input)
 	output.pos = mul(clipPos, projectionMatrix);
 	output.tex0 = input.tex0;
 	output.nor = worldNor;
+	output.worldPos = worldPos;
 
 #ifdef SHADOW
 	float4 shadowClipPos = mul(float4(worldPos, 1.0), lightViewMatrix);

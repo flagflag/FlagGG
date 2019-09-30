@@ -48,7 +48,7 @@ namespace FlagGG
 		static const uint32_t T_RECT = Container::StringHash("rect").ToHash();
 		static const uint32_t T_VECTOR2 = Container::StringHash("vector2").ToHash();
 		static const uint32_t T_VECTOR3 = Container::StringHash("vector3").ToHash();
-		static const uint32_t T_VECTOR4 = Container::StringHash("vector3").ToHash();
+		static const uint32_t T_VECTOR4 = Container::StringHash("vector4").ToHash();
 		static const uint32_t T_MATRIX3 = Container::StringHash("matrix3").ToHash();
 		static const uint32_t T_MATRIX3X4 = Container::StringHash("matrix3x4").ToHash();
 		static const uint32_t T_MATRIX4 = Container::StringHash("matrix4").ToHash();
@@ -110,6 +110,7 @@ namespace FlagGG
 			ToStream<float>(value, *TYPE_COUNT[type], &steam);
 			buffer.Resize(*TYPE_SIZE[type]);
 			assert(steam.GetSize() <= buffer.Length());
+			steam.ClearIndex();
 			steam.ReadStream(&buffer[0], steam.GetSize());
 		}
 
@@ -173,6 +174,11 @@ namespace FlagGG
 		Container::HashMap<uint32_t, RenderPass>& Material::GetRenderPass()
 		{
 			return renderPass_;
+		}
+
+		Container::SharedPtr<ShaderParameters> Material::GetShaderParameters()
+		{
+			return shaderParameters_;
 		}
 
 		static Container::SharedPtr<Texture> LoadTexture(Resource::ResourceCache* cache, const Config::LJSONValue& textureConfig)

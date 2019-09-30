@@ -328,6 +328,8 @@ namespace FlagGG
 					numSkinMatrix_ = renderContext->numWorldTransform_;
 				}
 			}
+
+			inShaderParameters_ = renderContext->shaderParameters_;
 		}
 
 		void RenderEngine::SetVertexBuffers(const Container::Vector<Container::SharedPtr<VertexBuffer>>& vertexBuffers)
@@ -536,18 +538,25 @@ namespace FlagGG
 					char* data = static_cast<char*>(constantBuffer.Lock(0, bufferDesc.size_));
 					for (const auto& variableDesc : bufferDesc.variableDescs_)
 					{
-						auto it2 = shaderParameters_.descs.Find(variableDesc.name_);
-						if (it2 != shaderParameters_.descs.End())
+						auto CopyParam = [&](ShaderParameters& shaderParam)
 						{
-							shaderParameters_.dataBuffer_->Seek(it2->second_.offset_);
-							shaderParameters_.dataBuffer_->ReadStream(data + variableDesc.offset_,
-								Math::Min(variableDesc.size_, it2->second_.size_));
-						}
-						else if (Container::StringHash(variableDesc.name_) == SP_SKIN_MATRICES)
-						{
-							memcpy(data + variableDesc.offset_, skinMatrix_,
-								Math::Min(variableDesc.size_, numSkinMatrix_ * sizeof(Math::Matrix3x4)));
-						}
+							auto it2 = shaderParam.descs.Find(variableDesc.name_);
+							if (it2 != shaderParam.descs.End())
+							{
+								shaderParam.dataBuffer_->Seek(it2->second_.offset_);
+								shaderParam.dataBuffer_->ReadStream(data + variableDesc.offset_,
+									Math::Min(variableDesc.size_, it2->second_.size_));
+							}
+							else if (Container::StringHash(variableDesc.name_) == SP_SKIN_MATRICES)
+							{
+								memcpy(data + variableDesc.offset_, skinMatrix_,
+									Math::Min(variableDesc.size_, numSkinMatrix_ * sizeof(Math::Matrix3x4)));
+							}
+						};
+
+						CopyParam(shaderParameters_);
+						if (inShaderParameters_)
+							CopyParam(*inShaderParameters_);
 					}
 					constantBuffer.Unlock();
 				}

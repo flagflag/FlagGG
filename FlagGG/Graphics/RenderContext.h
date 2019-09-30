@@ -33,6 +33,8 @@ namespace FlagGG
 			uint32_t numWorldTransform_{ 0 };
 
 			Container::HashMap<uint32_t, RenderPass>* renderPass_{ nullptr };
+
+			Container::SharedPtr<ShaderParameters> shaderParameters_{ nullptr };
 		};
 	}
 }
