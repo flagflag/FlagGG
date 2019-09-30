@@ -89,7 +89,7 @@ void GameApplication::CreateScene()
 
 	auto* cameraNode = new Node();
 	scene_->AddChild(cameraNode);
-	Camera* camera = cameraNode->CreateComponent<Camera>();
+	auto* camera = cameraNode->CreateComponent<Camera>();
 	cameraOpt_ = new CameraOperation(context_, camera);
 
 	mainHero_ = new Unit(context_);
@@ -101,6 +101,7 @@ void GameApplication::CreateScene()
 
 	terrain_ = new Terrain(context_);
 	terrain_->Create(64);
+	terrain_->SetScale(Vector3(1, 0.4, 1));
 	terrain_->SetPosition(Vector3(-80, -5, 0));
 	scene_->AddChild(terrain_);
 
@@ -130,10 +131,7 @@ void GameApplication::SetupWindow()
 	if (commandParam_.Contains("NoWindow"))
 		return;
 
-	IntRect desktopRect = SystemHelper::GetDesktopRect();
-	uint32_t length = Min(desktopRect.Width(), desktopRect.Height());
-	IntRect rect(IntVector2(0, 0), IntVector2(length, length));
-	
+	IntRect rect = SystemHelper::GetDesktopRect();
 
 	// 创建一张shaderMap
 	shadowMap_ = new Texture2D(context_);

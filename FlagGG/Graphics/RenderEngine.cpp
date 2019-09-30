@@ -572,6 +572,8 @@ namespace FlagGG
 
 			viewport->SetViewport();
 
+			float aspect = (float)viewport->GetWidth() / viewport->GetHeight();
+
 			Container::PODVector<Scene::Light*> lights;
 			scene->GetLights(lights);
 			SetRenderTarget(viewport, true);
@@ -584,6 +586,7 @@ namespace FlagGG
 					auto it = renderContext->renderPass_->Find(RENDER_PASS_TYPE_SHADOW);
 					if (it != renderContext->renderPass_->End())
 					{
+						light->SetAspect(aspect);
 						SetShaderParameter(light, renderContext);
 						SetVertexShader(it->second_.vertexShader_);
 						SetPixelShader(it->second_.pixelShader_);
@@ -606,12 +609,14 @@ namespace FlagGG
 					renderContext->renderPass_->Contains(RENDER_PASS_TYPE_SHADOW))
 				{
 					Scene::Node* lightNode = lights[0]->GetNode();
+					lights[0]->SetAspect(aspect);
 					shaderParameters_.SetValue(SP_LIGHT_POS, lightNode->GetWorldPosition());
 					shaderParameters_.SetValue(SP_LIGHT_DIR, lightNode->GetWorldRotation() * Math::Vector3::FORWARD);
 					shaderParameters_.SetValue(SP_LIGHT_VIEW_MATRIX, lights[0]->GetViewMatrix().Transpose());
 					shaderParameters_.SetValue(SP_LIGHT_PROJ_MATRIX, lights[0]->GetProjectionMatrix().Transpose());
 				}
 
+				viewport->GetCamera()->SetAspect(aspect);
 				SetShaderParameter(viewport->GetCamera(), renderContext);
 				SetVertexShader(renderContext->vertexShader_);
 				SetPixelShader(renderContext->pixelShader_);

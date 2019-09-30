@@ -168,7 +168,7 @@ namespace FlagGG
 		{
 			return Math::MatrixPerspectiveFovLH(
 				Math::PI / 4,
-				1.0f,
+				aspect_,
 				nearClip_,
 				farClip_
 				);
@@ -202,6 +202,11 @@ namespace FlagGG
 		float Camera::GetNearClip() const
 		{
 			return nearClip_;
+		}
+
+		void Camera::SetAspect(float aspect)
+		{
+			aspect_ = aspect;
 		}
 
 		Math::Vector3 Camera::GetRight() const

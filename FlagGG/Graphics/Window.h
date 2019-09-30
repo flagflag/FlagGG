@@ -53,7 +53,7 @@ namespace FlagGG
 		public:
 			Window(Core::Context* context, void* parentWindow, const Math::IntRect& rect);
 
-			~Window() override = default;
+			~Window() override;
 
 			uint32_t GetWidth();
 
@@ -89,7 +89,7 @@ namespace FlagGG
 			Core::Context* context_;
 			Core::Input* input_;
 
-			ID3D11Texture2D* depthTexture_;
+			ID3D11Texture2D* depthTexture_{ nullptr };
 			Container::SharedPtr<Viewport> viewport_;
 
 			uint32_t multiSample_{ 1 };

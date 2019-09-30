@@ -113,10 +113,14 @@ namespace FlagGG
 			context_(context),
 			input_(context->GetVariable<Core::Input>("input"))
 		{
-
 			Create(parentWindow, rect);
 
 			::GetCursorPos(&mousePos_);
+		}
+
+		Window::~Window()
+		{
+			SAFE_RELEASE(depthTexture_);
 		}
 
 		bool Window::Create(void* parentWindow, const Math::IntRect& rect)

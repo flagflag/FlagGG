@@ -34,13 +34,16 @@ namespace FlagGG
 			CameraType GetCameraType() const;
 			void SetCameraType(CameraType cameraType);
 
-			// Ô¶²Ã¼ôÃæ
+			// è¿œè£å‰ªé¢
 			void SetFarClip(float farClip);
 			float GetFarClip() const;
 
-			// ½ü²Ã¼ôÃæ
+			// è¿‘è£å‰ªé¢
 			void SetNearClip(float nearClip);
 			float GetNearClip() const;
+
+			// è®¾ç½®æ¨ªçºµæ¯”ä¾‹
+			void SetAspect(float aspect);
 
 			Math::Vector3 GetRight() const;
 			Math::Vector3 GetUp() const;
@@ -54,6 +57,7 @@ namespace FlagGG
 
 			float farClip_{ 1.0f };
 			float nearClip_{ 100.0f };
+			float aspect_{ 1.0f };
 		};
 	}
 }
