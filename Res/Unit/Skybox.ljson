@@ -1,0 +1,5 @@
+{
+    geometrytype = "STATIC",
+    model = "Model/Box.mdl",
+    material = "Materials/Skybox.ljson"
+}

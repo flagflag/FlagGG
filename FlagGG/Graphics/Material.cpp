@@ -4,6 +4,7 @@
 #include "Graphics/Shader.h"
 #include "Graphics/Texture.h"
 #include "Graphics/Texture2D.h"
+#include "Graphics/TextureCube.h"
 #include "Config/LJSONFile.h"
 #include "Config/LJSONAux.h"
 #include "Resource/ResourceCache.h"
@@ -190,12 +191,16 @@ namespace FlagGG
 				texture = cache->GetResource<Texture2D>(textureConfig["path"].GetString());
 				if (!texture)
 				{
-					FLAGGG_LOG_ERROR("Material ==> load texture failed.");
+					FLAGGG_LOG_ERROR("Material ==> load texture2d failed.");
 				}
 			}
-			else
+			else if (type == "texturecube")
 			{
-				// CubeÌùÍ¼
+				texture = cache->GetResource<TextureCube>(textureConfig["path"].GetString());
+				if (!texture)
+				{
+					FLAGGG_LOG_ERROR("Material ==> load textureCube failed.");
+				}
 			}
 			return texture;
 		}

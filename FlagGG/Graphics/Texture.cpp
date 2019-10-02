@@ -117,11 +117,6 @@ namespace FlagGG
 			return format_ == DXGI_FORMAT_BC1_UNORM || format_ == DXGI_FORMAT_BC2_UNORM || format_ == DXGI_FORMAT_BC3_UNORM;
 		}
 
-		RenderSurface* Texture::GetRenderSurface() const
-		{
-			return renderSurface_;
-		}
-
 		uint32_t Texture::GetComponents() const
 		{
 			if (!width_ || IsCompressed())
@@ -132,6 +127,12 @@ namespace FlagGG
 			return GetRowDataSize(width_) / width_;
 		}
 
+		void Texture::Release()
+		{
+			SAFE_RELEASE(resolveTexture_);
+			SAFE_RELEASE(shaderResourceView_);
+		}
+
 		uint32_t Texture::CheckMaxLevels(int32_t width, int32_t height, uint32_t requestedLevels)
 		{
 			uint32_t maxLevels = 1;
@@ -140,6 +141,25 @@ namespace FlagGG
 				++maxLevels;
 				width = width > 1 ? (width >> 1u) : 1;
 				height = height > 1 ? (height >> 1u) : 1;
+			}
+
+			if (!requestedLevels || maxLevels < requestedLevels)
+			{
+				return maxLevels;
+			}
+
+			return requestedLevels;
+		}
+
+		uint32_t Texture::CheckMaxLevels(int32_t width, int32_t height, int32_t depth, uint32_t requestedLevels)
+		{
+			uint32_t maxLevels = 1;
+			while (width > 1 || height > 1)
+			{
+				++maxLevels;
+				width = width > 1 ? (width >> 1u) : 1;
+				height = height > 1 ? (height >> 1u) : 1;
+				depth = depth > 1 ? (depth >> 1u) : 1;
 			}
 
 			if (!requestedLevels || maxLevels < requestedLevels)

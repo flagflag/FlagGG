@@ -63,7 +63,7 @@ namespace FlagGG
 			D3D11_RASTERIZER_DESC stateDesc;
 			memset(&stateDesc, 0, sizeof(stateDesc));
 			stateDesc.FillMode = D3D11_FILL_SOLID;
-			stateDesc.CullMode = D3D11_CULL_BACK;
+			stateDesc.CullMode = D3D11_CULL_NONE;
 			stateDesc.FrontCounterClockwise = false;
 			stateDesc.DepthBias = 0;
 			stateDesc.DepthBiasClamp = 0.0f;

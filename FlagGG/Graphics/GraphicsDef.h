@@ -30,6 +30,17 @@ enum TextureClass : uint32_t
 	MAX_TEXTURE_CLASS
 };
 
+enum CubeMapFace
+{
+	FACE_POSITIVE_X = 0,
+	FACE_NEGATIVE_X,
+	FACE_POSITIVE_Y,
+	FACE_NEGATIVE_Y,
+	FACE_POSITIVE_Z,
+	FACE_NEGATIVE_Z,
+	MAX_CUBEMAP_FACES
+};
+
 enum RenderPassType : uint32_t
 {
 	RENDER_PASS_TYPE_SHADOW = 0,

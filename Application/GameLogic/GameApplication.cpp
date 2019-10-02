@@ -123,6 +123,11 @@ void GameApplication::CreateScene()
 	lightNode->SetRotation(Quaternion(45.0f, Vector3(1.0f, 0.0f, 0.0f))); // 绕着x轴旋转45度，朝下
 	scene_->AddChild(lightNode);
 #endif
+
+	skybox_ = new Unit(context_);
+	skybox_->Load("Unit/Skybox.ljson");
+	skybox_->SetScale(Vector3(100000, 100000, 100000));
+	scene_->AddChild(skybox_);
 }
 
 void GameApplication::SetupWindow()

@@ -64,6 +64,7 @@ private:
 	SharedPtr<Unit> mainHero_;
 	SharedPtr<Terrain> terrain_;
 	SharedPtr<Unit> water_;
+	SharedPtr<Unit> skybox_;
 #endif
 
 	SharedPtr<LuaVM> luaVM_;

@@ -53,17 +53,21 @@ namespace FlagGG
 
 			bool IsCompressed() const;
 
-			RenderSurface* GetRenderSurface() const;
-
 			uint32_t GetComponents() const;
+
+			virtual RenderSurface* GetRenderSurface() const { return nullptr; }
+
+			virtual RenderSurface* GetRenderSurface(uint32_t index) const { return nullptr; }
 
 			friend class RenderEngine;
 
 		protected:
 
 			virtual bool Create() { return false; }
+			void Release();
 
 			static uint32_t CheckMaxLevels(int32_t width, int32_t height, uint32_t requestedLevels);
+			static uint32_t CheckMaxLevels(int32_t width, int32_t height, int32_t depth, uint32_t requestedLevels);
 			static uint32_t GetSRGBFormat(uint32_t format);
 			static uint32_t GetDSVFormat(uint32_t format);
 			static uint32_t GetSRVFormat(uint32_t format);
@@ -82,8 +86,6 @@ namespace FlagGG
 			bool sRGB_{ false };
 
 			TextureUsage usage_{ TEXTURE_STATIC };
-
-			Container::SharedPtr<RenderSurface> renderSurface_;
 
 			uint32_t mipsToSkip_[MAX_TEXTURE_QUALITY_LEVELS];
 

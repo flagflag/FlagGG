@@ -1,0 +1,15 @@
+{
+    vsshader = 
+    {
+        path = "Shader/Skybox_VS.hlsl"
+    },
+    psshader = 
+    {
+        path = "Shader/Skybox_PS.hlsl"
+    },
+    texture = 
+    {
+        type = "texturecube",
+        path = "Textures/SkyBox.ljson"
+    }
+}
