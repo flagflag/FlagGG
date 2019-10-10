@@ -119,7 +119,7 @@ void GameApplication::CreateScene()
 	auto* lightNode = new Node();
 #endif
 	lightNode->CreateComponent<Light>();
-	lightNode->SetPosition(Vector3(0, 20, -20));
+	lightNode->SetPosition(Vector3(0, 2, 0));
 	lightNode->SetRotation(Quaternion(45.0f, Vector3(1.0f, 0.0f, 0.0f))); // 绕着x轴旋转45度，朝下
 	scene_->AddChild(lightNode);
 #endif

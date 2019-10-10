@@ -26,6 +26,12 @@ struct PixelInput
 #endif
 };
 
+float DecodeFloatRG(float2 enc)
+{  
+    float2 kDecodeDot = float2(1.0, 1.0 / 255.0);
+    return dot(enc, kDecodeDot);
+}
+
 float4 PS(PixelInput input) : SV_TARGET
 {
     float3 weight = Sample2D(weight, input.weightTex).xyz;
@@ -45,7 +51,7 @@ float4 PS(PixelInput input) : SV_TARGET
 	shadowTex.y = input.shadowPos.y / input.shadowPos.w * (-0.5) + 0.5;
 	if (saturate(shadowTex.x) == shadowTex.x && saturate(shadowTex.y) == shadowTex.y)
 	{
-		float shadowDepth = shadowMap.Sample(shadowSampler, shadowTex).x + bias;
+		float shadowDepth = DecodeFloatRG(shadowMap.Sample(shadowSampler, shadowTex).xy)  + bias;
 		float depth = input.shadowPos.z / input.shadowPos.w;
 		if (shadowDepth < depth)
 		{

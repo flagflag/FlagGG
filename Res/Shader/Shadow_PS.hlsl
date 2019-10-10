@@ -17,9 +17,19 @@ struct PixelInput
 };
 #endif
 
+float4 EncodeFloatRGBA(float value)
+{
+	float4 kEncodeMul = float4(1.0, 255.0, 65025.0, 16581375.0);
+    float kEncodeBit = 1.0 / 255.0;
+    float4 enc = kEncodeMul * value;
+    enc = frac(enc);
+    enc -= enc.yzww * kEncodeBit;
+    return enc;
+}
+
 float4 PS(PixelInput input) : SV_TARGET
 {
 	float depth = input.pos.z / input.pos.w;
-	return float4(depth, depth, depth, 1);
+	return EncodeFloatRGBA(depth);
 }
 
