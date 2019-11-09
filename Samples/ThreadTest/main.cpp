@@ -15,8 +15,6 @@ void OneThreadTest()
 	FlagGG::AsyncFrame::Thread::SharedThread thread;
 	thread.Start();
 
-	FlagGG::Utility::SystemHelper::Sleep(2000);
-
 	for (uint32_t i = 0; i < 1e5; ++i)
 	{
 		thread.Add(std::bind(&ThreadFunc, i));
@@ -48,6 +46,7 @@ void MultiThreadTest()
 
 int main()
 {
+	freopen("E:\\test.txt", "w", stdout);
 	OneThreadTest();
 	// MultiThreadTest();
 

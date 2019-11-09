@@ -1,5 +1,6 @@
 ﻿#include "SharedThread.h"
 #include "Utility/SystemHelper.h"
+#include "Log.h"
 
 namespace FlagGG
 {
@@ -33,6 +34,7 @@ namespace FlagGG
 				if (running_ && thread_)
 				{
 					running_ = false;
+					taskQueue_.Release();
 				}
 			}
 
@@ -79,31 +81,30 @@ namespace FlagGG
 
 			void SharedThread::WorkThread()
 			{
+				FLAGGG_LOG_INFO("Shared thread start.");
+
+				ConditionQueue<ThreadTask>::Objects objects;
+
 				while (running_)
 				{
-					taskQueue_.Wait();
+					taskQueue_.Swap(objects);
 
 					CHECK_EXIT();
 
-					while (!taskQueue_.IsEmpty())
+					for (auto it = objects.Begin(); it != objects.End(); ++it)
 					{
-						auto& objects = taskQueue_.Swap();
-
 						CHECK_EXIT();
 
-						for (auto it = objects.Begin(); it != objects.End(); ++it)
-						{
-							CHECK_EXIT();
-
-							if ((*it))
-							{
-								(*it)();
-							}
-						}
+						if ((*it))
+							(*it)();
 					}
+
+					objects.Clear();
 
 					CHECK_EXIT();
 				}
+
+				FLAGGG_LOG_INFO("Shared thread stop.");
 			}
 		}
 	}
