@@ -43,6 +43,7 @@ namespace FlagGG
 				if (running_ && thread_)
 				{
 					running_ = false;
+					taskQueue_.Release();
 
 					thread_->Stop();
 				}
@@ -50,7 +51,7 @@ namespace FlagGG
 
 			void SharedThread::WaitForStop()
 			{
-				if (running_ && thread_)
+				if (thread_)
 				{
 					thread_->WaitForStop();
 				}
@@ -58,7 +59,7 @@ namespace FlagGG
 
 			void SharedThread::WaitForStop(uint32_t wait_time)
 			{
-				if (running_ && thread_)
+				if (thread_)
 				{
 					thread_->WaitForStop(wait_time);
 				}
@@ -77,7 +78,7 @@ namespace FlagGG
 				return (uint32_t)taskQueue_.Size();
 			}
 
-#define CHECK_EXIT() if (!running_) return;
+#define CHECK_EXIT() if (!running_) break;
 
 			void SharedThread::WorkThread()
 			{
