@@ -262,6 +262,11 @@ namespace FlagGG
 			return constantBufferDescs_;
 		}
 
+		const Container::HashMap<uint32_t, TextureDesc>& Shader::GetTextureDesc() const
+		{
+			return textureDescs_;
+		}
+
 		void Shader::AnalysisReflection(ID3DBlob* compileCode)
 		{
 			ID3D11ShaderReflection* reflector = nullptr;
@@ -292,7 +297,27 @@ namespace FlagGG
 					FLAGGG_LOG_ERROR("Failed to get resource bind desc.");
 					return;
 				}
-				bindMap[bindDesc.Name] = bindDesc.BindPoint;
+
+				switch(bindDesc.Type)
+				{
+				case D3D_SIT_CBUFFER:
+					bindMap[bindDesc.Name] = bindDesc.BindPoint;
+				break;
+
+				case D3D_SIT_TEXTURE:
+				{
+					TextureDesc& desc = textureDescs_[bindDesc.BindPoint];
+					desc.textureName_ = bindDesc.Name;
+				}
+				break;
+
+				case D3D_SIT_SAMPLER:
+				{
+					TextureDesc& desc = textureDescs_[bindDesc.BindPoint];
+					desc.samplerName_ = bindDesc.Name;
+				}
+				break;
+				}
 			}
 
 			for (uint32_t i = 0; i < shaderDesc.ConstantBuffers; ++i)

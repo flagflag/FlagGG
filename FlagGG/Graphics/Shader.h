@@ -54,6 +54,12 @@ namespace FlagGG
 			Container::Vector<ConstantBufferVariableDesc> variableDescs_;
 		};
 
+		struct TextureDesc
+		{
+			Container::String textureName_;
+			Container::String samplerName_;
+		};
+
 		// 经过编译的shader，是GPU对象
 		class FlagGG_API Shader : public GPUObject, public Container::RefCounted
 		{
@@ -78,6 +84,8 @@ namespace FlagGG
 
 			const Container::HashMap<uint32_t, ConstantBufferDesc>& GetContantBufferVariableDesc() const;
 
+			const Container::HashMap<uint32_t, TextureDesc>& GetTextureDesc() const;
+
 		protected:
 			void AnalysisReflection(ID3DBlob* compileCode);
 
@@ -94,6 +102,7 @@ namespace FlagGG
 			Container::String definesString_;
 
 			Container::HashMap<uint32_t, ConstantBufferDesc> constantBufferDescs_;
+			Container::HashMap<uint32_t, TextureDesc> textureDescs_;
 		};
 	}
 }

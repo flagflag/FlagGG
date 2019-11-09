@@ -197,7 +197,7 @@ namespace FlagGG
 
 			if (usage >= TEXTURE_RENDERTARGET)
 			{
-				renderSurface_ = new RenderSurface();
+				renderSurface_ = new RenderSurface(this);
 			}
 
 			width_ = width;

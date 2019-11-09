@@ -5,6 +5,10 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
+		RenderSurface::RenderSurface(Texture* parentTexture) :
+			parentTexture_(parentTexture)
+		{ }
+
 		void RenderSurface::Initialize()
 		{
 		}
@@ -12,6 +16,11 @@ namespace FlagGG
 		bool RenderSurface::IsValid()
 		{
 			return GetHandler() != nullptr;
+		}
+
+		Texture* RenderSurface::GetParentTexture()
+		{
+			return parentTexture_;
 		}
 	}
 }

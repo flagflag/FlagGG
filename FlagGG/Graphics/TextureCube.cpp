@@ -174,7 +174,7 @@ namespace FlagGG
 			{
 				for (uint32_t i = 0; i < MAX_CUBEMAP_FACES; ++i)
 				{
-					renderSurfaces_[i] = new RenderSurface();
+					renderSurfaces_[i] = new RenderSurface(this);
 					faceMemoryUse_[i] = 0u;
 				}
 			}

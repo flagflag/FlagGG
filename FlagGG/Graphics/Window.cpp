@@ -220,7 +220,7 @@ namespace FlagGG
 				FLAGGG_LOG_ERROR("Failed to create RenderTargetView for SwapChain.");
 				return;
 			}
-			Container::SharedPtr<RenderSurface> renderTarget(new RenderSurface());
+			Container::SharedPtr<RenderSurface> renderTarget(new RenderSurface(nullptr));
 			renderTarget->ResetHandler(renderTargetView);
 
 			D3D11_TEXTURE2D_DESC depthDesc;
@@ -253,7 +253,7 @@ namespace FlagGG
 				FLAGGG_LOG_ERROR("Failed to create depth-stencil view.");
 				return;
 			}
-			Container::SharedPtr<RenderSurface> depthStencil(new RenderSurface());
+			Container::SharedPtr<RenderSurface> depthStencil(new RenderSurface(nullptr));
 			depthStencil->ResetHandler(depthStencilView);
 
 			viewport_ = new Viewport();

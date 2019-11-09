@@ -15,14 +15,19 @@
 	shader_parameters = 
 	[
 		{
-			name = "noise",
+			name = "noiseTiling",
 			type = "float",
-			value = 1
+			value = 50.0
 		},
 		{
-			name = "speed",
+			name = "noiseSpeed",
 			type = "vector2",
-			value = [ 20, 20 ]
+			value = [ 0.05, 0.05 ]
+		},
+		{
+			name = "noiseStrength",
+			type = "float",
+			value = 0.02
 		}
 	]
 }

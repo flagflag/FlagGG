@@ -17,6 +17,7 @@ struct PixelInput
 	float4 pos : SV_POSITION;
 	float2 tex0 : TEXCOORD0;
 	float3 nor : NORMAL;
+	float3 worldPos : WORLD_POS;
 };
 
 PixelInput VS(VertexInput input)
@@ -30,6 +31,7 @@ PixelInput VS(VertexInput input)
 	output.pos = mul(clipPos, projectionMatrix);
 	output.tex0 = input.tex0;
 	output.nor = worldNor;
+	output.worldPos = worldPos;
 
 	return output;
 }

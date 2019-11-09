@@ -160,6 +160,7 @@ namespace FlagGG
 
 			Container::SharedPtr<Texture> textures_[MAX_TEXTURE_CLASS];
 			Container::SharedPtr<Texture> defaultTextures_[MAX_TEXTURE_CLASS];
+			Container::SharedPtr<Texture2D> envTexture_;
 			bool texturesDirty_{ false };
 
 			Container::HashMap<uint64_t, Container::SharedPtr<VertexFormat>> vertexFormatCache_;

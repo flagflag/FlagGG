@@ -1,5 +1,6 @@
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Texture.h"
+#include "Graphics/Texture2D.h"
 #include "Scene/Node.h"
 #include "Scene/Component.h"
 #include "Scene/Light.h"
@@ -492,6 +493,42 @@ namespace FlagGG
 					{
 						shaderResourceView[i] = nullptr;
 						samplerState[i] = nullptr;
+					}
+				}
+
+				if (!shaderResourceView[TEXTURE_CLASS_ENVIRONMENT] &&
+					pixelShader_->GetTextureDesc().Contains(TEXTURE_CLASS_ENVIRONMENT))
+				{
+					// 直接渲染到backbuffer，需要创建一张环境贴图，然后将backbuffer拷贝到环境贴图
+					Texture* renderTargetTexture = renderTarget_->GetParentTexture();
+
+					if (!envTexture_)
+					{
+						envTexture_ = new Texture2D(nullptr);
+						envTexture_->SetNumLevels(1);
+						envTexture_->Initialize();
+					}
+
+					if (!renderTargetTexture)
+					{
+						//envTexture_->SetSize(400, 400, GetRGBFormat(), TEXTURE_DYNAMIC);
+					}
+					// 渲染到贴图，直接把当前贴图作为环境贴图采样
+					// 修正：不能直接作为环境贴图传入，在shader里会变成NoResource，可能是应为renderTarget不能即读又写吧
+					else
+					{
+						if (envTexture_->GetWidth() != renderTargetTexture->GetWidth() ||
+							envTexture_->GetHeight() != renderTargetTexture->GetHeight())
+							envTexture_->SetSize(renderTargetTexture->GetWidth(), renderTargetTexture->GetHeight(), GetRGBFormat(), TEXTURE_DYNAMIC);
+						Container::SharedArrayPtr<char> data(new char[envTexture_->GetWidth() * envTexture_->GetHeight() * envTexture_->GetComponents()]);
+						static_cast<Texture2D*>(renderTargetTexture)->GetData(0, data);
+						envTexture_->SetData(0, 0, 0, envTexture_->GetWidth(), envTexture_->GetHeight(), data);
+					}
+
+					if (envTexture_)
+					{
+						shaderResourceView[TEXTURE_CLASS_ENVIRONMENT] = envTexture_->shaderResourceView_;
+						samplerState[TEXTURE_CLASS_ENVIRONMENT] = envTexture_->sampler_;
 					}
 				}
 

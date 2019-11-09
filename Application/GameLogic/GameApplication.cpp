@@ -90,6 +90,8 @@ void GameApplication::CreateScene()
 	auto* cameraNode = new Node();
 	scene_->AddChild(cameraNode);
 	auto* camera = cameraNode->CreateComponent<Camera>();
+	camera->SetNearClip(1.0f);
+	camera->SetFarClip(1000000000.0f);
 	cameraOpt_ = new CameraOperation(context_, camera);
 
 	mainHero_ = new Unit(context_);
@@ -105,11 +107,11 @@ void GameApplication::CreateScene()
 	terrain_->SetPosition(Vector3(-80, -5, 0));
 	scene_->AddChild(terrain_);
 
-	//water_ = new Unit(context_);
-	//water_->Load("Unit/Water.ljson");
-	//water_->SetPosition(Vector3(0, -5, 10));
-	//water_->SetScale(Vector3(1000, 1000, 1000));
-	//scene_->AddChild(water_);
+	water_ = new Unit(context_);
+	water_->Load("Unit/Water.ljson");
+	water_->SetPosition(Vector3(0, -4, 10));
+	water_->SetScale(Vector3(5, 5, 5));
+	scene_->AddChild(water_);
 
 #if 0
 	auto* lightNode = new Unit(context_);
@@ -164,9 +166,6 @@ void GameApplication::SetupWindow()
 	window_->Show();
 	window_->GetViewport()->SetCamera(cameraOpt_->GetCamera());
 	window_->GetViewport()->SetScene(scene_);
-
-	cameraOpt_->GetCamera()->SetNearClip(1.0f);
-	cameraOpt_->GetCamera()->SetFarClip(1000000000.0f);
 
 	WindowDevice::RegisterWinMessage(window_);
 #endif
