@@ -107,12 +107,6 @@ void GameApplication::CreateScene()
 	terrain_->SetPosition(Vector3(-80, -5, 0));
 	scene_->AddChild(terrain_);
 
-	water_ = new Unit(context_);
-	water_->Load("Unit/Water.ljson");
-	water_->SetPosition(Vector3(0, -4, 10));
-	water_->SetScale(Vector3(5, 5, 5));
-	scene_->AddChild(water_);
-
 #if 0
 	auto* lightNode = new Unit(context_);
 	lightNode->Load("Unit/MainHero.ljson");
@@ -130,6 +124,12 @@ void GameApplication::CreateScene()
 	skybox_->Load("Unit/Skybox.ljson");
 	skybox_->SetScale(Vector3(100000, 100000, 100000));
 	scene_->AddChild(skybox_);
+
+	water_ = new Unit(context_);
+	water_->Load("Unit/Water.ljson");
+	water_->SetPosition(Vector3(0, -4, 10));
+	water_->SetScale(Vector3(100, 100, 100));
+	scene_->AddChild(water_);
 }
 
 void GameApplication::SetupWindow()

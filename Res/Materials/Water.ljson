@@ -28,6 +28,11 @@
 			name = "noiseStrength",
 			type = "float",
 			value = 0.02
+		},
+		{
+			name = "waterColor",
+			type = "vector3",
+			value = [ 0.8, 0.8, 1.0 ]
 		}
 	]
 }
