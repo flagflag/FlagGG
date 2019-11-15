@@ -1,5 +1,5 @@
 include (${CMAKE_CURRENT_SOURCE_DIR}/../CMake/ThirdParty.cmake)
-add_subdirectory (Client)
+add_subdirectory (Editor)
 add_subdirectory (Server)
-add_subdirectory (GameLogic)
+add_subdirectory (Game)
 add_subdirectory (AssetImporter)
