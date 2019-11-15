@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+// #define USE_TCP
+
 class ServerHandler : public FlagGG::IOFrame::Handler::EventHandler
 {
 public:
@@ -36,18 +38,24 @@ public:
 
 	void ErrorCatch(FlagGG::IOFrame::Context::IOContextPtr context, const FlagGG::ErrorCode& error_code) override
 	{
-		FLAGGG_LOG_DEBUG("errorCatch %d %s", error_code.Value(), error_code.Message().c_str());
+		FLAGGG_LOG_DEBUG("errorCatch %d %s", error_code.Value(), error_code.Message().CString());
 	}
 };
 
 void StartServer()
 {
 	FLAGGG_LOG_DEBUG("ready start server.");
-
+#ifdef USE_TCP
 	FlagGG::IOFrame::Acceptor::IOAcceptorPtr acceptor = 
 		FlagGG::IOFrame::TCP::CreateAcceptor(
 		FlagGG::IOFrame::Handler::EventHandlerPtr(new ServerHandler),
 		1);
+#else
+	FlagGG::IOFrame::Acceptor::IOAcceptorPtr acceptor =
+		FlagGG::IOFrame::UDP::CreateAcceptor(
+		FlagGG::IOFrame::Handler::EventHandlerPtr(new ServerHandler)
+		);
+#endif
 
 	if (acceptor->Bind("127.0.0.1", 5000))
 	{
@@ -66,19 +74,21 @@ void StartServer()
 void StartClient()
 {
 	FLAGGG_LOG_DEBUG("ready start client.");
+#ifdef USE_TCP
+	FlagGG::IOFrame::IOThreadPoolPtr threadPool = FlagGG::IOFrame::TCP::CreateThreadPool(1);
 
-	FlagGG::IOFrame::IOThreadPoolPtr thread_pool = FlagGG::IOFrame::TCP::CreateThreadPool(1);
-
-	thread_pool->Start();
+	threadPool->Start();
 
 	FlagGG::IOFrame::Connector::IOConnectorPtr connector =
 		FlagGG::IOFrame::TCP::CreateConnector(
 		FlagGG::IOFrame::Handler::EventHandlerPtr(new ServerHandler),
-		thread_pool);
+		threadPool);
 
 	connector->Connect("127.0.0.1", 5000);
 
 	FLAGGG_LOG_DEBUG("succeed to startup client");
+
+	FlagGG::Utility::SystemHelper::Sleep(1000);
 
 	FlagGG::IOFrame::Buffer::IOBufferPtr buffer = FlagGG::IOFrame::TCP::CreateBuffer();
 	std::string content = "test233";
@@ -88,8 +98,32 @@ void StartClient()
 		bool result = connector->Write(buffer);
 		FLAGGG_LOG_DEBUG("write %d result(%d)", i, result ? 1 : 0);
 	}
+#else
+	FlagGG::IOFrame::IOThreadPoolPtr threadPool = FlagGG::IOFrame::UDP::CreateThreadPool();
 
-	thread_pool->WaitForStop();
+	threadPool->Start();
+
+	FlagGG::IOFrame::Connector::IOConnectorPtr connector =
+		FlagGG::IOFrame::UDP::CreateConnector(
+		FlagGG::IOFrame::Handler::EventHandlerPtr(new ServerHandler),
+		threadPool);
+
+	connector->Connect("127.0.0.1", 5000);
+
+	FLAGGG_LOG_DEBUG("succeed to startup client");
+
+	FlagGG::Utility::SystemHelper::Sleep(1000);
+
+	FlagGG::IOFrame::Buffer::IOBufferPtr buffer = FlagGG::IOFrame::UDP::CreateBuffer();
+	std::string content = "test2333";
+	buffer->WriteStream(content.data(), content.length());
+	for (int i = 0; i < 10; ++i)
+	{
+		bool result = connector->Write(buffer);
+		FLAGGG_LOG_DEBUG("write %d result(%d)", i, result ? 1 : 0);
+	}
+#endif
+	threadPool->WaitForStop();
 }
 
 int main()

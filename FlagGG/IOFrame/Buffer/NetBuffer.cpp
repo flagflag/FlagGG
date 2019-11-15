@@ -220,6 +220,25 @@ namespace FlagGG
 				WriteByte(byte[3]);
 			}
 
+			uint32_t NetBuffer::ReadStream(void* data, uint32_t dataSize)
+			{
+				if (buffers_.Size() <= 0u)
+					return 0u;
+
+				auto* index = static_cast<char*>(data);
+				uint32_t readSize = 0u;
+				for (uint32_t i = 0; i < buffers_.Size() && readSize < dataSize; ++i)
+				{
+					uint32_t realSize = (i + 1 == buffers_.Size() ? count_ : buffers_[i].bufferSize);
+					if (readSize + realSize > dataSize)
+						realSize = dataSize - readSize;
+					memcpy(index, buffers_[i].buffer, realSize);
+					index += realSize;
+					readSize += realSize;
+				}
+				return readSize;
+			}
+
 			uint32_t NetBuffer::WriteStream(const void* data, uint32_t dataSize)
 			{
 				if (!data || dataSize == 0) return 0;

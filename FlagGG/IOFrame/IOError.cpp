@@ -19,6 +19,21 @@ namespace FlagGG
 			{
 				return errorCode_.message().c_str();
 			}
+
+			CustomIOError::CustomIOError(int value, const Container::String& message) :
+				value_(value),
+				message_(message)
+			{}
+
+			int CustomIOError::Value() const
+			{
+				return value_;
+			}
+
+			Container::String CustomIOError::Message() const
+			{
+				return message_;
+			}
 		}
 	}
 }

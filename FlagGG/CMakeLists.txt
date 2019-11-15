@@ -36,11 +36,13 @@ endif()
 message ("boost lib: ${BOOST_LIB}")
 message ("d3d11 lib: ${D3D11_LIB}")
 message ("lua lib: ${LUA_LIB}")
+message ("SLikeNet lib: ${SLikeNet_LIB}")
 
 target_link_libraries(${TARGET_NAME}
     ${BOOST_LIB}
     ${D3D11_LIB}
-    ${LUA_LIB})
+    ${LUA_LIB}
+	${SLikeNet_LIB})
 
 # Setup test cases
 setup_test ()

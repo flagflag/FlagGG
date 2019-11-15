@@ -33,6 +33,20 @@ namespace FlagGG
 			private:
 				boost::system::error_code errorCode_;
 			};
+
+			class CustomIOError : public ErrorCode
+			{
+			public:
+				CustomIOError(int value, const Container::String& message);
+
+				int Value() const override;
+
+				Container::String Message() const override;
+
+			private:
+				int value_;
+				Container::String message_;
+			};
 		}
 	}
 }

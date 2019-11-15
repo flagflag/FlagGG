@@ -65,7 +65,7 @@ namespace FlagGG
 				void ReadFloat(float& value) override;
 				void WriteFloat(float value) override;
 
-				uint32_t ReadStream(void* data, uint32_t dataSize) override { return 0u; }
+				uint32_t ReadStream(void* data, uint32_t dataSize) override;
 				uint32_t WriteStream(const void* data, uint32_t dataSize) override;
 
 				void ToString(Container::String& result) override;
