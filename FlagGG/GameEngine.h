@@ -21,7 +21,7 @@ using namespace FlagGG::Utility;
 
 namespace FlagGG
 {
-	class GameEngine : public Launcher
+	class FlagGG_API GameEngine : public Launcher
 	{
 	public:
 		void SetFrameRate(float rate);

@@ -10,7 +10,7 @@ namespace FlagGG
 {
 	namespace Resource
 	{
-		class ResourceCache : public Container::RefCounted
+		class FlagGG_API ResourceCache : public Container::RefCounted
 		{
 		public:
 			ResourceCache(Core::Context* context);

@@ -16,7 +16,7 @@ namespace FlagGG
 			const AnimationTrack* track_{ nullptr };
 		};
 
-		class AnimationComponent : public Component
+		class FlagGG_API AnimationComponent : public Component
 		{
 			OBJECT_OVERRIDE(AnimationComponent)
 		public:

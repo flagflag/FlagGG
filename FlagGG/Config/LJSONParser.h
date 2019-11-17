@@ -8,7 +8,7 @@ namespace FlagGG
 {
 	namespace Config
 	{
-		class LJSONError
+		class FlagGG_API LJSONError
 		{
 		public:
 			void DumpError(const Byte* bufferStart, const Byte* bufferEnd, const Byte* bufferIndex, const Container::String& content);
@@ -28,7 +28,7 @@ namespace FlagGG
 		};
 
 		// Like JSON Parser
-		class LJSONParser
+		class FlagGG_API LJSONParser
 		{
 		public:
 			LJSONParser();

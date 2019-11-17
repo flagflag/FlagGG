@@ -1,8 +1,10 @@
 #pragma once
 
+#include "Export.h"
+
 namespace FlagGG
 {
-	class Launcher
+	class FlagGG_API Launcher
 	{
 	public:
 		void Run();

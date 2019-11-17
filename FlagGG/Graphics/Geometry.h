@@ -9,7 +9,7 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		class Geometry : public Container::RefCounted
+		class FlagGG_API Geometry : public Container::RefCounted
 		{
 		public:
 			void SetPrimitiveType(PrimitiveType type);

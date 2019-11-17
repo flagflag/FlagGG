@@ -1,4 +1,5 @@
 #pragma once
+#include "Export.h"
 #include "Graphics/GraphicsDef.h"
 #include "Graphics/GPUObject.h"
 #include "Container/RefCounted.h"
@@ -8,7 +9,7 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		class GPUBuffer : public GPUObject, public Container::RefCounted
+		class FlagGG_API GPUBuffer : public GPUObject, public Container::RefCounted
 		{
 		public:
 			bool IsValid() override;

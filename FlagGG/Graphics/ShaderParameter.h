@@ -17,7 +17,7 @@ namespace FlagGG
 			uint32_t size_;
 		};
 
-		class ShaderParameters : public Container::RefCounted
+		class FlagGG_API ShaderParameters : public Container::RefCounted
 		{
 		public:
 			void WriteToBuffer(GPUBuffer* buffer);

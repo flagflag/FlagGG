@@ -13,7 +13,7 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		class Model : public Resource::Resource
+		class FlagGG_API Model : public Resource::Resource
 		{
 		public:
 			Model(Core::Context* context);

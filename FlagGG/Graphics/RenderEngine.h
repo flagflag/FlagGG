@@ -8,6 +8,7 @@
 #include "Graphics/RenderContext.h"
 #include "Graphics/ConstantBuffer.h"
 #include "Graphics/ShaderParameter.h"
+#include "Graphics/Texture2D.h"
 #include "Scene/Camera.h"
 #include "Resource/Image.h"
 #include "Container/HashMap.h"

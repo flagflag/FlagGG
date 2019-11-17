@@ -6,7 +6,7 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		class ConstantBuffer : public GPUBuffer
+		class FlagGG_API ConstantBuffer : public GPUBuffer
 		{
 		public:
 			uint32_t GetBindFlags() override;

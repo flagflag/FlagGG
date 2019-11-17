@@ -31,7 +31,7 @@ namespace FlagGG
 			typedef int _;
 		}
 
-		class LuaFunction
+		class FlagGG_API LuaFunction
 		{
 		public:
 			LuaFunction();

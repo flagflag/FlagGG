@@ -30,7 +30,7 @@ namespace FlagGG
 
 			typedef Container::SharedPtr < EventHandler > EventHandlerPtr;
 
-			class NullEventHandler : public EventHandler
+			class FlagGG_API NullEventHandler : public EventHandler
 			{
 			public:
 				~NullEventHandler() override = default;

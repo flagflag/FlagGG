@@ -7,7 +7,7 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		class VertexBuffer : public GPUBuffer
+		class FlagGG_API VertexBuffer : public GPUBuffer
 		{
 		public:
 			uint32_t GetBindFlags() override;

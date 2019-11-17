@@ -11,7 +11,7 @@ namespace FlagGG
 	{
 		namespace Buffer
 		{
-			class IOBufferAdaptor : public IOBuffer
+			class FlagGG_API IOBufferAdaptor : public IOBuffer
 			{
 			public:
 				void ReadInt8(int8_t& value) override;

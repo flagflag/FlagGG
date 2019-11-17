@@ -10,12 +10,13 @@
 #include "Math/Vector3.h"
 #include "Math/Quaternion.h"
 #include "Math/Matrix3x4.h"
+#include "Scene/Component.h"
 
 namespace FlagGG
 {
 	namespace Scene
 	{
-		class Component;
+		// class Component;
 
 		class FlagGG_API Node : public Container::RefCounted
 		{
