@@ -1,8 +1,8 @@
 # boost
 if (WIN32 OR WIN64)
     include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/boost_1_67_0)
-    link_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/boost_1_67_0/vc12_x86/lib)
-    set (BOOST_LIB libboost_regex-vc120-mt-gd-x32-1_67)
+    link_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/boost_1_67_0/vc14_x86/lib)
+    set (BOOST_LIB libboost_regex-vc140-mt-gd-x32-1_67)
 else ()
     include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/boost_1_69_0)
     link_directories (/usr/local/lib)

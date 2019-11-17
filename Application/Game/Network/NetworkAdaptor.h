@@ -43,7 +43,7 @@ public:
 
 	void Disconnect();
 
-	void SendMessage(const void* data, uint32_t dataSize);
+	void Send(const void* data, uint32_t dataSize);
 
 	bool IsActive() const;
 

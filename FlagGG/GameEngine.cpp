@@ -1,5 +1,5 @@
 #include "GameEngine.h"
-#ifdef WIN32
+#ifdef _WIN32
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Window.h"
 #endif
@@ -25,7 +25,7 @@ namespace FlagGG
 
 	void GameEngine::Start()
 	{
-#ifdef WIN32
+#ifdef _WIN32
 		WindowDevice::Initialize();
 		RenderEngine::Instance()->Initialize();
 #endif
@@ -50,13 +50,13 @@ namespace FlagGG
 
 		context_->SendEvent<Frame::FRAME_BEGIN_HANDLER>(Frame::FRAME_BEGIN, timeStep);
 
-#ifdef WIN32
+#ifdef _WIN32
 		WindowDevice::Update();
 #endif
 
 		context_->SendEvent<Frame::LOGIC_UPDATE_HANDLER>(Frame::LOGIC_UPDATE, timeStep);
 
-#ifdef WIN32
+#ifdef _WIN32
 		WindowDevice::Render();
 
 		RenderEngine::Instance()->GetShaderParameters().SetValue(SP_DELTA_TIME, timeStep);
@@ -83,7 +83,7 @@ namespace FlagGG
 	{
 		isRunning_ = false;
 
-#ifdef WIN32
+#ifdef _WIN32
 		WindowDevice::Uninitialize();
 		RenderEngine::Instance()->Uninitialize();
 #endif

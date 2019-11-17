@@ -10,7 +10,7 @@ namespace FlagGG
 		{
 #define FileHandler(file) static_cast<FILE*>(file)
 
-#ifdef WIN32 || WIN64
+#ifdef _WIN32
 #define FilePathString Container::WString
 #define FormatPath(filePath) Container::WString(filePath.Replaced('/', '\\'))
 #define FileAPI_Open(file, filePath, fileMode) (file = _wfopen(filePath.CString(), fileMode))

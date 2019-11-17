@@ -76,7 +76,7 @@ namespace FlagGG
 				wrappers_.Insert(Container::Pair<Container::String, Container::SharedPtr<VariableWrapper>>(variableName, wrapper));
 			}
 
-#ifdef WIN32
+#ifdef _WIN32
 			template <> void RegisterVariable<int8_t>(int8_t* variable, const Container::String& variableName);
 			template <> void RegisterVariable<uint8_t>(uint8_t* variable, const Container::String& variableName);
 			template <> void RegisterVariable<int16_t>(int16_t* variable, const Container::String& variableName);

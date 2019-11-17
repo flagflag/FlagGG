@@ -1,7 +1,7 @@
 #include "SystemHelper.h"
 #include "Container/Str.h"
 
-#if WIN32 || WIN64
+#if _WIN32
 #include <windows.h>
 #include <shlwapi.h>
 #pragma comment(lib, "shlwapi.lib")
@@ -22,7 +22,7 @@ namespace FlagGG
 	{
 		namespace SystemHelper
 		{
-#ifdef WIN32 || WIN64
+#ifdef _WIN32
 			const char* const PATH_SEPARATOR = "\\";
 #else
 			const char* const PATH_SEPARATOR = "/";
@@ -36,7 +36,7 @@ namespace FlagGG
 				wchar_t buffer[MAX_PATH] = { 0 };
 				uint32_t cur = 0;
 				bool lastMatch = false;
-#ifdef WIN32 || WIN64
+#ifdef _WIN32
 				char match1 = wchar_t('\\');
 				char match2 = wchar_t('/');
 #else
@@ -78,7 +78,7 @@ namespace FlagGG
 
 			void Sleep(uint64_t time)
 			{
-#if WIN32 || WIN64
+#if _WIN32
 				::Sleep(time);
 #else
 				usleep(time * 1000);
@@ -87,7 +87,7 @@ namespace FlagGG
 
 			uint32_t Tick()
 			{
-#if WIN32 || WIN64
+#if _WIN32
 				return (uint32_t)timeGetTime();
 #else
 				struct timeval time{};
@@ -122,7 +122,7 @@ namespace FlagGG
 
 			bool DirExists(const Container::String& path)
 			{
-#ifdef WIN32 || WIN64
+#ifdef _WIN32
 				DWORD attributes = GetFileAttributesW(Container::WString(path).CString());
 				if (attributes == INVALID_FILE_ATTRIBUTES || attributes & FILE_ATTRIBUTE_DIRECTORY)
 					return false;
@@ -136,7 +136,7 @@ namespace FlagGG
 
 			bool FileExists(const Container::String& path)
 			{
-#ifdef WIN32 || WIN64
+#ifdef _WIN32
 				DWORD attributes = GetFileAttributesW(Container::WString(path).CString());
 				if (attributes == INVALID_FILE_ATTRIBUTES || (attributes & FILE_ATTRIBUTE_DIRECTORY))
 					return false;
@@ -150,7 +150,7 @@ namespace FlagGG
 
 			bool CreateDir(const Container::String& path)
 			{
-#ifdef WIN32 || WIN64
+#ifdef _WIN32
 				Container::WString wPath(path);
 				bool success = CreateDirectoryW(wPath.CString(), nullptr) == TRUE || GetLastError() == ERROR_ALREADY_EXISTS;
 #else
@@ -166,7 +166,7 @@ namespace FlagGG
 
 			Math::IntRect GetDesktopRect()
 			{
-#if WIN32 || WIN64
+#if _WIN32
 				RECT rect;
 				SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
 				return Math::IntRect(Math::IntVector2(rect.left, rect.top), Math::IntVector2(rect.right, rect.bottom));

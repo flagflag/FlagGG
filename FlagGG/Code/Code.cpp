@@ -1,6 +1,6 @@
 ﻿#include "Code.h"
 
-#if WIN32 || WIN64
+#if _WIN32
 #include <windows.h>
 #else
 #include <iconv.h>
@@ -14,7 +14,7 @@ namespace FlagGG
 	{
 		std::wstring AnsiToWide(const std::string& ansi_string)
 		{
-#if WIN32 || WIN64
+#if _WIN32
 			int count = MultiByteToWideChar(CP_ACP, 0, ansi_string.data(), ansi_string.length(), NULL, 0);
 			std::wstring unicode_string(count + 1, '\0');
 			MultiByteToWideChar(CP_ACP, 0, ansi_string.data(), ansi_string.length(), &unicode_string[0], count);
@@ -26,7 +26,7 @@ namespace FlagGG
 
 		std::wstring Utf8ToWide(const std::string& utf8_string)
 		{
-#if WIN32 || WIN64
+#if _WIN32
 			int count = MultiByteToWideChar(CP_UTF8, 0, utf8_string.data(), utf8_string.length(), NULL, 0);
 			std::wstring unicode_string(count + 1, '\0');
 			MultiByteToWideChar(CP_UTF8, 0, utf8_string.data(), utf8_string.length(), &unicode_string[0], count);
@@ -38,7 +38,7 @@ namespace FlagGG
 
 		std::string WideToAnsi(const std::wstring& wide_string)
 		{
-#if WIN32 || WIN64
+#if _WIN32
 			int count = WideCharToMultiByte(CP_ACP, 0, wide_string.data(), wide_string.length(), NULL, 0, NULL, NULL);
 			std::string ansi_string(count + 1, '\0');
 			WideCharToMultiByte(CP_ACP, 0, wide_string.data(), wide_string.length(), &ansi_string[0], count, NULL, NULL);
@@ -50,7 +50,7 @@ namespace FlagGG
 
 		std::string WideToUtf8(const std::wstring& wide_string)
 		{
-#if WIN32 || WIN64
+#if _WIN32
 			int count = WideCharToMultiByte(CP_UTF8, 0, wide_string.data(), wide_string.length(), NULL, 0, NULL, NULL);
 			std::string utf8_string(count + 1, '\0');
 			WideCharToMultiByte(CP_UTF8, 0, wide_string.data(), wide_string.length(), &utf8_string[0], count, NULL, NULL);

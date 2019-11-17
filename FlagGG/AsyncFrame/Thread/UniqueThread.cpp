@@ -1,7 +1,7 @@
 ﻿#include "UniqueThread.h"
 #include "Log.h"
 
-#if WIN32 || WIN64
+#if _WIN32
 #include <windows.h>
 #define THREAD_MARK WINAPI
 #define THREAD_RETURN DWORD
@@ -21,7 +21,7 @@ namespace FlagGG
 			struct ThreadParam
 			{
 				std::function < void(void) > thread_func;
-#if !WIN32 && !WIN64
+#ifndef _WIN32
 				pthread_cond_t* pcond;
 #endif
 			};
@@ -32,7 +32,7 @@ namespace FlagGG
 				if (param && param->thread_func)
 				{
 					param->thread_func();
-#if !WIN32 && !WIN64
+#ifndef _WIN32
 					pthread_cond_signal(param->pcond);
 #endif
 					delete param;
@@ -47,7 +47,7 @@ namespace FlagGG
 				{
 					ThreadParam* param = new ThreadParam();
 					param->thread_func = thread_func;
-#if WIN32 || WIN64
+#if _WIN32
 					handle_ = CreateThread(nullptr, 0, ThreadFunc, param, 0, nullptr);
 
 					if (!handle_)
@@ -74,7 +74,7 @@ namespace FlagGG
 
 			UniqueThread::~UniqueThread()
 			{
-#if !WIN32 && !WIN64
+#ifndef _WIN32
 				pthread_mutex_destroy(&mutex_);
 				pthread_cond_destroy(&cond_);
 				if (handle_)
@@ -88,7 +88,7 @@ namespace FlagGG
 			void UniqueThread::Stop()
 			{
 				
-#if WIN32 || WIN64
+#if _WIN32
 				TerminateThread(handle_, -1);
 #else
 				if (handle_)
@@ -100,7 +100,7 @@ namespace FlagGG
 
 			void UniqueThread::WaitForStop()
 			{
-#if WIN32 || WIN64
+#if _WIN32
 				WaitForSingleObject(handle_, INFINITE);
 #else
 				if (handle_)
@@ -112,7 +112,7 @@ namespace FlagGG
 
 			void UniqueThread::WaitForStop(uint32_t wait_time)
 			{
-#if WIN32 || WIN64
+#if _WIN32
 				WaitForSingleObject(handle_, wait_time);
 #else
 				pthread_mutex_lock(&mutex_);

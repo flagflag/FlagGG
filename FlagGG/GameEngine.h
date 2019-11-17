@@ -3,7 +3,7 @@
 #include "Core/EventDefine.h"
 #include "Core/Context.h"
 #include "Core/DeviceEvent.h"
-#ifdef WIN32
+#ifdef _WIN32
 #include "Graphics/Viewport.h"
 #endif
 #include "Resource/ResourceCache.h"
@@ -13,7 +13,7 @@
 
 using namespace FlagGG::Core;
 using namespace FlagGG::Container;
-#ifdef WIN32
+#ifdef _WIN32
 using namespace FlagGG::Graphics;
 #endif
 using namespace FlagGG::Resource;
@@ -43,7 +43,7 @@ namespace FlagGG
 
 		SharedPtr<ResourceCache> cache_;
 
-#ifdef WIN32
+#ifdef _WIN32
 		Vector<SharedPtr<Viewport>> viewports_;
 #endif
 

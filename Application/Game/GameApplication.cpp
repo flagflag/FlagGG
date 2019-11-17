@@ -1,4 +1,4 @@
-#ifdef WIN32
+#ifdef _WIN32
 #include <Graphics/RenderEngine.h>
 #include <Scene/Light.h>
 #endif
@@ -41,7 +41,7 @@ void GameApplication::Start()
 	networkModule_ = new LuaNetwork(context_);
 
 	context_->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, GameApplication::Update, this));
-#ifdef WIN32
+#ifdef _WIN32
 	context_->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_DOWN, GameApplication::OnKeyDown, this));
 	context_->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, GameApplication::OnKeyUp, this));
 	context_->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_DOWN, GameApplication::OnMouseDown, this));
@@ -67,7 +67,7 @@ void GameApplication::Start()
 
 void GameApplication::Stop()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	WindowDevice::UnregisterWinMessage(window_);
 #endif
 
@@ -83,7 +83,7 @@ void GameApplication::Update(float timeStep)
 
 void GameApplication::CreateScene()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	scene_ = new FlagGG::Scene::Scene(context_);
 	scene_->Start();
 
@@ -134,7 +134,7 @@ void GameApplication::CreateScene()
 
 void GameApplication::SetupWindow()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	if (commandParam_.Contains("NoWindow"))
 		return;
 
@@ -195,7 +195,7 @@ void GameApplication::CreateNetwork()
 	webNetwork_ = new Network(context_, NETWORK_TYPE_WEB);
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 void GameApplication::OnKeyDown(KeyState* keyState, unsigned keyCode)
 {
 	// luaVM_->CallEvent("on_key_down", keyCode);

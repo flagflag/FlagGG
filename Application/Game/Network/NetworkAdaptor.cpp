@@ -45,7 +45,7 @@ void Network::Disconnect()
 	connector_->Disconnect();
 }
 
-void Network::SendMessage(const void* data, uint32_t dataSize)
+void Network::Send(const void* data, uint32_t dataSize)
 {
 	IOFrame::Buffer::IOBufferPtr buffer = IOFrame::TCP::CreateBuffer();
 	buffer->WriteStream(data, dataSize);

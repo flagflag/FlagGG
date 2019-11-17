@@ -9,7 +9,7 @@
 
 #include <functional>
 
-#if !WIN32 && !WIN64
+#ifndef _WIN32
 #include <pthread.h>
 #endif
 
@@ -32,7 +32,7 @@ namespace FlagGG
 
 				void WaitForStop(uint32_t wait_time) override;
 
-#if !WIN32 && !WIN64
+#ifndef _WIN32
 				pthread_mutex_t mutex_;
 				pthread_cond_t cond_;
 #endif

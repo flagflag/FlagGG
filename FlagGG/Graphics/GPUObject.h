@@ -3,7 +3,7 @@
 
 #include "Export.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <d3d11.h>
 #endif
 

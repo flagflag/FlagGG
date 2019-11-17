@@ -1,6 +1,6 @@
 ﻿#include "HandleObject.h"
 
-#if WIN32 || WIN64
+#if _WIN32
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -20,7 +20,7 @@ namespace FlagGG
 			{
 				if (handle_)
 				{
-#if WIN32 || WIN64
+#if _WIN32
 					CloseHandle((HANDLE)handle_);
 #endif
 					handle_ = NULL_HANDLE;

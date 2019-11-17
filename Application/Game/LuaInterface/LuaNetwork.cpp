@@ -65,7 +65,7 @@ int LuaNetwork::Send(LuaVM* luaVM)
 	uint32_t dataSize = luaVM->Get<uint32_t>(3);
 	auto* network = network_[networkType];
 	if (network)
-		network->SendMessage(data, dataSize);
+		network->Send(data, dataSize);
 	return 0;
 }
 

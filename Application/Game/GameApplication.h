@@ -4,7 +4,7 @@
 #include <GameEngine.h>
 
 #include <Lua/LuaVM.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <Graphics/Window.h>
 #include <Graphics/Texture2D.h>
 #include <Scene/Scene.h>
@@ -22,7 +22,7 @@
 
 using namespace FlagGG::Config;
 using namespace FlagGG::Lua;
-#ifdef WIN32
+#ifdef _WIN32
 using namespace FlagGG::Scene;
 #endif
 
@@ -41,7 +41,7 @@ protected:
 	void OpenLuaVM();
 	void CreateNetwork();
 
-#ifdef WIN32
+#ifdef _WIN32
 	void OnKeyDown(KeyState* keyState, unsigned keyCode);
 	void OnKeyUp(KeyState* keyState, unsigned keyCode);
 	void OnMouseDown(KeyState* keyState, MouseKey mouseKey);
@@ -53,7 +53,7 @@ protected:
 private:
 	LJSONValue commandParam_;
 
-#ifdef WIN32
+#ifdef _WIN32
 	SharedPtr<Window> window_;
 	SharedPtr<CameraOperation> cameraOpt_;
 	SharedPtr<FlagGG::Scene::Scene> scene_;

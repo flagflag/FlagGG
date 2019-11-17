@@ -2,7 +2,7 @@
 #include "Code/Code.h"
 #include "Allocator/SmartMemory.hpp"
 
-#if WIN32 || WIN64
+#if _WIN32
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -97,7 +97,7 @@ namespace FlagGG
 
 			void ProcessObject::Stop()
 			{
-#if WIN32 || WIN64
+#if _WIN32
 				TerminateProcess(handle_, -1);
 #else
 
@@ -106,7 +106,7 @@ namespace FlagGG
 
 			void ProcessObject::WaitForStop()
 			{
-#if WIN32 || WIN64
+#if _WIN32
 				WaitForSingleObject(handle_, INFINITE);
 #else
 				waitpid(*((pid_t*)handle_), nullptr, 0);
@@ -115,7 +115,7 @@ namespace FlagGG
 
 			void ProcessObject::WaitForStop(uint32_t wait_time)
 			{
-#if WIN32 || WIN64
+#if _WIN32
 				WaitForSingleObject(handle_, wait_time);
 #else
 
@@ -133,7 +133,7 @@ namespace FlagGG
 
 			ProcessObjectPtr Builder::CreateProcess(const std::wstring& proc_path, const std::wstring& param)
 			{
-#if WIN32 || WIN64
+#if _WIN32
 				STARTUPINFOW startup_info;
 				ZeroMemory(&startup_info, sizeof startup_info);
 				startup_info.cb = sizeof(startup_info);

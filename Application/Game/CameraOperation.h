@@ -1,4 +1,4 @@
-#ifdef WIN32
+#ifdef _WIN32
 #pragma once
 
 #include <Scene/Camera.h>
@@ -36,7 +36,7 @@ private:
 
 	bool mouseDown_{ false };
 
-	float rate_{ 0.00005 };
+	float rate_{ 0.00005f };
 
 	float walkSpeed_{ 5.0f };
 };

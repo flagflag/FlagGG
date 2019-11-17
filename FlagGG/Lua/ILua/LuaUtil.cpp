@@ -4,7 +4,7 @@
 #include "Log.h"
 
 #include <lua.hpp>
-#ifdef WIN32 || WIN64
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -48,7 +48,7 @@ namespace FlagGG
 
 			FLAGGG_LOG_ERROR(errorMessage);
 
-#ifdef WIN32 || WIN64
+#ifdef _WIN32
 			MessageBoxA(nullptr, errorMessage, "FlagGG Lua Error", 0);
 #endif
 			return 0;

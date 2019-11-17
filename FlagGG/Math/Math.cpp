@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-#if WIN32 || WIN64
+#if _WIN32
 #include <d3dx9math.h>
 #endif
 
@@ -201,7 +201,7 @@ namespace FlagGG
 
 		Matrix4 MatrixPerspectiveFovLH(float fovy, float aspect, float zn, float zf)
 		{
-#if WIN32 || WIN64
+#if _WIN32
 			D3DXMATRIX out;
 			D3DXMatrixPerspectiveFovLH(
 				&out,
@@ -213,7 +213,7 @@ namespace FlagGG
 #endif
 
 			Math::Matrix4 output;
-#if WIN32 || WIN64
+#if _WIN32
 			memcpy(&output, &out, sizeof(Math::Matrix4));
 #endif
 
