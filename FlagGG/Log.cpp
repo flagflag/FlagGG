@@ -7,6 +7,67 @@
 
 namespace FlagGG
 {
+	static const std::string FLAGGG_LOG = "FlagGGLog";
+
+	Logger::Logger()
+	{
+		try
+		{
+			auto FlagGGLog = spdlog::basic_logger_mt(FLAGGG_LOG, "FlagGGLog.log");
+			FlagGGLog->flush_on(spdlog::level::debug);
+			spdlog::register_logger(FlagGGLog);
+		}
+		catch (spdlog::spdlog_ex& ex)
+		{
+			Log(LOG_ERROR, "There is something wrong with spdlog[%s].", ex.what());
+		}
+	}
+
+	Logger::~Logger()
+	{
+	}
+
+	std::shared_ptr<spdlog::logger> Logger::Default()
+	{
+		return spdlog::get(FLAGGG_LOG);
+	}
+
+	void Logger::AddLogger(const Container::String& name, const Container::String& path)
+	{
+		spdlog::basic_logger_mt(name.CString(), path.CString());
+	}
+
+	void Logger::RemoveLogger(const Container::String& name)
+	{
+		spdlog::drop(name.CString());
+	}
+
+	std::shared_ptr<spdlog::logger> Logger::GetLogger(const Container::String& name)
+	{
+		return spdlog::get(name.CString());
+	}
+
+	Container::SharedPtr<Logger> Logger::GetInstance()
+	{
+		if (!logger_)
+		{
+			mutex_.Lock();
+
+			if (!logger_)
+			{
+				logger_ = new Logger();
+			}
+
+			mutex_.UnLock();
+		}
+
+		return logger_;
+	}
+
+	Container::SharedPtr<Logger> Logger::logger_;
+
+	AsyncFrame::Mutex Logger::mutex_;
+
     void Log(LogType log_type, const char* format, ...)
     {
         if (log_type == LOG_DEBUG)

@@ -33,12 +33,12 @@ public:
 		FlagGG::Container::String data;
 		buffer->ToString(data);
 
-		FLAGGG_LOG_INFO("MessageRecived: %s", data.CString());
+		FLAGGG_LOG_INFO("MessageRecived: {}", data.CString());
 	}
 
 	void ErrorCatch(FlagGG::IOFrame::Context::IOContextPtr context, const FlagGG::ErrorCode& error_code) override
 	{
-		FLAGGG_LOG_DEBUG("errorCatch %d %s", error_code.Value(), error_code.Message().CString());
+		FLAGGG_LOG_DEBUG("errorCatch {} {}", error_code.Value(), error_code.Message().CString());
 	}
 };
 
@@ -96,7 +96,7 @@ void StartClient()
 	for (int i = 0; i < 3; ++i)
 	{
 		bool result = connector->Write(buffer);
-		FLAGGG_LOG_DEBUG("write %d result(%d)", i, result ? 1 : 0);
+		FLAGGG_LOG_DEBUG("write {} result({})", i, result ? 1 : 0);
 	}
 #else
 	FlagGG::IOFrame::IOThreadPoolPtr threadPool = FlagGG::IOFrame::UDP::CreateThreadPool();
@@ -120,7 +120,7 @@ void StartClient()
 	for (int i = 0; i < 10; ++i)
 	{
 		bool result = connector->Write(buffer);
-		FLAGGG_LOG_DEBUG("write %d result(%d)", i, result ? 1 : 0);
+		FLAGGG_LOG_DEBUG("write {} result({})", i, result ? 1 : 0);
 	}
 #endif
 	threadPool->WaitForStop();

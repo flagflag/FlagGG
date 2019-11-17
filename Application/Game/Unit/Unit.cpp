@@ -25,7 +25,7 @@ bool Unit::Load(const String& path)
 	LJSONFile* jsonFile = cache->GetResource<LJSONFile>(path);
 	if (!jsonFile)
 	{
-		FLAGGG_LOG_ERROR("Failed to load unit config[%s].", path.CString());
+		FLAGGG_LOG_ERROR("Failed to load unit config[{}].", path.CString());
 		return false;
 	}
 

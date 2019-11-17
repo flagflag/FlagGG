@@ -142,7 +142,7 @@ namespace FlagGG
 
 			if (!window)
 			{
-				FLAGGG_LOG_ERROR("CreateWindow failed, error code(%d).", GetLastError());
+				FLAGGG_LOG_ERROR("CreateWindow failed, error code({}).", GetLastError());
 				return false;
 			}
 

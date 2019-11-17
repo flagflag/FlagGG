@@ -1057,7 +1057,7 @@ namespace FlagGG
 		{
 			if (!Utility::SystemHelper::HasAccess(fileName))
 			{
-				FLAGGG_LOG_ERROR("Access denied to %s", fileName.CString());
+				FLAGGG_LOG_ERROR("Access denied to {}", fileName.CString());
 				return false;
 			}
 
@@ -1158,7 +1158,7 @@ namespace FlagGG
 			outFile.Open(fileName, IOFrame::Stream::FileMode::FILE_WRITE);
 			if (!outFile.IsOpen())
 			{
-				FLAGGG_LOG_ERROR("Access denied to %s.", fileName.CString());
+				FLAGGG_LOG_ERROR("Access denied to {}.", fileName.CString());
 				return false;
 			}
 
@@ -1170,7 +1170,7 @@ namespace FlagGG
 
 			if (components_ != 4)
 			{
-				FLAGGG_LOG_ERROR("Can not save image with %u components to DDS.", components_);
+				FLAGGG_LOG_ERROR("Can not save image with {} components to DDS.", components_);
 				return false;
 			}
 
@@ -1732,7 +1732,7 @@ namespace FlagGG
 
 					if (offset + level.dataSize_ > GetMemoryUse())
 					{
-						FLAGGG_LOG_ERROR("Compressed level is outside image data. Offset: %u Size: %u Datasize: %u",
+						FLAGGG_LOG_ERROR("Compressed level is outside image data. Offset: {} Size: {} Datasize: {}.",
 							offset, level.dataSize_, GetMemoryUse());
 						level.data_ = nullptr;
 						return level;
@@ -1770,7 +1770,7 @@ namespace FlagGG
 
 					if (offset + level.dataSize_ > GetMemoryUse())
 					{
-						FLAGGG_LOG_ERROR("Compressed level is outside image data. Offset: %u Size: %u Datasize: %u",
+						FLAGGG_LOG_ERROR("Compressed level is outside image data. Offset: {} Size: {} Datasize: {}",
 							offset, level.dataSize_, GetMemoryUse());
 						level.data_ = nullptr;
 						return level;
@@ -1808,7 +1808,7 @@ namespace FlagGG
 
 					if (offset + level.dataSize_ > GetMemoryUse())
 					{
-						FLAGGG_LOG_ERROR("Compressed level is outside image data. Offset: %u Size: %u Datasize: %u", 
+						FLAGGG_LOG_ERROR("Compressed level is outside image data. Offset: {} Size: {} Datasize: {}", 
 							offset, level.dataSize_, GetMemoryUse());
 						level.data_ = nullptr;
 						return level;

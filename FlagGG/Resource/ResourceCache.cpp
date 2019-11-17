@@ -25,7 +25,7 @@ namespace FlagGG
 		{
 			if (!Utility::SystemHelper::FileExists(resourceDir_ + path))
 			{
-				FLAGGG_LOG_ERROR("file(%s) not exists.", path.CString());
+				FLAGGG_LOG_ERROR("file({}) not exists.", path.CString());
 
 				return false;
 			}
@@ -40,7 +40,7 @@ namespace FlagGG
 		{
 			if (!res->LoadFile(resourceDir_ + path))
 			{
-				FLAGGG_LOG_ERROR("Load Resource[%s] failed.", path.CString());
+				FLAGGG_LOG_ERROR("Load Resource[{}] failed.", path.CString());
 
 				return false;
 			}

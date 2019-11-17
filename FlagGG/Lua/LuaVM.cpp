@@ -68,7 +68,7 @@ namespace FlagGG
 		{
 			if (luaL_dofile(luaState_, filePath.CString()))
 			{
-				FLAGGG_LOG_ERROR("execute lua file failed, error message: %s.", lua_tostring(luaState_, -1));
+				FLAGGG_LOG_ERROR("execute lua file failed, error message: {}.", lua_tostring(luaState_, -1));
 
 				lua_pop(luaState_, 1);
 
@@ -82,7 +82,7 @@ namespace FlagGG
 		{
 			if (luaL_dostring(luaState_, scriptCode.CString()))
 			{
-				FLAGGG_LOG_ERROR("execute lua code failed, error message: %s.", lua_tostring(luaState_, -1));
+				FLAGGG_LOG_ERROR("execute lua code failed, error message: {}.", lua_tostring(luaState_, -1));
 
 				lua_pop(luaState_, 1);
 

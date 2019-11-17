@@ -17,6 +17,7 @@ if (NOT FLAGGG_D3D11)
     list (APPEND EXCLUDED_SOURCE_DIRS Graphics)
     list (APPEND EXCLUDED_SOURCE_DIRS Scene)
 endif ()
+list (APPEND EXCLUDED_SOURCE_DIRS spdlog)
 # 输出排除的目录
 message ("exclude folder: ${EXCLUDED_SOURCE_DIRS}")
 string (REPLACE ";" "/[^;]+;" EXCLUDE_PATTERNS "${EXCLUDED_SOURCE_DIRS};")

@@ -16,7 +16,7 @@ namespace FlagGG
 			fileStream.Open(fileName);
 			if (!fileStream.IsOpen())
 			{
-				FLAGGG_LOG_ERROR("open file[%s] filed.", fileName.CString());
+				FLAGGG_LOG_ERROR("open file[{}] filed.", fileName.CString());
 
 				return false;
 			}

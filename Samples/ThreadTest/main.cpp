@@ -7,7 +7,7 @@ static uint32_t count = 0;
 void ThreadFunc(int32_t index)
 {
 	++count;
-	FLAGGG_LOG_INFO("%d %d", count, index);
+	FLAGGG_LOG_INFO("{} {}", count, index);
 }
 
 void OneThreadTest()

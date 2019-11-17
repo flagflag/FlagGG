@@ -138,7 +138,7 @@ namespace FlagGG
 
 				if (FAILED(hr) || !mappedData.pData)
 				{
-					FLAGGG_LOG_ERROR("Failed to update texture resource.", hr);
+					FLAGGG_LOG_ERROR("Failed to update texture resource.");
 					return false;
 				}
 				else

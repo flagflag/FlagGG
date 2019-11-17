@@ -1162,7 +1162,7 @@ namespace FlagGG
 					}
 
 				default:
-					FLAGGG_LOG_WARN("Unsupported format specifier: '%c'", format);
+					FLAGGG_LOG_WARN("Unsupported format specifier: '{}'", format);
 					break;
 				}
 			}

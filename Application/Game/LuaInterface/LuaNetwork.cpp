@@ -85,7 +85,7 @@ void LuaNetwork::OnOpend(NetworkType type, IOFrame::Context::IOContextPtr contex
 	}
 	else
 	{
-		FLAGGG_LOG_ERROR("OnOpend, Network type(%d) not initialized.", type);
+		FLAGGG_LOG_ERROR("OnOpend, Network type({}) not initialized.", type);
 	}
 }
 
@@ -97,7 +97,7 @@ void LuaNetwork::OnClosed(NetworkType type, IOFrame::Context::IOContextPtr conte
 	}
 	else
 	{
-		FLAGGG_LOG_ERROR("OnClosed, Network type(%d) not initialized.", type);
+		FLAGGG_LOG_ERROR("OnClosed, Network type({}) not initialized.", type);
 	}
 }
 
@@ -109,7 +109,7 @@ void LuaNetwork::OnError(NetworkType type, IOFrame::Context::IOContextPtr contex
 	}
 	else
 	{
-		FLAGGG_LOG_ERROR("OnError, Network type(%d) not initialized.", type);
+		FLAGGG_LOG_ERROR("OnError, Network type({}) not initialized.", type);
 	}
 }
 
@@ -122,6 +122,6 @@ void LuaNetwork::OnMessageRecived(NetworkType type, IOFrame::Context::IOContextP
 	}
 	else
 	{
-		FLAGGG_LOG_ERROR("OnMessageRecived, Network type(%d) not initialized.", type);
+		FLAGGG_LOG_ERROR("OnMessageRecived, Network type({}) not initialized.", type);
 	}
 }

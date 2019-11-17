@@ -29,7 +29,7 @@ namespace FlagGG
 
 			//if (TypeOf(L, -1) != Type::FUNCTION)
 			//{
-			//	FLAGGG_LOG_ERROR("try call non-function[game_events.%s].", eventName.CString());
+			//	FLAGGG_LOG_ERROR("try call non-function[game_events.{}].", eventName.CString());
 
 			//	lua_pop(L, 2);
 
@@ -63,7 +63,7 @@ namespace FlagGG
 
 			if (ret != LUA_OK)
 			{
-				FLAGGG_LOG_ERROR("call lua function failed, error code: %d.", ret);
+				FLAGGG_LOG_ERROR("call lua function failed, error code: {}.", ret);
 			}
 
 			lua_remove(L, pos);
