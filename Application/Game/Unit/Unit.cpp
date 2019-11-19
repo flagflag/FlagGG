@@ -16,7 +16,8 @@ using namespace FlagGG::Config;
 
 Unit::Unit(Context* context) :
 	Node(),
-	context_(context)
+	context_(context),
+	material_(nullptr)
 { }
 
 bool Unit::Load(const String& path)
@@ -52,7 +53,8 @@ bool Unit::Load(const String& path)
 	}
 
 	meshComp->SetModel(cache->GetResource<Model>(root["model"].GetString()));
-	meshComp->SetMaterial(cache->GetResource<Material>(root["material"].GetString()));
+	material_ = cache->GetResource<Material>(root["material"].GetString());
+	meshComp->SetMaterial(material_);
 
 	return true;
 }
@@ -92,4 +94,9 @@ void Unit::StopAnimation()
 	{
 		animComp->Stop();
 	}
+}
+
+Material* Unit::GetMaterial() const
+{
+	return material_;
 }

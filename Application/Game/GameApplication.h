@@ -62,6 +62,7 @@ private:
 	SharedPtr<Texture2D> shadowMap_;
 
 	SharedPtr<Unit> mainHero_;
+	SharedPtr<Unit> dissolveHero_;
 	SharedPtr<Terrain> terrain_;
 	SharedPtr<Unit> water_;
 	SharedPtr<Unit> skybox_;

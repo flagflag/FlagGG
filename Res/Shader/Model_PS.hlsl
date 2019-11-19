@@ -1,5 +1,9 @@
 Texture2D colorMap : register(t0);
 SamplerState colorSampler : register(s0);
+#ifdef DISSOLVE
+Texture2D noiseMap : register(t1);
+SamplerState noiseSampler : register(s1);
+#endif
 #ifdef SHADOW
 Texture2D shadowMap : register(t6);
 SamplerState shadowSampler : register(s6);
@@ -18,6 +22,7 @@ cbuffer ParamBuffer : register(b0)
 	float4 diffuseColor;
 	float4 specularColor;
 	float emissivePower;
+	float dissolveTime;
 }
 
 struct PixelInput
@@ -68,6 +73,16 @@ float4 PS(PixelInput input) : SV_TARGET
 	float diffPower = diffuseColor.a / 255.0;
 	float specPower = specularColor.a / 255.0;
 	float4 color = float4(ambientColor.rgb * ambiPower + diffColor * diffPower + specColor * specPower, 1.0);
+
+// 溶解特效
+#ifdef DISSOLVE
+	float dissolveNoise = noiseMap.Sample(noiseSampler, input.tex0).r;
+	float temp = dissolveNoise + dissolveTime;
+	if (temp > 1)
+		discard;
+	if (temp > 0.9)
+		color += float4(0.94, 0.9, 0.54, 0);
+#endif
 
 	return color;
 }

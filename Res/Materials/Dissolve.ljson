@@ -1,0 +1,69 @@
+{
+	vsshader = 
+	{
+		path = "Shader/Model_VS.hlsl",
+		defines =  [ "SKINNED", "SHADOW" ]
+	},
+	psshader = 
+	{
+		path = "Shader/Model_PS.hlsl",
+		defines = [ "SHADOW", "DISSOLVE" ]
+	},
+	textures =
+	{
+        "0" =
+        {
+            type = "texture2d", //texturecube => 3d
+            path = "Textures/Kachujin_diffuse.png"
+        },
+        "1" = 
+        {
+            type = "texture2d",
+            path = "Textures/WaterNoise.dds"
+        }
+	},
+	shader_parameters = 
+	[
+		{
+			name = "ambientColor",
+			type = "vector4",
+			value = [ 0.0, 0.0, 0.0, 16 ]
+		},
+		{
+			name = "diffuseColor",
+			type = "vector4",
+			value = [ 1.0, 1.0, 1.0, 255 ]
+		},
+		{
+			name = "specularColor",
+			type = "vector4",
+			value = [ 0.1, 0.1, 0.1, 16 ]
+		},
+		{
+			name = "emissivePower",
+			type = "float",
+			value = 2
+		},
+        {
+            name = "dissolveTime",
+            type = "float",
+            value = 0
+        }
+	],
+	pass =
+	[
+		{
+			name = "shadow",
+			vsshader = 
+			{
+				path = "Shader/Model_VS.hlsl",
+				defines = [ "SKINNED" ]
+			},
+			psshader =
+			{
+				path = "Shader/Shadow_PS.hlsl",
+				defines = [ "MODEL_SHADOW" ]
+			}
+		}
+	]
+}

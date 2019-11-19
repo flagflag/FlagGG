@@ -79,6 +79,21 @@ void GameApplication::Stop()
 void GameApplication::Update(float timeStep)
 {
 	// luaVM_->CallEvent("update", timeStep);
+
+	static float dissolveTime = 0.f;
+	dissolveTime += timeStep * 0.25;
+
+	if (dissolveTime > 1.0f)
+		dissolveTime = 0.0f;
+
+	if (dissolveHero_)
+	{
+		Material* material = dissolveHero_->GetMaterial();
+		if (material)
+		{
+			material->GetShaderParameters()->SetValue("dissolveTime", dissolveTime);
+		}
+	}
 }
 
 void GameApplication::CreateScene()
@@ -100,6 +115,13 @@ void GameApplication::CreateScene()
 	mainHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
 	mainHero_->SetRotation(Quaternion(180, Vector3(0.0f, 1.0f, 0.0f)));
 	scene_->AddChild(mainHero_);
+
+	dissolveHero_ = new Unit(context_);
+	dissolveHero_->Load("Unit/DissolveHero.ljson");
+	dissolveHero_->SetPosition(Vector3(0, 0, 10));
+	dissolveHero_->SetRotation(Quaternion(180, Vector3(0.0f, 1.0f, 0.0f)));
+	dissolveHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
+	scene_->AddChild(dissolveHero_);
 
 	terrain_ = new Terrain(context_);
 	terrain_->Create(64);

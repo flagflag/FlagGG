@@ -2,11 +2,13 @@
 
 #include <Core/Context.h>
 #include <Scene/Node.h>
+#include <Graphics/Material.h>
 #include <Container/Str.h>
 
 using namespace FlagGG::Core;
 using namespace FlagGG::Math;
 using namespace FlagGG::Scene;
+using namespace FlagGG::Graphics;
 using namespace FlagGG::Container;
 
 class Unit : public Node
@@ -27,8 +29,12 @@ public:
 
 	void StopAnimation();
 
+	Material* GetMaterial() const;
+
 protected:
 	Context* context_;
+
+	Material* material_;
 
 	float speed_;
 };
