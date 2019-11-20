@@ -335,6 +335,7 @@ namespace FlagGG
 
 		void RenderEngine::SetVertexBuffers(const Container::Vector<Container::SharedPtr<VertexBuffer>>& vertexBuffers)
 		{
+			vertexBuffers_.Clear();
 			for (auto vertexBuffer : vertexBuffers)
 				vertexBuffers_.Push(vertexBuffer);
 			vertexBufferDirty_ = true;
@@ -650,9 +651,11 @@ namespace FlagGG
 			SetRenderTarget(viewport, false);
 			for (const auto& renderContext : renderContexts)
 			{
-				if (lights.Size() > 0 &&
+				if (lights.Size() > 0
+					// 要不要传灯光的参数，与是否加了阴影通道没关系
+					/* &&
 					renderContext->renderPass_ &&
-					renderContext->renderPass_->Contains(RENDER_PASS_TYPE_SHADOW))
+					renderContext->renderPass_->Contains(RENDER_PASS_TYPE_SHADOW)*/)
 				{
 					Scene::Node* lightNode = lights[0]->GetNode();
 					lights[0]->SetAspect(aspect);
