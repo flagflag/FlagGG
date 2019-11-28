@@ -152,6 +152,31 @@ namespace FlagGG
 			textures_{}
 		{ }
 
+		void Material::SetTexture(Texture* texture)
+		{
+			textures_[0] = texture;
+		}
+
+		void Material::SetTexture(TextureClass textureClass, Texture* texture)
+		{
+			textures_[textureClass] = texture;
+		}
+
+		void Material::SetVertexShader(Shader* vertexShader)
+		{
+			vsShader_ = vertexShader;
+		}
+
+		void Material::SetPixelShader(Shader* pixelShader)
+		{
+			psShader_ = pixelShader;
+		}
+
+		void Material::SetRenderPass(RenderPassType type, const RenderPass& renderPass)
+		{
+			renderPass_[type] = renderPass;
+		}
+
 		Container::SharedPtr<Texture> Material::GetTexture()
 		{
 			return textures_[TEXTURE_CLASS_UNIVERSAL];
@@ -180,6 +205,11 @@ namespace FlagGG
 		Container::SharedPtr<ShaderParameters> Material::GetShaderParameters()
 		{
 			return shaderParameters_;
+		}
+
+		void Material::CreateShaderParameters()
+		{
+			shaderParameters_ = new ShaderParameters();
 		}
 
 		static Container::SharedPtr<Texture> LoadTexture(Resource::ResourceCache* cache, const Config::LJSONValue& textureConfig)

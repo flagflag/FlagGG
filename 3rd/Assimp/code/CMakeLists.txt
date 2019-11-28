@@ -1,4 +1,3 @@
-
 SET( HEADER_PATH ../include/assimp )
 
 SET( COMPILER_HEADERS

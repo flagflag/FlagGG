@@ -23,6 +23,10 @@ namespace FlagGG
 
 			void SetMaterial(Graphics::Material* material);
 
+			Graphics::Model* GetModel();
+
+			Graphics::Material* GetMaterial();
+
 		protected:
 			virtual void OnModel();
 

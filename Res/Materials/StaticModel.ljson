@@ -2,7 +2,7 @@
 	vsshader = 
 	{
 		path = "Shader/Model_VS.hlsl",
-		defines =  [ "STATIC", "SHADOW" ]
+		defines =  [ "STATIC" ]
 	},
 	psshader = 
 	{
@@ -11,22 +11,29 @@
 	texture =
 	{
 		type = "texture2d", //texturecube => 3d
-		path = "Textures/default.dds"
+		path = "Textures/Plane.dds"
 	},
-	pass =
+	shader_parameters = 
 	[
 		{
-			name = "shadow",
-			vsshader = 
-			{
-				path = "Shader/Model_VS.hlsl",
-				defines = [ "STATIC" ]
-			},
-			psshader =
-			{
-				path = "Shader/Shadow_PS.hlsl",
-				defines = [ "MODEL_SHADOW" ]
-			}
+			name = "ambientColor",
+			type = "vector4",
+			value = [ 0.0, 0.0, 0.0, 16 ]
+		},
+		{
+			name = "diffuseColor",
+			type = "vector4",
+			value = [ 1.0, 1.0, 1.0, 255 ]
+		},
+		{
+			name = "specularColor",
+			type = "vector4",
+			value = [ 0.1, 0.1, 0.1, 16 ]
+		},
+		{
+			name = "emissivePower",
+			type = "float",
+			value = 2
 		}
 	]
 }

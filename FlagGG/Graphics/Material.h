@@ -29,6 +29,17 @@ namespace FlagGG
 
 			~Material() override = default;
 
+			void SetTexture(Texture* texture);
+
+			void SetTexture(TextureClass textureClass, Texture* texture);
+
+			void SetVertexShader(Shader* vertexShader);
+
+			void SetPixelShader(Shader* pixelShader);
+
+			void SetRenderPass(RenderPassType type, const RenderPass& renderPass);
+
+
 			Container::SharedPtr<Texture> GetTexture();
 
 			Container::SharedPtr<Texture> GetTexture(uint32_t index);
@@ -40,6 +51,8 @@ namespace FlagGG
 			Container::HashMap<uint32_t, RenderPass>& GetRenderPass();
 
 			Container::SharedPtr<ShaderParameters> GetShaderParameters();
+
+			void CreateShaderParameters();
 
 		protected:
 			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;

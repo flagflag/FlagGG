@@ -89,11 +89,21 @@ enum GeometryType : unsigned
 	GEOMETRY_BILLBOARD,
 };
 
-struct VertexElement
+struct FlagGG_API VertexElement
 {
 	VertexElement();
 
-	VertexElement(VertexElementType vertexElementType, VertexElementSemantic vertexElementSemantic, uint8_t index, bool perInstance = false);
+	VertexElement(VertexElementType vertexElementType, VertexElementSemantic vertexElementSemantic, uint8_t index = 0, bool perInstance = false);
+
+	bool operator ==(const VertexElement& rhs) const
+	{
+		return vertexElementType_ == rhs.vertexElementType_ &&
+			vertexElementSemantic_ == rhs.vertexElementSemantic_ &&
+			index_ == rhs.index_ &&
+			perInstance_ == rhs.perInstance_;
+	}
+
+	bool operator !=(const VertexElement& rhs) const { return !(*this == rhs); }
 
 	VertexElementType		vertexElementType_;
 	VertexElementSemantic	vertexElementSemantic_;

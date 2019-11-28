@@ -18,15 +18,33 @@ namespace FlagGG
 		public:
 			Model(Core::Context* context);
 
-			Container::Vector<Container::SharedPtr<VertexBuffer>>& GetVertexBuffers();
+			void SetVertexBuffers(const Container::Vector<Container::SharedPtr<VertexBuffer>>& vertexBuffers);
 
-			Container::Vector<Container::SharedPtr<IndexBuffer>>& GetIndexBuffers();
+			void SetIndexBuffers(const Container::Vector<Container::SharedPtr<IndexBuffer>>& indexBuffers);
+
+			void SetBoneMappings(const Container::Vector<Container::PODVector<uint32_t>>& boneMappings);
+
+			void SetNumGeometries(uint32_t numGeometries);
+
+			void SetNumGeometryLodLevels(uint32_t index, uint32_t num);
+
+			bool SetGeometry(uint32_t index, uint32_t lodLevel, Geometry* geometry);
+
+			const Container::Vector<Container::SharedPtr<VertexBuffer>>& GetVertexBuffers() const;
+
+			const Container::Vector<Container::SharedPtr<IndexBuffer>>& GetIndexBuffers() const;
 
 			const Container::Vector<Container::PODVector<uint32_t>>& GetBoneMappings() const;
 
 			const Scene::Skeleton& GetSkeleton() const;
 
 			const Container::Vector <Container::Vector<Container::SharedPtr<Geometry>>>& GetGeometries() const;
+
+			Geometry* GetGeometry(uint32_t index, uint32_t lodLevel) const;
+
+			uint32_t GetNumGeometries() const;
+
+			uint32_t GetNumGeometryLodLevels(uint32_t index) const;
 
 		protected:
 			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;

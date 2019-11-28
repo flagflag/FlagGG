@@ -12,12 +12,52 @@ namespace FlagGG
 			Resource(context)
 		{ }
 
-		Container::Vector<Container::SharedPtr<VertexBuffer>>& Model::GetVertexBuffers()
+		void Model::SetVertexBuffers(const Container::Vector<Container::SharedPtr<VertexBuffer>>& vertexBuffers)
+		{
+			vertexBuffers_ = vertexBuffers;
+		}
+
+		void Model::SetIndexBuffers(const Container::Vector<Container::SharedPtr<IndexBuffer>>& indexBuffers)
+		{
+			indexBuffers_ = indexBuffers;
+		}
+
+		void Model::SetBoneMappings(const Container::Vector<Container::PODVector<uint32_t>>& boneMappings)
+		{
+			boneMappings_ = boneMappings;
+		}
+
+		void Model::SetNumGeometries(uint32_t numGeometries)
+		{
+			geometries_.Resize(numGeometries);
+		}
+
+		void Model::SetNumGeometryLodLevels(uint32_t index, uint32_t num)
+		{
+			if (index >= geometries_.Size())
+				return;
+
+			geometries_[index].Resize(num);
+		}
+
+		bool Model::SetGeometry(uint32_t index, uint32_t lodLevel, Geometry* geometry)
+		{
+			if (index >= geometries_.Size())
+				return false;
+
+			if (lodLevel >= geometries_[index].Size())
+				return false;
+
+			geometries_[index][lodLevel] = geometry;
+			return true;
+		}
+
+		const Container::Vector<Container::SharedPtr<VertexBuffer>>& Model::GetVertexBuffers() const
 		{
 			return vertexBuffers_;
 		}
 
-		Container::Vector<Container::SharedPtr<IndexBuffer>>& Model::GetIndexBuffers()
+		const Container::Vector<Container::SharedPtr<IndexBuffer>>& Model::GetIndexBuffers() const
 		{
 			return indexBuffers_;
 		}
@@ -35,6 +75,29 @@ namespace FlagGG
 		const Container::Vector <Container::Vector<Container::SharedPtr<Geometry>>>& Model::GetGeometries() const
 		{
 			return geometries_;
+		}
+
+		Geometry* Model::GetGeometry(uint32_t index, uint32_t lodLevel) const
+		{
+			if (index >= geometries_.Size() || geometries_[index].Empty())
+				return nullptr;
+
+			if (lodLevel >= geometries_[index].Size())
+				lodLevel = geometries_[index].Size() - 1;
+
+			return geometries_[index][lodLevel];
+		}
+
+		uint32_t Model::GetNumGeometries() const
+		{
+			return geometries_.Size();
+		}
+
+		uint32_t Model::GetNumGeometryLodLevels(uint32_t index) const
+		{
+			if (index >= geometries_.Size())
+				return 0u;
+			return geometries_[index].Size();
 		}
 
 		bool Model::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
