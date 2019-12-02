@@ -28,6 +28,9 @@ struct VertexInput
 	float4 pos : POSITION;
 	float2 tex0 : TEXCOORD0;
 	float3 nor : NORMAL;
+#ifdef COLOR
+	float4 color : COLOR;
+#endif
 #ifdef SKINNED
 	float4 blendWeights : BLEND_WEIGHTS;
 	int4 blendIndices : BLEND_INDICES;
@@ -39,6 +42,9 @@ struct PixelInput
 	float4 pos : SV_POSITION;
 	float2 tex0 : TEXCOORD0;
 	float3 nor : NORMAL;
+#ifdef COLOR
+	float4 color : COLOR;
+#endif
 	float3 worldPos : WORLD_POS;
 #ifdef SHADOW
 	float4 shadowPos : POSITION;
@@ -72,6 +78,9 @@ PixelInput VS(VertexInput input)
 	output.pos = mul(clipPos, projectionMatrix);
 	output.tex0 = input.tex0;
 	output.nor = worldNor;
+#ifdef COLOR
+	output.color = input.color;
+#endif
 	output.worldPos = worldPos;
 
 #ifdef SHADOW

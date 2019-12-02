@@ -185,6 +185,16 @@ namespace Importer
 		return folder + filename;
 	}
 
+	bool HasColor(const PODVector<VertexElement>& elements)
+	{
+		for (auto el : elements)
+		{
+			if (el.vertexElementSemantic_ == SEM_COLOR)
+				return true;
+		}
+		return false;
+	}
+
 	static HashMap<aiMaterial*, SharedPtr<Material>> materialMap;
 	static HashMap<String, SharedPtr<Texture2D>> textureMap;
 	static SharedPtr<Node> BuildNode(const aiScene* aiScn, aiNode* aiNd, aiMatrix4x4 transform = {})
@@ -345,10 +355,22 @@ namespace Importer
 						material->GetShaderParameters()->AddParametersDefine<float>("emissivePower");
 						material->GetShaderParameters()->SetValue<float>("emissivePower", 2.0f);
 
+						Vector<String> vsdefines = { "STATIC" };
+						Vector<String> psdefines = {};
+						if (HasColor(vertexElement))
+						{
+							vsdefines.Push("COLOR");
+							psdefines.Push("COLOR");
+						}
 						ShaderCode* vsShaderCode = context_->GetVariable<ResourceCache>("ResourceCache")->GetResource<ShaderCode>("Shader/Model_VS.hlsl");
-						material->SetVertexShader(vsShaderCode->GetShader(VS, { "STATIC" }));
+						material->SetVertexShader(vsShaderCode->GetShader(VS, vsdefines));
 						ShaderCode* psShaderCode = context_->GetVariable<ResourceCache>("ResourceCache")->GetResource<ShaderCode>("Shader/Model_PS.hlsl");
-						material->SetPixelShader(psShaderCode->GetShader(PS, {}));
+						material->SetPixelShader(psShaderCode->GetShader(PS, psdefines));
+
+						if (!material->GetTexture())
+						{
+							material->SetTexture(context_->GetVariable<ResourceCache>("ResourceCache")->GetResource<Texture2D>("Textures/White.dds"));
+						}
 					}
 					materialList.Push(material);
 				}

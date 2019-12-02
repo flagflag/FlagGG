@@ -30,6 +30,9 @@ struct PixelInput
 	float4 pos : SV_POSITION;
 	float2 tex0 : TEXCOORD0;
 	float3 nor : NORMAL;
+#ifdef COLOR
+	float4 color : COLOR;
+#endif
 	float3 worldPos : WORLD_POS;
 #ifdef SHADOW
 	float4 shadowPos : POSITION;
@@ -46,7 +49,11 @@ float4 PS(PixelInput input) : SV_TARGET
 {
 	float lightIntensity = saturate(dot(input.nor, -lightDir));
 	float3 diffColor = saturate(diffuseColor.rgb * lightIntensity);
+#ifndef COLOR
 	float3 textureColor = colorMap.Sample(colorSampler, input.tex0).rgb;
+#else
+	float3 textureColor = input.color.rgb * input.color.a;
+#endif
 	diffColor = diffColor * textureColor;
 
 	float3 reflectDir = (input.nor * -lightDir * 2.0) * input.nor - (-lightDir);
