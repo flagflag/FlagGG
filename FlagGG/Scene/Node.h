@@ -17,13 +17,22 @@ namespace FlagGG
 	namespace Scene
 	{
 		// class Component;
+		class Scene;
+		class Octree;
+
+		struct NodeUpdateContext
+		{
+			float timeStep_;
+			Scene* scene_;
+			Octree* octree_;
+		};
 
 		class FlagGG_API Node : public Container::RefCounted
 		{
 		public:
 			Node();
 
-			virtual void Update(float timeStep);
+			virtual void Update(const NodeUpdateContext& updateContext);
 
 			virtual void Render(Container::PODVector<Graphics::RenderContext*>& renderContexts);
 
@@ -65,6 +74,10 @@ namespace FlagGG
 
 			void SetName(const Container::String& name);
 
+			void SetTranspent(bool transpent);
+
+			bool IsTranspent() const;
+
 			void SetPosition(const Math::Vector3& position);
 
 			const Math::Vector3& GetPosition() const;
@@ -93,6 +106,8 @@ namespace FlagGG
 
 			Math::Vector3 GetWorldScale() const;
 
+			Math::Vector3 GetWorldDirection() const;
+
 			// 更新节点属性结构dirty状态
 			virtual void UpdateTreeDirty();
 
@@ -118,6 +133,8 @@ namespace FlagGG
 			Container::Vector<Container::SharedPtr<Node>> children_;
 
 			Node* parent_;
+
+			bool isTranspent_;
 		};
 	}
 }

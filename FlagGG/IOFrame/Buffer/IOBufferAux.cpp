@@ -47,6 +47,12 @@ namespace FlagGG
 				stream->ReadStream(&mat.m00_, sizeof(Math::Matrix4));
 			}
 
+			void ReadBoundingBox(IOBuffer* stream, Math::BoundingBox& box)
+			{
+				ReadVector3(stream, box.min_);
+				ReadVector3(stream, box.max_);
+			}
+
 			void WriteString(IOBuffer* stream, const Container::String& str)
 			{
 				stream->WriteStream(str.CString(), str.Length());
@@ -76,6 +82,12 @@ namespace FlagGG
 			void WriteMatrix4x4(IOBuffer* stream, const Math::Matrix4& mat)
 			{
 				stream->WriteStream(&mat.m00_, sizeof(Math::Matrix4));
+			}
+
+			void WriteBoundingBox(IOBuffer* stream, const Math::BoundingBox& box)
+			{
+				WriteVector3(stream, box.min_);
+				WriteVector3(stream, box.max_);
 			}
 		}
 	}

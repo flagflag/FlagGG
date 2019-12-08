@@ -3,12 +3,14 @@
 
 #include "Export.h"
 #include "Define.h"
-#include "Math/Vector3.h"
 
 namespace FlagGG
 {
 	namespace Math
 	{
+		class Vector3;
+		class Matrix3x4;
+
 		/// 4x4 matrix for arbitrary linear transforms including projection.
 		class FlagGG_API Matrix4
 		{
@@ -42,6 +44,10 @@ namespace FlagGG
 
 			// 矩阵乘法
 			Matrix4 operator *(const Matrix4& rhs) const;
+
+			Matrix4 operator *(const Matrix3x4& rhs) const;
+
+			Vector3 operator *(const Vector3& rhs) const;
 
 			// 矩阵转置
 			Matrix4 Transpose() const;

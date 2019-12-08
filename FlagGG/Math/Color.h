@@ -5,6 +5,7 @@
 #include "Define.h"
 #include "Container/Str.h"
 #include "Math/Math.h"
+#include "Math/Vector3.h"
 
 namespace FlagGG
 {

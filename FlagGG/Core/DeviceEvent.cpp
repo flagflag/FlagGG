@@ -1,6 +1,8 @@
 #include "Core/DeviceEvent.h"
 #include "Core/Context.h"
 
+#include <windows.h>
+
 namespace FlagGG
 {
 	namespace Core
@@ -8,6 +10,13 @@ namespace FlagGG
 		Input::Input(Context* context) :
 			context_(context)
 		{ }
+
+		Math::IntVector2 Input::GetMousePos() const
+		{
+			POINT point;
+			::GetCursorPos(&point);
+			return Math::IntVector2(point.x, point.y);
+		}
 
 		void Input::OnKeyDown(KeyState* keyState, uint32_t keyCode)
 		{

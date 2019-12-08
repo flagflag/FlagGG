@@ -60,7 +60,7 @@ VertexElement DEFAULT_VERTEX_ELEMENT[] =
 
 const FlagGG::Container::StringHash SP_WORLD_MATRIX("worldMatrix");
 const FlagGG::Container::StringHash SP_VIEW_MATRIX("viewMatrix");
-const FlagGG::Container::StringHash SP_PROJECTION_MATRIX("projectionMatrix");
+const FlagGG::Container::StringHash SP_PROJVIEW_MATRIX("projviewMatrix");
 const FlagGG::Container::StringHash SP_SKIN_MATRICES("skinMatrices");
 const FlagGG::Container::StringHash SP_DELTA_TIME("deltaTime");
 const FlagGG::Container::StringHash SP_ELAPSED_TIME("elapsedTime");
@@ -68,5 +68,5 @@ const FlagGG::Container::StringHash SP_CAMERA_POS("cameraPos");
 const FlagGG::Container::StringHash SP_LIGHT_POS("lightPos");
 const FlagGG::Container::StringHash SP_LIGHT_DIR("lightDir");
 const FlagGG::Container::StringHash SP_LIGHT_VIEW_MATRIX("lightViewMatrix");
-const FlagGG::Container::StringHash SP_LIGHT_PROJ_MATRIX("lightProjMatrix");
+const FlagGG::Container::StringHash SP_LIGHT_PROJVIEW_MATRIX("lightProjviewMatrix");
 

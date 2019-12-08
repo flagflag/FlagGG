@@ -1,4 +1,6 @@
 #include "Math.h"
+#include "Vector3.h"
+#include "Matrix4.h"
 
 #include <math.h>
 
@@ -12,7 +14,12 @@ namespace FlagGG
 	{
 		const float PI = asin(1.0f) * 2;
 		const float EPS = 1e-6;
+		const float F_MIN_INT = 0x80000000;
+		const float F_MAX_INT = 0x7fffffff;
+		const float F_MIN_UNSIGNED = 0x00000000;
+		const float F_MAX_UNSIGNED = 0xffffffff;
 		const float F_INFINITY = (float)HUGE_VAL;
+		const float F_MIN_NEARCLIP = 0.01f;
 		const float DEGTORAD = PI / 180.0f;
 		const float DEGTORAD_2 = PI / 360.0f;
 		const float RADTODEG = 1.0f / DEGTORAD;

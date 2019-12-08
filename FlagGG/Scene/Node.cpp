@@ -1,5 +1,6 @@
 #include "Scene/Node.h"
 #include "Scene/Component.h"
+#include "Scene/Octree.h"
 
 namespace FlagGG
 {
@@ -8,6 +9,7 @@ namespace FlagGG
 		Node::Node() :
 			name_(""),
 			nameHash_(0u),
+			isTranspent_(false),
 			parent_(nullptr),
 			dirty_(true),
 			position_(Math::Vector3::ZERO),
@@ -16,14 +18,19 @@ namespace FlagGG
 			worldTransform_(Math::Matrix3x4::IDENTITY)
 		{ }
 
-		void Node::Update(float timeStep)
+		void Node::Update(const NodeUpdateContext& updateContext)
 		{
 			if (dirty_)
 				UpdateWorldTransform();
 
 			for (const auto& compoment : components_)
 			{
-				compoment->Update(timeStep);
+				compoment->Update(updateContext.timeStep_);
+
+				if (compoment->IsDrawable() && !IsTranspent())
+				{
+					updateContext.octree_->InsertElement(compoment);
+				}
 			}
 		}
 
@@ -169,6 +176,16 @@ namespace FlagGG
 			return name_;
 		}
 
+		void Node::SetTranspent(bool transpent)
+		{
+			isTranspent_ = transpent;
+		}
+
+		bool Node::IsTranspent() const
+		{
+			return isTranspent_;
+		}
+
 		Container::StringHash Node::GetNameHash() const
 		{
 			return nameHash_;
@@ -250,6 +267,11 @@ namespace FlagGG
 			if (dirty_)
 				UpdateWorldTransform();
 			return worldTransform_.Scale();
+		}
+
+		Math::Vector3 Node::GetWorldDirection() const
+		{
+			return GetWorldPosition() * Math::Vector3::FORWARD;
 		}
 
 		void Node::UpdateWorldTransform() const

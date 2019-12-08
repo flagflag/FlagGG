@@ -1,4 +1,6 @@
 #include "Matrix4.h"
+#include "Math/Vector3.h"
+#include "Math/Matrix3x4.h"
 
 #include "Math/Math.h"
 
@@ -225,6 +227,39 @@ namespace FlagGG
 				m30_ * rhs.m02_ + m31_ * rhs.m12_ + m32_ * rhs.m22_ + m33_ * rhs.m32_,
 				m30_ * rhs.m03_ + m31_ * rhs.m13_ + m32_ * rhs.m23_ + m33_ * rhs.m33_
 				);
+		}
+
+		Matrix4 Matrix4::operator *(const Matrix3x4& rhs) const
+		{
+			return Matrix4(
+				m00_ * rhs.m00_ + m01_ * rhs.m10_ + m02_ * rhs.m20_,
+				m00_ * rhs.m01_ + m01_ * rhs.m11_ + m02_ * rhs.m21_,
+				m00_ * rhs.m02_ + m01_ * rhs.m12_ + m02_ * rhs.m22_,
+				m00_ * rhs.m03_ + m01_ * rhs.m13_ + m02_ * rhs.m23_ + m03_,
+				m10_ * rhs.m00_ + m11_ * rhs.m10_ + m12_ * rhs.m20_,
+				m10_ * rhs.m01_ + m11_ * rhs.m11_ + m12_ * rhs.m21_,
+				m10_ * rhs.m02_ + m11_ * rhs.m12_ + m12_ * rhs.m22_,
+				m10_ * rhs.m03_ + m11_ * rhs.m13_ + m12_ * rhs.m23_ + m13_,
+				m20_ * rhs.m00_ + m21_ * rhs.m10_ + m22_ * rhs.m20_,
+				m20_ * rhs.m01_ + m21_ * rhs.m11_ + m22_ * rhs.m21_,
+				m20_ * rhs.m02_ + m21_ * rhs.m12_ + m22_ * rhs.m22_,
+				m20_ * rhs.m03_ + m21_ * rhs.m13_ + m22_ * rhs.m23_ + m23_,
+				m30_ * rhs.m00_ + m31_ * rhs.m10_ + m32_ * rhs.m20_,
+				m30_ * rhs.m01_ + m31_ * rhs.m11_ + m32_ * rhs.m21_,
+				m30_ * rhs.m02_ + m31_ * rhs.m12_ + m32_ * rhs.m22_,
+				m30_ * rhs.m03_ + m31_ * rhs.m13_ + m32_ * rhs.m23_ + m33_
+			);
+		}
+
+		Vector3 Matrix4::operator *(const Vector3& rhs) const
+		{
+			float invW = 1.0f / (m30_ * rhs.x_ + m31_ * rhs.y_ + m32_ * rhs.z_ + m33_);
+
+			return Vector3(
+				(m00_ * rhs.x_ + m01_ * rhs.y_ + m02_ * rhs.z_ + m03_) * invW,
+				(m10_ * rhs.x_ + m11_ * rhs.y_ + m12_ * rhs.z_ + m13_) * invW,
+				(m20_ * rhs.x_ + m21_ * rhs.y_ + m22_ * rhs.z_ + m23_) * invW
+			);
 		}
 
 		Matrix4 Matrix4::Transpose() const

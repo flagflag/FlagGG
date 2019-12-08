@@ -100,6 +100,11 @@ namespace FlagGG
 			return geometries_[index].Size();
 		}
 
+		const Math::BoundingBox& Model::GetBoundingBox() const
+		{
+			return boundingBox_;
+		}
+
 		bool Model::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		{
 			Container::String fileID;
@@ -252,11 +257,53 @@ namespace FlagGG
 			}
 
 			skeleton_.Load(stream);
+
+			IOFrame::Buffer::ReadBoundingBox(stream, boundingBox_);
 			
 			return true;
 		}
 
 		bool Model::EndLoad()
+		{
+			return true;
+		}
+
+		bool Model::BeginSave(IOFrame::Buffer::IOBuffer* stream)
+		{
+			Container::String fileID = "UMD2";
+			stream->WriteStream(&fileID[0], fileID.Length());
+
+			uint32_t numVertexBuffers = vertexBuffers_.Size();
+			stream->WriteUInt32(numVertexBuffers);
+			for (uint32_t i = 0; i < numVertexBuffers; ++i)
+			{
+				auto vertexBuffer = vertexBuffers_[i];
+				uint32_t vertexCount = vertexBuffer->GetVertexCount();
+				stream->WriteUInt32(vertexCount);
+				const auto& vertexElements = vertexBuffer->GetElements();
+				uint32_t numElements = vertexElements.Size();
+				stream->WriteUInt32(numElements);
+				for (auto element : vertexElements)
+				{
+					uint32_t type = element.vertexElementType_;
+					uint32_t semantic = element.vertexElementSemantic_;
+					uint32_t index = element.index_;
+					uint32_t elementDesc = type | (semantic << 8u) | (index << 16);
+					stream->WriteUInt32(elementDesc);
+				}
+
+				stream->WriteUInt32(0u);
+				stream->WriteUInt32(0u);
+
+				void* data = vertexBuffer->Lock(0, vertexCount);
+				stream->WriteStream(data, vertexBuffer->GetVertexSize() * vertexBuffer->GetVertexCount());
+				vertexBuffer->Unlock();
+			}
+
+			return true;
+		}
+
+		bool Model::EndSave()
 		{
 			return true;
 		}

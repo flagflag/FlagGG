@@ -2,13 +2,16 @@
 #define __VECTOR3__
 
 #include "Export.h"
+#include "Define.h"
+#include "Math/Vector2.h"
 
 namespace FlagGG
 {
 	namespace Math
 	{
-		struct FlagGG_API IntVector3
+		class FlagGG_API IntVector3
 		{
+		public:
 			IntVector3();
 
 			IntVector3(int x, int y, int z);
@@ -22,13 +25,22 @@ namespace FlagGG
 			int z_;
 		};
 
-		struct FlagGG_API Vector3
+		class FlagGG_API Vector3
 		{
-			Vector3();
+		public:
+			Vector3() NOEXCEPT;
 
-			Vector3(float x, float y, float z);
+			Vector3(float x, float y, float z) NOEXCEPT;
 
-			Vector3(const Vector3& other);
+			Vector3(const Vector3& other) NOEXCEPT;
+
+			Vector3(const Vector2& vector, float z) NOEXCEPT;
+
+			Vector3& operator =(const Vector3& rhs) NOEXCEPT = default;
+
+			bool operator ==(const Vector3& rhs) const;
+
+			bool operator !=(const Vector3& rhs) const;
 
 			Vector3 operator +(const Vector3& rhs) const;
 
@@ -92,6 +104,8 @@ namespace FlagGG
 
 			Vector3 Normalized() const;
 
+			Container::String ToString() const;
+
 			float x_;
 
 			float y_;
@@ -107,6 +121,14 @@ namespace FlagGG
 			static const Vector3 BACK;
 			static const Vector3 ONE;
 		};
+
+		inline Vector3 operator *(float lhs, const Vector3& rhs) { return rhs * lhs; }
+
+		inline Vector3 VectorLerp(const Vector3& lhs, const Vector3& rhs, const Vector3& t) { return lhs + (rhs - lhs) * t; }
+
+		inline Vector3 VectorMin(const Vector3& lhs, const Vector3& rhs) { return Vector3(Min(lhs.x_, rhs.x_), Min(lhs.y_, rhs.y_), Min(lhs.z_, rhs.z_)); }
+
+		inline Vector3 VectorMax(const Vector3& lhs, const Vector3& rhs) { return Vector3(Max(lhs.x_, rhs.x_), Max(lhs.y_, rhs.y_), Max(lhs.z_, rhs.z_)); }
 	}
 }
 

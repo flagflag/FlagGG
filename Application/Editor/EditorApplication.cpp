@@ -10,6 +10,7 @@
 #include <Scene/StaticMeshComponent.h>
 #include <Scene/SkeletonMeshComponent.h>
 #include <Scene/Light.h>
+#include <Scene/Octree.h>
 #include <Log.h>
 
 using namespace FlagGG::Math;
@@ -52,6 +53,8 @@ void EditorApplication::CreateScene()
 	scene_ = new FlagGG::Scene::Scene(context_);
 	scene_->Start();
 
+	scene_->CreateComponent<Octree>();
+
 	auto* cameraNode = new Node();
 	scene_->AddChild(cameraNode);
 	auto* camera = cameraNode->CreateComponent<Camera>();
@@ -59,22 +62,22 @@ void EditorApplication::CreateScene()
 	camera->SetFarClip(1000000000.0f);
 	cameraOpt_ = new CameraOperation(context_, camera);
 
-	//SharedPtr<Node> unit(new Node());
-	//StaticMeshComponent* staticMeshComp = unit->CreateComponent<StaticMeshComponent>();
-	//staticMeshComp->SetModel(cache_->GetResource<Model>("Model/SpaceColony.mdl"));
-	//staticMeshComp->SetMaterial(cache_->GetResource<Material>("Materials/StaticModel.ljson"));
-	//unit->SetScale(Vector3(0.001, 0.001, 0.001));
-	//scene_->AddChild(unit);
+	SharedPtr<Node> unit(new Node());
+	StaticMeshComponent* staticMeshComp = unit->CreateComponent<StaticMeshComponent>();
+	staticMeshComp->SetModel(cache_->GetResource<Model>("Model/SpaceColony.mdl"));
+	staticMeshComp->SetMaterial(cache_->GetResource<Material>("Materials/StaticModel.ljson"));
+	unit->SetScale(Vector3(0.001, 0.001, 0.001));
+	scene_->AddChild(unit);
 
-	Importer::SetContext(context_);
-	SharedPtr<Node> importNode = Importer::ImportScene("G:/Kitbash3D-Space Colony/Kitbash3d_SpaceColony.FBX");
-	if (importNode)
-	{
-		importNode_ = importNode;
-		importNode_->SetPosition(Vector3(80, -2, 5));
-		importNode_->SetScale(Vector3(0.001, 0.001, 0.001));
-		scene_->AddChild(importNode_);
-	}
+	//Importer::SetContext(context_);
+	//SharedPtr<Node> importNode = Importer::ImportScene("G:/Kitbash3D - Utopia/Kitbash3d_Utopia.FBX");
+	//if (importNode)
+	//{
+	//	importNode_ = importNode;
+	//	importNode->SetRotation(Quaternion(-90.0f, Vector3(1.0f, 0.0f, 0.0f)));
+	//	importNode_->SetScale(Vector3(0.001, 0.001, 0.001));
+	//	scene_->AddChild(importNode_);
+	//}
 
 	SharedPtr<Node> lightNode(new Node());
 	lightNode->CreateComponent<Light>();

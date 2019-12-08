@@ -6,7 +6,8 @@ namespace FlagGG
 	namespace Scene
 	{
 		SkeletonMeshComponent::SkeletonMeshComponent() :
-			skinningDirty_(true)
+			skinningDirty_(true),
+			boneBoundingBoxDirty_(true)
 		{
 
 		}
@@ -18,6 +19,11 @@ namespace FlagGG
 			if (skinningDirty_)
 			{
 				UpdateSkinning();
+			}
+
+			if (boneBoundingBoxDirty_)
+			{
+				UpdateBoneBoundingBox();
 			}
 		}
 
@@ -41,6 +47,8 @@ namespace FlagGG
 			renderContext_.geometryType_ = GEOMETRY_SKINNED;
 			renderContext_.worldTransform_ = &skinMatrices_[0];
 			renderContext_.numWorldTransform_ = skinMatrices_.Size();
+
+			boneBoundingBox_ = boundingBox_;
 		}
 
 		void SkeletonMeshComponent::SetSkeleton(const Skeleton& skeleton)
@@ -140,9 +148,39 @@ namespace FlagGG
 			skinningDirty_ = false;
 		}
 
+		void SkeletonMeshComponent::UpdateBoneBoundingBox()
+		{
+			boneBoundingBox_.Clear();
+
+			Math::Matrix3x4 inverseTransform = node_->GetWorldTransform().Inverse();
+
+			const auto& bones = skeleton_.GetBones();
+			for (const auto& bone : bones)
+			{
+				if (bone.node_)
+				{
+					if (bone.collisionMask_ & BONE_COLLISSION_BOX)
+						boneBoundingBox_.Merge(bone.boundingBox_.Transformed(inverseTransform * bone.node_->GetWorldTransform()));
+					//if(bone.collisionMask_ & BONE_COLLISSION_SPHERE)
+					//	boneBoundingBox_.Merge()
+				}
+			}
+
+			boneBoundingBoxDirty_ = false;
+			worldBoundingBoxDirty_ = true;
+		}
+
 		void SkeletonMeshComponent::UpdateTreeDirty()
 		{
+			Component::UpdateTreeDirty();
+
 			skinningDirty_ = true;
+			boneBoundingBoxDirty_ = true;
+		}
+
+		void SkeletonMeshComponent::OnUpdateWorldBoundingBox()
+		{
+			worldBoundingBox_ = boneBoundingBox_.Transformed(node_->GetWorldTransform());
 		}
 	}
 }

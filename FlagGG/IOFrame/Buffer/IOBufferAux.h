@@ -8,6 +8,7 @@
 #include "Math/Quaternion.h"
 #include "Math/Matrix3x4.h"
 #include "Math/Matrix4.h"
+#include "Math/BoundingBox.h"
 
 namespace FlagGG
 {
@@ -27,6 +28,8 @@ namespace FlagGG
 
 			FlagGG_API void ReadMatrix4x4(IOBuffer* stream, Math::Matrix4& mat);
 
+			FlagGG_API void ReadBoundingBox(IOBuffer* stream, Math::BoundingBox& box);
+
 
 			FlagGG_API void WriteString(IOBuffer* stream, const Container::String& str);
 
@@ -39,6 +42,8 @@ namespace FlagGG
 			FlagGG_API void WriteMatrix3x4(IOBuffer* stream, const Math::Matrix3x4& mat);
 
 			FlagGG_API void WriteMatrix4x4(IOBuffer* stream, const Math::Matrix4& mat);
+
+			FlagGG_API void WriteBoundingBox(IOBuffer* stream, const Math::BoundingBox& box);
 		}
 	}
 }

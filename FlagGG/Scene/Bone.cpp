@@ -28,11 +28,7 @@ namespace FlagGG
 				if (bone.collisionMask_ & BONE_COLLISSION_SPHERE)
 					stream->ReadFloat(bone.radius_);
 				if (bone.collisionMask_ & BONE_COLLISSION_BOX)
-				{
-					Math::Vector3 ignore;
-					IOFrame::Buffer::ReadVector3(stream, ignore);
-					IOFrame::Buffer::ReadVector3(stream, ignore);
-				}
+					IOFrame::Buffer::ReadBoundingBox(stream, bone.boundingBox_);
 
 				if (bone.parentIndex_ == i)
 					rootBoneIndex_ = i;

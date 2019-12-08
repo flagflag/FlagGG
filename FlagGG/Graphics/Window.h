@@ -59,6 +59,8 @@ namespace FlagGG
 
 			uint32_t GetHeight();
 
+			Math::IntVector2 GetMousePos() const;
+
 			void Resize(uint32_t width, uint32_t height);
 
 			void* GetWindow();

@@ -17,15 +17,15 @@ namespace FlagGG
 		RenderEngine::RenderEngine()
 		{
 			shaderParameters_.AddParametersDefine<Math::Matrix3x4>(SP_WORLD_MATRIX);
-			shaderParameters_.AddParametersDefine<Math::Matrix4>(SP_VIEW_MATRIX);
-			shaderParameters_.AddParametersDefine<Math::Matrix4>(SP_PROJECTION_MATRIX);
+			shaderParameters_.AddParametersDefine<Math::Matrix3x4>(SP_VIEW_MATRIX);
+			shaderParameters_.AddParametersDefine<Math::Matrix4>(SP_PROJVIEW_MATRIX);
 			shaderParameters_.AddParametersDefine<float>(SP_DELTA_TIME);
 			shaderParameters_.AddParametersDefine<float>(SP_ELAPSED_TIME);
 			shaderParameters_.AddParametersDefine<Math::Vector3>(SP_CAMERA_POS);
 			shaderParameters_.AddParametersDefine<Math::Vector3>(SP_LIGHT_POS);
 			shaderParameters_.AddParametersDefine<Math::Vector3>(SP_LIGHT_DIR);
-			shaderParameters_.AddParametersDefine<Math::Matrix4>(SP_LIGHT_VIEW_MATRIX);
-			shaderParameters_.AddParametersDefine<Math::Matrix4>(SP_LIGHT_PROJ_MATRIX);
+			shaderParameters_.AddParametersDefine<Math::Matrix3x4>(SP_LIGHT_VIEW_MATRIX);
+			shaderParameters_.AddParametersDefine<Math::Matrix4>(SP_LIGHT_PROJVIEW_MATRIX);
 		}
 
 		void RenderEngine::CreateDevice()
@@ -319,8 +319,8 @@ namespace FlagGG
 			if (camera && renderContext->worldTransform_ && renderContext->numWorldTransform_)
 			{
 				shaderParameters_.SetValue(SP_WORLD_MATRIX, *renderContext->worldTransform_);
-				shaderParameters_.SetValue(SP_VIEW_MATRIX, camera->GetViewMatrix().Transpose());
-				shaderParameters_.SetValue(SP_PROJECTION_MATRIX, camera->GetProjectionMatrix().Transpose());
+				shaderParameters_.SetValue(SP_VIEW_MATRIX, camera->GetViewMatrix());
+				shaderParameters_.SetValue(SP_PROJVIEW_MATRIX, camera->GetProjectionMatrix() * camera->GetViewMatrix());
 				shaderParameters_.SetValue(SP_CAMERA_POS, camera->GetNode()->GetPosition());
 
 				if (renderContext->geometryType_ == GEOMETRY_SKINNED)
@@ -661,8 +661,8 @@ namespace FlagGG
 					lights[0]->SetAspect(aspect);
 					shaderParameters_.SetValue(SP_LIGHT_POS, lightNode->GetWorldPosition());
 					shaderParameters_.SetValue(SP_LIGHT_DIR, lightNode->GetWorldRotation() * Math::Vector3::FORWARD);
-					shaderParameters_.SetValue(SP_LIGHT_VIEW_MATRIX, lights[0]->GetViewMatrix().Transpose());
-					shaderParameters_.SetValue(SP_LIGHT_PROJ_MATRIX, lights[0]->GetProjectionMatrix().Transpose());
+					shaderParameters_.SetValue(SP_LIGHT_VIEW_MATRIX, lights[0]->GetViewMatrix());
+					shaderParameters_.SetValue(SP_LIGHT_PROJVIEW_MATRIX, lights[0]->GetProjectionMatrix() * lights[0]->GetViewMatrix());
 				}
 
 				viewport->GetCamera()->SetAspect(aspect);

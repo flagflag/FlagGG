@@ -20,6 +20,8 @@ namespace FlagGG
 
 			void UpdateTreeDirty() override;
 
+			void OnUpdateWorldBoundingBox() override;
+
 			Skeleton& GetSkeleton();
 
 		protected:
@@ -31,8 +33,11 @@ namespace FlagGG
 
 			void UpdateSkinning();
 
+			void UpdateBoneBoundingBox();
+
 		private:
 			bool skinningDirty_;
+			bool boneBoundingBoxDirty_;
 		
 			Skeleton skeleton_;
 
@@ -41,6 +46,8 @@ namespace FlagGG
 			Container::Vector<Container::PODVector<Math::Matrix3x4>> geometrySkinMatrices_;
 
 			Container::Vector<Container::PODVector<Math::Matrix3x4*>> geometrySkinMatrixPtrs_;
+
+			Math::BoundingBox boneBoundingBox_;
 		};
 	}
 }

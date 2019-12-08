@@ -8,6 +8,7 @@
 #include "Container/Ptr.h"
 #include "Container/Vector.h"
 #include "Scene/Bone.h"
+#include "Math/BoundingBox.h"
 
 namespace FlagGG
 {
@@ -46,10 +47,16 @@ namespace FlagGG
 
 			uint32_t GetNumGeometryLodLevels(uint32_t index) const;
 
+			const Math::BoundingBox& GetBoundingBox() const;
+
 		protected:
 			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
 			bool EndLoad() override;
+
+			bool BeginSave(IOFrame::Buffer::IOBuffer* stream) override;
+
+			bool EndSave() override;
 
 		private:
 			Container::Vector<Container::SharedPtr<VertexBuffer>> vertexBuffers_;
@@ -62,6 +69,8 @@ namespace FlagGG
 			Container::Vector<Container::PODVector<uint32_t>> boneMappings_;
 
 			Scene::Skeleton skeleton_;
+
+			Math::BoundingBox boundingBox_;
 		};
 	}
 }

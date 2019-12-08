@@ -1,4 +1,4 @@
-#include "Vector3.h"
+#include "Math/Vector3.h"
 #include "Math/Math.h"
 
 namespace FlagGG
@@ -54,6 +54,23 @@ namespace FlagGG
 			x_ = other.x_;
 			y_ = other.y_;
 			z_ = other.z_;
+		}
+
+		Vector3::Vector3(const Vector2& vector, float z) :
+			x_(vector.x_),
+			y_(vector.y_),
+			z_(z)
+		{
+		}
+
+		bool Vector3::operator ==(const Vector3& rhs) const
+		{
+			return x_ == rhs.x_ && y_ == rhs.y_ && z_ == rhs.z_;
+		}
+
+		bool Vector3::operator !=(const Vector3& rhs) const
+		{
+			return x_ != rhs.x_ || y_ != rhs.y_ || z_ != rhs.z_;
 		}
 
 		Vector3 Vector3::operator +(const Vector3& rhs) const
@@ -254,6 +271,13 @@ namespace FlagGG
 			}
 			
 			return *this;
+		}
+
+		Container::String Vector3::ToString() const
+		{
+			char tempBuffer[Container::CONVERSION_BUFFER_LENGTH];
+			sprintf(tempBuffer, "%d %d %d", x_, y_, z_);
+			return Container::String(tempBuffer);
 		}
 	}
 }

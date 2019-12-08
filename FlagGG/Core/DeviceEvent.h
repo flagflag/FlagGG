@@ -33,6 +33,8 @@ namespace FlagGG
 
 			~Input() override = default;
 
+			Math::IntVector2 GetMousePos() const;
+
 			void OnKeyDown(KeyState* keyState, uint32_t keyCode);
 
 			void OnKeyUp(KeyState* keyState, uint32_t keyCode);

@@ -2,9 +2,6 @@
 #define __MATH__
 
 #include "Export.h"
-
-#include "Vector3.h"
-#include "Matrix4.h"
 #include "Container/Str.h"
 
 #include <stdint.h>
@@ -13,6 +10,9 @@ namespace FlagGG
 {
 	namespace Math
 	{
+		class Matrix4;
+		class Vector3;
+
 		enum Intersection
 		{
 			OUTSIDE,
@@ -20,12 +20,17 @@ namespace FlagGG
 			INSIDE
 		};
 
-		extern const float PI;
-		extern const float EPS;
-		extern const float F_INFINITY;
-		extern const float DEGTORAD;
-		extern const float DEGTORAD_2;
-		extern const float RADTODEG;
+		extern FlagGG_API const float PI;
+		extern FlagGG_API const float EPS;
+		extern FlagGG_API const float F_MIN_INT;
+		extern FlagGG_API const float F_MAX_INT;
+		extern FlagGG_API const float F_MIN_UNSIGNED;
+		extern FlagGG_API const float F_MAX_UNSIGNED;
+		extern FlagGG_API const float F_INFINITY;
+		extern FlagGG_API const float F_MIN_NEARCLIP;
+		extern FlagGG_API const float DEGTORAD;
+		extern FlagGG_API const float DEGTORAD_2;
+		extern FlagGG_API const float RADTODEG;
 
 		template < class T >
 		inline T Max(T value1, T value2)

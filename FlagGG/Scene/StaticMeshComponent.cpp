@@ -19,6 +19,16 @@ namespace FlagGG
 			return &renderContext_;
 		}
 
+		void StaticMeshComponent::OnUpdateWorldBoundingBox()
+		{
+			worldBoundingBox_ = boundingBox_.Transformed(node_->GetWorldTransform());
+		}
+
+		void StaticMeshComponent::ProcessRayQuery(const RayOctreeQuery& query, Container::PODVector<RayQueryResult>& results)
+		{
+			Component::ProcessRayQuery(query, results);
+		}
+
 		void StaticMeshComponent::SetModel(Graphics::Model* model)
 		{
 			if (model_ == model)
@@ -63,6 +73,8 @@ namespace FlagGG
 			}
 			renderContext_.worldTransform_ = &node_->GetWorldTransform();
 			renderContext_.numWorldTransform_ = 1;
+
+			boundingBox_ = model_->GetBoundingBox();
 		}
 
 		void StaticMeshComponent::OnMaterial()

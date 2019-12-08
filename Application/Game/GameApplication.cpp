@@ -1,6 +1,8 @@
 #ifdef _WIN32
 #include <Graphics/RenderEngine.h>
 #include <Scene/Light.h>
+#include <Scene/Octree.h>
+#include <Scene/StaticMeshComponent.h>
 #endif
 #include <Log.h>
 
@@ -102,10 +104,13 @@ void GameApplication::CreateScene()
 	scene_ = new FlagGG::Scene::Scene(context_);
 	scene_->Start();
 
+	scene_->CreateComponent<Octree>();
+
 	auto* cameraNode = new Node();
+	cameraNode->SetPosition(Vector3(0, 0, -1));
 	scene_->AddChild(cameraNode);
 	auto* camera = cameraNode->CreateComponent<Camera>();
-	camera->SetNearClip(1.0f);
+	camera->SetNearClip(0.1f);
 	camera->SetFarClip(1000000000.0f);
 	cameraOpt_ = new CameraOperation(context_, camera);
 
@@ -114,6 +119,7 @@ void GameApplication::CreateScene()
 	mainHero_->SetPosition(Vector3(0, -5, 10));
 	mainHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
 	mainHero_->SetRotation(Quaternion(180, Vector3(0.0f, 1.0f, 0.0f)));
+	mainHero_->SetName("MainHero");
 	scene_->AddChild(mainHero_);
 
 	dissolveHero_ = new Unit(context_);
@@ -121,12 +127,14 @@ void GameApplication::CreateScene()
 	dissolveHero_->SetPosition(Vector3(0, 0, 10));
 	dissolveHero_->SetRotation(Quaternion(180, Vector3(0.0f, 1.0f, 0.0f)));
 	dissolveHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
+	dissolveHero_->SetName("DissolveHero");
 	scene_->AddChild(dissolveHero_);
 
 	terrain_ = new Terrain(context_);
 	terrain_->Create(64);
 	terrain_->SetScale(Vector3(1, 0.4, 1));
 	terrain_->SetPosition(Vector3(-80, -5, 0));
+	terrain_->SetName("Terrain");
 	scene_->AddChild(terrain_);
 
 #if 0
@@ -145,12 +153,15 @@ void GameApplication::CreateScene()
 	skybox_ = new Unit(context_);
 	skybox_->Load("Unit/Skybox.ljson");
 	skybox_->SetScale(Vector3(100000, 100000, 100000));
+	skybox_->SetName("Skybox");
+	skybox_->SetTranspent(true);
 	scene_->AddChild(skybox_);
 
 	water_ = new Unit(context_);
 	water_->Load("Unit/Water.ljson");
 	water_->SetPosition(Vector3(0, -4, 10));
 	water_->SetScale(Vector3(100, 100, 100));
+	water_->SetName("Water");
 	scene_->AddChild(water_);
 }
 
@@ -241,6 +252,21 @@ void GameApplication::OnMouseDown(KeyState* keyState, MouseKey mouseKey)
 void GameApplication::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
 {
 	// luaVM_->CallEvent("on_mouse_up", static_cast<uint32_t>(mouseKey));
+	if (mouseKey == MOUSE_RIGHT)
+	{
+		IntVector2 mousePos = window_->GetMousePos();
+		Ray ray = cameraOpt_->GetCamera()->GetScreenRay((float)mousePos.x_ / window_->GetWidth(), (float)mousePos.y_ / window_->GetHeight());
+		PODVector<RayQueryResult> results;
+		RayOctreeQuery query(results, ray, RAY_QUERY_TRIANGLE, 250.0f);
+		scene_->GetComponent<Octree>()->Raycast(query);
+		if (query.results_.Size() > 0u)
+		{
+			const auto& ret = query.results_[0];
+			auto* meshComp = ret.node_->CreateComponent<StaticMeshComponent>();
+			meshComp->SetModel(cache_->GetResource<Model>("Model/Axes.mdl"));
+			meshComp->SetMaterial(cache_->GetResource<Material>("Materials/StaticModel.ljson"));
+		}
+	}
 }
 
 void GameApplication::OnMouseMove(KeyState* keyState, const Vector2& delta)

@@ -4,6 +4,7 @@
 #include "Scene/Component.h"
 #include "Graphics/Model.h"
 #include "Graphics/Material.h"
+#include "Math/BoundingBox.h"
 
 namespace FlagGG
 {
@@ -18,6 +19,10 @@ namespace FlagGG
 			bool IsDrawable() override;
 
 			Graphics::RenderContext* GetRenderContext() override;
+
+			void OnUpdateWorldBoundingBox() override;
+
+			void ProcessRayQuery(const RayOctreeQuery& query, Container::PODVector<RayQueryResult>& results) override;
 
 			void SetModel(Graphics::Model* model);
 
@@ -37,6 +42,8 @@ namespace FlagGG
 			Container::SharedPtr<Graphics::Material> material_;
 
 			Graphics::RenderContext renderContext_;
+
+			Math::BoundingBox boundingBox_;
 		};
 	}
 }

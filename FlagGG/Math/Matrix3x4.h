@@ -2,10 +2,6 @@
 
 #include "Export.h"
 #include "Define.h"
-#include "Math/Matrix3.h"
-#include "Math/Matrix4.h"
-#include "Math/Vector3.h"
-#include "Math/Vector4.h"
 #include "Math/Quaternion.h"
 #include "Container/Str.h"
 
@@ -13,6 +9,12 @@ namespace FlagGG
 {
 	namespace Math
 	{
+		class Matrix3;
+		class Matrix3x4;
+		class Matrix4;
+		class Vector3;
+		class Vector4;
+
 		class FlagGG_API Matrix3x4
 		{
 		public:

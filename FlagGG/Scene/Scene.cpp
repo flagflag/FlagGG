@@ -2,6 +2,7 @@
 #include "Core/EventDefine.h"
 #include "Scene/Component.h"
 #include "Scene/Light.h"
+#include "Scene/Octree.h"
 
 namespace FlagGG
 {
@@ -38,26 +39,30 @@ namespace FlagGG
 
 		void Scene::HandleUpdate(float timeStep)
 		{
-			Update(timeStep);
+			NodeUpdateContext updateContext;
+			updateContext.timeStep_ = timeStep;
+			updateContext.scene_ = this;
+			updateContext.octree_ = this->GetComponent<Octree>();
+			Update(updateContext);
 		}
 
-		void Scene::Update(float timeStep)
+		void Scene::Update(const NodeUpdateContext& updateContext)
 		{
-			Update(this, timeStep);
+			Update(this, updateContext);
 		}
 
-		void Scene::Update(Node* node, float timeStep)
+		void Scene::Update(Node* node, const NodeUpdateContext& updateContext)
 		{
 			auto& children = node->GetChildren();
 
 			for (const auto& child : children)
 			{
-				child->Update(timeStep);
+				child->Update(updateContext);
 			}
 
 			for (const auto& child : children)
 			{
-				Update(child, timeStep);
+				Update(child, updateContext);
 			}
 		}
 

@@ -21,9 +21,9 @@ namespace FlagGG
 
 			void Stop();
 
-			void Update(float timeStep) override;
+			void Update(const NodeUpdateContext& updateContext) override;
 
-			void Update(Node* node, float timeStep);
+			void Update(Node* node, const NodeUpdateContext& updateContext);
 
 			void Render(Container::PODVector<Graphics::RenderContext*>& renderContexts) override;
 

@@ -18,9 +18,13 @@ namespace FlagGG
 
 			~Resource() override = default;
 
-			bool LoadFile(const Container::String& fileName);
+			bool LoadFile(const Container::String& filepath);
 
 			bool LoadFile(IOFrame::Buffer::IOBuffer* stream);
+
+			bool SaveFile(const Container::String& filepath);
+
+			bool SaveFile(IOFrame::Buffer::IOBuffer* stream);
 
 			void SetMemoryUse(uint32_t memoryUse);
 
@@ -31,6 +35,10 @@ namespace FlagGG
 			virtual bool BeginLoad(IOFrame::Buffer::IOBuffer* stream);
 
 			virtual bool EndLoad();
+
+			virtual bool BeginSave(IOFrame::Buffer::IOBuffer* stream);
+
+			virtual bool EndSave();
 
 			Core::Context* context_;
 

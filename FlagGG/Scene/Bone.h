@@ -10,6 +10,7 @@
 #include "Math/Vector3.h"
 #include "Math/Quaternion.h"
 #include "Math/Matrix3x4.h"
+#include "Math/BoundingBox.h"
 #include "IOFrame/Buffer/IOBuffer.h"
 
 #include <stdint.h>
@@ -47,6 +48,7 @@ namespace FlagGG
 			Container::BoneCollisionShapeFlags collisionMask_{ BONE_COLLISSION_NONE };
 			float radius_{ 0.0f };
 			Container::WeakPtr<Node> node_;
+			Math::BoundingBox boundingBox_;
 		};
 
 		class FlagGG_API Skeleton
