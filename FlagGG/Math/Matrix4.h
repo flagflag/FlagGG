@@ -11,7 +11,6 @@ namespace FlagGG
 		class Vector3;
 		class Matrix3x4;
 
-		/// 4x4 matrix for arbitrary linear transforms including projection.
 		class FlagGG_API Matrix4
 		{
 		public:
@@ -81,9 +80,7 @@ namespace FlagGG
 			// 批量转置
 			static void BulkTranspose(float* dest, const float* src, unsigned count);
 
-			/// Zero matrix.
 			static const Matrix4 ZERO;
-			/// Identity matrix.
 			static const Matrix4 IDENTITY;
 		};
 	}

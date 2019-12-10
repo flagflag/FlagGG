@@ -8,7 +8,7 @@ namespace FlagGG
 	{
 		Vector3 Ray::ClosestPoint(const Ray& ray) const
 		{
-			// Algorithm based on http://paulbourke.net/geometry/lineline3d/
+			// 参考： http://paulbourke.net/geometry/lineline3d/
 			Vector3 p13 = origin_ - ray.origin_;
 			Vector3 p43 = ray.direction_;
 			Vector3 p21 = direction_;
@@ -30,17 +30,15 @@ namespace FlagGG
 
 		float Ray::HitDistance(const BoundingBox& box) const
 		{
-			// If undefined, no hit (infinite distance)
 			if (!box.Defined())
 				return F_INFINITY;
 
-			// Check for ray origin being inside the box
 			if (box.IsInside(origin_))
 				return 0.0f;
 
 			float dist = F_INFINITY;
 
-			// Check for intersecting in the X-direction
+			// X方向的面
 			if (origin_.x_ < box.min_.x_ && direction_.x_ > 0.0f)
 			{
 				float x = (box.min_.x_ - origin_.x_) / direction_.x_;
@@ -61,7 +59,7 @@ namespace FlagGG
 						dist = x;
 				}
 			}
-			// Check for intersecting in the Y-direction
+			// Y方向的面
 			if (origin_.y_ < box.min_.y_ && direction_.y_ > 0.0f)
 			{
 				float x = (box.min_.y_ - origin_.y_) / direction_.y_;
@@ -82,7 +80,7 @@ namespace FlagGG
 						dist = x;
 				}
 			}
-			// Check for intersecting in the Z-direction
+			// Z方向的面
 			if (origin_.z_ < box.min_.z_ && direction_.z_ > 0.0f)
 			{
 				float x = (box.min_.z_ - origin_.z_) / direction_.z_;
@@ -177,7 +175,6 @@ namespace FlagGG
 					*outUV = Vector2::ZERO;
 				else
 				{
-					// Interpolate the UV coordinate using barycentric coordinate
 					const Vector2& uv0 = *((const Vector2*)(&vertices[uvOffset + nearestIdx * vertexStride]));
 					const Vector2& uv1 = *((const Vector2*)(&vertices[uvOffset + (nearestIdx + 1) * vertexStride]));
 					const Vector2& uv2 = *((const Vector2*)(&vertices[uvOffset + (nearestIdx + 2) * vertexStride]));
@@ -224,7 +221,6 @@ namespace FlagGG
 						*outUV = Vector2::ZERO;
 					else
 					{
-						// Interpolate the UV coordinate using barycentric coordinate
 						const Vector2& uv0 = *((const Vector2*)(&vertices[uvOffset + nearestIndices[0] * vertexStride]));
 						const Vector2& uv1 = *((const Vector2*)(&vertices[uvOffset + nearestIndices[1] * vertexStride]));
 						const Vector2& uv2 = *((const Vector2*)(&vertices[uvOffset + nearestIndices[2] * vertexStride]));
@@ -260,7 +256,6 @@ namespace FlagGG
 						*outUV = Vector2::ZERO;
 					else
 					{
-						// Interpolate the UV coordinate using barycentric coordinate
 						const Vector2& uv0 = *((const Vector2*)(&vertices[uvOffset + nearestIndices[0] * vertexStride]));
 						const Vector2& uv1 = *((const Vector2*)(&vertices[uvOffset + nearestIndices[1] * vertexStride]));
 						const Vector2& uv2 = *((const Vector2*)(&vertices[uvOffset + nearestIndices[2] * vertexStride]));
@@ -288,20 +283,13 @@ namespace FlagGG
 				float frontFaceDistance = HitDistance(v0, v1, v2);
 				float backFaceDistance = HitDistance(v2, v1, v0);
 				currentFrontFace = Min(frontFaceDistance > 0.0f ? frontFaceDistance : F_INFINITY, currentFrontFace);
-				// A backwards face is just a regular one, with the vertices in the opposite order. This essentially checks backfaces by
-				// checking reversed frontfaces
 				currentBackFace = Min(backFaceDistance > 0.0f ? backFaceDistance : F_INFINITY, currentBackFace);
 				index += 3;
 			}
 
-			// If the closest face is a backface, that means that the ray originates from the inside of the geometry
-			// NOTE: there may be cases where both are equal, as in, no collision to either. This is prevented in the most likely case
-			// (ray doesn't hit either) by this conditional
 			if (currentFrontFace != F_INFINITY || currentBackFace != F_INFINITY)
 				return currentBackFace < currentFrontFace;
 
-			// It is still possible for two triangles to be equally distant from the triangle, however, this is extremely unlikely.
-			// As such, it is safe to assume they are not
 			return false;
 		}
 
@@ -326,8 +314,6 @@ namespace FlagGG
 					float frontFaceDistance = HitDistance(v0, v1, v2);
 					float backFaceDistance = HitDistance(v2, v1, v0);
 					currentFrontFace = Min(frontFaceDistance > 0.0f ? frontFaceDistance : F_INFINITY, currentFrontFace);
-					// A backwards face is just a regular one, with the vertices in the opposite order. This essentially checks backfaces by
-					// checking reversed frontfaces
 					currentBackFace = Min(backFaceDistance > 0.0f ? backFaceDistance : F_INFINITY, currentBackFace);
 					indices += 3;
 				}
@@ -346,21 +332,14 @@ namespace FlagGG
 					float frontFaceDistance = HitDistance(v0, v1, v2);
 					float backFaceDistance = HitDistance(v2, v1, v0);
 					currentFrontFace = Min(frontFaceDistance > 0.0f ? frontFaceDistance : F_INFINITY, currentFrontFace);
-					// A backwards face is just a regular one, with the vertices in the opposite order. This essentially checks backfaces by
-					// checking reversed frontfaces
 					currentBackFace = Min(backFaceDistance > 0.0f ? backFaceDistance : F_INFINITY, currentBackFace);
 					indices += 3;
 				}
 			}
 
-			// If the closest face is a backface, that means that the ray originates from the inside of the geometry
-			// NOTE: there may be cases where both are equal, as in, no collision to either. This is prevented in the most likely case
-			// (ray doesn't hit either) by this conditional
 			if (currentFrontFace != F_INFINITY || currentBackFace != F_INFINITY)
 				return currentBackFace < currentFrontFace;
 
-			// It is still possible for two triangles to be equally distant from the triangle, however, this is extremely unlikely.
-			// As such, it is safe to assume they are not
 			return false;
 		}
 

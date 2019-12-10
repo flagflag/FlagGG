@@ -118,7 +118,6 @@ namespace FlagGG
 			static const Matrix3x4 IDENTITY;
 		};
 
-		/// Multiply a 3x4 matrix with a scalar.
 		inline Matrix3x4 operator *(float lhs, const Matrix3x4& rhs) { return rhs * lhs; }
 
 	}

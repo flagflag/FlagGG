@@ -236,21 +236,19 @@ namespace FlagGG
 
 		float Color::SaturationHSV(float min, float max) const
 		{
-			// Avoid div-by-zero: result undefined
+			// 避免除零，结果不正确
 			if (max <= EPS)
 				return 0.0f;
 
-			// Saturation equals chroma:value ratio
 			return 1.0f - (min / max);
 		}
 
 		float Color::SaturationHSL(float min, float max) const
 		{
-			// Avoid div-by-zero: result undefined
+			// 避免除零，结果不正确
 			if (max <= EPS || min >= 1.0f - EPS)
 				return 0.0f;
 
-			// Chroma = max - min, lightness = (max + min) * 0.5
 			float hl = (max + min);
 			if (hl <= 1.0f)
 				return (max - min) / hl;
@@ -267,7 +265,6 @@ namespace FlagGG
 			float hs = h * 6.0f;
 			float x = c * (1.0f - Math::Abs(fmodf(hs, 2.0f) - 1.0f));
 
-			// Reconstruct r', g', b' from hue
 			if (hs < 2.0f)
 			{
 				b_ = 0.0f;
