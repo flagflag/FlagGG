@@ -45,12 +45,12 @@ namespace FlagGG
 			LuaFunction& operator=(const LuaFunction& func);
 
 			template < int returnCount = 0, class ... Args >
-			void operator()(Args ... args)
+			void operator()(Args&& ... args)
 			{
 				StackGuard guard(luaState_);
 
 				lua_rawgeti(luaState_, LUA_REGISTRYINDEX, ref_);
-				SetParam(luaState_, args ...);
+				SetParam(luaState_, std::forward<Args>(args)...);
 				CallImpl(luaState_, sizeof...(args), returnCount);
 			}
 

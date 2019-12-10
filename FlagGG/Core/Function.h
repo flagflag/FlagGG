@@ -19,9 +19,9 @@ namespace FlagGG
 			{ }
 
 			template < class ... Args >
-			void operator()(Args ... args)
+			void operator()(Args&& ... args)
 			{
-				(instance_->*func_)(args...);
+				(instance_->*func_)(std::forward<Args>(args)...);
 			}
 
 		private:
@@ -41,9 +41,9 @@ namespace FlagGG
 			{ }
 
 			template < class ... Args >
-			void operator()(Args ... args)
+			void operator()(Args&& ... args)
 			{
-				(*func_)(args...);
+				(*func_)(std::forward<Args>(args)...);
 			}
 
 		private:
@@ -80,9 +80,9 @@ namespace FlagGG
 			{ }
 
 			template < class ... Args >
-			void operator()(Args ... args)
+			void operator()(Args&& ... args)
 			{
-				funcWrapper_(args...);
+				funcWrapper_(std::forward<Args>(args)...);
 			}
 
 		private:

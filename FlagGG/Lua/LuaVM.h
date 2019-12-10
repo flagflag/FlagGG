@@ -32,11 +32,11 @@ namespace FlagGG
 			bool IsOpen() const;
 
 			template < class ... Args >
-			bool CallEvent(const Container::String& eventName, const Args ... args)
+			bool CallEvent(const Container::String& eventName, Args&& ... args)
 			{
 				StackGuard guard(luaState_);
 
-				return Call(luaState_, eventName, args ...);
+				return Call(luaState_, eventName, std::forward<Args>(args)...);
 			}
 
 			void RegisterCEvents(const Container::Vector<LuaProxy>& librarys);

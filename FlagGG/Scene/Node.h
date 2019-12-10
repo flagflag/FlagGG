@@ -37,9 +37,9 @@ namespace FlagGG
 			virtual void Render(Container::PODVector<Graphics::RenderContext*>& renderContexts);
 
 			template < class ComponentType, class ... Args >
-			ComponentType* CreateComponent(Args ... args)
+			ComponentType* CreateComponent(Args&& ... args)
 			{
-				Container::SharedPtr<ComponentType> comp(new ComponentType(args...));
+				Container::SharedPtr<ComponentType> comp(new ComponentType(std::forward<Args>(args)...));
 				AddComponent(comp);
 				return comp;
 			}

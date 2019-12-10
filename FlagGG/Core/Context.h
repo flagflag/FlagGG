@@ -107,7 +107,7 @@ namespace FlagGG
 			}
 
 			template < class FunctionType, class ... Args >
-			void SendEvent(uint32_t eventId, Args ... args)
+			void SendEvent(uint32_t eventId, Args&& ... args)
 			{
 				auto it = evnets_.Find(eventId);
 				if (it != evnets_.End())
@@ -115,7 +115,7 @@ namespace FlagGG
 					Container::Vector<Container::SharedPtr<EventWrapper>>& wrappers = it->second_;
 					for (auto itWrapper = wrappers.Begin(); itWrapper != wrappers.End(); ++itWrapper)
 					{
-						(*static_cast<FunctionType*>((*itWrapper)->GetEvent()))(args ...);
+						(*static_cast<FunctionType*>((*itWrapper)->GetEvent()))(std::forward<Args>(args)...);
 					}
 				}
 			}
