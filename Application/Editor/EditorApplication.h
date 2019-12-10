@@ -27,6 +27,8 @@ protected:
 
 	void OnKeyUp(KeyState* keyState, unsigned keyCode);
 
+	void OnMouseUp(KeyState* keyState, MouseKey mouseKey);
+
 	void WindowClose(void* window);
 
 private:

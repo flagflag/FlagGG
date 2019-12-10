@@ -13,6 +13,7 @@
 #include <Container/Vector.h>
 #include <Container/HashSet.h>
 #include <Math/Vector3.h>
+#include <Math/Vector4.h>
 #include <Math/Quaternion.h>
 #include <Graphics/GraphicsDef.h>
 #include <IOFrame/Buffer/StringBuffer.h>

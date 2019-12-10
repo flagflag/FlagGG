@@ -257,7 +257,7 @@ void GameApplication::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
 		IntVector2 mousePos = window_->GetMousePos();
 		Ray ray = cameraOpt_->GetCamera()->GetScreenRay((float)mousePos.x_ / window_->GetWidth(), (float)mousePos.y_ / window_->GetHeight());
 		PODVector<RayQueryResult> results;
-		RayOctreeQuery query(results, ray, RAY_QUERY_TRIANGLE, 250.0f);
+		RayOctreeQuery query(results, ray, RAY_QUERY_AABB, 250.0f);
 		scene_->GetComponent<Octree>()->Raycast(query);
 		if (query.results_.Size() > 0u)
 		{

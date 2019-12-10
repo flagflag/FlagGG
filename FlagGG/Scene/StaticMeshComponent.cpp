@@ -26,7 +26,16 @@ namespace FlagGG
 
 		void StaticMeshComponent::ProcessRayQuery(const RayOctreeQuery& query, Container::PODVector<RayQueryResult>& results)
 		{
-			Component::ProcessRayQuery(query, results);
+			switch (query.level_)
+			{
+			case RAY_QUERY_AABB:
+				Component::ProcessRayQuery(query, results);
+				break;
+
+			case RAY_QUERY_OBB:
+
+				break;
+			}
 		}
 
 		void StaticMeshComponent::SetModel(Graphics::Model* model)

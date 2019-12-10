@@ -29,6 +29,7 @@ void EditorApplication::Start()
 
 	context_->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, EditorApplication::Update, this));
 	context_->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, EditorApplication::OnKeyUp, this));
+	context_->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_UP, EditorApplication::OnMouseUp, this));
 	context_->RegisterEvent(EVENT_HANDLER(Application::WINDOW_CLOSE, EditorApplication::WindowClose, this));
 
 	FLAGGG_LOG_INFO("Start Editor.");
@@ -69,15 +70,15 @@ void EditorApplication::CreateScene()
 	unit->SetScale(Vector3(0.001, 0.001, 0.001));
 	scene_->AddChild(unit);
 
-	//Importer::SetContext(context_);
-	//SharedPtr<Node> importNode = Importer::ImportScene("G:/Kitbash3D - Utopia/Kitbash3d_Utopia.FBX");
-	//if (importNode)
-	//{
-	//	importNode_ = importNode;
-	//	importNode->SetRotation(Quaternion(-90.0f, Vector3(1.0f, 0.0f, 0.0f)));
-	//	importNode_->SetScale(Vector3(0.001, 0.001, 0.001));
-	//	scene_->AddChild(importNode_);
-	//}
+	Importer::SetContext(context_);
+	SharedPtr<Node> importNode = Importer::ImportScene("G:/Kitbash3D - Utopia/Kitbash3d_Utopia.FBX");
+	if (importNode)
+	{
+		importNode_ = importNode;
+		importNode->SetRotation(Quaternion(-90.0f, Vector3(1.0f, 0.0f, 0.0f)));
+		importNode_->SetScale(Vector3(0.001, 0.001, 0.001));
+		scene_->AddChild(importNode_);
+	}
 
 	SharedPtr<Node> lightNode(new Node());
 	lightNode->CreateComponent<Light>();
@@ -90,6 +91,7 @@ void EditorApplication::CreateScene()
 	meshComp->SetModel(cache_->GetResource<Model>("Model/Box.mdl"));
 	meshComp->SetMaterial(cache_->GetResource<Material>("Materials/Skybox.ljson"));
 	skyBox->SetScale(Vector3(100000, 100000, 100000));
+	skyBox->SetTranspent(true);
 	scene_->AddChild(skyBox);
 }
 
@@ -147,6 +149,25 @@ void EditorApplication::OnKeyUp(KeyState* keyState, unsigned keyCode)
 		char buffer[256] = { 0 };
 		sprintf(buffer, "(%lf,%lf,%lf)=>(%lf,%lf,%lf).", scale.x_, scale.y_, scale.z_, newScale.x_, newScale.y_, newScale.z_);
 		MessageBoxA(nullptr, buffer, "Model Scale", 0);
+	}
+}
+
+void EditorApplication::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
+{
+	if (mouseKey == MOUSE_RIGHT)
+	{
+		IntVector2 mousePos = window_->GetMousePos();
+		Ray ray = cameraOpt_->GetCamera()->GetScreenRay((float)mousePos.x_ / window_->GetWidth(), (float)mousePos.y_ / window_->GetHeight());
+		PODVector<RayQueryResult> results;
+		RayOctreeQuery query(results, ray, RAY_QUERY_AABB);
+		scene_->GetComponent<Octree>()->Raycast(query);
+		if (query.results_.Size() > 0u)
+		{
+			const auto& ret = query.results_[0];
+			auto* meshComp = ret.node_->CreateComponent<StaticMeshComponent>();
+			meshComp->SetModel(cache_->GetResource<Model>("Model/Axes.mdl"));
+			meshComp->SetMaterial(cache_->GetResource<Material>("Materials/StaticModel.ljson"));
+		}
 	}
 }
 
