@@ -3,7 +3,6 @@
 
 #include "Export.h"
 #include "Container/Str.h"
-#include "Container/Ptr.h"
 #include "AsyncFrame/Mutex.h"
 #include "spdlog/spdlog.h"
 
@@ -20,7 +19,7 @@ namespace FlagGG
 
     void FlagGG_API Log(LogType log_type, const char* format, ...);
 
-	class FlagGG_API Logger : public Container::RefCounted
+	class FlagGG_API Logger
 	{
 	public:
 		Logger();
@@ -35,10 +34,13 @@ namespace FlagGG
 
 		std::shared_ptr<spdlog::logger> GetLogger(const Container::String& name);
 
-		static Container::SharedPtr<Logger> GetInstance();
+		static Logger* GetInstance();
+
+		static void DestroyInstance();
 
 	private:
-		static Container::SharedPtr<Logger> logger_;
+		static volatile bool initialized_;
+		static Logger* logger_;
 
 		static AsyncFrame::Mutex mutex_;
 	};

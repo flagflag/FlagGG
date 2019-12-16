@@ -47,15 +47,16 @@ namespace FlagGG
 		return spdlog::get(name.CString());
 	}
 
-	Container::SharedPtr<Logger> Logger::GetInstance()
+	Logger* Logger::GetInstance()
 	{
-		if (!logger_)
+		if (!initialized_)
 		{
 			mutex_.Lock();
 
-			if (!logger_)
+			if (!initialized_)
 			{
 				logger_ = new Logger();
+				initialized_ = true;
 			}
 
 			mutex_.UnLock();
@@ -64,8 +65,25 @@ namespace FlagGG
 		return logger_;
 	}
 
-	Container::SharedPtr<Logger> Logger::logger_;
+	void Logger::DestroyInstance()
+	{
+		if (initialized_)
+		{
+			mutex_.Lock();
 
+			if (initialized_)
+			{
+				delete logger_;
+				logger_ = nullptr;
+				initialized_ = false;
+			}
+
+			mutex_.UnLock();
+		}
+	}
+
+	volatile bool Logger::initialized_ = false;
+	Logger* Logger::logger_ = nullptr;
 	AsyncFrame::Mutex Logger::mutex_;
 
     void Log(LogType log_type, const char* format, ...)
