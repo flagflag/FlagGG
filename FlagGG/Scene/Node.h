@@ -70,6 +70,8 @@ namespace FlagGG
 
 			Node* GetChild(Container::StringHash nameHash, bool recursive = false);
 
+			Node* GetParent() const;
+
 			Container::Vector<Container::SharedPtr<Node>>& GetChildren();
 
 			void SetName(const Container::String& name);
@@ -102,9 +104,15 @@ namespace FlagGG
 
 			Math::Vector3 GetWorldPosition() const;
 
+			void SetWorldPosition(const Math::Vector3& position);
+
 			Math::Quaternion GetWorldRotation() const;
 
+			void SetWorldRotation(const Math::Quaternion& rotation);
+
 			Math::Vector3 GetWorldScale() const;
+
+			void SetWorldScale(const Math::Vector3& scale);
 
 			Math::Vector3 GetWorldDirection() const;
 

@@ -284,6 +284,11 @@ namespace FlagGG
 			return Math::IntVector2(point.x, point.y);
 		}
 
+		bool Window::IsForegroundWindow() const
+		{
+			return ::GetForegroundWindow() == window;
+		}
+
 		void Window::Resize(uint32_t width, uint32_t height)
 		{
 			::SetWindowPos((HWND)window, nullptr, 0, 0, width, height, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);

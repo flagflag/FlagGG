@@ -160,6 +160,11 @@ namespace FlagGG
 			return nullptr;
 		}
 
+		Node* Node::GetParent() const
+		{
+			return parent_;
+		}
+
 		Container::Vector<Container::SharedPtr<Node>>& Node::GetChildren()
 		{
 			return children_;
@@ -255,6 +260,11 @@ namespace FlagGG
 			return worldTransform_.Translation();
 		}
 
+		void Node::SetWorldPosition(const Math::Vector3& position)
+		{
+			SetPosition(!parent_ ? position : parent_->GetWorldTransform().Inverse() * position);
+		}
+
 		Math::Quaternion Node::GetWorldRotation() const
 		{
 			if (dirty_)
@@ -262,11 +272,21 @@ namespace FlagGG
 			return worldTransform_.Rotation();
 		}
 
+		void Node::SetWorldRotation(const Math::Quaternion& rotation)
+		{
+			SetRotation(!parent_ ? rotation : parent_->GetWorldRotation().Inverse() * rotation);
+		}
+
 		Math::Vector3 Node::GetWorldScale() const
 		{
 			if (dirty_)
 				UpdateWorldTransform();
 			return worldTransform_.Scale();
+		}
+
+		void Node::SetWorldScale(const Math::Vector3& scale)
+		{
+			SetScale(!parent_ ? scale : scale / parent_->GetWorldScale());
 		}
 
 		Math::Vector3 Node::GetWorldDirection() const

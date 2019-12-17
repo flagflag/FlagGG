@@ -7,6 +7,7 @@
 #include <Log.h>
 
 #include "GameApplication.h"
+#include "GamePlay/ThirdPersonPerspective.h"
 
 static int Begin(lua_State* L)
 {
@@ -33,6 +34,12 @@ void GameApplication::Start()
 	SetupWindow();
 	OpenLuaVM();
 	CreateNetwork();
+
+	perspective_ = new ThirdPersonPerspective(context_);
+	perspective_->SetCamera(camera_);
+	perspective_->SetWindow(window_);
+	perspective_->SetNode(mainHero_);
+	perspective_->Reset();
 
 	context_->RegisterVariable<LuaVM>(luaVM_, "LuaVM");
 	context_->RegisterVariable<Network>(tcpNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_TCP]);
@@ -107,18 +114,16 @@ void GameApplication::CreateScene()
 	scene_->CreateComponent<Octree>();
 
 	auto* cameraNode = new Node();
-	cameraNode->SetPosition(Vector3(0, 0, -1));
 	scene_->AddChild(cameraNode);
-	auto* camera = cameraNode->CreateComponent<Camera>();
-	camera->SetNearClip(0.1f);
-	camera->SetFarClip(1000000000.0f);
-	cameraOpt_ = new CameraOperation(context_, camera);
+	camera_ = cameraNode->CreateComponent<Camera>();
+	camera_->SetNearClip(0.1f);
+	camera_->SetFarClip(1000000000.0f);
 
 	mainHero_ = new Unit(context_);
 	mainHero_->Load("Unit/MainHero.ljson");
-	mainHero_->SetPosition(Vector3(0, -5, 10));
+	mainHero_->SetPosition(Vector3(0, -2, 10));
 	mainHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
-	mainHero_->SetRotation(Quaternion(180, Vector3(0.0f, 1.0f, 0.0f)));
+	// mainHero_->SetRotation(Quaternion(180, Vector3(0.0f, 1.0f, 0.0f)));
 	mainHero_->SetName("MainHero");
 	scene_->AddChild(mainHero_);
 
@@ -189,7 +194,7 @@ void GameApplication::SetupWindow()
 
 	SharedPtr<Viewport> viewport(new Viewport());
 	viewport->Resize(IntRect(0, 0, rect.Width(), rect.Height()));
-	viewport->SetCamera(cameraOpt_->GetCamera());
+	viewport->SetCamera(camera_);
 	viewport->SetScene(scene_);
 	viewport->SetRenderTarget(renderTexture_[0]->GetRenderSurface());
 	viewport->SetDepthStencil(renderTexture_[1]->GetRenderSurface());
@@ -197,7 +202,7 @@ void GameApplication::SetupWindow()
 
 	window_ = new Window(context_, nullptr, rect);
 	window_->Show();
-	window_->GetViewport()->SetCamera(cameraOpt_->GetCamera());
+	window_->GetViewport()->SetCamera(camera_);
 	window_->GetViewport()->SetScene(scene_);
 
 	WindowDevice::RegisterWinMessage(window_);
@@ -255,7 +260,7 @@ void GameApplication::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
 	if (mouseKey == MOUSE_RIGHT)
 	{
 		IntVector2 mousePos = window_->GetMousePos();
-		Ray ray = cameraOpt_->GetCamera()->GetScreenRay((float)mousePos.x_ / window_->GetWidth(), (float)mousePos.y_ / window_->GetHeight());
+		Ray ray = camera_->GetScreenRay((float)mousePos.x_ / window_->GetWidth(), (float)mousePos.y_ / window_->GetHeight());
 		PODVector<RayQueryResult> results;
 		RayOctreeQuery query(results, ray, RAY_QUERY_AABB, 250.0f);
 		scene_->GetComponent<Octree>()->Raycast(query);

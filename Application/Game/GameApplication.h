@@ -19,6 +19,9 @@
 #include "LuaInterface/LuaGame.h"
 #include "LuaInterface/LuaUI.h"
 #include "LuaInterface/LuaNetwork.h"
+#include "Lobby/Lobby.h"
+#include "GamePlay/GamePlayBase.h"
+#include "GamePlay/Perspective.h"
 
 using namespace FlagGG::Config;
 using namespace FlagGG::Lua;
@@ -55,7 +58,7 @@ private:
 
 #ifdef _WIN32
 	SharedPtr<Window> window_;
-	SharedPtr<CameraOperation> cameraOpt_;
+	SharedPtr<Camera> camera_;
 	SharedPtr<FlagGG::Scene::Scene> scene_;
 
 	SharedPtr<Texture2D> renderTexture_[2];
@@ -75,4 +78,8 @@ private:
 	SharedPtr<Network> tcpNetwork_;
 	SharedPtr<Network> udpNetwork_;
 	SharedPtr<Network> webNetwork_;
+
+	SharedPtr<Lobby> lobby_;
+	SharedPtr<GamePlayBase> gameplay_;
+	SharedPtr<Perspective> perspective_;
 };

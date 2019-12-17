@@ -11,14 +11,14 @@ namespace FlagGG
 			{
 				Node* master = GetNode();
 				Math::Vector3 right = GetRight();
-				master->SetPosition(master->GetPosition() + Math::Vector3(right.x_, 0.0f, right.z_) * units);
+				master->SetWorldPosition(master->GetWorldPosition() + Math::Vector3(right.x_, 0.0f, right.z_) * units);
 			}
 
 			if (cameraType_ == AIRCRAFT)
 			{
 				Node* master = GetNode();
 				Math::Vector3 right = GetRight();
-				master->SetPosition(master->GetPosition() + right * units);
+				master->SetWorldPosition(master->GetWorldPosition() + right * units);
 			}
 		}
 
@@ -27,14 +27,14 @@ namespace FlagGG
 			if (cameraType_ == LAND_OBJECT)
 			{
 				Node* master = GetNode();
-				master->SetPosition(master->GetPosition() + Math::Vector3(0.0f, units, 0.0f));
+				master->SetWorldPosition(master->GetWorldPosition() + Math::Vector3(0.0f, units, 0.0f));
 			}
 
 			if (cameraType_ == AIRCRAFT)
 			{
 				Node* master = GetNode();
 				Math::Vector3 up = GetUp();
-				master->SetPosition(master->GetPosition() + up * units);
+				master->SetWorldPosition(master->GetWorldPosition() + up * units);
 			}
 		}
 
@@ -44,14 +44,14 @@ namespace FlagGG
 			{
 				Node* master = GetNode();
 				Math::Vector3 look = GetLook();
-				master->SetPosition(master->GetPosition() + Math::Vector3(look.x_, 0.0f, look.z_) * units);
+				master->SetWorldPosition(master->GetWorldPosition() + Math::Vector3(look.x_, 0.0f, look.z_) * units);
 			}
 
 			if (cameraType_ == AIRCRAFT)
 			{
 				Node* master = GetNode();
 				Math::Vector3 look = GetLook();
-				master->SetPosition(master->GetPosition() + look * units);
+				master->SetWorldPosition(master->GetWorldPosition() + look * units);
 			}
 		}
 

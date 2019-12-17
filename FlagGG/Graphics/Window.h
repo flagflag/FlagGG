@@ -61,6 +61,8 @@ namespace FlagGG
 
 			Math::IntVector2 GetMousePos() const;
 
+			bool IsForegroundWindow() const;
+
 			void Resize(uint32_t width, uint32_t height);
 
 			void* GetWindow();
