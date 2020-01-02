@@ -4,6 +4,7 @@
 #include <typeindex>
 #include <algorithm>
 
+#include "Core/FunctionTraits.h"
 #include "Container/Str.h"
 #include "Container/StringHash.h"
 #include "Container/Swap.h"
@@ -68,12 +69,20 @@ namespace FlagGG
 					VariantHelper<Args...>::Destroy(id, data);
 			}
 
-			inline static void Set(std::type_index id, const void* srcData, void* dstData)
+			inline static  void Move(std::type_index id, void* srcData, void* dstData)
+			{
+				if (id == std::type_index(typeid(T)))
+					new (dstData) T(std::move(*(T*)srcData));
+				else
+					VariantHelper<Args...>::Move(id, srcData, dstData);
+			}
+
+			inline static void Copy(std::type_index id, const void* srcData, void* dstData)
 			{
 				if (id == std::type_index(typeid(T)))
 					new (dstData) T(*(const T*)srcData);
 				else
-					VariantHelper<Args...>::Set(id, srcData, dstData);
+					VariantHelper<Args...>::Copy(id, srcData, dstData);
 			}
 		};
 
@@ -81,7 +90,8 @@ namespace FlagGG
 		struct VariantHelper<>
 		{
 			inline static void Destroy(std::type_index id, void* data) {}
-			inline static void Set(std::type_index id, const void* srcData, void* dstData) {}
+			inline static  void Move(std::type_index id, void* srcData, void* dstData) {}
+			inline static void Copy(std::type_index id, const void* srcData, void* dstData) {}
 		};
 
 		template < class ... Args >
@@ -93,7 +103,19 @@ namespace FlagGG
 				data_{ 0 }
 			{}
 
-			template < class T >
+			Variant(Variant<Args...>&& rhs) :
+				id_(rhs.id_)
+			{
+				VariantHelper<Args...>::Move(rhs.id_, &rhs.data_, &data_);
+			}
+
+			Variant(const Variant<Args...>& rhs) :
+				id_(rhs.id_)
+			{
+				VariantHelper<Args...>::Copy(rhs.id_, &rhs.data_, &data_);
+			}
+
+			template < class T, class = typename std::enable_if<Contains<typename std::remove_reference<T>::type, Args...>::value>::type >
 			Variant(T&& value) :
 				id_(typeid(int)),
 				data_{ 0 }
@@ -124,24 +146,10 @@ namespace FlagGG
 				return *(U*)&data_;
 			}
 
-			template < class T >
+			template < class T, class = typename std::enable_if<Contains<typename std::remove_reference<T>::type, Args...>::value>::type >
 			void Set(T&& value)
 			{
 				using U = typename std::decay<T>::type;
-
-				static_assert(Contains<U, Args...>::value || std::is_same<U, Variant<Args...>>::value, "Type is not expired.");
-
-				if (std::is_same<T, Variant<Args...>>::value)
-				{
-					Swap(std::forward<Variant<Args...>&&>(value));
-					return;
-				}
-
-				if (std::is_same<T, Variant<Args...>&>::value)
-				{
-					SetEntry(std::forward<T>(value));
-					return;
-				}
 
 				if (!Is<U>())
 				{
@@ -152,23 +160,43 @@ namespace FlagGG
 				new (&data_) U(value);
 			}
 
-			void Swap(Variant<Args...>&& rhs)
-			{
-				FlagGG::Container::Swap(id_, rhs.id_);
-				FlagGG::Container::Swap(data_, rhs.data_);
-			}
-
-			void SetEntry(const Variant<Args...>& rhs)
+			Variant<Args...>& operator=(Variant<Args...>&& rhs)
 			{
 				id_ = rhs.id_;
-				VariantHelper<Args...>::Set(rhs.id_, &rhs.data_, &data_);
+				VariantHelper<Args...>::Move(rhs.id_, &rhs.data_, &data_);
+				return *this;
 			}
 
-			template < class T >
+			Variant<Args...>& operator=(const Variant<Args...>& rhs)
+			{
+				id_ = rhs.id_;
+				VariantHelper<Args...>::Copy(rhs.id_, &rhs.data_, &data_);
+				return *this;
+			}
+
+			template < class T, class = typename std::enable_if<Contains<typename std::remove_reference<T>::type, Args...>::value>::type >
 			Variant<Args...>& operator=(T&& value)
 			{
 				Set(std::forward<T>(value));
 				return *this;
+			}
+
+			template < class F >
+			void Visit(F&& f)
+			{
+				using T = typename Core::FunctionTraits<std::remove_reference<F>::type>::Argument<0>::Type;
+				if (Is<T>())
+					f(Get<T>());
+			}
+
+			template < class F, class ... Rest >
+			void Visit(F&& f, Rest&& ... rest)
+			{
+				using T = typename Core::FunctionTraits<std::remove_reference<F>::type>::Argument<0>::Type;
+				if (Is<T>())
+					f(Get<T>);
+				else
+					Visit(std::forward<Rest>(rest)...);
 			}
 
 		private:

@@ -94,6 +94,13 @@ void Run2()
 	test = FlagGG::Math::Vector2(100, 100);
 
 	printf("(%f, %f)\n", test.Get<FlagGG::Math::Vector2>().x_, test.Get<FlagGG::Math::Vector2>().y_);
+
+	auto temp = [](const FlagGG::Math::Vector2& value)
+	{
+		printf("Visit ==> Vector2(%f, %f)\n", value.x_, value.y_);
+	};
+
+	test.Visit(temp);
 }
 
 int main()
