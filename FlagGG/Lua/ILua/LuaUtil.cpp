@@ -14,27 +14,37 @@ namespace FlagGG
 	{
 		bool GetGameEvent(lua_State* L, const Container::String& eventName)
 		{
-			lua_getglobal(L, "game_events");
+			static Container::String nameSpaceOrName, funcName;
 
-			if (TypeOf(L, -1) != Type::TABLE)
+			auto nPos = eventName.Find(".");
+			nameSpaceOrName = nPos != Container::String::NPOS ? eventName.Substring(0, nPos) : eventName;
+
+			lua_getglobal(L, nameSpaceOrName.CString());
+
+			if (TypeOf(L, -1) == Type::TABLE)
+			{
+				funcName = eventName.Substring(nPos + 1);
+				lua_getfield(L, -1, funcName.CString());
+			}
+			else
 			{
 				FLAGGG_LOG_ERROR("global game_events is ilegall.");
 
 				lua_pop(L, 1);
+			}
+
+#if 0
+			if (TypeOf(L, -1) != Type::FUNCTION)
+			{
+				FLAGGG_LOG_ERROR("try call non-function[game_events.{}].", eventName.CString());
+				Container::String content = "try call non-function[" + eventName + "].";
+				MessageBoxA(nullptr, "error", content.CString(), 0);
+
+				lua_pop(L, 2);
 
 				return false;
 			}
-
-			lua_getfield(L, -1, eventName.CString());
-
-			//if (TypeOf(L, -1) != Type::FUNCTION)
-			//{
-			//	FLAGGG_LOG_ERROR("try call non-function[game_events.{}].", eventName.CString());
-
-			//	lua_pop(L, 2);
-
-			//	return false;
-			//}
+#endif
 
 			lua_remove(L, -2);
 

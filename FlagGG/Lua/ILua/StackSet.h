@@ -66,9 +66,9 @@ namespace FlagGG
 		};
 
 		template < class T >
-		void Set(lua_State* L, const T& value)
+		void Set(lua_State* L, T&& value)
 		{
-			Setter<T>::Set(L, value);
+			Setter<typename std::decay<T>::type>::Set(L, value);
 		}
     }
 }

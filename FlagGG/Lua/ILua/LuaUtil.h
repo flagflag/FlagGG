@@ -13,6 +13,22 @@ namespace FlagGG
 
 		FlagGG_API bool CallImpl(lua_State* L, int paramCount, int returnCount);
 
+		FlagGG_API void SetParam(lua_State* L);
+
+		template < class T >
+		void SetParam(lua_State* L, T&& value)
+		{
+			Set(L, std::forward<T>(value));
+		}
+
+		template < class T, class ... Args >
+		void SetParam(lua_State *L, T&& value, Args&& ... args)
+		{
+			Set(L, std::forward<T>(value));
+
+			SetParam(L, std::forward<Args>(args)...);
+		}
+
 		template < int returnCount = 0, class ... Args >
 		bool Call(lua_State *L, const Container::String& eventName, Args&& ... args)
 		{
@@ -24,22 +40,6 @@ namespace FlagGG
 			SetParam(L, std::forward<Args>(args)...);
 
 			return CallImpl(L, sizeof...(args), returnCount);
-		}
-
-		FlagGG_API void SetParam(lua_State* L);
-
-		template < class T >
-		void SetParam(lua_State* L, const T& value)
-		{
-			Set(L, value);
-		}
-
-		template < class T, class ... Args >
-		void SetParam(lua_State *L, const T& value, Args&& ... args)
-		{
-			Set(L, value);
-
-			SetParam(L, std::forward<Args>(args)...);
 		}
 
 		typedef int(*LuaCFuntion)(lua_State* L);
