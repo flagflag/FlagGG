@@ -29,7 +29,7 @@ namespace FlagGG
 			SetParam(L, std::forward<Args>(args)...);
 		}
 
-		template < int returnCount = 0, class ... Args >
+		template < int returnCount = LUA_MULTRET, class ... Args >
 		bool Call(lua_State *L, const Container::String& eventName, Args&& ... args)
 		{
 			if (!GetGameEvent(L, eventName))
