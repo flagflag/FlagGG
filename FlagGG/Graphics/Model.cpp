@@ -52,6 +52,11 @@ namespace FlagGG
 			return true;
 		}
 
+		void Model::SetBoundingBox(Math::BoundingBox& box)
+		{
+			boundingBox_ = box;
+		}
+
 		const Container::Vector<Container::SharedPtr<VertexBuffer>>& Model::GetVertexBuffers() const
 		{
 			return vertexBuffers_;

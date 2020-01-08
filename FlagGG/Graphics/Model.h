@@ -31,6 +31,8 @@ namespace FlagGG
 
 			bool SetGeometry(uint32_t index, uint32_t lodLevel, Geometry* geometry);
 
+			void SetBoundingBox(Math::BoundingBox& box);
+
 			const Container::Vector<Container::SharedPtr<VertexBuffer>>& GetVertexBuffers() const;
 
 			const Container::Vector<Container::SharedPtr<IndexBuffer>>& GetIndexBuffers() const;

@@ -109,10 +109,12 @@ namespace Importer
 		return ret;
 	}
 
-	static void WriteVertex(StringBuffer& buffer, aiMesh* aiMsh, bool isSkinned, uint32_t index, const Matrix3x4& vertexTransform, const Matrix3& normalTransform)
+	static void WriteVertex(StringBuffer& buffer, aiMesh* aiMsh, bool isSkinned, uint32_t index, 
+		const Matrix3x4& vertexTransform, const Matrix3& normalTransform, BoundingBox& boudingBox)
 	{
 		Vector3 vertex = vertexTransform * ToVector3(aiMsh->mVertices[index]);
 		WriteVector3(&buffer, vertex);
+		boudingBox.Merge(vertex);
 
 		if (aiMsh->HasNormals())
 		{
@@ -223,6 +225,7 @@ namespace Importer
 			Vector<SharedPtr<VertexBuffer>> vertexBuffers;
 			Vector<SharedPtr<IndexBuffer>> indexBuffers;
 			Vector<SharedPtr<Material>> materialList;
+			BoundingBox boundingBox;
 			for (uint32_t i = 0; i < aiNd->mNumMeshes; ++i)
 			{
 				aiMesh* aiMsh = aiScn->mMeshes[aiNd->mMeshes[i]];
@@ -233,7 +236,7 @@ namespace Importer
 				StringBuffer buffer1(vertexBuffer->Lock(0, vertexBufferSize), vertexBufferSize);
 				for (uint32_t j = 0; j < aiMsh->mNumVertices; ++j)
 				{
-					WriteVertex(buffer1, aiMsh, false, j, vertexTransform, normalTransform);
+					WriteVertex(buffer1, aiMsh, false, j, vertexTransform, normalTransform, boundingBox);
 				}
 				vertexBuffer->Unlock();
 
@@ -378,6 +381,7 @@ namespace Importer
 			}
 			model->SetVertexBuffers(vertexBuffers);
 			model->SetIndexBuffers(indexBuffers);
+			model->SetBoundingBox(boundingBox);
 
 			SharedPtr<Material> material = materialList.Size()> 0 ?
 				materialList[0] :

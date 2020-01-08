@@ -163,10 +163,13 @@ void EditorApplication::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
 		scene_->GetComponent<Octree>()->Raycast(query);
 		if (query.results_.Size() > 0u)
 		{
-			const auto& ret = query.results_[0];
-			auto* meshComp = ret.node_->CreateComponent<StaticMeshComponent>();
+			const auto& ret = query.results_[0];	
+			SharedPtr<Node> axesNode(new Node());
+			axesNode->SetScale(Vector3(1000.0f, 1000.0f, 1000.0f));
+			auto* meshComp = axesNode->CreateComponent<StaticMeshComponent>();
 			meshComp->SetModel(cache_->GetResource<Model>("Model/Axes.mdl"));
 			meshComp->SetMaterial(cache_->GetResource<Material>("Materials/StaticModel.ljson"));
+			ret.node_->AddChild(axesNode);		
 		}
 	}
 }
