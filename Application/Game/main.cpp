@@ -21,7 +21,7 @@ int main(int argc, const char* argv[])
 	}
 	else
 	{
-		FLAGGG_LOG_ERROR("parse command failed.");
+		FLAGGG_LOG_ERROR("Parse command failed.");
 	}
 
 	return 0;
