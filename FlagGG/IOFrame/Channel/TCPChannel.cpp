@@ -8,6 +8,7 @@
 #include "IOFrame/Context/TCPContext.h"
 #include "IOFrame/IOError.h"
 #include "IOFrame/Buffer/NetBuffer.h"
+#include "Log.h"
 
 namespace FlagGG
 {
@@ -98,13 +99,13 @@ namespace FlagGG
 
 					OnOpend();
 
-					printf("connect succeeded.\n");
+					FLAGGG_LOG_ERROR("Connect succeeded.");
 				}
 				else
 				{
 					state_ = Free;
 
-					printf("connect failed.\n");
+					FLAGGG_LOG_ERROR("Connect failed.");
 
 					THROW_IO_ERROR(Context::TCPContext, Container::SharedPtr<IOChannel>(this), handler_, error_code);
 				}
