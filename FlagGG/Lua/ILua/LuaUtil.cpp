@@ -28,7 +28,7 @@ namespace FlagGG
 			}
 			else
 			{
-				FLAGGG_LOG_ERROR("global game_events is ilegall.");
+				FLAGGG_LOG_ERROR("global {} is ilegall.", nameSpaceOrName.CString());
 
 				lua_pop(L, 1);
 			}

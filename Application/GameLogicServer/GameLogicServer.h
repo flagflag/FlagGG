@@ -4,6 +4,7 @@
 #include <Config/LJSONValue.h>
 #include <IOFrame/IOFrame.h>
 #include <Container/Ptr.h>
+#include <Lua/LuaVM.h>
 
 #include "Network/TCPNetwork.h"
 #include "Network/UDPNetwork.h"
@@ -17,6 +18,9 @@ public:
 
 protected:
 	void Start() override;
+	void Update(float timeStep);
+
+	void CreateLuaVM();
 
 	void CreateNetwork();
 
@@ -24,6 +28,8 @@ protected:
 
 private:
 	FlagGG::Config::LJSONValue commandParam_;
+
+	SharedPtr<FlagGG::Lua::LuaVM> luaVM_;
 
 	FlagGG::IOFrame::Acceptor::IOAcceptorPtr tcpAcceptor_;
 	FlagGG::IOFrame::Acceptor::IOAcceptorPtr udpAcceptor_;

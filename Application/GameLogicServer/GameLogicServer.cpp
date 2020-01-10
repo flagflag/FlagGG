@@ -1,5 +1,6 @@
 #include "GameLogicServer.h"
 #include "EventDefine/CommandEvent.h"
+#include "Game/Init.h"
 
 #include <Log.h>
 
@@ -13,11 +14,40 @@ void GameLogicServer::Start()
 
 	SetFrameRate(60.0f);
 
+	CreateLuaVM();
+
 	CreateNetwork();
 
 	context_->RegisterEvent(EVENT_HANDLER(CommandEvent::START_GAME, GameLogicServer::HandleStartGame, this));
+	context_->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, GameLogicServer::Update, this));
 
 	FLAGGG_LOG_INFO("GameLogicServer start.");
+}
+
+void GameLogicServer::Update(float timeStep)
+{
+	luaVM_->CallEvent("game.on_update", timeStep);
+}
+
+void GameLogicServer::CreateLuaVM()
+{
+	luaVM_ = new FlagGG::Lua::LuaVM();
+	luaVM_->Open();
+	if (!luaVM_->IsOpen())
+	{
+		FLAGGG_LOG_CRITICAL("Failed to open lua vm.");
+		return;
+	}
+
+	InitEngine(*luaVM_);
+
+	const String luaCodePath = commandParam_["CodePath"].GetString();
+	luaVM_->SetLoaderPath(luaCodePath);
+	if (!luaVM_->Execute(luaCodePath + "main.lua"))
+	{
+		FLAGGG_LOG_ERROR("Failed to execute main.lua.");
+		return;
+	}
 }
 
 void GameLogicServer::CreateNetwork()

@@ -25,6 +25,11 @@ namespace FlagGG
 
 			~LuaVM() override;
 
+			operator lua_State*()
+			{
+				return luaState_;
+			}
+
 			// 打开虚拟机
 			void Open();
 
