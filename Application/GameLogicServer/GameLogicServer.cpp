@@ -1,7 +1,7 @@
 #include "GameLogicServer.h"
 #include "EventDefine/CommandEvent.h"
-#include "Game/Init.h"
 
+#include <LuaGameEngine/Init.h>
 #include <Log.h>
 
 GameLogicServer::GameLogicServer(const FlagGG::Config::LJSONValue& commandParam) :
@@ -39,7 +39,7 @@ void GameLogicServer::CreateLuaVM()
 		return;
 	}
 
-	InitEngine(*luaVM_);
+	LuaGameEngine::InitEngine(*luaVM_);
 
 	const String luaCodePath = commandParam_["CodePath"].GetString();
 	luaVM_->SetLoaderPath(luaCodePath);

@@ -45,6 +45,6 @@ int LuaLog::Error(LuaVM* luaVM)
 
 int LuaLog::Critical(LuaVM* luaVM)
 {
-	FLAGG_LOG_CRITICAL(luaVM->Get<const char*>(1));
+	FLAGGG_LOG_CRITICAL(luaVM->Get<const char*>(1));
 	return 0;
 }
