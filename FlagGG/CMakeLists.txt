@@ -3,6 +3,7 @@ include (${CMAKE_CURRENT_SOURCE_DIR}/../CMake/ThirdParty.cmake)
 # Define target name
 set (TARGET_NAME FlagGG)
 set (LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../bin)
+list (APPEND TARGET_PROPERTIES FOLDER "Engine")
 
 setup_lint ()
 
