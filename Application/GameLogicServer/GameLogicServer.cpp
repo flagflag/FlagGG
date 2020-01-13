@@ -52,8 +52,8 @@ void GameLogicServer::CreateLuaVM()
 
 void GameLogicServer::CreateNetwork()
 {
-	tcpNetwork_ = new TCPNetwork();
-	udpNetwork_ = new UDPNetwork();
+	tcpNetwork_ = new TCPNetwork(context_);
+	udpNetwork_ = new UDPNetwork(context_);
 
 	tcpAcceptor_ = FlagGG::IOFrame::TCP::CreateAcceptor(tcpNetwork_, 1);
 	tcpAcceptor_->Bind("127.0.0.1", 5000);
@@ -66,5 +66,5 @@ void GameLogicServer::CreateNetwork()
 
 void GameLogicServer::HandleStartGame(const char* gameName)
 {
-
+	luaVM_->CallEvent("game.on_start");
 }

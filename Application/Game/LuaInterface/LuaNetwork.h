@@ -13,7 +13,7 @@ using namespace FlagGG::Container;
 class LuaNetwork : public RefCounted
 {
 public:
-	LuaNetwork(Context* context);
+	explicit LuaNetwork(Context* context);
 
 protected:
 	int Init(LuaVM* luaVM);

@@ -2,27 +2,28 @@ require 'LAS.init'
 
 log.info('finish loading LAS.')
 
-las.tcp.opend = function()
+las.udp.opend = function()
     log.info('TCP ==> opend.')
 end
 
-las.tcp.closed = function()
+las.udp.closed = function()
     log.info('TCP ==> closed.')
 end
 
-las.tcp.error = function()
+las.udp.error = function()
     log.info('TCP ==> error.')
 end
 
-las.tcp.message = function()
+las.udp.message = function()
     log.info('TCP ==> message.')
 end
 
 local result = las.run(function()
-    las.tcp.init()
-    local result = las.await(las.tcp.connect)('127.0.0.1', 5000)
+    las.udp.init()
+    local result = las.await(las.udp.connect)('127.0.0.1', 5000)
     if result then
         log.info('connect result: true')
+        gameplay.start_game()
     else
         log.info('connect result: false')
     end
@@ -30,4 +31,3 @@ end)
 if not result then
     log.info('las.run ==> failed.')
 end
-

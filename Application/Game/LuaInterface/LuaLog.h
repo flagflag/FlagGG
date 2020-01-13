@@ -11,7 +11,7 @@ using namespace FlagGG::Container;
 class LuaLog : public RefCounted
 {
 public:
-	LuaLog(Context* context);
+	explicit LuaLog(Context* context);
 	
 protected:
 	int Debug(LuaVM* luaVM);

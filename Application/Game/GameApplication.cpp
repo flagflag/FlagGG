@@ -48,6 +48,7 @@ void GameApplication::Start()
 
 	logModule_ = new LuaLog(context_);
 	networkModule_ = new LuaNetwork(context_);
+	gameplayModule_ = new LuaGamePlay(context_);
 
 	context_->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, GameApplication::Update, this));
 #ifdef _WIN32

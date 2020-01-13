@@ -1,10 +1,10 @@
 local event_map = {}
 
-function game.on_update(time_step)
-    local func_array = event_map['on_update']
+local function call(name, ...)
+    local func_array = event_map[name]
     if func_array ~= nil then
         for i, v in ipairs(func_array) do
-            v(time_step)
+            v(...)
         end
     end
 end
@@ -34,6 +34,7 @@ local function unregister(name, func)
 end
 
 return {
+    call = call,
     register = register,
     unregister = unregister
 }

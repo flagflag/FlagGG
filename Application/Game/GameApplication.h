@@ -19,6 +19,7 @@
 #include "LuaInterface/LuaGame.h"
 #include "LuaInterface/LuaUI.h"
 #include "LuaInterface/LuaNetwork.h"
+#include "LuaInterface/LuaGame.h"
 #include "Lobby/Lobby.h"
 #include "GamePlay/GamePlayBase.h"
 #include "GamePlay/Perspective.h"
@@ -74,6 +75,7 @@ private:
 	SharedPtr<LuaVM> luaVM_;
 	SharedPtr<LuaLog> logModule_;
 	SharedPtr<LuaNetwork> networkModule_;
+	SharedPtr<LuaGamePlay> gameplayModule_;
 
 	SharedPtr<Network> tcpNetwork_;
 	SharedPtr<Network> udpNetwork_;

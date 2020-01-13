@@ -13,6 +13,9 @@ Network::Network(Context* context, NetworkType type) :
 		break;
 
 	case NETWORK_TYPE_UDP:
+		threadPool_ = IOFrame::UDP::CreateThreadPool();
+		threadPool_->Start();
+		connector_ = IOFrame::UDP::CreateConnector(this, threadPool_);
 		break;
 
 	case NETWORK_TYPE_WEB:
