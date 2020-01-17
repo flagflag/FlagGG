@@ -14,6 +14,9 @@ void GameLogicServer::Start()
 
 	SetFrameRate(60.0f);
 
+	forwarder_ = new Forwarder<Mutex>();
+	context_->RegisterVariable<Forwarder<Mutex>>(forwarder_, "Forwarder<Mutex>");
+
 	CreateLuaVM();
 
 	CreateNetwork();
@@ -26,6 +29,8 @@ void GameLogicServer::Start()
 
 void GameLogicServer::Update(float timeStep)
 {
+	forwarder_->Execute();
+
 	luaVM_->CallEvent("game.on_update", timeStep);
 }
 

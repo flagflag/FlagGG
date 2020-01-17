@@ -107,7 +107,7 @@ macro (define_source_files)
     # Source files are defined by globbing source files in current source directory and also by including the extra source files if provided
     cmake_parse_arguments (ARG "RECURSE;GROUP" "" "PCH;EXTRA_CPP_FILES;EXTRA_H_FILES;GLOB_CPP_PATTERNS;GLOB_H_PATTERNS;EXCLUDE_PATTERNS" ${ARGN})
     if (NOT ARG_GLOB_CPP_PATTERNS)
-        set (ARG_GLOB_CPP_PATTERNS *.cpp)    # Default glob pattern
+        set (ARG_GLOB_CPP_PATTERNS *.cpp *.cc)    # Default glob pattern
     endif ()
     if (NOT ARG_GLOB_H_PATTERNS)
         set (ARG_GLOB_H_PATTERNS *.h *.hpp)

@@ -13,3 +13,5 @@ build
 bin
 .vscode
 .DS_Store
+*.pb.h
+*.pb.cc

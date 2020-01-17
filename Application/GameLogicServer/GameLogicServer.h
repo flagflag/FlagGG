@@ -5,11 +5,15 @@
 #include <IOFrame/IOFrame.h>
 #include <Container/Ptr.h>
 #include <Lua/LuaVM.h>
+#include <Core/Forwarder.h>
+#include <AsyncFrame/Mutex.h>
 
 #include "Network/TCPNetwork.h"
 #include "Network/UDPNetwork.h"
 
 using namespace FlagGG::Container;
+using namespace FlagGG::Core;
+using namespace FlagGG::AsyncFrame;
 
 class GameLogicServer : public FlagGG::ServerEngine
 {
@@ -36,4 +40,6 @@ private:
 
 	SharedPtr<TCPNetwork> tcpNetwork_;
 	SharedPtr<UDPNetwork> udpNetwork_;
+
+	SharedPtr<Forwarder<Mutex>> forwarder_;
 };

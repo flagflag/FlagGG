@@ -20,7 +20,7 @@ define_source_files (EXCLUDE_PATTERNS ${EXCLUDE_PATTERNS} RECURSE GROUP)
 
 setup_main_executable ()
 
-target_link_libraries(${TARGET_NAME} FlagGG)
+target_link_libraries (${TARGET_NAME} libprotobuf FlagGG)
 
 setup_test ()
 

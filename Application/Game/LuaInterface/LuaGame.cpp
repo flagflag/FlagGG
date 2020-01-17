@@ -1,4 +1,5 @@
 #include "LuaInterface/LuaGame.h"
+#include "Proto/Game.pb.h"
 
 LuaGamePlay::LuaGamePlay(Context* context) :
 	context_(context)
@@ -24,8 +25,17 @@ int LuaGamePlay::StartGame(LuaVM* luaVM)
 	}
 	else
 	{
-		String buffer("START_GAME");
-		network_->Send(buffer.CString(), buffer.Length());
+		Proto::Game::RequestStartGame request;
+		request.set_user_id(0u);
+		request.set_game_name("TestGame");
+
+		Proto::Game::MessageHeader header;
+		header.set_message_type(Proto::Game::MessageType_RequestStartGame);
+		header.set_message_body(request.SerializeAsString());
+
+		const std::string& buffer = header.SerializeAsString();
+
+		network_->Send(buffer.data(), buffer.length());
 		luaVM->Set(true);
 	}
 	return 1;

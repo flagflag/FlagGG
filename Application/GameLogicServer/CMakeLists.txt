@@ -14,7 +14,7 @@ define_source_files (RECURSE GROUP)
 
 setup_main_executable ()
 
-target_link_libraries(${TARGET_NAME} FlagGG LuaGameEngine)
+target_link_libraries (${TARGET_NAME} libprotobuf FlagGG LuaGameEngine)
 
 setup_test ()
 

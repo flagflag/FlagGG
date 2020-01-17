@@ -1,0 +1,52 @@
+
+package Proto.Game;
+
+enum MessageType
+{
+	MessageType_RequestStartGame = 0;
+	MessageType_ResponseStartGame = 1;
+
+	MessageType_RequestStopGame = 2;
+	MessageType_ResponseStopGame = 3;
+}
+
+message MessageHeader
+{
+	required int32 message_type = 1;
+	required string message_body = 2;
+}
+
+message RequestStartGame
+{
+	required int64 user_id = 1;
+	required string game_name = 2;
+}
+
+enum StarGameResult
+{
+	StartGameSuccess = 0;
+	StartGameFailed = 1;
+}
+
+message ResponseStartGame
+{
+	required StarGameResult result = 1;
+}
+
+enum StopGameResult
+{
+	StopGameSuccess = 0;
+	StopGameFaild = 1;
+}
+
+message RequestStopGame
+{
+	required int64 user_id = 1;
+	required string game_name = 2;
+}
+
+message ResponseStopGame
+{
+	required StopGameResult result = 1;
+}
+
