@@ -66,6 +66,8 @@ namespace FlagGG
 		{
 			RenderEngine::Instance()->Render(viewport);
 		}
+
+		RenderEngine::Instance()->Render(batches_);
 #endif
 
 		context_->SendEvent<Frame::FRAME_END_HANDLER>(Frame::FRAME_END, timeStep);

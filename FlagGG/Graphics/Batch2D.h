@@ -13,7 +13,7 @@ namespace FlagGG
 		class FlagGG_API Batch2D : public Batch
 		{
 		public:
-			Batch2D(Texture* texture, VertexVector* vertexs = nullptr);
+			Batch2D(Texture* texture = nullptr, VertexVector* vertexs = nullptr);
 
 			~Batch2D() override = default;
 

@@ -9,6 +9,7 @@
 #include "Graphics/ConstantBuffer.h"
 #include "Graphics/ShaderParameter.h"
 #include "Graphics/Texture2D.h"
+#include "Graphics/Batch.h"
 #include "Scene/Camera.h"
 #include "Resource/Image.h"
 #include "Container/HashMap.h"
@@ -109,9 +110,15 @@ namespace FlagGG
 
 			void SetRenderTarget(Viewport* viewport, bool renderShadowMap = false);
 
-			void DrawCall(uint32_t indexStart, uint32_t indexCount);
+			void PreDraw();
+
+			void DrawCallIndexed(uint32_t indexStart, uint32_t indexCount);
+
+			void DrawCall(uint32_t vertexStart, uint32_t vertexCount);
 
 			void Render(Viewport* viewport);
+
+			void Render(const Container::Vector<Container::SharedPtr<Batch>>& batches);
 
 			static RenderEngine* Instance();
 

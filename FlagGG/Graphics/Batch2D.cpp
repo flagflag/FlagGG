@@ -6,7 +6,7 @@ namespace FlagGG
 	namespace Graphics
 	{
 		Batch2D::Batch2D(Texture* texture, VertexVector* vertexs) :
-			Batch(DRAW_TRIANGLE, texture, vertexs, 20)
+			Batch(DRAW_TRIANGLE, texture, vertexs, 24)
 		{
 		}
 
@@ -23,18 +23,21 @@ namespace FlagGG
 			dest[2] = 0.0f;
 			dest[3] = uv1.x_;
 			dest[4] = uv1.y_;
+			(*((unsigned*)&dest[5])) = color;
 
-			dest[5] = v2.x_;
-			dest[6] = v2.y_;
-			dest[7] = 0.0f;
-			dest[8] = uv2.x_;
-			dest[9] = uv2.y_;
+			dest[6] = v2.x_;
+			dest[7] = v2.y_;
+			dest[8] = 0.0f;
+			dest[9] = uv2.x_;
+			dest[10] = uv2.y_;
+			(*((unsigned*)&dest[11])) = color;
 
-			dest[10] = v3.x_;
-			dest[11] = v3.y_;
-			dest[12] = 0.0f;
-			dest[13] = uv3.x_;
-			dest[14] = uv3.y_;
+			dest[12] = v3.x_;
+			dest[13] = v3.y_;
+			dest[14] = 0.0f;
+			dest[15] = uv3.x_;
+			dest[16] = uv3.y_;
+			(*((unsigned*)&dest[17])) = color;
 		}
 	}
 }

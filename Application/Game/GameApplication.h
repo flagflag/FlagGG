@@ -40,6 +40,7 @@ protected:
 	void Stop() override;
 	void Update(float timeStep);
 
+	void Create2DBatch();
 	void CreateScene();
 	void SetupWindow();
 	void OpenLuaVM();

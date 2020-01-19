@@ -394,7 +394,7 @@ namespace FlagGG
 			return vertexFormat;
 		}
 
-		void RenderEngine::DrawCall(uint32_t indexStart, uint32_t indexCount)
+		void RenderEngine::PreDraw()
 		{
 			static VertexBuffer* vertexBuffers[MAX_VERTEX_BUFFER_COUNT + 1] = { 0 };
 
@@ -558,9 +558,22 @@ namespace FlagGG
 				deviceContext_->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0, 0);
 				renderTargetDirty_ = false;
 			}
+		}
+
+		void RenderEngine::DrawCallIndexed(uint32_t indexStart, uint32_t indexCount)
+		{
+			PreDraw();
+
+			// draw call index
+			deviceContext_->DrawIndexed(indexCount, indexStart, 0);
+		}
+
+		void RenderEngine::DrawCall(uint32_t vertexStart, uint32_t vertexCount)
+		{
+			PreDraw();
 
 			// draw call
-			deviceContext_->DrawIndexed(indexCount, indexStart, 0);
+			deviceContext_->Draw(vertexCount, vertexStart);
 		}
 
 		void RenderEngine::CopyShaderParameterToBuffer(Shader* shader, ConstantBuffer* buffer)
@@ -642,7 +655,7 @@ namespace FlagGG
 							SetVertexBuffers(geometry->GetVertexBuffers());
 							SetIndexBuffer(geometry->GetIndexBuffer());
 							SetPrimitiveType(geometry->GetPrimitiveType());
-							DrawCall(geometry->GetIndexStart(), geometry->GetIndexCount());
+							DrawCallIndexed(geometry->GetIndexStart(), geometry->GetIndexCount());
 						}
 					}
 				}
@@ -676,8 +689,76 @@ namespace FlagGG
 					SetVertexBuffers(geometry->GetVertexBuffers());
 					SetIndexBuffer(geometry->GetIndexBuffer());
 					SetPrimitiveType(geometry->GetPrimitiveType());
-					DrawCall(geometry->GetIndexStart(), geometry->GetIndexCount());
+					DrawCallIndexed(geometry->GetIndexStart(), geometry->GetIndexCount());
 				}
+			}
+		}
+
+		void RenderEngine::Render(const Container::Vector<Container::SharedPtr<Batch>>& batches)
+		{
+			static Container::PODVector<VertexElement> vertexElement =
+			{
+				VertexElement(VE_VECTOR3, SEM_POSITION, 0),
+				VertexElement(VE_VECTOR2, SEM_TEXCOORD, 0),
+				VertexElement(VE_UBYTE4, SEM_COLOR, 0)
+			};
+			static Container::SharedPtr<Graphics::VertexBuffer> vertexBuffer;
+			static Container::Vector<Container::SharedPtr<Graphics::VertexBuffer>> vertexBuffers;
+			static Container::SharedPtr<Graphics::Shader> vertexShader;
+			static Container::SharedPtr<Graphics::Shader> pixelShader;
+			static Container::SharedPtr<Graphics::ShaderCode> vertexShaderCode;
+			static Container::SharedPtr<Graphics::ShaderCode> pixelShaderCode;
+			static Container::Vector<Container::SharedPtr<Graphics::Texture>> textures;
+
+			if (!vertexBuffer)
+			{
+				vertexBuffer = new Graphics::VertexBuffer();
+			}
+
+			if (!vertexShaderCode && !pixelShaderCode)
+			{
+				vertexShaderCode = new Graphics::ShaderCode(nullptr);
+				vertexShaderCode->LoadFile("../../../Res/Shader/UI_VS.hlsl");
+				vertexShader = vertexShaderCode->GetShader(VS, {});
+
+				pixelShaderCode = new Graphics::ShaderCode(nullptr);
+				pixelShaderCode->LoadFile("../../../Res/Shader/UI_PS.hlsl");
+				pixelShader = pixelShaderCode->GetShader(PS, {});
+			}
+
+			for (const auto& batch : batches)
+			{
+				vertexBuffer->SetSize(batch->GetVertexCount(), vertexElement);
+				char* data = (char*)vertexBuffer->Lock(0, vertexBuffer->GetVertexCount());
+				memcpy(data, batch->GetVertexs(), batch->GetVertexSize() * batch->GetVertexCount());
+				vertexBuffer->Unlock();
+
+				vertexBuffers.Clear();
+				vertexBuffers.Push(vertexBuffer);
+
+				SetVertexBuffers(vertexBuffers);
+				SetVertexShader(vertexShader);
+				SetPixelShader(pixelShader);
+
+				textures.Clear();
+				if (batch->GetTexture())
+				{
+					textures.Push(Container::SharedPtr<Graphics::Texture>(batch->GetTexture()));
+					SetTextures(textures);
+				}
+
+				switch (batch->GetType())
+				{
+				case Graphics::DRAW_LINE:
+					SetPrimitiveType(PRIMITIVE_LINE);
+					break;
+
+				case Graphics::DRAW_TRIANGLE:
+					SetPrimitiveType(PRIMITIVE_TRIANGLE);
+					break;
+				}
+
+				DrawCall(0, batch->GetVertexCount());
 			}
 		}
 

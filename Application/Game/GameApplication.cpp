@@ -1,5 +1,6 @@
 #ifdef _WIN32
 #include <Graphics/RenderEngine.h>
+#include <Graphics/Batch2D.h>
 #include <Scene/Light.h>
 #include <Scene/Octree.h>
 #include <Scene/StaticMeshComponent.h>
@@ -30,6 +31,7 @@ void GameApplication::Start()
 {
 	GameEngine::Start();
 
+	Create2DBatch();
 	CreateScene();
 	SetupWindow();
 	OpenLuaVM();
@@ -104,6 +106,22 @@ void GameApplication::Update(float timeStep)
 			material->GetShaderParameters()->SetValue("dissolveTime", dissolveTime);
 		}
 	}
+}
+
+void GameApplication::Create2DBatch()
+{
+	SharedPtr<Batch2D> batch(new Batch2D());
+	batch->AddTriangle(
+		Vector2(0, 0), Vector2(1, 0), Vector2(1, 1),
+		Vector2(0, 0), Vector2(1, 0), Vector2(1, 1),
+		0u
+		);
+	batch->AddTriangle(
+		Vector2(0, 0), Vector2(1, 1), Vector2(0, 1),
+		Vector2(0, 0), Vector2(1, 1), Vector2(0, 1),
+		0u
+	);
+	batches_.Push(batch);
 }
 
 void GameApplication::CreateScene()

@@ -5,6 +5,7 @@
 #include "Core/DeviceEvent.h"
 #ifdef _WIN32
 #include "Graphics/Viewport.h"
+#include "Graphics/Batch.h"
 #endif
 #include "Resource/ResourceCache.h"
 #include "Container/Ptr.h"
@@ -45,6 +46,7 @@ namespace FlagGG
 
 #ifdef _WIN32
 		Vector<SharedPtr<Viewport>> viewports_;
+		Container::Vector<Container::SharedPtr<Batch>> batches_;
 #endif
 
 		SystemHelper::Timer timer_;

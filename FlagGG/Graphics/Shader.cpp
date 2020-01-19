@@ -133,7 +133,7 @@ namespace FlagGG
 
 				if (errorMsgs)
 				{
-					FLAGGG_LOG_ERROR("Error code: {}", errorMsgs->GetBufferPointer());
+					FLAGGG_LOG_ERROR("Error code: {}", (const char*)errorMsgs->GetBufferPointer());
 
 					SAFE_RELEASE(errorMsgs);
 				}
