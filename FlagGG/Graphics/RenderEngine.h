@@ -13,6 +13,9 @@
 #include "Scene/Camera.h"
 #include "Resource/Image.h"
 #include "Container/HashMap.h"
+#include "Utility/Singleton.h"
+#include "AsyncFrame/Mutex.h"
+#include "Core/Context.h"
 
 #include <d3d11.h>
 
@@ -29,10 +32,10 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		class FlagGG_API RenderEngine
+		class FlagGG_API RenderEngine : public Utility::Singleton<RenderEngine, AsyncFrame::NullMutex, Core::Context*>
 		{
 		public:
-			RenderEngine();
+			RenderEngine(Core::Context* context);
 
 			void Initialize();
 
@@ -120,8 +123,6 @@ namespace FlagGG
 
 			void Render(const Container::Vector<Container::SharedPtr<Batch>>& batches);
 
-			static RenderEngine* Instance();
-
 		protected:
 			void CopyShaderParameterToBuffer(Shader* shader, ConstantBuffer* buffer);
 
@@ -181,7 +182,7 @@ namespace FlagGG
 			bool renderShadowMap_{ false };
 			bool renderTargetDirty_{ false };
 
-			static RenderEngine* renderEngine_;
+			Core::Context* context_;
 		};
 	}
 }

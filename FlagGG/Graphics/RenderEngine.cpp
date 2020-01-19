@@ -7,6 +7,7 @@
 #include "Math/Math.h"
 #include "Log.h"
 #include "IOFrame/Buffer/IOBufferAux.h"
+#include "Resource/ResourceCache.h"
 
 #include <assert.h>
 
@@ -14,7 +15,8 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		RenderEngine::RenderEngine()
+		RenderEngine::RenderEngine(Core::Context* context) :
+			context_(context)
 		{
 			shaderParameters_.AddParametersDefine<Math::Matrix3x4>(SP_WORLD_MATRIX);
 			shaderParameters_.AddParametersDefine<Math::Matrix3x4>(SP_VIEW_MATRIX);
@@ -717,12 +719,12 @@ namespace FlagGG
 
 			if (!vertexShaderCode && !pixelShaderCode)
 			{
-				vertexShaderCode = new Graphics::ShaderCode(nullptr);
-				vertexShaderCode->LoadFile("../../../Res/Shader/UI_VS.hlsl");
+				auto* cache = context_->GetVariable<Resource::ResourceCache>("ResourceCache");
+
+				vertexShaderCode = cache->GetResource<Graphics::ShaderCode>("Shader/UI_VS.hlsl");
 				vertexShader = vertexShaderCode->GetShader(VS, {});
 
-				pixelShaderCode = new Graphics::ShaderCode(nullptr);
-				pixelShaderCode->LoadFile("../../../Res/Shader/UI_PS.hlsl");
+				pixelShaderCode = cache->GetResource<Graphics::ShaderCode>("Shader/UI_PS.hlsl");
 				pixelShader = pixelShaderCode->GetShader(PS, {});
 			}
 
@@ -761,15 +763,5 @@ namespace FlagGG
 				DrawCall(0, batch->GetVertexCount());
 			}
 		}
-
-		RenderEngine* RenderEngine::Instance()
-		{
-			if (!renderEngine_)
-				renderEngine_ = new RenderEngine();
-
-			return renderEngine_;
-		}
-
-		RenderEngine* RenderEngine::renderEngine_ = nullptr;
 	}
 }

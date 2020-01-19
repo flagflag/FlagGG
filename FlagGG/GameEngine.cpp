@@ -25,12 +25,12 @@ namespace FlagGG
 
 	void GameEngine::Start()
 	{
+		CreateCoreObject();
+
 #ifdef _WIN32
 		WindowDevice::Initialize();
-		RenderEngine::Instance()->Initialize();
+		RenderEngine::CreateInstance(context_)->Initialize();
 #endif
-
-		CreateCoreObject();
 
 		isRunning_ = true;
 		elapsedTime_ = 0.0f;
@@ -88,6 +88,7 @@ namespace FlagGG
 #ifdef _WIN32
 		WindowDevice::Uninitialize();
 		RenderEngine::Instance()->Uninitialize();
+		RenderEngine::DestroyInstance();
 #endif
 	}
 }
