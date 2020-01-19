@@ -1,4 +1,5 @@
-﻿#include "TCPConnector.h"
+﻿#ifndef FLAGGG_NO_BOOST
+#include "TCPConnector.h"
 #include "IOFrame/ThreadPool/NetThreadPool.h"
 
 namespace FlagGG
@@ -32,3 +33,4 @@ namespace FlagGG
 		}
 	}
 }
+#endif

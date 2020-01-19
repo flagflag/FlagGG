@@ -1,4 +1,5 @@
-﻿#ifndef __TCP_CONNECTOR__
+﻿#ifndef FLAGGG_NO_BOOST
+#ifndef __TCP_CONNECTOR__
 #define __TCP_CONNECTOR__
 
 #include "IOConnector.h"
@@ -37,4 +38,5 @@ namespace FlagGG
 	}
 }
 
+#endif
 #endif

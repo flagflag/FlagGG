@@ -2,8 +2,6 @@
 #include "Utility/Format.h"
 #include "Log.h"
 
-#include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
 #include <ctype.h>
 
 namespace FlagGG

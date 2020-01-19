@@ -1,4 +1,5 @@
-﻿#ifndef __TCPCHANNEL__
+﻿#ifndef FLAGGG_NO_BOOST
+#ifndef __TCPCHANNEL__
 #define __TCPCHANNEL__
  
 #include <boost/asio/io_service.hpp>
@@ -108,4 +109,5 @@ namespace FlagGG
 	}
 }
 
+#endif
 #endif

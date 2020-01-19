@@ -1,4 +1,5 @@
-﻿#ifndef __TCP_ACCEPTOR__
+﻿#ifndef FLAGGG_NO_BOOST
+#ifndef __TCP_ACCEPTOR__
 #define __TCP_ACCEPTOR__
 
 #include <boost/asio/io_service.hpp>
@@ -51,4 +52,5 @@ namespace FlagGG
 	}
 }
 
+#endif
 #endif

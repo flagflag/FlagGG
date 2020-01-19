@@ -1,4 +1,5 @@
-﻿#ifndef __TCP_CONTEXT__
+﻿#ifndef FLAGGG_NO_BOOST
+#ifndef __TCP_CONTEXT__
 #define __TCP_CONTEXT__
 
 #include "IOContext.h"
@@ -27,4 +28,5 @@ namespace FlagGG
 	}
 }
 
+#endif
 #endif

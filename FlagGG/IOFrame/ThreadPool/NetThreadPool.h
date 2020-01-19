@@ -1,4 +1,5 @@
-﻿#ifndef __NET_THREAD_POOL__
+﻿#ifndef FLAGGG_NO_BOOST
+#ifndef __NET_THREAD_POOL__
 #define __NET_THREAD_POOL__
 
 #include <boost/asio/io_service.hpp>
@@ -46,4 +47,5 @@ namespace FlagGG
 	}
 }
 
+#endif
 #endif

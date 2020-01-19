@@ -6,6 +6,7 @@ namespace FlagGG
 	{
 		namespace Error
 		{
+#ifndef FLAGGG_NO_BOOST
 			IOError::IOError(boost::system::error_code error_code)
 				: errorCode_(error_code)
 			{ }
@@ -19,6 +20,7 @@ namespace FlagGG
 			{
 				return errorCode_.message().c_str();
 			}
+#endif
 
 			CustomIOError::CustomIOError(int value, const Container::String& message) :
 				value_(value),

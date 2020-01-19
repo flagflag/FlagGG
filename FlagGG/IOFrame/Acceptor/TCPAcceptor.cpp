@@ -1,4 +1,4 @@
-﻿
+﻿#ifndef FLAGGG_NO_BOOST
 #include <boost/bind.hpp>
 #include <boost/asio/placeholders.hpp>
 
@@ -87,3 +87,4 @@ namespace FlagGG
 		}
 	}
 }
+#endif

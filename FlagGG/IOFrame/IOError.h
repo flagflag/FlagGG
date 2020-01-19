@@ -1,7 +1,9 @@
 ﻿#ifndef __IO_ERROR__
 #define __IO_ERROR__
 
+#ifndef FLAGGG_NO_BOOST
 #include <boost/asio/error.hpp>
+#endif
 
 #include "ErrorCode.h"
 #include "IOFrame/Channel/IOChannel.h"
@@ -19,6 +21,7 @@ namespace FlagGG
 	{
 		namespace Error
 		{
+#ifndef FLAGGG_NO_BOOST
 			class IOError : public ErrorCode
 			{
 			public:
@@ -33,6 +36,7 @@ namespace FlagGG
 			private:
 				boost::system::error_code errorCode_;
 			};
+#endif
 
 			class CustomIOError : public ErrorCode
 			{

@@ -1,4 +1,5 @@
-﻿#include "NetThreadPool.h"
+﻿#ifndef FLAGGG_NO_BOOST
+#include "NetThreadPool.h"
 #include "Utility/SystemHelper.h"
 
 namespace FlagGG
@@ -49,3 +50,4 @@ namespace FlagGG
 		}
 	}
 }
+#endif

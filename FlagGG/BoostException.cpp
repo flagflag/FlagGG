@@ -1,3 +1,4 @@
+#ifndef FLAGGG_NO_BOOST
 #include <boost/throw_exception.hpp>
 
 namespace boost
@@ -7,3 +8,4 @@ namespace boost
 
 	}
 }
+#endif

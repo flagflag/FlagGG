@@ -1,4 +1,5 @@
-﻿//linux可能会编译不过，所以把头文件引用放在这里！！！很关键！！！
+﻿#ifndef FLAGGG_NO_BOOST
+//linux可能会编译不过，所以把头文件引用放在这里！！！很关键！！！
 #include "Container/Ptr.h"
 
 #include <boost/bind.hpp>
@@ -260,3 +261,4 @@ namespace FlagGG
 		}
 	}
 }
+#endif

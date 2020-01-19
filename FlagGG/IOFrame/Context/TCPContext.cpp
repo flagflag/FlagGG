@@ -1,4 +1,5 @@
-﻿#include "TCPContext.h"
+﻿#ifndef FLAGGG_NO_BOOST
+#include "TCPContext.h"
 
 namespace FlagGG
 {
@@ -17,3 +18,4 @@ namespace FlagGG
 		}
 	}
 }
+#endif

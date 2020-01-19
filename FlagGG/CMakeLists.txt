@@ -18,6 +18,10 @@ if (NOT FLAGGG_D3D11)
     list (APPEND EXCLUDED_SOURCE_DIRS Graphics)
     list (APPEND EXCLUDED_SOURCE_DIRS Scene)
 endif ()
+# 不用boost
+if (FLAGGG_NO_BOOST)
+	add_definitions (-DFLAGGG_NO_BOOST)
+endif ()
 list (APPEND EXCLUDED_SOURCE_DIRS spdlog)
 # 输出排除的目录
 message ("exclude folder: ${EXCLUDED_SOURCE_DIRS}")
@@ -40,11 +44,14 @@ message ("d3d11 lib: ${D3D11_LIB}")
 message ("lua lib: ${LUA_LIB}")
 message ("SLikeNet lib: ${SLikeNet_LIB}")
 
-target_link_libraries(${TARGET_NAME}
-    ${BOOST_LIB}
-    ${D3D11_LIB}
-    ${LUA_LIB}
-	${SLikeNet_LIB})
+if (NOT FLAGGG_NO_BOOST)
+	list (APPEND THIRD_LIB ${BOOST_LIB})
+endif ()
+list (APPEND THIRD_LIB ${D3D11_LIB})
+list (APPEND THIRD_LIB ${LUA_LIB})
+list (APPEND THIRD_LIB ${SLikeNet_LIB})
+
+target_link_libraries(${TARGET_NAME} ${THIRD_LIB})
 
 # Setup test cases
 setup_test ()
