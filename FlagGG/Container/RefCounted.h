@@ -7,7 +7,7 @@ namespace FlagGG
 	namespace Container
 	{
 		/// Reference count structure.
-		struct RefCount
+		struct FlagGG_API RefCount
 		{
 			/// Construct.
 			RefCount() :
@@ -23,6 +23,10 @@ namespace FlagGG
 				refs_ = -1;
 				weakRefs_ = -1;
 			}
+
+			// Overload new/delete:
+			void* operator new(size_t byteSize);
+			void operator delete(void* object);
 
 			/// Reference count. If below zero, the object has been destroyed.
 			int refs_;
@@ -55,6 +59,13 @@ namespace FlagGG
 
 			/// Return pointer to the reference count structure.
 			RefCount* RefCountPtr() { return refCount_; }
+			
+
+			// Overload new/delete:
+			void* operator new(size_t byteSize);
+			void* operator new[](size_t byteSize);
+			void operator delete(void* object);
+			void operator delete[](void* object);
 
 		private:
 			/// Pointer to the reference count structure.

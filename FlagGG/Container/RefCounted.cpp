@@ -1,11 +1,25 @@
 #include "Container/RefCounted.h"
 
+extern "C"
+{
+	#include "jemalloc/include/jemalloc/jemalloc.h"
+}
+
 #include <assert.h>
 
 namespace FlagGG
 {
 	namespace Container
 	{
+		void* RefCount::operator new(size_t byteSize)
+		{
+			return je_malloc(byteSize);
+		}
+
+		void RefCount::operator delete(void* object)
+		{
+			je_free(object);
+		}
 
 		RefCounted::RefCounted() :
 			refCount_(new RefCount())
@@ -52,6 +66,26 @@ namespace FlagGG
 		{
 			// Subtract one to not return the internally held reference
 			return refCount_->weakRefs_ - 1;
+		}
+
+		void* RefCounted::operator new(size_t byteSize)
+		{
+			return je_malloc(byteSize);
+		}
+
+		void* RefCounted::operator new[](size_t byteSize)
+		{
+			return je_malloc(byteSize);
+		}
+
+		void RefCounted::operator delete(void* object)
+		{
+			je_free(object);
+		}
+
+		void RefCounted::operator delete[](void* object)
+		{
+			je_free(object);
 		}
 	}
 }
