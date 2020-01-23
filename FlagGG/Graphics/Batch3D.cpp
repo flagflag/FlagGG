@@ -17,10 +17,10 @@ namespace FlagGG
 			if (type_ != DRAW_TRIANGLE) return;
 
 			unsigned begin = vertexs_->Size();
-			vertexEnd_ = vertexs_->Size() + vertexSize_ * 3;
+			vertexEnd_ = vertexs_->Size() + vertexSize_ / 4u * 3;
 			vertexs_->Resize(vertexEnd_);
 
-			float* dest = reinterpret_cast<float*>(&(*vertexs_)[begin]);
+			float* dest = &(vertexs_->At(begin));
 			dest[0] = v1.x_;
 			dest[1] = v1.y_;
 			dest[2] = v1.z_;
@@ -56,10 +56,10 @@ namespace FlagGG
 			if (type_ != DRAW_LINE) return;
 
 			unsigned begin = vertexs_->Size();
-			vertexEnd_ = vertexs_->Size() + vertexSize_ * 2;
+			vertexEnd_ = vertexs_->Size() + vertexSize_ / 4u * 2;
 			vertexs_->Resize(vertexEnd_);
 
-			float* dest = reinterpret_cast<float*>(&(*vertexs_)[begin]);
+			float* dest = &(vertexs_->At(begin));
 			dest[0] = v1.x_;
 			dest[1] = v1.y_;
 			dest[2] = v1.z_;

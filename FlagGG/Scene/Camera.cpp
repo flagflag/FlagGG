@@ -7,16 +7,18 @@ namespace FlagGG
 	{
 		void Camera::Strafe(float units)
 		{
+			Node* master = GetNode();
+			if (!master)
+				return;
+
 			if (cameraType_ == LAND_OBJECT)
 			{
-				Node* master = GetNode();
 				Math::Vector3 right = GetRight();
 				master->SetWorldPosition(master->GetWorldPosition() + Math::Vector3(right.x_, 0.0f, right.z_) * units);
 			}
 
 			if (cameraType_ == AIRCRAFT)
 			{
-				Node* master = GetNode();
 				Math::Vector3 right = GetRight();
 				master->SetWorldPosition(master->GetWorldPosition() + right * units);
 			}
@@ -24,15 +26,17 @@ namespace FlagGG
 
 		void Camera::Fly(float units)
 		{
+			Node* master = GetNode();
+			if (!master)
+				return;
+
 			if (cameraType_ == LAND_OBJECT)
-			{
-				Node* master = GetNode();
+			{			
 				master->SetWorldPosition(master->GetWorldPosition() + Math::Vector3(0.0f, units, 0.0f));
 			}
 
 			if (cameraType_ == AIRCRAFT)
 			{
-				Node* master = GetNode();
 				Math::Vector3 up = GetUp();
 				master->SetWorldPosition(master->GetWorldPosition() + up * units);
 			}
@@ -40,16 +44,18 @@ namespace FlagGG
 
 		void Camera::Walk(float units)
 		{
+			Node* master = GetNode();
+			if (!master)
+				return;
+
 			if (cameraType_ == LAND_OBJECT)
-			{
-				Node* master = GetNode();
+			{			
 				Math::Vector3 look = GetLook();
 				master->SetWorldPosition(master->GetWorldPosition() + Math::Vector3(look.x_, 0.0f, look.z_) * units);
 			}
 
 			if (cameraType_ == AIRCRAFT)
 			{
-				Node* master = GetNode();
 				Math::Vector3 look = GetLook();
 				master->SetWorldPosition(master->GetWorldPosition() + look * units);
 			}
@@ -68,7 +74,11 @@ namespace FlagGG
 
 		void Camera::Pitch(float angle)
 		{
-			auto matrix = GetNode()->GetRotation().RotationMatrix();
+			Node* master = GetNode();
+			if (!master)
+				return;
+
+			auto matrix = master->GetRotation().RotationMatrix();
 
 			Math::Vector3 right(matrix.m00_, matrix.m10_, matrix.m20_);
 			Math::Vector3 up(matrix.m01_, matrix.m11_, matrix.m21_);
@@ -80,7 +90,7 @@ namespace FlagGG
 
 			Correct(right, up, look);
 			
-			GetNode()->SetRotation(Math::Quaternion(Math::Matrix3(
+			master->SetRotation(Math::Quaternion(Math::Matrix3(
 				right.x_, up.x_, look.x_,
 				right.y_, up.y_, look.y_,
 				right.z_, up.z_, look.z_
@@ -89,7 +99,11 @@ namespace FlagGG
 
 		void Camera::Yaw(float angle)
 		{
-			auto matrix = GetNode()->GetRotation().RotationMatrix();
+			Node* master = GetNode();
+			if (!master)
+				return;
+
+			auto matrix = master->GetRotation().RotationMatrix();
 
 			Math::Vector3 right(matrix.m00_, matrix.m10_, matrix.m20_);
 			Math::Vector3 up(matrix.m01_, matrix.m11_, matrix.m21_);
@@ -112,7 +126,7 @@ namespace FlagGG
 
 			Correct(right, up, look);
 
-			GetNode()->SetRotation(Math::Quaternion(Math::Matrix3(
+			master->SetRotation(Math::Quaternion(Math::Matrix3(
 				right.x_, up.x_, look.x_,
 				right.y_, up.y_, look.y_,
 				right.z_, up.z_, look.z_
@@ -123,7 +137,11 @@ namespace FlagGG
 		{
 			if (cameraType_ == AIRCRAFT)
 			{
-				auto matrix = GetNode()->GetRotation().RotationMatrix();
+				Node* master = GetNode();
+				if (!master)
+					return;
+
+				auto matrix = master->GetRotation().RotationMatrix();
 
 				Math::Vector3 right(matrix.m00_, matrix.m10_, matrix.m20_);
 				Math::Vector3 up(matrix.m01_, matrix.m11_, matrix.m21_);
@@ -135,7 +153,7 @@ namespace FlagGG
 
 				Correct(right, up, look);
 
-				GetNode()->SetRotation(Math::Quaternion(Math::Matrix3(
+				master->SetRotation(Math::Quaternion(Math::Matrix3(
 					right.x_, up.x_, look.x_,
 					right.y_, up.y_, look.y_,
 					right.z_, up.z_, look.z_
@@ -231,17 +249,20 @@ namespace FlagGG
 
 		Math::Vector3 Camera::GetRight() const
 		{
-			return GetNode()->GetWorldRotation() * Math::Vector3::RIGHT;
+			Node* master = GetNode();
+			return master ? master->GetWorldRotation() * Math::Vector3::RIGHT : Math::Vector3::ZERO;
 		}
 
 		Math::Vector3 Camera::GetUp() const
 		{
-			return GetNode()->GetWorldRotation() * Math::Vector3::UP;
+			Node* master = GetNode();
+			return master ? master->GetWorldRotation() * Math::Vector3::UP : Math::Vector3::ZERO;
 		}
 
 		Math::Vector3 Camera::GetLook() const
 		{
-			return GetNode()->GetWorldRotation() * Math::Vector3::FORWARD;
+			Node* master = GetNode();
+			return master ? master->GetWorldRotation() * Math::Vector3::FORWARD : Math::Vector3::ZERO;
 		}
 
 		bool Camera::IsProjectionValid() const

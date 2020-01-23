@@ -18,9 +18,9 @@ namespace FlagGG
 
 		bool GPUBuffer::SetSize(uint32_t byteCount)
 		{
-			uint32_t byteLeft = byteCount % 16;
-			if (byteLeft != 16)
-				byteCount += (16 - byteLeft);
+			uint32_t byteLeft = byteCount % 16u;
+			if (byteLeft != 0u)
+				byteCount += (16u - byteLeft);
 
 			if (GetHandler() && gpuBufferSize_ == byteCount)
 				return true;

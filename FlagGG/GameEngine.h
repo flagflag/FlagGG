@@ -46,7 +46,6 @@ namespace FlagGG
 
 #ifdef _WIN32
 		Vector<SharedPtr<Viewport>> viewports_;
-		Container::Vector<Container::SharedPtr<Batch>> batches_;
 #endif
 
 		SystemHelper::Timer timer_;
