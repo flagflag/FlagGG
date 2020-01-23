@@ -13,7 +13,7 @@ namespace FlagGG
 	{
 		class Texture;
 
-		typedef Container::Vector <UInt8> VertexVector;
+		typedef Container::Vector<Real>VertexVector;
 
 		enum BatchType
 		{
@@ -28,7 +28,7 @@ namespace FlagGG
 
 			virtual ~Batch();
 
-			VertexVector* GetVertexs() const;
+			const char* GetVertexs() const;
 
 			unsigned GetVertexSize() const;
 

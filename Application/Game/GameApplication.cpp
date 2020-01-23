@@ -6,6 +6,7 @@
 #include <Scene/StaticMeshComponent.h>
 #endif
 #include <Log.h>
+#include <IOFrame/Buffer/StringBuffer.h>
 
 #include "GameApplication.h"
 #include "GamePlay/ThirdPersonPerspective.h"
@@ -110,18 +111,21 @@ void GameApplication::Update(float timeStep)
 
 void GameApplication::Create2DBatch()
 {
+	Container::Vector<Container::SharedPtr<Batch>> batches;
+
 	SharedPtr<Batch2D> batch(new Batch2D());
 	batch->AddTriangle(
-		Vector2(0, 0), Vector2(1, 0), Vector2(1, 1),
+		Vector2(-1, -1), Vector2(1, -1), Vector2(1, 1),
 		Vector2(0, 0), Vector2(1, 0), Vector2(1, 1),
 		0u
 		);
 	batch->AddTriangle(
-		Vector2(0, 0), Vector2(1, 1), Vector2(0, 1),
+		Vector2(-1, -1), Vector2(1, 1), Vector2(-1, 1),
 		Vector2(0, 0), Vector2(1, 1), Vector2(0, 1),
 		0u
 	);
-	batches_.Push(batch);
+	batches.Push(batch);
+	RenderEngine::Instance()->PostRenderBatch(batches);
 }
 
 void GameApplication::CreateScene()

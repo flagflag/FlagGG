@@ -57,17 +57,15 @@ namespace FlagGG
 		context_->SendEvent<Frame::LOGIC_UPDATE_HANDLER>(Frame::LOGIC_UPDATE, timeStep);
 
 #ifdef _WIN32
-		WindowDevice::Render();
-
 		RenderEngine::Instance()->GetShaderParameters().SetValue(SP_DELTA_TIME, timeStep);
 		RenderEngine::Instance()->GetShaderParameters().SetValue(SP_ELAPSED_TIME, elapsedTime_);
+
+		WindowDevice::Render();
 
 		for (const auto& viewport : viewports_)
 		{
 			RenderEngine::Instance()->Render(viewport);
 		}
-
-		RenderEngine::Instance()->Render(batches_);
 #endif
 
 		context_->SendEvent<Frame::FRAME_END_HANDLER>(Frame::FRAME_END, timeStep);

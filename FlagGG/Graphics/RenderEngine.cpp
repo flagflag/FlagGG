@@ -312,6 +312,15 @@ namespace FlagGG
 			return shaderParameters_;
 		}
 
+		void RenderEngine::PostRenderBatch(const Container::Vector<Container::SharedPtr<Batch>>& batches)
+		{
+			batches_.Clear();
+			for (const auto& batch : batches)
+			{
+				batches_.Push(batch);
+			}
+		}
+
 		void RenderEngine::SetShaderParameter(Scene::Camera* camera, const RenderContext* renderContext)
 		{
 			if (!renderContext)
@@ -629,6 +638,8 @@ namespace FlagGG
 			if (!viewport) return;
 
 			Scene::Scene* scene = viewport->GetScene();
+			if (!scene)
+				return;
 			Container::PODVector<RenderContext*> renderContexts;
 			scene->Render(renderContexts);
 
@@ -694,6 +705,12 @@ namespace FlagGG
 					DrawCallIndexed(geometry->GetIndexStart(), geometry->GetIndexCount());
 				}
 			}
+
+			// 最后渲染batch
+			if (!batches_.Empty())
+			{
+				Render(batches_);
+			}
 		}
 
 		void RenderEngine::Render(const Container::Vector<Container::SharedPtr<Batch>>& batches)
@@ -732,7 +749,7 @@ namespace FlagGG
 			{
 				vertexBuffer->SetSize(batch->GetVertexCount(), vertexElement);
 				char* data = (char*)vertexBuffer->Lock(0, vertexBuffer->GetVertexCount());
-				memcpy(data, batch->GetVertexs(), batch->GetVertexSize() * batch->GetVertexCount());
+				memcpy(data, batch->GetVertexs(), batch->GetVertexCount() * batch->GetVertexSize());
 				vertexBuffer->Unlock();
 
 				vertexBuffers.Clear();

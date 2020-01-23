@@ -95,6 +95,8 @@ namespace FlagGG
 
 			ShaderParameters& GetShaderParameters();
 
+			void PostRenderBatch(const Container::Vector<Container::SharedPtr<Batch>>& batches);
+
 			void SetDefaultTextures(TextureClass index, Texture* texture);
 
 			void SetShaderParameter(Scene::Camera* camera, const RenderContext* renderContext);
@@ -181,6 +183,8 @@ namespace FlagGG
 			Container::SharedPtr<RenderSurface> depthStencil_;
 			bool renderShadowMap_{ false };
 			bool renderTargetDirty_{ false };
+
+			Container::Vector<Container::SharedPtr<Batch>> batches_;
 
 			Core::Context* context_;
 		};

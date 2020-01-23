@@ -34,9 +34,9 @@ namespace FlagGG
 			}
 		}
 
-		VertexVector* Batch::GetVertexs() const
+		const char* Batch::GetVertexs() const
 		{
-			return vertexs_;
+			return (const char*)&(vertexs_->At(0));
 		}
 
 		unsigned Batch::GetVertexSize() const
@@ -46,7 +46,7 @@ namespace FlagGG
 
 		unsigned Batch::GetVertexCount() const
 		{
-			return vertexs_->Size() / vertexSize_;
+			return vertexs_->Size() * 4u / vertexSize_;
 		}
 
 		Texture* Batch::GetTexture() const
