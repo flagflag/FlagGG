@@ -16,9 +16,9 @@ namespace FlagGG
 		{
 		}
 
-		bool GPUBuffer::SetSize(uint32_t byteCount)
+		bool GPUBuffer::SetSize(UInt32 byteCount)
 		{
-			uint32_t byteLeft = byteCount % 16;
+			UInt32 byteLeft = byteCount % 16;
 			if (byteLeft != 16)
 				byteCount += (16 - byteLeft);
 
@@ -54,7 +54,7 @@ namespace FlagGG
 			return true;
 		}
 
-		void* GPUBuffer::Lock(uint32_t start, uint32_t count)
+		void* GPUBuffer::Lock(UInt32 start, UInt32 count)
 		{
 			if (gpuBufferSize_ == 0)
 				return nullptr;
@@ -78,7 +78,7 @@ namespace FlagGG
 			RenderEngine::Instance()->GetDeviceContext()->Unmap(GetObject<ID3D11Buffer>(), 0);
 		}
 
-		IOFrame::Buffer::IOBuffer* GPUBuffer::LockStaticBuffer(uint32_t start, uint32_t count)
+		IOFrame::Buffer::IOBuffer* GPUBuffer::LockStaticBuffer(UInt32 start, UInt32 count)
 		{
 			void* data = Lock(start, count);
 			buffer_ = new IOFrame::Buffer::StringBuffer(data, count);

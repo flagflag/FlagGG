@@ -13,7 +13,7 @@ namespace FlagGG
 {
 	namespace Scene
 	{
-		enum AnimationChannel : uint8_t
+		enum AnimationChannel : UInt8
 		{
 			AC_NONE = 0,
 			AC_POSITION = 1 << 0,
@@ -31,7 +31,7 @@ namespace FlagGG
 	{
 		struct AnimationKeyFrame
 		{
-			float time_{ 0.0f };
+			Real time_{ 0.0f };
 			Math::Vector3 position_{ Math::Vector3::ZERO };
 			Math::Quaternion rotation_{ Math::Quaternion::IDENTITY };
 			Math::Vector3 scale_{ Math::Vector3::ONE };
@@ -39,18 +39,18 @@ namespace FlagGG
 
 		struct FlagGG_API AnimationKeyFrameInterval
 		{
-			Math::Vector3 GetPosition(float time);
-			Math::Quaternion GetRotation(float time);
-			Math::Vector3 GetScale(float time);
+			Math::Vector3 GetPosition(Real time);
+			Math::Quaternion GetRotation(Real time);
+			Math::Vector3 GetScale(Real time);
 
 			const AnimationKeyFrame* left_{ nullptr };
 			const AnimationKeyFrame* right_{ nullptr };
-			float timeInterval_{ 1e6 };
+			Real timeInterval_{ 1e6 };
 		};
 
 		struct FlagGG_API AnimationTrack
 		{
-			AnimationKeyFrameInterval GetKeyFrameInterval(float currentTime, float totalTime) const;
+			AnimationKeyFrameInterval GetKeyFrameInterval(Real currentTime, Real totalTime) const;
 
 			Container::String name_;
 			Container::StringHash nameHash_;
@@ -67,7 +67,7 @@ namespace FlagGG
 			Container::String name_;
 			Container::StringHash nameHash_;
 			// 动画时长
-			float length_;
+			Real length_;
 			// 动画轨迹
 			Container::HashMap<Container::StringHash, AnimationTrack> tracks_;
 

@@ -25,7 +25,7 @@ SharedPtr<Camera> CameraOperation::GetCamera()
 	return camera_;
 }
 
-void CameraOperation::OnKeyDown(KeyState* keyState, unsigned keyCode)
+void CameraOperation::OnKeyDown(KeyState* keyState, UInt32 keyCode)
 {
 	// printf("OnKeyDown keyCode = %u\n", keyCode);
 
@@ -92,7 +92,7 @@ void CameraOperation::OnKeyDown(KeyState* keyState, unsigned keyCode)
 	//}
 }
 
-void CameraOperation::OnKeyUp(KeyState* keyState, unsigned keyCode)
+void CameraOperation::OnKeyUp(KeyState* keyState, UInt32 keyCode)
 {
 	// printf("OnKeyUp keyCode = %u\n", keyCode);
 }

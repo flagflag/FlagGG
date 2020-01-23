@@ -20,7 +20,7 @@ namespace FlagGG
 		{
 			OBJECT_OVERRIDE(AnimationComponent)
 		public:
-			void Update(float timeStep) override;
+			void Update(Real timeStep) override;
 
 			void SetAnimation(Animation* animation);
 
@@ -33,7 +33,7 @@ namespace FlagGG
 		protected:
 			void SetAnimationTrack();
 
-			void UpdateAnimation(float timeStep);
+			void UpdateAnimation(Real timeStep);
 
 			void UpdateBoneTrack(BoneTrack& boneTrack);
 
@@ -41,7 +41,7 @@ namespace FlagGG
 			Container::SharedPtr<Animation> animation_;
 			Container::PODVector<BoneTrack> boneTracks_;
 
-			float animTime_{ 0.0f };
+			Real animTime_{ 0.0f };
 			bool startPlay_{ false };
 			bool isPaused_{ false };
 			bool isLoop_{ false };

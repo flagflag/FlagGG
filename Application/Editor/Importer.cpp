@@ -91,10 +91,10 @@ namespace Importer
 		if (aiMsh->HasNormals())
 			ret.Push(VertexElement(VE_VECTOR3, SEM_NORMAL));
 
-		for (uint32_t i = 0; i < aiMsh->GetNumColorChannels() && i < MAX_CHANNELS; ++i)
+		for (UInt32 i = 0; i < aiMsh->GetNumColorChannels() && i < MAX_CHANNELS; ++i)
 			ret.Push(VertexElement(VE_UBYTE4_UNORM, SEM_COLOR, i));
 
-		for (uint32_t i = 0; i < aiMsh->GetNumUVChannels() && i < MAX_CHANNELS; ++i)
+		for (UInt32 i = 0; i < aiMsh->GetNumUVChannels() && i < MAX_CHANNELS; ++i)
 			ret.Push(VertexElement(VE_VECTOR2, SEM_TEXCOORD, i));
 
 		if (aiMsh->HasTangentsAndBitangents())
@@ -109,7 +109,7 @@ namespace Importer
 		return ret;
 	}
 
-	static void WriteVertex(StringBuffer& buffer, aiMesh* aiMsh, bool isSkinned, uint32_t index, 
+	static void WriteVertex(StringBuffer& buffer, aiMesh* aiMsh, bool isSkinned, UInt32 index, 
 		const Matrix3x4& vertexTransform, const Matrix3& normalTransform, BoundingBox& boudingBox)
 	{
 		Vector3 vertex = vertexTransform * ToVector3(aiMsh->mVertices[index]);
@@ -122,7 +122,7 @@ namespace Importer
 			WriteVector3(&buffer, normal);
 		}
 
-		for (uint32_t i = 0; i < aiMsh->GetNumColorChannels() && i < MAX_CHANNELS; ++i)
+		for (UInt32 i = 0; i < aiMsh->GetNumColorChannels() && i < MAX_CHANNELS; ++i)
 		{
 			Color color(
 				aiMsh->mColors[i][index].r,
@@ -132,7 +132,7 @@ namespace Importer
 			buffer.WriteUInt32(color.ToUInt());
 		}
 
-		for (uint32_t i = 0; i < aiMsh->GetNumUVChannels() && i < MAX_CHANNELS; ++i)
+		for (UInt32 i = 0; i < aiMsh->GetNumUVChannels() && i < MAX_CHANNELS; ++i)
 		{
 			Vector3 texCoord = ToVector3(aiMsh->mTextureCoords[i][index]);
 			buffer.WriteFloat(texCoord.x_);
@@ -159,7 +159,7 @@ namespace Importer
 		}
 	}
 
-	static void WriteIndex(StringBuffer& buffer, aiMesh* aiMsh, uint32_t index, bool largeIndeces)
+	static void WriteIndex(StringBuffer& buffer, aiMesh* aiMsh, UInt32 index, bool largeIndeces)
 	{
 		if (aiMsh->mFaces[index].mNumIndices != 3)
 			return;
@@ -226,26 +226,26 @@ namespace Importer
 			Vector<SharedPtr<IndexBuffer>> indexBuffers;
 			Vector<SharedPtr<Material>> materialList;
 			BoundingBox boundingBox;
-			for (uint32_t i = 0; i < aiNd->mNumMeshes; ++i)
+			for (UInt32 i = 0; i < aiNd->mNumMeshes; ++i)
 			{
 				aiMesh* aiMsh = aiScn->mMeshes[aiNd->mMeshes[i]];
 				PODVector<VertexElement> vertexElement = GetVertexElements(aiMsh, false);			
 				SharedPtr<VertexBuffer> vertexBuffer(new VertexBuffer());
 				vertexBuffer->SetSize(aiMsh->mNumVertices, vertexElement);
-				uint32_t vertexBufferSize = vertexBuffer->GetVertexSize() * vertexBuffer->GetVertexCount();
+				UInt32 vertexBufferSize = vertexBuffer->GetVertexSize() * vertexBuffer->GetVertexCount();
 				StringBuffer buffer1(vertexBuffer->Lock(0, vertexBufferSize), vertexBufferSize);
-				for (uint32_t j = 0; j < aiMsh->mNumVertices; ++j)
+				for (UInt32 j = 0; j < aiMsh->mNumVertices; ++j)
 				{
 					WriteVertex(buffer1, aiMsh, false, j, vertexTransform, normalTransform, boundingBox);
 				}
 				vertexBuffer->Unlock();
 
 				SharedPtr<IndexBuffer> indexBuffer(new IndexBuffer());
-				bool largeIndeces = aiMsh->mNumFaces > sizeof(uint16_t);
-				indexBuffer->SetSize(largeIndeces ? sizeof(uint32_t) : sizeof(uint16_t), aiMsh->mNumFaces * 3);
-				uint32_t indexBufferSize = indexBuffer->GetIndexSize() * indexBuffer->GetIndexCount();
+				bool largeIndeces = aiMsh->mNumFaces > sizeof(UInt16);
+				indexBuffer->SetSize(largeIndeces ? sizeof(UInt32) : sizeof(UInt16), aiMsh->mNumFaces * 3);
+				UInt32 indexBufferSize = indexBuffer->GetIndexSize() * indexBuffer->GetIndexCount();
 				StringBuffer buffer2(indexBuffer->Lock(0, indexBufferSize), indexBufferSize);
-				for (uint32_t j = 0; j < aiMsh->mNumFaces; ++j)
+				for (UInt32 j = 0; j < aiMsh->mNumFaces; ++j)
 				{
 					WriteIndex(buffer2, aiMsh, j, largeIndeces);
 				}
@@ -392,7 +392,7 @@ namespace Importer
 			meshComp->SetMaterial(material);
 		}
 
-		for (uint32_t i = 0; i < aiNd->mNumChildren; ++i)
+		for (UInt32 i = 0; i < aiNd->mNumChildren; ++i)
 		{
 			SharedPtr<Node> child = BuildNode(aiScn, aiNd->mChildren[i], transform);
 			node->AddChild(child);

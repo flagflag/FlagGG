@@ -30,9 +30,9 @@ namespace FlagGG
 			Container::SharedPtr<Shader> pixelShader_;
 
 			const Math::Matrix3x4* worldTransform_{ nullptr };
-			uint32_t numWorldTransform_{ 0 };
+			UInt32 numWorldTransform_{ 0 };
 
-			Container::HashMap<uint32_t, RenderPass>* renderPass_{ nullptr };
+			Container::HashMap<UInt32, RenderPass>* renderPass_{ nullptr };
 
 			Container::SharedPtr<ShaderParameters> shaderParameters_{ nullptr };
 		};

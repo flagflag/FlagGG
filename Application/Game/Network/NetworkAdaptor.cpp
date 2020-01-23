@@ -38,7 +38,7 @@ Network::~Network()
 	connector_.Reset();
 }
 
-void Network::Connect(const String& ip, uint16_t port)
+void Network::Connect(const String& ip, UInt16 port)
 {
 	connector_->Connect(ip.CString(), port);
 }
@@ -48,7 +48,7 @@ void Network::Disconnect()
 	connector_->Disconnect();
 }
 
-void Network::Send(const void* data, uint32_t dataSize)
+void Network::Send(const void* data, UInt32 dataSize)
 {
 	IOFrame::Buffer::IOBufferPtr buffer = IOFrame::TCP::CreateBuffer();
 	buffer->WriteStream(data, dataSize);

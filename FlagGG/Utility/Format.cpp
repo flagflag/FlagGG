@@ -12,7 +12,7 @@ namespace FlagGG
 			{
 				va_list va;
 				va_start(va, format);
-				size_t len = vsnprintf(nullptr, 0, format, va);
+				Size len = vsnprintf(nullptr, 0, format, va);
 
 				Container::String buffer;
 				buffer.Resize(len);
@@ -25,7 +25,7 @@ namespace FlagGG
 
 			bool IsInterger(const Container::String& content)
 			{
-				for (uint32_t i = 0; i < content.Length(); ++i)
+				for (UInt32 i = 0; i < content.Length(); ++i)
 				{
 					if (content[i] < '0' || content[i] > '9')
 					{
@@ -35,16 +35,16 @@ namespace FlagGG
 				return true;
 			}
 
-			int32_t ToInt(const Container::String& content)
+			Int32 ToInt(const Container::String& content)
 			{
-				int32_t result;
+				Int32 result;
 				sscanf(content.CString(), "%d", &result);
 				return result;
 			}
 
-			uint32_t ToUInt(const Container::String& content)
+			UInt32 ToUInt(const Container::String& content)
 			{
-				uint32_t result;
+				UInt32 result;
 				sscanf(content.CString(), "%u", &result);
 				return result;
 			}

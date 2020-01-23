@@ -13,8 +13,8 @@ namespace FlagGG
 	{
 		struct ShaderParameterDesc
 		{
-			uint32_t offset_;
-			uint32_t size_;
+			UInt32 offset_;
+			UInt32 size_;
 		};
 
 		class FlagGG_API ShaderParameters : public Container::RefCounted
@@ -28,7 +28,7 @@ namespace FlagGG
 				return AddParametersDefineImpl(key, sizeof(Type));
 			}
 
-			bool AddParametersDefineImpl(Container::StringHash key, uint32_t typeSize);
+			bool AddParametersDefineImpl(Container::StringHash key, UInt32 typeSize);
 
 			template < class Type >
 			bool SetValue(Container::StringHash key, Type value)
@@ -36,7 +36,7 @@ namespace FlagGG
 				return SetValueImpl(key, &value, sizeof(Type));
 			}
 
-			bool SetValueImpl(Container::StringHash key, const void* buffer, uint32_t bufferSize);
+			bool SetValueImpl(Container::StringHash key, const void* buffer, UInt32 bufferSize);
 
 			friend class RenderEngine;
 

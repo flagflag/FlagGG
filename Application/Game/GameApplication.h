@@ -47,8 +47,8 @@ protected:
 	void CreateNetwork();
 
 #ifdef _WIN32
-	void OnKeyDown(KeyState* keyState, unsigned keyCode);
-	void OnKeyUp(KeyState* keyState, unsigned keyCode);
+	void OnKeyDown(KeyState* keyState, UInt32 keyCode);
+	void OnKeyUp(KeyState* keyState, UInt32 keyCode);
 	void OnMouseDown(KeyState* keyState, MouseKey mouseKey);
 	void OnMouseUp(KeyState* keyState, MouseKey mouseKey);
 	void OnMouseMove(KeyState* keyState, const Vector2& delta);

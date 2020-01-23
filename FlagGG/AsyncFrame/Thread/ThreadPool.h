@@ -4,8 +4,7 @@
 #include "Export.h"
 
 #include "SharedThread.h"
-
-#include <vector>
+#include "Container/Vector.h"
 
 namespace FlagGG
 {
@@ -16,7 +15,7 @@ namespace FlagGG
 			class FlagGG_API ThreadPool : public KernelObject::Runtime, public Container::RefCounted
 			{
 			public:
-				ThreadPool(size_t thread_count);
+				ThreadPool(UInt32 threadCount);
 
 				~ThreadPool() override = default;
 
@@ -28,10 +27,10 @@ namespace FlagGG
 
 				void WaitForStop() override;
 
-				void WaitForStop(uint32_t wait_time) override;
+				void WaitForStop(UInt32 wait_time) override;
 
 			private:
-				std::vector < SharedThreadPtr > threads_;
+				Container::Vector<SharedThreadPtr> threads_;
 			};
 		}
 	}

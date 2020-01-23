@@ -9,7 +9,7 @@ namespace FlagGG
 		class FlagGG_API ConstantBuffer : public GPUBuffer
 		{
 		public:
-			uint32_t GetBindFlags() override;
+			UInt32 GetBindFlags() override;
 		};
 	}
 }

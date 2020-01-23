@@ -2,9 +2,8 @@
 #define __IO_CONNECTOR__
 
 #include "IOFrame/Buffer/IOBuffer.h"
+#include "Core/BaseTypes.h"
 #include "Export.h"
-
-#include <stdint.h>
 
 namespace FlagGG
 {
@@ -17,7 +16,7 @@ namespace FlagGG
 			public:
 				virtual ~IOConnector() = default;
 
-				virtual bool Connect(const char* ip, uint16_t port) = 0;
+				virtual bool Connect(const char* ip, UInt16 port) = 0;
 
 				virtual bool Disconnect() = 0;
 

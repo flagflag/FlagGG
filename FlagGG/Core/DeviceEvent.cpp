@@ -18,12 +18,12 @@ namespace FlagGG
 			return Math::IntVector2(point.x, point.y);
 		}
 
-		void Input::OnKeyDown(KeyState* keyState, uint32_t keyCode)
+		void Input::OnKeyDown(KeyState* keyState, UInt32 keyCode)
 		{
 			context_->SendEvent<InputEvent::KEY_DOWN_HANDLER>(InputEvent::KEY_DOWN, keyState, keyCode);
 		}
 
-		void Input::OnKeyUp(KeyState* keyState, uint32_t keyCode)
+		void Input::OnKeyUp(KeyState* keyState, UInt32 keyCode)
 		{
 			context_->SendEvent<InputEvent::KEY_UP_HANDLER>(InputEvent::KEY_UP, keyState, keyCode);
 		}

@@ -6,12 +6,12 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		uint32_t IndexBuffer::GetBindFlags()
+		UInt32 IndexBuffer::GetBindFlags()
 		{
 			return D3D11_BIND_INDEX_BUFFER;
 		}
 
-		bool IndexBuffer::SetSize(uint32_t indexSize, uint32_t indexCount)
+		bool IndexBuffer::SetSize(UInt32 indexSize, UInt32 indexCount)
 		{
 			indexSize_ = indexSize;
 			indexCount_ = indexCount;
@@ -19,12 +19,12 @@ namespace FlagGG
 			return GPUBuffer::SetSize(indexSize_ * indexCount_);
 		}
 
-		uint32_t IndexBuffer::GetIndexSize() const
+		UInt32 IndexBuffer::GetIndexSize() const
 		{
 			return indexSize_;
 		}
 
-		uint32_t IndexBuffer::GetIndexCount() const
+		UInt32 IndexBuffer::GetIndexCount() const
 		{
 			return indexCount_;
 		}

@@ -62,7 +62,7 @@ namespace FlagGG
 
 // --------------------------------------------------------------------------------------------------------------
 
-		Shader::Shader(Container::SharedArrayPtr<char> buffer, uint32_t bufferSize) :
+		Shader::Shader(Container::SharedArrayPtr<char> buffer, UInt32 bufferSize) :
 			GPUObject(),
 			buffer_(buffer),
 			bufferSize_(bufferSize)
@@ -101,7 +101,7 @@ namespace FlagGG
 
 			Container::PODVector<D3D_SHADER_MACRO> macros;
 
-			for (uint32_t i = 0; i < defines.Size(); ++i)
+			for (UInt32 i = 0; i < defines.Size(); ++i)
 			{
 				D3D_SHADER_MACRO macro;
 				macro.Name = defines[i].CString();
@@ -257,12 +257,12 @@ namespace FlagGG
 			return shaderCode_;
 		}
 
-		const Container::HashMap<uint32_t, ConstantBufferDesc>& Shader::GetContantBufferVariableDesc() const
+		const Container::HashMap<UInt32, ConstantBufferDesc>& Shader::GetContantBufferVariableDesc() const
 		{
 			return constantBufferDescs_;
 		}
 
-		const Container::HashMap<uint32_t, TextureDesc>& Shader::GetTextureDesc() const
+		const Container::HashMap<UInt32, TextureDesc>& Shader::GetTextureDesc() const
 		{
 			return textureDescs_;
 		}
@@ -287,8 +287,8 @@ namespace FlagGG
 				return;
 			}
 
-			Container::HashMap<Container::StringHash, uint32_t> bindMap;
-			for (uint32_t i = 0; i < shaderDesc.BoundResources; ++i)
+			Container::HashMap<Container::StringHash, UInt32> bindMap;
+			for (UInt32 i = 0; i < shaderDesc.BoundResources; ++i)
 			{
 				D3D11_SHADER_INPUT_BIND_DESC bindDesc;
 				hr = reflector->GetResourceBindingDesc(i, &bindDesc);
@@ -320,18 +320,18 @@ namespace FlagGG
 				}
 			}
 
-			for (uint32_t i = 0; i < shaderDesc.ConstantBuffers; ++i)
+			for (UInt32 i = 0; i < shaderDesc.ConstantBuffers; ++i)
 			{
 				ID3D11ShaderReflectionConstantBuffer* rConstantBuffer = reflector->GetConstantBufferByIndex(i);
 				D3D11_SHADER_BUFFER_DESC d3dBufferDesc;
 				rConstantBuffer->GetDesc(&d3dBufferDesc);
 
-				uint32_t index = bindMap[d3dBufferDesc.Name];
+				UInt32 index = bindMap[d3dBufferDesc.Name];
 				auto& bufferDesc = constantBufferDescs_[index];
 				bufferDesc.name_ = d3dBufferDesc.Name;
 				bufferDesc.size_ = d3dBufferDesc.Size;
 
-				for (uint32_t j = 0; j < d3dBufferDesc.Variables; ++j)
+				for (UInt32 j = 0; j < d3dBufferDesc.Variables; ++j)
 				{
 					ID3D11ShaderReflectionVariable* variable = rConstantBuffer->GetVariableByIndex(j);
 					D3D11_SHADER_VARIABLE_DESC d3dVariableDesc;

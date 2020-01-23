@@ -6,7 +6,6 @@
 #include "Container/Str.h"
 #include "Math/Rect.h"
 
-#include <stdint.h>
 #include <string>
 
 namespace FlagGG
@@ -23,9 +22,9 @@ namespace FlagGG
 			FlagGG_API void Sleep(uint64_t time);
 
 			// 单位：毫秒
-			FlagGG_API uint32_t Tick();
+			FlagGG_API UInt32 Tick();
 
-			FlagGG_API bool ParseCommand(const char** argv, uint32_t argc, Config::LJSONValue& result);
+			FlagGG_API bool ParseCommand(const char** argv, UInt32 argc, Config::LJSONValue& result);
 
 			FlagGG_API bool DirExists(const Container::String& path);
 
@@ -42,12 +41,12 @@ namespace FlagGG
 			public:
 				Timer();
 
-				uint32_t GetMilliSeconds(bool reset);
+				UInt32 GetMilliSeconds(bool reset);
 
 				void Reset();
 
 			private:
-				uint32_t startTime_;
+				UInt32 startTime_;
 			};
 		}
 	}

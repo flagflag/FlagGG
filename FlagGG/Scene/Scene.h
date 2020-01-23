@@ -27,7 +27,7 @@ namespace FlagGG
 
 			void Render(Container::PODVector<Graphics::RenderContext*>& renderContexts) override;
 
-			void HandleUpdate(float timeStep);
+			void HandleUpdate(Real timeStep);
 
 			void GetLights(Container::PODVector<Light*>& lights);
 

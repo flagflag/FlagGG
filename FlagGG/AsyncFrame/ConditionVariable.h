@@ -2,8 +2,7 @@
 
 #include "Export.h"
 #include "AsyncFrame/KernelObject/HandleObject.h"
-
-#include <stdint.h>
+#include "Core/BaseTypes.h"
 
 namespace FlagGG
 {
@@ -18,7 +17,7 @@ namespace FlagGG
 
 			void Wait(KernelObject::HandleObject* object);
 
-			void Wait(KernelObject::HandleObject* object, uint32_t waitTime);
+			void Wait(KernelObject::HandleObject* object, UInt32 waitTime);
 
 			void Trigger();
 		};

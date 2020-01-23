@@ -23,9 +23,9 @@ namespace FlagGG
 		VertexFormat::VertexFormat(Shader* VSShader, VertexBuffer** vertexBuffer)
 		{
 			Container::PODVector<D3D11_INPUT_ELEMENT_DESC> elementDescs;
-			uint32_t preSize = 0;
+			UInt32 preSize = 0;
 
-			for (uint32_t i = 0; i < MAX_VERTEX_BUFFER_COUNT && vertexBuffer[i]; ++i)
+			for (UInt32 i = 0; i < MAX_VERTEX_BUFFER_COUNT && vertexBuffer[i]; ++i)
 			{
 				const Container::PODVector<VertexElement>& elements = vertexBuffer[i]->GetElements();
 				bool isExisting = false;
@@ -34,7 +34,7 @@ namespace FlagGG
 				{
 					const char* semName = VERTEX_ELEMENT_SEM_NAME[element.vertexElementSemantic_];
 
-					for (uint32_t j = 0; j < preSize; ++j)
+					for (UInt32 j = 0; j < preSize; ++j)
 					{
 						if (elementDescs[j].SemanticName == semName && elementDescs[j].SemanticIndex == element.index_)
 						{

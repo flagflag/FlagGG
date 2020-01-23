@@ -21,7 +21,7 @@ namespace FlagGG
 
 				~TCPConnector() override = default;
 
-				bool Connect(const char* ip, uint16_t port) override;
+				bool Connect(const char* ip, UInt16 port) override;
 
 				bool Disconnect() override;
 

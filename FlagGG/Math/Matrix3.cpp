@@ -29,9 +29,9 @@ namespace FlagGG
 		}
 
 		Matrix3::Matrix3(
-			float v00, float v01, float v02,
-			float v10, float v11, float v12,
-			float v20, float v21, float v22) :
+			Real v00, Real v01, Real v02,
+			Real v10, Real v11, Real v12,
+			Real v20, Real v21, Real v22) :
 			m00_(v00),
 			m01_(v01),
 			m02_(v02),
@@ -44,7 +44,7 @@ namespace FlagGG
 		{
 		}
 
-		Matrix3::Matrix3(const float* data) :
+		Matrix3::Matrix3(const Real* data) :
 			m00_(data[0]),
 			m01_(data[1]),
 			m02_(data[2]),
@@ -59,8 +59,8 @@ namespace FlagGG
 
 		bool Matrix3::operator ==(const Matrix3& rhs) const
 		{
-			const float* leftData = Data();
-			const float* rightData = rhs.Data();
+			const Real* leftData = Data();
+			const Real* rightData = rhs.Data();
 
 			for (unsigned i = 0; i < 9; ++i)
 			{
@@ -115,7 +115,7 @@ namespace FlagGG
 				);
 		}
 
-		Matrix3 Matrix3::operator *(float rhs) const
+		Matrix3 Matrix3::operator *(Real rhs) const
 		{
 			return Matrix3(
 				m00_ * rhs,
@@ -152,7 +152,7 @@ namespace FlagGG
 			m22_ = scale.z_;
 		}
 
-		void Matrix3::SetScale(float scale)
+		void Matrix3::SetScale(Real scale)
 		{
 			m00_ = scale;
 			m11_ = scale;
@@ -209,8 +209,8 @@ namespace FlagGG
 
 		bool Matrix3::Equals(const Matrix3& rhs) const
 		{
-			const float* leftData = Data();
-			const float* rightData = rhs.Data();
+			const Real* leftData = Data();
+			const Real* rightData = rhs.Data();
 
 			for (unsigned i = 0; i < 9; ++i)
 			{
@@ -223,14 +223,14 @@ namespace FlagGG
 
 		Matrix3 Matrix3::Inverse() const
 		{
-			float det = m00_ * m11_ * m22_ +
+			Real det = m00_ * m11_ * m22_ +
 				m10_ * m21_ * m02_ +
 				m20_ * m01_ * m12_ -
 				m20_ * m11_ * m02_ -
 				m10_ * m01_ * m22_ -
 				m00_ * m21_ * m12_;
 
-			float invDet = 1.0f / det;
+			Real invDet = 1.0f / det;
 
 			return Matrix3(
 				(m11_ * m22_ - m21_ * m12_) * invDet,

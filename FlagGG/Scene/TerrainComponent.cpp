@@ -7,7 +7,7 @@ namespace FlagGG
 {
 	namespace Scene
 	{
-		void TerrainComponent::SetPathSize(uint32_t pathSize)
+		void TerrainComponent::SetPathSize(UInt32 pathSize)
 		{
 			if (pathSize_ != pathSize)
 			{
@@ -33,7 +33,7 @@ namespace FlagGG
 			{
 				material_ = material;
 
-				for (uint32_t i = 0; i < MAX_TEXTURE_CLASS; ++i)
+				for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
 				{
 					renderContext_.textures_.Push(material_->GetTexture(i));
 				}
@@ -77,11 +77,11 @@ namespace FlagGG
 			};
 
 			vertexBuffer_->SetSize(verticesNum_.x_ * verticesNum_.y_, vertexElements);
-			uint32_t vertexDataSize = vertexBuffer_->GetVertexCount() * vertexBuffer_->GetVertexSize();
+			UInt32 vertexDataSize = vertexBuffer_->GetVertexCount() * vertexBuffer_->GetVertexSize();
 			auto* buffer1 = vertexBuffer_->LockStaticBuffer(0, vertexDataSize);
 
-			indexBuffer_->SetSize(sizeof(uint32_t), (verticesNum_.x_ - 1) * (verticesNum_.y_ - 1) * 6);
-			uint32_t indexDataSize = indexBuffer_->GetIndexCount() * indexBuffer_->GetIndexSize();
+			indexBuffer_->SetSize(sizeof(UInt32), (verticesNum_.x_ - 1) * (verticesNum_.y_ - 1) * 6);
+			UInt32 indexDataSize = indexBuffer_->GetIndexCount() * indexBuffer_->GetIndexSize();
 			auto* buffer2 = indexBuffer_->LockStaticBuffer(0, indexDataSize);
 
 			// 地形高度图相关
@@ -89,11 +89,11 @@ namespace FlagGG
 			unsigned imgComps = heightMap_->GetComponents();
 			unsigned imgRow = heightMap_->GetWidth() * imgComps;
 
-			for (uint32_t x = 0; x < verticesNum_.x_; ++x)
+			for (UInt32 x = 0; x < verticesNum_.x_; ++x)
 			{
-				for (uint32_t y = 0; y < verticesNum_.y_; ++y)
+				for (UInt32 y = 0; y < verticesNum_.y_; ++y)
 				{
-					float height = src[imgRow * (verticesNum_.x_ - 1 - x) + y];
+					Real height = src[imgRow * (verticesNum_.x_ - 1 - x) + y];
 					IOFrame::Buffer::WriteVector3(buffer1, Math::Vector3(x, height, y));
 					IOFrame::Buffer::WriteVector3(buffer1, Math::Vector3(1, 1, 1));
 					IOFrame::Buffer::WriteVector2(buffer1, Math::Vector2(1.0f * x / verticesNum_.x_, 1.0f * y / verticesNum_.y_));

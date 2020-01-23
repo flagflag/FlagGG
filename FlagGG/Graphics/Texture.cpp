@@ -21,7 +21,7 @@ namespace FlagGG
 			SAFE_RELEASE(sampler_);
 		}
 
-		void Texture::SetNumLevels(uint32_t levels)
+		void Texture::SetNumLevels(UInt32 levels)
 		{
 			if (usage_ > TEXTURE_RENDERTARGET)
 				requestedLevels_ = 1;
@@ -29,22 +29,22 @@ namespace FlagGG
 				requestedLevels_ = levels;
 		}
 
-		int32_t Texture::GetWidth() const
+		Int32 Texture::GetWidth() const
 		{
 			return width_;
 		}
 
-		int32_t Texture::GetHeight() const
+		Int32 Texture::GetHeight() const
 		{
 			return height_;
 		}
 
-		int32_t Texture::GetDepth() const
+		Int32 Texture::GetDepth() const
 		{
 			return depth_;
 		}
 
-		int32_t Texture::GetLevelWidth(uint32_t level) const
+		Int32 Texture::GetLevelWidth(UInt32 level) const
 		{
 			if (level > levels_)
 			{
@@ -53,7 +53,7 @@ namespace FlagGG
 			return Math::Max(width_ >> level, 1);
 		}
 
-		int32_t Texture::GetLevelHeight(uint32_t level) const
+		Int32 Texture::GetLevelHeight(UInt32 level) const
 		{
 			if (level > levels_)
 			{
@@ -62,7 +62,7 @@ namespace FlagGG
 			return Math::Max(height_ >> level, 1);
 		}
 
-		int32_t Texture::GetLevelDepth(uint32_t level) const
+		Int32 Texture::GetLevelDepth(UInt32 level) const
 		{
 			if (level > levels_)
 			{
@@ -71,19 +71,19 @@ namespace FlagGG
 			return Math::Max(depth_ >> level, 1);
 		}
 
-		uint32_t Texture::GetRowDataSize(int32_t width) const
+		UInt32 Texture::GetRowDataSize(Int32 width) const
 		{
 			switch (format_)
 			{
 			case DXGI_FORMAT_R8_UNORM:
 			case DXGI_FORMAT_A8_UNORM:
-				return (uint32_t)width;
+				return (UInt32)width;
 
 			case DXGI_FORMAT_R8G8_UNORM:
 			case DXGI_FORMAT_R16_UNORM:
 			case DXGI_FORMAT_R16_FLOAT:
 			case DXGI_FORMAT_R16_TYPELESS:
-				return (uint32_t)(width * 2);
+				return (UInt32)(width * 2);
 
 			case DXGI_FORMAT_R8G8B8A8_UNORM:
 			case DXGI_FORMAT_R16G16_UNORM:
@@ -91,21 +91,21 @@ namespace FlagGG
 			case DXGI_FORMAT_R32_FLOAT:
 			case DXGI_FORMAT_R24G8_TYPELESS:
 			case DXGI_FORMAT_R32_TYPELESS:
-				return (uint32_t)(width * 4);
+				return (UInt32)(width * 4);
 
 			case DXGI_FORMAT_R16G16B16A16_UNORM:
 			case DXGI_FORMAT_R16G16B16A16_FLOAT:
-				return (uint32_t)(width * 8);
+				return (UInt32)(width * 8);
 
 			case DXGI_FORMAT_R32G32B32A32_FLOAT:
-				return (uint32_t)(width * 16);
+				return (UInt32)(width * 16);
 
 			case DXGI_FORMAT_BC1_UNORM:
-				return (uint32_t)(((width + 3) >> 2) * 8);
+				return (UInt32)(((width + 3) >> 2) * 8);
 
 			case DXGI_FORMAT_BC2_UNORM:
 			case DXGI_FORMAT_BC3_UNORM:
-				return (uint32_t)(((width + 3) >> 2) * 16);
+				return (UInt32)(((width + 3) >> 2) * 16);
 
 			default:
 				return 0;
@@ -117,7 +117,7 @@ namespace FlagGG
 			return format_ == DXGI_FORMAT_BC1_UNORM || format_ == DXGI_FORMAT_BC2_UNORM || format_ == DXGI_FORMAT_BC3_UNORM;
 		}
 
-		uint32_t Texture::GetComponents() const
+		UInt32 Texture::GetComponents() const
 		{
 			if (!width_ || IsCompressed())
 			{
@@ -133,9 +133,9 @@ namespace FlagGG
 			SAFE_RELEASE(shaderResourceView_);
 		}
 
-		uint32_t Texture::CheckMaxLevels(int32_t width, int32_t height, uint32_t requestedLevels)
+		UInt32 Texture::CheckMaxLevels(Int32 width, Int32 height, UInt32 requestedLevels)
 		{
-			uint32_t maxLevels = 1;
+			UInt32 maxLevels = 1;
 			while (width > 1 || height > 1)
 			{
 				++maxLevels;
@@ -151,9 +151,9 @@ namespace FlagGG
 			return requestedLevels;
 		}
 
-		uint32_t Texture::CheckMaxLevels(int32_t width, int32_t height, int32_t depth, uint32_t requestedLevels)
+		UInt32 Texture::CheckMaxLevels(Int32 width, Int32 height, Int32 depth, UInt32 requestedLevels)
 		{
-			uint32_t maxLevels = 1;
+			UInt32 maxLevels = 1;
 			while (width > 1 || height > 1)
 			{
 				++maxLevels;
@@ -170,7 +170,7 @@ namespace FlagGG
 			return requestedLevels;
 		}
 
-		uint32_t Texture::GetSRGBFormat(uint32_t format)
+		UInt32 Texture::GetSRGBFormat(UInt32 format)
 		{
 			if (format == DXGI_FORMAT_R8G8B8A8_UNORM)
 				return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
@@ -183,7 +183,7 @@ namespace FlagGG
 			return format;
 		}
 
-		uint32_t Texture::GetDSVFormat(uint32_t format)
+		UInt32 Texture::GetDSVFormat(UInt32 format)
 		{
 			if (format == DXGI_FORMAT_R24G8_TYPELESS)
 				return DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -194,7 +194,7 @@ namespace FlagGG
 			return format;
 		}
 
-		uint32_t Texture::GetSRVFormat(uint32_t format)
+		UInt32 Texture::GetSRVFormat(UInt32 format)
 		{
 			if (format == DXGI_FORMAT_R24G8_TYPELESS)
 				return DXGI_FORMAT_R24_UNORM_X8_TYPELESS;

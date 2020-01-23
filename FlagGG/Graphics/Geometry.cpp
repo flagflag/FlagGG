@@ -9,7 +9,7 @@ namespace FlagGG
 			primitiveType_ = type;
 		}
 
-		void Geometry::SetVertexBuffer(uint32_t index, VertexBuffer* vertexBuffer)
+		void Geometry::SetVertexBuffer(UInt32 index, VertexBuffer* vertexBuffer)
 		{
 			if (index >= vertexBuffers_.Size())
 				vertexBuffers_.Resize(index + 1);
@@ -22,7 +22,7 @@ namespace FlagGG
 			indexBuffer_ = indexBuffer;
 		}
 
-		void Geometry::SetDataRange(uint32_t indexStart, uint32_t indexCount)
+		void Geometry::SetDataRange(UInt32 indexStart, UInt32 indexCount)
 		{
 			indexStart_ = indexStart;
 			indexCount_ = indexCount;
@@ -40,7 +40,7 @@ namespace FlagGG
 			return vertexBuffers_;
 		}
 
-		VertexBuffer* Geometry::GetVertexBuffer(uint32_t index) const
+		VertexBuffer* Geometry::GetVertexBuffer(UInt32 index) const
 		{
 			if (index >= vertexBuffers_.Size())
 				return nullptr;
@@ -62,12 +62,12 @@ namespace FlagGG
 			return primitiveType_;
 		}
 
-		uint32_t Geometry::GetIndexStart() const
+		UInt32 Geometry::GetIndexStart() const
 		{
 			return indexStart_;
 		}
 
-		uint32_t Geometry::GetIndexCount() const
+		UInt32 Geometry::GetIndexCount() const
 		{
 			return indexCount_;
 		}

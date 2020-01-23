@@ -4,7 +4,7 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		bool ShaderParameters::AddParametersDefineImpl(Container::StringHash key, uint32_t typeSize)
+		bool ShaderParameters::AddParametersDefineImpl(Container::StringHash key, UInt32 typeSize)
 		{
 			if (descs.Contains(key))
 				return false;
@@ -16,7 +16,7 @@ namespace FlagGG
 			desc.offset_ = dataBuffer_->GetSize();
 			desc.size_ = typeSize;
 			dataBuffer_->Seek(desc.offset_);
-			for (uint32_t i = 0; i < desc.size_; ++i)
+			for (UInt32 i = 0; i < desc.size_; ++i)
 			{
 				dataBuffer_->WriteUInt8(0);
 			}
@@ -24,7 +24,7 @@ namespace FlagGG
 			return true;
 		}
 
-		bool ShaderParameters::SetValueImpl(Container::StringHash key, const void* buffer, uint32_t bufferSize)
+		bool ShaderParameters::SetValueImpl(Container::StringHash key, const void* buffer, UInt32 bufferSize)
 		{
 			if (!dataBuffer_)
 				return false;
@@ -43,7 +43,7 @@ namespace FlagGG
 			if (!dataBuffer_)
 				return;
 
-			uint32_t dataSize = dataBuffer_->GetSize();
+			UInt32 dataSize = dataBuffer_->GetSize();
 			if (buffer->SetSize(dataSize))
 			{
 				void* data = buffer->Lock(0, dataSize);

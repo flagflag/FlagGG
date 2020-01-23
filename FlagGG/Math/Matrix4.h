@@ -3,6 +3,7 @@
 
 #include "Export.h"
 #include "Define.h"
+#include "Core/BaseTypes.h"
 
 namespace FlagGG
 {
@@ -19,12 +20,12 @@ namespace FlagGG
 			Matrix4(const Matrix4& matrix) NOEXCEPT;
 
 			Matrix4(
-				float v00, float v01, float v02, float v03,
-				float v10, float v11, float v12, float v13,
-				float v20, float v21, float v22, float v23,
-				float v30, float v31, float v32, float v33) NOEXCEPT;
+				Real v00, Real v01, Real v02, Real v03,
+				Real v10, Real v11, Real v12, Real v13,
+				Real v20, Real v21, Real v22, Real v23,
+				Real v30, Real v31, Real v32, Real v33) NOEXCEPT;
 
-			explicit Matrix4(const float* data) NOEXCEPT;
+			explicit Matrix4(const Real* data) NOEXCEPT;
 
 			Matrix4& operator =(const Matrix4& rhs);
 
@@ -39,7 +40,7 @@ namespace FlagGG
 			Matrix4 operator -(const Matrix4& rhs) const;
 
 			// 矩阵分量乘rhs
-			Matrix4 operator *(float rhs) const;
+			Matrix4 operator *(Real rhs) const;
 
 			// 矩阵乘法
 			Matrix4 operator *(const Matrix4& rhs) const;
@@ -55,30 +56,30 @@ namespace FlagGG
 			Matrix4 Inverse() const;
 
 			// 矩阵数据数组
-			const float* Data() const;
+			const Real* Data() const;
 
 			// 矩阵元素 <=> [i][j]
-			float Element(unsigned i, unsigned j) const;
+			Real Element(unsigned i, unsigned j) const;
 
-			float m00_;
-			float m01_;
-			float m02_;
-			float m03_;
-			float m10_;
-			float m11_;
-			float m12_;
-			float m13_;
-			float m20_;
-			float m21_;
-			float m22_;
-			float m23_;
-			float m30_;
-			float m31_;
-			float m32_;
-			float m33_;
+			Real m00_;
+			Real m01_;
+			Real m02_;
+			Real m03_;
+			Real m10_;
+			Real m11_;
+			Real m12_;
+			Real m13_;
+			Real m20_;
+			Real m21_;
+			Real m22_;
+			Real m23_;
+			Real m30_;
+			Real m31_;
+			Real m32_;
+			Real m33_;
 
 			// 批量转置
-			static void BulkTranspose(float* dest, const float* src, unsigned count);
+			static void BulkTranspose(Real* dest, const Real* src, unsigned count);
 
 			static const Matrix4 ZERO;
 			static const Matrix4 IDENTITY;

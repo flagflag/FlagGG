@@ -19,24 +19,24 @@ namespace FlagGG
 
 		Vector3 Color::ToHSL() const
 		{
-			float min, max;
+			Real min, max;
 			Bounds(&min, &max, true);
 
-			float h = Hue(min, max);
-			float s = SaturationHSL(min, max);
-			float l = (max + min) * 0.5f;
+			Real h = Hue(min, max);
+			Real s = SaturationHSL(min, max);
+			Real l = (max + min) * 0.5f;
 
 			return Vector3(h, s, l);
 		}
 
 		Vector3 Color::ToHSV() const
 		{
-			float min, max;
+			Real min, max;
 			Bounds(&min, &max, true);
 
-			float h = Hue(min, max);
-			float s = SaturationHSV(min, max);
-			float v = max;
+			Real h = Hue(min, max);
+			Real s = SaturationHSV(min, max);
+			Real v = max;
 
 			return Vector3(h, s, v);
 		}
@@ -49,72 +49,72 @@ namespace FlagGG
 			r_ = ((color >> 0u) & 0xffu) / 255.0f;
 		}
 
-		void Color::FromHSL(float h, float s, float l, float a)
+		void Color::FromHSL(Real h, Real s, Real l, Real a)
 		{
-			float c;
+			Real c;
 			if (l < 0.5f)
 				c = (1.0f + (2.0f * l - 1.0f)) * s;
 			else
 				c = (1.0f - (2.0f * l - 1.0f)) * s;
 
-			float m = l - 0.5f * c;
+			Real m = l - 0.5f * c;
 
 			FromHCM(h, c, m);
 
 			a_ = a;
 		}
 
-		void Color::FromHSV(float h, float s, float v, float a)
+		void Color::FromHSV(Real h, Real s, Real v, Real a)
 		{
-			float c = v * s;
-			float m = v - c;
+			Real c = v * s;
+			Real m = v - c;
 
 			FromHCM(h, c, m);
 
 			a_ = a;
 		}
 
-		float Color::Chroma() const
+		Real Color::Chroma() const
 		{
-			float min, max;
+			Real min, max;
 			Bounds(&min, &max, true);
 
 			return max - min;
 		}
 
-		float Color::Hue() const
+		Real Color::Hue() const
 		{
-			float min, max;
+			Real min, max;
 			Bounds(&min, &max, true);
 
 			return Hue(min, max);
 		}
 
-		float Color::SaturationHSL() const
+		Real Color::SaturationHSL() const
 		{
-			float min, max;
+			Real min, max;
 			Bounds(&min, &max, true);
 
 			return SaturationHSL(min, max);
 		}
 
-		float Color::SaturationHSV() const
+		Real Color::SaturationHSV() const
 		{
-			float min, max;
+			Real min, max;
 			Bounds(&min, &max, true);
 
 			return SaturationHSV(min, max);
 		}
 
-		float Color::Lightness() const
+		Real Color::Lightness() const
 		{
-			float min, max;
+			Real min, max;
 			Bounds(&min, &max, true);
 
 			return (max + min) * 0.5f;
 		}
 
-		void Color::Bounds(float* min, float* max, bool clipped) const
+		void Color::Bounds(Real* min, Real* max, bool clipped) const
 		{
 			assert(min && max);
 
@@ -152,7 +152,7 @@ namespace FlagGG
 			}
 		}
 
-		float Color::MaxRGB() const
+		Real Color::MaxRGB() const
 		{
 			if (r_ > g_)
 				return (r_ > b_) ? r_ : b_;
@@ -160,7 +160,7 @@ namespace FlagGG
 				return (g_ > b_) ? g_ : b_;
 		}
 
-		float Color::MinRGB() const
+		Real Color::MinRGB() const
 		{
 			if (r_ < g_)
 				return (r_ < b_) ? r_ : b_;
@@ -168,9 +168,9 @@ namespace FlagGG
 				return (g_ < b_) ? g_ : b_;
 		}
 
-		float Color::Range() const
+		Real Color::Range() const
 		{
-			float min, max;
+			Real min, max;
 			Bounds(&min, &max);
 			return max - min;
 		}
@@ -195,9 +195,9 @@ namespace FlagGG
 				a_ = 1.0f - a_;
 		}
 
-		Color Color::Lerp(const Color& rhs, float t) const
+		Color Color::Lerp(const Color& rhs, Real t) const
 		{
-			float invT = 1.0f - t;
+			Real invT = 1.0f - t;
 			return Color(
 				r_ * invT + rhs.r_ * t,
 				g_ * invT + rhs.g_ * t,
@@ -213,9 +213,9 @@ namespace FlagGG
 			return Container::String(tempBuffer);
 		}
 
-		float Color::Hue(float min, float max) const
+		Real Color::Hue(Real min, Real max) const
 		{
-			float chroma = max - min;
+			Real chroma = max - min;
 
 			// If chroma equals zero, hue is undefined
 			if (chroma <= EPS)
@@ -228,13 +228,13 @@ namespace FlagGG
 				return (4.0f * chroma - g_ + r_) / (6.0f * chroma);
 			else
 			{
-				float r = (g_ - b_) / (6.0f * chroma);
+				Real r = (g_ - b_) / (6.0f * chroma);
 				return (r < 0.0f) ? 1.0f + r : ((r >= 1.0f) ? r - 1.0f : r);
 			}
 
 		}
 
-		float Color::SaturationHSV(float min, float max) const
+		Real Color::SaturationHSV(Real min, Real max) const
 		{
 			// 避免除零，结果不正确
 			if (max <= EPS)
@@ -243,13 +243,13 @@ namespace FlagGG
 			return 1.0f - (min / max);
 		}
 
-		float Color::SaturationHSL(float min, float max) const
+		Real Color::SaturationHSL(Real min, Real max) const
 		{
 			// 避免除零，结果不正确
 			if (max <= EPS || min >= 1.0f - EPS)
 				return 0.0f;
 
-			float hl = (max + min);
+			Real hl = (max + min);
 			if (hl <= 1.0f)
 				return (max - min) / hl;
 			else
@@ -257,13 +257,13 @@ namespace FlagGG
 
 		}
 
-		void Color::FromHCM(float h, float c, float m)
+		void Color::FromHCM(Real h, Real c, Real m)
 		{
 			if (h < 0.0f || h >= 1.0f)
 				h -= floorf(h);
 
-			float hs = h * 6.0f;
-			float x = c * (1.0f - Math::Abs(fmodf(hs, 2.0f) - 1.0f));
+			Real hs = h * 6.0f;
+			Real x = c * (1.0f - Math::Abs(fmodf(hs, 2.0f) - 1.0f));
 
 			if (hs < 2.0f)
 			{

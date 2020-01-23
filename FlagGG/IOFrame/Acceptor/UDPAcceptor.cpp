@@ -19,7 +19,7 @@ namespace FlagGG
 				handler_(handler)
 			{}
 
-			bool UDPAcceptor::Bind(const char* ip, uint16_t port)
+			bool UDPAcceptor::Bind(const char* ip, UInt16 port)
 			{
 				auto* rakPeer = threadPool_->getService();
 				if (!rakPeer->IsActive())

@@ -10,19 +10,19 @@ namespace FlagGG
 		class FlagGG_API VertexBuffer : public GPUBuffer
 		{
 		public:
-			uint32_t GetBindFlags() override;
+			UInt32 GetBindFlags() override;
 
-			bool SetSize(uint32_t vertexCount, const Container::PODVector<VertexElement>& vertexElements);
+			bool SetSize(UInt32 vertexCount, const Container::PODVector<VertexElement>& vertexElements);
 
-			uint32_t GetVertexSize() const;
+			UInt32 GetVertexSize() const;
 
-			uint32_t GetVertexCount() const;
+			UInt32 GetVertexCount() const;
 
 			const Container::PODVector<VertexElement>& GetElements() const;
 
-			static Container::PODVector<VertexElement> GetElements(uint32_t elementMask);
+			static Container::PODVector<VertexElement> GetElements(UInt32 elementMask);
 
-			static uint32_t GetVertexSize(const Container::PODVector<VertexElement>& elements);
+			static UInt32 GetVertexSize(const Container::PODVector<VertexElement>& elements);
 
 		protected:
 			void UpdateOffset();
@@ -30,8 +30,8 @@ namespace FlagGG
 		private:
 			Container::PODVector<VertexElement> vertexElements_;
 
-			uint32_t vertexSize_{ 0 };
-			uint32_t vertexCount_{ 0 };
+			UInt32 vertexSize_{ 0 };
+			UInt32 vertexCount_{ 0 };
 		};
 	}
 }

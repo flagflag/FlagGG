@@ -17,11 +17,11 @@ namespace FlagGG
 			Matrix3(const Matrix3& matrix) NOEXCEPT = default;
 
 			Matrix3(
-				float v00, float v01, float v02,
-				float v10, float v11, float v12,
-				float v20, float v21, float v22);
+				Real v00, Real v01, Real v02,
+				Real v10, Real v11, Real v12,
+				Real v20, Real v21, Real v22);
 
-			explicit Matrix3(const float* data) NOEXCEPT;
+			explicit Matrix3(const Real* data) NOEXCEPT;
 
 			Matrix3& operator =(const Matrix3& rhs) NOEXCEPT = default;
 
@@ -35,13 +35,13 @@ namespace FlagGG
 
 			Matrix3 operator -(const Matrix3& rhs) const;
 
-			Matrix3 operator *(float rhs) const;
+			Matrix3 operator *(Real rhs) const;
 
 			Matrix3 operator *(const Matrix3& rhs) const;
 
 			void SetScale(const Vector3& scale);
 
-			void SetScale(float scale);
+			void SetScale(Real scale);
 
 			Vector3 Scale() const;
 
@@ -55,9 +55,9 @@ namespace FlagGG
 
 			Matrix3 Inverse() const;
 
-			const float* Data() const { return &m00_; }
+			const Real* Data() const { return &m00_; }
 
-			float Element(unsigned i, unsigned j) const { return Data()[i * 3 + j]; }
+			Real Element(unsigned i, unsigned j) const { return Data()[i * 3 + j]; }
 
 			Vector3 Row(unsigned i) const { return Vector3(Element(i, 0), Element(i, 1), Element(i, 2)); }
 
@@ -65,17 +65,17 @@ namespace FlagGG
 
 			Container::String ToString() const;
 
-			float m00_;
-			float m01_;
-			float m02_;
-			float m10_;
-			float m11_;
-			float m12_;
-			float m20_;
-			float m21_;
-			float m22_;
+			Real m00_;
+			Real m01_;
+			Real m02_;
+			Real m10_;
+			Real m11_;
+			Real m12_;
+			Real m20_;
+			Real m21_;
+			Real m22_;
 
-			static void BulkTranspose(float* dest, const float* src, unsigned count)
+			static void BulkTranspose(Real* dest, const Real* src, unsigned count)
 			{
 				for (unsigned i = 0; i < count; ++i)
 				{
@@ -98,6 +98,6 @@ namespace FlagGG
 			static const Matrix3 IDENTITY;
 		};
 
-		inline Matrix3 operator *(float lhs, const Matrix3& rhs) { return rhs * lhs; }
+		inline Matrix3 operator *(Real lhs, const Matrix3& rhs) { return rhs * lhs; }
 	}
 }

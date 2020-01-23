@@ -32,7 +32,7 @@ namespace FlagGG
 			{
 			}
 
-			explicit IntVector2(const float* data) :
+			explicit IntVector2(const Real* data) :
 				x_((int)data[0]),
 				y_((int)data[1])
 			{
@@ -108,7 +108,7 @@ namespace FlagGG
 
 			unsigned ToHash() const { return (unsigned)x_ * 31 + (unsigned)y_; }
 
-			float Length() const { return sqrtf((float)(x_ * x_ + y_ * y_)); }
+			Real Length() const { return sqrtf((Real)(x_ * x_ + y_ * y_)); }
 
 			int x_;
 			int y_;
@@ -133,18 +133,18 @@ namespace FlagGG
 			Vector2(const Vector2& vector) NOEXCEPT = default;
 
 			explicit Vector2(const IntVector2& vector) NOEXCEPT :
-			x_((float)vector.x_),
-				y_((float)vector.y_)
+			x_((Real)vector.x_),
+				y_((Real)vector.y_)
 			{
 			}
 
-			Vector2(float x, float y) NOEXCEPT :
+			Vector2(Real x, Real y) NOEXCEPT :
 			x_(x),
 				y_(y)
 			{
 			}
 
-			explicit Vector2(const float* data) NOEXCEPT :
+			explicit Vector2(const Real* data) NOEXCEPT :
 			x_(data[0]),
 				y_(data[1])
 			{
@@ -162,11 +162,11 @@ namespace FlagGG
 
 			Vector2 operator -(const Vector2& rhs) const { return Vector2(x_ - rhs.x_, y_ - rhs.y_); }
 
-			Vector2 operator *(float rhs) const { return Vector2(x_ * rhs, y_ * rhs); }
+			Vector2 operator *(Real rhs) const { return Vector2(x_ * rhs, y_ * rhs); }
 
 			Vector2 operator *(const Vector2& rhs) const { return Vector2(x_ * rhs.x_, y_ * rhs.y_); }
 
-			Vector2 operator /(float rhs) const { return Vector2(x_ / rhs, y_ / rhs); }
+			Vector2 operator /(Real rhs) const { return Vector2(x_ / rhs, y_ / rhs); }
 
 			Vector2 operator /(const Vector2& rhs) const { return Vector2(x_ / rhs.x_, y_ / rhs.y_); }
 
@@ -184,7 +184,7 @@ namespace FlagGG
 				return *this;
 			}
 
-			Vector2& operator *=(float rhs)
+			Vector2& operator *=(Real rhs)
 			{
 				x_ *= rhs;
 				y_ *= rhs;
@@ -198,9 +198,9 @@ namespace FlagGG
 				return *this;
 			}
 
-			Vector2& operator /=(float rhs)
+			Vector2& operator /=(Real rhs)
 			{
-				float invRhs = 1.0f / rhs;
+				Real invRhs = 1.0f / rhs;
 				x_ *= invRhs;
 				y_ *= invRhs;
 				return *this;
@@ -215,30 +215,30 @@ namespace FlagGG
 
 			void Normalize()
 			{
-				float lenSquared = LengthSquared();
+				Real lenSquared = LengthSquared();
 				if (!Math::Equals(lenSquared, 1.0f) && lenSquared > 0.0f)
 				{
-					float invLen = 1.0f / sqrtf(lenSquared);
+					Real invLen = 1.0f / sqrtf(lenSquared);
 					x_ *= invLen;
 					y_ *= invLen;
 				}
 			}
 
-			float Length() const { return sqrtf(x_ * x_ + y_ * y_); }
+			Real Length() const { return sqrtf(x_ * x_ + y_ * y_); }
 
-			float LengthSquared() const { return x_ * x_ + y_ * y_; }
+			Real LengthSquared() const { return x_ * x_ + y_ * y_; }
 
-			float DotProduct(const Vector2& rhs) const { return x_ * rhs.x_ + y_ * rhs.y_; }
+			Real DotProduct(const Vector2& rhs) const { return x_ * rhs.x_ + y_ * rhs.y_; }
 
-			float AbsDotProduct(const Vector2& rhs) const { return Math::Abs(x_ * rhs.x_) + Math::Abs(y_ * rhs.y_); }
+			Real AbsDotProduct(const Vector2& rhs) const { return Math::Abs(x_ * rhs.x_) + Math::Abs(y_ * rhs.y_); }
 
-			float ProjectOntoAxis(const Vector2& axis) const { return DotProduct(axis.Normalized()); }
+			Real ProjectOntoAxis(const Vector2& axis) const { return DotProduct(axis.Normalized()); }
 
-			float Angle(const Vector2& rhs) const { return Math::Acos(DotProduct(rhs) / (Length() * rhs.Length())); }
+			Real Angle(const Vector2& rhs) const { return Math::Acos(DotProduct(rhs) / (Length() * rhs.Length())); }
 
 			Vector2 Abs() const { return Vector2(Math::Abs(x_), Math::Abs(y_)); }
 
-			Vector2 Lerp(const Vector2& rhs, float t) const { return *this * (1.0f - t) + rhs * t; }
+			Vector2 Lerp(const Vector2& rhs, Real t) const { return *this * (1.0f - t) + rhs * t; }
 
 			bool Equals(const Vector2& rhs) const { return Math::Equals(x_, rhs.x_) && Math::Equals(y_, rhs.y_); }
 
@@ -246,22 +246,22 @@ namespace FlagGG
 
 			Vector2 Normalized() const
 			{
-				float lenSquared = LengthSquared();
+				Real lenSquared = LengthSquared();
 				if (!Math::Equals(lenSquared, 1.0f) && lenSquared > 0.0f)
 				{
-					float invLen = 1.0f / sqrtf(lenSquared);
+					Real invLen = 1.0f / sqrtf(lenSquared);
 					return *this * invLen;
 				}
 				else
 					return *this;
 			}
 
-			const float* Data() const { return &x_; }
+			const Real* Data() const { return &x_; }
 
 			Container::String ToString() const;
 
-			float x_;
-			float y_;
+			Real x_;
+			Real y_;
 
 			static const Vector2 ZERO;
 			static const Vector2 LEFT;

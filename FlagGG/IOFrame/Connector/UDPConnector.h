@@ -17,7 +17,7 @@ namespace FlagGG
 			public:
 				UDPConnector(Handler::EventHandlerPtr handler, IOFrame::IOThreadPoolPtr& thread_pool);
 
-				bool Connect(const char* ip, uint16_t port) override;
+				bool Connect(const char* ip, UInt16 port) override;
 
 				bool Disconnect() override;
 

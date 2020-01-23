@@ -7,11 +7,11 @@ namespace FlagGG
 	{
 		void Skeleton::Load(IOFrame::Buffer::IOBuffer* stream)
 		{
-			uint32_t boneNum = 0;
+			UInt32 boneNum = 0;
 			stream->ReadUInt32(boneNum);
 			bones_.Reserve(boneNum);
 
-			for (uint32_t i = 0; i < boneNum; ++i)
+			for (UInt32 i = 0; i < boneNum; ++i)
 			{
 				Bone bone;
 				IOFrame::Buffer::ReadString(stream, bone.name_);

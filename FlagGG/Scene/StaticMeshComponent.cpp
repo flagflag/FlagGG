@@ -5,7 +5,7 @@ namespace FlagGG
 {
 	namespace Scene
 	{
-		void StaticMeshComponent::Update(float timeStep)
+		void StaticMeshComponent::Update(Real timeStep)
 		{
 		}
 
@@ -72,11 +72,11 @@ namespace FlagGG
 			renderContext_.geometryType_ = GEOMETRY_STATIC;
 			renderContext_.geometries_.Clear();
 			//const auto& geometries_ = model_->GetGeometries();
-			//for (uint32_t i = 0; i < geometries_.Size(); ++i)
+			//for (UInt32 i = 0; i < geometries_.Size(); ++i)
 			//{
 			//	renderContext_.geometries_.Push(geometries_[i][0]);
 			//}
-			for (uint32_t i = 0; i < model_->GetNumGeometries(); ++i)
+			for (UInt32 i = 0; i < model_->GetNumGeometries(); ++i)
 			{
 				renderContext_.geometries_.Push(Container::SharedPtr<Graphics::Geometry>(model_->GetGeometry(i, 0)));
 			}
@@ -88,7 +88,7 @@ namespace FlagGG
 
 		void StaticMeshComponent::OnMaterial()
 		{
-			for (uint32_t i = 0; i < MAX_TEXTURE_CLASS; ++i)
+			for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
 			{
 				renderContext_.textures_.Push(material_->GetTexture(i));
 			}

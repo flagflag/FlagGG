@@ -31,7 +31,7 @@ namespace FlagGG
 		private:
 			void NetThread();
 
-			void WaitForStop(uint32_t wait_time) override { };
+			void WaitForStop(UInt32 wait_time) override { };
 
 		private:
 			SLNet::RakPeerInterface*					rakPeer_;

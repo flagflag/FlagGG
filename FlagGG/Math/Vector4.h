@@ -16,11 +16,11 @@ namespace FlagGG
 
 			Vector4(const Vector4& vector) NOEXCEPT = default;
 
-			Vector4(const Vector3& vector, float w) NOEXCEPT;
+			Vector4(const Vector3& vector, Real w) NOEXCEPT;
 
-			Vector4(float x, float y, float z, float w) NOEXCEPT;
+			Vector4(Real x, Real y, Real z, Real w) NOEXCEPT;
 
-			explicit Vector4(const float* data) NOEXCEPT;
+			explicit Vector4(const Real* data) NOEXCEPT;
 
 			Vector4& operator =(const Vector4& rhs) NOEXCEPT = default;
 
@@ -34,11 +34,11 @@ namespace FlagGG
 
 			Vector4 operator -(const Vector4& rhs) const;
 
-			Vector4 operator *(float rhs) const;
+			Vector4 operator *(Real rhs) const;
 
 			Vector4 operator *(const Vector4& rhs) const;
 
-			Vector4 operator /(float rhs) const;
+			Vector4 operator /(Real rhs) const;
 
 			Vector4 operator /(const Vector4& rhs) const;
 
@@ -46,42 +46,42 @@ namespace FlagGG
 
 			Vector4& operator -=(const Vector4& rhs);
 
-			Vector4& operator *=(float rhs);
+			Vector4& operator *=(Real rhs);
 
 			Vector4& operator *=(const Vector4& rhs);
 
-			Vector4& operator /=(float rhs);
+			Vector4& operator /=(Real rhs);
 
 			Vector4& operator /=(const Vector4& rhs);
 
-			float operator[](unsigned index) const;
+			Real operator[](unsigned index) const;
 
-			float& operator[](unsigned index);
+			Real& operator[](unsigned index);
 
-			float DotProduct(const Vector4& rhs) const;
+			Real DotProduct(const Vector4& rhs) const;
 
-			float AbsDotProduct(const Vector4& rhs) const;
+			Real AbsDotProduct(const Vector4& rhs) const;
 
-			float ProjectOntoAxis(const Vector3& axis) const;
+			Real ProjectOntoAxis(const Vector3& axis) const;
 
 			Vector4 Abs() const;
 
-			Vector4 Lerp(const Vector4& rhs, float t) const;
+			Vector4 Lerp(const Vector4& rhs, Real t) const;
 
 			bool Equals(const Vector4& rhs) const;
 
 			bool IsNaN() const;
 
-			const float* Data() const;
+			const Real* Data() const;
 
 			Container::String ToString() const;
 
 			unsigned ToHash() const;
 				
-			float x_;
-			float y_;
-			float z_;
-			float w_;
+			Real x_;
+			Real y_;
+			Real z_;
+			Real w_;
 
 			static const Vector4 ZERO;
 			static const Vector4 ONE;

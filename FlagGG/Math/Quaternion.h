@@ -17,15 +17,15 @@ namespace FlagGG
 
 			Quaternion(const Quaternion& quat) NOEXCEPT;
 
-			Quaternion(float w, float x, float y, float z) NOEXCEPT;
+			Quaternion(Real w, Real x, Real y, Real z) NOEXCEPT;
 
-			explicit Quaternion(const float* data) NOEXCEPT;
+			explicit Quaternion(const Real* data) NOEXCEPT;
 
-			Quaternion(float angle, const Vector3& axis) NOEXCEPT;
+			Quaternion(Real angle, const Vector3& axis) NOEXCEPT;
 
-			explicit Quaternion(float angle) NOEXCEPT;
+			explicit Quaternion(Real angle) NOEXCEPT;
 
-			Quaternion(float x, float y, float z) NOEXCEPT;
+			Quaternion(Real x, Real y, Real z) NOEXCEPT;
 
 			Quaternion(const Vector3& start, const Vector3& end) NOEXCEPT;
 
@@ -36,13 +36,13 @@ namespace FlagGG
 			Quaternion& operator =(const Quaternion& rhs) NOEXCEPT;
 			Quaternion& operator +=(const Quaternion& rhs);
 
-			Quaternion& operator *=(float rhs);
+			Quaternion& operator *=(Real rhs);
 
 			bool operator ==(const Quaternion& rhs) const;
 
 			bool operator !=(const Quaternion& rhs) const;
 
-			Quaternion operator *(float rhs) const;
+			Quaternion operator *(Real rhs) const;
 
 			Quaternion operator -() const;
 
@@ -54,9 +54,9 @@ namespace FlagGG
 
 			Vector3 operator *(const Vector3& rhs) const;
 
-			void FromAngleAxis(float angle, const Vector3& axis);
+			void FromAngleAxis(Real angle, const Vector3& axis);
 
-			void FromEulerAngles(float x, float y, float z);
+			void FromEulerAngles(Real x, Real y, Real z);
 
 			void FromRotationTo(const Vector3& start, const Vector3& end);
 
@@ -72,9 +72,9 @@ namespace FlagGG
 
 			Quaternion Inverse() const;
 
-			float LengthSquared() const;
+			Real LengthSquared() const;
 
-			float DotProduct(const Quaternion& rhs) const;
+			Real DotProduct(const Quaternion& rhs) const;
 
 			bool Equals(const Quaternion& rhs) const;
 
@@ -84,30 +84,30 @@ namespace FlagGG
 
 			Vector3 EulerAngles() const;
 
-			float YawAngle() const;
+			Real YawAngle() const;
 
-			float PitchAngle() const;
+			Real PitchAngle() const;
 
-			float RollAngle() const;
+			Real RollAngle() const;
 
 			Vector3 Axis() const;
 
-			float Angle() const;
+			Real Angle() const;
 
 			Matrix3 RotationMatrix() const;
 
-			Quaternion Slerp(const Quaternion& rhs, float t) const;
+			Quaternion Slerp(const Quaternion& rhs, Real t) const;
 
-			Quaternion Nlerp(const Quaternion& rhs, float t, bool shortestPath = false) const;
+			Quaternion Nlerp(const Quaternion& rhs, Real t, bool shortestPath = false) const;
 
-			const float* Data() const { return &w_; }
+			const Real* Data() const { return &w_; }
 
 			Container::String ToString() const;
 
-			float w_;
-			float x_;
-			float y_;
-			float z_;
+			Real w_;
+			Real x_;
+			Real y_;
+			Real z_;
 
 			static const Quaternion IDENTITY;
 		};

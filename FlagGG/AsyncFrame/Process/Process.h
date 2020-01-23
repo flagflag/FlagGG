@@ -7,10 +7,10 @@
 #include "AsyncFrame/KernelObject/Runtime.h"
 #include "Container/Ptr.h"
 #include "Container/RefCounted.h"
+#include "Core/BaseTypes.h"
 
 #include <string>
 #include <vector>
-#include <stdint.h>
 
 namespace FlagGG
 {
@@ -31,9 +31,9 @@ namespace FlagGG
 
 				void Add(const std::wstring& param_name, const std::wstring& param);
 
-				void Add(const std::wstring& param_name, int32_t param);
+				void Add(const std::wstring& param_name, Int32 param);
 
-				void Add(const std::wstring& param_name, int64_t param);
+				void Add(const std::wstring& param_name, Int64 param);
 
 				void Add(const std::wstring& param_name, double param);
 
@@ -45,9 +45,9 @@ namespace FlagGG
 
 				void Add(const std::string& param_name, std::string& param);
 
-				void Add(const std::string& param_name, int32_t param);
+				void Add(const std::string& param_name, Int32 param);
 
-				void Add(const std::string& param_name, int64_t param);
+				void Add(const std::string& param_name, Int64 param);
 
 				void Add(const std::string& param_name, double param);
 
@@ -66,18 +66,18 @@ namespace FlagGG
 
 				~ProcessObject() override = default;
 
-				uint32_t GetID();
+				UInt32 GetID();
 
 				void Stop() override;
 
 				void WaitForStop() override;
 
-				void WaitForStop(uint32_t wait_time) override;
+				void WaitForStop(UInt32 wait_time) override;
 
 				friend class Builder;
 
 			private:
-				uint32_t id_;
+				UInt32 id_;
 			};
 
 			typedef Container::SharedPtr < ProcessObject > ProcessObjectPtr;

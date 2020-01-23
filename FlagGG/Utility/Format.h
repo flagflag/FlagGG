@@ -2,8 +2,7 @@
 
 #include "Export.h"
 #include "Container/Str.h"
-
-#include <stdint.h>
+#include "Core/BaseTypes.h"
 
 namespace FlagGG
 {
@@ -15,9 +14,9 @@ namespace FlagGG
 
 			FlagGG_API bool IsInterger(const Container::String& content);
 
-			FlagGG_API int32_t ToInt(const Container::String& content);
+			FlagGG_API Int32 ToInt(const Container::String& content);
 
-			FlagGG_API uint32_t ToUInt(const Container::String& content);
+			FlagGG_API UInt32 ToUInt(const Container::String& content);
 
 			FlagGG_API float ToFloat(const Container::String& content);
 

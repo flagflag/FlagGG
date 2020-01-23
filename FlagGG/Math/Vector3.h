@@ -30,11 +30,11 @@ namespace FlagGG
 		public:
 			Vector3() NOEXCEPT;
 
-			Vector3(float x, float y, float z) NOEXCEPT;
+			Vector3(Real x, Real y, Real z) NOEXCEPT;
 
 			Vector3(const Vector3& other) NOEXCEPT;
 
-			Vector3(const Vector2& vector, float z) NOEXCEPT;
+			Vector3(const Vector2& vector, Real z) NOEXCEPT;
 
 			Vector3& operator =(const Vector3& rhs) NOEXCEPT = default;
 
@@ -48,11 +48,11 @@ namespace FlagGG
 
 			Vector3 operator -(const Vector3& rhs) const;
 
-			Vector3 operator *(float rhs) const;
+			Vector3 operator *(Real rhs) const;
 
 			Vector3 operator *(const Vector3& rhs) const;
 
-			Vector3 operator /(float rhs) const;
+			Vector3 operator /(Real rhs) const;
 
 			Vector3 operator /(const Vector3& rhs) const;
 
@@ -60,33 +60,33 @@ namespace FlagGG
 
 			Vector3& operator -=(const Vector3& rhs);
 
-			Vector3& operator *=(float rhs);
+			Vector3& operator *=(Real rhs);
 
 			Vector3& operator *=(const Vector3& rhs);
 
-			Vector3& operator /=(float rhs);
+			Vector3& operator /=(Real rhs);
 
 			Vector3& operator /=(const Vector3& rhs);
 
 			void Normalize();
 
-			float Length() const;
+			Real Length() const;
 
-			float LengthSquared() const;
+			Real LengthSquared() const;
 
-			float DotProduct(const Vector3& rhs) const;
+			Real DotProduct(const Vector3& rhs) const;
 
-			float AbsDotProduct(const Vector3& rhs) const;
+			Real AbsDotProduct(const Vector3& rhs) const;
 
-			float ProjectOntoAxis(const Vector3& axis) const;
+			Real ProjectOntoAxis(const Vector3& axis) const;
 
 			Vector3 ProjectOntoPlane(const Vector3& origin, const Vector3& normal) const;
 
 			Vector3 ProjectOntoLine(const Vector3& from, const Vector3& to, bool clamped = false) const;
 
-			float DistanceToPoint(const Vector3& point) const;
+			Real DistanceToPoint(const Vector3& point) const;
 
-			float DistanceToPlane(const Vector3& origin, const Vector3& normal) const;
+			Real DistanceToPlane(const Vector3& origin, const Vector3& normal) const;
 
 			Vector3 Orthogonalize(const Vector3& axis) const;
 
@@ -94,11 +94,11 @@ namespace FlagGG
 
 			Vector3 Abs() const;
 
-			Vector3 Lerp(const Vector3& rhs, float t) const;
+			Vector3 Lerp(const Vector3& rhs, Real t) const;
 
 			bool Equals(const Vector3& rhs) const;
 
-			float Angle(const Vector3& rhs) const;
+			Real Angle(const Vector3& rhs) const;
 
 			bool IsNaN() const;
 
@@ -106,11 +106,11 @@ namespace FlagGG
 
 			Container::String ToString() const;
 
-			float x_;
+			Real x_;
 
-			float y_;
+			Real y_;
 
-			float z_;
+			Real z_;
 
 			static const Vector3 ZERO;
 			static const Vector3 LEFT;
@@ -122,7 +122,7 @@ namespace FlagGG
 			static const Vector3 ONE;
 		};
 
-		inline Vector3 operator *(float lhs, const Vector3& rhs) { return rhs * lhs; }
+		inline Vector3 operator *(Real lhs, const Vector3& rhs) { return rhs * lhs; }
 
 		inline Vector3 VectorLerp(const Vector3& lhs, const Vector3& rhs, const Vector3& t) { return lhs + (rhs - lhs) * t; }
 

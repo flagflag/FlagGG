@@ -1,6 +1,7 @@
 #include "Lua/LuaVM.h"
 #include "Log.h"
 #include "Container/ArrayPtr.h"
+#include "Core/BaseTypes.h"
 
 namespace FlagGG
 {
@@ -42,7 +43,7 @@ namespace FlagGG
 
 		void LuaVM::RegisterCEvents(const Container::Vector<LuaProxy>& librarys)
 		{
-			for (uint32_t i = 0; i < librarys.Size(); ++i)
+			for (UInt32 i = 0; i < librarys.Size(); ++i)
 			{
 				lua_pushcfunction(luaState_, librarys[i].func_);
 				lua_setglobal(luaState_, librarys[i].name_);
@@ -53,7 +54,7 @@ namespace FlagGG
 		{
 			lua_newtable(luaState_);
 			Container::SharedArrayPtr<luaL_Reg> libs(new luaL_Reg[librarys.Size() + 1]);
-			for (uint32_t i = 0; i < librarys.Size(); ++i)
+			for (UInt32 i = 0; i < librarys.Size(); ++i)
 			{
 				libs[i] = { librarys[i].name_, librarys[i].func_ };
 			}

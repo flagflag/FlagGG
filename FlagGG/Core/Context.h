@@ -7,8 +7,7 @@
 #include "Container/HashMap.h"
 #include "Core/EventDefine.h"
 #include "Container/Ptr.h"
-
-#include <stdint.h>
+#include "Core/BaseTypes.h"
 
 namespace FlagGG
 {
@@ -77,14 +76,14 @@ namespace FlagGG
 			}
 
 #ifdef _WIN32
-			template <> void RegisterVariable<int8_t>(int8_t* variable, const Container::String& variableName);
-			template <> void RegisterVariable<uint8_t>(uint8_t* variable, const Container::String& variableName);
-			template <> void RegisterVariable<int16_t>(int16_t* variable, const Container::String& variableName);
-			template <> void RegisterVariable<uint16_t>(uint16_t* variable, const Container::String& variableName);
-			template <> void RegisterVariable<int32_t>(int32_t* variable, const Container::String& variableName);
-			template <> void RegisterVariable<uint32_t>(uint32_t* variable, const Container::String& variableName);
-			template <> void RegisterVariable<int64_t>(int64_t* variable, const Container::String& variableName);
-			template <> void RegisterVariable<uint64_t>(uint64_t* variable, const Container::String& variableName);
+			template <> void RegisterVariable<Int8>(Int8* variable, const Container::String& variableName);
+			template <> void RegisterVariable<UInt8>(UInt8* variable, const Container::String& variableName);
+			template <> void RegisterVariable<Int16>(Int16* variable, const Container::String& variableName);
+			template <> void RegisterVariable<UInt16>(UInt16* variable, const Container::String& variableName);
+			template <> void RegisterVariable<Int32>(Int32* variable, const Container::String& variableName);
+			template <> void RegisterVariable<UInt32>(UInt32* variable, const Container::String& variableName);
+			template <> void RegisterVariable<Int64>(Int64* variable, const Container::String& variableName);
+			template <> void RegisterVariable<UInt64>(UInt64* variable, const Container::String& variableName);
 #endif
 
 			template < class VariableType >
@@ -99,7 +98,7 @@ namespace FlagGG
 			}
 
 			template < class FunctionType >
-			void RegisterEvent(uint32_t eventId, const FunctionType& func)
+			void RegisterEvent(UInt32 eventId, const FunctionType& func)
 			{
 				FunctionType* pFunc = new FunctionType(func);
 				Container::SharedPtr<EventWrapper> wrapper(new EventWrapperImpl<FunctionType>(pFunc));
@@ -107,7 +106,7 @@ namespace FlagGG
 			}
 
 			template < class FunctionType, class ... Args >
-			void SendEvent(uint32_t eventId, Args&& ... args)
+			void SendEvent(UInt32 eventId, Args&& ... args)
 			{
 				auto it = evnets_.Find(eventId);
 				if (it != evnets_.End())
@@ -122,7 +121,7 @@ namespace FlagGG
 
 		private:
 			Container::HashMap<Container::String, Container::SharedPtr<VariableWrapper>> wrappers_;
-			Container::HashMap<uint32_t, Container::Vector<Container::SharedPtr<EventWrapper>>> evnets_;
+			Container::HashMap<UInt32, Container::Vector<Container::SharedPtr<EventWrapper>>> evnets_;
 		};
 	}
 }

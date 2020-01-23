@@ -14,7 +14,7 @@ namespace FlagGG
 	{
 		struct FlagGG_API OctreeNode
 		{
-			OctreeNode(const Math::BoundingBox& box, uint32_t level);
+			OctreeNode(const Math::BoundingBox& box, UInt32 level);
 
 			~OctreeNode();
 
@@ -24,7 +24,7 @@ namespace FlagGG
 
 			OctreeNode* children_[8]{ nullptr };
 
-			uint32_t level_;
+			UInt32 level_;
 			Math::BoundingBox box_;
 			Math::BoundingBox cullingBox_;
 			Container::PODVector<Component*> components_;
@@ -46,14 +46,14 @@ namespace FlagGG
 
 			void InsertElement(OctreeNode* node, Component* component);
 
-			OctreeNode* GetOrCreateChild(OctreeNode* node, unsigned index);
+			OctreeNode* GetOrCreateChild(OctreeNode* node, UInt32 index);
 
 			void RaycastImpl(OctreeNode* node, RayOctreeQuery& query);
 
 		private:
 			OctreeNode root_;
 
-			uint32_t maxLevel_;
+			UInt32 maxLevel_;
 
 			Container::Allocator<OctreeNode> nodeAllocator_;
 		};

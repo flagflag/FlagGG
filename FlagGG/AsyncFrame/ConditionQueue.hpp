@@ -73,7 +73,7 @@ namespace FlagGG
 				return true;
 			}
 
-			uint32_t Size()
+			UInt32 Size()
 			{
 				Locker locker(mutex_);
 

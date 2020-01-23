@@ -2,7 +2,7 @@
 
 namespace FlagGG
 {
-	void ServerEngine::SetFrameRate(float rate)
+	void ServerEngine::SetFrameRate(Real rate)
 	{
 		frameRate_ = rate;
 	}
@@ -31,15 +31,15 @@ namespace FlagGG
 
 	void ServerEngine::RunFrame()
 	{
-		uint32_t deltaTime = timer_.GetMilliSeconds(true);
-		float timeStep = (float)deltaTime / 1000.0f;
+		UInt32 deltaTime = timer_.GetMilliSeconds(true);
+		Real timeStep = (Real)deltaTime / 1000.0f;
 		elapsedTime_ += timeStep;
 
 		context_->SendEvent<Frame::FRAME_BEGIN_HANDLER>(Frame::FRAME_BEGIN, timeStep);
 		context_->SendEvent<Frame::LOGIC_UPDATE_HANDLER>(Frame::LOGIC_UPDATE, timeStep);
 		context_->SendEvent<Frame::FRAME_END_HANDLER>(Frame::FRAME_END, timeStep);
 
-		float sleepTime = 1000.0f / frameRate_ - timer_.GetMilliSeconds(false);
+		Real sleepTime = 1000.0f / frameRate_ - timer_.GetMilliSeconds(false);
 		if (sleepTime > 0.0f)
 		{
 			SystemHelper::Sleep(sleepTime);

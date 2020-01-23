@@ -22,7 +22,7 @@ namespace FlagGG
 
 		struct NodeUpdateContext
 		{
-			float timeStep_;
+			Real timeStep_;
 			Scene* scene_;
 			Octree* octree_;
 		};

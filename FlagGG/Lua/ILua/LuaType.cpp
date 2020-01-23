@@ -10,9 +10,9 @@ namespace FlagGG
 			refCount_(nullptr)
 		{ }
 
-		LuaFunction::LuaFunction(lua_State* luaState, int32_t idx) :
+		LuaFunction::LuaFunction(lua_State* luaState, Int32 idx) :
 			luaState_(luaState),
-			refCount_(new int32_t{ 1 })
+			refCount_(new Int32{ 1 })
 		{
 			lua_pushvalue(luaState_, idx);
 			ref_ = luaL_ref(luaState_, LUA_REGISTRYINDEX);

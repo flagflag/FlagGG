@@ -55,15 +55,15 @@ namespace FlagGG
 
 			~Window() override;
 
-			uint32_t GetWidth();
+			UInt32 GetWidth();
 
-			uint32_t GetHeight();
+			UInt32 GetHeight();
 
 			Math::IntVector2 GetMousePos() const;
 
 			bool IsForegroundWindow() const;
 
-			void Resize(uint32_t width, uint32_t height);
+			void Resize(UInt32 width, UInt32 height);
 
 			void* GetWindow();
 
@@ -87,7 +87,7 @@ namespace FlagGG
 
 			void CreateSwapChain();
 
-			void UpdateSwapChain(uint32_t width, uint32_t height);
+			void UpdateSwapChain(UInt32 width, UInt32 height);
 
 		private:
 			Core::Context* context_;
@@ -96,7 +96,7 @@ namespace FlagGG
 			ID3D11Texture2D* depthTexture_{ nullptr };
 			Container::SharedPtr<Viewport> viewport_;
 
-			uint32_t multiSample_{ 1 };
+			UInt32 multiSample_{ 1 };
 
 			bool sRGB_{ true };
 
@@ -106,8 +106,8 @@ namespace FlagGG
 
 			Math::IntRect rect_;
 
-			uint32_t vertexSize_{ 0 };
-			uint32_t vertexCount_{ 0 };
+			UInt32 vertexSize_{ 0 };
+			UInt32 vertexCount_{ 0 };
 
 			POINT mousePos_;
 		};

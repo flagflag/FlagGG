@@ -4,8 +4,7 @@
 #include "Container/Str.h"
 #include "Container/Vector.h"
 #include "Container/HashMap.h"
-
-#include <stdint.h>
+#include "Core/BaseTypes.h"
 
 namespace FlagGG
 {
@@ -38,8 +37,8 @@ namespace FlagGG
 		public:
 			LJSONValue(LJSONValueType type = LJSON_NULL);
 			LJSONValue(bool value);
-			LJSONValue(int32_t value);
-			LJSONValue(uint32_t value);
+			LJSONValue(Int32 value);
+			LJSONValue(UInt32 value);
 			LJSONValue(float value);
 			LJSONValue(double value);
 			LJSONValue(const char* value);
@@ -51,16 +50,16 @@ namespace FlagGG
 			virtual ~LJSONValue();
 
 			// 取值
-			LJSONValue& operator[](uint32_t index);
-			const LJSONValue& operator[](uint32_t index) const;
+			LJSONValue& operator[](UInt32 index);
+			const LJSONValue& operator[](UInt32 index) const;
 
 			LJSONValue& operator[](const LJSONString& key);
 			const LJSONValue& operator[](const LJSONString& key) const;
 
 			// 赋值
 			LJSONValue& operator=(bool value);
-			LJSONValue& operator=(int32_t value);
-			LJSONValue& operator=(uint32_t value);
+			LJSONValue& operator=(Int32 value);
+			LJSONValue& operator=(UInt32 value);
 			LJSONValue& operator=(float value);
 			LJSONValue& operator=(double value);
 			LJSONValue& operator=(const char* value);
@@ -78,8 +77,8 @@ namespace FlagGG
 
 			// 获得具体值
 			const bool GetBool() const;
-			const int32_t GetInt() const;
-			const uint32_t GetUInt() const;
+			const Int32 GetInt() const;
+			const UInt32 GetUInt() const;
 			double GetDouble() const;
 			const LJSONString& GetString() const;
 			const LJSONArray& GetArray() const;
@@ -87,8 +86,8 @@ namespace FlagGG
 
 			// 弱判断的Get方法
 			const bool ToBool() const;
-			const int32_t ToInt() const;
-			const uint32_t ToUInt() const;
+			const Int32 ToInt() const;
+			const UInt32 ToUInt() const;
 			const double ToDouble() const;
 
 			// 数组操作
@@ -96,7 +95,7 @@ namespace FlagGG
 
 			// 其他
 			bool Contains(const LJSONString& key) const;
-			uint32_t Size() const;
+			UInt32 Size() const;
 
 			LJSONConstIterator Begin() const;
 			LJSONConstIterator End() const;

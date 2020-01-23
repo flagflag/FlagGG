@@ -16,7 +16,7 @@ Terrain::Terrain(Context* context) :
 	context_(context)
 { }
 
-void Terrain::Create(uint32_t pathSize)
+void Terrain::Create(UInt32 pathSize)
 {
 	RemoveAllChild();
 

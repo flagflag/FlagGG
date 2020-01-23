@@ -7,7 +7,7 @@ namespace FlagGG
 {
 	namespace Scene
 	{
-		void AnimationComponent::Update(float timeStep)
+		void AnimationComponent::Update(Real timeStep)
 		{
 			if (startPlay_ && !isPaused_)
 			{
@@ -15,7 +15,7 @@ namespace FlagGG
 			}
 		}
 
-		void AnimationComponent::UpdateAnimation(float timeStep)
+		void AnimationComponent::UpdateAnimation(Real timeStep)
 		{
 			animTime_ += timeStep;
 

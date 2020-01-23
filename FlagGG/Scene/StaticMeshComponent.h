@@ -14,7 +14,7 @@ namespace FlagGG
 		{
 			OBJECT_OVERRIDE(StaticMeshComponent);
 		public:
-			void Update(float timeStep) override;
+			void Update(Real timeStep) override;
 
 			bool IsDrawable() override;
 

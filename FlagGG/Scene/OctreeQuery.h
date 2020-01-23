@@ -30,7 +30,7 @@ namespace FlagGG
 			
 			Math::Vector3 position_;
 			Math::Vector3 normal_;
-			float distance_;
+			Real distance_;
 			Component* component_{ nullptr };
 			Node* node_{ nullptr };
 		};
@@ -39,7 +39,7 @@ namespace FlagGG
 		{
 		public:
 			RayOctreeQuery(Container::PODVector<RayQueryResult>& results, const Math::Ray& ray,
-				RayQueryLevel level = RAY_QUERY_TRIANGLE, float maxDistance = Math::F_INFINITY) :
+				RayQueryLevel level = RAY_QUERY_TRIANGLE, Real maxDistance = Math::F_INFINITY) :
 				results_(results),
 				ray_(ray),
 				level_(level),
@@ -48,7 +48,7 @@ namespace FlagGG
 
 			Container::PODVector<RayQueryResult>& results_;
 			RayQueryLevel level_;
-			float maxDistance_;
+			Real maxDistance_;
 			Math::Ray ray_;
 		};
 	}

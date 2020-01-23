@@ -3,8 +3,7 @@
 
 #include "Export.h"
 #include "Container/Str.h"
-
-#include <stdint.h>
+#include "Core/BaseTypes.h"
 
 namespace FlagGG
 {
@@ -20,17 +19,17 @@ namespace FlagGG
 			INSIDE
 		};
 
-		extern FlagGG_API const float PI;
-		extern FlagGG_API const float EPS;
-		extern FlagGG_API const float F_MIN_INT;
-		extern FlagGG_API const float F_MAX_INT;
-		extern FlagGG_API const float F_MIN_UNSIGNED;
-		extern FlagGG_API const float F_MAX_UNSIGNED;
-		extern FlagGG_API const float F_INFINITY;
-		extern FlagGG_API const float F_MIN_NEARCLIP;
-		extern FlagGG_API const float DEGTORAD;
-		extern FlagGG_API const float DEGTORAD_2;
-		extern FlagGG_API const float RADTODEG;
+		extern FlagGG_API const Real PI;
+		extern FlagGG_API const Real EPS;
+		extern FlagGG_API const Real F_MIN_INT;
+		extern FlagGG_API const Real F_MAX_INT;
+		extern FlagGG_API const Real F_MIN_UNSIGNED;
+		extern FlagGG_API const Real F_MAX_UNSIGNED;
+		extern FlagGG_API const Real F_INFINITY;
+		extern FlagGG_API const Real F_MIN_NEARCLIP;
+		extern FlagGG_API const Real DEGTORAD;
+		extern FlagGG_API const Real DEGTORAD_2;
+		extern FlagGG_API const Real RADTODEG;
 
 		template < class T >
 		inline T Max(T value1, T value2)
@@ -44,56 +43,56 @@ namespace FlagGG
 			return value1 < value2 ? value1 : value2;
 		}
 
-		bool FlagGG_API IsNaN(float number);
+		bool FlagGG_API IsNaN(Real number);
 
-		float FlagGG_API Sin(float angle);
+		Real FlagGG_API Sin(Real angle);
 
-		float FlagGG_API Cos(float angle);
+		Real FlagGG_API Cos(Real angle);
 
-		float FlagGG_API Tan(float angle);
+		Real FlagGG_API Tan(Real angle);
 
-		float FlagGG_API Asin(float angle);
+		Real FlagGG_API Asin(Real angle);
 
-		float FlagGG_API Acos(float angle);
+		Real FlagGG_API Acos(Real angle);
 
-		float FlagGG_API Atan(float angle);
-
-
-		float FlagGG_API Abs(float number);
-
-		float FlagGG_API Sqrt(float number);
-
-		float FlagGG_API Fract(float number);
+		Real FlagGG_API Atan(Real angle);
 
 
-		int FlagGG_API Compare(float _1, float _2);
+		Real FlagGG_API Abs(Real number);
 
-		float FlagGG_API Equals(float _1, float _2);
+		Real FlagGG_API Sqrt(Real number);
 
-		float FlagGG_API Clamp(float target, float min, float max);
+		Real FlagGG_API Fract(Real number);
 
-		uint32_t FlagGG_API FloatToRawIntBits(float value);
 
-		uint32_t FlagGG_API HashString(const char* str);
+		int FlagGG_API Compare(Real _1, Real _2);
+
+		Real FlagGG_API Equals(Real _1, Real _2);
+
+		Real FlagGG_API Clamp(Real target, Real min, Real max);
+
+		UInt32 FlagGG_API FloatToRawIntBits(Real value);
+
+		UInt32 FlagGG_API HashString(const char* str);
 
 		// 位移矩阵
-		Matrix4 FlagGG_API MatrixTranslation(float dx, float dy, float dz);
+		Matrix4 FlagGG_API MatrixTranslation(Real dx, Real dy, Real dz);
 
 		// X轴顺时针旋转矩阵
 		// https://baike.baidu.com/item/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/3265181?fr=aladdin
-		Matrix4 FlagGG_API MatrixRotationX(float angle);
+		Matrix4 FlagGG_API MatrixRotationX(Real angle);
 
 		// Y轴顺时针旋转矩阵
 		// https://baike.baidu.com/item/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/3265181?fr=aladdin
-		Matrix4 FlagGG_API MatrixRotationY(float angle);
+		Matrix4 FlagGG_API MatrixRotationY(Real angle);
 
 		// Z轴顺时针旋转矩阵
 		// https://baike.baidu.com/item/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/3265181?fr=aladdin
-		Matrix4 FlagGG_API MatrixRotationZ(float angle);
+		Matrix4 FlagGG_API MatrixRotationZ(Real angle);
 
 		// 任意轴顺时针旋转矩阵
 		// https://baike.baidu.com/item/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/3265181?fr=aladdin
-		Matrix4 FlagGG_API MatrixRotationAxis(const Vector3& axis, float angle);
+		Matrix4 FlagGG_API MatrixRotationAxis(const Vector3& axis, Real angle);
 
 		Vector3 FlagGG_API Vector3TransformNormal(const Vector3& target, const Matrix4& T);
 
@@ -115,7 +114,7 @@ namespace FlagGG
 		 * @param zf     - 表示视截体中远裁剪面距我们摄像机的位置，即人眼到“室外黑色墙壁”之间的距离
 		 * 注：具体可以参考这里：https://blog.csdn.net/poem_qianmo/article/details/8408723
 		 */
-		Matrix4 FlagGG_API MatrixPerspectiveFovLH(float fovy, float aspect, float zn, float zf);
+		Matrix4 FlagGG_API MatrixPerspectiveFovLH(Real fovy, Real aspect, Real zn, Real zf);
 	}
 }
 

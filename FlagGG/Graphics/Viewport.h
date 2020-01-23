@@ -21,13 +21,13 @@ namespace FlagGG
 		public:
 			~Viewport() override = default;
 
-			uint32_t GetX() const;
+			UInt32 GetX() const;
 
-			uint32_t GetY() const;
+			UInt32 GetY() const;
 
-			uint32_t GetWidth() const;
+			UInt32 GetWidth() const;
 
-			uint32_t GetHeight() const;
+			UInt32 GetHeight() const;
 
 			void Resize(const Math::IntRect& rect);
 

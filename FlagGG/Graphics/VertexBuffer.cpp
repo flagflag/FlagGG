@@ -5,12 +5,12 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		uint32_t VertexBuffer::GetBindFlags()
+		UInt32 VertexBuffer::GetBindFlags()
 		{
 			return D3D11_BIND_VERTEX_BUFFER;
 		}
 
-		bool VertexBuffer::SetSize(uint32_t vertexCount, const Container::PODVector<VertexElement>& vertexElements)
+		bool VertexBuffer::SetSize(UInt32 vertexCount, const Container::PODVector<VertexElement>& vertexElements)
 		{
 			vertexSize_ = GetVertexSize(vertexElements);
 			vertexCount_ = vertexCount;
@@ -26,7 +26,7 @@ namespace FlagGG
 
 		void VertexBuffer::UpdateOffset()
 		{
-			uint32_t offset = 0;
+			UInt32 offset = 0;
 			for (auto& element : vertexElements_)
 			{
 				element.offset_ = offset;
@@ -34,12 +34,12 @@ namespace FlagGG
 			}
 		}
 
-		uint32_t VertexBuffer::GetVertexSize() const
+		UInt32 VertexBuffer::GetVertexSize() const
 		{
 			return vertexSize_;
 		}
 
-		uint32_t VertexBuffer::GetVertexCount() const
+		UInt32 VertexBuffer::GetVertexCount() const
 		{
 			return vertexCount_;
 		}
@@ -49,10 +49,10 @@ namespace FlagGG
 			return vertexElements_;
 		}
 
-		Container::PODVector<VertexElement> VertexBuffer::GetElements(uint32_t elementMask)
+		Container::PODVector<VertexElement> VertexBuffer::GetElements(UInt32 elementMask)
 		{
 			Container::PODVector<VertexElement> vertexElements;
-			for (uint32_t i = 0; i < MAX_DEFAULT_VERTEX_ELEMENT; ++i)
+			for (UInt32 i = 0; i < MAX_DEFAULT_VERTEX_ELEMENT; ++i)
 			{
 				if (elementMask & (1u << i))
 				{
@@ -62,9 +62,9 @@ namespace FlagGG
 			return vertexElements;
 		}
 
-		uint32_t VertexBuffer::GetVertexSize(const Container::PODVector<VertexElement>& elements)
+		UInt32 VertexBuffer::GetVertexSize(const Container::PODVector<VertexElement>& elements)
 		{
-			uint32_t vertexSize = 0u;
+			UInt32 vertexSize = 0u;
 			for (const auto& element : elements)
 			{
 				vertexSize += VERTEX_ELEMENT_TYPE_SIZE[element.vertexElementType_];

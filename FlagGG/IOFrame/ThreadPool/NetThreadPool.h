@@ -16,7 +16,7 @@ namespace FlagGG
 		class NetThreadPool : public IOThreadPool
 		{
 		public:
-			NetThreadPool(size_t thread_count);
+			NetThreadPool(Size threadCount);
 
 			~NetThreadPool() override = default;
 
@@ -31,10 +31,10 @@ namespace FlagGG
 		private:
 			void NetThread();
 
-			void WaitForStop(uint32_t wait_time) override { };
+			void WaitForStop(UInt32 wait_time) override { };
 
 		private:
-			size_t												threadCount_;
+			Size												threadCount_;
 
 			boost::asio::io_service								service_;
 

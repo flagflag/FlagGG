@@ -5,22 +5,22 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		uint32_t Viewport::GetX() const
+		UInt32 Viewport::GetX() const
 		{
 			return rect_.left_;
 		}
 
-		uint32_t Viewport::GetY() const
+		UInt32 Viewport::GetY() const
 		{
 			return rect_.top_;
 		}
 
-		uint32_t Viewport::GetWidth() const
+		UInt32 Viewport::GetWidth() const
 		{
 			return rect_.Width();
 		}
 
-		uint32_t Viewport::GetHeight() const
+		UInt32 Viewport::GetHeight() const
 		{
 			return rect_.Height();
 		}

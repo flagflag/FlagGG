@@ -80,16 +80,16 @@ namespace FlagGG
 				return FileAPI_IsOpen(file_);
 			}
 
-			uint32_t FileStream::GetIndex() const
+			UInt32 FileStream::GetIndex() const
 			{
 				return FileAPI_Tell(file_);
 			}
 
-			uint32_t FileStream::GetSize() const
+			UInt32 FileStream::GetSize() const
 			{
-				uint32_t index = FileAPI_Tell(file_);
+				UInt32 index = FileAPI_Tell(file_);
 				FileAPI_SeekToEnd(file_);
-				uint32_t fileSize = FileAPI_Tell(file_);
+				UInt32 fileSize = FileAPI_Tell(file_);
 				FileAPI_SeekFromBegin(file_, index);
 				return fileSize;
 			}
@@ -99,7 +99,7 @@ namespace FlagGG
 				FileAPI_SeekToBegin(file_);
 			}
 
-			void FileStream::Seek(uint32_t pos)
+			void FileStream::Seek(UInt32 pos)
 			{
 				FileAPI_SeekFromBegin(file_, pos);
 			}
@@ -109,12 +109,12 @@ namespace FlagGG
 				// ½«ÎÄ¼þÖÃ¿Õ£¬´ýÌî¿Ó
 			}
 
-			uint32_t FileStream::ReadStream(void* data, uint32_t dataSize)
+			UInt32 FileStream::ReadStream(void* data, UInt32 dataSize)
 			{
 				return FileAPI_ReadStream(file_, data, dataSize);
 			}
 
-			uint32_t FileStream::WriteStream(const void* data, uint32_t dataSize)
+			UInt32 FileStream::WriteStream(const void* data, UInt32 dataSize)
 			{
 				return FileAPI_WriteStream(file_, data, dataSize);
 			}

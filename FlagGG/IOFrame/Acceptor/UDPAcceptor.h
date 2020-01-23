@@ -17,7 +17,7 @@ namespace FlagGG
 			public:
 				UDPAcceptor(Handler::EventHandlerPtr handler);
 
-				bool Bind(const char* ip, uint16_t port) override;
+				bool Bind(const char* ip, UInt16 port) override;
 
 				void Start() override;
 

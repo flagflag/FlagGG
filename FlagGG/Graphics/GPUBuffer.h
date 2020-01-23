@@ -4,6 +4,7 @@
 #include "Graphics/GPUObject.h"
 #include "Container/RefCounted.h"
 #include "IOFrame/Buffer/IOBuffer.h"
+#include "Core/BaseTypes.h"
 
 namespace FlagGG
 {
@@ -14,13 +15,13 @@ namespace FlagGG
 		public:
 			bool IsValid() override;
 
-			bool SetSize(uint32_t byteCount);
+			bool SetSize(UInt32 byteCount);
 
-			void* Lock(uint32_t start, uint32_t count);
+			void* Lock(UInt32 start, UInt32 count);
 
 			void Unlock();
 
-			IOFrame::Buffer::IOBuffer* LockStaticBuffer(uint32_t start, uint32_t count);
+			IOFrame::Buffer::IOBuffer* LockStaticBuffer(UInt32 start, UInt32 count);
 
 			void UnlockStaticBuffer();
 
@@ -28,14 +29,14 @@ namespace FlagGG
 
 			void UnlockDynamicBuffer();
 
-			virtual uint32_t GetBindFlags() = 0;
+			virtual UInt32 GetBindFlags() = 0;
 
 		protected:
 			void Initialize() override;
 
 			Container::SharedPtr<IOFrame::Buffer::IOBuffer> buffer_;
 
-			uint32_t gpuBufferSize_{ 0u };
+			UInt32 gpuBufferSize_{ 0u };
 		};
 	}
 }

@@ -16,7 +16,7 @@ namespace FlagGG
 		{
 			OBJECT_OVERRIDE(TerrainComponent)
 		public:
-			void SetPathSize(uint32_t pathSize);
+			void SetPathSize(UInt32 pathSize);
 
 			void SetHeightMap(Resource::Image* image);
 
@@ -30,7 +30,7 @@ namespace FlagGG
 			void CreateGeometry();
 
 		private:
-			uint32_t pathSize_;
+			UInt32 pathSize_;
 
 			Math::IntVector2 patchesNum_;
 			Math::IntVector2 verticesNum_;

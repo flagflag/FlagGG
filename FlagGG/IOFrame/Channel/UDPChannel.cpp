@@ -33,7 +33,7 @@ namespace FlagGG
 					if (rakPeer_->GetConnectionState(*addrID_) != SLNet::IS_CONNECTED)
 						return false;
 				
-					uint32_t bufferSize = buffer->GetSize();
+					UInt32 bufferSize = buffer->GetSize();
 					buffer_.Resize(bufferSize + 1);
 					buffer->ReadStream(&buffer_[1], bufferSize);
 					buffer_[0] = ID_USER_PACKET_ENUM;
@@ -48,7 +48,7 @@ namespace FlagGG
 				return true;
 			}
 
-			bool UDPChannel::Connect(const char* ip, uint16_t port)
+			bool UDPChannel::Connect(const char* ip, UInt16 port)
 			{
 				if (!rakPeer_)
 					return false;

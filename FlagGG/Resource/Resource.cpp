@@ -94,12 +94,12 @@ namespace FlagGG
 			return false;
 		}
 
-		void Resource::SetMemoryUse(uint32_t memoryUse)
+		void Resource::SetMemoryUse(UInt32 memoryUse)
 		{
 			memoryUse_ = memoryUse;
 		}
 
-		uint32_t Resource::GetMemoryUse() const
+		UInt32 Resource::GetMemoryUse() const
 		{
 			return memoryUse_;
 		}

@@ -24,13 +24,13 @@ namespace FlagGG
 			{
 			}
 
-			Rect(float left, float top, float right, float bottom) NOEXCEPT :
+			Rect(Real left, Real top, Real right, Real bottom) NOEXCEPT :
 			min_(left, top),
 				max_(right, bottom)
 			{
 			}
 
-			explicit Rect(const float* data) NOEXCEPT :
+			explicit Rect(const Real* data) NOEXCEPT :
 			min_(data[0], data[1]),
 				max_(data[2], data[3])
 			{
@@ -58,26 +58,26 @@ namespace FlagGG
 				return *this;
 			}
 
-			Rect& operator /=(float value)
+			Rect& operator /=(Real value)
 			{
 				min_ /= value;
 				max_ /= value;
 				return *this;
 			}
 
-			Rect& operator *=(float value)
+			Rect& operator *=(Real value)
 			{
 				min_ *= value;
 				max_ *= value;
 				return *this;
 			}
 
-			Rect operator /(float value) const
+			Rect operator /(Real value) const
 			{
 				return Rect(min_ / value, max_ / value);
 			}
 
-			Rect operator *(float value) const
+			Rect operator *(Real value) const
 			{
 				return Rect(min_ * value, max_ * value);
 			}
@@ -180,13 +180,13 @@ namespace FlagGG
 
 			Vector2 Max() const { return max_; }
 
-			float Left() const { return min_.x_; }
+			Real Left() const { return min_.x_; }
 
-			float Top() const { return min_.y_; }
+			Real Top() const { return min_.y_; }
 
-			float Right() const { return max_.x_; }
+			Real Right() const { return max_.x_; }
 
-			float Bottom() const { return max_.y_; }
+			Real Bottom() const { return max_.y_; }
 
 			Vector2 min_;
 			Vector2 max_;
@@ -259,7 +259,7 @@ namespace FlagGG
 				return *this;
 			}
 
-			IntRect& operator /=(float value)
+			IntRect& operator /=(Real value)
 			{
 				left_ = static_cast<int>(left_ / value);
 				top_ = static_cast<int>(top_ / value);
@@ -268,7 +268,7 @@ namespace FlagGG
 				return *this;
 			}
 
-			IntRect& operator *=(float value)
+			IntRect& operator *=(Real value)
 			{
 				left_ = static_cast<int>(left_ * value);
 				top_ = static_cast<int>(top_ * value);
@@ -277,7 +277,7 @@ namespace FlagGG
 				return *this;
 			}
 
-			IntRect operator /(float value) const
+			IntRect operator /(Real value) const
 			{
 				return{
 					static_cast<int>(left_ / value), static_cast<int>(top_ / value),
@@ -285,7 +285,7 @@ namespace FlagGG
 				};
 			}
 
-			IntRect operator *(float value) const
+			IntRect operator *(Real value) const
 			{
 				return{
 					static_cast<int>(left_ * value), static_cast<int>(top_ * value),

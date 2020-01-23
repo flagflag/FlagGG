@@ -110,7 +110,7 @@ namespace FlagGG
 #endif
 			}
 
-			void UniqueThread::WaitForStop(uint32_t wait_time)
+			void UniqueThread::WaitForStop(UInt32 wait_time)
 			{
 #if _WIN32
 				WaitForSingleObject(handle_, wait_time);

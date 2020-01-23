@@ -19,7 +19,7 @@ namespace FlagGG
 		public:
 			~Component() override;
 
-			virtual void Update(float timeStep) {}
+			virtual void Update(Real timeStep) {}
 
 			virtual bool IsDrawable() { return false; }
 

@@ -6,16 +6,16 @@ namespace FlagGG
 {
 	namespace IOFrame
 	{
-		NetThreadPool::NetThreadPool(size_t thread_count)
+		NetThreadPool::NetThreadPool(Size threadCount)
 			: running_(false)
-			, threadCount_(thread_count)
+			, threadCount_(threadCount)
 		{ }
 
 		void NetThreadPool::Start()
 		{
 			running_ = true;
 
-			for (size_t i = 0; i < threadCount_; ++i)
+			for (Size i = 0; i < threadCount_; ++i)
 			{
 				threadGroup_.emplace_back(new AsyncFrame::Thread::UniqueThread(std::bind(&NetThreadPool::NetThread, this)));
 			}
@@ -28,7 +28,7 @@ namespace FlagGG
 
 		void NetThreadPool::WaitForStop()
 		{
-			for (size_t i = 0; i < threadGroup_.size(); ++i)
+			for (Size i = 0; i < threadGroup_.size(); ++i)
 			{
 				threadGroup_[i]->WaitForStop();
 			}

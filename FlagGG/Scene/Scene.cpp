@@ -37,7 +37,7 @@ namespace FlagGG
 			}
 		}
 
-		void Scene::HandleUpdate(float timeStep)
+		void Scene::HandleUpdate(Real timeStep)
 		{
 			NodeUpdateContext updateContext;
 			updateContext.timeStep_ = timeStep;

@@ -11,11 +11,11 @@ class Terrain : public Node
 public:
 	Terrain(Context* context);
 
-	void Create(uint32_t pathSize);
+	void Create(UInt32 pathSize);
 
 private:
 	Context* context_;
 
-	uint32_t xCount_;
-	uint32_t yCount_;
+	UInt32 xCount_;
+	UInt32 yCount_;
 };

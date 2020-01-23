@@ -13,13 +13,13 @@ namespace FlagGG
 	{
 		namespace Acceptor
 		{
-			TCPAcceptor::TCPAcceptor(Handler::EventHandlerPtr handler, size_t thread_count)
-				: threadPool_(new IOFrame::NetThreadPool(thread_count))
+			TCPAcceptor::TCPAcceptor(Handler::EventHandlerPtr handler, Size threadCount)
+				: threadPool_(new IOFrame::NetThreadPool(threadCount))
 				, acceptor_(threadPool_->getService())
 				, handler_(handler)
 			{ }
 
-			bool TCPAcceptor::Bind(const char* ip, uint16_t port)
+			bool TCPAcceptor::Bind(const char* ip, UInt16 port)
 			{
 				boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip), port);
 				boost::system::error_code error_code;

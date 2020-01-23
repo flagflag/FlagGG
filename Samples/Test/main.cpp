@@ -26,7 +26,7 @@ void Print(const LJSONValue& root, const std::string& t = "")
 	else if (root.IsArray())
 	{
 		printf("\n%s[\n", t.c_str());
-		for (uint32_t i = 0; i < root.Size(); ++i)
+		for (UInt32 i = 0; i < root.Size(); ++i)
 		{
 			const LJSONValue& value = root[i];
 			printf("%s" TAB, t.c_str());

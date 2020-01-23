@@ -45,53 +45,53 @@ namespace FlagGG
 
 			ID3D11DeviceContext* GetDeviceContext();
 
-			bool CheckMultiSampleSupport(DXGI_FORMAT format, uint32_t sampleCount);
+			bool CheckMultiSampleSupport(DXGI_FORMAT format, UInt32 sampleCount);
 
-			uint32_t GetMultiSampleQuality(DXGI_FORMAT format, uint32_t sampleCount);
+			UInt32 GetMultiSampleQuality(DXGI_FORMAT format, UInt32 sampleCount);
 
 			void SetTextureQuality(MaterialQuality quality);
 
 			MaterialQuality GetTextureQuality();
 
-			static uint32_t GetFormat(Resource::CompressedFormat format);
+			static UInt32 GetFormat(Resource::CompressedFormat format);
 
 			/// Return the API-specific alpha texture format.
-			static uint32_t GetAlphaFormat();
+			static UInt32 GetAlphaFormat();
 			/// Return the API-specific luminance texture format.
-			static uint32_t GetLuminanceFormat();
+			static UInt32 GetLuminanceFormat();
 			/// Return the API-specific luminance alpha texture format.
-			static uint32_t GetLuminanceAlphaFormat();
+			static UInt32 GetLuminanceAlphaFormat();
 			/// Return the API-specific RGB texture format.
-			static uint32_t GetRGBFormat();
+			static UInt32 GetRGBFormat();
 			/// Return the API-specific RGBA texture format.
-			static uint32_t GetRGBAFormat();
+			static UInt32 GetRGBAFormat();
 			/// Return the API-specific RGBA 16-bit texture format.
-			static uint32_t GetRGBA16Format();
+			static UInt32 GetRGBA16Format();
 			/// Return the API-specific RGBA 16-bit float texture format.
-			static uint32_t GetRGBAFloat16Format();
+			static UInt32 GetRGBAFloat16Format();
 			/// Return the API-specific RGBA 32-bit float texture format.
-			static uint32_t GetRGBAFloat32Format();
+			static UInt32 GetRGBAFloat32Format();
 			/// Return the API-specific RG 16-bit texture format.
-			static uint32_t GetRG16Format();
+			static UInt32 GetRG16Format();
 			/// Return the API-specific RG 16-bit float texture format.
-			static uint32_t GetRGFloat16Format();
+			static UInt32 GetRGFloat16Format();
 			/// Return the API-specific RG 32-bit float texture format.
-			static uint32_t GetRGFloat32Format();
+			static UInt32 GetRGFloat32Format();
 			/// Return the API-specific single channel 16-bit float texture format.
-			static uint32_t GetFloat16Format();
+			static UInt32 GetFloat16Format();
 			/// Return the API-specific single channel 32-bit float texture format.
-			static uint32_t GetFloat32Format();
+			static UInt32 GetFloat32Format();
 			/// Return the API-specific linear depth texture format.
-			static uint32_t GetLinearDepthFormat();
+			static UInt32 GetLinearDepthFormat();
 			/// Return the API-specific hardware depth-stencil texture format.
-			static uint32_t GetDepthStencilFormat();
+			static UInt32 GetDepthStencilFormat();
 			/// Return the API-specific readable hardware depth format, or 0 if not supported.
-			static uint32_t GetReadableDepthFormat();
+			static UInt32 GetReadableDepthFormat();
 			/// Return the API-specific texture format from a textual description, for example "rgb".
-			static uint32_t GetFormat(const Container::String& formatName);
+			static UInt32 GetFormat(const Container::String& formatName);
 
 			// 最大骨骼数
-			static uint32_t GetMaxBonesNum();
+			static UInt32 GetMaxBonesNum();
 
 			ShaderParameters& GetShaderParameters();
 
@@ -115,9 +115,9 @@ namespace FlagGG
 
 			void PreDraw();
 
-			void DrawCallIndexed(uint32_t indexStart, uint32_t indexCount);
+			void DrawCallIndexed(UInt32 indexStart, UInt32 indexCount);
 
-			void DrawCall(uint32_t vertexStart, uint32_t vertexCount);
+			void DrawCall(UInt32 vertexStart, UInt32 vertexCount);
 
 			void Render(Viewport* viewport);
 
@@ -149,7 +149,7 @@ namespace FlagGG
 			ConstantBuffer vsConstantBuffer_[MAX_CONST_BUFFER_COUNT];
 			ConstantBuffer psConstantBuffer_[MAX_CONST_BUFFER_COUNT];
 			const Math::Matrix3x4* skinMatrix_{ nullptr };
-			uint32_t numSkinMatrix_{ 0u };
+			UInt32 numSkinMatrix_{ 0u };
 
 			MaterialQuality textureQuality_{ QUALITY_HIGH };
 

@@ -49,7 +49,7 @@ namespace FlagGG
 #endif
 		}
 
-		void ConditionVariable::Wait(KernelObject::HandleObject* object, uint32_t waitTime)
+		void ConditionVariable::Wait(KernelObject::HandleObject* object, UInt32 waitTime)
 		{
 #ifdef _WIN32
 			SleepConditionVariableCS(GetObject<CONDITION_VARIABLE>(), object->GetObject<CRITICAL_SECTION>(), waitTime);

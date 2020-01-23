@@ -16,7 +16,7 @@ namespace FlagGG
 		public:
 			SkeletonMeshComponent();
 
-			void Update(float timeStep) override;
+			void Update(Real timeStep) override;
 
 			void UpdateTreeDirty() override;
 
@@ -29,7 +29,7 @@ namespace FlagGG
 
 			void SetSkeleton(const Skeleton& skeleton);
 
-			void SetBoneMappings(const Container::Vector<Container::PODVector<uint32_t>>& boneMappings);
+			void SetBoneMappings(const Container::Vector<Container::PODVector<UInt32>>& boneMappings);
 
 			void UpdateSkinning();
 

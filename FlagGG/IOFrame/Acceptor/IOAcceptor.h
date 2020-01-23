@@ -4,8 +4,7 @@
 #include "Export.h"
 #include "Container/Ptr.h"
 #include "Container/RefCounted.h"
-
-#include <stdint.h>
+#include "Core/BaseTypes.h"
 
 namespace FlagGG
 {
@@ -18,7 +17,7 @@ namespace FlagGG
 			public:
 				virtual ~IOAcceptor() = default;
 
-				virtual bool Bind(const char* ip, uint16_t port) = 0;
+				virtual bool Bind(const char* ip, UInt16 port) = 0;
 
 				virtual void Start() = 0;
 

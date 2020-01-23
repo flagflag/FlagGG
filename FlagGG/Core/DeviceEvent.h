@@ -35,9 +35,9 @@ namespace FlagGG
 
 			Math::IntVector2 GetMousePos() const;
 
-			void OnKeyDown(KeyState* keyState, uint32_t keyCode);
+			void OnKeyDown(KeyState* keyState, UInt32 keyCode);
 
-			void OnKeyUp(KeyState* keyState, uint32_t keyCode);
+			void OnKeyUp(KeyState* keyState, UInt32 keyCode);
 
 			void OnMouseDown(KeyState* keyState, MouseKey mouseKey);
 

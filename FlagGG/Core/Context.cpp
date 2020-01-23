@@ -5,42 +5,42 @@ namespace FlagGG
 	namespace Core
 	{
 #ifdef _WIN32
-        template <> void Context::RegisterVariable<int8_t>(int8_t* variable, const Container::String& variableName)
+        template <> void Context::RegisterVariable<Int8>(Int8* variable, const Container::String& variableName)
         {
             
         }
 
-        template <> void Context::RegisterVariable<uint8_t>(uint8_t* variable, const Container::String& variableName)
+        template <> void Context::RegisterVariable<UInt8>(UInt8* variable, const Container::String& variableName)
         {
 
         }
 
-        template <> void Context::RegisterVariable<int16_t>(int16_t* variable, const Container::String& variableName)
+        template <> void Context::RegisterVariable<Int16>(Int16* variable, const Container::String& variableName)
         {
 
         }
 
-        template <> void Context::RegisterVariable<uint16_t>(uint16_t* variable, const Container::String& variableName)
+        template <> void Context::RegisterVariable<UInt16>(UInt16* variable, const Container::String& variableName)
         {
 
         }
 
-        template <> void Context::RegisterVariable<int32_t>(int32_t* variable, const Container::String& variableName)
+        template <> void Context::RegisterVariable<Int32>(Int32* variable, const Container::String& variableName)
         {
 
         }
 
-        template <> void Context::RegisterVariable<uint32_t>(uint32_t* variable, const Container::String& variableName)
+        template <> void Context::RegisterVariable<UInt32>(UInt32* variable, const Container::String& variableName)
         {
 
         }
 
-        template <> void Context::RegisterVariable<int64_t>(int64_t* variable, const Container::String& variableName)
+        template <> void Context::RegisterVariable<Int64>(Int64* variable, const Container::String& variableName)
         {
 
         }
 
-        template <> void Context::RegisterVariable<uint64_t>(uint64_t* variable, const Container::String& variableName)
+        template <> void Context::RegisterVariable<UInt64>(UInt64* variable, const Container::String& variableName)
         {
 
         }

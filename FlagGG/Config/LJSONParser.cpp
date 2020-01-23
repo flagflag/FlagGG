@@ -10,7 +10,7 @@ namespace FlagGG
 	{
 		void LJSONError::DumpError(const Byte* bufferStart, const Byte* bufferEnd, const Byte* bufferIndex, const Container::String& content)
 		{
-			int32_t lineCount = 1;
+			Int32 lineCount = 1;
 			for (const Byte* index = bufferStart; index < bufferEnd && index <= bufferIndex; ++index)
 			{
 				if ((*index) == '\n') ++lineCount;
@@ -26,7 +26,7 @@ namespace FlagGG
 
 		void LJSONError::Dump()
 		{
-			for (uint32_t i = 0; i < errors_.Size(); ++i)
+			for (UInt32 i = 0; i < errors_.Size(); ++i)
 			{
 				FLAGGG_LOG_ERROR(errors_[i].CString());
 			}
@@ -61,7 +61,7 @@ namespace FlagGG
 			if (contentState_)	{ delete contentState_;  contentState_ = nullptr; }
 		}
 
-		bool LJSONParser::Load(const char* buffer, uint32_t bufferSize, LJSONValue& value)
+		bool LJSONParser::Load(const char* buffer, UInt32 bufferSize, LJSONValue& value)
 		{
 			bufferStart_ = (const Byte*)buffer;
 			bufferEnd_ = (const Byte*)buffer + bufferSize;
@@ -313,7 +313,7 @@ namespace FlagGG
 			bool hasNonDig = false;
 			bool appearDot = false;
 
-			for (uint32_t i = 0; i < content.Length(); ++i)
+			for (UInt32 i = 0; i < content.Length(); ++i)
 			{
 				if (!isdigit(content[i]))
 				{

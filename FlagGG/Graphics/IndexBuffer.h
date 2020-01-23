@@ -9,18 +9,18 @@ namespace FlagGG
 		class FlagGG_API IndexBuffer : public GPUBuffer
 		{
 		public:
-			uint32_t GetBindFlags() override;
+			UInt32 GetBindFlags() override;
 
-			bool SetSize(uint32_t indexSize, uint32_t indexCount);
+			bool SetSize(UInt32 indexSize, UInt32 indexCount);
 
-			uint32_t GetIndexSize() const;
+			UInt32 GetIndexSize() const;
 
-			uint32_t GetIndexCount() const;
+			UInt32 GetIndexCount() const;
 
 		protected:
 
-			uint32_t indexSize_{ 0 };
-			uint32_t indexCount_{ 0 };
+			UInt32 indexSize_{ 0 };
+			UInt32 indexCount_{ 0 };
 		};
 	}
 }

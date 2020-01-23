@@ -12,80 +12,80 @@ namespace FlagGG
 {
 	namespace Math
 	{
-		const float PI = asin(1.0f) * 2;
-		const float EPS = 1e-6;
-		const float F_MIN_INT = 0x80000000;
-		const float F_MAX_INT = 0x7fffffff;
-		const float F_MIN_UNSIGNED = 0x00000000;
-		const float F_MAX_UNSIGNED = 0xffffffff;
-		const float F_INFINITY = (float)HUGE_VAL;
-		const float F_MIN_NEARCLIP = 0.01f;
-		const float DEGTORAD = PI / 180.0f;
-		const float DEGTORAD_2 = PI / 360.0f;
-		const float RADTODEG = 1.0f / DEGTORAD;
+		const Real PI = asin(1.0f) * 2;
+		const Real EPS = 1e-6;
+		const Real F_MIN_INT = 0x80000000;
+		const Real F_MAX_INT = 0x7fffffff;
+		const Real F_MIN_UNSIGNED = 0x00000000;
+		const Real F_MAX_UNSIGNED = 0xffffffff;
+		const Real F_INFINITY = (Real)HUGE_VAL;
+		const Real F_MIN_NEARCLIP = 0.01f;
+		const Real DEGTORAD = PI / 180.0f;
+		const Real DEGTORAD_2 = PI / 360.0f;
+		const Real RADTODEG = 1.0f / DEGTORAD;
 
-		bool IsNaN(float number)
+		bool IsNaN(Real number)
 		{
 			return isnan(number);
 		}
 
-		float Sin(float angle)
+		Real Sin(Real angle)
 		{
 			return sin(angle * 180.0f / PI);
 		}
 
-		float Cos(float angle)
+		Real Cos(Real angle)
 		{
 			return cos(angle * 180.0f / PI);
 		}
 
-		float Tan(float angle)
+		Real Tan(Real angle)
 		{
 			return tan(angle * 180.0f / PI);
 		}
 
-		float Asin(float angle)
+		Real Asin(Real angle)
 		{
 			return asin(angle * 180.0f / PI);
 		}
 
-		float Acos(float angle)
+		Real Acos(Real angle)
 		{
 			return acos(angle * 180.0f / PI);
 		}
 
-		float Atan(float angle)
+		Real Atan(Real angle)
 		{
 			return atan(angle * 180.0f / PI);
 		}
 
-		float Abs(float number)
+		Real Abs(Real number)
 		{
 			return fabs(number);
 		}
 
-		float Sqrt(float number)
+		Real Sqrt(Real number)
 		{
 			return sqrt(number);
 		}
 
-		float Fract(float number)
+		Real Fract(Real number)
 		{
 			return number - floor(number);
 		}
 
-		int Compare(float _1, float _2)
+		int Compare(Real _1, Real _2)
 		{
 			if (fabs(_1 - _2) <  EPS) return 0;
 			return _1 < _2 ? -1 : 1;
 		}
 
-		float Equals(float _1, float _2)
+		Real Equals(Real _1, Real _2)
 		{
 			return Compare(_1, _2) == 0;
 		}
 
-		float Clamp(float target, float min, float max)
+		Real Clamp(Real target, Real min, Real max)
 		{
 			if (target < min)
 				return min;
@@ -95,25 +95,25 @@ namespace FlagGG
 				return target;
 		}
 
-		uint32_t FloatToRawIntBits(float value)
+		UInt32 FloatToRawIntBits(Real value)
 		{
-			return *((uint32_t*)&value);
+			return *((UInt32*)&value);
 		}
 
-		uint32_t HashString(const char* str)
+		UInt32 HashString(const char* str)
 		{
-			uint32_t hash = 0;
+			UInt32 hash = 0;
 			while (*str)
 			{
 				// SDBM Hash
-				hash = static_cast<uint32_t>(*str) + (hash << 6u) + (hash << 16u) - hash;
+				hash = static_cast<UInt32>(*str) + (hash << 6u) + (hash << 16u) - hash;
 				++str;
 			}
 
 			return hash;
 		}
 
-		Matrix4 MatrixTranslation(float dx, float dy, float dz)
+		Matrix4 MatrixTranslation(Real dx, Real dy, Real dz)
 		{
 			return Matrix4(
 				1.0f, 0.0f, 0.0f, 0.0f,
@@ -123,10 +123,10 @@ namespace FlagGG
 				);
 		}
 
-		Matrix4 MatrixRotationX(float angle)
+		Matrix4 MatrixRotationX(Real angle)
 		{
-			float sina = Math::Sin(angle);
-			float cosa = Math::Cos(angle);
+			Real sina = Math::Sin(angle);
+			Real cosa = Math::Cos(angle);
 
 			return Matrix4(
 				1.0f, 0.0f, 0.0f, 0.0f,
@@ -136,10 +136,10 @@ namespace FlagGG
 				);
 		}
 
-		Matrix4 MatrixRotationY(float angle)
+		Matrix4 MatrixRotationY(Real angle)
 		{
-			float sina = Math::Sin(angle);
-			float cosa = Math::Cos(angle);
+			Real sina = Math::Sin(angle);
+			Real cosa = Math::Cos(angle);
 
 			return Matrix4(
 				cosa, 0.0f, sina, 0.0f,
@@ -149,10 +149,10 @@ namespace FlagGG
 				);
 		}
 
-		Matrix4 MatrixRotationZ(float angle)
+		Matrix4 MatrixRotationZ(Real angle)
 		{
-			float sina = Math::Sin(angle);
-			float cosa = Math::Cos(angle);
+			Real sina = Math::Sin(angle);
+			Real cosa = Math::Cos(angle);
 
 			return Matrix4(
 				cosa, -sina, 0.0f, 0.0f,
@@ -162,13 +162,13 @@ namespace FlagGG
 				);
 		}
 
-		Matrix4 MatrixRotationAxis(const Vector3& axis, float angle)
+		Matrix4 MatrixRotationAxis(const Vector3& axis, Real angle)
 		{
-			float x = axis.x_;
-			float y = axis.y_;
-			float z = axis.z_;
-			float sina = Math::Sin(angle);
-			float cosa = Math::Cos(angle);
+			Real x = axis.x_;
+			Real y = axis.y_;
+			Real z = axis.z_;
+			Real sina = Math::Sin(angle);
+			Real cosa = Math::Cos(angle);
 
 			return Matrix4(
 					cosa + (1.0f - cosa) * x * x,	(1.0f - cosa) * x * y - sina * z,	(1.0f - cosa) * x * z + sina * y,	0.0f,
@@ -206,7 +206,7 @@ namespace FlagGG
 			return Vector3(mat.m00_ / mat.m03_, mat.m01_ / mat.m03_, mat.m02_ / mat.m03_);
 		}
 
-		Matrix4 MatrixPerspectiveFovLH(float fovy, float aspect, float zn, float zf)
+		Matrix4 MatrixPerspectiveFovLH(Real fovy, Real aspect, Real zn, Real zf)
 		{
 #if _WIN32
 			D3DXMATRIX out;

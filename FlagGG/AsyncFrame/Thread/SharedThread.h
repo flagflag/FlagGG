@@ -6,10 +6,10 @@
 #include "AsyncFrame/ConditionQueue.hpp"
 #include "AsyncFrame/Thread/UniqueThread.h"
 #include "AsyncFrame/KernelObject/Runtime.h"
+#include "Core/BaseTypes.h"
 
 #include <functional>
 #include <atomic>
-#include <stdint.h>
 
 namespace FlagGG
 {
@@ -32,13 +32,13 @@ namespace FlagGG
 
 				void WaitForStop() override;
 
-				void WaitForStop(uint32_t wait_time) override;
+				void WaitForStop(UInt32 wait_time) override;
 
 				void Add(ThreadTask task_func);
 
 				void ForceStop();
 
-				uint32_t WaitingTime();
+				UInt32 WaitingTime();
 
 			protected:
 				void WorkThread();

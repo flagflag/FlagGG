@@ -35,12 +35,12 @@ namespace FlagGG
 				list_.emplace_back(param_name + L"=" + param);
 			}
 
-			void ParameterList::Add(const std::wstring& param_name, int32_t param)
+			void ParameterList::Add(const std::wstring& param_name, Int32 param)
 			{
 				list_.emplace_back(param_name + L"=" + std::to_wstring(param));
 			}
 
-			void ParameterList::Add(const std::wstring& param_name, int64_t param)
+			void ParameterList::Add(const std::wstring& param_name, Int64 param)
 			{
 				list_.emplace_back(param_name + L"=" + std::to_wstring(param));
 			}
@@ -65,12 +65,12 @@ namespace FlagGG
 				Add(Code::Utf8ToWide(param_name), Code::Utf8ToWide(param));
 			}
 
-			void ParameterList::Add(const std::string& param_name, int32_t param)
+			void ParameterList::Add(const std::string& param_name, Int32 param)
 			{
 				Add(Code::Utf8ToWide(param_name), param);
 			}
 
-			void ParameterList::Add(const std::string& param_name, int64_t param)
+			void ParameterList::Add(const std::string& param_name, Int64 param)
 			{
 				Add(Code::Utf8ToWide(param_name), param);
 			}
@@ -90,7 +90,7 @@ namespace FlagGG
 				: id_(0)
 			{ }
 
-			uint32_t ProcessObject::GetID()
+			UInt32 ProcessObject::GetID()
 			{
 				return id_;
 			}
@@ -113,7 +113,7 @@ namespace FlagGG
 #endif
 			}
 
-			void ProcessObject::WaitForStop(uint32_t wait_time)
+			void ProcessObject::WaitForStop(UInt32 wait_time)
 			{
 #if _WIN32
 				WaitForSingleObject(handle_, wait_time);
@@ -194,7 +194,7 @@ namespace FlagGG
 			{
 				std::wstring _param = L"";
 
-				for (size_t i = 0; i < param.list_.size(); ++i)
+				for (Size i = 0; i < param.list_.size(); ++i)
 				{
 					if (i != 0) _param += L" ";
 					_param += param.list_[i];

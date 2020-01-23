@@ -15,19 +15,19 @@ namespace FlagGG
 		public:
 			TextureCube(Core::Context* context);
 
-			bool SetSize(uint32_t size, uint32_t format, TextureUsage usage = TEXTURE_STATIC, int32_t multiSample = 1);
+			bool SetSize(UInt32 size, UInt32 format, TextureUsage usage = TEXTURE_STATIC, Int32 multiSample = 1);
 
-			bool SetData(CubeMapFace face, uint32_t level, int32_t x, int32_t y, int32_t width, int32_t height, const void* data);
+			bool SetData(CubeMapFace face, UInt32 level, Int32 x, Int32 y, Int32 width, Int32 height, const void* data);
 
 			bool SetData(CubeMapFace face, FlagGG::Resource::Image* image, bool useAlpha = false);
 
-			bool GetData(CubeMapFace face, uint32_t level, void* dest);
+			bool GetData(CubeMapFace face, UInt32 level, void* dest);
 
 			Container::SharedPtr<FlagGG::Resource::Image> GetImage(CubeMapFace face);
 
 			RenderSurface* GetRenderSurface() const override;
 
-			RenderSurface* GetRenderSurface(uint32_t index) const override;
+			RenderSurface* GetRenderSurface(UInt32 index) const override;
 
 		protected:
 			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
@@ -39,7 +39,7 @@ namespace FlagGG
 		private:
 			Container::SharedPtr<RenderSurface> renderSurfaces_[MAX_CUBEMAP_FACES];
 
-			uint32_t faceMemoryUse_[MAX_CUBEMAP_FACES];
+			UInt32 faceMemoryUse_[MAX_CUBEMAP_FACES];
 		};
 	}
 }

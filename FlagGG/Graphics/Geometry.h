@@ -4,6 +4,7 @@
 #include "Container/Ptr.h"
 #include "Graphics/VertexBuffer.h"
 #include "Graphics/IndexBuffer.h"
+#include "Core/BaseTypes.h"
 
 namespace FlagGG
 {
@@ -14,17 +15,17 @@ namespace FlagGG
 		public:
 			void SetPrimitiveType(PrimitiveType type);
 			
-			void SetVertexBuffer(uint32_t index, VertexBuffer* vertexBuffer);
+			void SetVertexBuffer(UInt32 index, VertexBuffer* vertexBuffer);
 
 			void SetIndexBuffer(IndexBuffer* indexBuffer);
 
-			void SetDataRange(uint32_t indexStart, uint32_t indexCount);
+			void SetDataRange(UInt32 indexStart, UInt32 indexCount);
 
 			void SetLodDistance(float distance);
 
 			const Container::Vector<Container::SharedPtr<VertexBuffer>>& GetVertexBuffers() const;
 
-			VertexBuffer* GetVertexBuffer(uint32_t index) const;
+			VertexBuffer* GetVertexBuffer(UInt32 index) const;
 
 			IndexBuffer* GetIndexBuffer() const;
 
@@ -32,9 +33,9 @@ namespace FlagGG
 
 			PrimitiveType GetPrimitiveType() const;
 
-			uint32_t GetIndexStart() const;
+			UInt32 GetIndexStart() const;
 
-			uint32_t GetIndexCount() const;
+			UInt32 GetIndexCount() const;
 
 		private:
 			PrimitiveType primitiveType_;
@@ -43,10 +44,10 @@ namespace FlagGG
 
 			Container::SharedPtr<IndexBuffer> indexBuffer_;
 
-			uint32_t indexStart_;
-			uint32_t indexCount_;
-			uint32_t vertexStart_;
-			uint32_t vertexCount_;
+			UInt32 indexStart_;
+			UInt32 indexCount_;
+			UInt32 vertexStart_;
+			UInt32 vertexCount_;
 			
 			float lodDistance_;
 		};

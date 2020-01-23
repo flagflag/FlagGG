@@ -41,7 +41,7 @@ namespace FlagGG
 				return origin_ + offset.DotProduct(direction_) * direction_;
 			}
 
-			float Distance(const Vector3& point) const
+			Real Distance(const Vector3& point) const
 			{
 				Vector3 projected = Project(point);
 				return (point - projected).Length();
@@ -49,12 +49,12 @@ namespace FlagGG
 
 			Vector3 ClosestPoint(const Ray& ray) const;
 			// 和BoundingBox三个面的距离，如果射线远点在BoundingBox内部，则距离为0
-			float HitDistance(const BoundingBox& box) const;
-			float HitDistance(const Vector3& v0, const Vector3& v1, const Vector3& v2, Vector3* outNormal = nullptr, Vector3* outBary = nullptr) const;
-			float HitDistance
+			Real HitDistance(const BoundingBox& box) const;
+			Real HitDistance(const Vector3& v0, const Vector3& v1, const Vector3& v2, Vector3* outNormal = nullptr, Vector3* outBary = nullptr) const;
+			Real HitDistance
 			(const void* vertexData, unsigned vertexStride, unsigned vertexStart, unsigned vertexCount, Vector3* outNormal = nullptr,
 				Vector2* outUV = nullptr, unsigned uvOffset = 0) const;
-			float HitDistance(const void* vertexData, unsigned vertexStride, const void* indexData, unsigned indexSize, unsigned indexStart,
+			Real HitDistance(const void* vertexData, unsigned vertexStride, const void* indexData, unsigned indexSize, unsigned indexStart,
 				unsigned indexCount, Vector3* outNormal = nullptr, Vector2* outUV = nullptr, unsigned uvOffset = 0) const;
 			bool InsideGeometry(const void* vertexData, unsigned vertexSize, unsigned vertexStart, unsigned vertexCount) const;
 			bool InsideGeometry(const void* vertexData, unsigned vertexSize, const void* indexData, unsigned indexSize, unsigned indexStart,

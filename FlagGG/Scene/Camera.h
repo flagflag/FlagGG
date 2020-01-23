@@ -22,13 +22,13 @@ namespace FlagGG
 		{
 			OBJECT_OVERRIDE(Camera);
 		public:
-			void Strafe(float units);
-			void Fly(float units);
-			void Walk(float units);
+			void Strafe(Real units);
+			void Fly(Real units);
+			void Walk(Real units);
 
-			void Pitch(float angle);
-			void Yaw(float angle);
-			void Roll(float angle);
+			void Pitch(Real angle);
+			void Yaw(Real angle);
+			void Roll(Real angle);
 
 			Math::Matrix3x4 GetViewMatrix();
 			Math::Matrix4 GetProjectionMatrix();
@@ -37,24 +37,24 @@ namespace FlagGG
 			void SetCameraType(CameraType cameraType);
 
 			// 远裁剪面
-			void SetFarClip(float farClip);
-			float GetFarClip() const;
+			void SetFarClip(Real farClip);
+			Real GetFarClip() const;
 
 			// 近裁剪面
-			void SetNearClip(float nearClip);
-			float GetNearClip() const;
+			void SetNearClip(Real nearClip);
+			Real GetNearClip() const;
 
 			// 设置横纵比例
-			void SetAspect(float aspect);
-			float GetAspect() const;
+			void SetAspect(Real aspect);
+			Real GetAspect() const;
 
 			// 设置透视范围基础距离
-			void SetZoom(float zoom);
-			float GetZoom() const;
+			void SetZoom(Real zoom);
+			Real GetZoom() const;
 
 			// 设置透视范围角度
-			void SetFov(float fov);
-			float GetFov() const;
+			void SetFov(Real fov);
+			Real GetFov() const;
 
 			Math::Vector3 GetRight() const;
 			Math::Vector3 GetUp() const;
@@ -62,7 +62,7 @@ namespace FlagGG
 
 			bool IsProjectionValid() const;
 
-			Math::Ray GetScreenRay(float x, float y);
+			Math::Ray GetScreenRay(Real x, Real y);
 			Math::Vector3 ScreenPosToWorldPos(const Math::Vector3& screenPos);
 			Math::Vector2 WorldPosToScreenPos(const Math::Vector3& worldPos);
 
@@ -72,11 +72,11 @@ namespace FlagGG
 		private:
 			CameraType cameraType_{ LAND_OBJECT };
 
-			float farClip_{ 1.0f };
-			float nearClip_{ 100.0f };
-			float aspect_{ 1.0f };
-			float fov_{ 45.0f };
-			float zoom_{ 1.0f };
+			Real farClip_{ 1.0f };
+			Real nearClip_{ 100.0f };
+			Real aspect_{ 1.0f };
+			Real fov_{ 45.0f };
+			Real zoom_{ 1.0f };
 			Math::Vector2 projOffset_{ Math::Vector2::ZERO };
 		};
 	}

@@ -28,7 +28,7 @@ LuaNetwork::LuaNetwork(Context* context) :
 
 int LuaNetwork::Init(LuaVM* luaVM)
 {
-	uint32_t networkType = luaVM->Get<uint32_t>(1);
+	UInt32 networkType = luaVM->Get<UInt32>(1);
 	initialized[networkType] = true;
 	openCall[networkType] = luaVM->Get<LuaFunction>(2);
 	closeCall[networkType] = luaVM->Get<LuaFunction>(3);
@@ -40,9 +40,9 @@ int LuaNetwork::Init(LuaVM* luaVM)
 
 int LuaNetwork::Connect(LuaVM* luaVM)
 {
-	uint32_t networkType = luaVM->Get<uint32_t>(1);
+	UInt32 networkType = luaVM->Get<UInt32>(1);
 	const char* ip = luaVM->Get<const char*>(2);
-	auto port = luaVM->Get<uint16_t>(3);
+	auto port = luaVM->Get<UInt16>(3);
 	auto* network = network_[networkType];
 	if (network)
 		network->Connect(ip, port);
@@ -51,7 +51,7 @@ int LuaNetwork::Connect(LuaVM* luaVM)
 
 int LuaNetwork::Disconnect(LuaVM* luaVM)
 {
-	uint32_t networkType = luaVM->Get<uint32_t>(1);
+	UInt32 networkType = luaVM->Get<UInt32>(1);
 	auto* network = network_[networkType];
 	if (network)
 		network->Disconnect();
@@ -60,9 +60,9 @@ int LuaNetwork::Disconnect(LuaVM* luaVM)
 
 int LuaNetwork::Send(LuaVM* luaVM)
 {
-	uint32_t networkType = luaVM->Get<uint32_t>(1);
+	UInt32 networkType = luaVM->Get<UInt32>(1);
 	const char* data = luaVM->Get<const char*>(2);
-	uint32_t dataSize = luaVM->Get<uint32_t>(3);
+	UInt32 dataSize = luaVM->Get<UInt32>(3);
 	auto* network = network_[networkType];
 	if (network)
 		network->Send(data, dataSize);
@@ -71,7 +71,7 @@ int LuaNetwork::Send(LuaVM* luaVM)
 
 int LuaNetwork::IsActive(LuaVM* luaVM)
 {
-	uint32_t networkType = luaVM->Get<uint32_t>(1);
+	UInt32 networkType = luaVM->Get<UInt32>(1);
 	auto* network = network_[networkType];
 	luaVM->Set<bool>(network && network->IsActive());
 	return 1;

@@ -28,25 +28,25 @@ namespace FlagGG
 
 		struct FlagGG_API CompressedLevel
 		{
-			bool Decompress(uint8_t* dest);
+			bool Decompress(UInt8* dest);
 
-			uint8_t* data_{};
+			UInt8* data_{};
 
 			CompressedFormat format_{ CF_NONE };
 
-			int32_t width_{};
+			Int32 width_{};
 
-			int32_t height_{};
+			Int32 height_{};
 
-			int32_t depth_{};
+			Int32 depth_{};
 
-			uint32_t blockSize_{};
+			UInt32 blockSize_{};
 
-			uint32_t dataSize_{};
+			UInt32 dataSize_{};
 
-			uint32_t rowSize_{};
+			UInt32 rowSize_{};
 
-			uint32_t rows_{};
+			UInt32 rows_{};
 		};
 
 		class FlagGG_API Image : public FlagGG::Resource::Resource
@@ -104,9 +104,9 @@ namespace FlagGG
 
 			unsigned GetPixelInt(int x, int y, int z) const;
 
-			Math::Color GetPixelBilinear(float x, float y) const;
+			Math::Color GetPixelBilinear(Real x, Real y) const;
 
-			Math::Color GetPixelTrilinear(float x, float y, float z) const;
+			Math::Color GetPixelTrilinear(Real x, Real y, Real z) const;
 
 			int GetWidth() const { return width_; }
 
@@ -158,15 +158,15 @@ namespace FlagGG
 			static void FreeImageData(unsigned char* pixelData);
 
 		private:
-			int32_t width_{ 0 };
+			Int32 width_{ 0 };
 
-			int32_t height_{ 0 };
+			Int32 height_{ 0 };
 
-			int32_t depth_{ 0 };
+			Int32 depth_{ 0 };
 
-			uint32_t components_{ 0 };
+			UInt32 components_{ 0 };
 
-			uint32_t numCompressedLevels_{ 0 };
+			UInt32 numCompressedLevels_{ 0 };
 
 			bool cubemap_{ false };
 
@@ -176,7 +176,7 @@ namespace FlagGG
 
 			CompressedFormat compressedFormat_{ CF_NONE };
 
-			Container::SharedArrayPtr<uint8_t> data_;
+			Container::SharedArrayPtr<UInt8> data_;
 
 			Container::SharedPtr<Image> nextLevel_;
 

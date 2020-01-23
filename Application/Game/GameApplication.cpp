@@ -253,12 +253,12 @@ void GameApplication::CreateNetwork()
 }
 
 #ifdef _WIN32
-void GameApplication::OnKeyDown(KeyState* keyState, unsigned keyCode)
+void GameApplication::OnKeyDown(KeyState* keyState, UInt32 keyCode)
 {
 	// luaVM_->CallEvent("on_key_down", keyCode);
 }
 
-void GameApplication::OnKeyUp(KeyState* keyState, unsigned keyCode)
+void GameApplication::OnKeyUp(KeyState* keyState, UInt32 keyCode)
 {
 	if (keyCode == VK_F11)
 	{

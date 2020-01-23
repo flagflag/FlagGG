@@ -44,10 +44,10 @@ namespace FlagGG
 				return true;
 			}
 
-			uint32_t NetBuffer::GetSize() const
+			UInt32 NetBuffer::GetSize() const
 			{
-				uint32_t dataSize = 0;
-				for (uint32_t i = 0; i < buffers_.Size(); ++i)
+				UInt32 dataSize = 0;
+				for (UInt32 i = 0; i < buffers_.Size(); ++i)
 				{
 					dataSize += (i + 1 == buffers_.Size() ? count_ : buffers_[i].bufferSize);
 				}
@@ -62,20 +62,20 @@ namespace FlagGG
 				currentBuffer_.bufferSize = 0;
 			}
 
-			bool NetBuffer::ReadByte(uint8_t& byte)
+			bool NetBuffer::ReadByte(UInt8& byte)
 			{
 				if (!CheckBuffer(mode_read))
 				{
 					return false;
 				}
 
-				byte = (uint8_t)currentBuffer_.buffer[count_];
+				byte = (UInt8)currentBuffer_.buffer[count_];
 				++count_;
 
 				return true;
 			}
 
-			bool NetBuffer::WriteByte(uint8_t byte)
+			bool NetBuffer::WriteByte(UInt8 byte)
 			{
 				if (!CheckBuffer(mode_write))
 				{
@@ -91,8 +91,8 @@ namespace FlagGG
 			#define __READ__(value) \
 			{ \
 				value = 0; \
-				size_t _size = sizeof(value); \
-				uint8_t byte; \
+				Size _size = sizeof(value); \
+				UInt8 byte; \
 				while (_size--) \
 				{ \
 					if (!ReadByte(byte)) \
@@ -106,9 +106,9 @@ namespace FlagGG
 
 			#define __WRITE__(value) \
 			{ \
-				size_t _size = sizeof(value); \
-				uint8_t byte; \
-				uint8_t offset = (_size - 1) * 8; \
+				Size _size = sizeof(value); \
+				UInt8 byte; \
+				UInt8 offset = (_size - 1) * 8; \
 				while (_size--) \
 				{ \
 					byte = (value >> offset) & 0xff; \
@@ -120,89 +120,89 @@ namespace FlagGG
 				} \
 			}
 
-			void NetBuffer::ReadInt8(int8_t& value)
+			void NetBuffer::ReadInt8(Int8& value)
 			{
 				__READ__(value);
 			}
 
-			void NetBuffer::WriteInt8(int8_t value)
+			void NetBuffer::WriteInt8(Int8 value)
 			{
 				__WRITE__(value);
 			}
 
-			void NetBuffer::ReadUInt8(uint8_t& value)
+			void NetBuffer::ReadUInt8(UInt8& value)
 			{
 				__READ__(value);
 			}
 
-			void NetBuffer::WriteUInt8(uint8_t value)
+			void NetBuffer::WriteUInt8(UInt8 value)
 			{
 				__WRITE__(value);
 			}
 
-			void NetBuffer::ReadInt16(int16_t& value)
+			void NetBuffer::ReadInt16(Int16& value)
 			{
 				__READ__(value);
 			}
 
-			void NetBuffer::WriteInt16(int16_t value)
+			void NetBuffer::WriteInt16(Int16 value)
 			{
 				__WRITE__(value);
 			}
 
-			void NetBuffer::ReadUInt16(uint16_t& value)
+			void NetBuffer::ReadUInt16(UInt16& value)
 			{
 				__READ__(value);
 			}
 
-			void NetBuffer::WriteUInt16(uint16_t value)
+			void NetBuffer::WriteUInt16(UInt16 value)
 			{
 				__WRITE__(value);
 			}
 
-			void NetBuffer::ReadInt32(int32_t& value)
+			void NetBuffer::ReadInt32(Int32& value)
 			{
 				__READ__(value);
 			}
 
-			void NetBuffer::WriteInt32(int32_t value)
+			void NetBuffer::WriteInt32(Int32 value)
 			{
 				__WRITE__(value);
 			}
 
-			void NetBuffer::ReadUInt32(uint32_t& value)
+			void NetBuffer::ReadUInt32(UInt32& value)
 			{
 				__READ__(value);
 			}
 
-			void NetBuffer::WriteUInt32(uint32_t value)
+			void NetBuffer::WriteUInt32(UInt32 value)
 			{
 				__WRITE__(value);
 			}
 
-			void NetBuffer::ReadInt64(int64_t& value)
+			void NetBuffer::ReadInt64(Int64& value)
 			{
 				__READ__(value);
 			}
 
-			void NetBuffer::WriteInt64(int64_t value)
+			void NetBuffer::WriteInt64(Int64 value)
 			{
 				__WRITE__(value);
 			}
 
-			void NetBuffer::ReadUInt64(uint64_t& value)
+			void NetBuffer::ReadUInt64(UInt64& value)
 			{
 				__READ__(value);
 			}
 
-			void NetBuffer::WriteUInt64(uint64_t value)
+			void NetBuffer::WriteUInt64(UInt64 value)
 			{
 				__WRITE__(value);
 			}
 
 			void NetBuffer::ReadFloat(float& value)
 			{
-				uint8_t byte[4];
+				UInt8 byte[4];
 				ReadByte(byte[0]);
 				ReadByte(byte[1]);
 				ReadByte(byte[2]);
@@ -212,7 +212,7 @@ namespace FlagGG
 
 			void NetBuffer::WriteFloat(float value)
 			{
-				uint8_t byte[4];
+				UInt8 byte[4];
 				memcpy(byte, &value, 4);
 				WriteByte(byte[0]);
 				WriteByte(byte[1]);
@@ -220,16 +220,16 @@ namespace FlagGG
 				WriteByte(byte[3]);
 			}
 
-			uint32_t NetBuffer::ReadStream(void* data, uint32_t dataSize)
+			UInt32 NetBuffer::ReadStream(void* data, UInt32 dataSize)
 			{
 				if (buffers_.Size() <= 0u)
 					return 0u;
 
 				auto* index = static_cast<char*>(data);
-				uint32_t readSize = 0u;
-				for (uint32_t i = 0; i < buffers_.Size() && readSize < dataSize; ++i)
+				UInt32 readSize = 0u;
+				for (UInt32 i = 0; i < buffers_.Size() && readSize < dataSize; ++i)
 				{
-					uint32_t realSize = (i + 1 == buffers_.Size() ? count_ : buffers_[i].bufferSize);
+					UInt32 realSize = (i + 1 == buffers_.Size() ? count_ : buffers_[i].bufferSize);
 					if (readSize + realSize > dataSize)
 						realSize = dataSize - readSize;
 					memcpy(index, buffers_[i].buffer, realSize);
@@ -239,17 +239,17 @@ namespace FlagGG
 				return readSize;
 			}
 
-			uint32_t NetBuffer::WriteStream(const void* data, uint32_t dataSize)
+			UInt32 NetBuffer::WriteStream(const void* data, UInt32 dataSize)
 			{
 				if (!data || dataSize == 0) return 0;
 
 				const char* index = (const char*)data;
-				size_t leftSize = dataSize;
+				Size leftSize = dataSize;
 				while (leftSize)
 				{
 					CheckBuffer(mode_write);
 
-					size_t writeSize = std::min < size_t >(leftSize,
+					Size writeSize = std::min < Size >(leftSize,
 						currentBuffer_.bufferSize - count_);
 
 					memcpy(currentBuffer_.buffer, index, writeSize);
@@ -269,19 +269,19 @@ namespace FlagGG
 					return;
 				}
 
-				uint32_t dataSize = GetSize();
+				UInt32 dataSize = GetSize();
 				result.Resize(dataSize);
 
 				char* index = &result[0];
-				for (uint32_t i = 0; i < buffers_.Size(); ++i)
+				for (UInt32 i = 0; i < buffers_.Size(); ++i)
 				{
-					uint32_t realSize = (i + 1 == buffers_.Size() ? count_ : buffers_[i].bufferSize);
+					UInt32 realSize = (i + 1 == buffers_.Size() ? count_ : buffers_[i].bufferSize);
 					memcpy(index, buffers_[i].buffer, realSize);
 					index += realSize;
 				}
 			}
 
-			void NetBuffer::ToBuffer(Container::SharedArrayPtr<char>& buffer, uint32_t& bufferSize)
+			void NetBuffer::ToBuffer(Container::SharedArrayPtr<char>& buffer, UInt32& bufferSize)
 			{
 				if (buffers_.Size() <= 0)
 				{
@@ -294,9 +294,9 @@ namespace FlagGG
 				buffer = new char[bufferSize];
 
 				char* index = buffer.Get();
-				for (uint32_t i = 0; i < buffers_.Size(); ++i)
+				for (UInt32 i = 0; i < buffers_.Size(); ++i)
 				{
-					uint32_t realSize = (i + 1 == buffers_.Size() ? count_ : buffers_[i].bufferSize);
+					UInt32 realSize = (i + 1 == buffers_.Size() ? count_ : buffers_[i].bufferSize);
 					memcpy(index, buffers_[i].buffer, realSize);
 					index += realSize;
 				}

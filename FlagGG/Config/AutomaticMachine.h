@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Container/Str.h"
+#include "Core/BaseTypes.h"
 
 #include <string>
 #include <vector>
-#include <stdint.h>
 
 namespace FlagGG
 {
@@ -12,9 +12,7 @@ namespace FlagGG
 	{
 #define AM_MID_SIGN '='
 
-		typedef uint8_t Byte;
-
-		static const uint32_t CHAR_COUNT = 256;
+		static const UInt32 CHAR_COUNT = 256;
 
 		class StateNode;
 		typedef StateNode* StatePtr;

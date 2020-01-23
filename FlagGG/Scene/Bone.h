@@ -13,13 +13,11 @@
 #include "Math/BoundingBox.h"
 #include "IOFrame/Buffer/IOBuffer.h"
 
-#include <stdint.h>
-
 namespace FlagGG
 {
 	namespace Scene
 	{
-		enum BoneCollisionShape : uint8_t
+		enum BoneCollisionShape : UInt8
 		{
 			BONE_COLLISSION_NONE = 0,
 			BONE_COLLISSION_SPHERE = 1,
@@ -38,7 +36,7 @@ namespace FlagGG
 		{
 			Container::String name_;
 			Container::StringHash nameHash_;
-			uint32_t parentIndex_{ 0 };
+			UInt32 parentIndex_{ 0 };
 			
 			Math::Vector3 initPosition_{ Math::Vector3::ZERO };
 			Math::Quaternion initRotation_{ Math::Quaternion::IDENTITY };
@@ -46,7 +44,7 @@ namespace FlagGG
 			Math::Matrix3x4 offsetMatrix{ Math::Matrix3x4::IDENTITY };
 			bool animated_{ true };
 			Container::BoneCollisionShapeFlags collisionMask_{ BONE_COLLISSION_NONE };
-			float radius_{ 0.0f };
+			Real radius_{ 0.0f };
 			Container::WeakPtr<Node> node_;
 			Math::BoundingBox boundingBox_;
 		};
@@ -71,7 +69,7 @@ namespace FlagGG
 		private:
 			Container::Vector<Bone> bones_;
 
-			uint32_t rootBoneIndex_;
+			UInt32 rootBoneIndex_;
 		};
 	}
 }

@@ -15,7 +15,7 @@ namespace FlagGG
 				channel_->OnRegisterd(handler);
 			}
 
-			bool TCPConnector::Connect(const char* ip, uint16_t port)
+			bool TCPConnector::Connect(const char* ip, UInt16 port)
 			{
 				return channel_->Connect(ip, port);
 			}

@@ -39,11 +39,11 @@ public:
 
 	~Network() override;
 
-	void Connect(const String& ip, uint16_t port);
+	void Connect(const String& ip, UInt16 port);
 
 	void Disconnect();
 
-	void Send(const void* data, uint32_t dataSize);
+	void Send(const void* data, UInt32 dataSize);
 
 	bool IsActive() const;
 

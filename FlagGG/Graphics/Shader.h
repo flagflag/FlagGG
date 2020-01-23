@@ -37,20 +37,20 @@ namespace FlagGG
 
 			// shader代码
 			Container::SharedArrayPtr<char> buffer_;
-			uint32_t bufferSize_{ 0 };
+			UInt32 bufferSize_{ 0 };
 		};
 
 		struct ConstantBufferVariableDesc
 		{
 			Container::String name_;
-			uint32_t offset_;
-			uint32_t size_;
+			UInt32 offset_;
+			UInt32 size_;
 		};
 
 		struct ConstantBufferDesc
 		{
 			Container::String name_;
-			uint32_t size_;
+			UInt32 size_;
 			Container::Vector<ConstantBufferVariableDesc> variableDescs_;
 		};
 
@@ -64,7 +64,7 @@ namespace FlagGG
 		class FlagGG_API Shader : public GPUObject, public Container::RefCounted
 		{
 		public:
-			Shader(Container::SharedArrayPtr<char> buffer, uint32_t bufferSize);
+			Shader(Container::SharedArrayPtr<char> buffer, UInt32 bufferSize);
 
 			~Shader() override;
 
@@ -82,9 +82,9 @@ namespace FlagGG
 
 			ID3DBlob* GetByteCode();
 
-			const Container::HashMap<uint32_t, ConstantBufferDesc>& GetContantBufferVariableDesc() const;
+			const Container::HashMap<UInt32, ConstantBufferDesc>& GetContantBufferVariableDesc() const;
 
-			const Container::HashMap<uint32_t, TextureDesc>& GetTextureDesc() const;
+			const Container::HashMap<UInt32, TextureDesc>& GetTextureDesc() const;
 
 		protected:
 			void AnalysisReflection(ID3DBlob* compileCode);
@@ -92,7 +92,7 @@ namespace FlagGG
 		private:
 			// shader代码
 			Container::SharedArrayPtr<char> buffer_;
-			uint32_t bufferSize_{ 0 };
+			UInt32 bufferSize_{ 0 };
 
 			ID3DBlob* shaderCode_{ nullptr };
 
@@ -101,8 +101,8 @@ namespace FlagGG
 			Container::Vector<Container::String> defines_;
 			Container::String definesString_;
 
-			Container::HashMap<uint32_t, ConstantBufferDesc> constantBufferDescs_;
-			Container::HashMap<uint32_t, TextureDesc> textureDescs_;
+			Container::HashMap<UInt32, ConstantBufferDesc> constantBufferDescs_;
+			Container::HashMap<UInt32, TextureDesc> textureDescs_;
 		};
 	}
 }

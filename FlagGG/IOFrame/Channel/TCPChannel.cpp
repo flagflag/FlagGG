@@ -51,7 +51,7 @@ namespace FlagGG
 				}
 
 				Container::SharedArrayPtr<char> data;
-				uint32_t dataSize;
+				UInt32 dataSize;
 				buffer->ToBuffer(data, dataSize);
 
 				if (!data || dataSize == 0)
@@ -112,7 +112,7 @@ namespace FlagGG
 				}
 			}
 
-			bool TCPChannel::Connect(const char* ip, uint16_t port)
+			bool TCPChannel::Connect(const char* ip, UInt16 port)
 			{
 				AsyncFrame::RecursiveLocker locker(mutex_);
 

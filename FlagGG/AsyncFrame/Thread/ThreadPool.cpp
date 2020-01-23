@@ -11,24 +11,24 @@ namespace FlagGG
 		{
 #define THREAD_POOL_MAX_SIZE 64
 
-			ThreadPool::ThreadPool(size_t thread_count)
+			ThreadPool::ThreadPool(UInt32 threadCount)
 			{
-				assert(thread_count <= THREAD_POOL_MAX_SIZE);
+				assert(threadCount <= THREAD_POOL_MAX_SIZE);
 
-				for (size_t i = 0; i < thread_count; ++i)
+				for (Size i = 0; i < threadCount; ++i)
 				{
-					threads_.emplace_back(new SharedThread);
+					threads_.Push(SharedThreadPtr(new SharedThread));
 				}
 			}
 
 			void ThreadPool::Add(ThreadTask task_func)
 			{
-				size_t index = 0;
-				uint32_t minWaitingTime = INT_MAX;
+				Size index = 0;
+				UInt32 minWaitingTime = INT_MAX;
 
-				for (size_t i = 0; i < threads_.size(); ++i)
+				for (Size i = 0; i < threads_.Size(); ++i)
 				{
-					uint32_t waitingTime = threads_[i]->WaitingTime();
+					UInt32 waitingTime = threads_[i]->WaitingTime();
 					if (waitingTime < minWaitingTime)
 					{
 						index = i;
@@ -36,7 +36,7 @@ namespace FlagGG
 					}
 				}
 
-				if (threads_.size() > 0)
+				if (threads_.Size() > 0)
 				{
 					threads_[index]->Add(task_func);
 				}
@@ -44,7 +44,7 @@ namespace FlagGG
 
 			void ThreadPool::Start()
 			{
-				for (size_t i = 0; i < threads_.size(); ++i)
+				for (Size i = 0; i < threads_.Size(); ++i)
 				{
 					threads_[i]->Start();
 				}
@@ -52,7 +52,7 @@ namespace FlagGG
 
 			void ThreadPool::Stop()
 			{
-				for (size_t i = 0; i < threads_.size(); ++i)
+				for (Size i = 0; i < threads_.Size(); ++i)
 				{
 					threads_[i]->Stop();
 				}
@@ -60,13 +60,13 @@ namespace FlagGG
 
 			void ThreadPool::WaitForStop()
 			{
-				for (size_t i = 0; i < threads_.size(); ++i)
+				for (Size i = 0; i < threads_.Size(); ++i)
 				{
 					threads_[i]->WaitForStop();
 				}
 			};
 
-			void ThreadPool::WaitForStop(uint32_t wait_time)
+			void ThreadPool::WaitForStop(UInt32 wait_time)
 			{
 				Utility::SystemHelper::Sleep(wait_time);
 			}

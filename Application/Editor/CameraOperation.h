@@ -19,9 +19,9 @@ public:
 
 	SharedPtr<Camera> GetCamera();
 
-	void OnKeyDown(KeyState* keyState, unsigned keyCode);
+	void OnKeyDown(KeyState* keyState, UInt32 keyCode);
 
-	void OnKeyUp(KeyState* keyState, unsigned keyCode);
+	void OnKeyUp(KeyState* keyState, UInt32 keyCode);
 
 	void OnMouseDown(KeyState* keyState, MouseKey mouseKey);
 

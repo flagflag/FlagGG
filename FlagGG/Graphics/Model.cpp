@@ -22,17 +22,17 @@ namespace FlagGG
 			indexBuffers_ = indexBuffers;
 		}
 
-		void Model::SetBoneMappings(const Container::Vector<Container::PODVector<uint32_t>>& boneMappings)
+		void Model::SetBoneMappings(const Container::Vector<Container::PODVector<UInt32>>& boneMappings)
 		{
 			boneMappings_ = boneMappings;
 		}
 
-		void Model::SetNumGeometries(uint32_t numGeometries)
+		void Model::SetNumGeometries(UInt32 numGeometries)
 		{
 			geometries_.Resize(numGeometries);
 		}
 
-		void Model::SetNumGeometryLodLevels(uint32_t index, uint32_t num)
+		void Model::SetNumGeometryLodLevels(UInt32 index, UInt32 num)
 		{
 			if (index >= geometries_.Size())
 				return;
@@ -40,7 +40,7 @@ namespace FlagGG
 			geometries_[index].Resize(num);
 		}
 
-		bool Model::SetGeometry(uint32_t index, uint32_t lodLevel, Geometry* geometry)
+		bool Model::SetGeometry(UInt32 index, UInt32 lodLevel, Geometry* geometry)
 		{
 			if (index >= geometries_.Size())
 				return false;
@@ -67,7 +67,7 @@ namespace FlagGG
 			return indexBuffers_;
 		}
 
-		const Container::Vector<Container::PODVector<uint32_t>>& Model::GetBoneMappings() const
+		const Container::Vector<Container::PODVector<UInt32>>& Model::GetBoneMappings() const
 		{
 			return boneMappings_;
 		}
@@ -82,7 +82,7 @@ namespace FlagGG
 			return geometries_;
 		}
 
-		Geometry* Model::GetGeometry(uint32_t index, uint32_t lodLevel) const
+		Geometry* Model::GetGeometry(UInt32 index, UInt32 lodLevel) const
 		{
 			if (index >= geometries_.Size() || geometries_[index].Empty())
 				return nullptr;
@@ -93,12 +93,12 @@ namespace FlagGG
 			return geometries_[index][lodLevel];
 		}
 
-		uint32_t Model::GetNumGeometries() const
+		UInt32 Model::GetNumGeometries() const
 		{
 			return geometries_.Size();
 		}
 
-		uint32_t Model::GetNumGeometryLodLevels(uint32_t index) const
+		UInt32 Model::GetNumGeometryLodLevels(UInt32 index) const
 		{
 			if (index >= geometries_.Size())
 				return 0u;
@@ -124,28 +124,28 @@ namespace FlagGG
 
 			bool hasVertexDeclarations = (fileID == "UMD2");
 
-			uint32_t numVertexBuffers = 0;
+			UInt32 numVertexBuffers = 0;
 			stream->ReadUInt32(numVertexBuffers);
-			uint32_t ignore;
-			for (uint32_t i = 0; i < numVertexBuffers; ++i)
+			UInt32 ignore;
+			for (UInt32 i = 0; i < numVertexBuffers; ++i)
 			{
 				Container::PODVector<VertexElement> vertexElements;
-				uint32_t vertexCount = 0;
+				UInt32 vertexCount = 0;
 				stream->ReadUInt32(vertexCount);
 
 				if (!hasVertexDeclarations)
 				{
-					uint32_t elementMask;
+					UInt32 elementMask;
 					stream->ReadUInt32(elementMask);
 					vertexElements = VertexBuffer::GetElements(elementMask);
 				}
 				else
 				{
-					uint32_t numElements = 0;
+					UInt32 numElements = 0;
 					stream->ReadUInt32(numElements);
-					for (uint32_t j = 0; j < numElements; ++j)
+					for (UInt32 j = 0; j < numElements; ++j)
 					{
-						uint32_t elementDesc;
+						UInt32 elementDesc;
 						stream->ReadUInt32(elementDesc);
 						auto type = static_cast<VertexElementType>(elementDesc & 0xffu);
 						auto semantic = static_cast<VertexElementSemantic>((elementDesc >> 8u) & 0xffu);
@@ -158,7 +158,7 @@ namespace FlagGG
 				stream->ReadUInt32(ignore);
 
 				Container::SharedPtr<VertexBuffer> buffer(new VertexBuffer());
-				uint32_t vertexSize = VertexBuffer::GetVertexSize(vertexElements);
+				UInt32 vertexSize = VertexBuffer::GetVertexSize(vertexElements);
 				buffer->SetSize(vertexCount, vertexElements);
 				void* data = buffer->Lock(0, vertexCount);
 				stream->ReadStream(data, vertexCount * vertexSize);
@@ -167,12 +167,12 @@ namespace FlagGG
 				vertexBuffers_.Push(buffer);
 			}
 
-			uint32_t numIndexBuffers = 0;
+			UInt32 numIndexBuffers = 0;
 			stream->ReadUInt32(numIndexBuffers);
-			for (uint32_t i = 0; i < numIndexBuffers; ++i)
+			for (UInt32 i = 0; i < numIndexBuffers; ++i)
 			{
-				uint32_t indexCount = 0;
-				uint32_t indexSize = 0;
+				UInt32 indexCount = 0;
+				UInt32 indexSize = 0;
 				stream->ReadUInt32(indexCount);
 				stream->ReadUInt32(indexSize);
 
@@ -185,34 +185,34 @@ namespace FlagGG
 				indexBuffers_.Push(buffer);
 			}
 
-			uint32_t numGeometries = 0;
+			UInt32 numGeometries = 0;
 			stream->ReadUInt32(numGeometries);
 			boneMappings_.Reserve(numGeometries);
-			for (uint32_t i = 0; i < numGeometries; ++i)
+			for (UInt32 i = 0; i < numGeometries; ++i)
 			{
-				uint32_t boneMappingCount = 0;
+				UInt32 boneMappingCount = 0;
 				stream->ReadUInt32(boneMappingCount);
 				Container::PODVector<unsigned> boneMapping(boneMappingCount);
-				for (uint32_t j = 0; j < boneMappingCount; ++j)
+				for (UInt32 j = 0; j < boneMappingCount; ++j)
 				{
 					stream->ReadUInt32(boneMapping[j]);
 				}
 				boneMappings_.Push(boneMapping);
 
 				// lod的图形，远近看到的是不同细节的模型
-				uint32_t numLodLevels = 0;
+				UInt32 numLodLevels = 0;
 				stream->ReadUInt32(numLodLevels);
 				Container::Vector<Container::SharedPtr<Geometry>> lodGeometry;
 				lodGeometry.Reserve(numLodLevels);
 
-				for (uint32_t j = 0; j < numLodLevels; ++j)
+				for (UInt32 j = 0; j < numLodLevels; ++j)
 				{
 					float distance = 0.0f;
-					uint32_t type = 0;
-					uint32_t vertexBufferRef = 0;
-					uint32_t indexBufferRef = 0;
-					uint32_t indexStart = 0;
-					uint32_t indexCount = 0;
+					UInt32 type = 0;
+					UInt32 vertexBufferRef = 0;
+					UInt32 indexBufferRef = 0;
+					UInt32 indexStart = 0;
+					UInt32 indexCount = 0;
 					stream->ReadFloat(distance);
 					stream->ReadUInt32(type);
 					stream->ReadUInt32(vertexBufferRef);
@@ -243,19 +243,19 @@ namespace FlagGG
 				geometries_.Push(lodGeometry);
 			}
 
-			uint32_t numMorphs = 0;
+			UInt32 numMorphs = 0;
 			stream->ReadUInt32(numMorphs);
-			for (uint32_t i = 0; i < numMorphs; ++i)
+			for (UInt32 i = 0; i < numMorphs; ++i)
 			{
 				Container::String ignoreStr;
 				IOFrame::Buffer::ReadString(stream, ignoreStr);
-				uint32_t numBuffers = 0;
+				UInt32 numBuffers = 0;
 				stream->ReadUInt32(numBuffers);
-				for (uint32_t i = 0; i < numBuffers; ++i)
+				for (UInt32 i = 0; i < numBuffers; ++i)
 				{
 					stream->ReadUInt32(ignore);
-					uint32_t vertexCount = 0;
-					uint32_t vertexSize = sizeof(uint32_t);
+					UInt32 vertexCount = 0;
+					UInt32 vertexSize = sizeof(UInt32);
 					stream->ReadUInt32(vertexCount);
 					stream->Seek(stream->GetIndex() + vertexCount * vertexSize);
 				}
@@ -278,22 +278,22 @@ namespace FlagGG
 			Container::String fileID = "UMD2";
 			stream->WriteStream(&fileID[0], fileID.Length());
 
-			uint32_t numVertexBuffers = vertexBuffers_.Size();
+			UInt32 numVertexBuffers = vertexBuffers_.Size();
 			stream->WriteUInt32(numVertexBuffers);
-			for (uint32_t i = 0; i < numVertexBuffers; ++i)
+			for (UInt32 i = 0; i < numVertexBuffers; ++i)
 			{
 				auto vertexBuffer = vertexBuffers_[i];
-				uint32_t vertexCount = vertexBuffer->GetVertexCount();
+				UInt32 vertexCount = vertexBuffer->GetVertexCount();
 				stream->WriteUInt32(vertexCount);
 				const auto& vertexElements = vertexBuffer->GetElements();
-				uint32_t numElements = vertexElements.Size();
+				UInt32 numElements = vertexElements.Size();
 				stream->WriteUInt32(numElements);
 				for (auto element : vertexElements)
 				{
-					uint32_t type = element.vertexElementType_;
-					uint32_t semantic = element.vertexElementSemantic_;
-					uint32_t index = element.index_;
-					uint32_t elementDesc = type | (semantic << 8u) | (index << 16);
+					UInt32 type = element.vertexElementType_;
+					UInt32 semantic = element.vertexElementSemantic_;
+					UInt32 index = element.index_;
+					UInt32 elementDesc = type | (semantic << 8u) | (index << 16);
 					stream->WriteUInt32(elementDesc);
 				}
 

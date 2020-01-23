@@ -23,13 +23,13 @@ namespace FlagGG
 
 			void SetIndexBuffers(const Container::Vector<Container::SharedPtr<IndexBuffer>>& indexBuffers);
 
-			void SetBoneMappings(const Container::Vector<Container::PODVector<uint32_t>>& boneMappings);
+			void SetBoneMappings(const Container::Vector<Container::PODVector<UInt32>>& boneMappings);
 
-			void SetNumGeometries(uint32_t numGeometries);
+			void SetNumGeometries(UInt32 numGeometries);
 
-			void SetNumGeometryLodLevels(uint32_t index, uint32_t num);
+			void SetNumGeometryLodLevels(UInt32 index, UInt32 num);
 
-			bool SetGeometry(uint32_t index, uint32_t lodLevel, Geometry* geometry);
+			bool SetGeometry(UInt32 index, UInt32 lodLevel, Geometry* geometry);
 
 			void SetBoundingBox(Math::BoundingBox& box);
 
@@ -37,17 +37,17 @@ namespace FlagGG
 
 			const Container::Vector<Container::SharedPtr<IndexBuffer>>& GetIndexBuffers() const;
 
-			const Container::Vector<Container::PODVector<uint32_t>>& GetBoneMappings() const;
+			const Container::Vector<Container::PODVector<UInt32>>& GetBoneMappings() const;
 
 			const Scene::Skeleton& GetSkeleton() const;
 
 			const Container::Vector <Container::Vector<Container::SharedPtr<Geometry>>>& GetGeometries() const;
 
-			Geometry* GetGeometry(uint32_t index, uint32_t lodLevel) const;
+			Geometry* GetGeometry(UInt32 index, UInt32 lodLevel) const;
 
-			uint32_t GetNumGeometries() const;
+			UInt32 GetNumGeometries() const;
 
-			uint32_t GetNumGeometryLodLevels(uint32_t index) const;
+			UInt32 GetNumGeometryLodLevels(UInt32 index) const;
 
 			const Math::BoundingBox& GetBoundingBox() const;
 
@@ -68,7 +68,7 @@ namespace FlagGG
 			// 每个数组表示不同lod下的图形
 			Container::Vector <Container::Vector<Container::SharedPtr<Geometry>>> geometries_;
 
-			Container::Vector<Container::PODVector<uint32_t>> boneMappings_;
+			Container::Vector<Container::PODVector<UInt32>> boneMappings_;
 
 			Scene::Skeleton skeleton_;
 

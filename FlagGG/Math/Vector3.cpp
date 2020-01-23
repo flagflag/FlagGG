@@ -42,7 +42,7 @@ namespace FlagGG
 		{
 		}
 
-		Vector3::Vector3(float x, float y, float z) :
+		Vector3::Vector3(Real x, Real y, Real z) :
 			x_(x),
 			y_(y),
 			z_(z)
@@ -56,7 +56,7 @@ namespace FlagGG
 			z_ = other.z_;
 		}
 
-		Vector3::Vector3(const Vector2& vector, float z) :
+		Vector3::Vector3(const Vector2& vector, Real z) :
 			x_(vector.x_),
 			y_(vector.y_),
 			z_(z)
@@ -88,7 +88,7 @@ namespace FlagGG
 			return Vector3(x_ - rhs.x_, y_ - rhs.y_, z_ - rhs.z_);
 		}
 
-		Vector3 Vector3::operator *(float rhs) const
+		Vector3 Vector3::operator *(Real rhs) const
 		{
 			return Vector3(x_ * rhs, y_ * rhs, z_ * rhs);
 		}
@@ -98,7 +98,7 @@ namespace FlagGG
 			return Vector3(x_ * rhs.x_, y_ * rhs.y_, z_ * rhs.z_);
 		}
 
-		Vector3 Vector3::operator /(float rhs) const
+		Vector3 Vector3::operator /(Real rhs) const
 		{ 
 			return Vector3(x_ / rhs, y_ / rhs, z_ / rhs);
 		}
@@ -124,7 +124,7 @@ namespace FlagGG
 			return *this;
 		}
 
-		Vector3& Vector3::operator *=(float rhs)
+		Vector3& Vector3::operator *=(Real rhs)
 		{
 			x_ *= rhs;
 			y_ *= rhs;
@@ -140,9 +140,9 @@ namespace FlagGG
 			return *this;
 		}
 
-		Vector3& Vector3::operator /=(float rhs)
+		Vector3& Vector3::operator /=(Real rhs)
 		{
-			float invRhs = 1.0f / rhs;
+			Real invRhs = 1.0f / rhs;
 			x_ *= invRhs;
 			y_ *= invRhs;
 			z_ *= invRhs;
@@ -159,37 +159,37 @@ namespace FlagGG
 
 		void Vector3::Normalize()
 		{
-			float lenSquared = LengthSquared();
+			Real lenSquared = LengthSquared();
 			if (!Math::Equals(lenSquared, 1.0f) && lenSquared > 0.0f)
 			{
-				float invLen = 1.0f / Math::Sqrt(lenSquared);
+				Real invLen = 1.0f / Math::Sqrt(lenSquared);
 				x_ *= invLen;
 				y_ *= invLen;
 				z_ *= invLen;
 			}
 		}
 
-		float Vector3::Length() const
+		Real Vector3::Length() const
 		{ 
 			return Math::Sqrt(x_ * x_ + y_ * y_ + z_ * z_);
 		}
 
-		float Vector3::LengthSquared() const 
+		Real Vector3::LengthSquared() const 
 		{ 
 			return x_ * x_ + y_ * y_ + z_ * z_; 
 		}
 
-		float Vector3::DotProduct(const Vector3& rhs) const
+		Real Vector3::DotProduct(const Vector3& rhs) const
 		{ 
 			return x_ * rhs.x_ + y_ * rhs.y_ + z_ * rhs.z_;
 		}
 
-		float Vector3::AbsDotProduct(const Vector3& rhs) const
+		Real Vector3::AbsDotProduct(const Vector3& rhs) const
 		{
 			return Math::Abs(x_ * rhs.x_) + Math::Abs(y_ * rhs.y_) + Math::Abs(z_ * rhs.z_);
 		}
 
-		float Vector3::ProjectOntoAxis(const Vector3& axis) const
+		Real Vector3::ProjectOntoAxis(const Vector3& axis) const
 		{ 
 			return DotProduct(axis.Normalized());
 		}
@@ -203,8 +203,8 @@ namespace FlagGG
 		Vector3 Vector3::ProjectOntoLine(const Vector3& from, const Vector3& to, bool clamped) const
 		{
 			const Vector3 direction = to - from;
-			const float lengthSquared = direction.LengthSquared();
-			float factor = (*this - from).DotProduct(direction) / lengthSquared;
+			const Real lengthSquared = direction.LengthSquared();
+			Real factor = (*this - from).DotProduct(direction) / lengthSquared;
 
 			if (clamped)
 				factor = Math::Clamp(factor, 0.0f, 1.0f);
@@ -212,12 +212,12 @@ namespace FlagGG
 			return from + direction * factor;
 		}
 
-		float Vector3::DistanceToPoint(const Vector3& point) const
+		Real Vector3::DistanceToPoint(const Vector3& point) const
 		{ 
 			return (*this - point).Length();
 		}
 
-		float Vector3::DistanceToPlane(const Vector3& origin, const Vector3& normal) const
+		Real Vector3::DistanceToPlane(const Vector3& origin, const Vector3& normal) const
 		{ 
 			return (*this - origin).ProjectOntoAxis(normal);
 		}
@@ -241,7 +241,7 @@ namespace FlagGG
 			return Vector3(Math::Abs(x_), Math::Abs(y_), Math::Abs(z_));
 		}
 
-		Vector3 Vector3::Lerp(const Vector3& rhs, float t) const
+		Vector3 Vector3::Lerp(const Vector3& rhs, Real t) const
 		{ 
 			return *this * (1.0f - t) + rhs * t;
 		}
@@ -251,7 +251,7 @@ namespace FlagGG
 			return Math::Equals(x_, rhs.x_) && Math::Equals(y_, rhs.y_) && Math::Equals(z_, rhs.z_);
 		}
 
-		float Vector3::Angle(const Vector3& rhs) const
+		Real Vector3::Angle(const Vector3& rhs) const
 		{
 			return Math::Acos(DotProduct(rhs) / (Length() * rhs.Length()));
 		}
@@ -263,10 +263,10 @@ namespace FlagGG
 
 		Vector3 Vector3::Normalized() const
 		{
-			float lenSquared = LengthSquared();
+			Real lenSquared = LengthSquared();
 			if (!Math::Equals(lenSquared, 1.0f) && lenSquared > 0.0f)
 			{
-				float invLen = 1.0f / Math::Sqrt(lenSquared);
+				Real invLen = 1.0f / Math::Sqrt(lenSquared);
 				return *this * invLen;
 			}
 			

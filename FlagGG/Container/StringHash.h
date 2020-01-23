@@ -1,7 +1,6 @@
 #pragma once
 #include "Container/Str.h"
-
-#include <stdint.h>
+#include "Core/BaseTypes.h"
 
 namespace FlagGG
 {
@@ -16,7 +15,7 @@ namespace FlagGG
 
 			StringHash(const String& str) NOEXCEPT;
 
-			StringHash(uint32_t value) NOEXCEPT;
+			StringHash(UInt32 value) NOEXCEPT;
 
 			StringHash(const StringHash& value) NOEXCEPT;
 
@@ -36,12 +35,12 @@ namespace FlagGG
 
 			explicit operator bool() const;
 
-			uint32_t ToHash() const;
+			UInt32 ToHash() const;
 
 			static const StringHash ZERO;
 
 		private:
-			uint32_t value_;
+			UInt32 value_;
 		};
 	}
 }

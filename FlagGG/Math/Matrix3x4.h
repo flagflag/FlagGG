@@ -27,13 +27,13 @@ namespace FlagGG
 			explicit Matrix3x4(const Matrix4& matrix) NOEXCEPT;
 
 			Matrix3x4(
-				float v00, float v01, float v02, float v03,
-				float v10, float v11, float v12, float v13,
-				float v20, float v21, float v22, float v23) NOEXCEPT;
+				Real v00, Real v01, Real v02, Real v03,
+				Real v10, Real v11, Real v12, Real v13,
+				Real v20, Real v21, Real v22, Real v23) NOEXCEPT;
 
-			explicit Matrix3x4(const float* data) NOEXCEPT;
+			explicit Matrix3x4(const Real* data) NOEXCEPT;
 
-			Matrix3x4(const Vector3& translation, const Quaternion& rotation, float scale) NOEXCEPT;
+			Matrix3x4(const Vector3& translation, const Quaternion& rotation, Real scale) NOEXCEPT;
 
 			Matrix3x4(const Vector3& translation, const Quaternion& rotation, const Vector3& scale) NOEXCEPT;
 
@@ -57,7 +57,7 @@ namespace FlagGG
 
 			Matrix3x4 operator -(const Matrix3x4& rhs) const;
 
-			Matrix3x4 operator *(float rhs) const;
+			Matrix3x4 operator *(Real rhs) const;
 
 			Matrix3x4 operator *(const Matrix3x4& rhs) const;
 
@@ -69,7 +69,7 @@ namespace FlagGG
 
 			void SetScale(const Vector3& scale);
 
-			void SetScale(float scale);
+			void SetScale(Real scale);
 
 			Matrix3 ToMatrix3() const;
 
@@ -91,9 +91,9 @@ namespace FlagGG
 
 			Matrix3x4 Inverse() const;
 
-			const float* Data() const;
+			const Real* Data() const;
 
-			float Element(unsigned i, unsigned j) const;
+			Real Element(unsigned i, unsigned j) const;
 
 			Vector4 Row(unsigned i) const;
 
@@ -101,24 +101,24 @@ namespace FlagGG
 
 			Container::String ToString() const;
 
-			float m00_;
-			float m01_;
-			float m02_;
-			float m03_;
-			float m10_;
-			float m11_;
-			float m12_;
-			float m13_;
-			float m20_;
-			float m21_;
-			float m22_;
-			float m23_;
+			Real m00_;
+			Real m01_;
+			Real m02_;
+			Real m03_;
+			Real m10_;
+			Real m11_;
+			Real m12_;
+			Real m13_;
+			Real m20_;
+			Real m21_;
+			Real m22_;
+			Real m23_;
 
 			static const Matrix3x4 ZERO;
 			static const Matrix3x4 IDENTITY;
 		};
 
-		inline Matrix3x4 operator *(float lhs, const Matrix3x4& rhs) { return rhs * lhs; }
+		inline Matrix3x4 operator *(Real lhs, const Matrix3x4& rhs) { return rhs * lhs; }
 
 	}
 }

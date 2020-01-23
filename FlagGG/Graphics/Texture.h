@@ -35,29 +35,29 @@ namespace FlagGG
 
 			void Initialize() override;
 
-			void SetNumLevels(uint32_t levels);
+			void SetNumLevels(UInt32 levels);
 
-			int32_t GetWidth() const;
+			Int32 GetWidth() const;
 
-			int32_t GetHeight() const;
+			Int32 GetHeight() const;
 
-			int32_t GetDepth() const;
+			Int32 GetDepth() const;
 
-			int32_t GetLevelWidth(uint32_t level) const;
+			Int32 GetLevelWidth(UInt32 level) const;
 
-			int32_t GetLevelHeight(uint32_t level) const;
+			Int32 GetLevelHeight(UInt32 level) const;
 
-			int32_t GetLevelDepth(uint32_t level) const;
+			Int32 GetLevelDepth(UInt32 level) const;
 
-			uint32_t GetRowDataSize(int32_t width) const;
+			UInt32 GetRowDataSize(Int32 width) const;
 
 			bool IsCompressed() const;
 
-			uint32_t GetComponents() const;
+			UInt32 GetComponents() const;
 
 			virtual RenderSurface* GetRenderSurface() const { return nullptr; }
 
-			virtual RenderSurface* GetRenderSurface(uint32_t index) const { return nullptr; }
+			virtual RenderSurface* GetRenderSurface(UInt32 index) const { return nullptr; }
 
 			friend class RenderEngine;
 
@@ -66,28 +66,28 @@ namespace FlagGG
 			virtual bool Create() { return false; }
 			void Release();
 
-			static uint32_t CheckMaxLevels(int32_t width, int32_t height, uint32_t requestedLevels);
-			static uint32_t CheckMaxLevels(int32_t width, int32_t height, int32_t depth, uint32_t requestedLevels);
-			static uint32_t GetSRGBFormat(uint32_t format);
-			static uint32_t GetDSVFormat(uint32_t format);
-			static uint32_t GetSRVFormat(uint32_t format);
+			static UInt32 CheckMaxLevels(Int32 width, Int32 height, UInt32 requestedLevels);
+			static UInt32 CheckMaxLevels(Int32 width, Int32 height, Int32 depth, UInt32 requestedLevels);
+			static UInt32 GetSRGBFormat(UInt32 format);
+			static UInt32 GetDSVFormat(UInt32 format);
+			static UInt32 GetSRVFormat(UInt32 format);
 
 		protected:
-			uint32_t levels_{ 0 };
-			uint32_t requestedLevels_{ 0 };
+			UInt32 levels_{ 0 };
+			UInt32 requestedLevels_{ 0 };
 
-			int32_t width_{ 0 };
-			int32_t height_{ 0 };
-			int32_t depth_{ 0 };
-			uint32_t format_{ 0 };
-			int32_t multiSample_{ 1 };
+			Int32 width_{ 0 };
+			Int32 height_{ 0 };
+			Int32 depth_{ 0 };
+			UInt32 format_{ 0 };
+			Int32 multiSample_{ 1 };
 			bool autoResolve_{ false };
 
 			bool sRGB_{ false };
 
 			TextureUsage usage_{ TEXTURE_STATIC };
 
-			uint32_t mipsToSkip_[MAX_TEXTURE_QUALITY_LEVELS];
+			UInt32 mipsToSkip_[MAX_TEXTURE_QUALITY_LEVELS];
 
 			ID3D11Resource* resolveTexture_{ nullptr };
 

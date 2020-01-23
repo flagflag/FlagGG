@@ -17,7 +17,7 @@ namespace FlagGG
 	class FlagGG_API ServerEngine : public Launcher
 	{
 	public:
-		void SetFrameRate(float rate);
+		void SetFrameRate(Real rate);
 
 	protected:
 		void Start() override;
@@ -35,10 +35,10 @@ namespace FlagGG
 		SharedPtr<ResourceCache> cache_;
 
 		SystemHelper::Timer timer_;
-		float elapsedTime_{ 0.0f };
+		Real elapsedTime_{ 0.0f };
 
 		bool isRunning_{ false };
 
-		float frameRate_{ 99999.0f };
+		Real frameRate_{ 99999.0f };
 	};
 }

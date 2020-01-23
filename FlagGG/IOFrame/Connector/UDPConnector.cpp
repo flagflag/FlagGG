@@ -19,7 +19,7 @@ namespace FlagGG
 				channel_->OnRegisterd(handler_);
 			}
 
-			bool UDPConnector::Connect(const char* ip, uint16_t port)
+			bool UDPConnector::Connect(const char* ip, UInt16 port)
 			{
 				return channel_->Connect(ip, port);
 			}

@@ -6,8 +6,7 @@
 #include "Container/RefCounted.h"
 #include "Container/Str.h"
 #include "Container/ArrayPtr.h"
-
-#include <stdint.h>
+#include "Core/BaseTypes.h"
 
 namespace FlagGG
 {
@@ -18,45 +17,45 @@ namespace FlagGG
 			class FlagGG_API IOBuffer : public Container::RefCounted
 			{
 			public:
-				virtual uint32_t GetIndex() const = 0;
-				virtual uint32_t GetSize() const = 0;
+				virtual UInt32 GetIndex() const = 0;
+				virtual UInt32 GetSize() const = 0;
 				virtual void ClearIndex() = 0;
-				virtual void Seek(uint32_t pos) = 0;
+				virtual void Seek(UInt32 pos) = 0;
 				virtual bool IsEof() = 0;
 				virtual void Clear() = 0;
 
-				virtual uint32_t ReadStream(void* data, uint32_t dataSize) = 0;
-				virtual uint32_t WriteStream(const void* data, uint32_t dataSize) = 0;
+				virtual UInt32 ReadStream(void* data, UInt32 dataSize) = 0;
+				virtual UInt32 WriteStream(const void* data, UInt32 dataSize) = 0;
 
-				virtual void ReadInt8(int8_t& value) = 0;
-				virtual void WriteInt8(int8_t value) = 0;
+				virtual void ReadInt8(Int8& value) = 0;
+				virtual void WriteInt8(Int8 value) = 0;
 
-				virtual void ReadUInt8(uint8_t& value) = 0;
-				virtual void WriteUInt8(uint8_t value) = 0;
+				virtual void ReadUInt8(UInt8& value) = 0;
+				virtual void WriteUInt8(UInt8 value) = 0;
 
-				virtual void ReadInt16(int16_t& value) = 0;
-				virtual void WriteInt16(int16_t value) = 0;
+				virtual void ReadInt16(Int16& value) = 0;
+				virtual void WriteInt16(Int16 value) = 0;
 
-				virtual void ReadUInt16(uint16_t& value) = 0;
-				virtual void WriteUInt16(uint16_t value) = 0;
+				virtual void ReadUInt16(UInt16& value) = 0;
+				virtual void WriteUInt16(UInt16 value) = 0;
 
-				virtual void ReadInt32(int32_t& value) = 0;
-				virtual void WriteInt32(int32_t value) = 0;
+				virtual void ReadInt32(Int32& value) = 0;
+				virtual void WriteInt32(Int32 value) = 0;
 
-				virtual void ReadUInt32(uint32_t& value) = 0;
-				virtual void WriteUInt32(uint32_t value) = 0;
+				virtual void ReadUInt32(UInt32& value) = 0;
+				virtual void WriteUInt32(UInt32 value) = 0;
 
-				virtual void ReadInt64(int64_t& value) = 0;
-				virtual void WriteInt64(int64_t value) = 0;
+				virtual void ReadInt64(Int64& value) = 0;
+				virtual void WriteInt64(Int64 value) = 0;
 
-				virtual void ReadUInt64(uint64_t& value) = 0;
-				virtual void WriteUInt64(uint64_t value) = 0;
+				virtual void ReadUInt64(UInt64& value) = 0;
+				virtual void WriteUInt64(UInt64 value) = 0;
 
-				virtual void ReadFloat(float& value) = 0;
-				virtual void WriteFloat(float value) = 0;
+				virtual void ReadFloat(Real& value) = 0;
+				virtual void WriteFloat(Real value) = 0;
 
 				virtual void ToString(Container::String& result) = 0;
-				virtual void ToBuffer(Container::SharedArrayPtr<char>& buffer, uint32_t& bufferSize) = 0;
+				virtual void ToBuffer(Container::SharedArrayPtr<char>& buffer, UInt32& bufferSize) = 0;
 			};
 
 			typedef Container::SharedPtr < IOBuffer > IOBufferPtr;

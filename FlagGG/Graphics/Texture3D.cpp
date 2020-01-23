@@ -60,7 +60,7 @@ namespace FlagGG
 			return true;
 		}
 
-		bool Texture3D::SetSize(int32_t width, int32_t height, int32_t depth, uint32_t format, TextureUsage usage/* = TEXTURE_STATIC*/)
+		bool Texture3D::SetSize(Int32 width, Int32 height, Int32 depth, UInt32 format, TextureUsage usage/* = TEXTURE_STATIC*/)
 		{
 			if (width <= 0 || height <= 0 || depth <= 0)
 			{
@@ -84,7 +84,7 @@ namespace FlagGG
 			return Create();
 		}
 
-		bool Texture3D::SetData(uint32_t level, int32_t x, int32_t y, int32_t z, int32_t width, int32_t height, int32_t depth, const void* data)
+		bool Texture3D::SetData(UInt32 level, Int32 x, Int32 y, Int32 z, Int32 width, Int32 height, Int32 depth, const void* data)
 		{
 			if (!data)
 			{
@@ -98,9 +98,9 @@ namespace FlagGG
 				return false;
 			}
 
-			int32_t levelWidth = GetLevelWidth(level);
-			int32_t levelHeight = GetLevelHeight(level);
-			int32_t levelDepth = GetLevelDepth(level);
+			Int32 levelWidth = GetLevelWidth(level);
+			Int32 levelHeight = GetLevelHeight(level);
+			Int32 levelDepth = GetLevelDepth(level);
 			if (x < 0 || x + width > levelWidth || y < 0 || y + height >levelHeight || z < 0 || z + depth > levelDepth || width <= 0 || height <= 0 || depth <= 0)
 			{
 				FLAGGG_LOG_ERROR("Texture3D ==> illegal dimensions.");
@@ -118,9 +118,9 @@ namespace FlagGG
 			}
 
 			const uint8_t* src = static_cast<const uint8_t*>(data);
-			uint32_t rowSize = GetRowDataSize(width);
-			uint32_t rowStart = GetRowDataSize(x);
-			uint32_t subResource = D3D11CalcSubresource(level, 0, levels_);
+			UInt32 rowSize = GetRowDataSize(width);
+			UInt32 rowStart = GetRowDataSize(x);
+			UInt32 subResource = D3D11CalcSubresource(level, 0, levels_);
 
 			if (usage_ == TEXTURE_DYNAMIC)
 			{
@@ -143,9 +143,9 @@ namespace FlagGG
 				}
 				else
 				{
-					for (int32_t page = 0; page < depth; ++page)
+					for (Int32 page = 0; page < depth; ++page)
 					{
-						for (int32_t row = 0; row < height; ++row)
+						for (Int32 row = 0; row < height; ++row)
 							memcpy((uint8_t*)mappedData.pData + (page + z) * mappedData.DepthPitch + (row + y) * mappedData.RowPitch + rowStart,
 								src + row * rowSize, rowSize);
 					}
@@ -181,13 +181,13 @@ namespace FlagGG
 			}
 
 			Container::SharedPtr<FlagGG::Resource::Image> mipImage;
-			uint32_t memoryUse = sizeof(Texture3D);
+			UInt32 memoryUse = sizeof(Texture3D);
 			MaterialQuality quality = RenderEngine::Instance()->GetTextureQuality();
 
 			if (!image->IsCompressed())
 			{
 				// Convert unsuitable formats to RGBA
-				uint32_t components = image->GetComponents();
+				UInt32 components = image->GetComponents();
 				if ((components == 1 && !useAlpha) || components == 2 || components == 3)
 				{
 					mipImage = image->ConvertToRGBA(); image = mipImage;
@@ -197,13 +197,13 @@ namespace FlagGG
 				}
 
 				uint8_t* levelData = image->GetData();
-				int32_t levelWidth = image->GetWidth();
-				int32_t levelHeight = image->GetHeight();
-				int32_t levelDepth = image->GetDepth();
-				uint32_t format = 0;
+				Int32 levelWidth = image->GetWidth();
+				Int32 levelHeight = image->GetHeight();
+				Int32 levelDepth = image->GetDepth();
+				UInt32 format = 0;
 
 				// Discard unnecessary mip levels
-				for (uint32_t i = 0; i < mipsToSkip_[quality]; ++i)
+				for (UInt32 i = 0; i < mipsToSkip_[quality]; ++i)
 				{
 					mipImage = image->GetNextLevel(); image = mipImage;
 					levelData = image->GetData();
@@ -233,7 +233,7 @@ namespace FlagGG
 					return false;
 				}
 
-				for (uint32_t i = 0; i < levels_; ++i)
+				for (UInt32 i = 0; i < levels_; ++i)
 				{
 					SetData(i, 0, 0, 0, levelWidth, levelHeight, levelDepth, levelData);
 					memoryUse += levelWidth * levelHeight * levelDepth * components;
@@ -250,11 +250,11 @@ namespace FlagGG
 			}
 			else
 			{
-				int32_t width = image->GetWidth();
-				int32_t height = image->GetHeight();
-				int32_t depth = image->GetDepth();
-				uint32_t levels = image->GetNumCompressedLevels();
-				uint32_t format = RenderEngine::GetFormat(image->GetCompressedFormat());
+				Int32 width = image->GetWidth();
+				Int32 height = image->GetHeight();
+				Int32 depth = image->GetDepth();
+				UInt32 levels = image->GetNumCompressedLevels();
+				UInt32 format = RenderEngine::GetFormat(image->GetCompressedFormat());
 				bool needDecompress = false;
 
 				if (!format)
@@ -263,7 +263,7 @@ namespace FlagGG
 					needDecompress = true;
 				}
 
-				uint32_t mipsToSkip = mipsToSkip_[quality];
+				UInt32 mipsToSkip = mipsToSkip_[quality];
 				if (mipsToSkip >= levels)
 					mipsToSkip = levels - 1;
 				while (mipsToSkip && (width / (1 << mipsToSkip) < 4 || height / (1 << mipsToSkip) < 4 || depth / (1 << mipsToSkip) < 4))
@@ -278,7 +278,7 @@ namespace FlagGG
 					return false;
 				}
 
-				for (uint32_t i = 0; i < levels_ && i < levels - mipsToSkip; ++i)
+				for (UInt32 i = 0; i < levels_ && i < levels - mipsToSkip; ++i)
 				{
 					FlagGG::Resource::CompressedLevel level = image->GetCompressedLevel(i + mipsToSkip);
 					if (!needDecompress)
@@ -302,7 +302,7 @@ namespace FlagGG
 			return true;
 		}
 
-		bool Texture3D::GetData(uint32_t level, void* dest)
+		bool Texture3D::GetData(UInt32 level, void* dest)
 		{
 			return true;
 		}

@@ -15,21 +15,21 @@ namespace FlagGG
 			public:
 				StringBuffer();
 
-				StringBuffer(void* data, uint32_t length);
+				StringBuffer(void* data, UInt32 length);
 
-				StringBuffer(const void* data, uint32_t length);
+				StringBuffer(const void* data, UInt32 length);
 
-				uint32_t GetIndex() const override;
-				uint32_t GetSize() const override;
+				UInt32 GetIndex() const override;
+				UInt32 GetSize() const override;
 
 				void ClearIndex() override;
 
-				void Seek(uint32_t pos) override;
+				void Seek(UInt32 pos) override;
 
 				void Clear() override;
 
-				uint32_t ReadStream(void* data, uint32_t dataSize) override;
-				uint32_t WriteStream(const void* data, uint32_t dataSize) override;
+				UInt32 ReadStream(void* data, UInt32 dataSize) override;
+				UInt32 WriteStream(const void* data, UInt32 dataSize) override;
 
 				bool IsEof() override;
 			
@@ -40,9 +40,9 @@ namespace FlagGG
 				char* cBuffer_;
 				const char* ccBuffer_;
 
-				uint32_t index_;
-				uint32_t bufferSize_;
-				uint32_t capacity_;
+				UInt32 index_;
+				UInt32 bufferSize_;
+				UInt32 capacity_;
 			};
 		}
 	}

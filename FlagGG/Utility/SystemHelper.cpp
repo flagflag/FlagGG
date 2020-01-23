@@ -31,10 +31,10 @@ namespace FlagGG
 			Container::String FormatPath(const Container::String& path)
 			{
 				Container::WString wPath(path);
-				uint32_t size = path.Length();
+				UInt32 size = path.Length();
 
 				wchar_t buffer[MAX_PATH] = { 0 };
-				uint32_t cur = 0;
+				UInt32 cur = 0;
 				bool lastMatch = false;
 #ifdef _WIN32
 				char match1 = wchar_t('\\');
@@ -44,7 +44,7 @@ namespace FlagGG
 				char match2 = wchar_t('\\');
 #endif
 
-				for (uint32_t i = 0; i < wPath.Length(); ++i)
+				for (UInt32 i = 0; i < wPath.Length(); ++i)
 				{
 					bool curMatch = wPath[i] == match1 || wPath[i] == match2;
 
@@ -85,25 +85,25 @@ namespace FlagGG
 #endif
 			}
 
-			uint32_t Tick()
+			UInt32 Tick()
 			{
 #if _WIN32
-				return (uint32_t)timeGetTime();
+				return (UInt32)timeGetTime();
 #else
 				struct timeval time{};
 				gettimeofday(&time, nullptr);
-				return (uint32_t)(time.tv_sec * 1000 + time.tv_usec / 1000);
+				return (UInt32)(time.tv_sec * 1000 + time.tv_usec / 1000);
 #endif
 			}
 
-			bool ParseCommand(const char** argv, uint32_t argc, Config::LJSONValue& result)
+			bool ParseCommand(const char** argv, UInt32 argc, Config::LJSONValue& result)
 			{
-				for (uint32_t i = 0; i < argc; ++i)
+				for (UInt32 i = 0; i < argc; ++i)
 				{
 					Container::String command = argv[i];
 					if (command.Length() > 0 && command[0] == '-')
 					{
-						uint32_t pos = command.Find('=');
+						UInt32 pos = command.Find('=');
 						if (pos != Container::String::NPOS)
 						{
 							const Container::String key = command.Substring(1, pos - 1);
@@ -181,10 +181,10 @@ namespace FlagGG
 				Reset();
 			}
 
-			uint32_t Timer::GetMilliSeconds(bool reset)
+			UInt32 Timer::GetMilliSeconds(bool reset)
 			{
-				uint32_t curTime = Tick();
-				uint32_t deltaTime = curTime - startTime_;
+				UInt32 curTime = Tick();
+				UInt32 deltaTime = curTime - startTime_;
 				if (reset)
 				{
 					startTime_ = curTime;

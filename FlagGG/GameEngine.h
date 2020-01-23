@@ -25,7 +25,7 @@ namespace FlagGG
 	class FlagGG_API GameEngine : public Launcher
 	{
 	public:
-		void SetFrameRate(float rate);
+		void SetFrameRate(Real rate);
 
 	protected:
 		void Start() override;
@@ -50,10 +50,10 @@ namespace FlagGG
 #endif
 
 		SystemHelper::Timer timer_;
-		float elapsedTime_{ 0.0f };
+		Real elapsedTime_{ 0.0f };
 
 		bool isRunning_{ false };
 
-		float frameRate_{ 99999.0f }; // �����óɲ���֡����
+		Real frameRate_{ 99999.0f }; // �����óɲ���֡����
 	};
 }

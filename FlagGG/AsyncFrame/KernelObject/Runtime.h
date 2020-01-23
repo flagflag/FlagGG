@@ -3,7 +3,7 @@
 
 #include "Export.h"
 
-#include <stdint.h>
+#include "Core/BaseTypes.h"
 
 namespace FlagGG
 {
@@ -20,7 +20,7 @@ namespace FlagGG
 
 				virtual void WaitForStop() = 0;
 
-				virtual void WaitForStop(uint32_t) = 0;
+				virtual void WaitForStop(UInt32) = 0;
 			};
 		}
 	}

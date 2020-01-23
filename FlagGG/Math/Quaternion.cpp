@@ -26,7 +26,7 @@ namespace FlagGG
 		{
 		}
 
-		Quaternion::Quaternion(float w, float x, float y, float z)
+		Quaternion::Quaternion(Real w, Real x, Real y, Real z)
 			:w_(w),
 			x_(x),
 			y_(y),
@@ -34,7 +34,7 @@ namespace FlagGG
 		{
 		}
 
-		Quaternion::Quaternion(const float* data)
+		Quaternion::Quaternion(const Real* data)
 			:w_(data[0]),
 			x_(data[1]),
 			y_(data[2]),
@@ -42,17 +42,17 @@ namespace FlagGG
 		{
 		}
 
-		Quaternion::Quaternion(float angle, const Vector3& axis)
+		Quaternion::Quaternion(Real angle, const Vector3& axis)
 		{
 			FromAngleAxis(angle, axis);
 		}
 
-		Quaternion::Quaternion(float angle)
+		Quaternion::Quaternion(Real angle)
 		{
 			FromAngleAxis(angle, Vector3::FORWARD);
 		}
 
-		Quaternion::Quaternion(float x, float y, float z)
+		Quaternion::Quaternion(Real x, Real y, Real z)
 		{
 			FromEulerAngles(x, y, z);
 		}
@@ -90,7 +90,7 @@ namespace FlagGG
 			return *this;
 		}
 
-		Quaternion& Quaternion::operator *=(float rhs)
+		Quaternion& Quaternion::operator *=(Real rhs)
 		{
 			w_ *= rhs;
 			x_ *= rhs;
@@ -106,7 +106,7 @@ namespace FlagGG
 
 		bool Quaternion::operator !=(const Quaternion& rhs) const { return !(*this == rhs); }
 
-		Quaternion Quaternion::operator *(float rhs) const
+		Quaternion Quaternion::operator *(Real rhs) const
 		{
 			return Quaternion(w_ * rhs, x_ * rhs, y_ * rhs, z_ * rhs);
 		}
@@ -145,12 +145,12 @@ namespace FlagGG
 			return rhs + (cross1 * w_ + cross2) * 2.0f;
 		}
 
-		void Quaternion::FromAngleAxis(float angle, const Vector3& axis)
+		void Quaternion::FromAngleAxis(Real angle, const Vector3& axis)
 		{
 			Vector3 normAxis = axis.Normalized();
 			angle *= DEGTORAD_2;
-			float sinAngle = sinf(angle);
-			float cosAngle = cosf(angle);
+			Real sinAngle = sinf(angle);
+			Real cosAngle = cosf(angle);
 
 			w_ = cosAngle;
 			x_ = normAxis.x_ * sinAngle;
@@ -158,18 +158,18 @@ namespace FlagGG
 			z_ = normAxis.z_ * sinAngle;
 		}
 
-		void Quaternion::FromEulerAngles(float x, float y, float z)
+		void Quaternion::FromEulerAngles(Real x, Real y, Real z)
 		{
 			// Order of rotations: Z first, then X, then Y (mimics typical FPS camera with gimbal lock at top/bottom)
 			x *= DEGTORAD_2;
 			y *= DEGTORAD_2;
 			z *= DEGTORAD_2;
-			float sinX = sinf(x);
-			float cosX = cosf(x);
-			float sinY = sinf(y);
-			float cosY = cosf(y);
-			float sinZ = sinf(z);
-			float cosZ = cosf(z);
+			Real sinX = sinf(x);
+			Real cosX = cosf(x);
+			Real sinY = sinf(y);
+			Real cosY = cosf(y);
+			Real sinZ = sinf(z);
+			Real cosZ = cosf(z);
 
 			w_ = cosY * cosX * cosZ + sinY * sinX * sinZ;
 			x_ = cosY * sinX * cosZ + sinY * cosX * sinZ;
@@ -181,13 +181,13 @@ namespace FlagGG
 		{
 			Vector3 normStart = start.Normalized();
 			Vector3 normEnd = end.Normalized();
-			float d = normStart.DotProduct(normEnd);
+			Real d = normStart.DotProduct(normEnd);
 
 			if (d > -1.0f + EPS)
 			{
 				Vector3 c = normStart.CrossProduct(normEnd);
-				float s = sqrtf((1.0f + d) * 2.0f);
-				float invS = 1.0f / s;
+				Real s = sqrtf((1.0f + d) * 2.0f);
+				Real invS = 1.0f / s;
 
 				x_ = c.x_ * invS;
 				y_ = c.y_ * invS;
@@ -217,11 +217,11 @@ namespace FlagGG
 
 		void Quaternion::FromRotationMatrix(const Matrix3& matrix)
 		{
-			float t = matrix.m00_ + matrix.m11_ + matrix.m22_;
+			Real t = matrix.m00_ + matrix.m11_ + matrix.m22_;
 
 			if (t > 0.0f)
 			{
-				float invS = 0.5f / sqrtf(1.0f + t);
+				Real invS = 0.5f / sqrtf(1.0f + t);
 
 				x_ = (matrix.m21_ - matrix.m12_) * invS;
 				y_ = (matrix.m02_ - matrix.m20_) * invS;
@@ -232,7 +232,7 @@ namespace FlagGG
 			{
 				if (matrix.m00_ > matrix.m11_ && matrix.m00_ > matrix.m22_)
 				{
-					float invS = 0.5f / sqrtf(1.0f + matrix.m00_ - matrix.m11_ - matrix.m22_);
+					Real invS = 0.5f / sqrtf(1.0f + matrix.m00_ - matrix.m11_ - matrix.m22_);
 
 					x_ = 0.25f / invS;
 					y_ = (matrix.m01_ + matrix.m10_) * invS;
@@ -241,7 +241,7 @@ namespace FlagGG
 				}
 				else if (matrix.m11_ > matrix.m22_)
 				{
-					float invS = 0.5f / sqrtf(1.0f + matrix.m11_ - matrix.m00_ - matrix.m22_);
+					Real invS = 0.5f / sqrtf(1.0f + matrix.m11_ - matrix.m00_ - matrix.m22_);
 
 					x_ = (matrix.m01_ + matrix.m10_) * invS;
 					y_ = 0.25f / invS;
@@ -250,7 +250,7 @@ namespace FlagGG
 				}
 				else
 				{
-					float invS = 0.5f / sqrtf(1.0f + matrix.m22_ - matrix.m00_ - matrix.m11_);
+					Real invS = 0.5f / sqrtf(1.0f + matrix.m22_ - matrix.m00_ - matrix.m11_);
 
 					x_ = (matrix.m02_ + matrix.m20_) * invS;
 					y_ = (matrix.m12_ + matrix.m21_) * invS;
@@ -288,10 +288,10 @@ namespace FlagGG
 
 		void Quaternion::Normalize()
 		{
-			float lenSquared = LengthSquared();
+			Real lenSquared = LengthSquared();
 			if (!FlagGG::Math::Equals(lenSquared, 1.0f) && lenSquared > 0.0f)
 			{
-				float invLen = 1.0f / sqrtf(lenSquared);
+				Real invLen = 1.0f / sqrtf(lenSquared);
 				w_ *= invLen;
 				x_ *= invLen;
 				y_ *= invLen;
@@ -301,10 +301,10 @@ namespace FlagGG
 
 		Quaternion Quaternion::Normalized() const
 		{
-			float lenSquared = LengthSquared();
+			Real lenSquared = LengthSquared();
 			if (!FlagGG::Math::Equals(lenSquared, 1.0f) && lenSquared > 0.0f)
 			{
-				float invLen = 1.0f / sqrtf(lenSquared);
+				Real invLen = 1.0f / sqrtf(lenSquared);
 				return *this * invLen;
 			}
 			else
@@ -313,7 +313,7 @@ namespace FlagGG
 
 		Quaternion Quaternion::Inverse() const
 		{
-			float lenSquared = LengthSquared();
+			Real lenSquared = LengthSquared();
 			if (lenSquared == 1.0f)
 				return Conjugate();
 			else if (lenSquared >= EPS)
@@ -322,12 +322,12 @@ namespace FlagGG
 				return IDENTITY;
 		}
 
-		float Quaternion::LengthSquared() const
+		Real Quaternion::LengthSquared() const
 		{
 			return w_ * w_ + x_ * x_ + y_ * y_ + z_ * z_;
 		}
 
-		float Quaternion::DotProduct(const Quaternion& rhs) const
+		Real Quaternion::DotProduct(const Quaternion& rhs) const
 		{
 			return w_ * rhs.w_ + x_ * rhs.x_ + y_ * rhs.y_ + z_ * rhs.z_;
 		}
@@ -348,7 +348,7 @@ namespace FlagGG
 		{
 			// Derivation from http://www.geometrictools.com/Documentation/EulerAngles.pdf
 			// Order of rotations: Z first, then X, then Y
-			float check = 2.0f * (-y_ * z_ + w_ * x_);
+			Real check = 2.0f * (-y_ * z_ + w_ * x_);
 
 			if (check < -0.995f)
 			{
@@ -376,17 +376,17 @@ namespace FlagGG
 			}
 		}
 
-		float Quaternion::YawAngle() const
+		Real Quaternion::YawAngle() const
 		{
 			return EulerAngles().y_;
 		}
 
-		float Quaternion::PitchAngle() const
+		Real Quaternion::PitchAngle() const
 		{
 			return EulerAngles().x_;
 		}
 
-		float Quaternion::RollAngle() const
+		Real Quaternion::RollAngle() const
 		{
 			return EulerAngles().z_;
 		}
@@ -396,7 +396,7 @@ namespace FlagGG
 			return Vector3(x_, y_, z_) / sqrt(1. - w_ * w_);
 		}
 
-		float Quaternion::Angle() const
+		Real Quaternion::Angle() const
 		{
 			return 2 * Acos(w_);
 		}
@@ -416,10 +416,10 @@ namespace FlagGG
 				);
 		}
 
-		Quaternion Quaternion::Slerp(const Quaternion& rhs, float t) const
+		Quaternion Quaternion::Slerp(const Quaternion& rhs, Real t) const
 		{
-			float cosAngle = DotProduct(rhs);
-			float sign = 1.0f;
+			Real cosAngle = DotProduct(rhs);
+			Real sign = 1.0f;
 
 			if (cosAngle < 0.0f)
 			{
@@ -427,13 +427,13 @@ namespace FlagGG
 				sign = -1.0f;
 			}
 
-			float angle = acosf(cosAngle);
-			float sinAngle = sinf(angle);
-			float t1, t2;
+			Real angle = acosf(cosAngle);
+			Real sinAngle = sinf(angle);
+			Real t1, t2;
 
 			if (sinAngle > 0.001f)
 			{
-				float invSinAngle = 1.0f / sinAngle;
+				Real invSinAngle = 1.0f / sinAngle;
 				t1 = sinf((1.0f - t) * angle) * invSinAngle;
 				t2 = sinf(t * angle) * invSinAngle;
 			}
@@ -446,10 +446,10 @@ namespace FlagGG
 			return *this * t1 + (rhs * sign) * t2;
 		}
 
-		Quaternion Quaternion::Nlerp(const Quaternion& rhs, float t, bool shortestPath) const
+		Quaternion Quaternion::Nlerp(const Quaternion& rhs, Real t, bool shortestPath) const
 		{
 			Quaternion result;
-			float fCos = DotProduct(rhs);
+			Real fCos = DotProduct(rhs);
 			if (fCos < 0.0f && shortestPath)
 				result = (*this) + (((-rhs) - (*this)) * t);
 			else

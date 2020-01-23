@@ -22,7 +22,7 @@ namespace FlagGG
 
 		void Component::ProcessRayQuery(const RayOctreeQuery& query, Container::PODVector<RayQueryResult>& results)
 		{
-			float distance = query.ray_.HitDistance(GetWorldBoundingBox());
+			Real distance = query.ray_.HitDistance(GetWorldBoundingBox());
 			if (distance < query.maxDistance_)
 			{
 				RayQueryResult ret;

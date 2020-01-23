@@ -6,6 +6,7 @@
 #include "Container/Str.h"
 #include "Math/Math.h"
 #include "Math/Vector3.h"
+#include "Core/BaseTypes.h"
 
 namespace FlagGG
 {
@@ -24,7 +25,7 @@ namespace FlagGG
 
 			Color(const Color& color) NOEXCEPT = default;
 
-			Color(const Color& color, float a) NOEXCEPT :
+			Color(const Color& color, Real a) NOEXCEPT :
 			r_(color.r_),
 				g_(color.g_),
 				b_(color.b_),
@@ -32,7 +33,7 @@ namespace FlagGG
 			{
 			}
 
-			Color(float r, float g, float b) NOEXCEPT :
+			Color(Real r, Real g, Real b) NOEXCEPT :
 			r_(r),
 				g_(g),
 				b_(b),
@@ -40,7 +41,7 @@ namespace FlagGG
 			{
 			}
 
-			Color(float r, float g, float b, float a) NOEXCEPT :
+			Color(Real r, Real g, Real b, Real a) NOEXCEPT :
 			r_(r),
 				g_(g),
 				b_(b),
@@ -48,7 +49,7 @@ namespace FlagGG
 			{
 			}
 
-			explicit Color(const float* data) NOEXCEPT :
+			explicit Color(const Real* data) NOEXCEPT :
 			r_(data[0]),
 				g_(data[1]),
 				b_(data[2]),
@@ -62,7 +63,7 @@ namespace FlagGG
 
 			bool operator !=(const Color& rhs) const { return r_ != rhs.r_ || g_ != rhs.g_ || b_ != rhs.b_ || a_ != rhs.a_; }
 
-			Color operator *(float rhs) const { return Color(r_ * rhs, g_ * rhs, b_ * rhs, a_ * rhs); }
+			Color operator *(Real rhs) const { return Color(r_ * rhs, g_ * rhs, b_ * rhs, a_ * rhs); }
 
 			Color operator +(const Color& rhs) const { return Color(r_ + rhs.r_, g_ + rhs.g_, b_ + rhs.b_, a_ + rhs.a_); }
 
@@ -79,7 +80,7 @@ namespace FlagGG
 				return *this;
 			}
 
-			const float* Data() const { return &r_; }
+			const Real* Data() const { return &r_; }
 
 			// 把颜色压缩成32位整数, Red在低八位.
 			unsigned ToUInt() const;
@@ -88,34 +89,34 @@ namespace FlagGG
 
 			// ToUInt的逆
 			void FromUInt(unsigned color);
-			void FromHSL(float h, float s, float l, float a = 1.0f);
-			void FromHSV(float h, float s, float v, float a = 1.0f);
+			void FromHSL(Real h, Real s, Real l, Real a = 1.0f);
+			void FromHSV(Real h, Real s, Real v, Real a = 1.0f);
 
 			Vector3 ToVector3() const { return Vector3(r_, g_, b_); }
 
-			float SumRGB() const { return r_ + g_ + b_; }
+			Real SumRGB() const { return r_ + g_ + b_; }
 
-			float Average() const { return (r_ + g_ + b_) / 3.0f; }
+			Real Average() const { return (r_ + g_ + b_) / 3.0f; }
 
-			float Luma() const { return r_ * 0.299f + g_ * 0.587f + b_ * 0.114f; }
+			Real Luma() const { return r_ * 0.299f + g_ * 0.587f + b_ * 0.114f; }
 
-			float Chroma() const;
-			float Hue() const;
-			float SaturationHSL() const;
-			float SaturationHSV() const;
+			Real Chroma() const;
+			Real Hue() const;
+			Real SaturationHSL() const;
+			Real SaturationHSV() const;
 
-			float Value() const { return MaxRGB(); }
+			Real Value() const { return MaxRGB(); }
 
-			float Lightness() const;
+			Real Lightness() const;
 
-			void Bounds(float* min, float* max, bool clipped = false) const;
-			float MaxRGB() const;
-			float MinRGB() const;
-			float Range() const;
+			void Bounds(Real* min, Real* max, bool clipped = false) const;
+			Real MaxRGB() const;
+			Real MinRGB() const;
+			Real Range() const;
 
 			void Clip(bool clipAlpha = false);
 			void Invert(bool invertAlpha = false);
-			Color Lerp(const Color& rhs, float t) const;
+			Color Lerp(const Color& rhs, Real t) const;
 
 			Color Abs() const { return Color(Math::Abs(r_), Math::Abs(g_), Math::Abs(b_), Math::Abs(a_)); }
 
@@ -128,10 +129,10 @@ namespace FlagGG
 
 			unsigned ToHash() const { return ToUInt(); }
 
-			float r_;
-			float g_;
-			float b_;
-			float a_;
+			Real r_;
+			Real g_;
+			Real b_;
+			Real a_;
 
 			static const Color WHITE;
 			static const Color GRAY;
@@ -145,13 +146,13 @@ namespace FlagGG
 			static const Color TRANSPARENT_BLACK;
 
 		protected:
-			float Hue(float min, float max) const;
-			float SaturationHSV(float min, float max) const;
-			float SaturationHSL(float min, float max) const;
-			void FromHCM(float h, float c, float m);
+			Real Hue(Real min, Real max) const;
+			Real SaturationHSV(Real min, Real max) const;
+			Real SaturationHSL(Real min, Real max) const;
+			void FromHCM(Real h, Real c, Real m);
 		};
 
-		inline Color operator *(float lhs, const Color& rhs) { return rhs * lhs; }
+		inline Color operator *(Real lhs, const Color& rhs) { return rhs * lhs; }
 	}
 }
 

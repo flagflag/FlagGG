@@ -42,11 +42,11 @@ namespace FlagGG
 				objs.splice(objs.begin(), queue_, queue_.begin(), queue_.end());
 			}
 
-			size_t Size()
+			UInt32 Size()
 			{
 				RecursiveLocker locker(mutex_);
 
-				size_t _size = queue_.size();
+				UInt32 _size = (UInt32)queue_.size();
 
 				return _size;
 			}

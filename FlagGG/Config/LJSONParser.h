@@ -35,7 +35,7 @@ namespace FlagGG
 
 			virtual ~LJSONParser();
 
-			bool Load(const char* buffer, uint32_t bufferSize, LJSONValue& value);
+			bool Load(const char* buffer, UInt32 bufferSize, LJSONValue& value);
 
 		protected:
 			bool StartAccept(const LJSONValue& parent, LJSONValue& node, const Container::String& rootType);

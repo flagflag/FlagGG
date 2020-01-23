@@ -17,7 +17,7 @@ namespace FlagGG
 				capacity_(0u)
 			{ }
 
-			StringBuffer::StringBuffer(void* data, uint32_t length) :
+			StringBuffer::StringBuffer(void* data, UInt32 length) :
 				sizeFixed_(true),
 				readOnly_(false),
 				cBuffer_(static_cast<char*>(data)),
@@ -27,7 +27,7 @@ namespace FlagGG
 				capacity_(length)
 			{ }
 
-			StringBuffer::StringBuffer(const void* data, uint32_t length) :
+			StringBuffer::StringBuffer(const void* data, UInt32 length) :
 				sizeFixed_(true),
 				readOnly_(true),
 				cBuffer_(nullptr),
@@ -37,12 +37,12 @@ namespace FlagGG
 				capacity_(length)
 			{ }
 
-			uint32_t StringBuffer::GetIndex() const
+			UInt32 StringBuffer::GetIndex() const
 			{
 				return index_;
 			}
 
-			uint32_t StringBuffer::GetSize() const
+			UInt32 StringBuffer::GetSize() const
 			{
 				return bufferSize_;
 			}
@@ -52,7 +52,7 @@ namespace FlagGG
 				index_ = 0;
 			}
 
-			void StringBuffer::Seek(uint32_t pos)
+			void StringBuffer::Seek(UInt32 pos)
 			{
 				index_ = pos;
 			}
@@ -65,7 +65,7 @@ namespace FlagGG
 					bufferSize_ = 0;
 			}
 
-			uint32_t StringBuffer::ReadStream(void* data, uint32_t dataSize)
+			UInt32 StringBuffer::ReadStream(void* data, UInt32 dataSize)
 			{
 				if (index_ + dataSize <= bufferSize_)
 				{
@@ -75,7 +75,7 @@ namespace FlagGG
 				return dataSize;
 			}
 
-			uint32_t StringBuffer::WriteStream(const void* data, uint32_t dataSize)
+			UInt32 StringBuffer::WriteStream(const void* data, UInt32 dataSize)
 			{
 				if (readOnly_) return 0;
 				if (index_ + dataSize > capacity_)

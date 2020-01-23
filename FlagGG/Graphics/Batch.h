@@ -5,8 +5,7 @@
 #include "Container/RefCounted.h"
 #include "Container/Ptr.h"
 #include "Container/Vector.h"
-
-#include <vector>
+#include "Core/BaseTypes.h"
 
 namespace FlagGG
 {
@@ -14,7 +13,7 @@ namespace FlagGG
 	{
 		class Texture;
 
-		typedef Container::Vector <unsigned char> VertexVector;
+		typedef Container::Vector <UInt8> VertexVector;
 
 		enum BatchType
 		{
@@ -25,7 +24,7 @@ namespace FlagGG
 		class FlagGG_API Batch : public Container::RefCounted
 		{
 		public:
-			Batch(BatchType type, Texture* texture, VertexVector* vertexs, unsigned vertexSize);
+			Batch(BatchType type, Texture* texture, VertexVector* vertexs, Size vertexSize);
 
 			virtual ~Batch();
 

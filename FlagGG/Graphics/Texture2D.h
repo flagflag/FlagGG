@@ -16,19 +16,19 @@ namespace FlagGG
 		public:
 			Texture2D(Core::Context* context);
 
-			bool SetSize(int32_t width, int32_t height, uint32_t format, TextureUsage usage = TEXTURE_STATIC, int32_t multiSample = 1, bool autoResolve = true);
+			bool SetSize(Int32 width, Int32 height, UInt32 format, TextureUsage usage = TEXTURE_STATIC, Int32 multiSample = 1, bool autoResolve = true);
 
-			bool SetData(uint32_t level, int32_t x, int32_t y, int32_t width, int32_t height, const void* data);
+			bool SetData(UInt32 level, Int32 x, Int32 y, Int32 width, Int32 height, const void* data);
 
 			bool SetData(FlagGG::Resource::Image* image, bool useAlpha = false);
 
-			bool GetData(uint32_t level, void* dest);
+			bool GetData(UInt32 level, void* dest);
 
 			Container::SharedPtr<FlagGG::Resource::Image> GetImage();
 
 			RenderSurface* GetRenderSurface() const override;
 
-			RenderSurface* GetRenderSurface(uint32_t index) const override;
+			RenderSurface* GetRenderSurface(UInt32 index) const override;
 
 		protected:
 			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;

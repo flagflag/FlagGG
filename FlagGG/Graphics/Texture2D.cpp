@@ -166,8 +166,8 @@ namespace FlagGG
 			return true;
 		}
 
-		bool Texture2D::SetSize(int32_t width, int32_t height, uint32_t format,
-			TextureUsage usage/* = TEXTURE_STATIC*/, int32_t multiSample/* = 1*/, bool autoResolve/* = true*/)
+		bool Texture2D::SetSize(Int32 width, Int32 height, UInt32 format,
+			TextureUsage usage/* = TEXTURE_STATIC*/, Int32 multiSample/* = 1*/, bool autoResolve/* = true*/)
 		{
 			if (width <= 0 || height <= 0)
 			{
@@ -210,7 +210,7 @@ namespace FlagGG
 			return Create();
 		}
 
-		bool Texture2D::SetData(uint32_t level, int32_t x, int32_t y, int32_t width, int32_t height, const void* data)
+		bool Texture2D::SetData(UInt32 level, Int32 x, Int32 y, Int32 width, Int32 height, const void* data)
 		{
 			if (!data)
 			{
@@ -224,8 +224,8 @@ namespace FlagGG
 				return false;
 			}
 
-			int32_t levelWidth = GetLevelWidth(level);
-			int32_t levelHeight = GetLevelHeight(level);
+			Int32 levelWidth = GetLevelWidth(level);
+			Int32 levelHeight = GetLevelHeight(level);
 			if (x < 0 || x + width > levelWidth || y < 0 || y + height > levelHeight || width <= 0 || height <= 0)
 			{
 				FLAGGG_LOG_ERROR("Texture2D ==> illegal dimensions.");
@@ -243,9 +243,9 @@ namespace FlagGG
 			}
 
 			const uint8_t* src = static_cast<const uint8_t*>(data);
-			uint32_t rowSize = GetRowDataSize(width);
-			uint32_t rowStart = GetRowDataSize(x);
-			uint32_t subResource = D3D11CalcSubresource(level, 0, levels_);
+			UInt32 rowSize = GetRowDataSize(width);
+			UInt32 rowStart = GetRowDataSize(x);
+			UInt32 subResource = D3D11CalcSubresource(level, 0, levels_);
 
 			if (usage_ == TEXTURE_DYNAMIC)
 			{
@@ -268,7 +268,7 @@ namespace FlagGG
 				}
 				else
 				{
-					for (int32_t row = 0; row < height; ++row)
+					for (Int32 row = 0; row < height; ++row)
 						memcpy((uint8_t*)mappedData.pData + (row + y) * mappedData.RowPitch + rowStart, src + row * rowSize, rowSize);
 
 					RenderEngine::Instance()->GetDeviceContext()->Unmap(GetObject<ID3D11Resource>(), subResource);
@@ -299,13 +299,13 @@ namespace FlagGG
 			}
 
 			Container::SharedPtr<FlagGG::Resource::Image> mipImage;
-			uint32_t memoryUse = sizeof(Texture2D);
+			UInt32 memoryUse = sizeof(Texture2D);
 			MaterialQuality quality = RenderEngine::Instance()->GetTextureQuality();
 
 			if (!image->IsCompressed())
 			{
 				// Convert unsuitable formats to RGBA
-				uint32_t components = image->GetComponents();
+				UInt32 components = image->GetComponents();
 				if ((components == 1 && !useAlpha) || components == 2 || components == 3)
 				{
 					mipImage = image->ConvertToRGBA(); image = mipImage;
@@ -315,12 +315,12 @@ namespace FlagGG
 				}
 
 				uint8_t* levelData = image->GetData();
-				int32_t levelWidth = image->GetWidth();
-				int32_t levelHeight = image->GetHeight();
-				uint32_t format = 0;
+				Int32 levelWidth = image->GetWidth();
+				Int32 levelHeight = image->GetHeight();
+				UInt32 format = 0;
 
 				// Discard unnecessary mip levels
-				for (uint32_t i = 0; i < mipsToSkip_[quality]; ++i)
+				for (UInt32 i = 0; i < mipsToSkip_[quality]; ++i)
 				{
 					mipImage = image->GetNextLevel(); image = mipImage;
 					levelData = image->GetData();
@@ -349,7 +349,7 @@ namespace FlagGG
 					return false;
 				}
 
-				for (uint32_t i = 0; i < levels_; ++i)
+				for (UInt32 i = 0; i < levels_; ++i)
 				{
 					SetData(i, 0, 0, levelWidth, levelHeight, levelData);
 					memoryUse += levelWidth * levelHeight * components;
@@ -365,10 +365,10 @@ namespace FlagGG
 			}
 			else
 			{
-				int32_t width = image->GetWidth();
-				int32_t height = image->GetHeight();
-				uint32_t levels = image->GetNumCompressedLevels();
-				uint32_t format = RenderEngine::GetFormat(image->GetCompressedFormat());
+				Int32 width = image->GetWidth();
+				Int32 height = image->GetHeight();
+				UInt32 levels = image->GetNumCompressedLevels();
+				UInt32 format = RenderEngine::GetFormat(image->GetCompressedFormat());
 				bool needDecompress = false;
 
 				if (!format)
@@ -377,7 +377,7 @@ namespace FlagGG
 					needDecompress = true;
 				}
 
-				uint32_t mipsToSkip = mipsToSkip_[quality];
+				UInt32 mipsToSkip = mipsToSkip_[quality];
 				if (mipsToSkip >= levels)
 					mipsToSkip = levels - 1;
 				while (mipsToSkip && (width / (1 << mipsToSkip) < 4 || height / (1 << mipsToSkip) < 4))
@@ -391,7 +391,7 @@ namespace FlagGG
 					return false;
 				}
 
-				for (uint32_t i = 0; i < levels_ && i < levels - mipsToSkip; ++i)
+				for (UInt32 i = 0; i < levels_ && i < levels - mipsToSkip; ++i)
 				{
 					FlagGG::Resource::CompressedLevel level = image->GetCompressedLevel(i + mipsToSkip);
 					if (!needDecompress)
@@ -434,7 +434,7 @@ namespace FlagGG
 			return true;
 		}
 
-		bool Texture2D::GetData(uint32_t level, void* dest)
+		bool Texture2D::GetData(UInt32 level, void* dest)
 		{
 			if (!Texture::IsValid())
 			{
@@ -460,8 +460,8 @@ namespace FlagGG
 				return false;
 			}
 
-			int32_t levelWidth = GetLevelWidth(level);
-			int32_t levelHeight = GetLevelHeight(level);
+			Int32 levelWidth = GetLevelWidth(level);
+			Int32 levelHeight = GetLevelHeight(level);
 
 			D3D11_TEXTURE2D_DESC textureDesc;
 			memset(&textureDesc, 0, sizeof textureDesc);
@@ -485,7 +485,7 @@ namespace FlagGG
 			}
 
 			ID3D11Resource* srcResource = (ID3D11Resource*)(resolveTexture_ ? resolveTexture_ : GetObject<ID3D11Resource>());
-			uint32_t srcSubResource = D3D11CalcSubresource(level, 0, levels_);
+			UInt32 srcSubResource = D3D11CalcSubresource(level, 0, levels_);
 
 			D3D11_BOX srcBox;
 			srcBox.left = 0;
@@ -499,8 +499,8 @@ namespace FlagGG
 
 			D3D11_MAPPED_SUBRESOURCE mappedData;
 			mappedData.pData = nullptr;
-			uint32_t rowSize = GetRowDataSize(levelWidth);
-			uint32_t numRows = (uint32_t)(IsCompressed() ? (levelHeight + 3) >> 2 : levelHeight);
+			UInt32 rowSize = GetRowDataSize(levelWidth);
+			UInt32 numRows = (UInt32)(IsCompressed() ? (levelHeight + 3) >> 2 : levelHeight);
 
 			hr = RenderEngine::Instance()->GetDeviceContext()->Map((ID3D11Resource*)stagingTexture, 0, D3D11_MAP_READ, 0, &mappedData);
 			if (FAILED(hr) || !mappedData.pData)
@@ -510,7 +510,7 @@ namespace FlagGG
 				return false;
 			}
 			
-			for (uint32_t row = 0; row < numRows; ++row)
+			for (UInt32 row = 0; row < numRows; ++row)
 			{
 				memcpy((uint8_t*)dest + row * rowSize, (uint8_t*)mappedData.pData + row * mappedData.RowPitch, rowSize);
 			}
@@ -541,7 +541,7 @@ namespace FlagGG
 			return renderSurface_;
 		}
 
-		RenderSurface* Texture2D::GetRenderSurface(uint32_t index) const
+		RenderSurface* Texture2D::GetRenderSurface(UInt32 index) const
 		{
 			return renderSurface_;
 		}

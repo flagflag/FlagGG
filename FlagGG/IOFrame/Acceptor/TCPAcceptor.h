@@ -21,11 +21,11 @@ namespace FlagGG
 			class TCPAcceptor : public IOAcceptor
 			{
 			public:
-				TCPAcceptor(Handler::EventHandlerPtr handler, size_t thread_count = 1);
+				TCPAcceptor(Handler::EventHandlerPtr handler, Size threadCount = 1);
 
 				~TCPAcceptor() override = default;
 
-				bool Bind(const char* ip, uint16_t port) override;
+				bool Bind(const char* ip, UInt16 port) override;
 
 				void Start() override;
 

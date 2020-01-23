@@ -3,8 +3,8 @@
 
 #include "Container/Str.h"
 #include "Lua/ILua/LuaUtil.h"
+#include "Core/BaseTypes.h"
 
-#include <stdint.h>
 #include <lua.hpp>
 
 struct lua_State;
@@ -36,7 +36,7 @@ namespace FlagGG
 		public:
 			LuaFunction();
 
-			LuaFunction(lua_State* luaState, int32_t idx);
+			LuaFunction(lua_State* luaState, Int32 idx);
 
 			LuaFunction(const LuaFunction& func);
 
@@ -62,8 +62,8 @@ namespace FlagGG
 		private:
 			lua_State* luaState_;
 
-			int32_t ref_;
-			int32_t* refCount_;
+			Int32 ref_;
+			Int32* refCount_;
 		};
 
 		inline Type::_ TypeOf(lua_State* L, int index) { return lua_type(L, index); }

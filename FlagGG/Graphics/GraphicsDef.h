@@ -2,8 +2,7 @@
 
 #include "Export.h"
 #include "Container/StringHash.h"
-
-#include <stdint.h>
+#include "Core/BaseTypes.h"
 
 enum PrimitiveType
 {
@@ -18,7 +17,7 @@ enum ShaderType
 	PS = 2
 };
 
-enum TextureClass : uint32_t
+enum TextureClass : UInt32
 {
 	TEXTURE_CLASS_UNIVERSAL = 0,
 	TEXTURE_CLASS_DIFFUSE,
@@ -41,13 +40,13 @@ enum CubeMapFace
 	MAX_CUBEMAP_FACES
 };
 
-enum RenderPassType : uint32_t
+enum RenderPassType : UInt32
 {
 	RENDER_PASS_TYPE_SHADOW = 0,
 	MAX_RENDER_PASS_TYPE,
 };
 
-enum MaterialQuality : unsigned
+enum MaterialQuality : UInt32
 {
 	QUALITY_LOW = 0,
 	QUALITY_MEDIUM = 1,
@@ -81,7 +80,7 @@ enum VertexElementSemantic
 	MAX_VERTEX_ELEMENT_SEMANTIC
 };
 
-enum GeometryType : unsigned
+enum GeometryType : UInt32
 {
 	GEOMETRY_STATIC = 0,
 	GEOMETRY_SKINNED,
@@ -93,7 +92,7 @@ struct FlagGG_API VertexElement
 {
 	VertexElement();
 
-	VertexElement(VertexElementType vertexElementType, VertexElementSemantic vertexElementSemantic, uint8_t index = 0, bool perInstance = false);
+	VertexElement(VertexElementType vertexElementType, VertexElementSemantic vertexElementSemantic, UInt8 index = 0, bool perInstance = false);
 
 	bool operator ==(const VertexElement& rhs) const
 	{
@@ -107,12 +106,12 @@ struct FlagGG_API VertexElement
 
 	VertexElementType		vertexElementType_;
 	VertexElementSemantic	vertexElementSemantic_;
-	uint8_t					index_;
+	UInt8					index_;
 	bool					perInstance_;
-	uint32_t				offset_;
+	UInt32					offset_;
 };
 
-extern FlagGG_API uint32_t VERTEX_ELEMENT_TYPE_SIZE[MAX_VERTEX_ELEMENT_TYPE];
+extern FlagGG_API UInt32 VERTEX_ELEMENT_TYPE_SIZE[MAX_VERTEX_ELEMENT_TYPE];
 
 extern FlagGG_API const char* VERTEX_ELEMENT_SEM_NAME[MAX_VERTEX_ELEMENT_SEMANTIC];
 

@@ -7,43 +7,43 @@ namespace FlagGG
 {
 	namespace Scene
 	{
-		Math::Vector3 AnimationKeyFrameInterval::GetPosition(float time)
+		Math::Vector3 AnimationKeyFrameInterval::GetPosition(Real time)
 		{
 			if (left_ && right_)
 			{
-				float t = (time - left_->time_) / timeInterval_;
+				Real t = (time - left_->time_) / timeInterval_;
 				return left_->position_.Lerp(right_->position_, t);
 			}
 
 			return Math::Vector3::ZERO;
 		}
 
-		Math::Quaternion AnimationKeyFrameInterval::GetRotation(float time)
+		Math::Quaternion AnimationKeyFrameInterval::GetRotation(Real time)
 		{
 			if (left_ && right_)
 			{
-				float t = (time - left_->time_) / timeInterval_;
+				Real t = (time - left_->time_) / timeInterval_;
 				return left_->rotation_.Slerp(right_->rotation_, t);
 			}
 
 			return Math::Quaternion::IDENTITY;
 		}
 
-		Math::Vector3 AnimationKeyFrameInterval::GetScale(float time)
+		Math::Vector3 AnimationKeyFrameInterval::GetScale(Real time)
 		{
 			if (left_ && right_)
 			{
-				float t = (time - left_->time_) / timeInterval_;
+				Real t = (time - left_->time_) / timeInterval_;
 				return left_->scale_.Lerp(right_->scale_, t);
 			}
 
 			return Math::Vector3::ONE;
 		}
 
-		AnimationKeyFrameInterval AnimationTrack::GetKeyFrameInterval(float currentTime, float totalTime) const
+		AnimationKeyFrameInterval AnimationTrack::GetKeyFrameInterval(Real currentTime, Real totalTime) const
 		{
 			AnimationKeyFrameInterval interval;
-			uint32_t index = 0;
+			UInt32 index = 0;
 			while (index < keyFrames_.Size() && currentTime > keyFrames_[index].time_) ++index;
 			--index;
 			if (index >= 0)
@@ -81,9 +81,9 @@ namespace FlagGG
 			stream->ReadFloat(length_);
 			tracks_.Clear();
 
-			uint32_t tracksCount = 0;
+			UInt32 tracksCount = 0;
 			stream->ReadUInt32(tracksCount);
-			for (uint32_t i = 0; i < tracksCount; ++i) 
+			for (UInt32 i = 0; i < tracksCount; ++i) 
 			{
 				Container::String trackName;
 				IOFrame::Buffer::ReadString(stream, trackName);
@@ -96,11 +96,11 @@ namespace FlagGG
 				stream->ReadUInt8(flag);
 				track.channelMask_ = Container::AnimationChannelFlags(flag);
 
-				uint32_t keyFramesCount = 0;
+				UInt32 keyFramesCount = 0;
 				stream->ReadUInt32(keyFramesCount);
 				track.keyFrames_.Resize(keyFramesCount);
 
-				for (uint32_t j = 0; j < keyFramesCount; ++j)
+				for (UInt32 j = 0; j < keyFramesCount; ++j)
 				{
 					AnimationKeyFrame& keyFrame = track.keyFrames_[j];
 					stream->ReadFloat(keyFrame.time_);

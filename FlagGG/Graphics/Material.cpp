@@ -41,20 +41,20 @@ namespace FlagGG
 			"shadow",
 		};
 
-		static const uint32_t T_INT = Container::StringHash("int").ToHash();
-		static const uint32_t T_INT32 = Container::StringHash("int32").ToHash();
-		static const uint32_t T_UINT32 = Container::StringHash("uint32").ToHash();
-		static const uint32_t T_FLOAT = Container::StringHash("float").ToHash();
-		static const uint32_t T_COLOR = Container::StringHash("color").ToHash();
-		static const uint32_t T_RECT = Container::StringHash("rect").ToHash();
-		static const uint32_t T_VECTOR2 = Container::StringHash("vector2").ToHash();
-		static const uint32_t T_VECTOR3 = Container::StringHash("vector3").ToHash();
-		static const uint32_t T_VECTOR4 = Container::StringHash("vector4").ToHash();
-		static const uint32_t T_MATRIX3 = Container::StringHash("matrix3").ToHash();
-		static const uint32_t T_MATRIX3X4 = Container::StringHash("matrix3x4").ToHash();
-		static const uint32_t T_MATRIX4 = Container::StringHash("matrix4").ToHash();
+		static const UInt32 T_INT = Container::StringHash("int").ToHash();
+		static const UInt32 T_INT32 = Container::StringHash("int32").ToHash();
+		static const UInt32 T_UINT32 = Container::StringHash("uint32").ToHash();
+		static const UInt32 T_FLOAT = Container::StringHash("float").ToHash();
+		static const UInt32 T_COLOR = Container::StringHash("color").ToHash();
+		static const UInt32 T_RECT = Container::StringHash("rect").ToHash();
+		static const UInt32 T_VECTOR2 = Container::StringHash("vector2").ToHash();
+		static const UInt32 T_VECTOR3 = Container::StringHash("vector3").ToHash();
+		static const UInt32 T_VECTOR4 = Container::StringHash("vector4").ToHash();
+		static const UInt32 T_MATRIX3 = Container::StringHash("matrix3").ToHash();
+		static const UInt32 T_MATRIX3X4 = Container::StringHash("matrix3x4").ToHash();
+		static const UInt32 T_MATRIX4 = Container::StringHash("matrix4").ToHash();
 
-		static const Container::HashMap<Container::StringHash, uint32_t> TYPE_SIZE =
+		static const Container::HashMap<Container::StringHash, UInt32> TYPE_SIZE =
 		{
 			{ T_INT,		4 },
 			{ T_INT32,		4 },
@@ -70,7 +70,7 @@ namespace FlagGG
 			{ T_MATRIX4,	sizeof(Math::Matrix4) },
 		};
 
-		static const Container::HashMap<Container::StringHash, uint32_t> TYPE_COUNT =
+		static const Container::HashMap<Container::StringHash, UInt32> TYPE_COUNT =
 		{
 			{ T_INT,		1 },
 			{ T_INT32,		1 },
@@ -87,7 +87,7 @@ namespace FlagGG
 		};
 
 		template < class Type >
-		void ToStream(const Config::LJSONValue& value, uint32_t count, IOFrame::Buffer::IOBuffer* stream)
+		void ToStream(const Config::LJSONValue& value, UInt32 count, IOFrame::Buffer::IOBuffer* stream)
 		{
 			if (value.IsNumber())
 			{
@@ -95,7 +95,7 @@ namespace FlagGG
 			}
 			else if (value.IsArray())
 			{
-				for (uint32_t i = 0; i < value.Size() && i < count; ++i)
+				for (UInt32 i = 0; i < value.Size() && i < count; ++i)
 				{
 					stream->WriteFloat(static_cast<Type>(value[i].GetDouble()));
 				}
@@ -104,7 +104,7 @@ namespace FlagGG
 
 		static void ToBuffer(const Container::String& typeStr, const Config::LJSONValue& value, Container::String& buffer)
 		{
-			uint32_t type = Container::StringHash(typeStr).ToHash();
+			UInt32 type = Container::StringHash(typeStr).ToHash();
 
 			static IOFrame::Buffer::StringBuffer steam;
 			steam.Clear();
@@ -117,7 +117,7 @@ namespace FlagGG
 
 		static TextureClass ToTextureClass(const Container::String& name)
 		{
-			for (uint32_t i = 0; i < MAX_TEXTURE_CLASS; ++i)
+			for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
 			{
 				if (name == TEXTURE_CLASS[i])
 				{
@@ -126,7 +126,7 @@ namespace FlagGG
 			}
 			if (Utility::Format::IsInterger(name))
 			{
-				uint32_t index = Utility::Format::ToInt(name);
+				UInt32 index = Utility::Format::ToInt(name);
 				if (index < MAX_TEXTURE_CLASS)
 				{
 					return static_cast<TextureClass>(index);
@@ -137,7 +137,7 @@ namespace FlagGG
 
 		static RenderPassType ToRenderPassType(const Container::String& name)
 		{
-			for (uint32_t i = 0; i < MAX_RENDER_PASS_TYPE; ++i)
+			for (UInt32 i = 0; i < MAX_RENDER_PASS_TYPE; ++i)
 			{
 				if (name == RENDER_PASS_TYPE[i])
 				{
@@ -182,7 +182,7 @@ namespace FlagGG
 			return textures_[TEXTURE_CLASS_UNIVERSAL];
 		}
 
-		Container::SharedPtr<Texture> Material::GetTexture(uint32_t index)
+		Container::SharedPtr<Texture> Material::GetTexture(UInt32 index)
 		{
 			return index < MAX_TEXTURE_CLASS ? textures_[index] : nullptr;
 		}
@@ -197,7 +197,7 @@ namespace FlagGG
 			return psShader_;
 		}
 
-		Container::HashMap<uint32_t, RenderPass>& Material::GetRenderPass()
+		Container::HashMap<UInt32, RenderPass>& Material::GetRenderPass()
 		{
 			return renderPass_;
 		}
@@ -299,7 +299,7 @@ namespace FlagGG
 					if (parameter.IsArray())
 					{
 						Container::String buffer;
-						for (uint32_t i = 0; i < parameter.Size(); ++i)
+						for (UInt32 i = 0; i < parameter.Size(); ++i)
 						{
 							const Config::LJSONValue& item = parameter[i];
 							auto name = item["name"].GetString();
@@ -322,7 +322,7 @@ namespace FlagGG
 					const Config::LJSONValue& pass = root["pass"];
 					if (pass.IsArray())
 					{
-						for (uint32_t i = 0; i < pass.Size(); ++i)
+						for (UInt32 i = 0; i < pass.Size(); ++i)
 						{
 							RenderPass renderPass;
 							vsShaderCode = cache->GetResource<ShaderCode>(pass[i]["vsshader"]["path"].GetString());
@@ -340,7 +340,7 @@ namespace FlagGG
 							}
 
 							const Container::String& name = pass[i]["name"].GetString();
-							renderPass_.Insert(Container::MakePair(static_cast<uint32_t>(ToRenderPassType(name)), renderPass));
+							renderPass_.Insert(Container::MakePair(static_cast<UInt32>(ToRenderPassType(name)), renderPass));
 						}
 					}
 				}

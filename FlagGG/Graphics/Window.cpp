@@ -196,7 +196,7 @@ namespace FlagGG
 			ResetHandler(swapChain);
 		}
 
-		void Window::UpdateSwapChain(uint32_t width, uint32_t height)
+		void Window::UpdateSwapChain(UInt32 width, UInt32 height)
 		{
 			GetObject<IDXGISwapChain>()->ResizeBuffers(1, (UINT)width, (UINT)height,
 				DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
@@ -262,14 +262,14 @@ namespace FlagGG
 			viewport_->SetDepthStencil(depthStencil);
 		}
 
-		uint32_t Window::GetWidth()
+		UInt32 Window::GetWidth()
 		{
 			RECT rect;
 			::GetWindowRect((HWND)window, &rect);
 			return rect.right - rect.left;
 		}
 
-		uint32_t Window::GetHeight()
+		UInt32 Window::GetHeight()
 		{
 			RECT rect;
 			::GetWindowRect((HWND)window, &rect);
@@ -289,7 +289,7 @@ namespace FlagGG
 			return ::GetForegroundWindow() == window;
 		}
 
-		void Window::Resize(uint32_t width, uint32_t height)
+		void Window::Resize(UInt32 width, UInt32 height)
 		{
 			::SetWindowPos((HWND)window, nullptr, 0, 0, width, height, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 

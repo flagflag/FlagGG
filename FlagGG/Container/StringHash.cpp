@@ -19,7 +19,7 @@ namespace FlagGG
 			value_(Math::HashString(str.CString()))
 		{ }
 
-		StringHash::StringHash(uint32_t value) :
+		StringHash::StringHash(UInt32 value) :
 			value_(value)
 		{ }
 
@@ -65,7 +65,7 @@ namespace FlagGG
 			return value_ != 0;
 		}
 
-		uint32_t StringHash::ToHash() const
+		UInt32 StringHash::ToHash() const
 		{
 			return value_;
 		}

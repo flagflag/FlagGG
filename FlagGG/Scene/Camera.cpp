@@ -5,7 +5,7 @@ namespace FlagGG
 {
 	namespace Scene
 	{
-		void Camera::Strafe(float units)
+		void Camera::Strafe(Real units)
 		{
 			if (cameraType_ == LAND_OBJECT)
 			{
@@ -22,7 +22,7 @@ namespace FlagGG
 			}
 		}
 
-		void Camera::Fly(float units)
+		void Camera::Fly(Real units)
 		{
 			if (cameraType_ == LAND_OBJECT)
 			{
@@ -38,7 +38,7 @@ namespace FlagGG
 			}
 		}
 
-		void Camera::Walk(float units)
+		void Camera::Walk(Real units)
 		{
 			if (cameraType_ == LAND_OBJECT)
 			{
@@ -66,7 +66,7 @@ namespace FlagGG
 			right.Normalize();
 		}
 
-		void Camera::Pitch(float angle)
+		void Camera::Pitch(Real angle)
 		{
 			auto matrix = GetNode()->GetRotation().RotationMatrix();
 
@@ -87,7 +87,7 @@ namespace FlagGG
 				)));
 		}
 
-		void Camera::Yaw(float angle)
+		void Camera::Yaw(Real angle)
 		{
 			auto matrix = GetNode()->GetRotation().RotationMatrix();
 
@@ -119,7 +119,7 @@ namespace FlagGG
 				)));
 		}
 
-		void Camera::Roll(float angle)
+		void Camera::Roll(Real angle)
 		{
 			if (cameraType_ == AIRCRAFT)
 			{
@@ -153,10 +153,10 @@ namespace FlagGG
 		{
 			Math::Matrix4 projection = Math::Matrix4::ZERO;
 
-			float h = (1.0f / tanf(fov_ * (Math::PI / 180.0f) * 0.5f)) * zoom_;
-			float w = h / aspect_;
-			float q = farClip_ / (farClip_ - nearClip_);
-			float r = -q * nearClip_;
+			Real h = (1.0f / tanf(fov_ * (Math::PI / 180.0f) * 0.5f)) * zoom_;
+			Real w = h / aspect_;
+			Real q = farClip_ / (farClip_ - nearClip_);
+			Real r = -q * nearClip_;
 
 			projection.m00_ = w;
 			projection.m02_ = projOffset_.x_ * 2.0f;
@@ -179,52 +179,52 @@ namespace FlagGG
 			cameraType_ = cameraType;
 		}
 
-		void Camera::SetFarClip(float farClip)
+		void Camera::SetFarClip(Real farClip)
 		{
 			farClip_ = farClip;
 		}
 
-		float Camera::GetFarClip() const
+		Real Camera::GetFarClip() const
 		{
 			return farClip_;
 		}
 
-		void Camera::SetNearClip(float nearClip)
+		void Camera::SetNearClip(Real nearClip)
 		{
 			nearClip_ = nearClip;
 		}
 
-		float Camera::GetNearClip() const
+		Real Camera::GetNearClip() const
 		{
 			return nearClip_;
 		}
 
-		void Camera::SetAspect(float aspect)
+		void Camera::SetAspect(Real aspect)
 		{
 			aspect_ = aspect;
 		}
 
-		float Camera::GetAspect() const
+		Real Camera::GetAspect() const
 		{
 			return aspect_;
 		}
 
-		void Camera::SetZoom(float zoom)
+		void Camera::SetZoom(Real zoom)
 		{
 			zoom_ = zoom;
 		}
 
-		float Camera::GetZoom() const
+		Real Camera::GetZoom() const
 		{
 			return zoom_;
 		}
 
-		void Camera::SetFov(float fov)
+		void Camera::SetFov(Real fov)
 		{
 			fov_ = fov;
 		}
 
-		float Camera::GetFov() const
+		Real Camera::GetFov() const
 		{
 			return fov_;
 		}
@@ -249,7 +249,7 @@ namespace FlagGG
 			return GetFarClip() > GetNearClip();
 		}
 
-		Math::Ray Camera::GetScreenRay(float x, float y)
+		Math::Ray Camera::GetScreenRay(Real x, Real y)
 		{
 			Math::Ray ret;
 			if (!IsProjectionValid())

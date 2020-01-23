@@ -13,7 +13,7 @@ namespace FlagGG
 				return false;
 			}
 
-			for (uint32_t i = 0; i < value.Size(); ++i)
+			for (UInt32 i = 0; i < value.Size(); ++i)
 			{
 				const LJSONValue& item = value[i];
 				result.Push(item.GetString());

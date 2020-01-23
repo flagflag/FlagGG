@@ -79,9 +79,9 @@ namespace FlagGG
 					REMOVE_QUOTATION(token);
 				}
 
-				int32_t offset = 0;
+				Int32 offset = 0;
 				bool flag = false;
-				for (size_t i = 0; i < token.Length(); ++i)
+				for (UInt32 i = 0; i < token.Length(); ++i)
 				{
 					if (flag)
 					{

@@ -42,13 +42,13 @@ namespace FlagGG
 
 			Container::SharedPtr<Texture> GetTexture();
 
-			Container::SharedPtr<Texture> GetTexture(uint32_t index);
+			Container::SharedPtr<Texture> GetTexture(UInt32 index);
 
 			Container::SharedPtr<Shader> GetVertexShader();
 
 			Container::SharedPtr<Shader> GetPixelShader();
 
-			Container::HashMap<uint32_t, RenderPass>& GetRenderPass();
+			Container::HashMap<UInt32, RenderPass>& GetRenderPass();
 
 			Container::SharedPtr<ShaderParameters> GetShaderParameters();
 
@@ -68,7 +68,7 @@ namespace FlagGG
 
 			Container::SharedPtr<ShaderParameters> shaderParameters_;
 
-			Container::HashMap<uint32_t, RenderPass> renderPass_;
+			Container::HashMap<UInt32, RenderPass> renderPass_;
 		};
 	}
 }

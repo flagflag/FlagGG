@@ -5,7 +5,7 @@ namespace FlagGG
 {
 	namespace Scene
 	{
-		OctreeNode::OctreeNode(const Math::BoundingBox& box, uint32_t level) :
+		OctreeNode::OctreeNode(const Math::BoundingBox& box, UInt32 level) :
 			box_(box),
 			level_(level)
 		{
@@ -54,7 +54,7 @@ namespace FlagGG
 
 		void Octree::RaycastImpl(OctreeNode* node, RayOctreeQuery& query)
 		{
-			float ocnodeDist = query.ray_.HitDistance(node->cullingBox_);
+			Real ocnodeDist = query.ray_.HitDistance(node->cullingBox_);
 			if (ocnodeDist >= query.maxDistance_)
 				return;
 
@@ -131,13 +131,13 @@ namespace FlagGG
 
 			const Math::Vector3 worldCenter = node->box_.Center();
 			const Math::Vector3 center = box.Center();
-			unsigned x = center.x_ < worldCenter.x_ ? 0 : 1;
-			unsigned y = center.y_ < worldCenter.y_ ? 0 : 2;
-			unsigned z = center.z_ < worldCenter.z_ ? 0 : 4;
+			UInt32 x = center.x_ < worldCenter.x_ ? 0 : 1;
+			UInt32 y = center.y_ < worldCenter.y_ ? 0 : 2;
+			UInt32 z = center.z_ < worldCenter.z_ ? 0 : 4;
 			InsertElement(GetOrCreateChild(node, x | y | z), component);
 		}
 
-		OctreeNode* Octree::GetOrCreateChild(OctreeNode* node, unsigned index)
+		OctreeNode* Octree::GetOrCreateChild(OctreeNode* node, UInt32 index)
 		{
 			OctreeNode*& child = node->children_[index];
 			

@@ -7,6 +7,7 @@
 #include "Math/Vector3.h"
 #include "Math/Matrix3x4.h"
 #include "Container/Str.h"
+#include "Core/BaseTypes.h"
 
 namespace FlagGG
 {
@@ -39,7 +40,7 @@ namespace FlagGG
 			{
 			}
 
-			BoundingBox(float min, float max) NOEXCEPT :
+			BoundingBox(Real min, Real max) NOEXCEPT :
 				min_(Vector3(min, min, min)),
 				max_(Vector3(max, max, max))
 			{
@@ -86,7 +87,7 @@ namespace FlagGG
 				max_ = max;
 			}
 
-			void Define(float min, float max)
+			void Define(Real min, Real max)
 			{
 				min_ = Vector3(min, min, min);
 				max_ = Vector3(max, max, max);
@@ -153,7 +154,7 @@ namespace FlagGG
 			BoundingBox Transformed(const Matrix3& transform) const;
 			BoundingBox Transformed(const Matrix3x4& transform) const;
 			Rect Projected(const Matrix4& projection) const;
-			float DistanceToPoint(const Vector3& point) const;
+			Real DistanceToPoint(const Vector3& point) const;
 
 			Intersection IsInside(const Vector3& point) const
 			{
@@ -188,10 +189,10 @@ namespace FlagGG
 			Container::String ToString() const;
 
 			Vector3 min_;
-			float dummyMin_{}; // 暂时没用
+			Real dummyMin_{}; // 暂时没用
 
 			Vector3 max_;
-			float dummyMax_{}; // 暂时没用
+			Real dummyMax_{}; // 暂时没用
 		};
 	}
 }

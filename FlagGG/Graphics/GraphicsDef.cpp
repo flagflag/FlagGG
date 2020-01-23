@@ -1,30 +1,30 @@
 #include "Graphics/GraphicsDef.h"
 
 VertexElement::VertexElement() :
-vertexElementType_(VE_INT),
-vertexElementSemantic_(SEM_POSITION),
-index_(0),
-perInstance_(false),
-offset_(0)
+	vertexElementType_(VE_INT),
+	vertexElementSemantic_(SEM_POSITION),
+	index_(0),
+	perInstance_(false),
+	offset_(0)
 { }
 
-VertexElement::VertexElement(VertexElementType vertexElementType, VertexElementSemantic vertexElementSemantic, uint8_t index, bool perInstance) :
-vertexElementType_(vertexElementType),
-vertexElementSemantic_(vertexElementSemantic),
-index_(index),
-perInstance_(perInstance),
-offset_(0)
+VertexElement::VertexElement(VertexElementType vertexElementType, VertexElementSemantic vertexElementSemantic, UInt8 index, bool perInstance) :
+	vertexElementType_(vertexElementType),
+	vertexElementSemantic_(vertexElementSemantic),
+	index_(index),
+	perInstance_(perInstance),
+	offset_(0)
 { }
 
-uint32_t VERTEX_ELEMENT_TYPE_SIZE[MAX_VERTEX_ELEMENT_TYPE] =
+UInt32 VERTEX_ELEMENT_TYPE_SIZE[MAX_VERTEX_ELEMENT_TYPE] =
 {
-	sizeof(int32_t),
+	sizeof(Int32),
 	sizeof(float),
 	2 * sizeof(float),
 	3 * sizeof(float),
 	4 * sizeof(float),
-	4 * sizeof(uint8_t),
-	4 * sizeof(uint8_t),
+	4 * sizeof(UInt8),
+	4 * sizeof(UInt8),
 };
 
 FlagGG_API const char* VERTEX_ELEMENT_SEM_NAME[MAX_VERTEX_ELEMENT_SEMANTIC] =

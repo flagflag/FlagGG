@@ -19,7 +19,7 @@ namespace FlagGG
 
 				virtual bool Flush() = 0;
 
-				virtual bool Connect(const char* ip, uint16_t port) = 0;
+				virtual bool Connect(const char* ip, UInt16 port) = 0;
 
 				virtual void Close() = 0;
 

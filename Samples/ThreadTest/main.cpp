@@ -3,8 +3,8 @@
 #include <Utility/SystemHelper.h>
 #include <Log.h>
 
-static uint32_t count = 0;
-void ThreadFunc(int32_t index)
+static UInt32 count = 0;
+void ThreadFunc(Int32 index)
 {
 	++count;
 	FLAGGG_LOG_INFO("{} {}", count, index);
@@ -15,7 +15,7 @@ void OneThreadTest()
 	FlagGG::AsyncFrame::Thread::SharedThread thread;
 	thread.Start();
 
-	for (uint32_t i = 0; i < 1e5; ++i)
+	for (UInt32 i = 0; i < 1e5; ++i)
 	{
 		thread.Add(std::bind(&ThreadFunc, i));
 	}
@@ -30,11 +30,11 @@ void MultiThreadTest()
 	thread.Start();
 
 	FlagGG::AsyncFrame::Thread::UniqueThreadPtr workThread[4];
-	for (uint32_t i = 0; i < 4; ++i)
+	for (UInt32 i = 0; i < 4; ++i)
 	{
 		workThread[i] = new FlagGG::AsyncFrame::Thread::UniqueThread([&]
 		{
-			for (uint32_t j = 0; j < 1e5; ++j)
+			for (UInt32 j = 0; j < 1e5; ++j)
 			{
 				thread.Add(std::bind(&ThreadFunc, i * j));
 			}

@@ -114,7 +114,7 @@ namespace FlagGG
 			return deviceContext_;
 		}
 
-		bool RenderEngine::CheckMultiSampleSupport(DXGI_FORMAT format, uint32_t sampleCount)
+		bool RenderEngine::CheckMultiSampleSupport(DXGI_FORMAT format, UInt32 sampleCount)
 		{
 			if (sampleCount < 2)
 			{
@@ -130,7 +130,7 @@ namespace FlagGG
 			return numLevels > 0;
 		}
 
-		uint32_t RenderEngine::GetMultiSampleQuality(DXGI_FORMAT format, uint32_t sampleCount)
+		UInt32 RenderEngine::GetMultiSampleQuality(DXGI_FORMAT format, UInt32 sampleCount)
 		{
 			if (sampleCount < 2)
 			{
@@ -161,7 +161,7 @@ namespace FlagGG
 			return textureQuality_;
 		}
 
-		uint32_t RenderEngine::GetFormat(Resource::CompressedFormat format)
+		UInt32 RenderEngine::GetFormat(Resource::CompressedFormat format)
 		{
 			switch (format)
 			{
@@ -182,87 +182,87 @@ namespace FlagGG
 			}
 		}
 
-		uint32_t RenderEngine::GetAlphaFormat()
+		UInt32 RenderEngine::GetAlphaFormat()
 		{
 			return DXGI_FORMAT_A8_UNORM;
 		}
 
-		uint32_t RenderEngine::GetLuminanceFormat()
+		UInt32 RenderEngine::GetLuminanceFormat()
 		{
 			return DXGI_FORMAT_R8_UNORM;
 		}
 
-		uint32_t RenderEngine::GetLuminanceAlphaFormat()
+		UInt32 RenderEngine::GetLuminanceAlphaFormat()
 		{
 			return DXGI_FORMAT_R8G8_UNORM;
 		}
 
-		uint32_t RenderEngine::GetRGBFormat()
+		UInt32 RenderEngine::GetRGBFormat()
 		{
 			return DXGI_FORMAT_R8G8B8A8_UNORM;
 		}
 
-		uint32_t RenderEngine::GetRGBAFormat()
+		UInt32 RenderEngine::GetRGBAFormat()
 		{
 			return DXGI_FORMAT_R8G8B8A8_UNORM;
 		}
 
-		uint32_t RenderEngine::GetRGBA16Format()
+		UInt32 RenderEngine::GetRGBA16Format()
 		{
 			return DXGI_FORMAT_R16G16B16A16_UNORM;
 		}
 
-		uint32_t RenderEngine::GetRGBAFloat16Format()
+		UInt32 RenderEngine::GetRGBAFloat16Format()
 		{
 			return DXGI_FORMAT_R16G16B16A16_FLOAT;
 		}
 
-		uint32_t RenderEngine::GetRGBAFloat32Format()
+		UInt32 RenderEngine::GetRGBAFloat32Format()
 		{
 			return DXGI_FORMAT_R32G32B32A32_FLOAT;
 		}
 
-		uint32_t RenderEngine::GetRG16Format()
+		UInt32 RenderEngine::GetRG16Format()
 		{
 			return DXGI_FORMAT_R16G16_UNORM;
 		}
 
-		uint32_t RenderEngine::GetRGFloat16Format()
+		UInt32 RenderEngine::GetRGFloat16Format()
 		{
 			return DXGI_FORMAT_R16G16_FLOAT;
 		}
 
-		uint32_t RenderEngine::GetRGFloat32Format()
+		UInt32 RenderEngine::GetRGFloat32Format()
 		{
 			return DXGI_FORMAT_R32G32_FLOAT;
 		}
 
-		uint32_t RenderEngine::GetFloat16Format()
+		UInt32 RenderEngine::GetFloat16Format()
 		{
 			return DXGI_FORMAT_R16_FLOAT;
 		}
 
-		uint32_t RenderEngine::GetFloat32Format()
+		UInt32 RenderEngine::GetFloat32Format()
 		{
 			return DXGI_FORMAT_R32_FLOAT;
 		}
 
-		uint32_t RenderEngine::GetLinearDepthFormat()
+		UInt32 RenderEngine::GetLinearDepthFormat()
 		{
 			return DXGI_FORMAT_R32_FLOAT;
 		}
 
-		uint32_t RenderEngine::GetDepthStencilFormat()
+		UInt32 RenderEngine::GetDepthStencilFormat()
 		{
 			return DXGI_FORMAT_R24G8_TYPELESS;
 		}
 
-		uint32_t RenderEngine::GetReadableDepthFormat()
+		UInt32 RenderEngine::GetReadableDepthFormat()
 		{
 			return DXGI_FORMAT_R24G8_TYPELESS;
 		}
 
-		uint32_t RenderEngine::GetFormat(const Container::String& formatName)
+		UInt32 RenderEngine::GetFormat(const Container::String& formatName)
 		{
 			Container::String nameLower = formatName.ToLower().Trimmed();
 
@@ -302,7 +302,7 @@ namespace FlagGG
 			return GetRGBFormat();
 		}
 
-		uint32_t RenderEngine::GetMaxBonesNum()
+		UInt32 RenderEngine::GetMaxBonesNum()
 		{
 			return 64;
 		}
@@ -363,7 +363,7 @@ namespace FlagGG
 
 		void RenderEngine::SetTextures(const Container::Vector<Container::SharedPtr<Texture>>& textures)
 		{
-			for (uint32_t i = 0; i < MAX_TEXTURE_CLASS; ++i)
+			for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
 			{
 				textures_[i] = i < textures.Size() && textures[i] ? textures[i] : defaultTextures_[i];
 			}
@@ -416,13 +416,13 @@ namespace FlagGG
 			if (vertexBufferDirty_)
 			{
 				static ID3D11Buffer* d3dVertexBuffers[MAX_VERTEX_BUFFER_COUNT] = { nullptr };
-				static uint32_t d3dVertexBufferCount{ 0 };
-				static uint32_t d3dVertexSize[MAX_VERTEX_BUFFER_COUNT] = { 0 };
-				static uint32_t d3dVertexOffset[MAX_VERTEX_BUFFER_COUNT] = { 0 };
+				static UInt32 d3dVertexBufferCount{ 0 };
+				static UInt32 d3dVertexSize[MAX_VERTEX_BUFFER_COUNT] = { 0 };
+				static UInt32 d3dVertexOffset[MAX_VERTEX_BUFFER_COUNT] = { 0 };
 
-				d3dVertexBufferCount = Math::Min<uint32_t>(vertexBuffers_.Size(), MAX_VERTEX_BUFFER_COUNT);
+				d3dVertexBufferCount = Math::Min<UInt32>(vertexBuffers_.Size(), MAX_VERTEX_BUFFER_COUNT);
 
-				for (uint32_t i = 0; i < d3dVertexBufferCount; ++i)
+				for (UInt32 i = 0; i < d3dVertexBufferCount; ++i)
 				{
 					const Container::SharedPtr<VertexBuffer>& vertexBuffer = vertexBuffers_[i];
 					vertexBuffers[i] = vertexBuffer;
@@ -440,7 +440,7 @@ namespace FlagGG
 			if (indexBufferDirty_)
 			{
 				deviceContext_->IASetIndexBuffer(indexBuffer_->GetObject<ID3D11Buffer>(),
-					indexBuffer_->GetIndexSize() == sizeof(uint16_t) ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
+					indexBuffer_->GetIndexSize() == sizeof(UInt16) ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
 				indexBufferDirty_ = false;
 			}
 
@@ -465,7 +465,7 @@ namespace FlagGG
 
 				static ID3D11Buffer* d3dVSConstantBuffer[MAX_CONST_BUFFER_COUNT] = { nullptr };
 				static ID3D11Buffer* d3dPSConstantBuffer[MAX_CONST_BUFFER_COUNT] = { nullptr };
-				for (uint32_t i = 0; i < MAX_CONST_BUFFER; ++i)
+				for (UInt32 i = 0; i < MAX_CONST_BUFFER; ++i)
 				{
 					d3dVSConstantBuffer[i] = vsConstantBuffer_[i].GetObject<ID3D11Buffer>();
 					d3dPSConstantBuffer[i] = psConstantBuffer_[i].GetObject<ID3D11Buffer>();
@@ -485,7 +485,7 @@ namespace FlagGG
 				static ID3D11ShaderResourceView* shaderResourceView[MAX_TEXTURE_CLASS] = { nullptr };
 				static ID3D11SamplerState* samplerState[MAX_TEXTURE_CLASS] = { nullptr };
 
-				for (uint32_t i = 0; i < MAX_TEXTURE_CLASS; ++i)
+				for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
 				{
 					if (textures_[i])
 					{
@@ -562,7 +562,7 @@ namespace FlagGG
 			}
 		}
 
-		void RenderEngine::DrawCallIndexed(uint32_t indexStart, uint32_t indexCount)
+		void RenderEngine::DrawCallIndexed(UInt32 indexStart, UInt32 indexCount)
 		{
 			PreDraw();
 
@@ -570,7 +570,7 @@ namespace FlagGG
 			deviceContext_->DrawIndexed(indexCount, indexStart, 0);
 		}
 
-		void RenderEngine::DrawCall(uint32_t vertexStart, uint32_t vertexCount)
+		void RenderEngine::DrawCall(UInt32 vertexStart, UInt32 vertexCount)
 		{
 			PreDraw();
 

@@ -12,7 +12,7 @@ namespace FlagGG
 
 		}
 
-		void SkeletonMeshComponent::Update(float timeStep)
+		void SkeletonMeshComponent::Update(Real timeStep)
 		{
 			StaticMeshComponent::Update(timeStep);
 
@@ -58,7 +58,7 @@ namespace FlagGG
 			auto& bones = skeleton_.GetBones();
 			// 骨骼Node缓存，避免再AddChild之前被释放
 			Container::Vector<Container::SharedPtr<Node>> boneNodes;
-			for (uint32_t i = 0; i < bones.Size(); ++i)
+			for (UInt32 i = 0; i < bones.Size(); ++i)
 			{
 				Bone& bone = bones[i];
 				Container::SharedPtr<Node> node(new Node());
@@ -68,10 +68,10 @@ namespace FlagGG
 				bone.node_ = node;
 			}
 
-			for (uint32_t i = 0; i < bones.Size(); ++i)
+			for (UInt32 i = 0; i < bones.Size(); ++i)
 			{
 				Bone& bone = bones[i];
-				uint32_t parentIndex = bone.parentIndex_;
+				UInt32 parentIndex = bone.parentIndex_;
 				if (parentIndex != i && parentIndex < bones.Size())
 				{
 					bones[parentIndex].node_->AddChild(bone.node_);
@@ -83,7 +83,7 @@ namespace FlagGG
 			}
 		}
 
-		void SkeletonMeshComponent::SetBoneMappings(const Container::Vector<Container::PODVector<uint32_t>>& boneMappings)
+		void SkeletonMeshComponent::SetBoneMappings(const Container::Vector<Container::PODVector<UInt32>>& boneMappings)
 		{
 			skinMatrices_.Resize(skeleton_.GetBones().Size());
 			
@@ -105,15 +105,15 @@ namespace FlagGG
 			if (allEmpty) return;
 
 			geometrySkinMatrices_.Resize(boneMappings.Size());
-			for (uint32_t i = 0; i < boneMappings.Size(); ++i)
+			for (UInt32 i = 0; i < boneMappings.Size(); ++i)
 			{
 				geometrySkinMatrices_[i].Resize(boneMappings[i].Size());
 			}
 
 			geometrySkinMatrixPtrs_.Resize(skeleton_.GetBones().Size());
-			for (uint32_t i = 0; i < boneMappings.Size(); ++i)
+			for (UInt32 i = 0; i < boneMappings.Size(); ++i)
 			{
-				for (uint32_t j = 0; j < boneMappings[i].Size(); ++j)
+				for (UInt32 j = 0; j < boneMappings[i].Size(); ++j)
 				{
 					geometrySkinMatrixPtrs_[boneMappings[i][j]].Push(&geometrySkinMatrices_[i][j]);
 				}
@@ -124,7 +124,7 @@ namespace FlagGG
 		{
 			const auto& bones = skeleton_.GetBones();
 
-			for (uint32_t i = 0; i < bones.Size(); ++i)
+			for (UInt32 i = 0; i < bones.Size(); ++i)
 			{
 				const Bone& bone = bones[i];
 				if (bone.node_)
@@ -138,7 +138,7 @@ namespace FlagGG
 
 				if (geometrySkinMatrices_.Size())
 				{
-					for (uint32_t j = 0; j < geometrySkinMatrixPtrs_.Size(); ++j)
+					for (UInt32 j = 0; j < geometrySkinMatrixPtrs_.Size(); ++j)
 					{
 						(*geometrySkinMatrixPtrs_[i][j]) = skinMatrices_[i];
 					}

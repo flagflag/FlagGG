@@ -22,13 +22,13 @@ namespace FlagGG
 			(*this) = value;
 		}
 
-		LJSONValue::LJSONValue(int32_t value) :
+		LJSONValue::LJSONValue(Int32 value) :
 			type_(LJSON_NULL)
 		{
 			(*this) = value;
 		}
 
-		LJSONValue::LJSONValue(uint32_t value) :
+		LJSONValue::LJSONValue(UInt32 value) :
 			type_(LJSON_NULL)
 		{
 			(*this) = value;
@@ -81,13 +81,13 @@ namespace FlagGG
 			Reset();
 		}
 
-		LJSONValue & LJSONValue::operator[](uint32_t index)
+		LJSONValue & LJSONValue::operator[](UInt32 index)
 		{
 			CheckType(LJSON_ARRAY);
 			return (*arrayValue_)[index];
 		}
 
-		const LJSONValue& LJSONValue::operator[](uint32_t index) const
+		const LJSONValue& LJSONValue::operator[](UInt32 index) const
 		{
 			if (type_ != LJSON_ARRAY)
 			{
@@ -121,7 +121,7 @@ namespace FlagGG
 			return (*this);
 		}
 
-		LJSONValue& LJSONValue::operator=(int32_t value)
+		LJSONValue& LJSONValue::operator=(Int32 value)
 		{
 			CheckType(LJSON_NUMBER);
 			numberValue_ = static_cast<double>(value);
@@ -129,7 +129,7 @@ namespace FlagGG
 			return (*this);
 		}
 
-		LJSONValue& LJSONValue::operator=(uint32_t value)
+		LJSONValue& LJSONValue::operator=(UInt32 value)
 		{
 			CheckType(LJSON_NUMBER);
 			numberValue_ = static_cast<double>(value);
@@ -245,14 +245,14 @@ namespace FlagGG
 			return IsBool() ? boolValue_ : false;
 		}
 
-		const int32_t LJSONValue::GetInt() const
+		const Int32 LJSONValue::GetInt() const
 		{
-			return IsNumber() ? static_cast<int32_t>(numberValue_) : 0;
+			return IsNumber() ? static_cast<Int32>(numberValue_) : 0;
 		}
 
-		const uint32_t LJSONValue::GetUInt() const
+		const UInt32 LJSONValue::GetUInt() const
 		{
-			return IsNumber() ? static_cast<uint32_t>(numberValue_) : 0u;
+			return IsNumber() ? static_cast<UInt32>(numberValue_) : 0u;
 		}
 
 		double LJSONValue::GetDouble() const
@@ -280,21 +280,21 @@ namespace FlagGG
 			return IsBool() ? boolValue_ : (IsString() && (*stringValue_) == "true" ? true : false);
 		}
 
-		const int32_t LJSONValue::ToInt() const
+		const Int32 LJSONValue::ToInt() const
 		{
 			if (IsNumber())
 			{
-				return static_cast<int32_t>(numberValue_);
+				return static_cast<Int32>(numberValue_);
 			}
 
 			return Utility::Format::ToInt(*stringValue_);
 		}
 
-		const uint32_t LJSONValue::ToUInt() const
+		const UInt32 LJSONValue::ToUInt() const
 		{
 			if (IsNumber())
 			{
-				static_cast<uint32_t>(numberValue_);
+				static_cast<UInt32>(numberValue_);
 			}
 
 			return Utility::Format::ToUInt(*stringValue_);
@@ -323,7 +323,7 @@ namespace FlagGG
 			return type_ == LJSON_OBJECT && objectValue_->Contains(key);
 		}
 
-		uint32_t LJSONValue::Size() const
+		UInt32 LJSONValue::Size() const
 		{
 			if (type_ == LJSON_ARRAY) return arrayValue_->Size();
 			if (type_ == LJSON_OBJECT) return objectValue_->Size();

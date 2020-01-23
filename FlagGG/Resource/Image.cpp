@@ -181,7 +181,7 @@ namespace FlagGG
 			unsigned dwTextureStage_;
 		};
 
-		bool CompressedLevel::Decompress(unsigned char* dest)
+		bool CompressedLevel::Decompress(UInt8* dest)
 		{
 			if (!data_)
 				return false;
@@ -486,31 +486,31 @@ namespace FlagGG
 			{
 				stream->Seek(12);
 
-				uint32_t endianness = 0;
+				UInt32 endianness = 0;
 				stream->ReadUInt32(endianness);
-				uint32_t type = 0;
+				UInt32 type = 0;
 				stream->ReadUInt32(type);
-				uint32_t typeSize = 0;
+				UInt32 typeSize = 0;
 				stream->ReadUInt32(typeSize);
-				uint32_t format = 0;
+				UInt32 format = 0;
 				stream->ReadUInt32(format);
-				uint32_t internalFormat = 0;
+				UInt32 internalFormat = 0;
 				stream->ReadUInt32(internalFormat);
-				uint32_t baseInternalFormat = 0;
+				UInt32 baseInternalFormat = 0;
 				stream->ReadUInt32(baseInternalFormat);
-				uint32_t width = 0;
+				UInt32 width = 0;
 				stream->ReadUInt32(width);
-				uint32_t height = 0;
+				UInt32 height = 0;
 				stream->ReadUInt32(height);
-				uint32_t depth = 0;
+				UInt32 depth = 0;
 				stream->ReadUInt32(depth);
-				uint32_t arrayElements = 0;
+				UInt32 arrayElements = 0;
 				stream->ReadUInt32(arrayElements);
-				uint32_t faces = 0;
+				UInt32 faces = 0;
 				stream->ReadUInt32(faces);
-				uint32_t mipmaps = 0;
+				UInt32 mipmaps = 0;
 				stream->ReadUInt32(mipmaps);
-				uint32_t keyValueBytes = 0;
+				UInt32 keyValueBytes = 0;
 				stream->ReadUInt32(keyValueBytes);
 
 				if (endianness != 0x04030201)
@@ -619,29 +619,29 @@ namespace FlagGG
 			}
 			else if (fileID == "PVR\3")
 			{
-				uint32_t flags = 0;
+				UInt32 flags = 0;
 				stream->ReadUInt32(flags);
-				uint32_t pixelFormatLo = 0;
+				UInt32 pixelFormatLo = 0;
 				stream->ReadUInt32(pixelFormatLo);
-				uint32_t pixelFormatHi = 0;
+				UInt32 pixelFormatHi = 0;
 				stream->ReadUInt32(pixelFormatHi);
-				uint32_t colourSpace = 0;
+				UInt32 colourSpace = 0;
 				stream->ReadUInt32(colourSpace);
-				uint32_t channelType = 0;
+				UInt32 channelType = 0;
 				stream->ReadUInt32(channelType);
-				uint32_t height = 0;
+				UInt32 height = 0;
 				stream->ReadUInt32(height);
-				uint32_t width = 0;
+				UInt32 width = 0;
 				stream->ReadUInt32(width);
-				uint32_t depth = 0;
+				UInt32 depth = 0;
 				stream->ReadUInt32(depth);
-				uint32_t numSurfaces = 0;
+				UInt32 numSurfaces = 0;
 				stream->ReadUInt32(numSurfaces);
-				uint32_t numFaces = 0;
+				UInt32 numFaces = 0;
 				stream->ReadUInt32(numFaces);
-				uint32_t mipmapCount = 0;
+				UInt32 mipmapCount = 0;
 				stream->ReadUInt32(mipmapCount);
-				uint32_t metaDataSize = 0;
+				UInt32 metaDataSize = 0;
 				stream->ReadUInt32(metaDataSize);
 
 				if (depth > 1 || numFaces > 1)
@@ -987,9 +987,9 @@ namespace FlagGG
 			{
 				for (int x = 0; x < width; ++x)
 				{
-					// Calculate float coordinates between 0 - 1 for resampling
-					float xF = (width_ > 1) ? (float)x / (float)(width - 1) : 0.0f;
-					float yF = (height_ > 1) ? (float)y / (float)(height - 1) : 0.0f;
+					// Calculate Real coordinates between 0 - 1 for resampling
+					Real xF = (width_ > 1) ? (Real)x / (Real)(width - 1) : 0.0f;
+					Real yF = (height_ > 1) ? (Real)y / (Real)(height - 1) : 0.0f;
 					unsigned uintColor = GetPixelBilinear(xF, yF).ToUInt();
 					unsigned char* dest = newData + (y * width + x) * components_;
 					auto* src = (unsigned char*)&uintColor;
@@ -1087,9 +1087,9 @@ namespace FlagGG
 				return false;
 			}
 
-			int32_t len;
-			uint8_t* png = stbi_write_png_to_mem(data_.Get(), 0, width_, height_, components_, &len);
-			bool success = stream->WriteStream(png, (uint32_t)len) == (uint32_t)len;
+			Int32 len;
+			UInt8* png = stbi_write_png_to_mem(data_.Get(), 0, width_, height_, components_, &len);
+			bool success = stream->WriteStream(png, (UInt32)len) == (UInt32)len;
 			free(png);      // NOLINT(hicpp-no-malloc)
 			return success;
 		}
@@ -1223,17 +1223,17 @@ namespace FlagGG
 			switch (components_)
 			{
 			case 4:
-				ret.a_ = (float)src[3] / 255.0f;
+				ret.a_ = (Real)src[3] / 255.0f;
 				// Fall through
 			case 3:
-				ret.b_ = (float)src[2] / 255.0f;
+				ret.b_ = (Real)src[2] / 255.0f;
 				// Fall through
 			case 2:
-				ret.g_ = (float)src[1] / 255.0f;
-				ret.r_ = (float)src[0] / 255.0f;
+				ret.g_ = (Real)src[1] / 255.0f;
+				ret.r_ = (Real)src[0] / 255.0f;
 				break;
 			default:
-				ret.r_ = ret.g_ = ret.b_ = (float)src[0] / 255.0f;
+				ret.r_ = ret.g_ = ret.b_ = (Real)src[0] / 255.0f;
 				break;
 			}
 
@@ -1279,38 +1279,38 @@ namespace FlagGG
 			return ret;
 		}
 
-		Math::Color Image::GetPixelBilinear(float x, float y) const
+		Math::Color Image::GetPixelBilinear(Real x, Real y) const
 		{
-			x = Math::Clamp(x * width_ - 0.5f, 0.0f, (float)(width_ - 1));
-			y = Math::Clamp(y * height_ - 0.5f, 0.0f, (float)(height_ - 1));
+			x = Math::Clamp(x * width_ - 0.5f, 0.0f, (Real)(width_ - 1));
+			y = Math::Clamp(y * height_ - 0.5f, 0.0f, (Real)(height_ - 1));
 
 			auto xI = (int)x;
 			auto yI = (int)y;
-			float xF = Math::Fract(x);
-			float yF = Math::Fract(y);
+			Real xF = Math::Fract(x);
+			Real yF = Math::Fract(y);
 
 			Math::Color topColor = GetPixel(xI, yI).Lerp(GetPixel(xI + 1, yI), xF);
 			Math::Color bottomColor = GetPixel(xI, yI + 1).Lerp(GetPixel(xI + 1, yI + 1), xF);
 			return topColor.Lerp(bottomColor, yF);
 		}
 
-		Math::Color Image::GetPixelTrilinear(float x, float y, float z) const
+		Math::Color Image::GetPixelTrilinear(Real x, Real y, Real z) const
 		{
 			if (depth_ < 2)
 				return GetPixelBilinear(x, y);
 
-			x = Math::Clamp(x * width_ - 0.5f, 0.0f, (float)(width_ - 1));
-			y = Math::Clamp(y * height_ - 0.5f, 0.0f, (float)(height_ - 1));
-			z = Math::Clamp(z * depth_ - 0.5f, 0.0f, (float)(depth_ - 1));
+			x = Math::Clamp(x * width_ - 0.5f, 0.0f, (Real)(width_ - 1));
+			y = Math::Clamp(y * height_ - 0.5f, 0.0f, (Real)(height_ - 1));
+			z = Math::Clamp(z * depth_ - 0.5f, 0.0f, (Real)(depth_ - 1));
 
 			auto xI = (int)x;
 			auto yI = (int)y;
 			auto zI = (int)z;
 			if (zI == depth_ - 1)
 				return GetPixelBilinear(x, y);
-			float xF = Math::Fract(x);
-			float yF = Math::Fract(y);
-			float zF = Math::Fract(z);
+			Real xF = Math::Fract(x);
+			Real yF = Math::Fract(y);
+			Real zF = Math::Fract(z);
 
 			Math::Color topColorNear = GetPixel(xI, yI, zI).Lerp(GetPixel(xI + 1, yI, zI), xF);
 			Math::Color bottomColorNear = GetPixel(xI, yI + 1, zI).Lerp(GetPixel(xI + 1, yI + 1, zI), xF);
@@ -1985,7 +1985,7 @@ namespace FlagGG
 		{
 			unsigned dataSize = stream->GetSize();
 
-			Container::SharedArrayPtr<uint8_t> buffer(new uint8_t[dataSize]);
+			Container::SharedArrayPtr<UInt8> buffer(new UInt8[dataSize]);
 			stream->ReadStream(buffer.Get(), dataSize);
 			return stbi_load_from_memory(buffer.Get(), dataSize, &width, &height, (int*)&components, 0);
 		}
@@ -2048,9 +2048,9 @@ namespace FlagGG
 				{
 					for (int x = 0; x < destWidth; ++x)
 					{
-						// Calculate float coordinates between 0 - 1 for resampling
-						const float xF = (image->width_ > 1) ? static_cast<float>(x) / (destWidth - 1) : 0.0f;
-						const float yF = (image->height_ > 1) ? static_cast<float>(y) / (destHeight - 1) : 0.0f;
+						// Calculate Real coordinates between 0 - 1 for resampling
+						const Real xF = (image->width_ > 1) ? static_cast<Real>(x) / (destWidth - 1) : 0.0f;
+						const Real yF = (image->height_ > 1) ? static_cast<Real>(y) / (destHeight - 1) : 0.0f;
 						const unsigned uintColor = image->GetPixelBilinear(xF, yF).ToUInt();
 
 						memcpy(dest, reinterpret_cast<const unsigned char*>(&uintColor), components_);

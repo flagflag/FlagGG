@@ -16,13 +16,13 @@ namespace FlagGG
 	{
 		namespace TCP
 		{
-			IOThreadPoolPtr FlagGG_API CreateThreadPool(size_t thread_count);
+			IOThreadPoolPtr FlagGG_API CreateThreadPool(Size threadCount);
 
 			Buffer::IOBufferPtr FlagGG_API CreateBuffer();
 
-			Acceptor::IOAcceptorPtr FlagGG_API CreateAcceptor(Handler::EventHandler* handler, size_t thread_count);
+			Acceptor::IOAcceptorPtr FlagGG_API CreateAcceptor(Handler::EventHandler* handler, Size threadCount);
 
-			Connector::IOConnectorPtr FlagGG_API CreateConnector(Handler::EventHandler* handler, IOThreadPoolPtr& thread_pool);
+			Connector::IOConnectorPtr FlagGG_API CreateConnector(Handler::EventHandler* handler, IOThreadPoolPtr& threadPool);
 		}
 
 		namespace UDP
@@ -33,7 +33,7 @@ namespace FlagGG
 
 			Acceptor::IOAcceptorPtr FlagGG_API CreateAcceptor(Handler::EventHandler* handler);
 
-			Connector::IOConnectorPtr FlagGG_API CreateConnector(Handler::EventHandler* handler, IOThreadPoolPtr& thread_pool);
+			Connector::IOConnectorPtr FlagGG_API CreateConnector(Handler::EventHandler* handler, IOThreadPoolPtr& threadPool);
 		}
 	}
 }

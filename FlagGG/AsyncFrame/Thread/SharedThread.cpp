@@ -57,7 +57,7 @@ namespace FlagGG
 				}
 			}
 
-			void SharedThread::WaitForStop(uint32_t wait_time)
+			void SharedThread::WaitForStop(UInt32 wait_time)
 			{
 				if (thread_)
 				{
@@ -73,9 +73,9 @@ namespace FlagGG
 				}
 			}
 
-			uint32_t SharedThread::WaitingTime()
+			UInt32 SharedThread::WaitingTime()
 			{
-				return (uint32_t)taskQueue_.Size();
+				return (UInt32)taskQueue_.Size();
 			}
 
 #define CHECK_EXIT() if (!running_) break;
