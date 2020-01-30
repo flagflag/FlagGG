@@ -24,6 +24,8 @@ namespace FlagGG
 
 			void ProcessRayQuery(const RayOctreeQuery& query, Container::PODVector<RayQueryResult>& results) override;
 
+			void SetViewMask(UInt32 viewMask) override;
+
 			void SetModel(Graphics::Model* model);
 
 			void SetMaterial(Graphics::Material* material);

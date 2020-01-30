@@ -5,6 +5,13 @@ namespace FlagGG
 {
 	namespace Scene
 	{
+		Camera::Camera() :
+			Component()
+		{
+			viewMask_ = Math::F_MAX_UNSIGNED;
+			reflectionMatrix_ = reflectionPlane_.ReflectionMatrix();
+		}
+
 		void Camera::Strafe(Real units)
 		{
 			Node* master = GetNode();
@@ -163,8 +170,8 @@ namespace FlagGG
 
 		Math::Matrix3x4 Camera::GetViewMatrix()
 		{
-			Math::Matrix3x4 transform = node_ ? node_->GetWorldTransform() : Math::Matrix3x4::IDENTITY;
-			return transform.Inverse();
+			Math::Matrix3x4 transform = node_ ? Math::Matrix3x4(node_->GetWorldPosition(), node_->GetWorldRotation(), 1.0f) : Math::Matrix3x4::IDENTITY;
+			return useReflection_ ? (reflectionMatrix_ * transform).Inverse() : transform.Inverse();
 		}
 
 		Math::Matrix4 Camera::GetProjectionMatrix()
@@ -300,6 +307,22 @@ namespace FlagGG
 		Math::Vector2 Camera::WorldPosToScreenPos(const Math::Vector3& worldPos)
 		{
 			return Math::Vector2::ZERO;
+		}
+
+		void Camera::SetUseReflection(bool useReflection)
+		{
+			useReflection_ = useReflection;
+		}
+
+		bool Camera::GetUseReflection() const
+		{
+			return useReflection_;
+		}
+
+		void Camera::SetReflectionPlane(const Math::Plane& plane)
+		{
+			reflectionPlane_ = plane;
+			reflectionMatrix_ = reflectionPlane_.ReflectionMatrix();
 		}
 	}
 }

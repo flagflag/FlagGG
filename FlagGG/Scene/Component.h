@@ -41,6 +41,9 @@ namespace FlagGG
 
 			OctreeNode* GetOcNode();
 
+			virtual void SetViewMask(UInt32 viewMask);
+			UInt32 GetViewMask() const;
+
 		protected:
 			Container::WeakPtr<Node> node_;
 
@@ -49,6 +52,8 @@ namespace FlagGG
 			bool worldBoundingBoxDirty_{ true };
 
 			OctreeNode* ocnode_{ nullptr };
+
+			UInt32 viewMask_{ 0u };
 		};
 	}
 }

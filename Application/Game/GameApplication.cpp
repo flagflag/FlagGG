@@ -32,7 +32,7 @@ void GameApplication::Start()
 {
 	GameEngine::Start();
 
-	Create2DBatch();
+	//Create2DBatch();
 	CreateScene();
 	SetupWindow();
 	OpenLuaVM();
@@ -142,6 +142,14 @@ void GameApplication::CreateScene()
 	camera_->SetNearClip(0.1f);
 	camera_->SetFarClip(1000000000.0f);
 
+	auto* reflectionNode = new Node();
+	cameraNode->AddChild(reflectionNode);
+	reflectionCamera_ = reflectionNode->CreateComponent<Camera>();
+	reflectionCamera_->SetNearClip(0.1f);
+	reflectionCamera_->SetFarClip(1000000000.0f);
+	reflectionCamera_->SetViewMask(0xff00);
+	reflectionCamera_->SetUseReflection(true);
+
 	mainHero_ = new Unit(context_);
 	mainHero_->Load("Unit/MainHero.ljson");
 	mainHero_->SetPosition(Vector3(0, -2, 10));
@@ -188,9 +196,12 @@ void GameApplication::CreateScene()
 	water_ = new Unit(context_);
 	water_->Load("Unit/Water.ljson");
 	water_->SetPosition(Vector3(0, -4, 10));
-	water_->SetScale(Vector3(100, 100, 100));
+	water_->SetScale(Vector3(1000, 1000, 1000));
 	water_->SetName("Water");
 	scene_->AddChild(water_);
+
+	Plane waterPlane(water_->GetWorldRotation() * Vector3::UP, water_->GetWorldPosition());
+	reflectionCamera_->SetReflectionPlane(waterPlane);
 }
 
 void GameApplication::SetupWindow()
@@ -214,6 +225,34 @@ void GameApplication::SetupWindow()
 	renderTexture_[1] = new Texture2D(context_);
 	renderTexture_[1]->SetNumLevels(1);
 	renderTexture_[1]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetDepthStencilFormat(), TEXTURE_DEPTHSTENCIL);
+
+	rttTexture_[0] = new Texture2D(context_);
+	rttTexture_[0]->SetNumLevels(1);
+	rttTexture_[0]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetRGBFormat(), TEXTURE_RENDERTARGET);
+	rttTexture_[0]->Initialize();
+	rttTexture_[1] = new Texture2D(context_);
+	rttTexture_[1]->SetNumLevels(1);
+	rttTexture_[1]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetDepthStencilFormat(), TEXTURE_DEPTHSTENCIL);
+
+	SharedPtr<Viewport> rttViewport(new Viewport());
+	rttViewport->Resize(IntRect(0, 0, rect.Width(), rect.Height()));
+	rttViewport->SetCamera(reflectionCamera_);
+	rttViewport->SetScene(scene_);
+	rttViewport->SetRenderTarget(rttTexture_[0]->GetRenderSurface());
+	rttViewport->SetDepthStencil(rttTexture_[1]->GetRenderSurface());
+	viewports_.Push(rttViewport);
+
+	auto* waterComp = water_->GetComponent<StaticMeshComponent>();
+	if (waterComp)
+	{
+		waterComp->SetViewMask(0xff);
+		auto* waterMaterial = waterComp->GetMaterial();
+		if (waterMaterial)
+		{
+			waterMaterial->SetTexture(TEXTURE_CLASS_DIFFUSE, rttTexture_[0]);
+			waterComp->SetMaterial(waterMaterial);
+		}
+	}
 
 	SharedPtr<Viewport> viewport(new Viewport());
 	viewport->Resize(IntRect(0, 0, rect.Width(), rect.Height()));
@@ -268,6 +307,22 @@ void GameApplication::OnKeyUp(KeyState* keyState, UInt32 keyCode)
 	{
 		SharedPtr<Image> image = renderTexture_[0]->GetImage();
 		image->SavePNG("E:\\FlagGG_Scene.png");
+	}
+
+	if (keyCode == VK_F9)
+	{
+		static bool flag = false;
+		if (!flag)
+		{
+			window_->GetViewport()->SetCamera(reflectionCamera_);
+			viewports_[1]->SetCamera(reflectionCamera_);
+		}
+		else
+		{
+			window_->GetViewport()->SetCamera(camera_);
+			viewports_[1]->SetCamera(camera_);
+		}
+		flag = !flag;
 	}
 	// luaVM_->CallEvent("on_key_up", keyCode);
 }

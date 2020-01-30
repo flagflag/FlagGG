@@ -121,6 +121,7 @@ namespace FlagGG
 			renderContext_.geometries_.Push(geometry_);
 			renderContext_.numWorldTransform_ = 1;
 			renderContext_.worldTransform_ = &node_->GetWorldTransform();
+			renderContext_.viewMask_ = GetViewMask();
 		}
 
 		bool TerrainComponent::IsDrawable()

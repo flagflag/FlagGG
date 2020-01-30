@@ -47,6 +47,7 @@ namespace FlagGG
 			renderContext_.geometryType_ = GEOMETRY_SKINNED;
 			renderContext_.worldTransform_ = &skinMatrices_[0];
 			renderContext_.numWorldTransform_ = skinMatrices_.Size();
+			renderContext_.viewMask_ = GetViewMask();
 
 			boneBoundingBox_ = boundingBox_;
 		}

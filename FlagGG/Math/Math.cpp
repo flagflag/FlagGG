@@ -14,10 +14,10 @@ namespace FlagGG
 	{
 		const Real PI = asin(1.0f) * 2;
 		const Real EPS = 1e-6;
-		const Real F_MIN_INT = 0x80000000;
-		const Real F_MAX_INT = 0x7fffffff;
-		const Real F_MIN_UNSIGNED = 0x00000000;
-		const Real F_MAX_UNSIGNED = 0xffffffff;
+		const Int32 F_MIN_INT = 0x80000000;
+		const Int32 F_MAX_INT = 0x7fffffff;
+		const UInt32 F_MIN_UNSIGNED = 0x00000000;
+		const UInt32 F_MAX_UNSIGNED = 0xffffffff;
 		const Real F_INFINITY = (Real)HUGE_VAL;
 		const Real F_MIN_NEARCLIP = 0.01f;
 		const Real DEGTORAD = PI / 180.0f;

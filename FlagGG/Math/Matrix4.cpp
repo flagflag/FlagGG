@@ -1,6 +1,8 @@
 #include "Matrix4.h"
 #include "Math/Vector3.h"
+#include "Math/Vector4.h"
 #include "Math/Matrix3x4.h"
+#include "Math/Matrix3.h"
 
 #include "Math/Math.h"
 
@@ -28,6 +30,26 @@ namespace FlagGG
 			m20_(0.0f),
 			m21_(0.0f),
 			m22_(1.0f),
+			m23_(0.0f),
+			m30_(0.0f),
+			m31_(0.0f),
+			m32_(0.0f),
+			m33_(1.0f)
+		{
+		}
+
+		Matrix4::Matrix4(const Matrix3& matrix) :
+			m00_(matrix.m00_),
+			m01_(matrix.m01_),
+			m02_(matrix.m02_),
+			m03_(0.0f),
+			m10_(matrix.m10_),
+			m11_(matrix.m11_),
+			m12_(matrix.m12_),
+			m13_(0.0f),
+			m20_(matrix.m20_),
+			m21_(matrix.m21_),
+			m22_(matrix.m22_),
 			m23_(0.0f),
 			m30_(0.0f),
 			m31_(0.0f),
@@ -259,6 +281,16 @@ namespace FlagGG
 				(m00_ * rhs.x_ + m01_ * rhs.y_ + m02_ * rhs.z_ + m03_) * invW,
 				(m10_ * rhs.x_ + m11_ * rhs.y_ + m12_ * rhs.z_ + m13_) * invW,
 				(m20_ * rhs.x_ + m21_ * rhs.y_ + m22_ * rhs.z_ + m23_) * invW
+			);
+		}
+
+		Vector4 Matrix4::operator *(const Vector4& rhs) const
+		{
+			return Vector4(
+				m00_ * rhs.x_ + m01_ * rhs.y_ + m02_ * rhs.z_ + m03_ * rhs.w_,
+				m10_ * rhs.x_ + m11_ * rhs.y_ + m12_ * rhs.z_ + m13_ * rhs.w_,
+				m20_ * rhs.x_ + m21_ * rhs.y_ + m22_ * rhs.z_ + m23_ * rhs.w_,
+				m30_ * rhs.x_ + m31_ * rhs.y_ + m32_ * rhs.z_ + m33_ * rhs.w_
 			);
 		}
 

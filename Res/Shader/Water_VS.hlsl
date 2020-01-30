@@ -5,20 +5,50 @@ cbuffer MatrixBuffer : register(b0)
 	float4x4 projviewMatrix;
 }
 
+cbuffer ParamBuffer : register(b2)
+{
+	float3 cameraPos;
+}
+
 struct VertexInput
 {
 	float4 pos : POSITION;
-	float2 tex0 : TEXCOORD0;
+	float2 tex : TEXCOORD;
 	float3 nor : NORMAL;
 };
 
 struct PixelInput
 {
 	float4 pos : SV_POSITION;
-	float2 tex0 : TEXCOORD0;
+	float2 tex : TEXCOORD;
 	float3 nor : NORMAL;
-	float4 screenPos : SCREEN_POS;
+	float4 screenPos : SCREENPOS;
+	float2 reflectTex : TEXCOORD1;
+	float4 eyeVec : EYEVEC;
 };
+
+float4 GetScreenPos(float4 clipPos)
+{
+	return float4(
+		clipPos.x * 0.5 + clipPos.w * 0.5,
+		-clipPos.y * 0.5 + clipPos.w * 0.5,
+		0.0,
+		clipPos.w
+	);
+}
+
+float2 GetQuadTexCoord(float4 clipPos)
+{
+	return float2(
+		clipPos.x / clipPos.w * 0.5 + 0.5,
+		-clipPos.y / clipPos.w * 0.5 + 0.5
+	);
+}
+
+float GetDepth(float4 clipPos)
+{
+    return dot(clipPos.zw, float2(0.0, 1.0 / 1000000000.0));
+}
 
 PixelInput VS(VertexInput input)
 {
@@ -29,9 +59,11 @@ PixelInput VS(VertexInput input)
 	
 	PixelInput output;
 	output.pos = clipPos;
-	output.tex0 = input.tex0;
+	output.tex = input.tex;
 	output.nor = worldNor;
-	output.screenPos = output.pos;
+	output.screenPos = GetScreenPos(clipPos);
+	output.reflectTex = GetQuadTexCoord(clipPos) * clipPos.w;
+	output.eyeVec = float4(cameraPos - worldPos, GetDepth(clipPos));
 
 	return output;
 }

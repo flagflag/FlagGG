@@ -21,10 +21,10 @@ namespace FlagGG
 
 		extern FlagGG_API const Real PI;
 		extern FlagGG_API const Real EPS;
-		extern FlagGG_API const Real F_MIN_INT;
-		extern FlagGG_API const Real F_MAX_INT;
-		extern FlagGG_API const Real F_MIN_UNSIGNED;
-		extern FlagGG_API const Real F_MAX_UNSIGNED;
+		extern FlagGG_API const Int32 F_MIN_INT;
+		extern FlagGG_API const Int32 F_MAX_INT;
+		extern FlagGG_API const UInt32 F_MIN_UNSIGNED;
+		extern FlagGG_API const UInt32 F_MAX_UNSIGNED;
 		extern FlagGG_API const Real F_INFINITY;
 		extern FlagGG_API const Real F_MIN_NEARCLIP;
 		extern FlagGG_API const Real DEGTORAD;

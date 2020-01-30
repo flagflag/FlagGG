@@ -38,6 +38,13 @@ namespace FlagGG
 			}
 		}
 
+		void StaticMeshComponent::SetViewMask(UInt32 viewMask)
+		{
+			Component::SetViewMask(viewMask);
+
+			renderContext_.viewMask_ = GetViewMask();
+		}
+
 		void StaticMeshComponent::SetModel(Graphics::Model* model)
 		{
 			if (model_ == model)
@@ -82,12 +89,14 @@ namespace FlagGG
 			}
 			renderContext_.worldTransform_ = &node_->GetWorldTransform();
 			renderContext_.numWorldTransform_ = 1;
+			renderContext_.viewMask_ = GetViewMask();
 
 			boundingBox_ = model_->GetBoundingBox();
 		}
 
 		void StaticMeshComponent::OnMaterial()
 		{
+			renderContext_.textures_.Clear();
 			for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
 			{
 				renderContext_.textures_.Push(material_->GetTexture(i));

@@ -64,6 +64,16 @@ namespace FlagGG
 		{
 			return ocnode_;
 		}
+
+		void Component::SetViewMask(UInt32 viewMask)
+		{
+			viewMask_ = viewMask;
+		}
+
+		UInt32 Component::GetViewMask() const
+		{
+			return viewMask_;
+		}
 	}
 }
 

@@ -10,12 +10,16 @@ namespace FlagGG
 	namespace Math
 	{
 		class Vector3;
+		class Vector4;
 		class Matrix3x4;
+		class Matrix3;
 
 		class FlagGG_API Matrix4
 		{
 		public:
 			Matrix4() NOEXCEPT;
+
+			Matrix4(const Matrix3& matrix) NOEXCEPT;
 
 			Matrix4(const Matrix4& matrix) NOEXCEPT;
 
@@ -48,6 +52,8 @@ namespace FlagGG
 			Matrix4 operator *(const Matrix3x4& rhs) const;
 
 			Vector3 operator *(const Vector3& rhs) const;
+
+			Vector4 operator *(const Vector4& rhs) const;
 
 			// 矩阵转置
 			Matrix4 Transpose() const;

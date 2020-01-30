@@ -332,7 +332,7 @@ namespace FlagGG
 				shaderParameters_.SetValue(SP_WORLD_MATRIX, *renderContext->worldTransform_);
 				shaderParameters_.SetValue(SP_VIEW_MATRIX, camera->GetViewMatrix());
 				shaderParameters_.SetValue(SP_PROJVIEW_MATRIX, camera->GetProjectionMatrix() * camera->GetViewMatrix());
-				shaderParameters_.SetValue(SP_CAMERA_POS, camera->GetNode()->GetPosition());
+				shaderParameters_.SetValue(SP_CAMERA_POS, camera->GetNode()->GetWorldPosition());
 
 				if (renderContext->geometryType_ == GEOMETRY_SKINNED)
 				{
@@ -637,6 +637,10 @@ namespace FlagGG
 		{
 			if (!viewport) return;
 
+			Scene::Camera* camera = viewport->GetCamera();
+			if (!camera)
+				return;
+
 			Scene::Scene* scene = viewport->GetScene();
 			if (!scene)
 				return;
@@ -654,6 +658,8 @@ namespace FlagGG
 			{
 				for (const auto& renderContext : renderContexts)
 				{
+					if ((renderContext->viewMask_ & camera->GetViewMask()) != renderContext->viewMask_)
+						continue;
 					if (!renderContext->renderPass_)
 						continue;
 					auto it = renderContext->renderPass_->Find(RENDER_PASS_TYPE_SHADOW);
@@ -677,6 +683,9 @@ namespace FlagGG
 			SetRenderTarget(viewport, false);
 			for (const auto& renderContext : renderContexts)
 			{
+				if ((renderContext->viewMask_ & camera->GetViewMask()) != renderContext->viewMask_)
+					continue;
+
 				if (lights.Size() > 0
 					// 要不要传灯光的参数，与是否加了阴影通道没关系
 					/* &&
@@ -691,8 +700,8 @@ namespace FlagGG
 					shaderParameters_.SetValue(SP_LIGHT_PROJVIEW_MATRIX, lights[0]->GetProjectionMatrix() * lights[0]->GetViewMatrix());
 				}
 
-				viewport->GetCamera()->SetAspect(aspect);
-				SetShaderParameter(viewport->GetCamera(), renderContext);
+				camera->SetAspect(aspect);
+				SetShaderParameter(camera, renderContext);
 				SetVertexShader(renderContext->vertexShader_);
 				SetPixelShader(renderContext->pixelShader_);
 				SetTextures(renderContext->textures_);

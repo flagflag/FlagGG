@@ -6,6 +6,7 @@
 #include "Math/Matrix3x4.h"
 #include "Math/Quaternion.h"
 #include "Math/Ray.h"
+#include "Math/Plane.h"
 #include "Scene/Component.h"
 
 namespace FlagGG
@@ -22,6 +23,8 @@ namespace FlagGG
 		{
 			OBJECT_OVERRIDE(Camera);
 		public:
+			Camera();
+
 			void Strafe(Real units);
 			void Fly(Real units);
 			void Walk(Real units);
@@ -66,6 +69,11 @@ namespace FlagGG
 			Math::Vector3 ScreenPosToWorldPos(const Math::Vector3& screenPos);
 			Math::Vector2 WorldPosToScreenPos(const Math::Vector3& worldPos);
 
+			void SetUseReflection(bool useReflection);
+			bool GetUseReflection() const;
+
+			void SetReflectionPlane(const Math::Plane& plane);
+
 		protected:
 			void Correct(Math::Vector3& right, Math::Vector3& up, Math::Vector3& look);
 
@@ -78,6 +86,10 @@ namespace FlagGG
 			Real fov_{ 45.0f };
 			Real zoom_{ 1.0f };
 			Math::Vector2 projOffset_{ Math::Vector2::ZERO };
+
+			bool useReflection_{ false };
+			Math::Plane reflectionPlane_{ Math::Plane::UP };
+			Math::Matrix3x4 reflectionMatrix_{ Math::Matrix3x4::IDENTITY };
 		};
 	}
 }

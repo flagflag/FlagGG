@@ -35,6 +35,8 @@ namespace FlagGG
 			Container::HashMap<UInt32, RenderPass>* renderPass_{ nullptr };
 
 			Container::SharedPtr<ShaderParameters> shaderParameters_{ nullptr };
+
+			UInt32 viewMask_{ 0u };
 		};
 	}
 }

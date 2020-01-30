@@ -61,10 +61,13 @@ private:
 #ifdef _WIN32
 	SharedPtr<Window> window_;
 	SharedPtr<Camera> camera_;
+	SharedPtr<Camera> reflectionCamera_;
 	SharedPtr<FlagGG::Scene::Scene> scene_;
 
 	SharedPtr<Texture2D> renderTexture_[2];
 	SharedPtr<Texture2D> shadowMap_;
+
+	SharedPtr<Texture2D> rttTexture_[2];
 
 	SharedPtr<Unit> mainHero_;
 	SharedPtr<Unit> dissolveHero_;
