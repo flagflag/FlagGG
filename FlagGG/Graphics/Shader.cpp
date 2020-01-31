@@ -3,6 +3,9 @@
 #include "Allocator/SmartMemory.hpp"
 #include "Container/ArrayPtr.h"
 #include "Container/Sort.h"
+#include "IOFrame/Stream/FileStream.h"
+#include "Resource/ResourceCache.h"
+#include "Core/Context.h"
 #include "Log.h"
 
 #include <d3dcompiler.h>
@@ -48,9 +51,87 @@ namespace FlagGG
 			return shader;
 		}
 
+		bool ShaderCode::PreCompileShaderCode(const char* head, const char* tail, Container::String& out)
+		{
+			while (head != tail)
+			{
+				while (head != tail && (*head == '\n' || *head == '\r' && *head == ' ' || *head == '\t')) ++head;
+				if (head + 10 < tail &&
+					head[0] == '#' &&
+					head[1] == 'i' &&
+					head[2] == 'n' &&
+					head[3] == 'c' &&
+					head[4] == 'l' &&
+					head[5] == 'u' &&
+					head[6] == 'd' &&
+					head[7] == 'e')
+				{
+					head += 8;
+					while (head != tail && (*head == ' ' || *head == '\t')) ++head;
+					if (*head == '\"')
+					{
+						++head;
+						const char* temp = head;
+						while (temp != tail && *temp != '\"') ++temp;
+
+						Container::String relativePath(head, temp - head);
+
+						if (*temp != '\"')
+						{
+							FLAGGG_LOG_ERROR("Pre compile shader error: missing '\"' behind #include\"{}.", relativePath.CString());
+							return false;
+						}
+
+						head = temp + 1;
+
+						while (head != tail && (*head == ' ' || *head == '\t')) ++head;
+
+						// 这个判断不严谨，懒得写了，将就用着。
+						if (head != tail && *head != '\r' && *head != '\n')
+						{
+							FLAGGG_LOG_ERROR("Pre compile shader error: missing wrap behind #include\"{}\".", relativePath.CString());
+							return false;
+						}
+
+						auto file = context_->GetVariable<FlagGG::Resource::ResourceCache>("ResourceCache")->GetFile(relativePath);
+						if (!file)
+						{
+							FLAGGG_LOG_ERROR("Pre compile shader error: can not open file[{}].", relativePath.CString());
+							return false;
+						}
+
+						UInt32 bufferSize = 0u;
+						Container::SharedArrayPtr<char> buffer;
+						file->ToBuffer(buffer, bufferSize);
+						if (!PreCompileShaderCode(buffer.Get(), buffer.Get() + bufferSize, out))
+							return false;
+					}
+					else
+					{
+						FLAGGG_LOG_ERROR("Pre compile shader error: missing filename behind #include.");
+						return false;
+					}
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			out.Append(head, tail - head);
+		}
+
 		bool ShaderCode::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		{
-			stream->ToBuffer(buffer_, bufferSize_);
+			Container::String buffer;
+			stream->ToString(buffer);
+
+			Container::String out;
+			PreCompileShaderCode(buffer.CString(), buffer.CString() + buffer.Length(), out);
+
+			bufferSize_ = out.Length();
+			buffer_ = new char[bufferSize_];
+			memcpy(buffer_.Get(), out.CString(), bufferSize_);
 
 			return true;
 		}
@@ -73,7 +154,7 @@ namespace FlagGG
 			SAFE_RELEASE(shaderCode_);
 		}
 
-		static bool CompileShader(const char* buffer, size_t bufferSize, ShaderType type, const Container::Vector<Container::String>& defines, ID3DBlob*& outCompileCode, ID3DBlob*& outStrippedCode)
+		static bool CompileShader(const char* buffer, Size bufferSize, ShaderType type, const Container::Vector<Container::String>& defines, ID3DBlob*& outCompileCode, ID3DBlob*& outStrippedCode)
 		{
 			char* entryPoint = nullptr;
 			char* profile = nullptr;

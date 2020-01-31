@@ -40,6 +40,8 @@ namespace FlagGG
 				return Container::StaticCast<T>(res);
 			}
 
+			Container::SharedPtr<IOFrame::Buffer::IOBuffer> GetFile(const Container::String& path);
+
 			void AddResourceDir(const Container::String& path);
 
 			static Container::String FormatReousrcePath(const Container::String& path);

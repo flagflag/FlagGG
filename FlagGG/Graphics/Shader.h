@@ -32,6 +32,8 @@ namespace FlagGG
 
 			bool EndLoad() override;
 
+			bool PreCompileShaderCode(const char* head, const char* tail, Container::String& out);
+
 		private:
 			Container::Vector<Container::SharedPtr<Shader>> shaders_;
 
