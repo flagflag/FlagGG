@@ -1,12 +1,12 @@
 {
 	vsshader = 
 	{
-		path = "Shader/Model_VS.hlsl",
+		path = "Shader/Model.hlsl",
 		defines =  [ "STATIC" ]
 	},
 	psshader = 
 	{
-		path = "Shader/Model_PS.hlsl"
+		path = "Shader/Model.hlsl"
 	},
 	texture =
 	{

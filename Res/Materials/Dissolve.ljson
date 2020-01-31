@@ -1,12 +1,12 @@
 {
 	vsshader = 
 	{
-		path = "Shader/Model_VS.hlsl",
+		path = "Shader/Model.hlsl",
 		defines =  [ "SKINNED", "SHADOW" ]
 	},
 	psshader = 
 	{
-		path = "Shader/Model_PS.hlsl",
+		path = "Shader/Model.hlsl",
 		defines = [ "SHADOW", "DISSOLVE" ]
 	},
 	textures =
@@ -56,12 +56,12 @@
 			name = "shadow",
 			vsshader = 
 			{
-				path = "Shader/Model_VS.hlsl",
+				path = "Shader/Shadow.hlsl",
 				defines = [ "SKINNED" ]
 			},
 			psshader =
 			{
-				path = "Shader/Shadow_PS.hlsl",
+				path = "Shader/Shadow.hlsl",
 				defines = [ "MODEL_SHADOW" ]
 			}
 		}

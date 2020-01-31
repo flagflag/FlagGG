@@ -1,12 +1,12 @@
 {
 	vsshader = 
 	{
-		path = "Shader/Terrain_VS.hlsl",
+		path = "Shader/Terrain.hlsl",
         defines = [ "SHADOW" ]
 	},
 	psshader = 
 	{
-		path = "Shader/Terrain_PS.hlsl",
+		path = "Shader/Terrain.hlsl",
         defines = [ "SHADOW" ]
 	},
 	textures =

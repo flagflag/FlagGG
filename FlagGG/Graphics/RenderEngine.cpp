@@ -811,10 +811,10 @@ namespace FlagGG
 			{
 				auto* cache = context_->GetVariable<Resource::ResourceCache>("ResourceCache");
 
-				vertexShaderCode = cache->GetResource<Graphics::ShaderCode>("Shader/UI_VS.hlsl");
+				vertexShaderCode = cache->GetResource<Graphics::ShaderCode>("Shader/UI.hlsl");
 				vertexShader = vertexShaderCode->GetShader(VS, {});
 
-				pixelShaderCode = cache->GetResource<Graphics::ShaderCode>("Shader/UI_PS.hlsl");
+				pixelShaderCode = cache->GetResource<Graphics::ShaderCode>("Shader/UI.hlsl");
 				pixelShader = pixelShaderCode->GetShader(PS, {});
 			}
 

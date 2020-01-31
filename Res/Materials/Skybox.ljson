@@ -1,11 +1,11 @@
 {
     vsshader = 
     {
-        path = "Shader/Skybox_VS.hlsl"
+        path = "Shader/Skybox.hlsl"
     },
     psshader = 
     {
-        path = "Shader/Skybox_PS.hlsl"
+        path = "Shader/Skybox.hlsl"
     },
     texture = 
     {

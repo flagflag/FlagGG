@@ -33,7 +33,9 @@ namespace FlagGG
 
 		Shader* ShaderCode::GetShader(ShaderType type, const Container::Vector<Container::String>& defines)
 		{
-			Container::String definesStr = HashVectorString(defines);
+			Container::Vector<Container::String> newDefines = defines;
+			newDefines.Push(type == VS ? "VERTEX" : "PIXEL");
+			Container::String definesStr = HashVectorString(newDefines);
 			for (const auto& shader : shaders_)
 			{
 				if (shader->GetType() == type && shader->GetDefinesString() == definesStr)
@@ -44,7 +46,7 @@ namespace FlagGG
 			
 			Container::SharedPtr<Shader> shader(new Shader(buffer_, bufferSize_));
 			shader->SetType(type);
-			shader->SetDefines(defines);
+			shader->SetDefines(newDefines);
 			shader->Initialize();
 			shaders_.Push(shader);
 
@@ -55,7 +57,7 @@ namespace FlagGG
 		{
 			while (head != tail)
 			{
-				while (head != tail && (*head == '\n' || *head == '\r' && *head == ' ' || *head == '\t')) ++head;
+				while (head != tail && (*head == '\n' || *head == '\r' || *head == ' ' || *head == '\t')) ++head;
 				if (head + 10 < tail &&
 					head[0] == '#' &&
 					head[1] == 'i' &&

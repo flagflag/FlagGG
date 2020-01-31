@@ -1,11 +1,11 @@
 {
 	vsshader = 
 	{
-		path = "Shader/Water_VS.hlsl"
+		path = "Shader/Water.hlsl"
 	},
 	psshader = 
 	{
-		path = "Shader/Water_PS.hlsl"
+		path = "Shader/Water.hlsl"
 	},
 	texture =
 	{
