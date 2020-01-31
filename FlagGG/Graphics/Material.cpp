@@ -86,6 +86,19 @@ namespace FlagGG
 			{ T_MATRIX4,	4 * 4 },
 		};
 
+		static const Container::HashMap<Container::StringHash, FillMode> FILL_MODE =
+		{
+			{ "FILL_WIREFRAME", FILL_WIREFRAME },
+			{ "FILL_SOLID", FILL_SOLID },
+		};
+
+		static const Container::HashMap<Container::StringHash, CullMode> CULL_MODE =
+		{
+			{ "CULL_NONE", CULL_NONE },
+			{ "CULL_FRONT",CULL_FRONT },
+			{ "CULL_BACK", CULL_BACK },
+		};
+
 		template < class Type >
 		void ToStream(const Config::LJSONValue& value, UInt32 count, IOFrame::Buffer::IOBuffer* stream)
 		{
@@ -177,6 +190,21 @@ namespace FlagGG
 			renderPass_[type] = renderPass;
 		}
 
+		void Material::SetFillMode(FillMode fillMode)
+		{
+			rasterizerState_.fillMode_ = fillMode;
+		}
+
+		void Material::SetCullMode(CullMode cullMode)
+		{
+			rasterizerState_.cullMode_ = cullMode;
+		}
+
+		void Material::SetDepthWrite(bool depthWrite)
+		{
+			rasterizerState_.depthWrite_ = depthWrite;
+		}
+
 		Container::SharedPtr<Texture> Material::GetTexture()
 		{
 			return textures_[TEXTURE_CLASS_UNIVERSAL];
@@ -205,6 +233,26 @@ namespace FlagGG
 		Container::SharedPtr<ShaderParameters> Material::GetShaderParameters()
 		{
 			return shaderParameters_;
+		}
+
+		FillMode Material::GetFillMode() const
+		{
+			return rasterizerState_.fillMode_;
+		}
+
+		CullMode Material::GetCullMode() const
+		{
+			return rasterizerState_.cullMode_;
+		}
+
+		bool Material::GetDepthWrite() const
+		{
+			return rasterizerState_.depthWrite_;
+		}
+
+		const RasterizerState Material::GetRasterizerState() const
+		{
+			return rasterizerState_;
 		}
 
 		void Material::CreateShaderParameters()
@@ -343,6 +391,21 @@ namespace FlagGG
 							renderPass_.Insert(Container::MakePair(static_cast<UInt32>(ToRenderPassType(name)), renderPass));
 						}
 					}
+				}
+
+				if (root.Contains("depthwrite"))
+				{
+					rasterizerState_.depthWrite_ = root["depthwrite"].GetBool();
+				}
+
+				if (root.Contains("fillmode"))
+				{
+					rasterizerState_.fillMode_ = *FILL_MODE[root["fillmode"].GetString()];
+				}
+
+				if (root.Contains("cullmode"))
+				{
+					rasterizerState_.cullMode_ = *CULL_MODE[root["cullmode"].GetString()];
 				}
 			}
 			else

@@ -32,9 +32,9 @@ void GameApplication::Start()
 {
 	GameEngine::Start();
 
-	//Create2DBatch();
 	CreateScene();
 	SetupWindow();
+	Create2DBatch();
 	OpenLuaVM();
 	CreateNetwork();
 
@@ -124,6 +124,7 @@ void GameApplication::Create2DBatch()
 		Vector2(0, 0), Vector2(1, 1), Vector2(0, 1),
 		0u
 	);
+	batch->SetTexture(renderTexture_[0]);
 	batches.Push(batch);
 	RenderEngine::Instance()->PostRenderBatch(batches);
 }
@@ -180,8 +181,10 @@ void GameApplication::CreateScene()
 #else
 	auto* lightNode = new Node();
 #endif
-	lightNode->CreateComponent<Light>();
-	lightNode->SetPosition(Vector3(0, 2, 0));
+	Light* light = lightNode->CreateComponent<Light>();
+	light->SetNearClip(0.1f);
+	light->SetFarClip(1000000000.0f);
+	lightNode->SetPosition(Vector3(0, 30, -30));
 	lightNode->SetRotation(Quaternion(45.0f, Vector3(1.0f, 0.0f, 0.0f))); // 绕着x轴旋转45度，朝下
 	scene_->AddChild(lightNode);
 #endif
@@ -222,6 +225,7 @@ void GameApplication::SetupWindow()
 	renderTexture_[0] = new Texture2D(context_);
 	renderTexture_[0]->SetNumLevels(1);
 	renderTexture_[0]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetRGBFormat(), TEXTURE_RENDERTARGET);
+	renderTexture_[0]->Initialize();
 	renderTexture_[1] = new Texture2D(context_);
 	renderTexture_[1]->SetNumLevels(1);
 	renderTexture_[1]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetDepthStencilFormat(), TEXTURE_DEPTHSTENCIL);

@@ -61,47 +61,29 @@ namespace FlagGG
 			}
 		}
 
-		void RenderEngine::CreateRasterizerState()
+		void RenderEngine::CreateShadowRasterizerState()
 		{
-			D3D11_RASTERIZER_DESC stateDesc;
-			memset(&stateDesc, 0, sizeof(stateDesc));
-			stateDesc.FillMode = D3D11_FILL_SOLID;
-			stateDesc.CullMode = D3D11_CULL_NONE;
-			stateDesc.FrontCounterClockwise = false;
-			stateDesc.DepthBias = 0;
-			stateDesc.DepthBiasClamp = 0.0f;
-
-			stateDesc.SlopeScaledDepthBias = 0;
-			stateDesc.DepthClipEnable = false;
-			stateDesc.ScissorEnable = false;
-			stateDesc.MultisampleEnable = false;
-			stateDesc.AntialiasedLineEnable = false;
-
-			HRESULT hr = device_->CreateRasterizerState(&stateDesc, &rasterizerState_);
-			if (hr != 0)
-			{
-				FLAGGG_LOG_ERROR("CreateRasterizerState failed.");
-
-				SAFE_RELEASE(rasterizerState_);
-
-				return;
-			}
-
-			deviceContext_->RSSetState(rasterizerState_);
+			shadowRasterizerState_.depthWrite_ = true;
+			shadowRasterizerState_.scissorTest_ = false;
+			shadowRasterizerState_.fillMode_ = FILL_SOLID;
+			shadowRasterizerState_.cullMode_ = CULL_FRONT;
 		}
 
 		void RenderEngine::Initialize()
 		{
 			CreateDevice();
 
-			CreateRasterizerState();
+			CreateShadowRasterizerState();
 		}
 
 		void RenderEngine::Uninitialize()
 		{
 			SAFE_RELEASE(device_);
 			SAFE_RELEASE(deviceContext_);
-			SAFE_RELEASE(rasterizerState_);
+			for (auto it = rasterizerStates_.Begin(); it != rasterizerStates_.End(); ++it)
+			{
+				SAFE_RELEASE(it->second_);
+			}
 		}
 
 		ID3D11Device* RenderEngine::GetDevice()
@@ -385,6 +367,12 @@ namespace FlagGG
 			defaultTextures_[index] = texture;
 		}
 
+		void RenderEngine::SetRasterizerState(RasterizerState rasterizerState)
+		{
+			rasterizerState_ = rasterizerState;
+			rasterizerStateDirty_ = true;
+		}
+
 		void RenderEngine::SetPrimitiveType(PrimitiveType primitiveType)
 		{
 			primitiveType_ = primitiveType;
@@ -405,9 +393,61 @@ namespace FlagGG
 			return vertexFormat;
 		}
 
+		static const D3D11_FILL_MODE d3d11FillMode[] =
+		{
+			D3D11_FILL_WIREFRAME,
+			D3D11_FILL_SOLID,
+		};
+
+		static const D3D11_CULL_MODE d3d11CullMode[] = 
+		{
+			D3D11_CULL_NONE,
+			D3D11_CULL_FRONT,
+			D3D11_CULL_BACK,
+		};
+
 		void RenderEngine::PreDraw()
 		{
 			static VertexBuffer* vertexBuffers[MAX_VERTEX_BUFFER_COUNT + 1] = { 0 };
+
+			// 设置渲染模式
+			if (rasterizerStateDirty_)
+			{
+				UInt32 stateHash = rasterizerState_.GetHash();
+				if (!rasterizerStates_.Contains(stateHash))
+				{
+					D3D11_RASTERIZER_DESC stateDesc;
+					memset(&stateDesc, 0, sizeof(stateDesc));
+					stateDesc.FillMode = d3d11FillMode[rasterizerState_.fillMode_];
+					stateDesc.CullMode = d3d11CullMode[rasterizerState_.cullMode_];
+					stateDesc.FrontCounterClockwise = false;
+					stateDesc.DepthBias = 0;
+					stateDesc.DepthBiasClamp = 0.0f;
+
+					stateDesc.SlopeScaledDepthBias = 0;
+					stateDesc.DepthClipEnable = false;
+					stateDesc.ScissorEnable = rasterizerState_.scissorTest_ ? true : false;
+					stateDesc.MultisampleEnable = false;
+					stateDesc.AntialiasedLineEnable = false;
+
+					ID3D11RasterizerState* newRasterizerState = nullptr;
+
+					HRESULT hr = device_->CreateRasterizerState(&stateDesc, &newRasterizerState);
+					if (hr != 0)
+					{
+						FLAGGG_LOG_ERROR("CreateRasterizerState failed.");
+
+						SAFE_RELEASE(newRasterizerState);
+
+						return;
+					}
+
+					rasterizerStates_.Insert(Container::MakePair(stateHash, newRasterizerState));
+				}
+
+				deviceContext_->RSSetState(rasterizerStates_[stateHash]);
+				rasterizerStateDirty_ = false;
+			}
 
 			// 设置图元类型
 			switch (primitiveType_)
@@ -564,9 +604,16 @@ namespace FlagGG
 					color = Math::Color(1.0f, 1.0f, 1.0f, 1.0f);
 				}
 
-				deviceContext_->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
-				deviceContext_->ClearRenderTargetView(renderTargetView, color.Data());
-				deviceContext_->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0, 0);
+				if (rasterizerState_.depthWrite_)
+				{
+					deviceContext_->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+					deviceContext_->ClearRenderTargetView(renderTargetView, color.Data());
+					deviceContext_->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0, 0);
+				}
+				else
+				{
+					deviceContext_->OMSetRenderTargets(1, &renderTargetView, nullptr);
+				}
 				renderTargetDirty_ = false;
 			}
 		}
@@ -589,6 +636,9 @@ namespace FlagGG
 
 		void RenderEngine::CopyShaderParameterToBuffer(Shader* shader, ConstantBuffer* buffer)
 		{
+			if (!shader || !buffer)
+				return;
+
 			const auto& constantBufferVariableDesc = shader->GetContantBufferVariableDesc();
 			for (auto it = constantBufferVariableDesc.Begin(); it != constantBufferVariableDesc.End(); ++it)
 			{
@@ -653,31 +703,43 @@ namespace FlagGG
 
 			Container::PODVector<Scene::Light*> lights;
 			scene->GetLights(lights);
+			
 			SetRenderTarget(viewport, true);
-			for (auto light : lights)
+
+			// 放射相机不处理阴影
+			if (!camera->GetUseReflection())
 			{
-				for (const auto& renderContext : renderContexts)
+				for (auto light : lights)
 				{
-					if ((renderContext->viewMask_ & camera->GetViewMask()) != renderContext->viewMask_)
-						continue;
-					if (!renderContext->renderPass_)
-						continue;
-					auto it = renderContext->renderPass_->Find(RENDER_PASS_TYPE_SHADOW);
-					if (it != renderContext->renderPass_->End())
+					for (const auto& renderContext : renderContexts)
 					{
-						light->SetAspect(aspect);
-						SetShaderParameter(light, renderContext);
-						SetVertexShader(it->second_.vertexShader_);
-						SetPixelShader(it->second_.pixelShader_);
-						for (const auto& geometry : renderContext->geometries_)
+						if ((renderContext->viewMask_ & camera->GetViewMask()) != renderContext->viewMask_)
+							continue;
+						if (!renderContext->renderPass_)
+							continue;
+						auto it = renderContext->renderPass_->Find(RENDER_PASS_TYPE_SHADOW);
+						if (it != renderContext->renderPass_->End())
 						{
-							SetVertexBuffers(geometry->GetVertexBuffers());
-							SetIndexBuffer(geometry->GetIndexBuffer());
-							SetPrimitiveType(geometry->GetPrimitiveType());
-							DrawCallIndexed(geometry->GetIndexStart(), geometry->GetIndexCount());
+							light->SetAspect(aspect);
+							SetRasterizerState(shadowRasterizerState_);
+							SetShaderParameter(light, renderContext);
+							SetVertexShader(it->second_.vertexShader_);
+							SetPixelShader(it->second_.pixelShader_);
+							for (const auto& geometry : renderContext->geometries_)
+							{
+								SetVertexBuffers(geometry->GetVertexBuffers());
+								SetIndexBuffer(geometry->GetIndexBuffer());
+								SetPrimitiveType(geometry->GetPrimitiveType());
+								DrawCallIndexed(geometry->GetIndexStart(), geometry->GetIndexCount());
+							}
 						}
 					}
 				}
+			}
+			else
+			{
+				// 这步操作用来清理阴影贴图
+				PreDraw();
 			}
 
 			SetRenderTarget(viewport, false);
@@ -701,6 +763,7 @@ namespace FlagGG
 				}
 
 				camera->SetAspect(aspect);
+				SetRasterizerState(renderContext->rasterizerState_);
 				SetShaderParameter(camera, renderContext);
 				SetVertexShader(renderContext->vertexShader_);
 				SetPixelShader(renderContext->pixelShader_);
@@ -714,15 +777,9 @@ namespace FlagGG
 					DrawCallIndexed(geometry->GetIndexStart(), geometry->GetIndexCount());
 				}
 			}
-
-			// 最后渲染batch
-			if (!batches_.Empty())
-			{
-				Render(batches_);
-			}
 		}
 
-		void RenderEngine::Render(const Container::Vector<Container::SharedPtr<Batch>>& batches)
+		void RenderEngine::RenderBatch(Viewport* viewport)
 		{
 			static Container::PODVector<VertexElement> vertexElement =
 			{
@@ -737,6 +794,13 @@ namespace FlagGG
 			static Container::SharedPtr<Graphics::ShaderCode> vertexShaderCode;
 			static Container::SharedPtr<Graphics::ShaderCode> pixelShaderCode;
 			static Container::Vector<Container::SharedPtr<Graphics::Texture>> textures;
+
+			if (!viewport)
+				return;
+
+			viewport->SetViewport();
+
+			SetRenderTarget(viewport, false);
 
 			if (!vertexBuffer)
 			{
@@ -754,7 +818,7 @@ namespace FlagGG
 				pixelShader = pixelShaderCode->GetShader(PS, {});
 			}
 
-			for (const auto& batch : batches)
+			for (const auto& batch : batches_)
 			{
 				vertexBuffer->SetSize(batch->GetVertexCount(), vertexElement);
 				char* data = (char*)vertexBuffer->Lock(0, vertexBuffer->GetVertexCount());

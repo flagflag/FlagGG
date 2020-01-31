@@ -318,6 +318,8 @@ namespace FlagGG
 		{
 			RenderEngine::Instance()->Render(viewport_);
 
+			RenderEngine::Instance()->RenderBatch(viewport_);
+
 			GetObject<IDXGISwapChain>()->Present(0, 0);
 		}
 

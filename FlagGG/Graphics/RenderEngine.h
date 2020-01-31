@@ -99,6 +99,8 @@ namespace FlagGG
 
 			void SetDefaultTextures(TextureClass index, Texture* texture);
 
+			void SetRasterizerState(RasterizerState rasterizerState);
+
 			void SetShaderParameter(Scene::Camera* camera, const RenderContext* renderContext);
 
 			void SetVertexBuffers(const Container::Vector<Container::SharedPtr<VertexBuffer>>& vertexBuffers);
@@ -123,7 +125,7 @@ namespace FlagGG
 
 			void Render(Viewport* viewport);
 
-			void Render(const Container::Vector<Container::SharedPtr<Batch>>& batches);
+			void RenderBatch(Viewport* viewport);
 
 		protected:
 			void CopyShaderParameterToBuffer(Shader* shader, ConstantBuffer* buffer);
@@ -142,11 +144,15 @@ namespace FlagGG
 
 			void CreateDevice();
 
-			void CreateRasterizerState();
+			void CreateShadowRasterizerState();
 
 			ID3D11Device* device_{ nullptr };
 			ID3D11DeviceContext* deviceContext_{ nullptr };
-			ID3D11RasterizerState* rasterizerState_{ nullptr };
+
+			RasterizerState rasterizerState_;
+			RasterizerState shadowRasterizerState_;
+			bool rasterizerStateDirty_{ false };
+			Container::HashMap<UInt32, ID3D11RasterizerState*> rasterizerStates_;
 
 			ConstantBuffer vsConstantBuffer_[MAX_CONST_BUFFER_COUNT];
 			ConstantBuffer psConstantBuffer_[MAX_CONST_BUFFER_COUNT];

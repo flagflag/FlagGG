@@ -1,3 +1,5 @@
+Texture2D colorMap : register(t0);
+SamplerState colorSampler : register(s0);
 
 struct PixelInput
 {
@@ -8,6 +10,9 @@ struct PixelInput
 
 float4 PS(PixelInput input) : SV_TARGET
 {
-    float4 color = float4(1, 0, 0, 1);
+    float2 tex;
+    tex.x = input.tex.x;
+    tex.y = 1.0 - input.tex.y;
+    float4 color = float4(colorMap.Sample(colorSampler, tex).rgb, 1.0);
     return color;
 }

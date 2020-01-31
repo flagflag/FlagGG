@@ -37,6 +37,8 @@ namespace FlagGG
 			Container::SharedPtr<ShaderParameters> shaderParameters_{ nullptr };
 
 			UInt32 viewMask_{ 0u };
+
+			RasterizerState rasterizerState_;
 		};
 	}
 }

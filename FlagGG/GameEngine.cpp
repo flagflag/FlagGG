@@ -60,12 +60,12 @@ namespace FlagGG
 		RenderEngine::Instance()->GetShaderParameters().SetValue(SP_DELTA_TIME, timeStep);
 		RenderEngine::Instance()->GetShaderParameters().SetValue(SP_ELAPSED_TIME, elapsedTime_);
 
-		WindowDevice::Render();
-
 		for (const auto& viewport : viewports_)
 		{
 			RenderEngine::Instance()->Render(viewport);
 		}
+
+		WindowDevice::Render();
 #endif
 
 		context_->SendEvent<Frame::FRAME_END_HANDLER>(Frame::FRAME_END, timeStep);

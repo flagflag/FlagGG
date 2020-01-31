@@ -105,6 +105,7 @@ namespace FlagGG
 			renderContext_.pixelShader_ = material_->GetPixelShader();
 			renderContext_.renderPass_ = &material_->GetRenderPass();
 			renderContext_.shaderParameters_ = material_->GetShaderParameters();
+			renderContext_.rasterizerState_ = material_->GetRasterizerState();
 		}
 	}
 }

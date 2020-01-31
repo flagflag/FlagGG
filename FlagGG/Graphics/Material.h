@@ -39,6 +39,12 @@ namespace FlagGG
 
 			void SetRenderPass(RenderPassType type, const RenderPass& renderPass);
 
+			void SetFillMode(FillMode fillMode);
+
+			void SetCullMode(CullMode cullMode);
+
+			void SetDepthWrite(bool depthWrite);
+
 
 			Container::SharedPtr<Texture> GetTexture();
 
@@ -51,6 +57,14 @@ namespace FlagGG
 			Container::HashMap<UInt32, RenderPass>& GetRenderPass();
 
 			Container::SharedPtr<ShaderParameters> GetShaderParameters();
+
+			FillMode GetFillMode() const;
+
+			CullMode GetCullMode() const;
+
+			bool GetDepthWrite() const;
+
+			const RasterizerState GetRasterizerState() const;
 
 			void CreateShaderParameters();
 
@@ -69,6 +83,8 @@ namespace FlagGG
 			Container::SharedPtr<ShaderParameters> shaderParameters_;
 
 			Container::HashMap<UInt32, RenderPass> renderPass_;
+
+			RasterizerState rasterizerState_;
 		};
 	}
 }

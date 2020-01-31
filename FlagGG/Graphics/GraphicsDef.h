@@ -88,6 +88,19 @@ enum GeometryType : UInt32
 	GEOMETRY_BILLBOARD,
 };
 
+enum FillMode
+{
+	FILL_WIREFRAME = 0,
+	FILL_SOLID,
+};
+
+enum CullMode
+{
+	CULL_NONE = 0,
+	CULL_FRONT,
+	CULL_BACK,
+};
+
 struct FlagGG_API VertexElement
 {
 	VertexElement();
@@ -109,6 +122,16 @@ struct FlagGG_API VertexElement
 	UInt8					index_;
 	bool					perInstance_;
 	UInt32					offset_;
+};
+
+struct FlagGG_API RasterizerState
+{
+	bool depthWrite_{ true };
+	bool scissorTest_{ false };
+	FillMode fillMode_{ FILL_SOLID };
+	CullMode cullMode_{ CULL_NONE };
+
+	UInt32 GetHash() const;
 };
 
 extern FlagGG_API UInt32 VERTEX_ELEMENT_TYPE_SIZE[MAX_VERTEX_ELEMENT_TYPE];

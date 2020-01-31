@@ -31,5 +31,6 @@
             type = "texture2d",
             path = "Textures/TerrainDetail3.dds"
         }
-	}
+	},
+    cullmode = "CULL_BACK"
 }
