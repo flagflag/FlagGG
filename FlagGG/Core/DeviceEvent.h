@@ -35,6 +35,12 @@ namespace FlagGG
 
 			Math::IntVector2 GetMousePos() const;
 
+			void ShowMouse();
+
+			void HideMouse();
+
+			bool IsMouseShow() const;
+
 			void OnKeyDown(KeyState* keyState, UInt32 keyCode);
 
 			void OnKeyUp(KeyState* keyState, UInt32 keyCode);
@@ -47,6 +53,8 @@ namespace FlagGG
 
 		private:
 			Context* context_;
+
+			bool isMouseShow_;
 		};
 	}
 }

@@ -23,7 +23,10 @@ local result = las.run(function()
     local result = las.await(las.udp.connect)('127.0.0.1', 5000)
     if result then
         log.info('connect result: true')
-        gameplay.start_game()
+        result = las.await(gameplay.login)()
+        if result then
+            gameplay.start_game()
+        end
     else
         log.info('connect result: false')
     end

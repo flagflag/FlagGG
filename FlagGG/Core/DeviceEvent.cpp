@@ -8,7 +8,8 @@ namespace FlagGG
 	namespace Core
 	{
 		Input::Input(Context* context) :
-			context_(context)
+			context_(context),
+			isMouseShow_(true)
 		{ }
 
 		Math::IntVector2 Input::GetMousePos() const
@@ -16,6 +17,23 @@ namespace FlagGG
 			POINT point;
 			::GetCursorPos(&point);
 			return Math::IntVector2(point.x, point.y);
+		}
+
+		void Input::ShowMouse()
+		{
+			::ShowCursor(TRUE);
+			isMouseShow_ = true;
+		}
+
+		void Input::HideMouse()
+		{
+			::ShowCursor(FALSE);
+			isMouseShow_ = false;
+		}
+
+		bool Input::IsMouseShow() const
+		{
+			return isMouseShow_;
 		}
 
 		void Input::OnKeyDown(KeyState* keyState, UInt32 keyCode)

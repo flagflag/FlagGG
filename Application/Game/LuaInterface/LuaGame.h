@@ -4,7 +4,7 @@
 #include <Lua/LuaVM.h>
 #include <Container/Ptr.h>
 
-#include "Network/NetworkAdaptor.h"
+#include "GamePlay/GamePlayBase.h"
 
 using namespace FlagGG::Core;
 using namespace FlagGG::Lua;
@@ -16,6 +16,8 @@ public:
 	explicit LuaGamePlay(Context* context);
 
 protected:
+	int Login(LuaVM* luaVM);
+
 	int StartGame(LuaVM* luaVM);
 
 	int EndGame(LuaVM* luaVM);
@@ -23,5 +25,7 @@ protected:
 private:
 	Context* context_;
 
-	WeakPtr<Network> network_;
+	LuaVM* luaVM_;
+
+	WeakPtr<GamePlayBase> gameplay_;
 };

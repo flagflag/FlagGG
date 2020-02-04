@@ -3,17 +3,49 @@ package Proto.Game;
 
 enum MessageType
 {
-	MessageType_RequestStartGame = 0;
-	MessageType_ResponseStartGame = 1;
+	MessageType_RequestLogin = 0;
+	MessageType_ResponseLogin = 1;
 
-	MessageType_RequestStopGame = 2;
-	MessageType_ResponseStopGame = 3;
+	MessageType_RequestStartGame = 2;
+	MessageType_ResponseStartGame = 3;
+
+	MessageType_RequestStopGame = 4;
+	MessageType_ResponseStopGame = 5;
+
+	MessageType_AppearUnit = 6;
+	MessageType_DisappearUnit = 7;
+
+	MessageType_SyncUnitTansform = 8;
+	MessageType_SyncUnitStatus = 9;
+	MessageType_SyncUnitAttribute = 10;
+	MessageType_SyncUnitMovement = 11;
+
+	MessageType_UnitCastSpell = 12;
+	MessageType_UnitAttachBuff = 13;
+	MessageType_UnitDettachBuff = 14;
 }
 
 message MessageHeader
 {
 	required int32 message_type = 1;
-	required string message_body = 2;
+	required bytes message_body = 2;
+}
+
+message RequestLogin
+{
+	required int64 user_id = 1;
+}
+
+enum LoginResult
+{
+	LoginResult_Success = 0;
+	LoginResult_Failed = 1;
+}
+
+message ResponseLogin
+{
+	required int64 user_id = 1;
+	required int32 result = 2;
 }
 
 message RequestStartGame
@@ -50,3 +82,114 @@ message ResponseStopGame
 	required StopGameResult result = 1;
 }
 
+message Vector3D
+{
+	required float x = 1;
+	required float y = 2;
+	required float z = 3;
+}
+
+message Quaternion
+{
+	required float x = 1;
+	required float y = 2;
+	required float z = 3;
+	required float w = 4;
+}
+
+message Transform
+{
+	required Vector3D position = 1;
+	required Quaternion rotation = 2;
+}
+
+message UnitAttribute
+{
+	required float move_speed = 1;
+	required float attack_speed = 2;
+}
+
+enum MoveType
+{
+	MoveType_Line = 1;
+	MoveType_Curve = 2;
+}
+
+message UnitMovementInfo
+{
+	required MoveType move_type = 1;
+	required Transform start_point = 2;
+	required Transform end_point = 3;
+}
+
+message SpellInfo
+{
+}
+
+message BuffInfo
+{
+}
+
+message BuffInfoList
+{
+	repeated BuffInfo buff_infos = 1;
+}
+
+message NotifyUnitAppear
+{
+	required int64 unit_id = 1;
+	required int32 status = 2;
+	required Transform transform = 3;
+	required UnitAttribute attribute = 4;
+	optional UnitMovementInfo movement = 5;
+	optional SpellInfo spell = 6;
+	optional BuffInfoList buff = 7;
+}
+
+message NotifyUnitDisappear
+{
+	required int64 unit_id = 1;
+}
+
+message NotifySyncUnitTansform
+{
+	required int64 unit_id = 1;
+	required Vector3D position = 2;
+	required Quaternion rotation = 3;
+}
+
+message NotifySyncUnitStatus
+{
+	required int64 unit_id = 1;
+	required int32 state = 2;
+}
+
+message NotifySyncUnitAttribute
+{
+	required int64 unit_id = 1;
+	required UnitAttribute attribute = 2;
+}
+
+message NotifySyncUnitMovement
+{
+	required int64 unit_id = 1;
+	required UnitMovementInfo movement = 2;
+}
+
+message NotifyUnitCastSpell
+{
+	required int64 unit_id = 1;
+	required SpellInfo spell = 2;
+}
+
+message NotifyUnitAttachBuff
+{
+	required int64 unit_id = 1;
+	required BuffInfoList buff = 2;
+}
+
+message NotifyUnitDettachBuff
+{
+	required int64 unit_id = 1;
+	repeated int32 buff_id = 2;
+}

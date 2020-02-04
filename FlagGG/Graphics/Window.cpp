@@ -379,6 +379,14 @@ namespace FlagGG
 
 				mousePos_ = mousePos;
 
+				if (!input_->IsMouseShow())
+				{
+					mousePos_.x = GetWidth() / 2;
+					mousePos_.y = GetHeight() / 2;
+					::ClientToScreen((HWND)window, &mousePos_);
+					::SetCursorPos(mousePos_.x, mousePos_.y);
+				}
+
 				break;
 
 			case WM_CLOSE:

@@ -1,20 +1,53 @@
 #pragma once
 
 #include <Container/Str.h>
+#include <Container/Ptr.h>
+#include <Container/Vector.h>
 #include <Math/Vector3.h>
 #include <Math/Quaternion.h>
 #include <lua.hpp>
 
 #include "LGEExport.h"
+#include "Movement.h"
+#include "Spell.h"
+#include "Buff.h"
+#include "EngineObject.h"
 
 namespace LuaGameEngine
 {
-	class LuaGameEngine_API Unit
+	enum Status
 	{
+		Idle		= 1 << 0,
+		Relax		= 1 << 1,
+		Walk		= 1 << 2,
+		Running		= 1 << 3,
+		Jump		= 1 << 4,
+		Attack		= 1 << 5,
+		CastSpell	= 1 << 6,
+	};
+
+	struct LuaGameEngine_API Transform
+	{
+		FlagGG::Math::Vector3 position_;
+		FlagGG::Math::Quaternion rotation_;
+		FlagGG::Math::Vector3 scale_;
+	};
+
+	struct LuaGameEngine_API Attribute
+	{
+		float moveSpeed_;
+		float attackSpeed_;
+	};
+
+	class LuaGameEngine_API Unit : public EngineObject
+	{
+		OBJECT_OVERRIDE(Unit)
 	public:
 		Unit();
 
-		virtual ~Unit();
+		~Unit() override;
+
+		Int64 GetId() const { return unitId_; }
 
 		const FlagGG::Container::String& GetName() const { return name_; }
 
@@ -24,6 +57,17 @@ namespace LuaGameEngine
 
 		const FlagGG::Math::Vector3& GetScale() const { return scale_; }
 
+		Int32 GetStatus() const { return status_; }
+
+		const Attribute& GetAttribute() const { return attribute_; }
+
+		Movement* GetCurrentMovement() const { return movement_; }
+
+		Spell* GetCurrentSpell() const { return spell_; }
+
+		const UInt32 GetNumBuff() const { return buffs_.Size(); }
+
+		Buff* GetBuff(UInt32 index) const { return buffs_[index]; }
 
 		void SetName(const FlagGG::Container::String& name);
 
@@ -32,6 +76,8 @@ namespace LuaGameEngine
 		void SetRotation(const FlagGG::Math::Quaternion& rotation);
 
 		void SetScale(const FlagGG::Math::Vector3& scale);
+
+		void SetStatus(Int32 status);
 
 
 		static int Create(lua_State* L);
@@ -46,11 +92,21 @@ namespace LuaGameEngine
 		static int SetScale(lua_State* L);
 
 	private:
+		static Int64 unitIdCount_;
+
+		Int64 unitId_;
 		FlagGG::Container::String name_;
 
 		FlagGG::Math::Vector3 position_;
 		FlagGG::Math::Quaternion rotation_;
 		FlagGG::Math::Vector3 scale_;
+
+		Int32 status_;
+		Attribute attribute_;
+
+		FlagGG::Container::SharedPtr<Movement> movement_;
+		FlagGG::Container::SharedPtr<Spell> spell_;
+		FlagGG::Container::Vector<FlagGG::Container::SharedPtr<Buff>> buffs_;
 	};
 }
 

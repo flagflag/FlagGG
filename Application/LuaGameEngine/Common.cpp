@@ -1,4 +1,5 @@
 #include "Common.h"
+#include "Engine.h"
 
 namespace LuaGameEngine
 {
@@ -16,6 +17,14 @@ namespace LuaGameEngine
 		void* lightuserdata = lua_touserdata(L, -1);
 		lua_pop(L, 1);
 		return lightuserdata;
+	}
+
+	Engine* GetEngine(lua_State* L)
+	{
+		lua_getglobal(L, "context");
+		Engine* engine = (Engine*)lua_touserdata(L, -1);
+		lua_pop(L, 1);
+		return engine;
 	}
 
 	void CreateClass(lua_State* L, const char* name, const luaL_Reg memberFuncs[], lua_CFunction destructor)

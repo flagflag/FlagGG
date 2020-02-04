@@ -10,10 +10,16 @@
 
 #include "Network/TCPNetwork.h"
 #include "Network/UDPNetwork.h"
+#include "Network/LuaEventAdaptor.h"
 
 using namespace FlagGG::Container;
 using namespace FlagGG::Core;
 using namespace FlagGG::AsyncFrame;
+
+namespace LuaGameEngine
+{
+	class Engine;
+}
 
 class GameLogicServer : public FlagGG::ServerEngine
 {
@@ -28,6 +34,7 @@ protected:
 
 	void CreateNetwork();
 
+	void HandleUserLogin(Int64 userId);
 	void HandleStartGame(const char* gameName);
 
 private:
@@ -40,6 +47,9 @@ private:
 
 	SharedPtr<TCPNetwork> tcpNetwork_;
 	SharedPtr<UDPNetwork> udpNetwork_;
+	SharedPtr<LuaEventAdaptor> luaEventAdaptor_;
+
+	LuaGameEngine::Engine* engine_;
 
 	SharedPtr<Forwarder<Mutex>> forwarder_;
 };

@@ -17,10 +17,11 @@ void GameLogicServer::Start()
 	forwarder_ = new Forwarder<Mutex>();
 	context_->RegisterVariable<Forwarder<Mutex>>(forwarder_, "Forwarder<Mutex>");
 
-	CreateLuaVM();
-
 	CreateNetwork();
 
+	CreateLuaVM();
+
+	context_->RegisterEvent(EVENT_HANDLER(CommandEvent::USER_LOGIN, GameLogicServer::HandleUserLogin, this));
 	context_->RegisterEvent(EVENT_HANDLER(CommandEvent::START_GAME, GameLogicServer::HandleStartGame, this));
 	context_->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, GameLogicServer::Update, this));
 
@@ -31,7 +32,7 @@ void GameLogicServer::Update(float timeStep)
 {
 	forwarder_->Execute();
 
-	luaVM_->CallEvent("game.on_update", timeStep);
+	engine_->OnFrameUpdate(timeStep);
 }
 
 void GameLogicServer::CreateLuaVM()
@@ -44,7 +45,9 @@ void GameLogicServer::CreateLuaVM()
 		return;
 	}
 
-	LuaGameEngine::InitEngine(*luaVM_);
+	luaEventAdaptor_ = new LuaEventAdaptor(udpNetwork_);
+	engine_ = LuaGameEngine::CreateEngine(*luaVM_);
+	engine_->RegisterEventHandler(luaEventAdaptor_);
 
 	const String luaCodePath = commandParam_["CodePath"].GetString();
 	luaVM_->SetLoaderPath(luaCodePath);
@@ -69,7 +72,15 @@ void GameLogicServer::CreateNetwork()
 	udpAcceptor_->Start();
 }
 
+void GameLogicServer::HandleUserLogin(Int64 userId)
+{
+	LuaGameEngine::LuaUserInfo info;
+	info.userId_ = userId;
+	info.userName_ = "FlagGG";
+	engine_->AddUser(info);
+}
+
 void GameLogicServer::HandleStartGame(const char* gameName)
 {
-	luaVM_->CallEvent("game.on_start");
+	engine_->OnStart();
 }

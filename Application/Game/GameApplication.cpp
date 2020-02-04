@@ -10,6 +10,7 @@
 
 #include "GameApplication.h"
 #include "GamePlay/ThirdPersonPerspective.h"
+#include "GamePlay/GamePlayOnline.h"
 
 static int Begin(lua_State* L)
 {
@@ -48,6 +49,10 @@ void GameApplication::Start()
 	context_->RegisterVariable<Network>(tcpNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_TCP]);
 	context_->RegisterVariable<Network>(udpNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_UDP]);
 	context_->RegisterVariable<Network>(webNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_WEB]);
+
+	gameplay_ = new GamePlayOnline(context_);
+	gameplay_->Initialize(scene_);
+	context_->RegisterVariable<GamePlayBase>(gameplay_, "GamePlayBase");
 
 	logModule_ = new LuaLog(context_);
 	networkModule_ = new LuaNetwork(context_);
@@ -152,27 +157,27 @@ void GameApplication::CreateScene()
 	reflectionCamera_->SetUseReflection(true);
 
 	mainHero_ = new Unit(context_);
-	mainHero_->Load("Unit/MainHero.ljson");
+	// mainHero_->Load("Unit/MainHero.ljson");
 	mainHero_->SetPosition(Vector3(0, -2, 10));
-	mainHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
+	//mainHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
 	// mainHero_->SetRotation(Quaternion(180, Vector3(0.0f, 1.0f, 0.0f)));
 	mainHero_->SetName("MainHero");
 	scene_->AddChild(mainHero_);
 
-	dissolveHero_ = new Unit(context_);
-	dissolveHero_->Load("Unit/DissolveHero.ljson");
-	dissolveHero_->SetPosition(Vector3(0, 0, 10));
-	dissolveHero_->SetRotation(Quaternion(180, Vector3(0.0f, 1.0f, 0.0f)));
-	dissolveHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
-	dissolveHero_->SetName("DissolveHero");
-	scene_->AddChild(dissolveHero_);
+	//dissolveHero_ = new Unit(context_);
+	//dissolveHero_->Load("Unit/DissolveHero.ljson");
+	//dissolveHero_->SetPosition(Vector3(0, 0, 10));
+	//dissolveHero_->SetRotation(Quaternion(180, Vector3(0.0f, 1.0f, 0.0f)));
+	//dissolveHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
+	//dissolveHero_->SetName("DissolveHero");
+	//scene_->AddChild(dissolveHero_);
 
-	terrain_ = new Terrain(context_);
-	terrain_->Create(64);
-	terrain_->SetScale(Vector3(1, 0.4, 1));
-	terrain_->SetPosition(Vector3(-80, -5, 0));
-	terrain_->SetName("Terrain");
-	scene_->AddChild(terrain_);
+	//terrain_ = new Terrain(context_);
+	//terrain_->Create(64);
+	//terrain_->SetScale(Vector3(1, 0.4, 1));
+	//terrain_->SetPosition(Vector3(-80, -5, 0));
+	//terrain_->SetName("Terrain");
+	//scene_->AddChild(terrain_);
 
 #if 0
 	auto* lightNode = new Unit(context_);
@@ -184,7 +189,7 @@ void GameApplication::CreateScene()
 	Light* light = lightNode->CreateComponent<Light>();
 	light->SetNearClip(0.1f);
 	light->SetFarClip(1000000000.0f);
-	lightNode->SetPosition(Vector3(0, 30, -30));
+	lightNode->SetPosition(Vector3(0, 2, -1));
 	lightNode->SetRotation(Quaternion(45.0f, Vector3(1.0f, 0.0f, 0.0f))); // 绕着x轴旋转45度，朝下
 	scene_->AddChild(lightNode);
 #endif
@@ -272,6 +277,8 @@ void GameApplication::SetupWindow()
 	window_->GetViewport()->SetScene(scene_);
 
 	WindowDevice::RegisterWinMessage(window_);
+
+	input_->HideMouse();
 #endif
 }
 
@@ -297,6 +304,8 @@ void GameApplication::CreateNetwork()
 	tcpNetwork_ = new Network(context_, NETWORK_TYPE_TCP);
 	udpNetwork_ = new Network(context_, NETWORK_TYPE_UDP);
 	webNetwork_ = new Network(context_, NETWORK_TYPE_WEB);
+
+	gameProtoDstr_ = new GameProtoDistributor(context_);
 }
 
 #ifdef _WIN32
@@ -327,6 +336,11 @@ void GameApplication::OnKeyUp(KeyState* keyState, UInt32 keyCode)
 			viewports_[1]->SetCamera(camera_);
 		}
 		flag = !flag;
+	}
+
+	if (keyCode == VK_ESCAPE)
+	{
+		isRunning_ = false;
 	}
 	// luaVM_->CallEvent("on_key_up", keyCode);
 }

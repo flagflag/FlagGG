@@ -14,6 +14,7 @@
 #include "Unit/Terrain.h"
 #endif
 #include "Network/NetworkAdaptor.h"
+#include "Network//GameProtoDistributor.h"
 #include "LuaInterface/LuaLog.h"
 #include "LuaInterface/LuaCommon.h"
 #include "LuaInterface/LuaGame.h"
@@ -84,6 +85,7 @@ private:
 	SharedPtr<Network> tcpNetwork_;
 	SharedPtr<Network> udpNetwork_;
 	SharedPtr<Network> webNetwork_;
+	SharedPtr<GameProtoDistributor> gameProtoDstr_;
 
 	SharedPtr<Lobby> lobby_;
 	SharedPtr<GamePlayBase> gameplay_;

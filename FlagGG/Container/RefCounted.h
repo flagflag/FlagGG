@@ -63,6 +63,7 @@ namespace FlagGG
 
 			// Overload new/delete:
 			void* operator new(size_t byteSize);
+			void* operator new(size_t byteSize, void* buffer);
 			void* operator new[](size_t byteSize);
 			void operator delete(void* object);
 			void operator delete[](void* object);

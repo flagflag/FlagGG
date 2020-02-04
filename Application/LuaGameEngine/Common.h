@@ -6,6 +6,8 @@
 
 namespace LuaGameEngine
 {
+	class Engine;
+
 	LuaGameEngine_API void SetEntry(lua_State*L, int idx, void* lightuserdata);
 
 	LuaGameEngine_API void* GetEntryImpl(lua_State* L, int idx);
@@ -15,6 +17,8 @@ namespace LuaGameEngine
 	{
 		return (T*)GetEntryImpl(L, idx);
 	}
+
+	LuaGameEngine_API Engine* GetEngine(lua_State* L);
 
 	LuaGameEngine_API void CreateClass(lua_State* L, const char* name, const luaL_Reg memberFuncs[], lua_CFunction destructor);
 }

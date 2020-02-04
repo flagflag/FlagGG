@@ -34,7 +34,8 @@ struct PixelInput
     float2 detailTex : TEXCOORD1;
 	float3 nor : NORMAL;
 #ifdef SHADOW
-	float4 shadowPos : POSITION;
+    float shadowDepth : DEPTH;
+    float4 shadowScreenPos : SCREENPOS;
 #endif
 };
 
@@ -54,7 +55,8 @@ struct PixelInput
 
     #ifdef SHADOW
         float4 shadowClipPos = mul(float4(worldPos, 1.0), lightProjviewMatrix);
-        output.shadowPos = shadowClipPos;
+        output.shadowDepth = GetDepth(shadowClipPos);
+        output.shadowScreenPos = GetScreenPos(shadowClipPos);
     #endif
 
         return output;
@@ -73,19 +75,13 @@ struct PixelInput
         float4 color = matDiffColor * diffColor;
 
     #ifdef SHADOW
-        float bias = 0.001;
-        float2 shadowTex;
-        shadowTex.x = input.shadowPos.x / input.shadowPos.w * 0.5 + 0.5;
-        shadowTex.y = input.shadowPos.y / input.shadowPos.w * (-0.5) + 0.5;
-        if (saturate(shadowTex.x) == shadowTex.x && saturate(shadowTex.y) == shadowTex.y)
-        {
-            float shadowDepth = DecodeFloatRG(shadowMap.Sample(shadowSampler, shadowTex).xy)  + bias;
-            float depth = input.shadowPos.z / input.shadowPos.w;
-            if (shadowDepth < depth)
-            {
-                color = float4(0, 0, 0, 1);
-            }
-        }
+        float2 shadowTex = input.shadowScreenPos.xy / input.shadowScreenPos.w;
+        // 接下来几步做法是用step代替if...else...来做到硬件加速
+        float t1 = step(0.0, saturate(shadowTex.x) - shadowTex.x) * step(0.0, shadowTex.x - saturate(shadowTex.x));
+        float t2 = step(0.0, saturate(shadowTex.y) - shadowTex.y) * step(0.0, shadowTex.y - saturate(shadowTex.y));
+        float shadowDepth = DecodeFloatRG(shadowMap.Sample(shadowSampler, shadowTex).xy);
+        float t3 = step(0.0, input.shadowDepth - shadowDepth);
+        color = lerp(color, float4(0, 0, 0, 1), t1 * t2 * t3);
     #endif
 
         return color;

@@ -1,9 +1,13 @@
 #include "Unit.h"
 #include "Common.h"
+#include "Engine.h"
 
 namespace LuaGameEngine
 {
-	Unit::Unit()
+	Int64 Unit::unitIdCount_ = 0;
+
+	Unit::Unit() :
+		unitId_(++unitIdCount_)
 	{
 
 	}
@@ -33,19 +37,26 @@ namespace LuaGameEngine
 		scale_ = scale;
 	}
 
+	void Unit::SetStatus(Int32 status)
+	{
+		status_ = status;
+	}
+
 	int Unit::Create(lua_State* L)
 	{
 		lua_newtable(L);
 		lua_getmetatable(L, 1);
-		lua_setmetatable(L, -2);
-		SetEntry(L, -1, new Unit());
+		lua_setmetatable(L, -2);		
+		Engine* engine = GetEngine(L);
+		SetEntry(L, -1, engine->CreateObject<Unit>());
 		return 1;
 	}
 
 	int Unit::Destroy(lua_State* L)
 	{
 		Unit* unit = GetEntry<Unit>(L, 1);
-		delete unit;
+		Engine* engine = GetEngine(L);
+		engine->DestroyObject(unit);
 		return 0;
 	}
 
@@ -69,10 +80,11 @@ namespace LuaGameEngine
 	int Unit::GetRotation(lua_State* L)
 	{
 		Unit* unit = GetEntry<Unit>(L, 1);
-		FlagGG::Math::Vector3 rot = unit->GetRotation() * FlagGG::Math::Vector3::FORWARD;
+		const auto& rot = unit->GetRotation();
 		lua_pushnumber(L, rot.x_);
 		lua_pushnumber(L, rot.y_);
 		lua_pushnumber(L, rot.z_);
+		lua_pushnumber(L, rot.w_);
 		return 3;
 	}
 
@@ -103,7 +115,7 @@ namespace LuaGameEngine
 	int Unit::SetRotation(lua_State* L)
 	{
 		Unit* unit = GetEntry<Unit>(L, 1);
-		unit->SetRotation(FlagGG::Math::Quaternion(lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4)));
+		unit->SetRotation(FlagGG::Math::Quaternion(lua_tonumber(L, 1), lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4)));
 		return 0;
 	}
 

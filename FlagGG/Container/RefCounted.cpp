@@ -73,6 +73,11 @@ namespace FlagGG
 			return je_malloc(byteSize);
 		}
 
+		void* RefCounted::operator new(size_t byteSize, void* buffer)
+		{
+			return buffer;
+		}
+
 		void* RefCounted::operator new[](size_t byteSize)
 		{
 			return je_malloc(byteSize);
