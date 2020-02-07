@@ -12,7 +12,8 @@ GamePlayOnline::GamePlayOnline(Context* context) :
 
 void GamePlayOnline::Initialize(FlagGG::Scene::Scene* scene)
 {
-	scene_ = scene;
+	world_ = new World(context_);
+	world_->SetScene(scene);
 }
 
 void GamePlayOnline::Login(const LuaFunction& callback)
@@ -88,17 +89,24 @@ void GamePlayOnline::OnGameMessageRecived(UInt32 messageType, ::google::protobuf
 void GamePlayOnline::HandleUnitAppear(::google::protobuf::Message* message)
 {
 	auto* notify = static_cast<Proto::Game::NotifyUnitAppear*>(message);
-	SharedPtr<Unit>& unit = tempUnits_[notify->unit_id()];
-	if (unit)
-	{
-		FLAGGG_LOG_CRITICAL("Appear repeat unit!!!");
-		return;
-	}
+	SharedPtr<Unit> unit;
 	
-	unit = new Unit(context_);
-	unit->Load("Unit/MainHero.ljson");
-	unit->PlayAnimation("Animation/Kachujin_Walk.ani", true);
-	scene_->AddChild(unit);
+	if (notify->unit_id() == 1)
+	{
+		unit = new CEUnit(context_);
+		unit->Load("Unit/MainHero.ljson");
+		unit->PlayAnimation("Animation/Warrior_Idle.ani", true);
+		Node* controler = world_->GetScene()->GetChild(String("MainHeroControler"));
+		controler->AddChild(unit);
+	}
+	else
+	{
+		unit = world_->CreateUnit(notify->unit_id());
+		if (!unit)
+			return;
+		unit->Load("Unit/Monster.ljson");
+		unit->PlayAnimation("Animation/Monster_Idle.ani", true);
+	}
 	
 	const auto& transform = notify->transform();
 	unit->SetWorldPosition(Vector3(transform.position().x(), transform.position().y(), transform.position().z()));
@@ -111,14 +119,6 @@ void GamePlayOnline::HandleUnitAppear(::google::protobuf::Message* message)
 void GamePlayOnline::HandleUnitDisappear(::google::protobuf::Message* message)
 {
 	auto* notify = static_cast<Proto::Game::NotifyUnitDisappear*>(message);
-	
-	auto it = tempUnits_.Find(notify->unit_id());
-	if (it == tempUnits_.End())
-	{
-		FLAGGG_LOG_CRITICAL("Disappear none unit!!!");
-		return;
-	}
 
-	scene_->RemoveChild(it->second_);
-	tempUnits_.Erase(it);
+	world_->DestroyUnit(notify->unit_id());
 }

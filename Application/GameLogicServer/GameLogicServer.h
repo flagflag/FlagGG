@@ -36,6 +36,7 @@ protected:
 
 	void HandleUserLogin(Int64 userId);
 	void HandleStartGame(const char* gameName);
+	void HandleStopGame(const char* gameName);
 
 private:
 	FlagGG::Config::LJSONValue commandParam_;

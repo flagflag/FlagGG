@@ -1,0 +1,56 @@
+{
+	vsshader = 
+	{
+		path = "Shader/Model.hlsl",
+		defines =  [ "SKINNED", "SHADOW" ]
+	},
+	psshader = 
+	{
+		path = "Shader/Model.hlsl",
+		defines = [ "SHADOW" ]
+	},
+	texture =
+	{
+		type = "texture2d", //texturecube => 3d
+		path = "Textures/Monster.png"
+	},
+	shader_parameters = 
+	[
+		{
+			name = "ambientColor",
+			type = "vector4",
+			value = [ 0.0, 0.0, 0.0, 16 ]
+		},
+		{
+			name = "diffuseColor",
+			type = "vector4",
+			value = [ 1.0, 1.0, 1.0, 255 ]
+		},
+		{
+			name = "specularColor",
+			type = "vector4",
+			value = [ 0.1, 0.1, 0.1, 16 ]
+		},
+		{
+			name = "emissivePower",
+			type = "float",
+			value = 2
+		}
+	],
+	pass =
+	[
+		{
+			name = "shadow",
+			vsshader = 
+			{
+				path = "Shader/Shadow.hlsl",
+				defines = [ "SKINNED" ]
+			},
+			psshader =
+			{
+				path = "Shader/Shadow.hlsl",
+				defines = [ "MODEL_SHADOW" ]
+			}
+		}
+	]
+}

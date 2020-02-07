@@ -114,7 +114,7 @@ namespace FlagGG
 					}
 				}
 
-				if (boneTrack.bone_)
+				if (boneTrack.bone_ && boneTrack.bone_->node_)
 				{
 					boneTracks_.Push(boneTrack);
 				}

@@ -70,6 +70,7 @@ private:
 
 	SharedPtr<Texture2D> rttTexture_[2];
 
+	SharedPtr<Node> mainHeroControler_;
 	SharedPtr<Unit> mainHero_;
 	SharedPtr<Unit> dissolveHero_;
 	SharedPtr<Terrain> terrain_;

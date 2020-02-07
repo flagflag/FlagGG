@@ -1,5 +1,5 @@
 #include "UDPNetwork.h"
-#include "EventDefine/CommandEvent.h"
+#include "EventDefine/GameEvent.h"
 #include "Proto/Game.pb.h"
 
 #include <Core/Forwarder.h>
@@ -31,6 +31,13 @@ void UDPNetwork::ChannelClosed(FlagGG::IOFrame::Context::IOContextPtr context)
 		if (it->second_ == context->GetChannel())
 		{
 			channels_.Erase(it);
+
+			auto* forwarder = context_->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
+			forwarder->Forward([&]
+			{
+				context_->SendEvent<GameEvent::START_GAME_HANDLER>(GameEvent::STOP_GAME, "...");
+			});
+
 			break;
 		}
 	}
@@ -93,7 +100,7 @@ void UDPNetwork::HandleRequestLogin(FlagGG::IOFrame::Context::IOContextPtr conte
 	auto* forwarder = context_->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
 	forwarder->Forward([&, userId]
 	{
-		context_->SendEvent<CommandEvent::USER_LOGIN_HANDLER>(CommandEvent::USER_LOGIN, userId);
+		context_->SendEvent<GameEvent::USER_LOGIN_HANDLER>(GameEvent::USER_LOGIN, userId);
 	});
 }
 
@@ -106,6 +113,6 @@ void UDPNetwork::HandleRequestStartGame(FlagGG::IOFrame::Context::IOContextPtr c
 	auto* forwarder = context_->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
 	forwarder->Forward([&, gameName]
 	{
-		context_->SendEvent<CommandEvent::START_GAME_HANDLER>(CommandEvent::START_GAME, gameName.c_str());
+		context_->SendEvent<GameEvent::START_GAME_HANDLER>(GameEvent::START_GAME, gameName.c_str());
 	});
 }

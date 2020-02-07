@@ -1,0 +1,5 @@
+{
+    geometrytype = "SKINNED", // STATIC | SKINNED
+    model = "Model/Monster.mdl",
+    material = "Materials/Monster.ljson"
+}

@@ -42,7 +42,7 @@ void GameApplication::Start()
 	perspective_ = new ThirdPersonPerspective(context_);
 	perspective_->SetCamera(camera_);
 	perspective_->SetWindow(window_);
-	perspective_->SetNode(mainHero_);
+	perspective_->SetNode(mainHeroControler_);
 	perspective_->Reset();
 
 	context_->RegisterVariable<LuaVM>(luaVM_, "LuaVM");
@@ -156,13 +156,14 @@ void GameApplication::CreateScene()
 	reflectionCamera_->SetViewMask(0xff00);
 	reflectionCamera_->SetUseReflection(true);
 
-	mainHero_ = new Unit(context_);
-	// mainHero_->Load("Unit/MainHero.ljson");
-	mainHero_->SetPosition(Vector3(0, -2, 10));
-	//mainHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
-	// mainHero_->SetRotation(Quaternion(180, Vector3(0.0f, 1.0f, 0.0f)));
-	mainHero_->SetName("MainHero");
-	scene_->AddChild(mainHero_);
+	mainHeroControler_ = new Node();
+	mainHeroControler_->SetName("MainHeroControler");
+	scene_->AddChild(mainHeroControler_);
+	//mainHero_ = new CEUnit(context_);
+	//mainHero_->Load("Unit/Monster.ljson");
+	//mainHero_->PlayAnimation("Animation/Monster_Idle.ani", true);
+	//mainHero_->SetPosition(Vector3(0, -2, 10));
+	//mainHeroControler_->AddChild(mainHero_);
 
 	//dissolveHero_ = new Unit(context_);
 	//dissolveHero_->Load("Unit/DissolveHero.ljson");
@@ -172,12 +173,12 @@ void GameApplication::CreateScene()
 	//dissolveHero_->SetName("DissolveHero");
 	//scene_->AddChild(dissolveHero_);
 
-	//terrain_ = new Terrain(context_);
-	//terrain_->Create(64);
-	//terrain_->SetScale(Vector3(1, 0.4, 1));
-	//terrain_->SetPosition(Vector3(-80, -5, 0));
-	//terrain_->SetName("Terrain");
-	//scene_->AddChild(terrain_);
+	terrain_ = new Terrain(context_);
+	terrain_->Create(64);
+	terrain_->SetScale(Vector3(1, 0.4, 1));
+	terrain_->SetPosition(Vector3(-80, -5, 0));
+	terrain_->SetName("Terrain");
+	scene_->AddChild(terrain_);
 
 #if 0
 	auto* lightNode = new Unit(context_);

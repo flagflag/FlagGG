@@ -1,5 +1,5 @@
 #include "GameLogicServer.h"
-#include "EventDefine/CommandEvent.h"
+#include "EventDefine/GameEvent.h"
 
 #include <LuaGameEngine/Init.h>
 #include <Log.h>
@@ -21,8 +21,9 @@ void GameLogicServer::Start()
 
 	CreateLuaVM();
 
-	context_->RegisterEvent(EVENT_HANDLER(CommandEvent::USER_LOGIN, GameLogicServer::HandleUserLogin, this));
-	context_->RegisterEvent(EVENT_HANDLER(CommandEvent::START_GAME, GameLogicServer::HandleStartGame, this));
+	context_->RegisterEvent(EVENT_HANDLER(GameEvent::USER_LOGIN, GameLogicServer::HandleUserLogin, this));
+	context_->RegisterEvent(EVENT_HANDLER(GameEvent::START_GAME, GameLogicServer::HandleStartGame, this));
+	context_->RegisterEvent(EVENT_HANDLER(GameEvent::STOP_GAME, GameLogicServer::HandleStopGame, this));
 	context_->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, GameLogicServer::Update, this));
 
 	FLAGGG_LOG_INFO("GameLogicServer start.");
@@ -83,4 +84,9 @@ void GameLogicServer::HandleUserLogin(Int64 userId)
 void GameLogicServer::HandleStartGame(const char* gameName)
 {
 	engine_->OnStart();
+}
+
+void GameLogicServer::HandleStopGame(const char* gameName)
+{
+	engine_->OnStop();
 }

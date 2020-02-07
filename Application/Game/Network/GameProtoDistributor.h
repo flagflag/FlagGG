@@ -1,7 +1,13 @@
 #pragma once
 
-#include "Network/NetworkAdaptor.h"
+#include "EventDefine/NetworkEvent.h"
 #include "Proto/Game.pb.h"
+
+#include <Core/Context.h>
+#include <Container/RefCounted.h>
+
+using namespace FlagGG::Core;
+using namespace FlagGG::Container;
 
 namespace GameProtoEvent
 {

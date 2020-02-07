@@ -11,6 +11,8 @@ namespace FlagGG
 		{
 			if (left_ && right_)
 			{
+				if (Math::Equals(timeInterval_, 0.0f))
+					return left_->position_;
 				Real t = (time - left_->time_) / timeInterval_;
 				return left_->position_.Lerp(right_->position_, t);
 			}
@@ -22,6 +24,8 @@ namespace FlagGG
 		{
 			if (left_ && right_)
 			{
+				if (Math::Equals(timeInterval_, 0.0f))
+					return left_->rotation_;
 				Real t = (time - left_->time_) / timeInterval_;
 				return left_->rotation_.Slerp(right_->rotation_, t);
 			}
@@ -33,6 +37,8 @@ namespace FlagGG
 		{
 			if (left_ && right_)
 			{
+				if (Math::Equals(timeInterval_, 0.0f))
+					return left_->scale_;
 				Real t = (time - left_->time_) / timeInterval_;
 				return left_->scale_.Lerp(right_->scale_, t);
 			}

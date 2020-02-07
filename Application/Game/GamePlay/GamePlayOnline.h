@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GamePlay/GamePlayBase.h"
+#include "GamePlay/World.h"
 #include "Network/NetworkAdaptor.h"
 #include "Network/GameProtoDistributor.h"
 #include "Unit/Unit.h"
@@ -33,12 +34,9 @@ protected:
 private:
 	Context* context_;
 
-	SharedPtr<FlagGG::Scene::Scene> scene_;
+	SharedPtr<World> world_;
 
 	WeakPtr<Network> network_;
 
 	LuaFunction loginResponse_;
-
-	// 临时用来存单位的，后面改成对象池
-	HashMap<Int64, SharedPtr<Unit>> tempUnits_;
 };

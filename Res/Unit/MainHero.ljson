@@ -1,5 +1,5 @@
 {
     geometrytype = "SKINNED", // STATIC | SKINNED
-    model = "Model/Kachujin.mdl",
-    material = "Materials/Kachujin.ljson"
+    model = "Model/Warrior.mdl",
+    material = "Materials/Warrior.ljson"
 }

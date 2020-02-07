@@ -1,6 +1,4 @@
 #include "LuaInterface/LuaGame.h"
-#include "Proto/Game.pb.h"
-#include "Network/NetworkAdaptor.h"
 
 LuaGamePlay::LuaGamePlay(Context* context) :
 	context_(context)
