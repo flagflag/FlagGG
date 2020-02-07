@@ -4,11 +4,12 @@
 #include "Math/Vector2.h"
 #include "Core/Function.h"
 #include "Core/BaseTypes.h"
+#include "Core/AddEvent.h"
 
 #include <functional>
 
 #define DEFINE_EVENT(eventId, eventNative) \
-	static const UInt32 eventId = FlagGG::Core::AddEvent(); \
+	static const UInt32 eventId = FlagGG::Core::AddEvent(__FILE__, #eventId); \
 	typedef FlagGG::Core::Function<eventNative> eventId##_HANDLER;
 
 #define EVENT_HANDLER(eventId, func, ...) eventId, FlagGG::Core::Function<eventId##_HANDLER::NativeType>(&func, ##__VA_ARGS__)
@@ -17,12 +18,6 @@ namespace FlagGG
 {
 	namespace Core
 	{
-		static unsigned AddEvent()
-		{
-			static unsigned count = 0;
-			return ++count;
-		}
-
 		enum MouseKey
 		{
 			MOUSE_LEFT = 0,
