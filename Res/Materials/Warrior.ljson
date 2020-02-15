@@ -19,17 +19,17 @@
 		{
 			name = "ambientColor",
 			type = "vector4",
-			value = [ 0.0, 0.0, 0.0, 16 ]
+			value = [ 0.1, 0.1, 0.1, 16 ]
 		},
 		{
 			name = "diffuseColor",
 			type = "vector4",
-			value = [ 1.0, 1.0, 1.0, 255 ]
+			value = [ 0.88, 0.88, 0.88, 255 ]
 		},
 		{
 			name = "specularColor",
 			type = "vector4",
-			value = [ 0.1, 0.1, 0.1, 16 ]
+			value = [ 0.02, 0.02, 0.02, 16 ]
 		},
 		{
 			name = "emissivePower",

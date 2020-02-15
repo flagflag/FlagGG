@@ -97,6 +97,8 @@ struct PixelInput
         float3 eyeDir = cameraPos - input.worldPos;
         float3 specColor = specularColor.rgb * pow(saturate(dot(eyeDir, reflectDir)), emissivePower);
 
+        float3 ambiColor = ambientColor.rgb * textureColor;
+
     #ifdef SHADOW
         float bias = 0.001;
         float2 shadowTex;
@@ -113,10 +115,11 @@ struct PixelInput
         }
     #endif
 
-        float ambiPower = ambientColor.a / 255.0;
-        float diffPower = diffuseColor.a / 255.0;
-        float specPower = specularColor.a / 255.0;
-        float4 color = float4(ambientColor.rgb * ambiPower + diffColor * diffPower + specColor * specPower, 1.0);
+        // float ambiPower = ambientColor.a / 255.0;
+        // float diffPower = diffuseColor.a / 255.0;
+        // float specPower = specularColor.a / 255.0;
+        // float4 color = float4(ambientColor.rgb * ambiPower + diffColor * diffPower + specColor * specPower, 1.0);
+        float4 color = float4(ambiColor + diffColor + specColor, 1.0);
 
     // 溶解特效
     #ifdef DISSOLVE
