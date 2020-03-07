@@ -15,6 +15,7 @@
 using namespace FlagGG::Container;
 using namespace FlagGG::Core;
 using namespace FlagGG::AsyncFrame;
+using namespace FlagGG::Math;
 
 namespace LuaGameEngine
 {
@@ -37,6 +38,8 @@ protected:
 	void HandleUserLogin(Int64 userId);
 	void HandleStartGame(const char* gameName);
 	void HandleStopGame(const char* gameName);
+	void HandleStartMove(Int64 userId, Quaternion direction);
+	void HandleStopMove(Int64 userId);
 
 private:
 	FlagGG::Config::LJSONValue commandParam_;

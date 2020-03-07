@@ -17,6 +17,31 @@ namespace LuaGameEngine
 
 	}
 
+	void Unit::Update()
+	{
+		for (auto it = movements_.Begin(); it != movements_.End();)
+		{
+			if (!(*it)->IsValid())
+			{
+				(*it)->ReleaseRef();
+				it = movements_.Erase(it);
+			}
+			else
+				++it;
+		}
+
+		for (auto it = buffs_.Begin(); it != buffs_.End(); ++it)
+		{
+			if (!(*it)->IsValid())
+			{
+				(*it)->ReleaseRef();
+				it = buffs_.Erase(it);
+			}
+			else
+				++it;
+		}
+	}
+
 	void Unit::SetName(const FlagGG::Container::String& name)
 	{
 		name_ = name;
@@ -42,19 +67,41 @@ namespace LuaGameEngine
 		status_ = status;
 	}
 
+	void Unit::AddMovement(Movement* movement)
+	{
+		if (!movements_.Contains(movement))
+		{
+			movements_.Push(movement);
+			movement->AddRef();
+		}
+	}
+
+	void Unit::RemoveMovement(Movement* movement)
+	{
+		auto it = movements_.Find(movement);
+		if (it != movements_.End())
+		{
+			movements_.Erase(it);
+			movement->ReleaseRef();
+		}
+	}
+
 	int Unit::Create(lua_State* L)
 	{
 		lua_newtable(L);
 		lua_getmetatable(L, 1);
 		lua_setmetatable(L, -2);		
 		Engine* engine = GetEngine(L);
-		SetEntry(L, -1, engine->CreateObject<Unit>());
+		Unit* unit = engine->CreateObject<Unit>();
+		unit->AddRef();
+		SetEntry(L, -1, unit);
 		return 1;
 	}
 
 	int Unit::Destroy(lua_State* L)
 	{
 		Unit* unit = GetEntry<Unit>(L, 1);
+		unit->ReleaseRef();
 		Engine* engine = GetEngine(L);
 		engine->DestroyObject(unit);
 		return 0;
@@ -115,7 +162,7 @@ namespace LuaGameEngine
 	int Unit::SetRotation(lua_State* L)
 	{
 		Unit* unit = GetEntry<Unit>(L, 1);
-		unit->SetRotation(FlagGG::Math::Quaternion(lua_tonumber(L, 1), lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4)));
+		unit->SetRotation(FlagGG::Math::Quaternion(lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4), lua_tonumber(L, 5)));
 		return 0;
 	}
 
@@ -123,6 +170,22 @@ namespace LuaGameEngine
 	{
 		Unit* unit = GetEntry<Unit>(L, 1);
 		unit->SetScale(FlagGG::Math::Vector3(lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4)));
+		return 0;
+	}
+
+	int Unit::AddMovement(lua_State* L)
+	{
+		Unit* unit = GetEntry<Unit>(L, 1);
+		Movement* movement = GetEntry<Movement>(L, 2);
+		unit->AddMovement(movement);
+		return 0;
+	}
+
+	int Unit::RemoveMovement(lua_State* L)
+	{
+		Unit* unit = GetEntry<Unit>(L, 1);
+		Movement* movement = GetEntry<Movement>(L, 2);
+		unit->RemoveMovement(movement);
 		return 0;
 	}
 }

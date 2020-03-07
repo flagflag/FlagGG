@@ -21,6 +21,8 @@ public:
 
 	void DestroyUnit(Int64 unitId);
 
+	Unit* GetUnit(Int64 unitId);
+
 	Terrain* CreateTerrain();
 
 	void DestroyTerrain();

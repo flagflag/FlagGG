@@ -31,6 +31,10 @@ protected:
 
 	void HandleUnitDisappear(::google::protobuf::Message* message);
 
+	void HandleStartMove(::google::protobuf::Message* message);
+
+	void HandleStopMove(::google::protobuf::Message* message);
+
 private:
 	Context* context_;
 

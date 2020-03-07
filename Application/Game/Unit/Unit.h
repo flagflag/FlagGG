@@ -4,6 +4,7 @@
 #include <Scene/Node.h>
 #include <Graphics/Material.h>
 #include <Container/Str.h>
+#include <Container/List.h>
 
 using namespace FlagGG::Core;
 using namespace FlagGG::Math;

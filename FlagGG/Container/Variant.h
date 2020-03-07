@@ -129,13 +129,25 @@ namespace FlagGG
 			}
 
 			template < class T >
-			inline bool Is()
+			inline bool Is() const
 			{
 				return id_ == std::type_index(typeid(T));
 			}
 
 			template < class T >
 			typename std::decay<T>::type& Get()
+			{
+				using U = typename std::decay<T>::type;
+				if (!Is<U>())
+				{
+					FLAGGG_LOG_ERROR("Type[{}] is not same to current type", typeid(U).name());
+					throw std::bad_cast();
+				}
+				return *(U*)&data_;
+			}
+
+			template < class T >
+			typename const std::decay<T>::type& Get() const
 			{
 				using U = typename std::decay<T>::type;
 				if (!Is<U>())
@@ -218,6 +230,7 @@ namespace FlagGG
 			unsigned long long,
 			float,
 			double,
+			void*,
 			String,
 			Math::Vector2,
 			Math::Vector3,
@@ -230,6 +243,6 @@ namespace FlagGG
 			Math::BoundingBox,
 			Math::Ray,
 			Math::Color
-		> DefaultVariant;
+		> FVariant;
 	}
 }

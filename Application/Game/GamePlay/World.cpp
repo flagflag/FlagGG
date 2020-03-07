@@ -63,6 +63,14 @@ void World::DestroyUnit(Int64 unitId)
 	context_->SendEvent<GameEvent::DESTROY_UNIT_HANDLER>(GameEvent::DESTROY_UNIT, currentUnit);
 }
 
+Unit* World::GetUnit(Int64 unitId)
+{
+	auto it = activeUnits_.Find(unitId);
+	if (it == activeUnits_.End())
+		return nullptr;
+	return it->second_;
+}
+
 Terrain* World::CreateTerrain()
 {
 	return nullptr;

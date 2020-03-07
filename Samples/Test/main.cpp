@@ -67,19 +67,22 @@ void Run()
 
 void Run2()
 {
-	FlagGG::Container::DefaultVariant v1(100);
-	FlagGG::Container::DefaultVariant v2 = 110u;
-	FlagGG::Container::DefaultVariant v3(FlagGG::Container::String("2333"));
-	FlagGG::Container::DefaultVariant v4(0.1f);
+	FlagGG::Container::FVariant v1(100);
+	FlagGG::Container::FVariant v2 = 110u;
+	FlagGG::Container::FVariant v3(FlagGG::Container::String("2333"));
+	FlagGG::Container::FVariant v4(0.1f);
 
 	printf("%d %u %s %f\n", v1.Get<int>(), v2.Get<unsigned>(), v3.Get<FlagGG::Container::String>().CString(), v4.Get<float>());
 
-	FlagGG::Container::DefaultVariant v5(v1);
-	FlagGG::Container::DefaultVariant v6 = v2;
-	FlagGG::Container::DefaultVariant v7;
-	FlagGG::Container::DefaultVariant v8;
+	const FlagGG::Container::FVariant& cv3 = v3;
+	FlagGG::Container::String t = cv3.Get<FlagGG::Container::String>();
+
+	FlagGG::Container::FVariant v5(v1);
+	FlagGG::Container::FVariant v6 = v2;
+	FlagGG::Container::FVariant v7;
+	FlagGG::Container::FVariant v8;
 	v7 = v3;
-	v8 = FlagGG::Container::DefaultVariant(0.1f);
+	v8 = FlagGG::Container::FVariant(0.1f);
 
 	printf("%d %u %s %f\n", v5.Get<int>(), v6.Get<unsigned>(), v7.Get<FlagGG::Container::String>().CString(), v8.Get<float>());
 
@@ -90,7 +93,7 @@ void Run2()
 
 	printf("%f %s %u %d\n", v1.Get<float>(), v2.Get<FlagGG::Container::String>().CString(), v3.Get<unsigned>(), v4.Get<int>());
 
-	FlagGG::Container::DefaultVariant test;
+	FlagGG::Container::FVariant test;
 	test = FlagGG::Math::Vector2(100, 100);
 
 	printf("(%f, %f)\n", test.Get<FlagGG::Math::Vector2>().x_, test.Get<FlagGG::Math::Vector2>().y_);

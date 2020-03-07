@@ -26,6 +26,8 @@ protected:
 
 	void HandleRequestLogin(FlagGG::IOFrame::Context::IOContextPtr context, const std::string& messageBody);
 	void HandleRequestStartGame(FlagGG::IOFrame::Context::IOContextPtr context, const std::string& messageBody);
+	void HandleRequestStartMove(FlagGG::IOFrame::Context::IOContextPtr context, const std::string& messageBody);
+	void HandleRequestStopMove(FlagGG::IOFrame::Context::IOContextPtr context, const std::string& messageBody);
 
 private:
 	Context* context_;

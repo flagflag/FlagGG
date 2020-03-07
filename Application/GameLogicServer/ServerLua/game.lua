@@ -18,8 +18,17 @@ function game.on_pause()
     event.call('on_pause')
 end
 
+function game.on_player_into(user_id)
+    event.call('on_player_into', user_id)
+end
+
+function game.on_player_leave(user_id)
+    event.call('on_player_leave', user_id)
+end
+
 local main_hero = nil
 local monsters = {}
+local players = {}
 
 local function start()
     print ('game start ==> create main hero.')
@@ -29,6 +38,11 @@ local function start()
     main_hero:set_position(1.0, 0.0, 1.0)
     main_hero:set_rotation(0.0, 0.0, 0.0, 1.0)
     main_hero:set_scale(1.0, 1.0, 1.0)
+    
+    local player = players[0]
+    if player then
+        player:set_control_unit(main_hero)
+    end
 
     -- 随机生成十个小怪
     for i = 0, 10 do
@@ -53,8 +67,25 @@ local function pause()
 
 end
 
+local add_player(user_id)
+    local player = engine.player:create(user_id)
+    players[user_id] = player
+    return player
+end
+
+local remove_player(user_id)
+    players[user_id] = nil
+end
+
+local get_player(usr_id)
+    return players[user_id]
+end
+
 return {
     start = start,
     stop = stop,
     pause = pause,
+    add_player = add_player,
+    remove_player = remove_player,
+    get_player = get_player,
 }

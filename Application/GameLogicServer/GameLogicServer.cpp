@@ -24,6 +24,8 @@ void GameLogicServer::Start()
 	context_->RegisterEvent(EVENT_HANDLER(GameEvent::USER_LOGIN, GameLogicServer::HandleUserLogin, this));
 	context_->RegisterEvent(EVENT_HANDLER(GameEvent::START_GAME, GameLogicServer::HandleStartGame, this));
 	context_->RegisterEvent(EVENT_HANDLER(GameEvent::STOP_GAME, GameLogicServer::HandleStopGame, this));
+	context_->RegisterEvent(EVENT_HANDLER(GameEvent::START_MOVE, GameLogicServer::HandleStartMove, this));
+	context_->RegisterEvent(EVENT_HANDLER(GameEvent::STOP_MOVE, GameLogicServer::HandleStopMove, this));
 	context_->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, GameLogicServer::Update, this));
 
 	FLAGGG_LOG_INFO("GameLogicServer start.");
@@ -89,4 +91,14 @@ void GameLogicServer::HandleStartGame(const char* gameName)
 void GameLogicServer::HandleStopGame(const char* gameName)
 {
 	engine_->OnStop();
+}
+
+void GameLogicServer::HandleStartMove(Int64 userId, Quaternion direction)
+{
+	engine_->GetControler()->StartDirectionMove(userId, direction * Vector3::FORWARD);
+}
+
+void GameLogicServer::HandleStopMove(Int64 userId)
+{
+	engine_->GetControler()->StopDirectionMove(userId);
 }

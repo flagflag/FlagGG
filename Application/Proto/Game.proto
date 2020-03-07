@@ -12,17 +12,22 @@ enum MessageType
 	MessageType_RequestStopGame = 4;
 	MessageType_ResponseStopGame = 5;
 
-	MessageType_AppearUnit = 6;
-	MessageType_DisappearUnit = 7;
+	MessageType_RequestStartMove = 6;
+	MessageType_ResponseStartMove = 7;
+	MessageType_RequestStopMove = 8;
+	MessageType_ResponseStopMove = 9;
 
-	MessageType_SyncUnitTansform = 8;
-	MessageType_SyncUnitStatus = 9;
-	MessageType_SyncUnitAttribute = 10;
-	MessageType_SyncUnitMovement = 11;
+	MessageType_AppearUnit = 10;
+	MessageType_DisappearUnit = 11;
 
-	MessageType_UnitCastSpell = 12;
-	MessageType_UnitAttachBuff = 13;
-	MessageType_UnitDettachBuff = 14;
+	MessageType_SyncUnitTansform = 12;
+	MessageType_SyncUnitStatus = 13;
+	MessageType_SyncUnitAttribute = 14;
+	MessageType_SyncUnitMovement = 15;
+
+	MessageType_UnitCastSpell = 16;
+	MessageType_UnitAttachBuff = 17;
+	MessageType_UnitDettachBuff = 18;
 }
 
 message MessageHeader
@@ -133,6 +138,34 @@ message BuffInfo
 message BuffInfoList
 {
 	repeated BuffInfo buff_infos = 1;
+}
+
+enum MoveResult
+{
+	MoveResult_Success = 0;
+	MoveResult_Failed = 1;
+}
+
+message RequestStartMove
+{
+	required int64 user_id = 1;
+	required Quaternion rotation = 2;
+}
+
+message ResponseStartMove
+{
+	required int32 result = 1;
+	required Quaternion rotation = 2;
+}
+
+message RequestStopMove
+{
+	required int64 user_id = 1;
+}
+
+message ResponseStopMove
+{
+	required int32 result = 1;
 }
 
 message NotifyUnitAppear

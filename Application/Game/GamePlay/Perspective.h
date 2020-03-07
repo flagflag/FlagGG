@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GamePlay/GamePlayBase.h"
+
 #include <Container/Ptr.h>
 #include <Graphics/Window.h>
 #include <Scene/Camera.h>
@@ -23,6 +25,10 @@ public:
 	// 设置控制对象
 	virtual void SetNode(Node* node) = 0;
 	virtual Node* GetNode() const = 0;
+
+	// 设置同步模式
+	virtual void SetSyncMode(SyncMode syncMode) = 0;
+	virtual SyncMode GetSyncMode() const = 0;
 
 	// 重置视角
 	virtual void Reset() = 0;

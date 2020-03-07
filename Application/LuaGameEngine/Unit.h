@@ -3,6 +3,7 @@
 #include <Container/Str.h>
 #include <Container/Ptr.h>
 #include <Container/Vector.h>
+#include <Container/List.h>
 #include <Math/Vector3.h>
 #include <Math/Quaternion.h>
 #include <lua.hpp>
@@ -47,6 +48,8 @@ namespace LuaGameEngine
 
 		~Unit() override;
 
+		void Update();
+
 		Int64 GetId() const { return unitId_; }
 
 		const FlagGG::Container::String& GetName() const { return name_; }
@@ -61,7 +64,7 @@ namespace LuaGameEngine
 
 		const Attribute& GetAttribute() const { return attribute_; }
 
-		Movement* GetCurrentMovement() const { return movement_; }
+		Movement* GetCurrentMovement() const { return *movements_.Begin(); }
 
 		Spell* GetCurrentSpell() const { return spell_; }
 
@@ -79,6 +82,9 @@ namespace LuaGameEngine
 
 		void SetStatus(Int32 status);
 
+		void AddMovement(Movement* movement);
+
+		void RemoveMovement(Movement* movement);
 
 		static int Create(lua_State* L);
 		static int Destroy(lua_State* L);
@@ -90,6 +96,8 @@ namespace LuaGameEngine
 		static int SetPosition(lua_State* L);
 		static int SetRotation(lua_State* L);
 		static int SetScale(lua_State* L);
+		static int AddMovement(lua_State* L);
+		static int RemoveMovement(lua_State* L);
 
 	private:
 		static Int64 unitIdCount_;
@@ -104,9 +112,9 @@ namespace LuaGameEngine
 		Int32 status_;
 		Attribute attribute_;
 
-		FlagGG::Container::SharedPtr<Movement> movement_;
-		FlagGG::Container::SharedPtr<Spell> spell_;
-		FlagGG::Container::Vector<FlagGG::Container::SharedPtr<Buff>> buffs_;
+		FlagGG::Container::List<Movement*> movements_;
+		Spell* spell_;
+		FlagGG::Container::PODVector<Buff*> buffs_;
 	};
 }
 

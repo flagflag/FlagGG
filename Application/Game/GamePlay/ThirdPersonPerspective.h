@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Perspective.h"
+#include "Network/NetworkAdaptor.h"
 
 #include <Core/Context.h>
 #include <Math/Vector2.h>
@@ -15,27 +16,32 @@ class ThirdPersonPerspective : public Perspective
 public:
 	explicit ThirdPersonPerspective(Context* context);
 
-	// ÉèÖÃÏà»ú
+	// è®¾ç½®ç›¸æœº
 	void SetCamera(Camera* camera) override;
 	Camera* GetCamera() const override;
 
-	// ÉèÖÃËùÊô´°¿Ú
+	// è®¾ç½®æ‰€å±çª—å£
 	void SetWindow(Window* window) override;
 	Window* GetWindow() const override;
 
-	// ÉèÖÃ¿ØÖÆ¶ÔÏó
+	// è®¾ç½®æ§åˆ¶å¯¹è±¡
 	void SetNode(Node* node) override;
 	Node* GetNode() const override;
 
-	// ÖØÖÃÊÓ½Ç
+	// è®¾ç½®åŒæ­¥æ¨¡å¼
+	void SetSyncMode(SyncMode syncMode) override;
+	SyncMode GetSyncMode() const override;
+
+	// é‡ç½®è§†è§’
 	void Reset() override;
 
-	// Ëø¶¨ÊÓ½Ç
+	// é”å®šè§†è§’
 	void Lock() override;
 
-	// ½âËøÊÓ½Ç
+	// è§£é”è§†è§’
 	void Unlock() override;
 
+protected:
 	void OnMouseMove(KeyState* keyState, const Vector2& delta);
 	void HandleUpdate(float timeStep);
 
@@ -43,12 +49,21 @@ private:
 	WeakPtr<Camera> camera_;
 	WeakPtr<Window> window_;
 	WeakPtr<Node> node_;
-	// ¿ØÖÆ·½ÏòºÍ×óÓÒÊÓ½ÇµÄÏà»ú
+	// æ§åˆ¶æ–¹å‘å’Œå·¦å³è§†è§’çš„ç›¸æœº
 	SharedPtr<Camera> controlCamera_;
 	SharedPtr<Node> lookupNode_;
-	// ¿ØÖÆÉÏÏÂÊÓ½ÇµÄÏà»ú
+	// æ§åˆ¶ä¸Šä¸‹è§†è§’çš„ç›¸æœº
 	SharedPtr<Camera> lookupCamera_;
 
-	// ¾µÍ·Ëø±ê¼Ç
+	// é•œå¤´é”æ ‡è®°
 	bool isLocked_;
+
+	WeakPtr<Network> network_;
+
+	// åŒæ­¥æ¨¡å¼
+	SyncMode syncMode_;
+	int dir_[4];
+	Quaternion rotation_[2][2][2][2];
+	Quaternion stop_;
+	Quaternion currentRot_;
 };

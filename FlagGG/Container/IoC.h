@@ -2,6 +2,7 @@
 
 #include "Container/HashMap.h"
 #include "Container/StringHash.h"
+#include "Container/Ptr.h"
 
 #include <functional>
 

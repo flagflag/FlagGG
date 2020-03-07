@@ -39,16 +39,17 @@ void GameApplication::Start()
 	OpenLuaVM();
 	CreateNetwork();
 
-	perspective_ = new ThirdPersonPerspective(context_);
-	perspective_->SetCamera(camera_);
-	perspective_->SetWindow(window_);
-	perspective_->SetNode(mainHeroControler_);
-	perspective_->Reset();
-
 	context_->RegisterVariable<LuaVM>(luaVM_, "LuaVM");
 	context_->RegisterVariable<Network>(tcpNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_TCP]);
 	context_->RegisterVariable<Network>(udpNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_UDP]);
 	context_->RegisterVariable<Network>(webNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_WEB]);
+
+	perspective_ = new ThirdPersonPerspective(context_);
+	perspective_->SetSyncMode(/*SyncMode_State*/SyncMode_Local);
+	perspective_->SetCamera(camera_);
+	perspective_->SetWindow(window_);
+	perspective_->SetNode(mainHero_);
+	perspective_->Reset();
 
 	gameplay_ = new GamePlayOnline(context_);
 	gameplay_->Initialize(scene_);
@@ -156,22 +157,22 @@ void GameApplication::CreateScene()
 	reflectionCamera_->SetViewMask(0xff00);
 	reflectionCamera_->SetUseReflection(true);
 
-	mainHeroControler_ = new Node();
-	mainHeroControler_->SetName("MainHeroControler");
-	scene_->AddChild(mainHeroControler_);
-	//mainHero_ = new CEUnit(context_);
+	mainHero_ = new CEUnit(context_);
 	//mainHero_->Load("Unit/Monster.ljson");
 	//mainHero_->PlayAnimation("Animation/Monster_Idle.ani", true);
 	//mainHero_->SetPosition(Vector3(0, -2, 10));
-	//mainHeroControler_->AddChild(mainHero_);
+	mainHero_->SetName("MainHero");
+	scene_->AddChild(mainHero_);
 
-	//dissolveHero_ = new Unit(context_);
-	//dissolveHero_->Load("Unit/DissolveHero.ljson");
-	//dissolveHero_->SetPosition(Vector3(0, 0, 10));
-	//dissolveHero_->SetRotation(Quaternion(180, Vector3(0.0f, 1.0f, 0.0f)));
-	//dissolveHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
-	//dissolveHero_->SetName("DissolveHero");
-	//scene_->AddChild(dissolveHero_);
+	dissolveHero_ = new CEUnit(context_);
+	// dissolveHero_->Load("Unit/DissolveHero.ljson");
+	dissolveHero_->Load("Unit/MainHero.ljson");
+	dissolveHero_->SetPosition(Vector3(0, 0, 10));
+	dissolveHero_->SetRotation(Quaternion(180, Vector3(0.0f, 1.0f, 0.0f)));
+	// dissolveHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
+	dissolveHero_->PlayAnimation("Animation/Warrior_Idle.ani", true);
+	dissolveHero_->SetName("DissolveHero");
+	scene_->AddChild(dissolveHero_);
 
 	terrain_ = new Terrain(context_);
 	terrain_->Create(64);

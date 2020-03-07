@@ -6,6 +6,8 @@
 #include "Container/Ptr.h"
 #include "Container/Str.h"
 #include "Container/StringHash.h"
+#include "Container/Variant.h"
+#include "Container/HashMap.h"
 #include "Graphics/RenderContext.h"
 #include "Math/Vector3.h"
 #include "Math/Quaternion.h"
@@ -35,6 +37,10 @@ namespace FlagGG
 			virtual void Update(const NodeUpdateContext& updateContext);
 
 			virtual void Render(Container::PODVector<Graphics::RenderContext*>& renderContexts);
+
+			void SetAttribute(const Container::String& key, Container::FVariant&& value);
+
+			const Container::FVariant& GetAttribute(const Container::String& key) const;
 
 			template < class ComponentType, class ... Args >
 			ComponentType* CreateComponent(Args&& ... args)
@@ -143,6 +149,9 @@ namespace FlagGG
 			Node* parent_;
 
 			bool isTranspent_;
+
+			Container::HashMap<Container::String, Container::FVariant> attribute_;
+			static Container::FVariant DEFAULT_VALUE;
 		};
 	}
 }

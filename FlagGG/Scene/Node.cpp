@@ -46,6 +46,21 @@ namespace FlagGG
 			}
 		}
 
+		void Node::SetAttribute(const Container::String& key, Container::FVariant&& value)
+		{
+			attribute_[key] = std::forward<Container::FVariant>(value);
+		}
+
+		Container::FVariant Node::DEFAULT_VALUE;
+
+		const Container::FVariant& Node::GetAttribute(const Container::String& key) const
+		{
+			auto it = attribute_.Find(key);
+			if (it == attribute_.End())
+				return DEFAULT_VALUE;
+			return it->second_;
+		}
+
 		void Node::AddComponent(Component* component)
 		{
 			Container::SharedPtr<Component> sharedComponent(component);

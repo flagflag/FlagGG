@@ -4,6 +4,7 @@
 
 #include <Core/Forwarder.h>
 #include <AsyncFrame/Mutex.h>
+#include <Math/Quaternion.h>
 
 using namespace FlagGG::Core;
 using namespace FlagGG::AsyncFrame;
@@ -60,6 +61,14 @@ void UDPNetwork::MessageRecived(FlagGG::IOFrame::Context::IOContextPtr context, 
 	case Proto::Game::MessageType_RequestStartGame:
 		HandleRequestStartGame(context, header.message_body());
 		break;
+
+	case Proto::Game::MessageType_RequestStartMove:
+		HandleRequestStartMove(context, header.message_body());
+		break;
+
+	case Proto::Game::MessageType_RequestStopMove:
+		HandleRequestStopMove(context, header.message_body());
+		break;
 	}
 }
 
@@ -114,5 +123,34 @@ void UDPNetwork::HandleRequestStartGame(FlagGG::IOFrame::Context::IOContextPtr c
 	forwarder->Forward([&, gameName]
 	{
 		context_->SendEvent<GameEvent::START_GAME_HANDLER>(GameEvent::START_GAME, gameName.c_str());
+	});
+}
+
+void UDPNetwork::HandleRequestStartMove(FlagGG::IOFrame::Context::IOContextPtr context, const std::string& messageBody)
+{
+	Proto::Game::RequestStartMove request;
+	request.ParseFromString(messageBody);
+
+	Int64 userId = request.user_id();
+	FlagGG::Math::Quaternion direction(request.rotation().w(), request.rotation().x(), request.rotation().y(), request.rotation().z());
+
+	auto* forwarder = context_->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
+	forwarder->Forward([&, userId]
+	{
+		context_->SendEvent<GameEvent::START_MOVE_HANDLER>(GameEvent::START_MOVE, userId, direction);
+	});
+}
+
+void UDPNetwork::HandleRequestStopMove(FlagGG::IOFrame::Context::IOContextPtr context, const std::string& messageBody)
+{
+	Proto::Game::RequestStopMove request;
+	request.ParseFromString(messageBody);
+
+	Int64 userId = request.user_id();
+
+	auto* forwarder = context_->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
+	forwarder->Forward([&, userId]
+	{
+		context_->SendEvent<GameEvent::STOP_MOVE_HANDLER>(GameEvent::STOP_MOVE, userId);
 	});
 }

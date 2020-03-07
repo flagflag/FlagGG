@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "Engine.h"
+#include "InternalEvent.h"
 
 namespace LuaGameEngine
 {
@@ -19,10 +20,27 @@ namespace LuaGameEngine
 		return lightuserdata;
 	}
 
+	void* GetNamedEntryImpl(lua_State* L, int idx, const char* name)
+	{
+		lua_pushstring(L, name);
+		lua_rawget(L, idx);
+		void* lightuserdata = lua_touserdata(L, -1);
+		lua_pop(L, 1);
+		return lightuserdata;
+	}
+
 	Engine* GetEngine(lua_State* L)
 	{
 		lua_getglobal(L, "context");
 		Engine* engine = (Engine*)lua_touserdata(L, -1);
+		lua_pop(L, 1);
+		return engine;
+	}
+
+	InternalEvent* GetInternalEvent(lua_State* L)
+	{
+		lua_getglobal(L, "context");
+		InternalEvent* engine = (InternalEvent*)lua_touserdata(L, -1);
 		lua_pop(L, 1);
 		return engine;
 	}

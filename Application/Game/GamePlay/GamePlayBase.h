@@ -7,6 +7,12 @@
 using namespace FlagGG::Container;
 using namespace FlagGG::Lua;
 
+enum SyncMode
+{
+	SyncMode_Local = 0, // 本地同步，单机游戏
+	SyncMode_State = 1, // 状态同步，联网游戏
+};
+
 class GamePlayBase : public RefCounted
 {
 public:
