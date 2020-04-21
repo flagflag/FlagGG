@@ -10,6 +10,14 @@
 
 namespace FlagGG
 {
+	namespace Core
+	{
+		class Profiler;
+	}
+}
+
+namespace FlagGG
+{
 	namespace Utility
 	{
 		namespace SystemHelper
@@ -23,6 +31,8 @@ namespace FlagGG
 
 			// 单位：毫秒
 			FlagGG_API UInt32 Tick();
+
+			FlagGG_API UInt64 HiresTick();
 
 			FlagGG_API bool ParseCommand(const char** argv, UInt32 argc, Config::LJSONValue& result);
 
@@ -47,6 +57,29 @@ namespace FlagGG
 
 			private:
 				UInt32 startTime_;
+			};
+
+			class FlagGG_API HiresTimer
+			{
+				friend class FlagGG::Core::Profiler;
+
+			public:
+				HiresTimer();
+
+				UInt64 GetUSec(bool reset);
+				void Reset();
+
+				static void InitSupported();
+
+				static bool IsSupported() { return supported; }
+
+				static UInt64 GetFrequency() { return frequency; }
+
+			private:
+				UInt64 startTime_{};
+
+				static bool supported;
+				static UInt64 frequency;
 			};
 		}
 	}

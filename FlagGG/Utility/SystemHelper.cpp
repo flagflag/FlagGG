@@ -96,6 +96,24 @@ namespace FlagGG
 #endif
 			}
 
+			UInt64 HiresTick()
+			{
+#ifdef _WIN32
+				if (HiresTimer::IsSupported())
+				{
+					LARGE_INTEGER counter;
+					QueryPerformanceCounter(&counter);
+					return counter.QuadPart;
+				}
+				else
+					return timeGetTime();
+#else
+				struct timeval time {};
+				gettimeofday(&time, nullptr);
+				return time.tv_sec * 1000000LL + time.tv_usec;
+#endif
+			}
+
 			bool ParseCommand(const char** argv, UInt32 argc, Config::LJSONValue& result)
 			{
 				for (UInt32 i = 0; i < argc; ++i)
@@ -195,6 +213,48 @@ namespace FlagGG
 			void Timer::Reset()
 			{
 				startTime_ = Tick();
+			}
+
+			bool HiresTimer::supported(false);
+			UInt64 HiresTimer::frequency(1000);
+
+			void HiresTimer::InitSupported()
+			{
+#ifdef _WIN32
+				LARGE_INTEGER frequency;
+				if (QueryPerformanceFrequency(&frequency))
+				{
+					HiresTimer::frequency = frequency.QuadPart;
+					HiresTimer::supported = true;
+				}
+#else
+				HiresTimer::frequency = 1000000;
+				HiresTimer::supported = true;
+#endif
+			}
+
+			HiresTimer::HiresTimer()
+			{
+				Reset();
+			}
+
+			UInt64 HiresTimer::GetUSec(bool reset)
+			{
+				UInt64 currentTime = HiresTick();
+				UInt64 elapsedTime = currentTime - startTime_;
+
+				if (elapsedTime < 0)
+					elapsedTime = 0;
+
+				if (reset)
+					startTime_ = currentTime;
+
+				return (elapsedTime * 1000000LL) / frequency;
+			}
+
+			void HiresTimer::Reset()
+			{
+				startTime_ = HiresTick();
 			}
 		}
 	}
