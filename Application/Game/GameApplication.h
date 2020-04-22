@@ -74,6 +74,7 @@ private:
 	SharedPtr<Unit> dissolveHero_;
 	SharedPtr<Terrain> terrain_;
 	SharedPtr<Unit> water_;
+	SharedPtr<Unit> waterDown_;
 	SharedPtr<Unit> skybox_;
 #endif
 

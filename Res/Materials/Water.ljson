@@ -1,16 +1,27 @@
 {
 	vsshader = 
 	{
-		path = "Shader/Water.hlsl"
+		path = "Shader/Water.hlsl",
+		defines = [ "RAIN_DOT" ]
 	},
 	psshader = 
 	{
-		path = "Shader/Water.hlsl"
+		path = "Shader/Water.hlsl",
+		defines = [ "RAIN_DOT" ]
 	},
-	texture =
+	textures =
 	{
-		type = "texture2d", //texturecube => 3d
-		path = "Textures/WaterNoise.dds"
+		"0" =
+		{
+			type = "texture2d", //texturecube => 3d
+			path = "Textures/WaterNoise.dds"
+			// path = "Textures/Liquid_norma.TGA"
+		},
+		"2" =
+		{
+			type = "texture2d",
+			path = "Textures/waterLight.png"
+		}
 	},
 	shader_parameters = 
 	[

@@ -164,22 +164,22 @@ void GameApplication::CreateScene()
 	mainHero_->SetName("MainHero");
 	scene_->AddChild(mainHero_);
 
-	dissolveHero_ = new CEUnit(context_);
-	// dissolveHero_->Load("Unit/DissolveHero.ljson");
-	dissolveHero_->Load("Unit/MainHero.ljson");
-	dissolveHero_->SetPosition(Vector3(0, 0, 10));
-	dissolveHero_->SetRotation(Quaternion(180, Vector3(0.0f, 1.0f, 0.0f)));
-	// dissolveHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
-	dissolveHero_->PlayAnimation("Animation/Warrior_Idle.ani", true);
-	dissolveHero_->SetName("DissolveHero");
-	scene_->AddChild(dissolveHero_);
+	//dissolveHero_ = new CEUnit(context_);
+	//// dissolveHero_->Load("Unit/DissolveHero.ljson");
+	//dissolveHero_->Load("Unit/MainHero.ljson");
+	//dissolveHero_->SetPosition(Vector3(0, 0, 10));
+	//dissolveHero_->SetRotation(Quaternion(180, Vector3(0.0f, 1.0f, 0.0f)));
+	//// dissolveHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
+	//dissolveHero_->PlayAnimation("Animation/Warrior_Idle.ani", true);
+	//dissolveHero_->SetName("DissolveHero");
+	//scene_->AddChild(dissolveHero_);
 
-	terrain_ = new Terrain(context_);
-	terrain_->Create(64);
-	terrain_->SetScale(Vector3(1, 0.4, 1));
-	terrain_->SetPosition(Vector3(-80, -5, 0));
-	terrain_->SetName("Terrain");
-	scene_->AddChild(terrain_);
+	//terrain_ = new Terrain(context_);
+	//terrain_->Create(64);
+	//terrain_->SetScale(Vector3(1, 0.4, 1));
+	//terrain_->SetPosition(Vector3(-80, -5, 0));
+	//terrain_->SetName("Terrain");
+	//scene_->AddChild(terrain_);
 
 #if 0
 	auto* lightNode = new Unit(context_);
@@ -203,10 +203,21 @@ void GameApplication::CreateScene()
 	skybox_->SetTranspent(true);
 	scene_->AddChild(skybox_);
 
+	waterDown_ = new Unit(context_);
+	waterDown_->Load("Unit/WaterDown.ljson");
+	waterDown_->SetPosition(Vector3(0, -5, 10));
+	waterDown_->SetScale(Vector3(10, 10, 10));
+	waterDown_->SetName("WaterDown");
+	waterDown_->SetTranspent(true);
+	auto* comp = waterDown_->GetComponent<StaticMeshComponent>();
+	if (comp)
+		comp->SetViewMask(0xff0000); // 不进入水反射
+	scene_->AddChild(waterDown_);
+
 	water_ = new Unit(context_);
 	water_->Load("Unit/Water.ljson");
 	water_->SetPosition(Vector3(0, -4, 10));
-	water_->SetScale(Vector3(1000, 1000, 1000));
+	water_->SetScale(Vector3(10, 10, 10));
 	water_->SetName("Water");
 	scene_->AddChild(water_);
 

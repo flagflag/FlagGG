@@ -1,0 +1,39 @@
+{
+	vsshader = 
+	{
+		path = "Shader/Model.hlsl",
+		defines =  [ "STATIC" ]
+	},
+	psshader = 
+	{
+		path = "Shader/Model.hlsl"
+	},
+	texture =
+	{
+		type = "texture2d", //texturecube => 3d
+		path = "Textures/summersky_b.jpg"
+	},
+    shader_parameters = 
+	[
+		{
+			name = "ambientColor",
+			type = "vector4",
+			value = [ 0.0, 0.0, 0.0, 16 ]
+		},
+		{
+			name = "diffuseColor",
+			type = "vector4",
+			value = [ 1.0, 1.0, 1.0, 255 ]
+		},
+		{
+			name = "specularColor",
+			type = "vector4",
+			value = [ 0.1, 0.1, 0.1, 16 ]
+		},
+		{
+			name = "emissivePower",
+			type = "float",
+			value = 2
+		}
+	]
+}
