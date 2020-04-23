@@ -15,7 +15,7 @@ namespace FlagGG
 
 		class FlagGG_API Component : public Core::Object
 		{
-			OBJECT_OVERRIDE(Component);
+			OBJECT_OVERRIDE(Component, Object);
 		public:
 			~Component() override;
 

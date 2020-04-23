@@ -12,7 +12,7 @@ namespace FlagGG
 	{
 		class FlagGG_API Light : public Camera
 		{
-			OBJECT_OVERRIDE(Light);
+			OBJECT_OVERRIDE(Light, Camera);
 		public:
 			Light();
 		};

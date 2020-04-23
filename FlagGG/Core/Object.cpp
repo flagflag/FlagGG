@@ -4,6 +4,6 @@ namespace FlagGG
 {
 	namespace Core
 	{
-
+		Object::~Object() = default;
 	}
 }

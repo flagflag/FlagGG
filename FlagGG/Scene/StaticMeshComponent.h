@@ -12,7 +12,7 @@ namespace FlagGG
 	{
 		class FlagGG_API StaticMeshComponent : public Component
 		{
-			OBJECT_OVERRIDE(StaticMeshComponent);
+			OBJECT_OVERRIDE(StaticMeshComponent, Component);
 		public:
 			void Update(Real timeStep) override;
 

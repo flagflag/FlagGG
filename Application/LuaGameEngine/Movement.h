@@ -11,7 +11,7 @@ namespace LuaGameEngine
 {
 	class LuaGameEngine_API Movement : public EngineObject
 	{
-		OBJECT_OVERRIDE(Movement)
+		OBJECT_OVERRIDE(Movement, EngineObject)
 	public:
 		virtual void Start() = 0;
 

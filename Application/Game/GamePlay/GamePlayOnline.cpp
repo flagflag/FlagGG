@@ -168,5 +168,5 @@ void GamePlayOnline::HandleStopMove(::google::protobuf::Message* message)
 	if (!moveComp)
 		moveComp = unit->CreateComponent<MovementComponent>();
 
-	moveComp->RemoveMovement(DirectionMovement::StaticClass());
+	moveComp->RemoveMovement(DirectionMovement::GetTypeStatic());
 }

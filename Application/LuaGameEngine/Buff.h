@@ -7,7 +7,7 @@ namespace LuaGameEngine
 {
 	class LuaGameEngine_API Buff : public EngineObject
 	{
-		OBJECT_OVERRIDE(Buff)
+		OBJECT_OVERRIDE(Buff, EngineObject)
 	public:
 
 	};

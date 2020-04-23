@@ -32,7 +32,7 @@ namespace LuaGameEngine
 
 	void EngineImpl::DestroyObject(EngineObject* object)
 	{
-		engineObjectCreator_.Destroy(object->ClassName(), object);
+		engineObjectCreator_.Destroy(object->GetTypeName(), object);
 	}
 
 	void EngineImpl::RegisterEventHandler(LuaEventHandler* handler)
@@ -101,7 +101,7 @@ namespace LuaGameEngine
 		for(auto it = peddingResolve_.Begin(); it != peddingResolve_.End(); ++it)
 		{
 			EngineObject* object = *it;
-			if (object->Class() == Unit::StaticClass())
+			if (object->GetType() == Unit::GetTypeStatic())
 			{
 				Unit* unit = static_cast<Unit*>(object);
 				for (auto notify : handlers_)

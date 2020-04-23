@@ -12,7 +12,7 @@ namespace FlagGG
 	{
 		class BaseMovement : public Core::Object
 		{
-			OBJECT_OVERRIDE(BaseMovement);
+			OBJECT_OVERRIDE(BaseMovement, Object);
 		public:
 			void SetOwner(Node* node);
 

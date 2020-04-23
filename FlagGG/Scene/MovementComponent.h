@@ -10,7 +10,7 @@ namespace FlagGG
 	{
 		class FlagGG_API MovementComponent : public Component
 		{
-			OBJECT_OVERRIDE(MovementComponent);
+			OBJECT_OVERRIDE(MovementComponent, Component);
 		public:
 			void AddMovement(BaseMovement* baseMovment);
 

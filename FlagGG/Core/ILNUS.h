@@ -9,7 +9,7 @@ namespace FlagGG
 	{
 		class FlagGG_API ILNUS : public Object
 		{
-			OBJECT_OVERRIDE(ILNUS)
+			OBJECT_OVERRIDE(ILNUS, Object)
 			
 		public:
 		};

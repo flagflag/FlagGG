@@ -4,14 +4,11 @@
 
 namespace LuaGameEngine
 {
-	class LuaGameEngine_API EngineObject
+	class LuaGameEngine_API EngineObject : public FlagGG::Core::RTTIObject
 	{
+		OBJECT_OVERRIDE(EngineObject, RTTIObject);
 	public:
 		virtual ~EngineObject() = default;
-
-		virtual FlagGG::Container::StringHash Class() = 0;
-
-		virtual const FlagGG::Container::String& ClassName() = 0;
 
 		inline void AddRef() { ++refCount_; }
 

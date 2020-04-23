@@ -12,7 +12,7 @@ namespace LuaGameEngine
 {
 	class LuaGameEngine_API Player : public EngineObject
 	{
-		OBJECT_OVERRIDE(Player);
+		OBJECT_OVERRIDE(Player, EngineObject);
 	public:
 		~Player() override;
 

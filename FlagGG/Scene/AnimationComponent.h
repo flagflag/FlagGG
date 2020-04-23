@@ -18,7 +18,7 @@ namespace FlagGG
 
 		class FlagGG_API AnimationComponent : public Component
 		{
-			OBJECT_OVERRIDE(AnimationComponent)
+			OBJECT_OVERRIDE(AnimationComponent, Component);
 		public:
 			void Update(Real timeStep) override;
 

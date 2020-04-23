@@ -21,7 +21,7 @@ namespace LuaGameEngine
 		template < class ClassName >
 		ClassName* CreateObject()
 		{
-			return static_cast<ClassName*>(CreateObjectImpl(ClassName::StaticClassName().CString()));
+			return static_cast<ClassName*>(CreateObjectImpl(ClassName::GetTypeNameStatic().CString()));
 		}
 
 		virtual void DestroyObject(EngineObject* object) = 0;

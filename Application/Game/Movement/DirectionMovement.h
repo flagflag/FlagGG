@@ -8,7 +8,7 @@ using namespace FlagGG::Math;
 
 class DirectionMovement : public BaseMovement
 {
-	OBJECT_OVERRIDE(DirectionMovement);
+	OBJECT_OVERRIDE(DirectionMovement, BaseMovement);
 public:
 	void Start() override;
 

@@ -23,7 +23,7 @@ namespace FlagGG
 		{
 			for (auto it = movements_.Begin(); it != movements_.End();)
 			{
-				if ((*it)->Class() == className)
+				if ((*it)->IsInstanceOf(className))
 					it = movements_.Erase(it);
 				else
 					++it;

@@ -42,7 +42,7 @@ namespace LuaGameEngine
 
 	class LuaGameEngine_API Unit : public EngineObject
 	{
-		OBJECT_OVERRIDE(Unit)
+		OBJECT_OVERRIDE(Unit, EngineObject);
 	public:
 		Unit();
 

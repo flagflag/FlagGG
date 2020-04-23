@@ -80,7 +80,7 @@ namespace FlagGG
 		{
 			for (const auto& comp : components_)
 			{
-				if (comp->Class() == compClass)
+				if (comp->IsInstanceOf(compClass))
 				{
 					return comp;
 				}

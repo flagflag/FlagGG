@@ -57,7 +57,7 @@ namespace FlagGG
 			template < class ComponentType >
 			ComponentType* GetComponent()
 			{
-				return static_cast<ComponentType*>(GetComponent(ComponentType::StaticClass()));
+				return static_cast<ComponentType*>(GetComponent(ComponentType::GetTypeStatic()));
 			}
 
 			Component* GetComponent(Container::StringHash compClass);

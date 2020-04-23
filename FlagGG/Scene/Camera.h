@@ -21,7 +21,7 @@ namespace FlagGG
 
 		class FlagGG_API Camera : public Component
 		{
-			OBJECT_OVERRIDE(Camera);
+			OBJECT_OVERRIDE(Camera, Component);
 		public:
 			Camera();
 

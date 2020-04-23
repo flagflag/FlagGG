@@ -14,7 +14,7 @@ namespace FlagGG
 	{
 		class FlagGG_API TerrainComponent : public Component
 		{
-			OBJECT_OVERRIDE(TerrainComponent)
+			OBJECT_OVERRIDE(TerrainComponent, Component);
 		public:
 			void SetPathSize(UInt32 pathSize);
 
