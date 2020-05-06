@@ -2,6 +2,7 @@
 #include <Scene/StaticMeshComponent.h>
 #include <Scene/SkeletonMeshComponent.h>
 #include <Scene/AnimationComponent.h>
+#include <Scene/OceanComponent.h>
 #include <Resource/ResourceCache.h>
 #include <Graphics/Model.h>
 #include <Graphics/Material.h>
@@ -32,6 +33,7 @@ bool Unit::Load(const String& path, Node* node)
 
 	const LJSONValue& root = jsonFile->GetRoot();
 	String type = root["geometrytype"].GetString();
+	String dynamicType = root["dynamicmodel"].GetString();
 
 	StaticMeshComponent* meshComp = nullptr;
 	if (type == "STATIC")
@@ -46,15 +48,24 @@ bool Unit::Load(const String& path, Node* node)
 		if (!meshComp)
 			meshComp = node->CreateComponent<SkeletonMeshComponent>();
 	}
-	else
+
+	material_ = cache->GetResource<Material>(root["material"].GetString());
+
+	if (meshComp)
 	{
-		FLAGGG_LOG_WARN("known model type.");
-		return false;
+		meshComp->SetModel(cache->GetResource<Model>(root["model"].GetString()));
+		meshComp->SetMaterial(material_);
 	}
 
-	meshComp->SetModel(cache->GetResource<Model>(root["model"].GetString()));
-	material_ = cache->GetResource<Material>(root["material"].GetString());
-	meshComp->SetMaterial(material_);
+	if (dynamicType == "Ocean")
+	{
+		OceanComponent* dynamicMeshComp = node->GetComponent<OceanComponent>();
+		if (!dynamicMeshComp)
+			dynamicMeshComp = node->CreateComponent<OceanComponent>();
+		dynamicMeshComp->SetSize(500, 500);
+		dynamicMeshComp->SetElementSize(1);
+		dynamicMeshComp->SetMaterial(material_);
+	}
 
 	return true;
 }

@@ -1,0 +1,52 @@
+{
+	vsshader = 
+	{
+		path = "Shader/Ocean.hlsl",
+		defines = [ "TURBULENT_WAVE" ]
+	},
+	psshader = 
+	{
+		path = "Shader/Ocean.hlsl"
+	},
+	textures =
+	{
+		"0" =
+		{
+			type = "texture2d", //texturecube => 3d
+			path = "Textures/WaterNoise.dds"
+		},
+		"2" =
+		{
+			type = "texture2d",
+			path = "Textures/waterLight.png"
+		}
+	},
+	shader_parameters = 
+	[
+		{
+			name = "noiseTiling",
+			type = "float",
+			value = 50.0
+		},
+		{
+			name = "noiseSpeed",
+			type = "vector2",
+			value = [ 0.002, 0.002 ]
+		},
+		{
+			name = "noiseStrength",
+			type = "float",
+			value = 0.02
+		},
+		{
+			name = "waterColor",
+			type = "vector3",
+			value = [ 0, 0.21, 0.47 ]
+		},
+		{
+			name = "fresnelPower",
+			type = "float",
+			value = 20.0
+		}
+	]
+}

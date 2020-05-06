@@ -4,6 +4,7 @@
 #include <Scene/Light.h>
 #include <Scene/Octree.h>
 #include <Scene/StaticMeshComponent.h>
+#include <Scene/OceanComponent.h>
 #endif
 #include <Log.h>
 #include <IOFrame/Buffer/StringBuffer.h>
@@ -215,9 +216,9 @@ void GameApplication::CreateScene()
 	scene_->AddChild(waterDown_);
 
 	water_ = new Unit(context_);
-	water_->Load("Unit/Water.ljson");
+	water_->Load("Unit/Ocean.ljson");
 	water_->SetPosition(Vector3(0, -4, 10));
-	water_->SetScale(Vector3(10, 10, 10));
+	water_->SetScale(Vector3(0.1, 0.1, 0.1));
 	water_->SetName("Water");
 	scene_->AddChild(water_);
 
@@ -273,6 +274,17 @@ void GameApplication::SetupWindow()
 		{
 			waterMaterial->SetTexture(TEXTURE_CLASS_DIFFUSE, rttTexture_[0]);
 			waterComp->SetMaterial(waterMaterial);
+		}
+	}
+	auto* dynamicWaterComp = water_->GetComponent<OceanComponent>();
+	if (dynamicWaterComp)
+	{
+		dynamicWaterComp->SetViewMask(0xff);
+		auto* waterMaterial = waterComp->GetMaterial();
+		if (waterMaterial)
+		{
+			waterMaterial->SetTexture(TEXTURE_CLASS_DIFFUSE, rttTexture_[0]);
+			dynamicWaterComp->SetMaterial(waterMaterial);
 		}
 	}
 

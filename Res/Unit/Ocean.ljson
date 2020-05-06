@@ -1,0 +1,5 @@
+{
+    geometrytype = "STATIC", // STATIC | SKINNED
+    dynamicmodel = "Ocean",
+    material = "Materials/Ocean.ljson"
+}
