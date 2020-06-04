@@ -20,6 +20,7 @@ void GameProtoDistributor::OnMessageRecived(NetworkType type, IOFrame::Context::
 	String bufferContent;
 	buffer->ToString(bufferContent);
 	
+#ifdef FLAGGG_PROTO
 	Proto::Game::MessageHeader header;
 	header.ParseFromString(std::string(bufferContent.CString(), bufferContent.Length()));
 
@@ -36,4 +37,5 @@ void GameProtoDistributor::OnMessageRecived(NetworkType type, IOFrame::Context::
 		IF_DO(Proto::Game::MessageType_UnitAttachBuff, Proto::Game::NotifyUnitAttachBuff);
 		IF_DO(Proto::Game::MessageType_UnitDettachBuff, Proto::Game::NotifyUnitDettachBuff);
 	}
+#endif
 }

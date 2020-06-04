@@ -9,7 +9,9 @@ GamePlayOnline::GamePlayOnline(Context* context) :
 {
 	network_ = context->GetVariable<Network>(NETWORK_TYPE_NAME[NETWORK_TYPE_UDP]);
 
+#ifdef FLAGGG_PROTO
 	context_->RegisterEvent(EVENT_HANDLER(GameProtoEvent::MESSAGE_RECIVED, GamePlayOnline::OnGameMessageRecived, this));
+#endif
 }
 
 void GamePlayOnline::Initialize(FlagGG::Scene::Scene* scene)
@@ -20,6 +22,7 @@ void GamePlayOnline::Initialize(FlagGG::Scene::Scene* scene)
 
 void GamePlayOnline::Login(const LuaFunction& callback)
 {
+#ifdef FLAGGG_PROTO
 	if (network_)
 	{
 		Proto::Game::RequestLogin request;
@@ -34,10 +37,12 @@ void GamePlayOnline::Login(const LuaFunction& callback)
 
 		loginResponse_ = callback;
 	}
+#endif
 }
 
 void GamePlayOnline::StartGame()
 {
+#ifdef FLAGGG_PROTO
 	if (network_)
 	{
 		Proto::Game::RequestStartGame request;
@@ -51,10 +56,12 @@ void GamePlayOnline::StartGame()
 		const std::string& buffer = header.SerializeAsString();
 		network_->Send(buffer.data(), buffer.length());
 	}
+#endif
 }
 
 void GamePlayOnline::EndGame()
 {
+#ifdef FLAGGG_PROTO
 	if (network_)
 	{
 		Proto::Game::RequestStopGame request;
@@ -68,8 +75,10 @@ void GamePlayOnline::EndGame()
 		const std::string& buffer = header.SerializeAsString();
 		network_->Send(buffer.data(), buffer.length());
 	}
+#endif
 }
 
+#ifdef FLAGGG_PROTO
 void GamePlayOnline::OnGameMessageRecived(UInt32 messageType, ::google::protobuf::Message* message)
 {
 	switch (messageType)
@@ -170,3 +179,4 @@ void GamePlayOnline::HandleStopMove(::google::protobuf::Message* message)
 
 	moveComp->RemoveMovement(DirectionMovement::GetTypeStatic());
 }
+#endif

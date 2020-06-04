@@ -1,5 +1,7 @@
 #include "GamePlay/ThirdPersonPerspective.h"
+#ifdef FLAGGG_PROTO
 #include "Proto/Game.pb.h"
+#endif
 
 ThirdPersonPerspective::ThirdPersonPerspective(Context* context) :
 	controlCamera_(new Camera()),
@@ -175,6 +177,7 @@ void ThirdPersonPerspective::HandleUpdate(float timeStep)
 		{
 			currentRot_ = rot;
 
+#ifdef FLAGGG_PROTO
 			if (rot != stop_)
 			{
 				rot = node_->GetWorldRotation() * rot;
@@ -207,6 +210,7 @@ void ThirdPersonPerspective::HandleUpdate(float timeStep)
 				const std::string& buffer = header.SerializeAsString();
 				network_->Send(buffer.data(), buffer.length());
 			}
+#endif
 		}
 	}
 }

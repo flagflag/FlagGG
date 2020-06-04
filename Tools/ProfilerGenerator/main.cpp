@@ -153,10 +153,8 @@ static void InsertProfiler(const std::string& strFilePath, const std::map<std::s
 	}
 }
 
-static void Run()
+static void Run(const char* pszFilePath)
 {
-	const char* pszFilePath = "E:/FlagGG/bin/Debug/config.ini";
-
 	char szWorkDir[MAX_PATH] = { 0 };
 	::GetPrivateProfileString("FilePath", "WorkDir", "", szWorkDir, MAX_PATH, pszFilePath);
 	std::string strWorkDir(szWorkDir);
@@ -220,9 +218,15 @@ static void Run()
 	}
 }
 
-int main()
+int main(int argc, const char* argv[])
 {
-	Run();
+	const char* pszFilePath = "E:/FlagGG/bin/Debug/config.ini";
+	if (argc > 1)
+	{
+		pszFilePath = argv[1];
+	}
+
+	Run(pszFilePath);
 
 	return 0;
 }

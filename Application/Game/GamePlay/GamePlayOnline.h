@@ -3,7 +3,9 @@
 #include "GamePlay/GamePlayBase.h"
 #include "GamePlay/World.h"
 #include "Network/NetworkAdaptor.h"
+#ifdef FLAGGG_PROTO
 #include "Network/GameProtoDistributor.h"
+#endif
 #include "Unit/Unit.h"
 
 #include <Core/Context.h>
@@ -25,6 +27,7 @@ public:
 	void EndGame() override;
 
 protected:
+#ifdef FLAGGG_PROTO
 	void OnGameMessageRecived(UInt32 messageType, ::google::protobuf::Message* message);
 
 	void HandleUnitAppear(::google::protobuf::Message* message);
@@ -34,6 +37,7 @@ protected:
 	void HandleStartMove(::google::protobuf::Message* message);
 
 	void HandleStopMove(::google::protobuf::Message* message);
+#endif
 
 private:
 	Context* context_;
