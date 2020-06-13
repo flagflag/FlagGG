@@ -79,9 +79,32 @@ struct PixelInput
         // 接下来几步做法是用step代替if...else...来做到硬件加速
         float t1 = step(0.0, saturate(shadowTex.x) - shadowTex.x) * step(0.0, shadowTex.x - saturate(shadowTex.x));
         float t2 = step(0.0, saturate(shadowTex.y) - shadowTex.y) * step(0.0, shadowTex.y - saturate(shadowTex.y));
+        
         float shadowDepth = DecodeFloatRG(shadowMap.Sample(shadowSampler, shadowTex).xy);
-        float t3 = step(0.0, input.shadowDepth - shadowDepth);
-        color = lerp(color, float4(0, 0, 0, 1), t1 * t2 * t3);
+        float s1 = step(0.0, input.shadowDepth - shadowDepth);
+        float final = t1 * t2 * s1;
+
+        float pixelOffset = 0.002;
+
+        shadowDepth = DecodeFloatRG(shadowMap.Sample(shadowSampler, shadowTex + float2(-pixelOffset, 0)).xy);
+        float s2 = step(0.0, input.shadowDepth - shadowDepth);
+        final += t1 * t2 * s2;
+
+        shadowDepth = DecodeFloatRG(shadowMap.Sample(shadowSampler, shadowTex + float2(pixelOffset, 0)).xy);
+        float s3 = step(0.0, input.shadowDepth - shadowDepth);
+        final += t1 * t2 * s3;
+
+        shadowDepth = DecodeFloatRG(shadowMap.Sample(shadowSampler, shadowTex + float2(0, -pixelOffset)).xy);
+        float s4 = step(0.0, input.shadowDepth - shadowDepth);
+        final += t1 * t2 * s4;
+
+        shadowDepth = DecodeFloatRG(shadowMap.Sample(shadowSampler, shadowTex + float2(0, pixelOffset)).xy);
+        float s5 = step(0.0, input.shadowDepth - shadowDepth);
+        final += t1 * t2 * s5;
+
+        final *= 0.2;
+
+        color = float4(color.xyz * (1.0 - final), 1.0);
     #endif
 
         return color;

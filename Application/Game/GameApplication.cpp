@@ -159,28 +159,26 @@ void GameApplication::CreateScene()
 	reflectionCamera_->SetUseReflection(true);
 
 	mainHero_ = new CEUnit(context_);
-	//mainHero_->Load("Unit/Monster.ljson");
-	//mainHero_->PlayAnimation("Animation/Monster_Idle.ani", true);
-	//mainHero_->SetPosition(Vector3(0, -2, 10));
+	mainHero_->Load("Unit/MainHero.ljson");
+	mainHero_->PlayAnimation("Animation/Warrior_Attack.ani", true);
+	mainHero_->SetPosition(Vector3(0, -4, 10));
 	mainHero_->SetName("MainHero");
 	scene_->AddChild(mainHero_);
 
-	//dissolveHero_ = new CEUnit(context_);
-	//// dissolveHero_->Load("Unit/DissolveHero.ljson");
-	//dissolveHero_->Load("Unit/MainHero.ljson");
-	//dissolveHero_->SetPosition(Vector3(0, 0, 10));
-	//dissolveHero_->SetRotation(Quaternion(180, Vector3(0.0f, 1.0f, 0.0f)));
-	//// dissolveHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
-	//dissolveHero_->PlayAnimation("Animation/Warrior_Idle.ani", true);
-	//dissolveHero_->SetName("DissolveHero");
-	//scene_->AddChild(dissolveHero_);
+	dissolveHero_ = new Unit(context_);
+	dissolveHero_->Load("Unit/DissolveHero.ljson");
+	dissolveHero_->SetPosition(Vector3(0, 0, 10));
+	dissolveHero_->SetRotation(Quaternion(180, Vector3(0.0f, 1.0f, 0.0f)));
+	dissolveHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
+	dissolveHero_->SetName("DissolveHero");
+	scene_->AddChild(dissolveHero_);
 
-	//terrain_ = new Terrain(context_);
-	//terrain_->Create(64);
-	//terrain_->SetScale(Vector3(1, 0.4, 1));
-	//terrain_->SetPosition(Vector3(-80, -5, 0));
-	//terrain_->SetName("Terrain");
-	//scene_->AddChild(terrain_);
+	terrain_ = new Terrain(context_);
+	terrain_->Create(64);
+	terrain_->SetScale(Vector3(1, 0.4, 1));
+	terrain_->SetPosition(Vector3(-80, -5, 0));
+	terrain_->SetName("Terrain");
+	scene_->AddChild(terrain_);
 
 #if 0
 	auto* lightNode = new Unit(context_);
@@ -205,7 +203,7 @@ void GameApplication::CreateScene()
 	scene_->AddChild(skybox_);
 
 	waterDown_ = new Unit(context_);
-	waterDown_->Load("Unit/WaterDown.ljson");
+	// waterDown_->Load("Unit/WaterDown.ljson");
 	waterDown_->SetPosition(Vector3(0, -5, 10));
 	waterDown_->SetScale(Vector3(10, 10, 10));
 	waterDown_->SetName("WaterDown");
@@ -216,7 +214,7 @@ void GameApplication::CreateScene()
 	scene_->AddChild(waterDown_);
 
 	water_ = new Unit(context_);
-	water_->Load("Unit/Ocean.ljson");
+	// water_->Load("Unit/Ocean.ljson");
 	water_->SetPosition(Vector3(0, -4, 10));
 	water_->SetScale(Vector3(0.1, 0.1, 0.1));
 	water_->SetName("Water");
@@ -232,7 +230,8 @@ void GameApplication::SetupWindow()
 	if (commandParam_.Contains("NoWindow"))
 		return;
 
-	IntRect rect = SystemHelper::GetDesktopRect();
+	// IntRect rect = SystemHelper::GetDesktopRect();
+	IntRect rect(0, 400, 500, 900);
 
 	// 创建一张shaderMap
 	shadowMap_ = new Texture2D(context_);
