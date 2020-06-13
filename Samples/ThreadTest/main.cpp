@@ -1,5 +1,7 @@
 ﻿#include <AsyncFrame/Thread/SharedThread.h>
 #include <AsyncFrame/Thread/ThreadPool.h>
+#include <AsyncFrame/LockFree/ThreadDeque.h>
+#include <Container/Vector.h>
 #include <Utility/SystemHelper.h>
 #include <Log.h>
 
@@ -44,11 +46,44 @@ void MultiThreadTest()
 	FlagGG::Utility::SystemHelper::Sleep(10000000);
 }
 
+static FlagGG::AsyncFrame::LockFree::ThreadSafeDeque<int> g_queue;
+FlagGG::Container::Vector<int> g_ret;
+void LockFreeQueueTest()
+{
+	FlagGG::AsyncFrame::Thread::UniqueThread thread([&]
+	{
+		while (true)
+		{
+			while (!g_queue.IsEmpty())
+			{
+				int value = 0;
+				if (g_queue.TryPopFront(value))
+				{
+					g_ret.Push(value);
+				}
+			}
+		}
+	});
+
+	for (UInt32 i = 0; i < 1e5; ++i)
+	{
+		g_queue.PushBack(i);
+	}
+
+	FlagGG::Utility::SystemHelper::Sleep(2000);
+
+	for (UInt32 i = 0; i < 1e5; ++i)
+	{
+		FLAGGG_LOG_INFO("{}", g_ret[i]);
+	}
+}
+
 int main()
 {
 	freopen("E:\\test.txt", "w", stdout);
-	OneThreadTest();
+	// OneThreadTest();
 	// MultiThreadTest();
+	LockFreeQueueTest();
 
 	return 0;
 }
