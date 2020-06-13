@@ -44,6 +44,14 @@ namespace FlagGG
 
 			FlagGG_API bool HasAccess(const Container::String& path);
 
+			enum FindFilesMode
+			{
+				FindFilesMode_Dir = 1,
+				FindFilesMode_File = 2,
+			};
+
+			FlagGG_API void FindFiles(const Container::String& dirPath, const Container::String& pattern, bool recursive, int fileMode, Container::Vector<Container::String>& fileNames);
+
 			FlagGG_API Math::IntRect GetDesktopRect();
 
 			class FlagGG_API Timer
