@@ -59,6 +59,13 @@ namespace FlagGG
 			void SetFov(Real fov);
 			Real GetFov() const;
 
+			// 设置正交模式
+			void SetOrthographic(bool enable);
+			bool GetOrthographics() const;
+
+			void SetOrthoSize(float orthoSize);
+			float GetOrthoSize() const;
+
 			Math::Vector3 GetRight() const;
 			Math::Vector3 GetUp() const;
 			Math::Vector3 GetLook() const;
@@ -86,6 +93,9 @@ namespace FlagGG
 			Real fov_{ 45.0f };
 			Real zoom_{ 1.0f };
 			Math::Vector2 projOffset_{ Math::Vector2::ZERO };
+
+			bool orthographic_{ false };
+			float orthoSize_{ 20.0f };
 
 			bool useReflection_{ false };
 			Math::Plane reflectionPlane_{ Math::Plane::UP };

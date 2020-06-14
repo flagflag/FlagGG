@@ -190,6 +190,7 @@ void GameApplication::CreateScene()
 	Light* light = lightNode->CreateComponent<Light>();
 	light->SetNearClip(0.1f);
 	light->SetFarClip(1000000000.0f);
+	light->SetOrthographic(true);
 	lightNode->SetPosition(Vector3(0, 2, -1));
 	lightNode->SetRotation(Quaternion(45.0f, Vector3(1.0f, 0.0f, 0.0f))); // 绕着x轴旋转45度，朝下
 	scene_->AddChild(lightNode);

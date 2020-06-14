@@ -178,18 +178,36 @@ namespace FlagGG
 		{
 			Math::Matrix4 projection = Math::Matrix4::ZERO;
 
-			Real h = (1.0f / tanf(fov_ * (Math::PI / 180.0f) * 0.5f)) * zoom_;
-			Real w = h / aspect_;
-			Real q = farClip_ / (farClip_ - nearClip_);
-			Real r = -q * nearClip_;
+			if (!orthographic_)
+			{
+				Real h = (1.0f / tanf(fov_ * (Math::PI / 180.0f) * 0.5f)) * zoom_;
+				Real w = h / aspect_;
+				Real q = farClip_ / (farClip_ - nearClip_);
+				Real r = -q * nearClip_;
 
-			projection.m00_ = w;
-			projection.m02_ = projOffset_.x_ * 2.0f;
-			projection.m11_ = h;
-			projection.m12_ = projOffset_.y_ * 2.0f;
-			projection.m22_ = q;
-			projection.m23_ = r;
-			projection.m32_ = 1.0f;
+				projection.m00_ = w;
+				projection.m02_ = projOffset_.x_ * 2.0f;
+				projection.m11_ = h;
+				projection.m12_ = projOffset_.y_ * 2.0f;
+				projection.m22_ = q;
+				projection.m23_ = r;
+				projection.m32_ = 1.0f;
+			}
+			else
+			{
+				Real h = (1.0f / (orthoSize_ * 0.5f)) * zoom_;
+				Real w = h / aspect_;
+				Real q = 1.0f / farClip_;
+				Real r = 0.0f;
+
+				projection.m00_ = w;
+				projection.m03_ = projOffset_.x_ * 2.0f;
+				projection.m11_ = h;
+				projection.m13_ = projOffset_.y_ * 2.0f;
+				projection.m22_ = q;
+				projection.m23_ = r;
+				projection.m33_ = 1.0f;
+			}
 
 			return projection;
 		}
@@ -252,6 +270,26 @@ namespace FlagGG
 		Real Camera::GetFov() const
 		{
 			return fov_;
+		}
+
+		void Camera::SetOrthographic(bool enable)
+		{
+			orthographic_ = enable;
+		}
+
+		bool Camera::GetOrthographics() const
+		{
+			return orthographic_;
+		}
+
+		void Camera::SetOrthoSize(float orthoSize)
+		{
+			orthoSize_ = orthoSize;
+		}
+
+		float Camera::GetOrthoSize() const
+		{
+			return orthoSize_;
 		}
 
 		Math::Vector3 Camera::GetRight() const
