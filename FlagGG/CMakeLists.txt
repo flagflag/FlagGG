@@ -51,6 +51,7 @@ list (APPEND THIRD_LIB ${D3D11_LIB})
 list (APPEND THIRD_LIB ${LUA_LIB})
 list (APPEND THIRD_LIB ${SLikeNet_LIB})
 list (APPEND THIRD_LIB jemallocso)
+list (APPEND THIRD_LIB $(BDFX_LIB))
 
 target_link_libraries(${TARGET_NAME} ${THIRD_LIB})
 
