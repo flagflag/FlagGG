@@ -2,23 +2,77 @@
 #define __GPU_OBJECT__
 
 #include "Export.h"
-
-#ifdef _WIN32
-#include <d3d11.h>
-#endif
-
 #include "Define.h"
+#include "Core/BaseTypes.h"
+#include "bgfx/bgfx.h"
 
-#ifdef USE_DIRECT3D
-typedef void* GPUHandler;
-#else
-typedef std::string GPUHandler;
-#endif
+enum GPUHandlerType
+{
+	GPU_Invalid = 0,
+	GPU_DynamicIndexBufferHandle,
+	GPU_DynamicVertexBufferHandle,
+	GPU_FrameBufferHandle,
+	GPU_IndexBufferHandle,
+	GPU_IndirectBufferHandle,
+	GPU_ProgramHandle,
+	GPU_ShaderHandle,
+	GPU_TextureHandle,
+	GPU_UniformHandle,
+	GPU_VertexBufferHandle,
+	GPU_VertexLayoutHandle,
+};
 
 namespace FlagGG
 {
 	namespace Graphics
 	{
+		struct GPUHandler
+		{
+			GPUHandler();
+
+			GPUHandler(bgfx::DynamicIndexBufferHandle handle);
+
+			GPUHandler(bgfx::DynamicVertexBufferHandle handle);
+
+			GPUHandler(bgfx::FrameBufferHandle handle);
+
+			GPUHandler(bgfx::IndexBufferHandle handle);
+
+			GPUHandler(bgfx::IndirectBufferHandle handle);
+
+			GPUHandler(bgfx::ProgramHandle handle);
+
+			GPUHandler(bgfx::ShaderHandle handle);
+
+			GPUHandler(bgfx::TextureHandle handle);
+
+			GPUHandler(bgfx::UniformHandle handle);
+
+			GPUHandler(bgfx::VertexBufferHandle handle);
+
+			GPUHandler(bgfx::VertexLayoutHandle handle);
+
+			GPUHandler(const GPUHandler& rhs);
+
+			~GPUHandler();
+
+			GPUHandler& operator=(const GPUHandler& rhs);
+
+			operator bool() { return type_ != GPU_Invalid; }
+
+			void AddRef();
+
+			void ReleaseRef();
+
+			void Destroy();
+
+			UInt16 idx_;
+			GPUHandlerType type_;
+			UInt16* refCount_;
+
+			static GPUHandler INVALID;
+		};
+
 		class FlagGG_API GPUObject
 		{
 		public:
@@ -35,9 +89,9 @@ namespace FlagGG
 			virtual void Initialize() = 0;
 
 			template < typename Type >
-			Type* GetObject()
+			Type GetSrcHandler()
 			{
-				return static_cast<Type*>(GetHandler());
+				return Type{ gpuHandler_.id };
 			}
 
 			void ResetHandler(GPUHandler handler);

@@ -1,14 +1,45 @@
 #include "Graphics/VertexBuffer.h"
 #include "Log.h"
+#include "bgfx/bgfx.h"
 
 namespace FlagGG
 {
 	namespace Graphics
 	{
-		UInt32 VertexBuffer::GetBindFlags()
+		static bgfx::Attrib::Enum BGFX_VERTEX_ELEMENT_SEMANTIC[]=
 		{
-			return D3D11_BIND_VERTEX_BUFFER;
-		}
+			bgfx::Attrib::Position,
+			bgfx::Attrib::Normal,
+			bgfx::Attrib::Normal,
+			bgfx::Attrib::Tangent,
+			bgfx::Attrib::TexCoord0,
+			bgfx::Attrib::Color0,
+			bgfx::Attrib::Weight,
+			bgfx::Attrib::Indices,
+			bgfx::Attrib::TexCoord1,
+		};
+
+		static UInt16 BGFX_VERTEX_ELEMENT_COUNT[] =
+		{
+			4,
+			1,
+			2,
+			3,
+			4,
+			4,
+			4
+		};
+
+		static bgfx::AttribType::Enum BGFX_VERTEX_ELEMENT_TYPE[] =
+		{
+			bgfx::AttribType::Uint8,
+			bgfx::AttribType::Float,
+			bgfx::AttribType::Float,
+			bgfx::AttribType::Float,
+			bgfx::AttribType::Float,
+			bgfx::AttribType::Uint8,
+			bgfx::AttribType::Uint8,
+		};
 
 		bool VertexBuffer::SetSize(UInt32 vertexCount, const Container::PODVector<VertexElement>& vertexElements)
 		{
@@ -70,6 +101,36 @@ namespace FlagGG
 				vertexSize += VERTEX_ELEMENT_TYPE_SIZE[element.vertexElementType_];
 			}
 			return vertexSize;
+		}
+
+		void VertexBuffer::Create(const bgfx::Memory* mem, bool dynamic)
+		{
+			bgfx::VertexLayout layout;
+			layout.begin();
+			for (auto it : vertexElements_)
+			{
+				layout.add(
+					BGFX_VERTEX_ELEMENT_SEMANTIC[it.vertexElementSemantic_],
+					BGFX_VERTEX_ELEMENT_COUNT[it.vertexElementType_],
+					BGFX_VERTEX_ELEMENT_TYPE[it.vertexElementType_]);
+			}
+			layout.end();
+
+			if (dynamic)
+			{
+				bgfx::DynamicVertexBufferHandle handle = bgfx::createDynamicVertexBuffer(mem, layout);
+				ResetHandler(handle);
+			}
+			else
+			{
+				bgfx::VertexBufferHandle handle = bgfx::createVertexBuffer(mem, layout);
+				ResetHandler(handle);
+			}
+		}
+
+		void VertexBuffer::UpdateBuffer(const bgfx::Memory* mem)
+		{
+			bgfx::update(GetSrcHandler<bgfx::DynamicVertexBufferHandle>(), 0u, mem);
 		}
 	}
 }

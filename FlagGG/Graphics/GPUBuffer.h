@@ -13,9 +13,13 @@ namespace FlagGG
 		class FlagGG_API GPUBuffer : public GPUObject, public Container::RefCounted
 		{
 		public:
+			GPUBuffer();
+
 			bool IsValid() override;
 
 			bool SetSize(UInt32 byteCount);
+
+			void SetDynamic(bool dynamic);
 
 			void* Lock(UInt32 start, UInt32 count);
 
@@ -29,14 +33,19 @@ namespace FlagGG
 
 			void UnlockDynamicBuffer();
 
-			virtual UInt32 GetBindFlags() = 0;
-
 		protected:
+			virtual void Create(const bgfx::Memory* mem, bool dynamic) = 0;
+
+			virtual void UpdateBuffer(const bgfx::Memory* mem) = 0;
+
 			void Initialize() override;
+
+			bool dynamic_;
 
 			Container::SharedPtr<IOFrame::Buffer::IOBuffer> buffer_;
 
-			UInt32 gpuBufferSize_{ 0u };
+			UInt32 gpuBufferSize_;
+			char* srcBuffer_;
 		};
 	}
 }

@@ -4,9 +4,14 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		UInt32 ConstantBuffer::GetBindFlags()
+		void ConstantBuffer::Create(const bgfx::Memory* mem, bool dynamic)
 		{
-			return D3D11_BIND_CONSTANT_BUFFER;
+			// do nothings
+		}
+
+		void ConstantBuffer::UpdateBuffer(const bgfx::Memory* mem)
+		{
+			// do nothings
 		}
 	}
 }

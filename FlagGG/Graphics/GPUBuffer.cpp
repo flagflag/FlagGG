@@ -1,12 +1,19 @@
 #include "GPUBuffer.h"
 #include "Graphics/RenderEngine.h"
 #include "IOFrame/Buffer/StringBuffer.h"
+#include "AsyncFrame/LockFree/Intrinsics.h"
 #include "Log.h"
 
 namespace FlagGG
 {
 	namespace Graphics
 	{
+		GPUBuffer::GPUBuffer() :
+			gpuBufferSize_(0u),
+			srcBuffer_(nullptr),
+			dynamic_(false)
+		{}
+
 		bool GPUBuffer::IsValid()
 		{
 			return !!GetHandler();
@@ -29,57 +36,51 @@ namespace FlagGG
 
 			if (byteCount == 0)
 			{
-				ResetHandler(nullptr);
+				ResetHandler(GPUHandler::INVALID);
 				return false;
 			}
 
-			D3D11_BUFFER_DESC bufferDesc;
-			memset(&bufferDesc, 0, sizeof(bufferDesc));
-			bufferDesc.BindFlags = GetBindFlags();
-			bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-			bufferDesc.Usage = D3D11_USAGE_DYNAMIC; //D3D11_USAGE_DEFAULT
-			bufferDesc.ByteWidth = byteCount;
-
-			ID3D11Buffer* buffer;
-			HRESULT hr = RenderEngine::Instance()->GetDevice()->CreateBuffer(&bufferDesc, nullptr, &buffer);
-			if (FAILED(hr))
+			if (srcBuffer_)
 			{
-				SAFE_RELEASE(buffer);
-				FLAGGG_LOG_ERROR("Failed to create vertex buffer.");
-				return false;
+				delete[] srcBuffer_;
 			}
 
-			ResetHandler(buffer);
+			srcBuffer_ = new char[gpuBufferSize_];
+
+			const bgfx::Memory* mem = bgfx::makeRef(srcBuffer_, gpuBufferSize_);
+
+			Create(mem, dynamic_);
 			
 			return true;
 		}
 
+		void GPUBuffer::SetDynamic(bool dynamic)
+		{
+			dynamic_ = dynamic;
+		}
+
 		void* GPUBuffer::Lock(UInt32 start, UInt32 count)
 		{
-			if (gpuBufferSize_ == 0)
+			if (!dynamic_ || gpuBufferSize_ == 0)
 				return nullptr;
 
-			D3D11_MAPPED_SUBRESOURCE mappedData;
-			memset(&mappedData, 0, sizeof mappedData);
-			HRESULT hr = RenderEngine::Instance()->GetDeviceContext()->Map(GetObject<ID3D11Buffer>(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-			if (FAILED(hr) || !mappedData.pData)
-			{
-				FLAGGG_LOG_ERROR("Failed to Map buffer data.");
-				return nullptr;
-			}
-			return (char*)mappedData.pData + start;
+			return srcBuffer_;
 		}
 
 		void GPUBuffer::Unlock()
 		{
-			if (gpuBufferSize_ == 0)
+			if (!dynamic_ || gpuBufferSize_ == 0)
 				return;
 
-			RenderEngine::Instance()->GetDeviceContext()->Unmap(GetObject<ID3D11Buffer>(), 0);
+			const bgfx::Memory* mem = bgfx::makeRef(srcBuffer_, gpuBufferSize_);
+			UpdateBuffer(mem);
 		}
 
 		IOFrame::Buffer::IOBuffer* GPUBuffer::LockStaticBuffer(UInt32 start, UInt32 count)
 		{
+			if (!dynamic_ || gpuBufferSize_ == 0)
+				return nullptr;
+
 			void* data = Lock(start, count);
 			buffer_ = new IOFrame::Buffer::StringBuffer(data, count);
 			return buffer_;
@@ -87,6 +88,9 @@ namespace FlagGG
 
 		void GPUBuffer::UnlockStaticBuffer()
 		{
+			if (!dynamic_ || gpuBufferSize_ == 0)
+				return;
+
 			buffer_.Reset();
 			Unlock();
 		}

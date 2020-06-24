@@ -9,8 +9,6 @@ namespace FlagGG
 		class FlagGG_API IndexBuffer : public GPUBuffer
 		{
 		public:
-			UInt32 GetBindFlags() override;
-
 			bool SetSize(UInt32 indexSize, UInt32 indexCount);
 
 			UInt32 GetIndexSize() const;
@@ -18,7 +16,11 @@ namespace FlagGG
 			UInt32 GetIndexCount() const;
 
 		protected:
+			void Create(const bgfx::Memory* mem, bool dynamic) override;
 
+			void UpdateBuffer(const bgfx::Memory* mem) override;
+
+		protected:
 			UInt32 indexSize_{ 0 };
 			UInt32 indexCount_{ 0 };
 		};

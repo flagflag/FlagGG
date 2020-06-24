@@ -6,11 +6,6 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		UInt32 IndexBuffer::GetBindFlags()
-		{
-			return D3D11_BIND_INDEX_BUFFER;
-		}
-
 		bool IndexBuffer::SetSize(UInt32 indexSize, UInt32 indexCount)
 		{
 			indexSize_ = indexSize;
@@ -27,6 +22,25 @@ namespace FlagGG
 		UInt32 IndexBuffer::GetIndexCount() const
 		{
 			return indexCount_;
+		}
+
+		void IndexBuffer::Create(const bgfx::Memory* mem, bool dynamic)
+		{
+			if (dynamic)
+			{
+				bgfx::DynamicIndexBufferHandle handle = bgfx::createDynamicIndexBuffer(mem);
+				ResetHandler(handle);
+			}
+			else
+			{
+				bgfx::IndexBufferHandle handle = bgfx::createIndexBuffer(mem);
+				ResetHandler(handle);
+			}
+		}
+
+		void IndexBuffer::UpdateBuffer(const bgfx::Memory* mem)
+		{
+			bgfx::update(GetSrcHandler<bgfx::DynamicIndexBufferHandle>(), 0u, mem);
 		}
 	}
 }
