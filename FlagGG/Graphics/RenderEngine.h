@@ -16,17 +16,10 @@
 #include "Utility/Singleton.h"
 #include "AsyncFrame/Mutex.h"
 #include "Core/Context.h"
-
-#include <d3d11.h>
+#include "bgfx/bgfx.h"
 
 #include <stdio.h>
 #include <stdint.h>
-
-#define SAFE_RELEASE(p) \
-	if ((p)) \
-	{ \
-		((IUnknown*)p)->Release();  p = nullptr; \
-	}
 
 namespace FlagGG
 {
@@ -40,14 +33,6 @@ namespace FlagGG
 			void Initialize();
 
 			void Uninitialize();
-
-			ID3D11Device* GetDevice();
-
-			ID3D11DeviceContext* GetDeviceContext();
-
-			bool CheckMultiSampleSupport(DXGI_FORMAT format, UInt32 sampleCount);
-
-			UInt32 GetMultiSampleQuality(DXGI_FORMAT format, UInt32 sampleCount);
 
 			void SetTextureQuality(MaterialQuality quality);
 
@@ -127,35 +112,14 @@ namespace FlagGG
 
 			void RenderBatch(Viewport* viewport);
 
-		protected:
-			void CopyShaderParameterToBuffer(Shader* shader, ConstantBuffer* buffer);
-
-			VertexFormat* CacheVertexFormat(Shader* VSShader, VertexBuffer** vertexBuffer);
-
 		private:
-			enum ConstBufferType
-			{
-				CONST_BUFFER_WORLD = 0,
-				CONST_BUFFER_SKIN,
-				CONST_BUFFER_VS,
-				CONST_BUFFER_PS,
-				MAX_CONST_BUFFER,
-			};
-
-			void CreateDevice();
-
 			void CreateShadowRasterizerState();
-
-			ID3D11Device* device_{ nullptr };
-			ID3D11DeviceContext* deviceContext_{ nullptr };
 
 			RasterizerState rasterizerState_;
 			RasterizerState shadowRasterizerState_;
 			bool rasterizerStateDirty_{ false };
 			Container::HashMap<UInt32, ID3D11RasterizerState*> rasterizerStates_;
 
-			ConstantBuffer vsConstantBuffer_[MAX_CONST_BUFFER_COUNT];
-			ConstantBuffer psConstantBuffer_[MAX_CONST_BUFFER_COUNT];
 			const Math::Matrix3x4* skinMatrix_{ nullptr };
 			UInt32 numSkinMatrix_{ 0u };
 
@@ -177,10 +141,9 @@ namespace FlagGG
 
 			Container::SharedPtr<Texture> textures_[MAX_TEXTURE_CLASS];
 			Container::SharedPtr<Texture> defaultTextures_[MAX_TEXTURE_CLASS];
+			bgfx::UniformHandle samplerUniform[MAX_TEXTURE_CLASS];
 			Container::SharedPtr<Texture2D> envTexture_;
 			bool texturesDirty_{ false };
-
-			Container::HashMap<uint64_t, Container::SharedPtr<VertexFormat>> vertexFormatCache_;
 
 			ShaderParameters shaderParameters_;
 			Container::SharedPtr<ShaderParameters> inShaderParameters_;

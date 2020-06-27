@@ -204,7 +204,6 @@ namespace FlagGG
 
 		void GPUObject::ResetHandler(GPUHandler handler)
 		{
-			SAFE_RELEASE(gpuHandler_);
 			gpuHandler_ = handler;
 		}
 	}

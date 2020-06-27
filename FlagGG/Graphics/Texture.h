@@ -35,7 +35,10 @@ namespace FlagGG
 
 			void Initialize() override;
 
+			// 设置贴图的最大lod
 			void SetNumLevels(UInt32 levels);
+
+			void SetNumLayers(UInt32 layers);
 
 			Int32 GetWidth() const;
 
@@ -76,6 +79,8 @@ namespace FlagGG
 			UInt32 levels_{ 0 };
 			UInt32 requestedLevels_{ 0 };
 
+			UInt32 layers_{ 0u };
+
 			Int32 width_{ 0 };
 			Int32 height_{ 0 };
 			Int32 depth_{ 0 };
@@ -88,12 +93,6 @@ namespace FlagGG
 			TextureUsage usage_{ TEXTURE_STATIC };
 
 			UInt32 mipsToSkip_[MAX_TEXTURE_QUALITY_LEVELS];
-
-			ID3D11Resource* resolveTexture_{ nullptr };
-
-			ID3D11ShaderResourceView* shaderResourceView_{ nullptr };
-
-			ID3D11SamplerState* sampler_{ nullptr };
 		};
 	}
 }

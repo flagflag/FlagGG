@@ -1,12 +1,15 @@
 #include "Graphics/TextureCube.h"
 #include "Graphics/RenderEngine.h"
 #include "Graphics/GraphicsDef.h"
+#include "Core/Context.h"
 #include "Config/LJSONFile.h"
 #include "Resource/ResourceCache.h"
 #include "Math/Math.h"
 #include "Log.h"
-
-#include <d3dx11.h>
+#include "bgfx/bgfx.h"
+#include "bimg/bimg.h"
+#include "bimg/decode.h"
+#include "bx/allocator.h"
 
 namespace FlagGG
 {
@@ -27,120 +30,51 @@ namespace FlagGG
 
 			levels_ = CheckMaxLevels(width_, height_, requestedLevels_);
 
-			D3D11_TEXTURE2D_DESC textureDesc;
-			memset(&textureDesc, 0, sizeof textureDesc);
-			textureDesc.Format = (DXGI_FORMAT)(sRGB_ ? GetSRGBFormat(format_) : format_);
-
-			if (multiSample_ > 1 && RenderEngine::Instance()->CheckMultiSampleSupport(textureDesc.Format, multiSample_))
+			if (usage_ == TEXTURE_DEPTHSTENCIL)
 			{
-				multiSample_ = 1;
-				autoResolve_ = false;
-			}
-
-			if (usage_ == TEXTURE_RENDERTARGET && levels_ != 1 && multiSample_ == 1)
-			{
-				textureDesc.MiscFlags |= D3D11_RESOURCE_MISC_GENERATE_MIPS;
-			}
-
-			textureDesc.Width = (UINT)width_;
-			textureDesc.Height = (UINT)height_;
-			textureDesc.MipLevels = (multiSample_ == 1 && usage_ != TEXTURE_DYNAMIC) ? levels_ : 1;
-			textureDesc.ArraySize = MAX_CUBEMAP_FACES;
-			textureDesc.SampleDesc.Count = (UINT)multiSample_;
-			textureDesc.SampleDesc.Quality = RenderEngine::Instance()->GetMultiSampleQuality(textureDesc.Format, multiSample_);
-			textureDesc.Usage = usage_ == TEXTURE_DYNAMIC ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
-			textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-
-			if (usage_ == TEXTURE_RENDERTARGET)
-			{
-				textureDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
-			}
-			else if (usage_ == TEXTURE_DEPTHSTENCIL)
-			{
-				textureDesc.BindFlags |= D3D11_BIND_DEPTH_STENCIL;
-			}
-			textureDesc.CPUAccessFlags = usage_ == TEXTURE_DYNAMIC ? D3D11_CPU_ACCESS_WRITE : 0;
-
-			if (multiSample_ < 2)
-			{
-				textureDesc.MiscFlags |= D3D11_RESOURCE_MISC_TEXTURECUBE;
-			}
-
-			ID3D11Texture2D* texture2D = nullptr;
-			HRESULT hr = RenderEngine::Instance()->GetDevice()->CreateTexture2D(&textureDesc, nullptr, &texture2D);
-			if (FAILED(hr))
-			{
-				FLAGGG_LOG_ERROR("Failed to create texture2d.");
-				SAFE_RELEASE(texture2D);
-				return false;
-			}
-
-			ResetHandler(texture2D);
-
-			if (multiSample_ > 1)
-			{
-				textureDesc.SampleDesc.Count = 1;
-				textureDesc.SampleDesc.Quality = 0;
-				textureDesc.MiscFlags |= D3D11_RESOURCE_MISC_TEXTURECUBE;
-				if (levels_ != 1)
+				// 判断一下深度贴图格式的合法性
+				if (format_ <= bgfx::TextureFormat::UnknownDepth)
 				{
-					textureDesc.MiscFlags |= D3D11_RESOURCE_MISC_GENERATE_MIPS;
-				}
-
-				HRESULT hr = RenderEngine::Instance()->GetDevice()->CreateTexture2D(&textureDesc, nullptr, (ID3D11Texture2D**)&resolveTexture_);
-				if (FAILED(hr))
-				{
-					FLAGGG_LOG_ERROR("Failed to create resolve texture.");
-					SAFE_RELEASE(resolveTexture_);
+					FLAGGG_LOG_ERROR("Texture2D's usage is depth stencil, but the format is invalid.");
 					return false;
 				}
-			}
-			
-			D3D11_SHADER_RESOURCE_VIEW_DESC resourceViewDesc;
-			memset(&resourceViewDesc, 0, sizeof resourceViewDesc);
-			resourceViewDesc.Format = (DXGI_FORMAT)GetSRVFormat(textureDesc.Format);
-			resourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
-			resourceViewDesc.Texture2D.MipLevels = usage_ != TEXTURE_DYNAMIC ? (UINT)levels_ : 1;
 
-			ID3D11Resource* viewObject = resolveTexture_ ? resolveTexture_ : GetObject<ID3D11Resource>();
-			hr = RenderEngine::Instance()->GetDevice()->CreateShaderResourceView(viewObject, &resourceViewDesc, &shaderResourceView_);
-			if (FAILED(hr))
+				levels_ = 1;
+			}
+
+			bool hasMips = false;
+			if (usage_ == TEXTURE_RENDERTARGET && levels_ != 1 && multiSample_ == 1)
 			{
-				FLAGGG_LOG_ERROR("Failed to create shader resource view.");
-				SAFE_RELEASE(shaderResourceView_);
+				hasMips = true;
+			}
+
+			UInt16 numLayers = layers_;
+			bgfx::TextureFormat::Enum format = (bgfx::TextureFormat::Enum)format_;
+			// bgfx不需要再这里转srgb、dsv、srv，库内部做了转换
+			// (sRGB_ ? GetSRGBFormat(format_) : format_);
+			uint64_t flags = BGFX_TEXTURE_NONE | BGFX_SAMPLER_NONE;
+			if (usage_ == TEXTURE_RENDERTARGET)
+			{
+				flags |= BGFX_TEXTURE_RT_MASK; // RenderTarget纹理
+			}
+
+			if (!bgfx::isTextureValid(0, false, numLayers, format, flags))
+			{
+				FLAGGG_LOG_ERROR("texture is valid.");
 				return false;
-			}			
+			}
+
+			// width_ == height_ == size
+			bgfx::TextureHandle texHandle = bgfx::createTextureCube(width_, hasMips, numLayers, format, flags);
+			
+			ResetHandler(texHandle);
 
 			if (usage_ == TEXTURE_RENDERTARGET)
 			{
-				for (UInt32 i = 0; i < MAX_CUBEMAP_FACES; ++i)
+				for (UInt32 face = 0; face < MAX_CUBEMAP_FACES; ++face)
 				{
-					D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-					memset(&renderTargetViewDesc, 0, sizeof renderTargetViewDesc);
-					renderTargetViewDesc.Format = textureDesc.Format;
-					if (multiSample_ > 1)
-					{
-						renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMSARRAY;
-						renderTargetViewDesc.Texture2DMSArray.ArraySize = 1;
-						renderTargetViewDesc.Texture2DMSArray.FirstArraySlice = i;
-					}
-					else
-					{
-						renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
-						renderTargetViewDesc.Texture2DArray.ArraySize = 1;
-						renderTargetViewDesc.Texture2DArray.FirstArraySlice = i;
-						renderTargetViewDesc.Texture2DArray.MipSlice = 0;
-					}
-
-					ID3D11RenderTargetView* renderTargetView;
-					hr = RenderEngine::Instance()->GetDevice()->CreateRenderTargetView(GetObject<ID3D11Resource>(), &renderTargetViewDesc, &renderTargetView);
-					if (FAILED(hr))
-					{
-						FLAGGG_LOG_ERROR("Failed to create rendertarget view.");
-						SAFE_RELEASE(renderTargetView);
-						return false;
-					}
-					renderSurfaces_[i]->ResetHandler(renderTargetView);
+					bgfx::FrameBufferHandle handle = bgfx::createFrameBuffer(1, &texHandle);
+					renderSurfaces_[face]->ResetHandler(handle);
 				}
 			}
 
@@ -189,9 +123,9 @@ namespace FlagGG
 			return Create();
 		}
 
-		bool TextureCube::SetData(CubeMapFace face, UInt32 level, Int32 x, Int32 y, Int32 width, Int32 height, const void* data)
+		bool TextureCube::SetData(CubeMapFace face, UInt32 level, Int32 x, Int32 y, Int32 width, Int32 height, const void* mipData, UInt32 mipDataSize)
 		{
-			if (!data)
+			if (!mipData)
 			{
 				FLAGGG_LOG_ERROR("TextureCube ==> set nullptr data.");
 				return false;
@@ -203,246 +137,8 @@ namespace FlagGG
 				return false;
 			}
 
-			Int32 levelWidth = GetLevelWidth(level);
-			Int32 levelHeight = GetLevelHeight(level);
-			if (x < 0 || x + width > levelWidth || y < 0 || y + height > levelHeight || width <= 0 || height <= 0)
-			{
-				FLAGGG_LOG_ERROR("TextureCube ==> illegal dimensions.");
-				return false;
-			}
-
-			if (IsCompressed())
-			{
-				x &= ~3;
-				y &= ~3;
-				width += 3;
-				width &= 0xfffffffc;
-				height += 3;
-				height &= 0xfffffffc;
-			}
-
-			const uint8_t* src = static_cast<const uint8_t*>(data);
-			UInt32 rowSize = GetRowDataSize(width);
-			UInt32 rowStart = GetRowDataSize(x);
-			UInt32 subResource = D3D11CalcSubresource(level, face, levels_);
-
-			if (usage_ == TEXTURE_DYNAMIC)
-			{
-				if (IsCompressed())
-				{
-					height = (height + 3) >> 2;
-					y >>= 2;
-				}
-
-				D3D11_MAPPED_SUBRESOURCE mappedData;
-				mappedData.pData = nullptr;
-
-				HRESULT hr = RenderEngine::Instance()->GetDeviceContext()->Map(GetObject<ID3D11Resource>(),
-					subResource, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-
-				if (FAILED(hr) || !mappedData.pData)
-				{
-					FLAGGG_LOG_ERROR("Failed to update texture resource.");
-					return false;
-				}
-				else
-				{
-					for (Int32 row = 0; row < height; ++row)
-						memcpy((uint8_t*)mappedData.pData + (row + y) * mappedData.RowPitch + rowStart, src + row * rowSize, rowSize);
-
-					RenderEngine::Instance()->GetDeviceContext()->Unmap(GetObject<ID3D11Resource>(), subResource);
-				}
-			}
-			else
-			{
-				D3D11_BOX destBox;
-				destBox.left = (UINT)x;
-				destBox.right = (UINT)(x + width);
-				destBox.top = (UINT)y;
-				destBox.bottom = (UINT)(y + height);
-				destBox.front = 0;
-				destBox.back = 1;
-
-				RenderEngine::Instance()->GetDeviceContext()->UpdateSubresource(GetObject<ID3D11Resource>(), subResource, &destBox, data, rowSize, 0);
-			}
-
-			return true;
-		}
-
-		bool TextureCube::SetData(CubeMapFace face, FlagGG::Resource::Image* image, bool useAlpha/* = false*/)
-		{
-			if (!image)
-			{
-				FLAGGG_LOG_ERROR("Null image, can not load texture.");
-				return false;
-			}
-
-			Container::SharedPtr<FlagGG::Resource::Image> mipImage;
-			UInt32 memoryUse = sizeof(TextureCube);
-			MaterialQuality quality = RenderEngine::Instance()->GetTextureQuality();
-
-			if (!image->IsCompressed())
-			{
-				// Convert unsuitable formats to RGBA
-				UInt32 components = image->GetComponents();
-				if ((components == 1 && !useAlpha) || components == 2 || components == 3)
-				{
-					mipImage = image->ConvertToRGBA(); image = mipImage;
-					if (!image)
-						return false;
-					components = image->GetComponents();
-				}
-
-				uint8_t* levelData = image->GetData();
-				Int32 levelWidth = image->GetWidth();
-				Int32 levelHeight = image->GetHeight();
-				UInt32 format = 0;
-
-				if (levelWidth != levelHeight)
-				{
-					FLAGGG_LOG_ERROR("Cube texture width not equal to height.");
-					return false;
-				}
-
-				// Discard unnecessary mip levels
-				for (UInt32 i = 0; i < mipsToSkip_[quality]; ++i)
-				{
-					mipImage = image->GetNextLevel(); image = mipImage;
-					levelData = image->GetData();
-					levelWidth = image->GetWidth();
-					levelHeight = image->GetHeight();
-				}
-
-				switch (components)
-				{
-				case 1:
-					format = RenderEngine::GetAlphaFormat();
-					break;
-
-				case 4:
-					format = RenderEngine::GetRGBAFormat();
-					break;
-
-				default: break;
-				}
-
-				// Create the texture when face 0 is being loaded, check that rest of the faces are same size & format
-				if (!face)
-				{
-					// If image was previously compressed, reset number of requested levels to avoid error if level count is too high for new size
-					if (IsCompressed() && requestedLevels_ > 1)
-						requestedLevels_ = 0;
-
-					if (!SetSize(levelWidth, format))
-					{
-						return false;
-					}
-				}
-				else
-				{
-					if (!GetHandler())
-					{
-						FLAGGG_LOG_ERROR("Cube texture face 0 must be loaded first.");
-						return false;
-					}
-
-					if (levelWidth != width_ || format != format_)
-					{
-						FLAGGG_LOG_ERROR("Cube texture face does not match size or format of face 0.");
-						return false;
-					}
-				}
-
-				for (UInt32 i = 0; i < levels_; ++i)
-				{
-					SetData(face, i, 0, 0, levelWidth, levelHeight, levelData);
-					memoryUse += levelWidth * levelHeight * components;
-
-					if (i < levels_ - 1)
-					{
-						mipImage = image->GetNextLevel(); image = mipImage;
-						levelData = image->GetData();
-						levelWidth = image->GetWidth();
-						levelHeight = image->GetHeight();
-					}
-				}
-			}
-			else
-			{
-				Int32 width = image->GetWidth();
-				Int32 height = image->GetHeight();
-				UInt32 levels = image->GetNumCompressedLevels();
-				UInt32 format = RenderEngine::GetFormat(image->GetCompressedFormat());
-				bool needDecompress = false;
-
-				if (width != height)
-				{
-					FLAGGG_LOG_ERROR("Cube texture width not equal to height.");
-					return false;
-				}
-
-				if (!format)
-				{
-					format = RenderEngine::GetRGBAFormat();
-					needDecompress = true;
-				}
-
-				UInt32 mipsToSkip = mipsToSkip_[quality];
-				if (mipsToSkip >= levels)
-					mipsToSkip = levels - 1;
-				while (mipsToSkip && (width / (1 << mipsToSkip) < 4 || height / (1 << mipsToSkip) < 4))
-					--mipsToSkip;
-				width /= (1 << mipsToSkip);
-				height /= (1 << mipsToSkip);
-
-				// Create the texture when face 0 is being loaded, assume rest of the faces are same size & format
-				if (!face)
-				{
-					SetNumLevels(Math::Max((levels - mipsToSkip), 1U));
-					if (!SetSize(width, format))
-					{
-						return false;
-					}
-				}
-				else
-				{
-					if (!GetHandler())
-					{
-						FLAGGG_LOG_ERROR("Cube texture face 0 must be loaded first.");
-						return false;
-					}
-
-					if (width != width_ || format != format_)
-					{
-						FLAGGG_LOG_ERROR("Cube texture face does not match size or format of face 0.");
-						return false;
-					}
-				}
-
-				for (UInt32 i = 0; i < levels_ && i < levels - mipsToSkip; ++i)
-				{
-					FlagGG::Resource::CompressedLevel level = image->GetCompressedLevel(i + mipsToSkip);
-					if (!needDecompress)
-					{
-						SetData(face, i, 0, 0, level.width_, level.height_, level.data_);
-						memoryUse += level.rows_ * level.rowSize_;
-					}
-					else
-					{
-						uint8_t* rgbaData = new uint8_t[level.width_ * level.height_ * 4];
-						level.Decompress(rgbaData);
-						SetData(face, i, 0, 0, level.width_, level.height_, rgbaData);
-						memoryUse += level.width_ * level.height_ * 4;
-						delete[] rgbaData;
-					}
-				}
-			}
-
-			faceMemoryUse_[face] = memoryUse;
-			UInt32 finalMemoryUse = 0u;
-			for (UInt32 i = 0; i < MAX_CUBEMAP_FACES; ++i)
-				finalMemoryUse += faceMemoryUse_[i];
-			SetMemoryUse(finalMemoryUse);
+			const bgfx::Memory* mem = bgfx::makeRef(mipData, mipDataSize);
+			bgfx::updateTextureCube(GetSrcHandler<bgfx::TextureHandle>(), 0, face, level, x, y, width, height, mem);
 
 			return true;
 		}
@@ -465,20 +161,85 @@ namespace FlagGG
 				return false;
 			}
 
+			auto* cache = context_->GetVariable<FlagGG::Resource::ResourceCache>("ResourceCache");
+
+			bx::DefaultAllocator defaultAllocator;
 			for (UInt32 i = 0; i < value.Size() && i < MAX_CUBEMAP_FACES; ++i)
 			{
-				auto* cache = context_->GetVariable<FlagGG::Resource::ResourceCache>("ResourceCache");
-				Container::SharedPtr<FlagGG::Resource::Image> image = cache->GetResource<FlagGG::Resource::Image>(value[i].GetString());
-				if (!image)
+				const Container::String& path = value[i].GetString();
+				
+				auto fileStream = cache->GetFile(path);
+
+				UInt32 dataSize = fileStream->GetSize();
+				Container::SharedArrayPtr<char> data(new char[dataSize]);
+				if (fileStream->ReadStream(data.Get(), dataSize) != dataSize)
+				{
+					FLAGGG_LOG_ERROR("Failed to load image.");
+					return false;
+				}
+
+				bimg::ImageContainer* imageContainer = bimg::imageParse(&defaultAllocator, data.Get(), dataSize);
+
+				if (!imageContainer)
 				{
 					return false;
 				}
 
-				if (!SetData(static_cast<CubeMapFace>(i), image))
+				if (imageContainer->m_cubeMap)
 				{
+					BX_ASSERT(false, "Cubemap Texture loading not supported");
 					return false;
 				}
+
+				if (1 >= imageContainer->m_depth)
+				{
+					BX_ASSERT(false, "3D Texture loading not supported");
+					return false;
+				}
+
+				if (1 == imageContainer->m_numLayers)
+				{
+					BX_ASSERT(false, "Texture Layer loading not supported");
+					return false;
+				}
+
+				if (i == 0)
+				{
+					SetNumLevels(imageContainer->m_numMips);
+					SetNumLayers(imageContainer->m_numLayers);
+
+					if (!SetSize(imageContainer->m_size, imageContainer->m_format))
+					{
+						return false;
+					}
+				}
+
+				uint32_t width = imageContainer->m_width;
+				uint32_t height = imageContainer->m_height;
+
+				for (UInt8 lod = 0, num = imageContainer->m_numMips; lod < num; ++lod)
+				{
+					if (width < 4 || height < 4)
+					{
+						break;
+					}
+
+					width = bx::max(1u, width);
+					height = bx::max(1u, height);
+
+					bimg::ImageMip mip;
+
+					if (bimg::imageGetRawData(*imageContainer, 0, lod, imageContainer->m_data, imageContainer->m_size, mip))
+					{
+						SetData((CubeMapFace)i, lod, 0, 0, width, height, mip.m_data, mip.m_size);
+					}
+
+					width >>= 1;
+					height >>= 1;
+				}
 			}
+
+			// bgfx::setName(GetSrcHandler<bgfx::TextureHandle>(), "");
 			
 			return true;
 		}
@@ -514,63 +275,7 @@ namespace FlagGG
 				return false;
 			}
 
-			Int32 levelWidth = GetLevelWidth(level);
-			Int32 levelHeight = GetLevelHeight(level);
-
-			D3D11_TEXTURE2D_DESC textureDesc;
-			memset(&textureDesc, 0, sizeof textureDesc);
-			textureDesc.Width = (UINT)levelWidth;
-			textureDesc.Height = (UINT)levelHeight;
-			textureDesc.MipLevels = 1;
-			textureDesc.ArraySize = 1;
-			textureDesc.Format = (DXGI_FORMAT)format_;
-			textureDesc.SampleDesc.Count = 1;
-			textureDesc.SampleDesc.Quality = 0;
-			textureDesc.Usage = D3D11_USAGE_STAGING;
-			textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-
-			ID3D11Texture2D* stagingTexture = nullptr;
-			HRESULT hr = RenderEngine::Instance()->GetDevice()->CreateTexture2D(&textureDesc, nullptr, &stagingTexture);
-			if (FAILED(hr))
-			{
-				FLAGGG_LOG_ERROR("Failed to create staging texture for GetData", hr);
-				SAFE_RELEASE(stagingTexture);
-				return false;
-			}
-
-			ID3D11Resource* srcResource = (ID3D11Resource*)(resolveTexture_ ? resolveTexture_ : GetObject<ID3D11Resource>());
-			UInt32 srcSubResource = D3D11CalcSubresource(level, face, levels_);
-
-			D3D11_BOX srcBox;
-			srcBox.left = 0;
-			srcBox.right = (UINT)levelWidth;
-			srcBox.top = 0;
-			srcBox.bottom = (UINT)levelHeight;
-			srcBox.front = 0;
-			srcBox.back = 1;
-			RenderEngine::Instance()->GetDeviceContext()->CopySubresourceRegion(stagingTexture, 0, 0, 0, 0, srcResource,
-				srcSubResource, &srcBox);
-
-			D3D11_MAPPED_SUBRESOURCE mappedData;
-			mappedData.pData = nullptr;
-			UInt32 rowSize = GetRowDataSize(levelWidth);
-			UInt32 numRows = (UInt32)(IsCompressed() ? (levelHeight + 3) >> 2 : levelHeight);
-
-			hr = RenderEngine::Instance()->GetDeviceContext()->Map((ID3D11Resource*)stagingTexture, 0, D3D11_MAP_READ, 0, &mappedData);
-			if (FAILED(hr) || !mappedData.pData)
-			{
-				FLAGGG_LOG_ERROR("Failed to map staging texture for GetData", hr);
-				SAFE_RELEASE(stagingTexture);
-				return false;
-			}
-
-			for (UInt32 row = 0; row < numRows; ++row)
-			{
-				memcpy((uint8_t*)dest + row * rowSize, (uint8_t*)mappedData.pData + row * mappedData.RowPitch, rowSize);
-			}
-
-			RenderEngine::Instance()->GetDeviceContext()->Unmap((ID3D11Resource*)stagingTexture, 0);
-			SAFE_RELEASE(stagingTexture);
+			bgfx::readTexture(GetSrcHandler<bgfx::TextureHandle>(), (char*)dest + levels_ * , level);
 
 			return true;
 		}

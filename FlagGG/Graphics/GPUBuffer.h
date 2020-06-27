@@ -21,6 +21,8 @@ namespace FlagGG
 
 			void SetDynamic(bool dynamic);
 
+			bool IsDynamic() const;
+
 			void* Lock(UInt32 start, UInt32 count);
 
 			void Unlock();

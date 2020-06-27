@@ -17,9 +17,7 @@ namespace FlagGG
 
 			bool SetSize(UInt32 size, UInt32 format, TextureUsage usage = TEXTURE_STATIC, Int32 multiSample = 1);
 
-			bool SetData(CubeMapFace face, UInt32 level, Int32 x, Int32 y, Int32 width, Int32 height, const void* data);
-
-			bool SetData(CubeMapFace face, FlagGG::Resource::Image* image, bool useAlpha = false);
+			bool SetData(CubeMapFace face, UInt32 level, Int32 x, Int32 y, Int32 width, Int32 height, const void* mipData, UInt32 mipDataSize);
 
 			bool GetData(CubeMapFace face, UInt32 level, void* dest);
 

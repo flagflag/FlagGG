@@ -59,6 +59,11 @@ namespace FlagGG
 			dynamic_ = dynamic;
 		}
 
+		bool GPUBuffer::IsDynamic() const
+		{
+			return dynamic_;
+		}
+
 		void* GPUBuffer::Lock(UInt32 start, UInt32 count)
 		{
 			if (!dynamic_ || gpuBufferSize_ == 0)

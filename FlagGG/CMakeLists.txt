@@ -13,6 +13,7 @@ include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/bgfx/bgfx/include)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/bgfx/bx/include)
+include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/bgfx/bimg/include)
 message ("include dir: ${CMAKE_CURRENT_SOURCE_DIR}")
 
 # 在非windows上把Graphics排除，因为目前Graphics只写了windows的部分

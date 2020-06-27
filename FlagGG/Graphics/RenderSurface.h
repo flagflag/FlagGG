@@ -13,8 +13,7 @@ namespace FlagGG
 	{
 		class Texture;
 
-		// ID3D11RenderTargetView*;
-		// ID3D11DepthStencilView*
+		/// FrameBuffer
 		class FlagGG_API RenderSurface : public GPUObject, public Container::RefCounted
 		{
 		public:

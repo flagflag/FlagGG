@@ -15,7 +15,7 @@ namespace FlagGG
 
 		bool RenderSurface::IsValid()
 		{
-			return GetHandler() != nullptr;
+			return GetHandler();
 		}
 
 		Texture* RenderSurface::GetParentTexture()
