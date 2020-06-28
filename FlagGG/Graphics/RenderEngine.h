@@ -118,7 +118,6 @@ namespace FlagGG
 			RasterizerState rasterizerState_;
 			RasterizerState shadowRasterizerState_;
 			bool rasterizerStateDirty_{ false };
-			Container::HashMap<UInt32, ID3D11RasterizerState*> rasterizerStates_;
 
 			const Math::Matrix3x4* skinMatrix_{ nullptr };
 			UInt32 numSkinMatrix_{ 0u };

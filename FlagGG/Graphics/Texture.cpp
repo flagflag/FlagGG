@@ -3,6 +3,7 @@
 #include "Math/Math.h"
 #include "Log.h"
 #include "bgfx/bgfx.h"
+#include "bimg/bimg.h"
 
 namespace FlagGG
 {
@@ -120,7 +121,8 @@ namespace FlagGG
 
 		bool Texture::IsCompressed() const
 		{
-			return format_ == DXGI_FORMAT_BC1_UNORM || format_ == DXGI_FORMAT_BC2_UNORM || format_ == DXGI_FORMAT_BC3_UNORM;
+			// return format_ == DXGI_FORMAT_BC1_UNORM || format_ == DXGI_FORMAT_BC2_UNORM || format_ == DXGI_FORMAT_BC3_UNORM;
+			return bimg::isCompressed((bimg::TextureFormat::Enum)format_);
 		}
 
 		UInt32 Texture::GetComponents() const

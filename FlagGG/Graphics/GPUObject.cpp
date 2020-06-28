@@ -102,6 +102,8 @@ namespace FlagGG
 			refCount_ = rhs.refCount_;
 
 			AddRef();
+
+			return *this;
 		}
 
 		void GPUHandler::AddRef()

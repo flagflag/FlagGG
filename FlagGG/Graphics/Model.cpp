@@ -3,6 +3,8 @@
 #include "Container/ArrayPtr.h"
 #include "IOFrame/Buffer/IOBufferAux.h"
 #include "Log.h"
+#include "bgfx/bgfx/src/vertexlayout.h"
+#include "bgfx/bgfx/3rdparty/meshoptimizer/src/meshoptimizer.h"
 
 namespace FlagGG
 {
@@ -110,8 +112,49 @@ namespace FlagGG
 			return boundingBox_;
 		}
 
+		static void ReadLayout(IOFrame::Buffer::IOBuffer* stream, bgfx::VertexLayout& layout)
+		{
+			UInt8 numAttrs;
+			stream->ReadUInt8(numAttrs);
+			UInt16 stride;
+			stream->ReadUInt16(stride);
+
+			layout.begin();
+			for (UInt32 ii = 0; ii < numAttrs; ++ii)
+			{
+				UInt16 offset;
+				stream->ReadUInt16(offset);
+
+				UInt16 attribId = 0;
+				stream->ReadUInt16(attribId);
+
+				UInt8 num;
+				stream->ReadUInt8(num);
+
+				UInt16 attribTypeId;
+				stream->ReadUInt16(attribTypeId);
+
+				UInt8 normalized;
+				stream->ReadUInt8(normalized);
+
+				UInt8 asInt;
+				stream->ReadUInt8(asInt);
+
+				bgfx::Attrib::Enum     attr = bgfx::idToAttrib(attribId);
+				bgfx::AttribType::Enum type = bgfx::idToAttribType(attribTypeId);
+				if (bgfx::Attrib::Count != attr && bgfx::AttribType::Count != type)
+				{
+					layout.add(attr, num, type, normalized, asInt);
+					layout.m_offset[attr] = offset;
+				}
+			}
+			layout.end();
+		}
+
+#define BGFX_MODEL
 		bool Model::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		{
+#ifndef BGFX_MODEL
 			Container::String fileID;
 			fileID.Resize(4);
 			stream->ReadStream(&fileID[0], 4);
@@ -264,6 +307,160 @@ namespace FlagGG
 			skeleton_.Load(stream);
 
 			IOFrame::Buffer::ReadBoundingBox(stream, boundingBox_);
+#else
+#define G_MAKEFOURCC(_a, _b, _c, _d) ( ( (uint32_t)(_a) | ( (uint32_t)(_b) << 8) | ( (uint32_t)(_c) << 16) | ( (uint32_t)(_d) << 24) ) )
+#define BGFX_CHUNK_MAGIC_VB  G_MAKEFOURCC('V', 'B', ' ', 0x1)
+#define BGFX_CHUNK_MAGIC_VBC G_MAKEFOURCC('V', 'B', 'C', 0x0)
+#define BGFX_CHUNK_MAGIC_IB  G_MAKEFOURCC('I', 'B', ' ', 0x0)
+#define BGFX_CHUNK_MAGIC_IBC G_MAKEFOURCC('I', 'B', 'C', 0x1)
+#define BGFX_CHUNK_MAGIC_PRI G_MAKEFOURCC('P', 'R', 'I', 0x0)
+			
+			UInt32 chunk;
+			Container::SharedPtr<VertexBuffer> vertexBuffer;
+			Container::SharedPtr<IndexBuffer> indexBuffer;
+			UInt32 fileSize = stream->GetSize();
+			while (stream->GetIndex() < fileSize)
+			{
+				stream->ReadUInt32(chunk);
+				switch (chunk)
+				{
+				case BGFX_CHUNK_MAGIC_VB:
+				{
+					stream->Seek(stream->GetIndex() + 16);
+					stream->Seek(stream->GetIndex() + 24);
+					stream->Seek(stream->GetIndex() + 64);
+
+					bgfx::VertexLayout layout;
+					ReadLayout(stream, layout);
+
+					UInt16 numVertices;
+					stream->ReadUInt16(numVertices);
+
+					vertexBuffer = new VertexBuffer();
+					vertexBuffer->SetDynamic(true);
+					vertexBuffer->SetSize(numVertices, layout);
+					UInt32 dataSize = vertexBuffer->GetVertexSize() * vertexBuffer->GetVertexCount();
+					void* data = vertexBuffer->Lock(0, dataSize);
+					stream->ReadStream(data, dataSize);
+					vertexBuffer->Unlock();
+
+					vertexBuffers_.Push(vertexBuffer);
+				}
+				break;
+
+				case BGFX_CHUNK_MAGIC_VBC:
+				{
+					stream->Seek(stream->GetIndex() + 16);
+					stream->Seek(stream->GetIndex() + 24);
+					stream->Seek(stream->GetIndex() + 64);
+
+					bgfx::VertexLayout layout;
+					ReadLayout(stream, layout);
+
+					UInt16 numVertices;
+					stream->ReadUInt16(numVertices);
+
+					UInt32 compressedSize;
+					stream->ReadUInt32(compressedSize);
+
+					Container::SharedArrayPtr<UInt8> compressedVertices(new UInt8[compressedSize]);
+					stream->ReadStream(compressedVertices.Get(), compressedSize);
+
+					vertexBuffer = new VertexBuffer();
+					vertexBuffer->SetDynamic(true);
+					vertexBuffer->SetSize(numVertices, layout);
+					void* data = vertexBuffer->Lock(0, vertexBuffer->GetVertexSize() * vertexBuffer->GetVertexCount());
+					meshopt_decodeVertexBuffer(data, vertexBuffer->GetVertexCount(), vertexBuffer->GetVertexSize(), compressedVertices.Get(), compressedSize);
+					vertexBuffer->Unlock();
+
+					vertexBuffers_.Push(vertexBuffer);
+				}
+				break;
+
+				case BGFX_CHUNK_MAGIC_IB:
+				{
+					UInt32 numIndices;
+					stream->ReadUInt32(numIndices);
+
+					indexBuffer = new IndexBuffer();
+					indexBuffer->SetDynamic(true);
+					indexBuffer->SetSize(2u, numIndices);
+					void* data = indexBuffer->Lock(0, 2u * numIndices);
+					stream->ReadStream(data, 2u * numIndices);
+					indexBuffer->Unlock();
+
+					indexBuffers_.Push(indexBuffer);
+				}
+				break;
+
+				case BGFX_CHUNK_MAGIC_IBC:
+				{
+					UInt32 numIndices;
+					stream->ReadUInt32(numIndices);
+
+					UInt32 compressedSize;
+					stream->ReadUInt32(compressedSize);
+
+					Container::SharedArrayPtr<UInt8> compressedIndices(new UInt8[compressedSize]);
+					stream->ReadStream(compressedIndices.Get(), compressedSize);
+
+					indexBuffer = new IndexBuffer();
+					indexBuffer->SetDynamic(true);
+					indexBuffer->SetSize(2u, numIndices);
+					void* data = indexBuffer->Lock(0, 2u * numIndices);
+					meshopt_decodeIndexBuffer(data, numIndices, 2, compressedIndices.Get(), compressedSize);
+					indexBuffer->Unlock();
+
+					indexBuffers_.Push(indexBuffer);
+				}
+				break;
+
+				case BGFX_CHUNK_MAGIC_PRI:
+				{
+					UInt16 len;
+					stream->ReadUInt16(len);
+
+					Container::String material;
+					material.Resize(len);
+					if (len)
+						stream->ReadStream(&material[0], len);
+
+					UInt16 num;
+					stream->ReadUInt16(num);
+
+					for (UInt32 i = 0; i < num; ++i)
+					{
+						stream->ReadUInt16(len);
+
+						Container::String name;
+						name.Resize(len);
+						if (len)
+							stream->ReadStream(&name[0], len);
+
+						Container::SharedPtr<Geometry> geometry(new Geometry());
+						geometry->SetVertexBuffer(0, vertexBuffer);
+						geometry->SetIndexBuffer(indexBuffer);
+
+						UInt32 indexStart, indexCount, vertexStart, vertexCount;
+						stream->ReadUInt32(indexStart);
+						stream->ReadUInt32(indexCount);
+						stream->ReadUInt32(vertexStart);
+						stream->ReadUInt32(vertexCount);
+						geometry->SetDataRange(indexStart, indexCount, vertexStart, vertexCount);
+
+						Container::Vector<Container::SharedPtr<Geometry>> lodGeometries;
+						lodGeometries.Push(geometry);
+						geometries_.Push(lodGeometries);
+
+						stream->Seek(stream->GetIndex() + 16);
+						stream->Seek(stream->GetIndex() + 24);
+						stream->Seek(stream->GetIndex() + 64);
+					}
+				}
+				break;
+				}
+			}
+#endif
 			
 			return true;
 		}

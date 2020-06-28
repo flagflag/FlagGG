@@ -50,13 +50,6 @@ namespace FlagGG
 			void SetScene(Scene::Scene* scene);
 
 			void SetViewport();
-
-		protected:
-			void CreateRenderTarget();
-
-			void CreateSwapChain();
-
-			void CreateDepthStencilView();
 			
 		protected:
 			Container::SharedPtr<RenderSurface> renderTarget_;
@@ -66,7 +59,7 @@ namespace FlagGG
 
 			Container::SharedPtr<Scene::Scene> scene_;
 
-			ID3D11DepthStencilView* depthStencialView_{ nullptr };
+			// ID3D11DepthStencilView* depthStencialView_{ nullptr };
 
 			Math::IntRect rect_;
 		};

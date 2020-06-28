@@ -3,6 +3,7 @@
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Window.h"
 #endif
+#include "bgfx/bgfx.h"
 
 using namespace FlagGG::Math;
 
@@ -29,8 +30,8 @@ namespace FlagGG
 
 #ifdef _WIN32
 		WindowDevice::Initialize();
-		RenderEngine::CreateInstance(context_)->Initialize();
 #endif
+		RenderEngine::CreateInstance(context_)->Initialize();
 
 		isRunning_ = true;
 		elapsedTime_ = 0.0f;
@@ -56,7 +57,6 @@ namespace FlagGG
 
 		context_->SendEvent<Frame::LOGIC_UPDATE_HANDLER>(Frame::LOGIC_UPDATE, timeStep);
 
-#ifdef _WIN32
 		RenderEngine::Instance()->GetShaderParameters().SetValue(SP_DELTA_TIME, timeStep);
 		RenderEngine::Instance()->GetShaderParameters().SetValue(SP_ELAPSED_TIME, elapsedTime_);
 
@@ -65,8 +65,11 @@ namespace FlagGG
 			RenderEngine::Instance()->Render(viewport);
 		}
 
+#ifdef _WIN32
 		WindowDevice::Render();
 #endif
+
+		bgfx::frame();
 
 		context_->SendEvent<Frame::FRAME_END_HANDLER>(Frame::FRAME_END, timeStep);
 
@@ -85,8 +88,8 @@ namespace FlagGG
 
 #ifdef _WIN32
 		WindowDevice::Uninitialize();
+#endif
 		RenderEngine::Instance()->Uninitialize();
 		RenderEngine::DestroyInstance();
-#endif
 	}
 }

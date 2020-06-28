@@ -2,6 +2,7 @@
 
 #include "GPUBuffer.h"
 #include "Container/Vector.h"
+#include "bgfx/bgfx.h"
 
 namespace FlagGG
 {
@@ -11,6 +12,8 @@ namespace FlagGG
 		{
 		public:
 			bool SetSize(UInt32 vertexCount, const Container::PODVector<VertexElement>& vertexElements);
+
+			bool SetSize(UInt32 vertexCount, const bgfx::VertexLayout& layout);
 
 			UInt32 GetVertexSize() const;
 
@@ -31,6 +34,9 @@ namespace FlagGG
 
 		private:
 			Container::PODVector<VertexElement> vertexElements_;
+
+			bool useBgfxLayout{ false };
+			bgfx::VertexLayout layout_;
 
 			UInt32 vertexSize_{ 0 };
 			UInt32 vertexCount_{ 0 };

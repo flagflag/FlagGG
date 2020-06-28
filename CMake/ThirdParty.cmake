@@ -11,7 +11,9 @@ endif ()
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/lua)
 set (LUA_LIB lua53)
 set (SLikeNet_LIB SLikeNet)
-set (BDFX_LIB bdfx)
+set (BGFX_LIB bgfx)
+set (BIMG_LIB bimg)
+set (BX bx)
 
 # Direct3D
 if (WIN32 OR WIN64)

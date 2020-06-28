@@ -10,8 +10,6 @@
 #include "Resource/ResourceCache.h"
 #include "bgfx/bgfx.h"
 
-#include <assert.h>
-
 namespace FlagGG
 {
 	namespace Graphics
@@ -29,6 +27,11 @@ namespace FlagGG
 			shaderParameters_.AddParametersDefine<Math::Vector3>(SP_LIGHT_DIR);
 			shaderParameters_.AddParametersDefine<Math::Matrix3x4>(SP_LIGHT_VIEW_MATRIX);
 			shaderParameters_.AddParametersDefine<Math::Matrix4>(SP_LIGHT_PROJVIEW_MATRIX);
+
+			for (auto& it : samplerUniform)
+			{
+				it.idx = bgfx::kInvalidHandle;
+			}
 		}
 
 		void RenderEngine::CreateShadowRasterizerState()
@@ -41,17 +44,21 @@ namespace FlagGG
 
 		void RenderEngine::Initialize()
 		{
-			CreateDevice();
-
 			CreateShadowRasterizerState();
+
+			bgfx::Init init;
+			init.type = bgfx::RendererType::Direct3D11;
+			init.resolution.width = 200;
+			init.resolution.height = 200;
+			init.resolution.reset = 0u;
+			if (!bgfx::init(init))
+			{
+				FLAGGG_LOG_ERROR("bgfx::init failed.");
+			}
 		}
 
 		void RenderEngine::Uninitialize()
 		{
-			for (auto it = rasterizerStates_.Begin(); it != rasterizerStates_.End(); ++it)
-			{
-				SAFE_RELEASE(it->second_);
-			}
 		}
 
 		void RenderEngine::SetTextureQuality(MaterialQuality quality)
@@ -319,19 +326,6 @@ namespace FlagGG
 			primitiveType_ = primitiveType;
 		}
 
-		static const D3D11_FILL_MODE d3d11FillMode[] =
-		{
-			D3D11_FILL_WIREFRAME,
-			D3D11_FILL_SOLID,
-		};
-
-		static const D3D11_CULL_MODE d3d11CullMode[] = 
-		{
-			D3D11_CULL_NONE,
-			D3D11_CULL_FRONT,
-			D3D11_CULL_BACK,
-		};
-
 		static const char* bgfxSamplerUniform[]=
 		{
 			"s_texUniversal",
@@ -342,7 +336,7 @@ namespace FlagGG
 			"s_texEnvironment",
 			"s_texShadowmap",
 		};
-		static_assert(BX_COUNTOF(bgfxSamplerUnitform) == MAX_TEXTURE_CLASS, "bgfxSamplerUniform num invalid.");
+		static_assert(_countof(bgfxSamplerUniform) == MAX_TEXTURE_CLASS, "bgfxSamplerUniform num invalid.");
 
 		void RenderEngine::PreDraw()
 		{
@@ -391,6 +385,45 @@ namespace FlagGG
 					}
 				}
 				texturesDirty_ = false;
+			}
+
+			if (rasterizerStateDirty_)
+			{
+				UInt64 state = 0u;
+
+				switch (rasterizerState_.cullMode_)
+				{
+				case CULL_FRONT:
+					state |= BGFX_STATE_CULL_CW;
+					break;
+						
+				case CULL_BACK:
+					state |= BGFX_STATE_CULL_CCW;
+					break;
+
+				default:
+					break;
+				}
+
+				switch (rasterizerState_.fillMode_)
+				{
+				case FILL_WIREFRAME:
+					state |= BGFX_STATE_WRITE_RGB;
+					break;
+						
+				case FILL_SOLID:
+					state |= BGFX_STATE_WRITE_RGB;
+					break;
+				}
+
+				state |= BGFX_STATE_WRITE_A;
+				state |= BGFX_STATE_WRITE_Z;
+				state |= BGFX_STATE_DEPTH_TEST_LESS;
+				state |= BGFX_STATE_MSAA;
+
+				bgfx::setState(state);
+
+				rasterizerStateDirty_ = false;
 			}
 		}
 

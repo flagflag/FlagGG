@@ -164,13 +164,13 @@ namespace FlagGG
 				return false;
 			}
 
-			if (1 >= imageContainer->m_depth)
+			if (1 < imageContainer->m_depth)
 			{
 				BX_ASSERT(false, "3D Texture loading not supported");
 				return false;
 			}
 
-			if (1 == imageContainer->m_numLayers)
+			if (1 != imageContainer->m_numLayers)
 			{
 				BX_ASSERT(false, "Texture Layer loading not supported");
 				return false;

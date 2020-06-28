@@ -55,6 +55,20 @@ namespace FlagGG
 			UpdateOffset();
 		}
 
+		bool VertexBuffer::SetSize(UInt32 vertexCount, const bgfx::VertexLayout& layout)
+		{
+			layout_ = layout;
+			vertexSize_ = layout_.getStride();
+			vertexCount_ = vertexCount;
+
+			useBgfxLayout = true;
+
+			if (!GPUBuffer::SetSize(vertexSize_ * vertexCount_))
+			{
+				return false;
+			}
+		}
+
 		void VertexBuffer::UpdateOffset()
 		{
 			UInt32 offset = 0;
@@ -105,26 +119,42 @@ namespace FlagGG
 
 		void VertexBuffer::Create(const bgfx::Memory* mem, bool dynamic)
 		{
-			bgfx::VertexLayout layout;
-			layout.begin();
-			for (auto it : vertexElements_)
+			if (!useBgfxLayout)
 			{
-				layout.add(
-					BGFX_VERTEX_ELEMENT_SEMANTIC[it.vertexElementSemantic_],
-					BGFX_VERTEX_ELEMENT_COUNT[it.vertexElementType_],
-					BGFX_VERTEX_ELEMENT_TYPE[it.vertexElementType_]);
-			}
-			layout.end();
+				bgfx::VertexLayout layout;
+				layout.begin();
+				for (auto it : vertexElements_)
+				{
+					layout.add(
+						BGFX_VERTEX_ELEMENT_SEMANTIC[it.vertexElementSemantic_],
+						BGFX_VERTEX_ELEMENT_COUNT[it.vertexElementType_],
+						BGFX_VERTEX_ELEMENT_TYPE[it.vertexElementType_]);
+				}
+				layout.end();
 
-			if (dynamic)
-			{
-				bgfx::DynamicVertexBufferHandle handle = bgfx::createDynamicVertexBuffer(mem, layout);
-				ResetHandler(handle);
+				if (dynamic)
+				{
+					bgfx::DynamicVertexBufferHandle handle = bgfx::createDynamicVertexBuffer(mem, layout);
+					ResetHandler(handle);
+				}
+				else
+				{
+					bgfx::VertexBufferHandle handle = bgfx::createVertexBuffer(mem, layout);
+					ResetHandler(handle);
+				}
 			}
 			else
 			{
-				bgfx::VertexBufferHandle handle = bgfx::createVertexBuffer(mem, layout);
-				ResetHandler(handle);
+				if (dynamic)
+				{
+					bgfx::DynamicVertexBufferHandle handle = bgfx::createDynamicVertexBuffer(mem, layout_);
+					ResetHandler(handle);
+				}
+				else
+				{
+					bgfx::VertexBufferHandle handle = bgfx::createVertexBuffer(mem, layout_);
+					ResetHandler(handle);
+				}
 			}
 		}
 

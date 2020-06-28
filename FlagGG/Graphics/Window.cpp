@@ -2,6 +2,8 @@
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Texture.h"
 #include "Log.h"
+#include "bgfx/bgfx.h"
+#include "bgfx/platform.h"
 
 #include <windows.h>
 #include <memory>
@@ -21,7 +23,7 @@ namespace FlagGG
 			switch (message)
 			{
 			case WM_CREATE:
-				FLAGGG_LOG_ERROR("create window success.");
+				FLAGGG_LOG_ERROR("create window_ success.");
 				break;
 			}
 
@@ -81,9 +83,9 @@ namespace FlagGG
 
 		void WindowDevice::Render()
 		{
-			for (auto& window : recivers_)
+			for (auto& window_ : recivers_)
 			{
-				window->Render();
+				window_->Render();
 			}
 		}
 
@@ -107,7 +109,7 @@ namespace FlagGG
 
 
 		Window::Window(Core::Context* context, void* parentWindow, const Math::IntRect& rect) :
-			window(nullptr),
+			window_(nullptr),
 			parentWindow_(parentWindow),
 			rect_(rect),
 			context_(context),
@@ -120,12 +122,11 @@ namespace FlagGG
 
 		Window::~Window()
 		{
-			SAFE_RELEASE(depthTexture_);
 		}
 
 		bool Window::Create(void* parentWindow, const Math::IntRect& rect)
 		{
-			window = CreateWindowExW(
+			window_ = CreateWindowExW(
 				0,
 				WindowDevice::className_,
 				L"",
@@ -140,11 +141,29 @@ namespace FlagGG
 				this
 				);
 
-			if (!window)
+			if (!window_)
 			{
 				FLAGGG_LOG_ERROR("CreateWindow failed, error code({}).", GetLastError());
 				return false;
 			}
+
+			bgfx::FrameBufferHandle handle = bgfx::createFrameBuffer(window_, rect.Width(), rect.Height(), bgfx::TextureFormat::RGBA8, bgfx::TextureFormat::D24S8);
+			ResetHandler(handle);
+
+			RenderSurface* renderTargetSurface = new RenderSurface(nullptr);
+			renderTargetSurface->ResetHandler(handle);
+
+			RenderSurface* depthStencilSurface = new RenderSurface(nullptr);
+			depthStencilSurface->ResetHandler(handle);
+
+			viewport_ = new Viewport();
+			viewport_->Resize(Math::IntRect(0, 0, rect.Width(), rect.Height()));
+			viewport_->SetRenderTarget(renderTargetSurface);
+			viewport_->SetDepthStencil(depthStencilSurface);
+
+			bgfx::PlatformData data;
+			data.nwh = window_;
+			bgfx::setPlatformData(data);
 
 			CreateSwapChain();
 			UpdateSwapChain(rect.Width(), rect.Height());
@@ -154,125 +173,125 @@ namespace FlagGG
 
 		void Window::CreateSwapChain()
 		{
-			IDXGISwapChain* swapChain = nullptr;
+			//IDXGISwapChain* swapChain = nullptr;
 
-			HWND handler_ = (HWND)GetWindow();
+			//HWND handler_ = (HWND)GetWindow();
 
-			DXGI_SWAP_CHAIN_DESC swapChainDesc;
-			memset(&swapChainDesc, 0, sizeof(swapChainDesc));
-			swapChainDesc.BufferCount = 1;
-			swapChainDesc.BufferDesc.Width = GetWidth();
-			swapChainDesc.BufferDesc.Height = GetHeight();
-			swapChainDesc.BufferDesc.Format = sRGB_ ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM;
-			swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-			swapChainDesc.OutputWindow = handler_;
-			swapChainDesc.SampleDesc.Count = (UINT)multiSample_;
-			swapChainDesc.SampleDesc.Quality = RenderEngine::Instance()->GetMultiSampleQuality(swapChainDesc.BufferDesc.Format, multiSample_);
-			swapChainDesc.Windowed = TRUE;
-			swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+			//DXGI_SWAP_CHAIN_DESC swapChainDesc;
+			//memset(&swapChainDesc, 0, sizeof(swapChainDesc));
+			//swapChainDesc.BufferCount = 1;
+			//swapChainDesc.BufferDesc.Width = GetWidth();
+			//swapChainDesc.BufferDesc.Height = GetHeight();
+			//swapChainDesc.BufferDesc.Format = sRGB_ ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM;
+			//swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+			//swapChainDesc.OutputWindow = handler_;
+			//swapChainDesc.SampleDesc.Count = (UINT)multiSample_;
+			//swapChainDesc.SampleDesc.Quality = RenderEngine::Instance()->GetMultiSampleQuality(swapChainDesc.BufferDesc.Format, multiSample_);
+			//swapChainDesc.Windowed = TRUE;
+			//swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-			IDXGIDevice* dxgiDevice = nullptr;
-			RenderEngine::Instance()->GetDevice()->QueryInterface(IID_IDXGIDevice, (void**)&dxgiDevice);
-			IDXGIAdapter* dxgiAdapter = nullptr;
-			dxgiDevice->GetParent(IID_IDXGIAdapter, (void**)&dxgiAdapter);
-			IDXGIFactory* dxgiFactory = nullptr;
-			dxgiAdapter->GetParent(IID_IDXGIFactory, (void**)&dxgiFactory);
-			HRESULT hr = dxgiFactory->CreateSwapChain(RenderEngine::Instance()->GetDevice(), &swapChainDesc, &swapChain);
-			dxgiFactory->MakeWindowAssociation(handler_, DXGI_MWA_NO_ALT_ENTER | DXGI_MWA_NO_WINDOW_CHANGES);
+			//IDXGIDevice* dxgiDevice = nullptr;
+			//RenderEngine::Instance()->GetDevice()->QueryInterface(IID_IDXGIDevice, (void**)&dxgiDevice);
+			//IDXGIAdapter* dxgiAdapter = nullptr;
+			//dxgiDevice->GetParent(IID_IDXGIAdapter, (void**)&dxgiAdapter);
+			//IDXGIFactory* dxgiFactory = nullptr;
+			//dxgiAdapter->GetParent(IID_IDXGIFactory, (void**)&dxgiFactory);
+			//HRESULT hr = dxgiFactory->CreateSwapChain(RenderEngine::Instance()->GetDevice(), &swapChainDesc, &swapChain);
+			//dxgiFactory->MakeWindowAssociation(handler_, DXGI_MWA_NO_ALT_ENTER | DXGI_MWA_NO_WINDOW_CHANGES);
 
-			SAFE_RELEASE(dxgiDevice);
-			SAFE_RELEASE(dxgiAdapter);
-			SAFE_RELEASE(dxgiFactory);
+			//SAFE_RELEASE(dxgiDevice);
+			//SAFE_RELEASE(dxgiAdapter);
+			//SAFE_RELEASE(dxgiFactory);
 
-			if (hr != 0)
-			{
-				FLAGGG_LOG_ERROR("CreateSwapChain failed.");
+			//if (hr != 0)
+			//{
+			//	FLAGGG_LOG_ERROR("CreateSwapChain failed.");
 
-				SAFE_RELEASE(swapChain);
+			//	SAFE_RELEASE(swapChain);
 
-				return;
-			}
+			//	return;
+			//}
 
-			ResetHandler(swapChain);
+			//ResetHandler(swapChain);
 		}
 
 		void Window::UpdateSwapChain(UInt32 width, UInt32 height)
 		{
-			GetObject<IDXGISwapChain>()->ResizeBuffers(1, (UINT)width, (UINT)height,
-				DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+			//GetObject<IDXGISwapChain>()->ResizeBuffers(1, (UINT)width, (UINT)height,
+			//	DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
 
-			viewport_.Reset();
+			//viewport_.Reset();
 
-			ID3D11Texture2D* backBuffer;
-			HRESULT hr = GetObject<IDXGISwapChain>()->GetBuffer(0, IID_ID3D11Texture2D, (void**)&backBuffer);
-			if (FAILED(hr))
-			{
-				SAFE_RELEASE(backBuffer);
-				FLAGGG_LOG_ERROR("Faild to get backbuffer from SwapChain.");
-				return;
-			}
+			//ID3D11Texture2D* backBuffer;
+			//HRESULT hr = GetObject<IDXGISwapChain>()->GetBuffer(0, IID_ID3D11Texture2D, (void**)&backBuffer);
+			//if (FAILED(hr))
+			//{
+			//	SAFE_RELEASE(backBuffer);
+			//	FLAGGG_LOG_ERROR("Faild to get backbuffer from SwapChain.");
+			//	return;
+			//}
 
-			ID3D11RenderTargetView* renderTargetView;
-			hr = RenderEngine::Instance()->GetDevice()->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView);
-			if (FAILED(hr))
-			{
-				SAFE_RELEASE(renderTargetView);
-				FLAGGG_LOG_ERROR("Failed to create RenderTargetView for SwapChain.");
-				return;
-			}
-			Container::SharedPtr<RenderSurface> renderTarget(new RenderSurface(nullptr));
-			renderTarget->ResetHandler(renderTargetView);
+			//ID3D11RenderTargetView* renderTargetView;
+			//hr = RenderEngine::Instance()->GetDevice()->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView);
+			//if (FAILED(hr))
+			//{
+			//	SAFE_RELEASE(renderTargetView);
+			//	FLAGGG_LOG_ERROR("Failed to create RenderTargetView for SwapChain.");
+			//	return;
+			//}
+			//Container::SharedPtr<RenderSurface> renderTarget(new RenderSurface(nullptr));
+			//renderTarget->ResetHandler(renderTargetView);
 
-			D3D11_TEXTURE2D_DESC depthDesc;
-			memset(&depthDesc, 0, sizeof depthDesc);
-			depthDesc.Width = (UINT)width;
-			depthDesc.Height = (UINT)height;
-			depthDesc.MipLevels = 1;
-			depthDesc.ArraySize = 1;
-			depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-			depthDesc.SampleDesc.Count = (UINT)multiSample_;
-			depthDesc.SampleDesc.Quality = RenderEngine::Instance()->GetMultiSampleQuality(depthDesc.Format, multiSample_);
-			depthDesc.Usage = D3D11_USAGE_DEFAULT;
-			depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-			depthDesc.CPUAccessFlags = 0;
-			depthDesc.MiscFlags = 0;
+			//D3D11_TEXTURE2D_DESC depthDesc;
+			//memset(&depthDesc, 0, sizeof depthDesc);
+			//depthDesc.Width = (UINT)width;
+			//depthDesc.Height = (UINT)height;
+			//depthDesc.MipLevels = 1;
+			//depthDesc.ArraySize = 1;
+			//depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+			//depthDesc.SampleDesc.Count = (UINT)multiSample_;
+			//depthDesc.SampleDesc.Quality = RenderEngine::Instance()->GetMultiSampleQuality(depthDesc.Format, multiSample_);
+			//depthDesc.Usage = D3D11_USAGE_DEFAULT;
+			//depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+			//depthDesc.CPUAccessFlags = 0;
+			//depthDesc.MiscFlags = 0;
 
-			hr = RenderEngine::Instance()->GetDevice()->CreateTexture2D(&depthDesc, nullptr, &depthTexture_);
-			if (FAILED(hr))
-			{
-				SAFE_RELEASE(depthTexture_);
-				FLAGGG_LOG_ERROR("Failed to create depth texture.");
-				return;
-			}
+			//hr = RenderEngine::Instance()->GetDevice()->CreateTexture2D(&depthDesc, nullptr, &depthTexture_);
+			//if (FAILED(hr))
+			//{
+			//	SAFE_RELEASE(depthTexture_);
+			//	FLAGGG_LOG_ERROR("Failed to create depth texture.");
+			//	return;
+			//}
 
-			ID3D11DepthStencilView* depthStencilView;
-			hr = RenderEngine::Instance()->GetDevice()->CreateDepthStencilView(depthTexture_, nullptr, &depthStencilView);
-			if (FAILED(hr))
-			{
-				SAFE_RELEASE(depthStencilView);
-				FLAGGG_LOG_ERROR("Failed to create depth-stencil view.");
-				return;
-			}
-			Container::SharedPtr<RenderSurface> depthStencil(new RenderSurface(nullptr));
-			depthStencil->ResetHandler(depthStencilView);
+			//ID3D11DepthStencilView* depthStencilView;
+			//hr = RenderEngine::Instance()->GetDevice()->CreateDepthStencilView(depthTexture_, nullptr, &depthStencilView);
+			//if (FAILED(hr))
+			//{
+			//	SAFE_RELEASE(depthStencilView);
+			//	FLAGGG_LOG_ERROR("Failed to create depth-stencil view.");
+			//	return;
+			//}
+			//Container::SharedPtr<RenderSurface> depthStencil(new RenderSurface(nullptr));
+			//depthStencil->ResetHandler(depthStencilView);
 
-			viewport_ = new Viewport();
-			viewport_->Resize(Math::IntRect(0, 0, width, height));
-			viewport_->SetRenderTarget(renderTarget);
-			viewport_->SetDepthStencil(depthStencil);
+			//viewport_ = new Viewport();
+			//viewport_->Resize(Math::IntRect(0, 0, width, height));
+			//viewport_->SetRenderTarget(renderTarget);
+			//viewport_->SetDepthStencil(depthStencil);
 		}
 
 		UInt32 Window::GetWidth()
 		{
 			RECT rect;
-			::GetWindowRect((HWND)window, &rect);
+			::GetWindowRect((HWND)window_, &rect);
 			return rect.right - rect.left;
 		}
 
 		UInt32 Window::GetHeight()
 		{
 			RECT rect;
-			::GetWindowRect((HWND)window, &rect);
+			::GetWindowRect((HWND)window_, &rect);
 			return rect.bottom - rect.top;
 		}
 
@@ -280,18 +299,18 @@ namespace FlagGG
 		{
 			POINT point;
 			::GetCursorPos(&point);
-			::ScreenToClient((HWND)window, &point);
+			::ScreenToClient((HWND)window_, &point);
 			return Math::IntVector2(point.x, point.y);
 		}
 
 		bool Window::IsForegroundWindow() const
 		{
-			return ::GetForegroundWindow() == window;
+			return ::GetForegroundWindow() == window_;
 		}
 
 		void Window::Resize(UInt32 width, UInt32 height)
 		{
-			::SetWindowPos((HWND)window, nullptr, 0, 0, width, height, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+			::SetWindowPos((HWND)window_, nullptr, 0, 0, width, height, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
 			UpdateSwapChain(width, height);
 
@@ -301,17 +320,17 @@ namespace FlagGG
 
 		void* Window::GetWindow()
 		{
-			return window;
+			return window_;
 		}
 
 		void Window::Show()
 		{
-			::ShowWindow((HWND)window, SW_SHOW);
+			::ShowWindow((HWND)window_, SW_SHOW);
 		}
 
 		void Window::Hide()
 		{
-			::ShowWindow((HWND)window, SW_HIDE);
+			::ShowWindow((HWND)window_, SW_HIDE);
 		}
 
 		void Window::Render()
@@ -319,8 +338,6 @@ namespace FlagGG
 			RenderEngine::Instance()->Render(viewport_);
 
 			RenderEngine::Instance()->RenderBatch(viewport_);
-
-			GetObject<IDXGISwapChain>()->Present(0, 0);
 		}
 
 		Viewport* Window::GetViewport() const
@@ -383,14 +400,14 @@ namespace FlagGG
 				{
 					mousePos_.x = GetWidth() / 2;
 					mousePos_.y = GetHeight() / 2;
-					::ClientToScreen((HWND)window, &mousePos_);
+					::ClientToScreen((HWND)window_, &mousePos_);
 					::SetCursorPos(mousePos_.x, mousePos_.y);
 				}
 
 				break;
 
 			case WM_CLOSE:
-				context_->SendEvent<Core::Application::WINDOW_CLOSE_HANDLER>(Core::Application::WINDOW_CLOSE, window);
+				context_->SendEvent<Core::Application::WINDOW_CLOSE_HANDLER>(Core::Application::WINDOW_CLOSE, window_);
 
 				break;
 			}
@@ -398,7 +415,7 @@ namespace FlagGG
 
 		bool Window::IsValid()
 		{
-			return window && GetHandler();
+			return window_ && GetHandler();
 		}
 
 		void Window::Initialize()

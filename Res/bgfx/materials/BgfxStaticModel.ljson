@@ -1,0 +1,40 @@
+{
+	vsshader = 
+	{
+		path = "bgfx/shaders/dx11/vs_shadowvolume_texture_lighting.bin",
+		defines =  [ "SKINNED", "SHADOW" ]
+	},
+	psshader = 
+	{
+		path = "bgfx/shaders/dx11/fs_shadowvolume_texture_lighting.bin",
+		defines = [ "SHADOW" ]
+	},
+	texture =
+	{
+		type = "texture2d", //texturecube => 3d
+		path = "bgfx/textures/figure-rgba.dds"
+	},
+	shader_parameters = 
+	[
+		{
+			name = "ambientColor",
+			type = "vector4",
+			value = [ 0.1, 0.1, 0.1, 16 ]
+		},
+		{
+			name = "diffuseColor",
+			type = "vector4",
+			value = [ 0.88, 0.88, 0.88, 255 ]
+		},
+		{
+			name = "specularColor",
+			type = "vector4",
+			value = [ 0.02, 0.02, 0.02, 16 ]
+		},
+		{
+			name = "emissivePower",
+			type = "float",
+			value = 2
+		}
+	]
+}

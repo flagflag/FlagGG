@@ -46,6 +46,9 @@ message ("boost lib: ${BOOST_LIB}")
 message ("d3d11 lib: ${D3D11_LIB}")
 message ("lua lib: ${LUA_LIB}")
 message ("SLikeNet lib: ${SLikeNet_LIB}")
+message ("bgfx lib: ${BGFX_LIB}")
+message ("bimg lib: ${BIMG_LIB}")
+message ("bx lib: ${BX}")
 
 if (NOT FLAGGG_NO_BOOST)
 	list (APPEND THIRD_LIB ${BOOST_LIB})
@@ -54,9 +57,11 @@ list (APPEND THIRD_LIB ${D3D11_LIB})
 list (APPEND THIRD_LIB ${LUA_LIB})
 list (APPEND THIRD_LIB ${SLikeNet_LIB})
 list (APPEND THIRD_LIB jemallocso)
-list (APPEND THIRD_LIB $(BDFX_LIB))
+list (APPEND THIRD_LIB ${BGFX_LIB})
+list (APPEND THIRD_LIB ${BIMG_LIB})
+list (APPEND THIRD_LIB ${BX})
 
-target_link_libraries(${TARGET_NAME} ${THIRD_LIB})
+target_link_libraries(${TARGET_NAME} ${THIRD_LIB} meshoptimizer)
 
 # Setup test cases
 setup_test ()

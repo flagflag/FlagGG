@@ -93,14 +93,13 @@ namespace FlagGG
 			Core::Context* context_;
 			Core::Input* input_;
 
-			ID3D11Texture2D* depthTexture_{ nullptr };
 			Container::SharedPtr<Viewport> viewport_;
 
 			UInt32 multiSample_{ 1 };
 
 			bool sRGB_{ true };
 
-			void* window{ nullptr };
+			void* window_{ nullptr };
 
 			void* parentWindow_{ nullptr };
 

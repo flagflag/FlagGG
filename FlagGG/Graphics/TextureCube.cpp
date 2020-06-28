@@ -275,7 +275,8 @@ namespace FlagGG
 				return false;
 			}
 
-			bgfx::readTexture(GetSrcHandler<bgfx::TextureHandle>(), (char*)dest + levels_ * , level);
+			// width_ == height_ == size
+			bgfx::readTexture(GetSrcHandler<bgfx::TextureHandle>(), (char*)dest + levels_ * width_, level);
 
 			return true;
 		}

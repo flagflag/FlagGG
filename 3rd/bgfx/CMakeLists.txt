@@ -39,6 +39,10 @@ set( BGFX_OPENGL_VERSION   ""       CACHE STRING "Specify minimum opengl version
 set( BGFX_OPENGLES_VERSION ""       CACHE STRING "Specify minimum OpenGL ES version" )
 set( BGFX_LIBRARY_TYPE     "STATIC" CACHE STRING "Linking type for library" )
 
+add_definitions (-DSTB_IMAGE_STATIC)
+add_definitions (-DSTB_IMAGE_RESIZE_STATIC)
+add_definitions (-DSTB_IMAGE_WRITE_STATIC)
+
 set_property( CACHE BGFX_LIBRARY_TYPE PROPERTY STRINGS STATIC SHARED )
 
 if( NOT BX_DIR )

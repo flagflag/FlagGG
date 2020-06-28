@@ -27,7 +27,15 @@ namespace FlagGG
 			indexStart_ = indexStart;
 			indexCount_ = indexCount;
 			vertexStart_ = 0;
-			vertexCount_ = 0;
+			vertexCount_ = vertexBuffers_.Size() > 0 && vertexBuffers_[0] ? vertexBuffers_[0]->GetVertexCount() : 0u;
+		}
+
+		void Geometry::SetDataRange(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 vertexCount)
+		{
+			indexStart_ = indexStart;
+			indexCount_ = indexCount;
+			vertexStart_ = vertexStart;
+			vertexCount_ = vertexCount;
 		}
 
 		void Geometry::SetLodDistance(float distance)

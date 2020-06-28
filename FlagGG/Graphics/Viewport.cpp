@@ -57,15 +57,15 @@ namespace FlagGG
 
 		void Viewport::SetViewport()
 		{
-			D3D11_VIEWPORT d3d11Viewport;
-			d3d11Viewport.TopLeftX = GetX();
-			d3d11Viewport.TopLeftY = GetY();
-			d3d11Viewport.Width = GetWidth();
-			d3d11Viewport.Height = GetHeight();
-			d3d11Viewport.MinDepth = 0.0f;
-			d3d11Viewport.MaxDepth = 1.0f;
+			//D3D11_VIEWPORT d3d11Viewport;
+			//d3d11Viewport.TopLeftX = GetX();
+			//d3d11Viewport.TopLeftY = GetY();
+			//d3d11Viewport.Width = GetWidth();
+			//d3d11Viewport.Height = GetHeight();
+			//d3d11Viewport.MinDepth = 0.0f;
+			//d3d11Viewport.MaxDepth = 1.0f;
 
-			RenderEngine::Instance()->GetDeviceContext()->RSSetViewports(1, &d3d11Viewport);
+			//RenderEngine::Instance()->GetDeviceContext()->RSSetViewports(1, &d3d11Viewport);
 		}
 
 		Scene::Camera* Viewport::GetCamera() const

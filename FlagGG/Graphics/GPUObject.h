@@ -91,7 +91,7 @@ namespace FlagGG
 			template < typename Type >
 			Type GetSrcHandler()
 			{
-				return Type{ gpuHandler_.id };
+				return Type{ gpuHandler_.idx_ };
 			}
 
 			void ResetHandler(GPUHandler handler);

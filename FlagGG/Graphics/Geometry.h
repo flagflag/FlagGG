@@ -21,6 +21,8 @@ namespace FlagGG
 
 			void SetDataRange(UInt32 indexStart, UInt32 indexCount);
 
+			void SetDataRange(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 vertexCount);
+
 			void SetLodDistance(float distance);
 
 			const Container::Vector<Container::SharedPtr<VertexBuffer>>& GetVertexBuffers() const;
