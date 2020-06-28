@@ -39,12 +39,7 @@ namespace FlagGG
 				levels_ = 1;
 			}
 
-			bool hasMips = false;
-			if (usage_ == TEXTURE_RENDERTARGET && levels_ != 1 && multiSample_ == 1)
-			{
-				hasMips = true;
-			}
-
+			bool hasMips = levels_ > 1;
 			UInt16 numLayers = layers_;
 			bgfx::TextureFormat::Enum format = (bgfx::TextureFormat::Enum)format_;
 			// bgfx不需要再这里转srgb、dsv、srv，库内部做了转换
@@ -132,7 +127,7 @@ namespace FlagGG
 				return false;
 			}
 
-			const bgfx::Memory* mem = bgfx::makeRef(mipData, mipDataSize);
+			const bgfx::Memory* mem = bgfx::copy(mipData, mipDataSize);
 			bgfx::updateTexture2D(GetSrcHandler<bgfx::TextureHandle>(), 0, level, x, y, width, height, mem);
 
 			return true;

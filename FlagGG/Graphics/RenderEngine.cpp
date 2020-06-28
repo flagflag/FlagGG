@@ -8,6 +8,7 @@
 #include "Log.h"
 #include "IOFrame/Buffer/IOBufferAux.h"
 #include "Resource/ResourceCache.h"
+#include "Math/Color.h"
 #include "bgfx/bgfx.h"
 
 namespace FlagGG
@@ -340,6 +341,10 @@ namespace FlagGG
 
 		void RenderEngine::PreDraw()
 		{
+			bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL, Math::Color::BLACK.ToHash(), 1.0f, 0);
+
+			bgfx::submit(0, BGFX_INVALID_HANDLE, 0);
+
 			if (vertexBufferDirty_)
 			{
 				for (UInt8 i = 0; i < vertexBuffers_.Size(); ++i)

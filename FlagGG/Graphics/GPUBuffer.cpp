@@ -102,7 +102,8 @@ namespace FlagGG
 
 		IOFrame::Buffer::IOBuffer* GPUBuffer::LockDynamicBuffer()
 		{
-			buffer_ = new IOFrame::Buffer::StringBuffer();
+			if (!buffer_)
+				buffer_ = new IOFrame::Buffer::StringBuffer();
 			return buffer_;
 		}
 

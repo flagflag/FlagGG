@@ -154,13 +154,12 @@ namespace FlagGG
 
 		static bool CompileShader(Container::SharedArrayPtr<char> buffer, UInt32 bufferSize,
 			ShaderType shaderType, const Container::Vector<Container::String>& defines,
-			Container::SharedArrayPtr<char>& byteCode, UInt32& byteCodeSize)
+			const bgfx::Memory*& men)
 		{
 #ifdef COMPILE_SHADER
 
 #else
-			byteCode = buffer;
-			byteCodeSize = bufferSize;
+			men = bgfx::copy(buffer.Get(), bufferSize);
 #endif
 			return true;
 		}
@@ -174,15 +173,13 @@ namespace FlagGG
 				return;
 			}
 
-			Container::SharedArrayPtr<char> byteCode;
-			UInt32 byteCodeSize = 0u;
-			if (!CompileShader(buffer_, bufferSize_, shaderType_, defines_, byteCode, byteCodeSize))
+			const bgfx::Memory* mem = nullptr;
+			if (!CompileShader(buffer_, bufferSize_, shaderType_, defines_, mem) || !mem)
 			{
 				FLAGGG_LOG_ERROR("Failed to compile shader.");
 				return;
 			}
 
-			const bgfx::Memory* mem = bgfx::makeRef(byteCode.Get(), byteCodeSize);
 			bgfx::ShaderHandle handle = bgfx::createShader(mem);
 			ResetHandler(handle);
 		}
