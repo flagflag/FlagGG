@@ -86,6 +86,27 @@ namespace FlagGG
 			{ T_MATRIX4,	4 * 4 },
 		};
 
+		struct BgfxUniformType
+		{
+			bgfx::UniformType::Enum type_;
+			UInt32 num_;
+		};
+		static const Container::HashMap<Container::StringHash, BgfxUniformType> BGFX_UNIFORM_TYPE = 
+		{
+			{ T_INT,		{ bgfx::UniformType::Vec4, 1u } },
+			{ T_INT32,		{ bgfx::UniformType::Vec4, 1u } },
+			{ T_UINT32,		{ bgfx::UniformType::Vec4, 1u } },
+			{ T_FLOAT,		{ bgfx::UniformType::Vec4, 1u } },
+			{ T_COLOR,		{ bgfx::UniformType::Vec4, 1u } },
+			{ T_RECT,		{ bgfx::UniformType::Vec4, 1u } },
+			{ T_VECTOR2,	{ bgfx::UniformType::Vec4, 1u } },
+			{ T_VECTOR3,	{ bgfx::UniformType::Vec4, 1u } },
+			{ T_VECTOR4,	{ bgfx::UniformType::Vec4, 1u } },
+			{ T_MATRIX3,    { bgfx::UniformType::Mat3, 1u } },
+			{ T_MATRIX3X4,  { bgfx::UniformType::Mat4, 1u } },
+			{ T_MATRIX4,	{ bgfx::UniformType::Mat4, 1u } },
+		};
+
 		static const Container::HashMap<Container::StringHash, FillMode> FILL_MODE =
 		{
 			{ "FILL_WIREFRAME", FILL_WIREFRAME },
@@ -354,7 +375,8 @@ namespace FlagGG
 							auto type = item["type"].GetString().ToLower();
 
 							ToBuffer(type, item["value"], buffer);
-							shaderParameters_->AddParametersDefineImpl(name, *TYPE_SIZE[type]);
+							const auto& info = BGFX_UNIFORM_TYPE[type];
+							shaderParameters_->AddParametersDefineImpl(name, *TYPE_SIZE[type], info->type_, info->num_);
 							shaderParameters_->SetValueImpl(name, buffer.CString(), buffer.Length());
 						}
 					}

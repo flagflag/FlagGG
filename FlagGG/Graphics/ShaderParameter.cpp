@@ -4,7 +4,7 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-		bool ShaderParameters::AddParametersDefineImpl(Container::StringHash key, UInt32 typeSize)
+		bool ShaderParameters::AddParametersDefineImpl(Container::String key, UInt32 typeSize, bgfx::UniformType::Enum type, UInt32 num)
 		{
 			if (descs.Contains(key))
 				return false;
@@ -15,6 +15,8 @@ namespace FlagGG
 			ShaderParameterDesc& desc = descs[key];
 			desc.offset_ = dataBuffer_->GetSize();
 			desc.size_ = typeSize;
+			desc.type_ = type;
+			desc.num_ = num;
 			dataBuffer_->Seek(desc.offset_);
 			for (UInt32 i = 0; i < desc.size_; ++i)
 			{
@@ -24,7 +26,7 @@ namespace FlagGG
 			return true;
 		}
 
-		bool ShaderParameters::SetValueImpl(Container::StringHash key, const void* buffer, UInt32 bufferSize)
+		bool ShaderParameters::SetValueImpl(Container::String key, const void* buffer, UInt32 bufferSize)
 		{
 			if (!dataBuffer_)
 				return false;
@@ -50,6 +52,23 @@ namespace FlagGG
 				dataBuffer_->ClearIndex();
 				dataBuffer_->ReadStream(data, dataSize);
 				buffer->Unlock();
+			}
+		}
+
+		void ShaderParameters::SubmitUniforms()
+		{
+			if (!dataBuffer_)
+				return;
+
+			dataBuffer_->ClearIndex();
+			for (auto it : descs)
+			{
+				bgfx::UniformHandle handle = bgfx::createUniform(it.first_.CString(), it.second_.type_, it.second_.num_);
+				dataBuffer_->Seek(it.second_.offset_);
+				char* data = new char[it.second_.size_];
+				dataBuffer_->ReadStream(data, it.second_.size_);
+				bgfx::setUniform(handle, data, it.second_.num_);
+				delete[] data;
 			}
 		}
 	}

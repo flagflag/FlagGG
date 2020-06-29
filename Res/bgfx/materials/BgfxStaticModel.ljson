@@ -1,12 +1,12 @@
 {
 	vsshader = 
 	{
-		path = "bgfx/shaders/dx11/vs_shadowvolume_texture_lighting.bin",
+		path = "bgfx/shaders/dx11/vs_cubes.bin",
 		defines =  [ "SKINNED", "SHADOW" ]
 	},
 	psshader = 
 	{
-		path = "bgfx/shaders/dx11/fs_shadowvolume_texture_lighting.bin",
+		path = "bgfx/shaders/dx11/fs_cubes.bin",
 		defines = [ "SHADOW" ]
 	},
 	texture =
@@ -17,24 +17,49 @@
 	shader_parameters = 
 	[
 		{
-			name = "ambientColor",
+			name = "u_params",
 			type = "vector4",
-			value = [ 0.1, 0.1, 0.1, 16 ]
+			value = [ 1, 0, 0, 0 ]
 		},
 		{
-			name = "diffuseColor",
+			name = "u_ambient",
 			type = "vector4",
-			value = [ 0.88, 0.88, 0.88, 255 ]
+			value = [ 0.05, 0.05, 0.05, 0 ]
 		},
 		{
-			name = "specularColor",
+			name = "u_diffuse",
 			type = "vector4",
-			value = [ 0.02, 0.02, 0.02, 16 ]
+			value = [ 0.8, 0.8, 0.8, 0 ]
 		},
 		{
-			name = "emissivePower",
-			type = "float",
-			value = 2
+			name = "u_specular_shininess",
+			type = "vector4",
+			value = [ 1, 1, 1, 25 ]
+		},
+		{
+			name = "u_fog",
+			type = "vector4",
+			value = [ 0, 0, 0, 0.0055 ]
+		},
+		{
+			name = "u_color",
+			type = "vector4",
+			value = [ 0.68, 0.65, 0.6, 1 ]
+		},
+		{
+			name = "u_lightPosRadius",
+			type = "vector4",
+			value = [ 0, 0, 0, 1 ]
+		},
+		{
+			name = "u_lightRgbInnerR",
+			type = "vector4",
+			value = [ 0, 0, 0, 1 ]
+		},
+		{
+			name = "u_virtualLightPos_extrusionDist",
+			type = "vector4",
+			value = [ 0, 0, 0, 100 ]
 		}
 	]
 }

@@ -15,6 +15,71 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
+		class BgfxCallback : public bgfx::CallbackI
+		{
+		protected:
+			void fatal(const char* _filePath, uint16_t _line, bgfx::Fatal::Enum _code, const char* _str) override
+			{
+				FLAGGG_LOG_CRITICAL("bgfx => file[{}] line[{}] error[{}] msg[{}].", _filePath, _line, _code, _str);
+			}
+
+			void traceVargs(const char* _filePath, uint16_t _line, const char* _format, va_list _argList) override
+			{
+
+			}
+
+			void profilerBegin(const char* _name, uint32_t _abgr, const char* _filePath, uint16_t _line) override
+			{
+
+			}
+
+			void profilerBeginLiteral(const char* _name, uint32_t _abgr, const char* _filePath, uint16_t _line) override
+			{
+
+			}
+
+			void profilerEnd() override
+			{
+
+			}
+
+			uint32_t cacheReadSize(uint64_t _id) override
+			{
+				return 0;
+			}
+
+			bool cacheRead(uint64_t _id, void* _data, uint32_t _size) override
+			{
+				return false;
+			}
+
+			void cacheWrite(uint64_t _id, const void* _data, uint32_t _size) override
+			{
+
+			}
+
+			void screenShot(const char* _filePath, uint32_t _width, uint32_t _height, uint32_t _pitch, const void* _data, uint32_t _size, bool _yflip) override
+			{
+
+			}
+
+			void captureBegin(uint32_t _width, uint32_t _height, uint32_t _pitch, bgfx::TextureFormat::Enum _format, bool _yflip) override
+			{
+
+			}
+
+			void captureEnd() override
+			{
+
+			}
+
+			void captureFrame(const void* _data, uint32_t _size) override
+			{
+
+			}
+		};
+		static BgfxCallback BGFX_CALLBACK;
+
 		RenderEngine::RenderEngine(Core::Context* context) :
 			context_(context)
 		{
@@ -52,6 +117,7 @@ namespace FlagGG
 			init.resolution.width = 200;
 			init.resolution.height = 200;
 			init.resolution.reset = 0u;
+			init.callback = &BGFX_CALLBACK;
 			if (!bgfx::init(init))
 			{
 				FLAGGG_LOG_ERROR("bgfx::init failed.");
@@ -329,7 +395,7 @@ namespace FlagGG
 
 		static const char* bgfxSamplerUniform[]=
 		{
-			"s_texUniversal",
+			"s_texColor",
 			"s_texDiff",
 			"s_texNormal",
 			"s_texSpecular",
@@ -341,11 +407,11 @@ namespace FlagGG
 
 		void RenderEngine::PreDraw()
 		{
-			bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL, Math::Color::BLACK.ToHash(), 1.0f, 0);
+			bgfx::setViewFrameBuffer(0, renderTarget_->GetSrcHandler<bgfx::FrameBufferHandle>());
 
-			bgfx::submit(0, BGFX_INVALID_HANDLE, 0);
+			bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL, 0, 1.0f, 0);
 
-			if (vertexBufferDirty_)
+			// if (vertexBufferDirty_)
 			{
 				for (UInt8 i = 0; i < vertexBuffers_.Size(); ++i)
 				{
@@ -361,7 +427,7 @@ namespace FlagGG
 				vertexBufferDirty_ = false;
 			}
 
-			if (indexBufferDirty_)
+			// if (indexBufferDirty_)
 			{
 				if (indexBuffer_)
 				{
@@ -373,7 +439,7 @@ namespace FlagGG
 				indexBufferDirty_ = false;
 			}
 
-			if (texturesDirty_)
+			// if (texturesDirty_)
 			{
 				for (UInt8 i = 0; i < MAX_TEXTURE_CLASS; ++i)
 				{
@@ -392,7 +458,13 @@ namespace FlagGG
 				texturesDirty_ = false;
 			}
 
-			if (rasterizerStateDirty_)
+			if (inShaderParameters_)
+			{
+				inShaderParameters_->SubmitUniforms();
+				inShaderParameters_ = nullptr;
+			}
+
+			// if (rasterizerStateDirty_)
 			{
 				UInt64 state = 0u;
 

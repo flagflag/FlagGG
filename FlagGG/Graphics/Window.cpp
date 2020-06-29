@@ -337,7 +337,7 @@ namespace FlagGG
 		{
 			RenderEngine::Instance()->Render(viewport_);
 
-			RenderEngine::Instance()->RenderBatch(viewport_);
+			// RenderEngine::Instance()->RenderBatch(viewport_);
 		}
 
 		Viewport* Window::GetViewport() const
