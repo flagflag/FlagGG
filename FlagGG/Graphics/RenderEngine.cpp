@@ -10,6 +10,7 @@
 #include "Resource/ResourceCache.h"
 #include "Math/Color.h"
 #include "bgfx/bgfx.h"
+#include "bx/math.h"
 
 namespace FlagGG
 {
@@ -320,25 +321,27 @@ namespace FlagGG
 
 		void RenderEngine::SetShaderParameter(Scene::Camera* camera, const RenderContext* renderContext)
 		{
-			if (!renderContext)
-				return;
+// 			if (!renderContext)
+// 				return;
+// 
+// 			// 视图矩阵，投影矩阵，蒙皮矩阵等
+// 			if (camera && renderContext->worldTransform_ && renderContext->numWorldTransform_)
+// 			{
+// 				shaderParameters_.SetValue(SP_WORLD_MATRIX, *renderContext->worldTransform_);
+// 				shaderParameters_.SetValue(SP_VIEW_MATRIX, camera->GetViewMatrix());
+// 				shaderParameters_.SetValue(SP_PROJVIEW_MATRIX, camera->GetProjectionMatrix() * camera->GetViewMatrix());
+// 				shaderParameters_.SetValue(SP_CAMERA_POS, camera->GetNode()->GetWorldPosition());
+// 
+// 				if (renderContext->geometryType_ == GEOMETRY_SKINNED)
+// 				{
+// 					skinMatrix_ = renderContext->worldTransform_;
+// 					numSkinMatrix_ = renderContext->numWorldTransform_;
+// 				}
+// 			}
 
-			// 视图矩阵，投影矩阵，蒙皮矩阵等
-			if (camera && renderContext->worldTransform_ && renderContext->numWorldTransform_)
-			{
-				shaderParameters_.SetValue(SP_WORLD_MATRIX, *renderContext->worldTransform_);
-				shaderParameters_.SetValue(SP_VIEW_MATRIX, camera->GetViewMatrix());
-				shaderParameters_.SetValue(SP_PROJVIEW_MATRIX, camera->GetProjectionMatrix() * camera->GetViewMatrix());
-				shaderParameters_.SetValue(SP_CAMERA_POS, camera->GetNode()->GetWorldPosition());
+			camera_ = camera;
 
-				if (renderContext->geometryType_ == GEOMETRY_SKINNED)
-				{
-					skinMatrix_ = renderContext->worldTransform_;
-					numSkinMatrix_ = renderContext->numWorldTransform_;
-				}
-			}
-
-			inShaderParameters_ = renderContext->shaderParameters_;
+			inShaderParameters_ = renderContext ? renderContext->shaderParameters_ : nullptr;
 		}
 
 		void RenderEngine::SetVertexBuffers(const Container::Vector<Container::SharedPtr<VertexBuffer>>& vertexBuffers)
@@ -405,13 +408,13 @@ namespace FlagGG
 		};
 		static_assert(_countof(bgfxSamplerUniform) == MAX_TEXTURE_CLASS, "bgfxSamplerUniform num invalid.");
 
-		void RenderEngine::PreDraw()
+		void RenderEngine::PreDraw(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 vertexCount)
 		{
 			bgfx::setViewFrameBuffer(0, renderTarget_->GetSrcHandler<bgfx::FrameBufferHandle>());
 
-			bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL, 0, 1.0f, 0);
+			bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL, Math::Color::BLACK.ToHash(), 1.0f, 0);
 
-			// if (vertexBufferDirty_)
+			if (vertexBufferDirty_)
 			{
 				for (UInt8 i = 0; i < vertexBuffers_.Size(); ++i)
 				{
@@ -419,27 +422,27 @@ namespace FlagGG
 					if (vb)
 					{
 						if (vb->IsDynamic())
-							bgfx::setVertexBuffer(i, vb->GetSrcHandler<bgfx::DynamicVertexBufferHandle>());
+							bgfx::setVertexBuffer(i, vb->GetSrcHandler<bgfx::DynamicVertexBufferHandle>(), vertexStart, vertexCount);
 						else
-							bgfx::setVertexBuffer(i, vb->GetSrcHandler<bgfx::VertexBufferHandle>());
+							bgfx::setVertexBuffer(i, vb->GetSrcHandler<bgfx::VertexBufferHandle>(), vertexStart, vertexCount);
 					}
 				}
 				vertexBufferDirty_ = false;
 			}
 
-			// if (indexBufferDirty_)
+			if (indexBufferDirty_)
 			{
 				if (indexBuffer_)
 				{
 					if (indexBuffer_->IsDynamic())
-						bgfx::setIndexBuffer(indexBuffer_->GetSrcHandler<bgfx::DynamicIndexBufferHandle>());
+						bgfx::setIndexBuffer(indexBuffer_->GetSrcHandler<bgfx::DynamicIndexBufferHandle>(), indexStart, indexCount);
 					else
-						bgfx::setIndexBuffer(indexBuffer_->GetSrcHandler<bgfx::IndexBufferHandle>());
+						bgfx::setIndexBuffer(indexBuffer_->GetSrcHandler<bgfx::IndexBufferHandle>(), indexStart, indexCount);
 				}
 				indexBufferDirty_ = false;
 			}
 
-			// if (texturesDirty_)
+			if (texturesDirty_)
 			{
 				for (UInt8 i = 0; i < MAX_TEXTURE_CLASS; ++i)
 				{
@@ -464,7 +467,28 @@ namespace FlagGG
 				inShaderParameters_ = nullptr;
 			}
 
-			// if (rasterizerStateDirty_)
+			if (camera_ && viewport_)
+			{
+				float view[16];
+				camera_->GetViewMatrix(view);
+
+				float proj[16];
+				camera_->GetProjectionMatrix(proj);
+
+				bgfx::setViewTransform(0, view, proj);
+
+				bgfx::setViewRect(0, viewport_->GetX(), viewport_->GetY(), viewport_->GetWidth(), viewport_->GetHeight());
+
+				float time = 666;
+				float mtx[16];
+				bx::mtxRotateXY(mtx, time + 5 * 0.21f, time + 5 * 0.37f);
+				mtx[12] = -15.0f + float(5)*3.0f;
+				mtx[13] = -15.0f + float(5)*3.0f;
+				mtx[14] = 0.0f;
+				bgfx::setTransform(mtx);
+			}
+
+			if (rasterizerStateDirty_)
 			{
 				UInt64 state = 0u;
 
@@ -504,12 +528,9 @@ namespace FlagGG
 			}
 		}
 
-		void RenderEngine::DrawCallIndexed(UInt32 indexStart, UInt32 indexCount)
+		void RenderEngine::DrawCallIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 vertexCount)
 		{
-			PreDraw();
-
-			// draw call index
-			// deviceContext_->DrawIndexed(indexCount, indexStart, 0);
+			PreDraw(indexStart, indexCount, vertexStart, vertexCount);
 
 			bgfx::ProgramHandle handle = bgfx::createProgram(
 				vertexShader_->GetSrcHandler<bgfx::ShaderHandle>(),
@@ -520,7 +541,7 @@ namespace FlagGG
 
 		void RenderEngine::DrawCall(UInt32 vertexStart, UInt32 vertexCount)
 		{
-			PreDraw();
+			PreDraw(0, 0, vertexStart, vertexCount);
 
 			// draw call
 			// deviceContext_->Draw(vertexCount, vertexStart);
@@ -554,7 +575,7 @@ namespace FlagGG
 			Container::PODVector<RenderContext*> renderContexts;
 			scene->Render(renderContexts);
 
-			viewport->SetViewport();
+			viewport_ = viewport;
 
 			float aspect = (float)viewport->GetWidth() / viewport->GetHeight();
 
@@ -587,7 +608,8 @@ namespace FlagGG
 								SetVertexBuffers(geometry->GetVertexBuffers());
 								SetIndexBuffer(geometry->GetIndexBuffer());
 								SetPrimitiveType(geometry->GetPrimitiveType());
-								DrawCallIndexed(geometry->GetIndexStart(), geometry->GetIndexCount());
+								DrawCallIndexed(geometry->GetIndexStart(), geometry->GetIndexCount(),
+									geometry->GetVertexStart(), geometry->GetVertexCount());
 							}
 						}
 					}
@@ -596,7 +618,7 @@ namespace FlagGG
 			else
 			{
 				// 这步操作用来清理阴影贴图
-				PreDraw();
+				PreDraw(0, 0, 0, 0);
 			}
 
 			SetRenderTarget(viewport, false);
@@ -631,7 +653,8 @@ namespace FlagGG
 					SetVertexBuffers(geometry->GetVertexBuffers());
 					SetIndexBuffer(geometry->GetIndexBuffer());
 					SetPrimitiveType(geometry->GetPrimitiveType());
-					DrawCallIndexed(geometry->GetIndexStart(), geometry->GetIndexCount());
+					DrawCallIndexed(geometry->GetIndexStart(), geometry->GetIndexCount(),
+						geometry->GetVertexStart(), geometry->GetVertexCount());
 				}
 			}
 		}
@@ -655,7 +678,7 @@ namespace FlagGG
 			if (!viewport)
 				return;
 
-			viewport->SetViewport();
+			viewport_ = viewport;
 
 			SetRenderTarget(viewport, false);
 

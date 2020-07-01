@@ -56,11 +56,6 @@ namespace FlagGG
 			depthStencil_ = depthStencil;
 		}
 
-		void Viewport::SetViewport()
-		{
-			bgfx::setViewRect(0, GetX(), GetY(), GetWidth(), GetHeight());
-		}
-
 		Scene::Camera* Viewport::GetCamera() const
 		{
 			return camera_;

@@ -10,6 +10,8 @@
 using namespace FlagGG::Container;
 using namespace FlagGG::Scene;
 using namespace FlagGG::Core;
+using namespace FlagGG::Math;
+using namespace FlagGG::Graphics;
 
 class BgfxApp : public FlagGG::GameEngine
 {
@@ -19,6 +21,7 @@ public:
 	void Start() override;
 	void Stop() override;
 	void Update(float timeStep);
+	void OnMouseMove(KeyState* keyState, const Vector2& delta);
 
 private:
 	SharedPtr<Window> window_;

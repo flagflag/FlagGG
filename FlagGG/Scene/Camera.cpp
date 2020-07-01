@@ -1,5 +1,6 @@
 #include "Scene/Camera.h"
 #include "Scene/Node.h"
+#include "bx/math.h"
 
 namespace FlagGG
 {
@@ -210,6 +211,31 @@ namespace FlagGG
 			}
 
 			return projection;
+		}
+
+		void Camera::GetViewMatrix(float* view)
+		{
+			Math::Vector3 eye = GetNode()->GetWorldPosition();
+			Math::Vector3 look = GetLook();
+			Math::Vector3 at = eye + look;
+			Math::Vector3 up = GetUp();
+
+			bx::mtxLookAt(
+				view,
+				{ eye.x_, eye.y_, eye.z_ },
+				{ at.x_, at.y_, at.z_ },
+				{ up.x_, up.y_, up.z_ });
+		}
+
+		void Camera::GetProjectionMatrix(float* proj)
+		{
+			if (!orthographic_)
+			{
+				bx::mtxProj(proj, fov_, aspect_, nearClip_, farClip_, bgfx::getCaps()->homogeneousDepth);
+			}
+			else
+			{
+			}
 		}
 
 		CameraType Camera::GetCameraType() const

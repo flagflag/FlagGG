@@ -48,8 +48,6 @@ namespace FlagGG
 			Scene::Scene* GetScene() const;
 
 			void SetScene(Scene::Scene* scene);
-
-			void SetViewport();
 			
 		protected:
 			Container::SharedPtr<RenderSurface> renderTarget_;

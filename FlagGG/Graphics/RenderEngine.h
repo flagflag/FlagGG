@@ -102,9 +102,9 @@ namespace FlagGG
 
 			void SetRenderTarget(Viewport* viewport, bool renderShadowMap = false);
 
-			void PreDraw();
+			void PreDraw(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 vertexCount);
 
-			void DrawCallIndexed(UInt32 indexStart, UInt32 indexCount);
+			void DrawCallIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 vertexCount);
 
 			void DrawCall(UInt32 vertexStart, UInt32 vertexCount);
 
@@ -151,6 +151,9 @@ namespace FlagGG
 			Container::SharedPtr<RenderSurface> depthStencil_;
 			bool renderShadowMap_{ false };
 			bool renderTargetDirty_{ false };
+
+			Container::SharedPtr<Viewport> viewport_;
+			Container::SharedPtr<Scene::Camera> camera_;
 
 			Container::Vector<Container::SharedPtr<Batch>> batches_;
 

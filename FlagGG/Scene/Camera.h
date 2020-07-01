@@ -36,6 +36,9 @@ namespace FlagGG
 			Math::Matrix3x4 GetViewMatrix();
 			Math::Matrix4 GetProjectionMatrix();
 
+			void GetViewMatrix(float* view);
+			void GetProjectionMatrix(float* proj);
+
 			CameraType GetCameraType() const;
 			void SetCameraType(CameraType cameraType);
 

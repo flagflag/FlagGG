@@ -17,9 +17,6 @@
 
 #include "BgfxApp.h"
 
-using namespace FlagGG::Math;
-using namespace FlagGG::Graphics;
-
 BgfxApp::BgfxApp(const FlagGG::Config::LJSONValue& command)
 {
 
@@ -41,6 +38,7 @@ void BgfxApp::Start()
 	GameEngine::Start();
 
 	context_->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, BgfxApp::Update, this));
+	context_->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_MOVE, BgfxApp::OnMouseMove, this));
 
 // Scene
 	scene_ = new FlagGG::Scene::Scene(context_);
@@ -48,6 +46,7 @@ void BgfxApp::Start()
 	scene_->CreateComponent<Octree>();
 
 	auto* cameraNode = new Node();
+	// cameraNode->SetPosition(Vector3(0, 0, -30));
 	scene_->AddChild(cameraNode);
 	camera_ = cameraNode->CreateComponent<Camera>();
 	camera_->SetNearClip(0.1f);
@@ -96,5 +95,38 @@ void BgfxApp::Stop()
 
 void BgfxApp::Update(float timeStep)
 {
+	static const float walkSpeed_{ 5.0f };
+	float walkDelta = timeStep * walkSpeed_;
 
+	if (GetKeyState('W') < 0 || GetKeyState('w') < 0)
+		camera_->Walk(walkDelta);
+
+	if (GetKeyState('S') < 0 || GetKeyState('s') < 0)
+		camera_->Walk(-walkDelta);
+
+	if (GetKeyState('A') < 0 || GetKeyState('a') < 0)
+		camera_->Strafe(-walkDelta);
+
+	if (GetKeyState('D') < 0 || GetKeyState('d') < 0)
+		camera_->Strafe(walkDelta);
+
+	if (GetKeyState('E') < 0 || GetKeyState('e') < 0)
+		camera_->Fly(walkDelta);
+
+	if (GetKeyState('Q') < 0 || GetKeyState('Q') < 0)
+		camera_->Fly(-walkDelta);
+
+	if (GetKeyState('N') < 0 || GetKeyState('n') < 0)
+		camera_->Roll(0.000020);
+
+	if (GetKeyState('M') < 0 || GetKeyState('m') < 0)
+		camera_->Roll(-0.000020);
+}
+
+void BgfxApp::OnMouseMove(KeyState* keyState, const Vector2& delta)
+{
+	static const float rate_{ 0.00005f };
+
+ 	camera_->Yaw(-delta.x_ * rate_);
+ 	camera_->Pitch(-delta.y_ * rate_);
 }

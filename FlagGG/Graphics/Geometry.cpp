@@ -79,5 +79,15 @@ namespace FlagGG
 		{
 			return indexCount_;
 		}
+
+		UInt32 Geometry::GetVertexStart() const
+		{
+			return vertexStart_;
+		}
+
+		UInt32 Geometry::GetVertexCount() const
+		{
+			return vertexCount_;
+		}
 	}
 }
