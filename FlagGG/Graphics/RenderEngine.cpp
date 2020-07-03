@@ -341,6 +341,8 @@ namespace FlagGG
 
 			camera_ = camera;
 
+			renderContext_ = renderContext;
+
 			inShaderParameters_ = renderContext ? renderContext->shaderParameters_ : nullptr;
 		}
 

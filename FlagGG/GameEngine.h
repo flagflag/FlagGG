@@ -10,15 +10,15 @@
 #include "Resource/ResourceCache.h"
 #include "Container/Ptr.h"
 #include "Utility/SystemHelper.h"
+#include "Math/Vector2.h"
 #include "Launcher.h"
 
 using namespace FlagGG::Core;
 using namespace FlagGG::Container;
-#ifdef _WIN32
 using namespace FlagGG::Graphics;
-#endif
 using namespace FlagGG::Resource;
 using namespace FlagGG::Utility;
+using namespace FlagGG::Math;
 
 namespace FlagGG
 {
@@ -28,6 +28,8 @@ namespace FlagGG
 		void SetFrameRate(Real rate);
 
 	protected:
+		virtual IntVector2 Resolution() = 0;
+
 		void Start() override;
 
 		void Stop() override;

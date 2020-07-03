@@ -17,20 +17,15 @@
 
 #include "BgfxApp.h"
 
-BgfxApp::BgfxApp(const FlagGG::Config::LJSONValue& command)
+BgfxApp::BgfxApp(const FlagGG::Config::LJSONValue& command) :
+	resolution_(500, 500)
 {
 
 }
 
-static Model* CreateStaticModel(Context* context)
+IntVector2 BgfxApp::Resolution()
 {
-	auto* cache = context->GetVariable<FlagGG::Resource::ResourceCache>("ResourceCache");
-
-	Model* model = new Model(context);
-	auto stream = cache->GetFile("bgfx/meshes/cube.bin");
-	model->LoadFile(stream);
-
-	return model;
+	return resolution_;
 }
 
 void BgfxApp::Start()
@@ -63,7 +58,7 @@ void BgfxApp::Start()
 
 	auto* modelNode = new Node();
 	auto* meshComp = modelNode->CreateComponent<StaticMeshComponent>();
-	meshComp->SetModel(CreateStaticModel(context_));
+	meshComp->SetModel(cache_->GetResource<Model>("bgfx/meshes/cube.bin"));
 	meshComp->SetMaterial(cache_->GetResource<Material>("bgfx/materials/BgfxStaticModel.ljson"));
 	//auto* meshComp = modelNode->CreateComponent<SkeletonMeshComponent>();
 	//meshComp->SetModel(cache_->GetResource<Model>(""));
@@ -76,7 +71,8 @@ void BgfxApp::Start()
 	scene_->AddChild(modelNode);
 
 // Window
-	IntRect rect(0, 400, 500, 900);
+	IntVector2 pos(0, 400);
+	IntRect rect(pos.x_, pos.y_, pos.x_ + resolution_.x_, pos.y_ + resolution_.y_);
 
 	window_ = new Window(context_, nullptr, rect);
 	window_->Show();

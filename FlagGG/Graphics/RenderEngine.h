@@ -154,6 +154,7 @@ namespace FlagGG
 
 			Container::SharedPtr<Viewport> viewport_;
 			Container::SharedPtr<Scene::Camera> camera_;
+			const RenderContext* renderContext_;
 
 			Container::Vector<Container::SharedPtr<Batch>> batches_;
 

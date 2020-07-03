@@ -18,12 +18,14 @@ class BgfxApp : public FlagGG::GameEngine
 public:
 	BgfxApp(const FlagGG::Config::LJSONValue& command);
 
+	IntVector2 Resolution() override;
 	void Start() override;
 	void Stop() override;
 	void Update(float timeStep);
 	void OnMouseMove(KeyState* keyState, const Vector2& delta);
 
 private:
+	IntVector2 resolution_;
 	SharedPtr<Window> window_;
 	SharedPtr<Camera> camera_;
 	SharedPtr<FlagGG::Scene::Scene> scene_;
