@@ -17,6 +17,7 @@
 #include "AsyncFrame/Mutex.h"
 #include "Core/Context.h"
 #include "bgfx/bgfx.h"
+#include "bx/allocator.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -29,6 +30,8 @@ namespace FlagGG
 		{
 		public:
 			RenderEngine(Core::Context* context);
+
+			~RenderEngine();
 
 			void Initialize();
 
@@ -112,8 +115,17 @@ namespace FlagGG
 
 			void RenderBatch(Viewport* viewport);
 
+			bx::DefaultAllocator* GetDefaultAllocator() const { return defaultAllocator_; }
+
 		private:
 			void CreateShadowRasterizerState();
+
+			bgfx::ViewId currentViewId_{};
+			bgfx::FrameBufferHandle currentFramebuffer_;
+			Container::HashMap<Container::Pair<UInt16, UInt16>, bgfx::FrameBufferHandle> frameBufferMap_;
+			float viewMtx_[16];
+			float projMtx_[16];
+			Math::IntRect viewportRect_;
 
 			RasterizerState rasterizerState_;
 			RasterizerState shadowRasterizerState_;
@@ -138,9 +150,11 @@ namespace FlagGG
 			Container::SharedPtr<Shader> pixelShader_{ nullptr };
 			bool pixelShaderDirty_{ false };
 
+			Container::SharedPtr<ShaderProgram> shaderProgram_;
+			Container::HashMap<Container::Pair<Shader*, Shader*>, Container::SharedPtr<ShaderProgram>> shaderProgramMap_;
+
 			Container::SharedPtr<Texture> textures_[MAX_TEXTURE_CLASS];
 			Container::SharedPtr<Texture> defaultTextures_[MAX_TEXTURE_CLASS];
-			bgfx::UniformHandle samplerUniform[MAX_TEXTURE_CLASS];
 			Container::SharedPtr<Texture2D> envTexture_;
 			bool texturesDirty_{ false };
 
@@ -159,6 +173,8 @@ namespace FlagGG
 			Container::Vector<Container::SharedPtr<Batch>> batches_;
 
 			Core::Context* context_;
+
+			bx::DefaultAllocator* defaultAllocator_;
 		};
 	}
 }

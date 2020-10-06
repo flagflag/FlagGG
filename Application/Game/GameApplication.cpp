@@ -30,6 +30,11 @@ GameApplication::GameApplication(LJSONValue commandParam) :
 	luaVM_(new LuaVM())
 { }
 
+IntVector2 GameApplication::Resolution()
+{
+	return IntVector2(1600, 900);
+}
+
 void GameApplication::Start()
 {
 	GameEngine::Start();

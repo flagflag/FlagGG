@@ -10,6 +10,11 @@ namespace FlagGG
 			context_(context)
 		{ }
 
+		void Resource::SetName(const Container::String& name)
+		{
+			name_ = name;
+		}
+
 		bool Resource::LoadFile(const Container::String& filepath)
 		{
 			IOFrame::Stream::FileStream fileStream;

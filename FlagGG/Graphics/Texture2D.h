@@ -9,8 +9,6 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
-#define USE_DDS
-
 		class FlagGG_API Texture2D : public Texture
 		{
 		public:

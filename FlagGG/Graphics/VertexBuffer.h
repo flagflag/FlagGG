@@ -35,7 +35,7 @@ namespace FlagGG
 		private:
 			Container::PODVector<VertexElement> vertexElements_;
 
-			bool useBgfxLayout{ false };
+			bool useBgfxLayout_{ false };
 			bgfx::VertexLayout layout_;
 
 			UInt32 vertexSize_{ 0 };

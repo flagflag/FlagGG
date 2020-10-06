@@ -10,11 +10,15 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
+		class ShaderProgram;
+
 		struct ShaderParameterDesc
 		{
 			UInt32 offset_;
 			UInt32 size_;
 
+			Container::String name_;
+			bgfx::UniformHandle handle_;
 			bgfx::UniformType::Enum type_;
 			UInt32 num_;
 		};
@@ -40,7 +44,7 @@ namespace FlagGG
 
 			bool SetValueImpl(Container::String key, const void* buffer, UInt32 bufferSize);
 
-			void SubmitUniforms();
+			void SubmitUniforms(ShaderProgram* program);
 
 			friend class RenderEngine;
 
@@ -48,6 +52,8 @@ namespace FlagGG
 			Container::HashMap<Container::String, ShaderParameterDesc> descs;
 
 			Container::SharedPtr<IOFrame::Buffer::StringBuffer> dataBuffer_;
+
+			Container::PODVector<char> tempBuffer_;
 		};
 	}
 }

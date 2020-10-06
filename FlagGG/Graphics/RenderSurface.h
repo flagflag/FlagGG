@@ -25,6 +25,8 @@ namespace FlagGG
 
 			Texture* GetParentTexture();
 
+			UInt16 GetBgfxLayer() const { return layer_; }
+
 			friend class Texture2D;
 
 		protected:
@@ -34,6 +36,8 @@ namespace FlagGG
 			Texture* parentTexture_{ nullptr };
 
 			void* readOnlyView_{ nullptr };
+
+			UInt16 layer_{};
 		};
 	}
 }

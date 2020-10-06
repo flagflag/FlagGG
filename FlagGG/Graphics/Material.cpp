@@ -341,7 +341,7 @@ namespace FlagGG
 				if (vsShaderCode)
 				{
 					Config::ParseStringVector(root["vsshader"]["defines"], defines);
-					vsShader_ = vsShaderCode->GetShader(VS, defines);
+					vsShader_ = vsShaderCode->GetShader(VS, "FORWARD", defines);
 				}
 				else
 				{
@@ -353,7 +353,7 @@ namespace FlagGG
 				if (psShaderCode)
 				{
 					Config::ParseStringVector(root["psshader"]["defines"], defines);
-					psShader_ = psShaderCode->GetShader(PS, defines);
+					psShader_ = psShaderCode->GetShader(PS, "FORWARD", defines);
 				}
 				else
 				{
@@ -395,21 +395,22 @@ namespace FlagGG
 						for (UInt32 i = 0; i < pass.Size(); ++i)
 						{
 							RenderPass renderPass;
+							const Container::String& name = pass[i]["name"].GetString();
+
 							vsShaderCode = cache->GetResource<ShaderCode>(pass[i]["vsshader"]["path"].GetString());
 							if (vsShaderCode)
 							{
 								Config::ParseStringVector(pass[i]["vsshader"]["defines"], defines);
-								renderPass.vertexShader_ = vsShaderCode->GetShader(VS, defines);
+								renderPass.vertexShader_ = vsShaderCode->GetShader(VS, name, defines);
 							}
 
 							psShaderCode = cache->GetResource<ShaderCode>(pass[i]["psshader"]["path"].GetString());
 							if (psShaderCode)
 							{
 								Config::ParseStringVector(pass[i]["psshader"]["defines"], defines);
-								renderPass.pixelShader_ = psShaderCode->GetShader(PS, defines);
+								renderPass.pixelShader_ = psShaderCode->GetShader(PS, name, defines);
 							}
-
-							const Container::String& name = pass[i]["name"].GetString();
+		
 							renderPass_.Insert(Container::MakePair(static_cast<UInt32>(ToRenderPassType(name)), renderPass));
 						}
 					}

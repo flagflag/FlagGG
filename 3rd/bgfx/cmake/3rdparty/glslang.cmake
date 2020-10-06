@@ -17,6 +17,7 @@ file( GLOB GLSLANG_SOURCES
 	${BGFX_DIR}/3rdparty/glslang/glslang/MachineIndependent/*.cpp
 	${BGFX_DIR}/3rdparty/glslang/glslang/MachineIndependent/preprocessor/*.cpp
 	${BGFX_DIR}/3rdparty/glslang/hlsl/*.cpp
+	${BGFX_DIR}/3rdparty/glslang/glslang/hlsl/*.cpp
 	${BGFX_DIR}/3rdparty/glslang/SPIRV/*.cpp
 	${BGFX_DIR}/3rdparty/glslang/OGLCompilersDLL/*.cpp
 )

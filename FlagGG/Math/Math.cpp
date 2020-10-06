@@ -208,22 +208,7 @@ namespace FlagGG
 
 		Matrix4 MatrixPerspectiveFovLH(Real fovy, Real aspect, Real zn, Real zf)
 		{
-#if _WIN32
-			D3DXMATRIX out;
-			D3DXMatrixPerspectiveFovLH(
-				&out,
-				fovy,
-				aspect,
-				zn,
-				zf
-				);
-#endif
-
 			Math::Matrix4 output;
-#if _WIN32
-			memcpy(&output, &out, sizeof(Math::Matrix4));
-#endif
-
 			return output;
 		}
 	}

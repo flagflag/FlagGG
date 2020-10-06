@@ -37,6 +37,7 @@ public:
 	GameApplication(LJSONValue commandParam);
 
 protected:
+	IntVector2 Resolution() override;
 	void Start() override;
 	void Stop() override;
 	void Update(float timeStep);

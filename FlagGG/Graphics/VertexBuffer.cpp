@@ -61,7 +61,7 @@ namespace FlagGG
 			vertexSize_ = layout_.getStride();
 			vertexCount_ = vertexCount;
 
-			useBgfxLayout = true;
+			useBgfxLayout_ = true;
 
 			if (!GPUBuffer::SetSize(vertexSize_ * vertexCount_))
 			{
@@ -119,7 +119,7 @@ namespace FlagGG
 
 		void VertexBuffer::Create(const bgfx::Memory* mem, bool dynamic)
 		{
-			if (!useBgfxLayout)
+			if (!useBgfxLayout_)
 			{
 				bgfx::VertexLayout layout;
 				layout.begin();

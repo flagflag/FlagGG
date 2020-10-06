@@ -62,6 +62,8 @@ namespace bgfx
 #include <bx/file.h>
 #include "../../src/vertexlayout.h"
 
+#include "compile_shader.h"
+
 namespace bgfx
 {
 	extern bool g_verbose;

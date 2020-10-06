@@ -1,4 +1,5 @@
 #include "Graphics/ShaderParameter.h"
+#include "Graphics/Shader.h"
 
 namespace FlagGG
 {
@@ -13,6 +14,7 @@ namespace FlagGG
 				dataBuffer_ = new IOFrame::Buffer::StringBuffer();
 
 			ShaderParameterDesc& desc = descs[key];
+			desc.name_ = key;
 			desc.offset_ = dataBuffer_->GetSize();
 			desc.size_ = typeSize;
 			desc.type_ = type;
@@ -55,7 +57,7 @@ namespace FlagGG
 			}
 		}
 
-		void ShaderParameters::SubmitUniforms()
+		void ShaderParameters::SubmitUniforms(ShaderProgram* program)
 		{
 			if (!dataBuffer_)
 				return;
@@ -63,12 +65,14 @@ namespace FlagGG
 			dataBuffer_->ClearIndex();
 			for (auto it : descs)
 			{
-				bgfx::UniformHandle handle = bgfx::createUniform(it.first_.CString(), it.second_.type_, it.second_.num_);
-				dataBuffer_->Seek(it.second_.offset_);
-				char* data = new char[it.second_.size_];
-				dataBuffer_->ReadStream(data, it.second_.size_);
-				bgfx::setUniform(handle, data, it.second_.num_);
-				delete[] data;
+				const auto* uniformDesc = program->GetUniformDesc(it.second_.name_);
+				if (uniformDesc)
+				{
+					dataBuffer_->Seek(it.second_.offset_);
+					tempBuffer_.Resize(it.second_.size_);
+					dataBuffer_->ReadStream(&tempBuffer_[0], it.second_.size_);
+					bgfx::setUniform(uniformDesc->handle_, &tempBuffer_[0], it.second_.num_);
+				}
 			}
 		}
 	}

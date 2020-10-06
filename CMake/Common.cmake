@@ -654,7 +654,7 @@ macro (setup_executable)
     if (WIN32 AND NOT ARG_NODEPS AND FLAGGG_LIB_TYPE STREQUAL SHARED)
         # Make a copy of the FlagGG DLL to the runtime directory in the build tree
         if (TARGET FlagGG)
-            add_custom_command (TARGET ${TARGET_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:FlagGG> ${RUNTIME_DIR})
+            # add_custom_command (TARGET ${TARGET_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:FlagGG> ${RUNTIME_DIR})
             add_make_clean_files (${RUNTIME_DIR}/$<TARGET_FILE_NAME:FlagGG>)
         else ()
             foreach (DLL ${FLAGGG_DLL})

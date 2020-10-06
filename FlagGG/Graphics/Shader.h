@@ -5,7 +5,7 @@
 
 #include "Graphics/GPUObject.h"
 #include "Graphics/GraphicsDef.h"
-#include "Graphics/ShaderParameter.h"
+#include "Graphics/ShaderParser.h"
 #include "Resource/Resource.h"
 #include "Container/ArrayPtr.h"
 #include "Container/Vector.h"
@@ -16,6 +16,7 @@ namespace FlagGG
 	namespace Graphics
 	{
 		class Shader;
+		struct ShaderParameterDesc;
 
 		// shader源码
 		class FlagGG_API ShaderCode : public Resource::Resource
@@ -23,28 +24,24 @@ namespace FlagGG
 		public:
 			ShaderCode(Core::Context* context);
 
-			Shader* GetShader(ShaderType type, const Container::Vector<Container::String>& defines);
+			Shader* GetShader(ShaderType type, const Container::String& passName, const Container::Vector<Container::String>& defines);
 
 		protected:
 			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
 			bool EndLoad() override;
 
-			bool PreCompileShaderCode(const char* head, const char* tail, Container::String& out);
-
 		private:
-			Container::Vector<Container::SharedPtr<Shader>> shaders_;
+			ShaderParser shaderParser_;
 
-			// shader代码
-			Container::SharedArrayPtr<char> buffer_;
-			UInt32 bufferSize_{ 0 };
+			Container::HashMap<Container::String, Container::Vector<Container::SharedPtr<Shader>>> shadersMap_;
 		};
 
 		// 经过编译的shader，是GPU对象
 		class FlagGG_API Shader : public GPUObject, public Container::RefCounted
 		{
 		public:
-			Shader(Container::SharedArrayPtr<char> buffer, UInt32 bufferSize);
+			Shader(const PassShaderSourceCode& pass);
 
 			~Shader() override;
 
@@ -56,19 +53,44 @@ namespace FlagGG
 
 			void SetDefines(const Container::Vector<Container::String>& defines);
 
-			Container::String GetDefinesString() const;
+			const Container::String& GetDefinesString() const;
 
 			ShaderType GetType();
 
-		private:
-			// shader代码
-			Container::SharedArrayPtr<char> buffer_;
-			UInt32 bufferSize_{ 0 };
+			const Container::HashMap<Container::String, ShaderParameterDesc>& GetShaderParameterDescs() const { return shaderParameterDescMap; }
 
+		private:
 			ShaderType shaderType_{ None };
+
+			const PassShaderSourceCode& pass_;
 
 			Container::Vector<Container::String> defines_;
 			Container::String definesString_;
+
+			Container::String compiledSourceCode_;
+
+			Container::HashMap<Container::String, ShaderParameterDesc> shaderParameterDescMap;
+		};
+
+		class FlagGG_API ShaderProgram : public GPUObject, public Container::RefCounted
+		{
+		public:
+			explicit ShaderProgram(Shader* vsShader, Shader* psShader);
+
+			bool IsValid() override;
+
+			void Initialize() override {};
+
+			const ShaderParameterDesc* GetUniformDesc(const Container::String& parameterName);
+
+			bgfx::UniformHandle GetTexSamplers(UInt32 index) { return texSamplers_[index]; }
+		
+		private:
+			void UniformAndSamplers(Shader* shader);
+
+		private:
+			Container::HashMap<Container::String, ShaderParameterDesc> uniformDescMap_;
+			bgfx::UniformHandle texSamplers_[MAX_TEXTURE_CLASS];
 		};
 	}
 }

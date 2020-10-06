@@ -25,10 +25,6 @@ namespace FlagGG
 
 		bool GPUBuffer::SetSize(UInt32 byteCount)
 		{
-			UInt32 byteLeft = byteCount % 16u;
-			if (byteLeft != 0u)
-				byteCount += (16u - byteLeft);
-
 			if (GetHandler() && gpuBufferSize_ == byteCount)
 				return true;
 
@@ -47,7 +43,7 @@ namespace FlagGG
 
 			srcBuffer_ = new char[gpuBufferSize_];
 
-			const bgfx::Memory* mem = bgfx::makeRef(srcBuffer_, gpuBufferSize_);
+			const bgfx::Memory* mem = bgfx::copy(srcBuffer_, gpuBufferSize_);
 
 			Create(mem, dynamic_);
 			
@@ -66,7 +62,7 @@ namespace FlagGG
 
 		void* GPUBuffer::Lock(UInt32 start, UInt32 count)
 		{
-			if (!dynamic_ || gpuBufferSize_ == 0)
+			if (gpuBufferSize_ == 0)
 				return nullptr;
 
 			return srcBuffer_;
@@ -74,16 +70,16 @@ namespace FlagGG
 
 		void GPUBuffer::Unlock()
 		{
-			if (!dynamic_ || gpuBufferSize_ == 0)
+			if (gpuBufferSize_ == 0)
 				return;
 
-			const bgfx::Memory* mem = bgfx::makeRef(srcBuffer_, gpuBufferSize_);
+			const bgfx::Memory* mem = bgfx::copy(srcBuffer_, gpuBufferSize_);
 			UpdateBuffer(mem);
 		}
 
 		IOFrame::Buffer::IOBuffer* GPUBuffer::LockStaticBuffer(UInt32 start, UInt32 count)
 		{
-			if (!dynamic_ || gpuBufferSize_ == 0)
+			if (gpuBufferSize_ == 0)
 				return nullptr;
 
 			void* data = Lock(start, count);
@@ -93,7 +89,7 @@ namespace FlagGG
 
 		void GPUBuffer::UnlockStaticBuffer()
 		{
-			if (!dynamic_ || gpuBufferSize_ == 0)
+			if (gpuBufferSize_ == 0)
 				return;
 
 			buffer_.Reset();

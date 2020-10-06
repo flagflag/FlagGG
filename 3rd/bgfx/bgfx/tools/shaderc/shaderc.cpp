@@ -23,6 +23,8 @@ extern "C"
 
 namespace bgfx
 {
+	CompileCallback* g_callback;
+
 	bool g_verbose = false;
 
 	static const char* s_ARB_shader_texture_lod[] =
@@ -2557,9 +2559,19 @@ namespace bgfx
 		return bx::kExitFailure;
 	}
 
+	void SetCompileCallback(CompileCallback* callback)
+	{
+		g_callback = callback;
+	}
+
+	int CommandCompileShader(int _argc, const char* _argv[])
+	{
+		return compileShader(_argc, _argv);
+	}
+
 } // namespace bgfx
 
-int main(int _argc, const char* _argv[])
-{
-	return bgfx::compileShader(_argc, _argv);
-}
+//int main(int _argc, const char* _argv[])
+//{
+//	return bgfx::compileShader(_argc, _argv);
+//}

@@ -151,7 +151,7 @@ namespace FlagGG
 			layout.end();
 		}
 
-#define BGFX_MODEL
+// #define BGFX_MODEL
 		bool Model::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		{
 #ifndef BGFX_MODEL

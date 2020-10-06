@@ -45,13 +45,7 @@ namespace FlagGG
 			bool hasMips = levels_ > 1;
 			UInt16 numLayers = layers_;
 			bgfx::TextureFormat::Enum format = (bgfx::TextureFormat::Enum)format_;
-			// bgfx不需要再这里转srgb、dsv、srv，库内部做了转换
-			// (sRGB_ ? GetSRGBFormat(format_) : format_);
-			uint64_t flags = BGFX_TEXTURE_NONE | BGFX_SAMPLER_NONE;
-			if (usage_ == TEXTURE_RENDERTARGET)
-			{
-				flags |= BGFX_TEXTURE_RT_MASK; // RenderTarget纹理
-			}
+			UInt64 flags = GetFlags();
 
 			if (!bgfx::isTextureValid(0, false, numLayers, format, flags))
 			{
@@ -59,19 +53,14 @@ namespace FlagGG
 				return false;
 			}
 
+			const bgfx::Memory* mem = internalData_ ? (const bgfx::Memory*)internalData_ : nullptr;
+
 			// width_ == height_ == size
-			bgfx::TextureHandle texHandle = bgfx::createTextureCube(width_, hasMips, numLayers, format, flags);
+			bgfx::TextureHandle texHandle = bgfx::createTextureCube(width_, hasMips, numLayers, format, flags, mem);
+
+			internalData_ = nullptr;
 			
 			ResetHandler(texHandle);
-
-			if (usage_ == TEXTURE_RENDERTARGET)
-			{
-				for (UInt32 face = 0; face < MAX_CUBEMAP_FACES; ++face)
-				{
-					bgfx::FrameBufferHandle handle = bgfx::createFrameBuffer(1, &texHandle);
-					renderSurfaces_[face]->ResetHandler(handle);
-				}
-			}
 
 			return true;
 		}
@@ -142,99 +131,47 @@ namespace FlagGG
 		{
 			Initialize();
 
-			Config::LJSONFile imageConfig(context_);
-			if (!imageConfig.LoadFile(stream))
+			UInt32 dataSize = stream->GetSize();
+			Container::SharedArrayPtr<char> data(new char[dataSize]);
+			if (stream->ReadStream(data.Get(), dataSize) != dataSize)
 			{
-				FLAGGG_LOG_ERROR("Failed to load cube texture config.");
+				FLAGGG_LOG_ERROR("Failed to load image.");
 				return false;
 			}
 
-			const Config::LJSONValue& value = imageConfig.GetRoot();
-			if (!value.IsArray())
+			bimg::ImageContainer* imageContainer = bimg::imageParse(RenderEngine::Instance()->GetDefaultAllocator(), data.Get(), dataSize);
+
+			if (!imageContainer)
 			{
-				FLAGGG_LOG_ERROR("Illegal cube texture config.");
 				return false;
 			}
 
-			auto* cache = context_->GetVariable<FlagGG::Resource::ResourceCache>("ResourceCache");
-
-			bx::DefaultAllocator defaultAllocator;
-			for (UInt32 i = 0; i < value.Size() && i < MAX_CUBEMAP_FACES; ++i)
+			if (!imageContainer->m_cubeMap)
 			{
-				const Container::String& path = value[i].GetString();
-				
-				auto fileStream = cache->GetFile(path);
-
-				UInt32 dataSize = fileStream->GetSize();
-				Container::SharedArrayPtr<char> data(new char[dataSize]);
-				if (fileStream->ReadStream(data.Get(), dataSize) != dataSize)
-				{
-					FLAGGG_LOG_ERROR("Failed to load image.");
-					return false;
-				}
-
-				bimg::ImageContainer* imageContainer = bimg::imageParse(&defaultAllocator, data.Get(), dataSize);
-
-				if (!imageContainer)
-				{
-					return false;
-				}
-
-				if (imageContainer->m_cubeMap)
-				{
-					BX_ASSERT(false, "Cubemap Texture loading not supported");
-					return false;
-				}
-
-				if (1 >= imageContainer->m_depth)
-				{
-					BX_ASSERT(false, "3D Texture loading not supported");
-					return false;
-				}
-
-				if (1 == imageContainer->m_numLayers)
-				{
-					BX_ASSERT(false, "Texture Layer loading not supported");
-					return false;
-				}
-
-				if (i == 0)
-				{
-					SetNumLevels(imageContainer->m_numMips);
-					SetNumLayers(imageContainer->m_numLayers);
-
-					if (!SetSize(imageContainer->m_size, imageContainer->m_format))
-					{
-						return false;
-					}
-				}
-
-				uint32_t width = imageContainer->m_width;
-				uint32_t height = imageContainer->m_height;
-
-				for (UInt8 lod = 0, num = imageContainer->m_numMips; lod < num; ++lod)
-				{
-					if (width < 4 || height < 4)
-					{
-						break;
-					}
-
-					width = bx::max(1u, width);
-					height = bx::max(1u, height);
-
-					bimg::ImageMip mip;
-
-					if (bimg::imageGetRawData(*imageContainer, 0, lod, imageContainer->m_data, imageContainer->m_size, mip))
-					{
-						SetData((CubeMapFace)i, lod, 0, 0, width, height, mip.m_data, mip.m_size);
-					}
-
-					width >>= 1;
-					height >>= 1;
-				}
+				BX_ASSERT(false, "Can't convert textureother to texturecube");
+				return false;
 			}
 
-			// bgfx::setName(GetSrcHandler<bgfx::TextureHandle>(), "");
+			if (1 < imageContainer->m_depth)
+			{
+				BX_ASSERT(false, "Can't convert texturen3d to texturecube");
+				return false;
+			}
+
+			SetNumLevels(imageContainer->m_numMips);
+			SetNumLayers(imageContainer->m_numLayers);
+			SetAddressMode(COORD_U, ADDRESS_CLAMP);
+			SetAddressMode(COORD_V, ADDRESS_CLAMP);
+			SetAddressMode(COORD_W, ADDRESS_CLAMP);
+			const bgfx::Memory* mem = bgfx::makeRef(imageContainer->m_data, imageContainer->m_size, ImageReleaseCb, imageContainer);
+			SetInternalData(mem);
+
+			if (!SetSize(imageContainer->m_width, imageContainer->m_format))
+			{
+				return false;
+			}
+
+			bgfx::setName(GetSrcHandler<bgfx::TextureHandle>(), GetName().CString());
 			
 			return true;
 		}

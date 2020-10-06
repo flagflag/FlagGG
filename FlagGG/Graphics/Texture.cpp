@@ -9,6 +9,40 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
+		static const uint32_t bgfxWrapU[] =
+		{
+			BGFX_TEXTURE_NONE,
+			BGFX_SAMPLER_U_MIRROR,
+			BGFX_SAMPLER_U_CLAMP,
+			BGFX_SAMPLER_U_BORDER
+		};
+
+		static const uint32_t bgfxWrapV[] =
+		{
+			BGFX_TEXTURE_NONE,
+			BGFX_SAMPLER_V_MIRROR,
+			BGFX_SAMPLER_V_CLAMP,
+			BGFX_SAMPLER_V_BORDER
+		};
+
+		static const uint32_t bgfxWrapW[] =
+		{
+			BGFX_TEXTURE_NONE,
+			BGFX_SAMPLER_W_MIRROR,
+			BGFX_SAMPLER_W_CLAMP,
+			BGFX_SAMPLER_W_BORDER
+		};
+
+		static const uint32_t bgfxFilterMode[] =
+		{
+			BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT, // FILTER_NEAREST
+			BGFX_SAMPLER_MIP_POINT, // FILTER_BILINEAR
+			BGFX_TEXTURE_NONE, // FILTER_TRILINEAR
+			BGFX_SAMPLER_MIN_ANISOTROPIC | BGFX_SAMPLER_MAG_ANISOTROPIC, // FILTER_ANISOTROPIC
+			BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT, // FILTER_NEAREST_ANISOTROPIC
+			BGFX_TEXTURE_NONE // FILTER_DEFAULT
+		};
+
 		Texture::Texture(Core::Context* context) :
 			GPUObject(),
 			Resource(context)
@@ -33,6 +67,21 @@ namespace FlagGG
 		void Texture::SetNumLayers(UInt32 layers)
 		{
 			layers_ = layers;
+		}
+
+		void Texture::SetFilterMode(TextureFilterMode mode)
+		{
+			filterMode_ = mode;
+		}
+
+		void Texture::SetAddressMode(TextureCoordinate coord, TextureAddressMode mode)
+		{
+			addressModes_[coord] = mode;
+		}
+
+		void Texture::SetShadowCompare(bool compare)
+		{
+			shadowCompare_ = compare;
 		}
 
 		Int32 Texture::GetWidth() const
@@ -135,9 +184,56 @@ namespace FlagGG
 			return GetRowDataSize(width_) / width_;
 		}
 
+		UInt64 Texture::GetFlags() const
+		{
+			uint64_t flags =
+				bgfxWrapU[addressModes_[0]] |
+				bgfxWrapV[addressModes_[1]] |
+				bgfxWrapW[addressModes_[2]] |
+				bgfxFilterMode[filterMode_];
+
+			if (sRGB_)
+				flags |= BGFX_TEXTURE_SRGB;
+
+			if ((usage_ == TEXTURE_RENDERTARGET) || (usage_ == TEXTURE_DEPTHSTENCIL))
+				flags |= BGFX_TEXTURE_RT;
+
+			if (shadowCompare_)
+				flags |= BGFX_SAMPLER_COMPARE_LEQUAL;
+
+			if (multiSample_ > 1)
+			{
+				// flags |= BGFX_TEXTURE_MSAA_SAMPLE;
+				switch (multiSample_)
+				{
+				case 2:
+					flags |= BGFX_TEXTURE_RT_MSAA_X2;
+					break;
+				case 4:
+					flags |= BGFX_TEXTURE_RT_MSAA_X4;
+					break;
+				case 8:
+					flags |= BGFX_TEXTURE_RT_MSAA_X8;
+					break;
+				case 16:
+					flags |= BGFX_TEXTURE_RT_MSAA_X16;
+					break;
+				default:
+					break;
+				}
+			}
+
+			return flags;
+		}
+
 		void Texture::Release()
 		{
 			ResetHandler(GPUHandler::INVALID);
+		}
+
+		void Texture::SetInternalData(const bgfx::Memory* data)
+		{
+			internalData_ = data;
 		}
 
 		UInt32 Texture::CheckMaxLevels(Int32 width, Int32 height, UInt32 requestedLevels)
@@ -210,6 +306,13 @@ namespace FlagGG
 			//else if (format == DXGI_FORMAT_R32_TYPELESS)
 			//	return DXGI_FORMAT_R32_FLOAT;
 			return format;
+		}
+
+		void Texture::ImageReleaseCb(void* _ptr, void* _userData)
+		{
+			BX_UNUSED(_ptr);
+			bimg::ImageContainer* imageContainer = (bimg::ImageContainer*)_userData;
+			bimg::imageFree(imageContainer);
 		}
 
 		void Texture::Initialize()

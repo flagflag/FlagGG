@@ -42,13 +42,7 @@ namespace FlagGG
 			bool hasMips = levels_ > 1;
 			UInt16 numLayers = layers_;
 			bgfx::TextureFormat::Enum format = (bgfx::TextureFormat::Enum)format_;
-			// bgfx不需要再这里转srgb、dsv、srv，库内部做了转换
-			// (sRGB_ ? GetSRGBFormat(format_) : format_);
-			uint64_t flags = BGFX_TEXTURE_NONE | BGFX_SAMPLER_NONE;
-			if (usage_ == TEXTURE_RENDERTARGET)
-			{
-				flags |= BGFX_TEXTURE_RT_MASK; // RenderTarget纹理
-			}
+			UInt64 flags = GetFlags();
 
 			if (!bgfx::isTextureValid(0, false, numLayers, format, flags))
 			{
@@ -56,15 +50,13 @@ namespace FlagGG
 				return false;
 			}
 
-			bgfx::TextureHandle texHandle = bgfx::createTexture2D((UInt16)width_, (UInt16)height_, hasMips, numLayers, format, flags);
+			const bgfx::Memory* mem = internalData_ ? (const bgfx::Memory*)internalData_ : nullptr;
+
+			bgfx::TextureHandle texHandle = bgfx::createTexture2D((UInt16)width_, (UInt16)height_, hasMips, numLayers, format, flags, mem);
+
+			internalData_ = nullptr;
 
 			ResetHandler(texHandle);
-
-			if (usage_ >= TEXTURE_RENDERTARGET)
-			{
-				bgfx::FrameBufferHandle handle = bgfx::createFrameBuffer(1, &texHandle);
-				renderSurface_->ResetHandler(handle);
-			}
 
 			return true;
 		}
@@ -145,8 +137,7 @@ namespace FlagGG
 				return false;
 			}
 
-			bx::DefaultAllocator defaultAllocator;
-			bimg::ImageContainer* imageContainer = bimg::imageParse(&defaultAllocator, data.Get(), dataSize);
+			bimg::ImageContainer* imageContainer = bimg::imageParse(RenderEngine::Instance()->GetDefaultAllocator(), data.Get(), dataSize);
 
 			if (!imageContainer)
 			{
@@ -155,55 +146,35 @@ namespace FlagGG
 
 			if (imageContainer->m_cubeMap)
 			{
-				BX_ASSERT(false, "Cubemap Texture loading not supported");
+				BX_ASSERT(false, "Can't convert texturecube to texturen2d.");
 				return false;
 			}
 
 			if (1 < imageContainer->m_depth)
 			{
-				BX_ASSERT(false, "3D Texture loading not supported");
+				BX_ASSERT(false, "Can't convert texture3d to texturen2d.");
 				return false;
 			}
 
 			if (1 != imageContainer->m_numLayers)
 			{
-				BX_ASSERT(false, "Texture Layer loading not supported");
+				BX_ASSERT(false, "Texture2d's layers must be 1.");
 				return false;
 			}
 
 			SetNumLevels(imageContainer->m_numMips);
 			SetNumLayers(imageContainer->m_numLayers);
-				
+			SetAddressMode(COORD_U, ADDRESS_CLAMP);
+			SetAddressMode(COORD_V, ADDRESS_CLAMP);
+			const bgfx::Memory* mem = bgfx::makeRef(imageContainer->m_data, imageContainer->m_size, ImageReleaseCb, imageContainer);
+			SetInternalData(mem);
+
 			if (!SetSize(imageContainer->m_width, imageContainer->m_height, imageContainer->m_format))
 			{
 				return false;
 			}
 
-			uint32_t width = imageContainer->m_width;
-			uint32_t height = imageContainer->m_height;
-			
-			for (UInt8 lod = 0, num = imageContainer->m_numMips; lod < num; ++lod)
-			{
-				if (width < 4 || height < 4)
-				{
-					break;
-				}
-
-				width = bx::max(1u, width);
-				height = bx::max(1u, height);
-
-				bimg::ImageMip mip;
-
-				if (bimg::imageGetRawData(*imageContainer, 0, lod, imageContainer->m_data, imageContainer->m_size, mip))
-				{
-					SetData(lod, 0, 0, width, height, mip.m_data, mip.m_size);
-				}
-
-				width >>= 1;
-				height >>= 1;
-			}
-
-			// bgfx::setName(GetSrcHandler<bgfx::TextureHandle>(), "");
+			bgfx::setName(GetSrcHandler<bgfx::TextureHandle>(), GetName().CString());
 
 			return true;
 		}
@@ -239,7 +210,8 @@ namespace FlagGG
 				return false;
 			}
 
-			bgfx::readTexture(GetSrcHandler<bgfx::TextureHandle>(), dest, level);
+			int numFrame = bgfx::readTexture(GetSrcHandler<bgfx::TextureHandle>(), dest, level);
+			while (bgfx::frame() <= numFrame) {}
 
 			return true;		
 		}

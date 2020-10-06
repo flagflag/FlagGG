@@ -49,6 +49,7 @@ message ("SLikeNet lib: ${SLikeNet_LIB}")
 message ("bgfx lib: ${BGFX_LIB}")
 message ("bimg lib: ${BIMG_LIB}")
 message ("bx lib: ${BX}")
+message ("shadrc lib: ${SHADERC}")
 
 if (NOT FLAGGG_NO_BOOST)
 	list (APPEND THIRD_LIB ${BOOST_LIB})
@@ -60,6 +61,7 @@ list (APPEND THIRD_LIB jemallocso)
 list (APPEND THIRD_LIB ${BGFX_LIB})
 list (APPEND THIRD_LIB ${BIMG_LIB})
 list (APPEND THIRD_LIB ${BX})
+list (APPEND THIRD_LIB ${SHADERC})
 
 target_link_libraries(${TARGET_NAME} ${THIRD_LIB} meshoptimizer)
 

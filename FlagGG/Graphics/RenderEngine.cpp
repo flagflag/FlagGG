@@ -82,7 +82,8 @@ namespace FlagGG
 		static BgfxCallback BGFX_CALLBACK;
 
 		RenderEngine::RenderEngine(Core::Context* context) :
-			context_(context)
+			context_(context),
+			defaultAllocator_(new bx::DefaultAllocator())
 		{
 			shaderParameters_.AddParametersDefine<Math::Matrix3x4>(SP_WORLD_MATRIX);
 			shaderParameters_.AddParametersDefine<Math::Matrix3x4>(SP_VIEW_MATRIX);
@@ -94,10 +95,14 @@ namespace FlagGG
 			shaderParameters_.AddParametersDefine<Math::Vector3>(SP_LIGHT_DIR);
 			shaderParameters_.AddParametersDefine<Math::Matrix3x4>(SP_LIGHT_VIEW_MATRIX);
 			shaderParameters_.AddParametersDefine<Math::Matrix4>(SP_LIGHT_PROJVIEW_MATRIX);
+		}
 
-			for (auto& it : samplerUniform)
+		RenderEngine::~RenderEngine()
+		{
+			if (defaultAllocator_)
 			{
-				it.idx = bgfx::kInvalidHandle;
+				delete defaultAllocator_;
+				defaultAllocator_ = nullptr;
 			}
 		}
 
@@ -321,24 +326,6 @@ namespace FlagGG
 
 		void RenderEngine::SetShaderParameter(Scene::Camera* camera, const RenderContext* renderContext)
 		{
-// 			if (!renderContext)
-// 				return;
-// 
-// 			// 视图矩阵，投影矩阵，蒙皮矩阵等
-// 			if (camera && renderContext->worldTransform_ && renderContext->numWorldTransform_)
-// 			{
-// 				shaderParameters_.SetValue(SP_WORLD_MATRIX, *renderContext->worldTransform_);
-// 				shaderParameters_.SetValue(SP_VIEW_MATRIX, camera->GetViewMatrix());
-// 				shaderParameters_.SetValue(SP_PROJVIEW_MATRIX, camera->GetProjectionMatrix() * camera->GetViewMatrix());
-// 				shaderParameters_.SetValue(SP_CAMERA_POS, camera->GetNode()->GetWorldPosition());
-// 
-// 				if (renderContext->geometryType_ == GEOMETRY_SKINNED)
-// 				{
-// 					skinMatrix_ = renderContext->worldTransform_;
-// 					numSkinMatrix_ = renderContext->numWorldTransform_;
-// 				}
-// 			}
-
 			camera_ = camera;
 
 			renderContext_ = renderContext;
@@ -412,13 +399,94 @@ namespace FlagGG
 
 		void RenderEngine::PreDraw(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 vertexCount)
 		{
-			bgfx::setViewFrameBuffer(0, renderTarget_->GetSrcHandler<bgfx::FrameBufferHandle>());
-
-			bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL, Math::Color::BLACK.ToHash(), 1.0f, 0);
-
-			if (vertexBufferDirty_)
+			bool viewDirty = false;
+			if (camera_ && viewport_)
 			{
-				for (UInt8 i = 0; i < vertexBuffers_.Size(); ++i)
+				static Math::Matrix4 Mtx4x4[128];
+				for (UInt32 i = 0; i < renderContext_->numWorldTransform_; ++i)
+				{
+					Mtx4x4[i] = renderContext_->worldTransform_[i].ToMatrix4();
+				}
+				bgfx::setTransform(&Mtx4x4, renderContext_->numWorldTransform_);
+
+				float viewMtx[16];
+				camera_->GetViewMatrix(viewMtx);
+
+				float projMtx[16];
+				camera_->GetProjectionMatrix(projMtx);
+
+				if (memcmp(viewMtx_, viewMtx, 64) != 0 ||
+					memcmp(projMtx_, projMtx, 64) != 0)
+				{
+					memcpy(viewMtx_, viewMtx, 64);
+					memcpy(projMtx_, projMtx, 64);
+
+					viewDirty = true;
+				}
+
+				Math::IntRect viewportRect(viewport_->GetX(), viewport_->GetY(),
+					viewport_->GetX() + viewport_->GetWidth(),
+					viewport_->GetY() + viewport_->GetHeight());
+
+				if (viewportRect != viewportRect_)
+				{
+					viewportRect_ = viewportRect;
+
+					viewDirty = true;
+				}
+			}
+
+			if (renderTargetDirty_ || viewDirty)
+			{
+				if (renderTargetDirty_)
+				{
+					bgfx::Attachment attachments[2];
+					auto* renderTexture = renderTarget_->GetParentTexture();
+					auto* depthTexture = depthStencil_->GetParentTexture();
+					auto renderHandle = renderTexture->GetSrcHandler<bgfx::TextureHandle>();
+					auto depthHandle = depthTexture->GetSrcHandler<bgfx::TextureHandle>();
+
+					auto fbKey = Container::MakePair(renderHandle.idx, depthHandle.idx);
+					auto itFB = frameBufferMap_.Find(fbKey);
+					if (itFB == frameBufferMap_.End())
+					{
+						attachments[0].init(
+							renderHandle,
+							bgfx::Access::Write,
+							renderTarget_->GetBgfxLayer(),
+							0);
+
+						attachments[1].init(
+							depthHandle,
+							bgfx::Access::Write,
+							depthStencil_->GetBgfxLayer(),
+							0);
+
+						currentFramebuffer_ = bgfx::createFrameBuffer(2, attachments);
+					}
+					else
+						currentFramebuffer_ = itFB->second_;
+
+					++currentViewId_;
+					bgfx::resetView(currentViewId_);
+					bgfx::setViewMode(currentViewId_, bgfx::ViewMode::Default);
+
+					bgfx::setViewFrameBuffer(currentViewId_, currentFramebuffer_);
+					bgfx::setViewClear(currentViewId_, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL, Math::Color::BLACK.ToHash(), 1.0f, 0);
+				}
+
+				++currentViewId_;
+				bgfx::resetView(currentViewId_);
+				bgfx::setViewMode(currentViewId_, bgfx::ViewMode::Default);
+
+				bgfx::setViewFrameBuffer(currentViewId_, currentFramebuffer_);
+				bgfx::setViewRect(currentViewId_, viewportRect_.Top(), viewportRect_.Left(), viewportRect_.Width(), viewportRect_.Height());
+				bgfx::setViewTransform(currentViewId_, viewMtx_, projMtx_);
+			}
+
+			// if (vertexBufferDirty_)
+			{
+				for (UInt32 i = 0; i < vertexBuffers_.Size(); ++i)
 				{
 					auto vb = vertexBuffers_[i];
 					if (vb)
@@ -432,7 +500,7 @@ namespace FlagGG
 				vertexBufferDirty_ = false;
 			}
 
-			if (indexBufferDirty_)
+			// if (indexBufferDirty_)
 			{
 				if (indexBuffer_)
 				{
@@ -444,20 +512,31 @@ namespace FlagGG
 				indexBufferDirty_ = false;
 			}
 
+			auto shaderPair = Container::MakePair(vertexShader_.Get(), pixelShader_.Get());
+			auto it = shaderProgramMap_.Find(shaderPair);
+			if (it == shaderProgramMap_.End())
+			{
+				shaderProgram_ = new ShaderProgram(vertexShader_.Get(), pixelShader_.Get());
+				shaderProgramMap_.Insert(MakePair(shaderPair, shaderProgram_));
+			}
+			else
+			{
+				shaderProgram_ = it->second_;
+			}
+
 			if (texturesDirty_)
 			{
-				for (UInt8 i = 0; i < MAX_TEXTURE_CLASS; ++i)
+				for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
 				{
 					auto tex = textures_[i] ? textures_[i] : defaultTextures_[i];
 
 					if (tex)
 					{
-						if (samplerUniform[i].idx == bgfx::kInvalidHandle)
+						auto samplerUnitform = shaderProgram_->GetTexSamplers(i);
+						if (bgfx::isValid(samplerUnitform))
 						{
-							samplerUniform[i] = bgfx::createUniform(bgfxSamplerUniform[i], bgfx::UniformType::Sampler);
+							bgfx::setTexture(i, samplerUnitform, tex->GetSrcHandler<bgfx::TextureHandle>());
 						}
-
-						bgfx::setTexture(i, samplerUniform[i], tex->GetSrcHandler<bgfx::TextureHandle>());
 					}
 				}
 				texturesDirty_ = false;
@@ -465,34 +544,13 @@ namespace FlagGG
 
 			if (inShaderParameters_)
 			{
-				inShaderParameters_->SubmitUniforms();
+				inShaderParameters_->SubmitUniforms(shaderProgram_);
 				inShaderParameters_ = nullptr;
 			}
 
-			if (camera_ && viewport_)
+			// if (rasterizerStateDirty_)
 			{
-				float view[16];
-				camera_->GetViewMatrix(view);
-
-				float proj[16];
-				camera_->GetProjectionMatrix(proj);
-
-				bgfx::setViewTransform(0, view, proj);
-
-				bgfx::setViewRect(0, viewport_->GetX(), viewport_->GetY(), viewport_->GetWidth(), viewport_->GetHeight());
-
-				float time = 666;
-				float mtx[16];
-				bx::mtxRotateXY(mtx, time + 5 * 0.21f, time + 5 * 0.37f);
-				mtx[12] = -15.0f + float(5)*3.0f;
-				mtx[13] = -15.0f + float(5)*3.0f;
-				mtx[14] = 0.0f;
-				bgfx::setTransform(mtx);
-			}
-
-			if (rasterizerStateDirty_)
-			{
-				UInt64 state = 0u;
+				UInt64 state = BGFX_STATE_FRONT_CCW;
 
 				switch (rasterizerState_.cullMode_)
 				{
@@ -545,9 +603,6 @@ namespace FlagGG
 		{
 			PreDraw(0, 0, vertexStart, vertexCount);
 
-			// draw call
-			// deviceContext_->Draw(vertexCount, vertexStart);
-
 			bgfx::ProgramHandle handle = bgfx::createProgram(
 				vertexShader_->GetSrcHandler<bgfx::ShaderHandle>(),
 				pixelShader_->GetSrcHandler<bgfx::ShaderHandle>());
@@ -557,10 +612,14 @@ namespace FlagGG
 
 		void RenderEngine::SetRenderTarget(Viewport* viewport, bool renderShadowMap)
 		{
-			renderTarget_ = viewport->GetRenderTarget();
-			depthStencil_ = viewport->GetDepthStencil();
-			renderShadowMap_ = renderShadowMap;
-			renderTargetDirty_ = true;
+			if (renderTarget_ != viewport->GetRenderTarget() ||
+				depthStencil_ != viewport->GetDepthStencil())
+			{
+				renderTarget_ = viewport->GetRenderTarget();
+				depthStencil_ = viewport->GetDepthStencil();
+				renderShadowMap_ = renderShadowMap;
+				renderTargetDirty_ = true;
+			}
 		}
 
 		void RenderEngine::Render(Viewport* viewport)
@@ -694,10 +753,10 @@ namespace FlagGG
 				auto* cache = context_->GetVariable<Resource::ResourceCache>("ResourceCache");
 
 				vertexShaderCode = cache->GetResource<Graphics::ShaderCode>("Shader/UI.hlsl");
-				vertexShader = vertexShaderCode->GetShader(VS, {});
+				vertexShader = vertexShaderCode->GetShader(VS, "UI", {});
 
 				pixelShaderCode = cache->GetResource<Graphics::ShaderCode>("Shader/UI.hlsl");
-				pixelShader = pixelShaderCode->GetShader(PS, {});
+				pixelShader = pixelShaderCode->GetShader(PS, "UI", {});
 			}
 
 			for (const auto& batch : batches_)

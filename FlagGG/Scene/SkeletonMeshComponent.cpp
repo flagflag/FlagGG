@@ -44,10 +44,20 @@ namespace FlagGG
 			UpdateTreeDirty();
 
 			// 设置渲染Context
-			renderContext_.geometryType_ = GEOMETRY_SKINNED;
-			renderContext_.worldTransform_ = &skinMatrices_[0];
-			renderContext_.numWorldTransform_ = skinMatrices_.Size();
-			renderContext_.viewMask_ = GetViewMask();
+			if (!skinMatrices_.Empty())
+			{
+				renderContext_.geometryType_ = GEOMETRY_SKINNED;
+				renderContext_.worldTransform_ = &skinMatrices_[0];
+				renderContext_.numWorldTransform_ = skinMatrices_.Size();
+				renderContext_.viewMask_ = GetViewMask();
+			}
+			else
+			{
+				renderContext_.geometryType_ = GEOMETRY_STATIC;
+				renderContext_.worldTransform_ = &node_->GetWorldTransform();
+				renderContext_.numWorldTransform_ = 1;
+				renderContext_.viewMask_ = GetViewMask();
+			}
 
 			boneBoundingBox_ = boundingBox_;
 		}

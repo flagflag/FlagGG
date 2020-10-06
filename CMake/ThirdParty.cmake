@@ -14,6 +14,7 @@ set (SLikeNet_LIB SLikeNet)
 set (BGFX_LIB bgfx)
 set (BIMG_LIB bimg)
 set (BX bx)
+set (SHADERC shaderc)
 
 # Direct3D
 if (WIN32 OR WIN64)

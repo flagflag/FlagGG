@@ -1,5 +1,6 @@
 #include "Graphics/Shader.h"
 #include "Graphics/RenderEngine.h"
+#include "Graphics/ShaderParameter.h"
 #include "Allocator/SmartMemory.hpp"
 #include "Container/ArrayPtr.h"
 #include "Container/Sort.h"
@@ -13,6 +14,17 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
+		static Container::HashMap<Container::String, TextureClass> TEXTURE_CLASS =
+		{
+			{ "Universal", TEXTURE_CLASS_UNIVERSAL },
+			{ "DiffuseMap", TEXTURE_CLASS_DIFFUSE },
+			{ "NormalMap", TEXTURE_CLASS_NORMAL },
+			{ "SpecularMap", TEXTURE_CLASS_SPECULAR },
+			{ "EmissiveMap", TEXTURE_CLASS_EMISSIVE },
+			{ "EnvMap", TEXTURE_CLASS_ENVIRONMENT },
+			{ "ShadowMap", TEXTURE_CLASS_SHADOWMAP }
+		};
+
 		static Container::String HashVectorString(Container::Vector<Container::String> vecStr)
 		{
 			Container::Sort(vecStr.Begin(), vecStr.End());
@@ -25,15 +37,22 @@ namespace FlagGG
 		}
 
 		ShaderCode::ShaderCode(Core::Context* context) :
-			Resource(context)
+			Resource(context),
+			shaderParser_(context)
 		{ }
 
-		Shader* ShaderCode::GetShader(ShaderType type, const Container::Vector<Container::String>& defines)
+		Shader* ShaderCode::GetShader(ShaderType type, const Container::String& passName, const Container::Vector<Container::String>& defines)
 		{
+			const auto& passMap = shaderParser_.GetPassShaderSourceCode();
+			auto itPass = passMap.Find(passName);
+			if (itPass == passMap.End())
+				return nullptr;
+
+			auto& shaders = shadersMap_[passName];
 			Container::Vector<Container::String> newDefines = defines;
 			newDefines.Push(type == VS ? "VERTEX" : "PIXEL");
 			Container::String definesStr = HashVectorString(newDefines);
-			for (const auto& shader : shaders_)
+			for (const auto& shader : shaders)
 			{
 				if (shader->GetType() == type && shader->GetDefinesString() == definesStr)
 				{
@@ -41,83 +60,13 @@ namespace FlagGG
 				}
 			}
 
-			Container::SharedPtr<Shader> shader(new Shader(buffer_, bufferSize_));
+			Container::SharedPtr<Shader> shader(new Shader(itPass->second_));
 			shader->SetType(type);
 			shader->SetDefines(newDefines);
 			shader->Initialize();
-			shaders_.Push(shader);
+			shaders.Push(shader);
 
 			return shader;
-		}
-
-		bool ShaderCode::PreCompileShaderCode(const char* head, const char* tail, Container::String& out)
-		{
-			while (head != tail)
-			{
-				while (head != tail && (*head == '\n' || *head == '\r' || *head == ' ' || *head == '\t')) ++head;
-				if (head + 10 < tail &&
-					head[0] == '#' &&
-					head[1] == 'i' &&
-					head[2] == 'n' &&
-					head[3] == 'c' &&
-					head[4] == 'l' &&
-					head[5] == 'u' &&
-					head[6] == 'd' &&
-					head[7] == 'e')
-				{
-					head += 8;
-					while (head != tail && (*head == ' ' || *head == '\t')) ++head;
-					if (*head == '\"')
-					{
-						++head;
-						const char* temp = head;
-						while (temp != tail && *temp != '\"') ++temp;
-
-						Container::String relativePath(head, temp - head);
-
-						if (*temp != '\"')
-						{
-							FLAGGG_LOG_ERROR("Pre compile shader error: missing '\"' behind #include\"{}.", relativePath.CString());
-							return false;
-						}
-
-						head = temp + 1;
-
-						while (head != tail && (*head == ' ' || *head == '\t')) ++head;
-
-						// 这个判断不严谨，懒得写了，将就用着。
-						if (head != tail && *head != '\r' && *head != '\n')
-						{
-							FLAGGG_LOG_ERROR("Pre compile shader error: missing wrap behind #include\"{}\".", relativePath.CString());
-							return false;
-						}
-
-						auto file = context_->GetVariable<FlagGG::Resource::ResourceCache>("ResourceCache")->GetFile(relativePath);
-						if (!file)
-						{
-							FLAGGG_LOG_ERROR("Pre compile shader error: can not open file[{}].", relativePath.CString());
-							return false;
-						}
-
-						UInt32 bufferSize = 0u;
-						Container::SharedArrayPtr<char> buffer;
-						file->ToBuffer(buffer, bufferSize);
-						if (!PreCompileShaderCode(buffer.Get(), buffer.Get() + bufferSize, out))
-							return false;
-					}
-					else
-					{
-						FLAGGG_LOG_ERROR("Pre compile shader error: missing filename behind #include.");
-						return false;
-					}
-				}
-				else
-				{
-					break;
-				}
-			}
-
-			out.Append(head, tail - head);
 		}
 
 		bool ShaderCode::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
@@ -125,14 +74,10 @@ namespace FlagGG
 			Container::String buffer;
 			stream->ToString(buffer);
 
-			Container::String out;
-			PreCompileShaderCode(buffer.CString(), buffer.CString() + buffer.Length(), out);
+			shaderParser_.Clear();
+			bool ret = shaderParser_.Parse(buffer.CString(), buffer.Length());
 
-			bufferSize_ = out.Length();
-			buffer_ = new char[bufferSize_];
-			memcpy(buffer_.Get(), out.CString(), bufferSize_);
-
-			return true;
+			return ret;
 		}
 
 		bool ShaderCode::EndLoad()
@@ -142,25 +87,21 @@ namespace FlagGG
 
 		// --------------------------------------------------------------------------------------------------------------
 
-		Shader::Shader(Container::SharedArrayPtr<char> buffer, UInt32 bufferSize) :
+		Shader::Shader(const PassShaderSourceCode& pass) :
 			GPUObject(),
-			buffer_(buffer),
-			bufferSize_(bufferSize)
+			pass_(pass)
 		{ }
 
 		Shader::~Shader()
 		{
 		}
 
-		static bool CompileShader(Container::SharedArrayPtr<char> buffer, UInt32 bufferSize,
+		static bool CompileShader(const char* buffer, UInt32 bufferSize,
 			ShaderType shaderType, const Container::Vector<Container::String>& defines,
-			const bgfx::Memory*& men)
+			Container::String& out)
 		{
-#ifdef COMPILE_SHADER
+			Container::Vector<Container::String> args;
 
-#else
-			men = bgfx::copy(buffer.Get(), bufferSize);
-#endif
 			return true;
 		}
 
@@ -174,7 +115,7 @@ namespace FlagGG
 			}
 
 			const bgfx::Memory* mem = nullptr;
-			if (!CompileShader(buffer_, bufferSize_, shaderType_, defines_, mem) || !mem)
+			if (!CompileShader(pass_.sourceCode_.Buffer(), pass_.sourceCode_.Size(), shaderType_, defines_, compiledSourceCode_))
 			{
 				FLAGGG_LOG_ERROR("Failed to compile shader.");
 				return;
@@ -182,6 +123,31 @@ namespace FlagGG
 
 			bgfx::ShaderHandle handle = bgfx::createShader(mem);
 			ResetHandler(handle);
+
+			if (bgfx::isValid(handle))
+			{
+				UInt16 numUniform = bgfx::getShaderUniforms(handle);
+				if (numUniform)
+				{
+					Container::PODVector<bgfx::UniformHandle> uniformHandles((unsigned)numUniform);
+					bgfx::getShaderUniforms(handle, &uniformHandles[0], numUniform);
+					for (auto& uniformHandle : uniformHandles)
+					{
+						bgfx::UniformInfo info;
+						bgfx::getUniformInfo(uniformHandle, info);
+
+						ShaderParameterDesc desc;
+						desc.name_ = &info.name[1];
+						desc.handle_ = uniformHandle;
+						desc.type_ = info.type;
+						desc.num_ = info.num;
+						desc.offset_ = 0;
+						desc.size_ = 0;
+
+						shaderParameterDescMap[desc.name_] = desc;
+					}
+				}
+			}
 		}
 
 		bool Shader::IsValid()
@@ -201,7 +167,7 @@ namespace FlagGG
 			definesString_ = HashVectorString(defines_);
 		}
 
-		Container::String Shader::GetDefinesString() const
+		const Container::String& Shader::GetDefinesString() const
 		{
 			return definesString_;
 		}
@@ -209,6 +175,44 @@ namespace FlagGG
 		ShaderType Shader::GetType()
 		{
 			return shaderType_;
+		}
+
+
+		ShaderProgram::ShaderProgram(Shader* vsShader, Shader* psShader)
+		{
+			UniformAndSamplers(vsShader);
+			UniformAndSamplers(psShader);
+		}
+
+		bool ShaderProgram::IsValid()
+		{
+			return bgfx::isValid(GetSrcHandler<bgfx::ProgramHandle>());
+		}
+
+		void ShaderProgram::UniformAndSamplers(Shader* shader)
+		{
+			for (auto& it : shader->GetShaderParameterDescs())
+			{
+				const auto& desc = it.second_;
+				if (desc.type_ == bgfx::UniformType::Enum::Sampler)
+				{
+					auto itClass = TEXTURE_CLASS.Find(desc.name_);
+					if (itClass != TEXTURE_CLASS.End())
+					{
+						texSamplers_[itClass->second_] = desc.handle_;
+					}
+				}
+				else
+				{
+					uniformDescMap_[it.first_] = it.second_;
+				}
+			}
+		}
+
+		const ShaderParameterDesc* ShaderProgram::GetUniformDesc(const Container::String& parameterName)
+		{
+			auto it = uniformDescMap_.Find(parameterName);
+			return it != uniformDescMap_.End() ? &(it->second_) : nullptr;
 		}
 	}
 }
