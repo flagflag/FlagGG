@@ -11,6 +11,8 @@
 cmake_minimum_required( VERSION 3.0 )
 project(bgfx)
 
+set (LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../bin)
+
 # sets project version from api ver / git rev
 include( cmake/version.cmake )
 

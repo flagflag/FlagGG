@@ -178,12 +178,12 @@ void GameApplication::CreateScene()
 	dissolveHero_->SetName("DissolveHero");
 	scene_->AddChild(dissolveHero_);
 
-	terrain_ = new Terrain(context_);
-	terrain_->Create(64);
-	terrain_->SetScale(Vector3(1, 0.4, 1));
-	terrain_->SetPosition(Vector3(-80, -5, 0));
-	terrain_->SetName("Terrain");
-	scene_->AddChild(terrain_);
+	//terrain_ = new Terrain(context_);
+	//terrain_->Create(64);
+	//terrain_->SetScale(Vector3(1, 0.4, 1));
+	//terrain_->SetPosition(Vector3(-80, -5, 0));
+	//terrain_->SetName("Terrain");
+	//scene_->AddChild(terrain_);
 
 #if 0
 	auto* lightNode = new Unit(context_);
@@ -201,33 +201,33 @@ void GameApplication::CreateScene()
 	scene_->AddChild(lightNode);
 #endif
 
-	skybox_ = new Unit(context_);
-	skybox_->Load("Unit/Skybox.ljson");
-	skybox_->SetScale(Vector3(100000, 100000, 100000));
-	skybox_->SetName("Skybox");
-	skybox_->SetTranspent(true);
-	scene_->AddChild(skybox_);
+	//skybox_ = new Unit(context_);
+	//skybox_->Load("Unit/Skybox.ljson");
+	//skybox_->SetScale(Vector3(100000, 100000, 100000));
+	//skybox_->SetName("Skybox");
+	//skybox_->SetTranspent(true);
+	//scene_->AddChild(skybox_);
 
-	waterDown_ = new Unit(context_);
-	// waterDown_->Load("Unit/WaterDown.ljson");
-	waterDown_->SetPosition(Vector3(0, -5, 10));
-	waterDown_->SetScale(Vector3(10, 10, 10));
-	waterDown_->SetName("WaterDown");
-	waterDown_->SetTranspent(true);
-	auto* comp = waterDown_->GetComponent<StaticMeshComponent>();
-	if (comp)
-		comp->SetViewMask(0xff0000); // 不进入水反射
-	scene_->AddChild(waterDown_);
+	//waterDown_ = new Unit(context_);
+	//// waterDown_->Load("Unit/WaterDown.ljson");
+	//waterDown_->SetPosition(Vector3(0, -5, 10));
+	//waterDown_->SetScale(Vector3(10, 10, 10));
+	//waterDown_->SetName("WaterDown");
+	//waterDown_->SetTranspent(true);
+	//auto* comp = waterDown_->GetComponent<StaticMeshComponent>();
+	//if (comp)
+	//	comp->SetViewMask(0xff0000); // 不进入水反射
+	//scene_->AddChild(waterDown_);
 
-	water_ = new Unit(context_);
-	// water_->Load("Unit/Ocean.ljson");
-	water_->SetPosition(Vector3(0, -4, 10));
-	water_->SetScale(Vector3(0.1, 0.1, 0.1));
-	water_->SetName("Water");
-	scene_->AddChild(water_);
+	//water_ = new Unit(context_);
+	//// water_->Load("Unit/Ocean.ljson");
+	//water_->SetPosition(Vector3(0, -4, 10));
+	//water_->SetScale(Vector3(0.1, 0.1, 0.1));
+	//water_->SetName("Water");
+	//scene_->AddChild(water_);
 
-	Plane waterPlane(water_->GetWorldRotation() * Vector3::UP, water_->GetWorldPosition());
-	reflectionCamera_->SetReflectionPlane(waterPlane);
+	//Plane waterPlane(water_->GetWorldRotation() * Vector3::UP, water_->GetWorldPosition());
+	//reflectionCamera_->SetReflectionPlane(waterPlane);
 }
 
 void GameApplication::SetupWindow()
@@ -236,8 +236,7 @@ void GameApplication::SetupWindow()
 	if (commandParam_.Contains("NoWindow"))
 		return;
 
-	// IntRect rect = SystemHelper::GetDesktopRect();
-	IntRect rect(0, 400, 500, 900);
+	IntRect rect(0, 0, Resolution().x_, Resolution().y_);
 
 	// 创建一张shaderMap
 	shadowMap_ = new Texture2D(context_);
@@ -270,26 +269,29 @@ void GameApplication::SetupWindow()
 	rttViewport->SetDepthStencil(rttTexture_[1]->GetRenderSurface());
 	viewports_.Push(rttViewport);
 
-	auto* waterComp = water_->GetComponent<StaticMeshComponent>();
-	if (waterComp)
+	if (water_) 
 	{
-		waterComp->SetViewMask(0xff);
-		auto* waterMaterial = waterComp->GetMaterial();
-		if (waterMaterial)
+		auto* waterComp = water_->GetComponent<StaticMeshComponent>();
+		if (waterComp)
 		{
-			waterMaterial->SetTexture(TEXTURE_CLASS_DIFFUSE, rttTexture_[0]);
-			waterComp->SetMaterial(waterMaterial);
+			waterComp->SetViewMask(0xff);
+			auto* waterMaterial = waterComp->GetMaterial();
+			if (waterMaterial)
+			{
+				waterMaterial->SetTexture(TEXTURE_CLASS_DIFFUSE, rttTexture_[0]);
+				waterComp->SetMaterial(waterMaterial);
+			}
 		}
-	}
-	auto* dynamicWaterComp = water_->GetComponent<OceanComponent>();
-	if (dynamicWaterComp)
-	{
-		dynamicWaterComp->SetViewMask(0xff);
-		auto* waterMaterial = waterComp->GetMaterial();
-		if (waterMaterial)
+		auto* dynamicWaterComp = water_->GetComponent<OceanComponent>();
+		if (dynamicWaterComp)
 		{
-			waterMaterial->SetTexture(TEXTURE_CLASS_DIFFUSE, rttTexture_[0]);
-			dynamicWaterComp->SetMaterial(waterMaterial);
+			dynamicWaterComp->SetViewMask(0xff);
+			auto* waterMaterial = waterComp->GetMaterial();
+			if (waterMaterial)
+			{
+				waterMaterial->SetTexture(TEXTURE_CLASS_DIFFUSE, rttTexture_[0]);
+				dynamicWaterComp->SetMaterial(waterMaterial);
+			}
 		}
 	}
 

@@ -9,12 +9,13 @@ Shader "Shader Res/Shader/Model" {
         Tags {
             "RenderType" = "LitSolid"
         }
+
         Pass {
             Name "FORWARD"
             
             Vertex {
                 vec4 iPosition : POSITION
-                vec4 iNormal : NORMAL
+                vec3 iNormal : NORMAL
                 vec2 iTexCoord : TEXCOORD0
                 vec4 iColor : COLOR0
                 vec4 iBlendWeight : BLENDWEIGHT
@@ -31,9 +32,11 @@ Shader "Shader Res/Shader/Model" {
             }
 
             CGPROGRAM
+            #include "Shader/Engine.h"
             #include "Shader/Define.shader"
             #include "Shader/Common.shader"
-
+            
+            #ifdef VERTEX
             void VS()
             {
             #ifdef STATIC
@@ -53,12 +56,15 @@ Shader "Shader Res/Shader/Model" {
                 #endif
 
             #ifdef SHADOW
-                vShadowPos = mul(float4(worldPos, 1.0), lightProjviewMatrix);
+                vShadowPos = mul(float4(worldPos, 1.0), _LightProjViewMatrix);
             #endif
             }
+            #endif
 
+            #ifdef PIXEL
             float DistributionGGX(vec3 N, vec3 H, float roughness) // roughness 参与
             {
+                float PI     = 3.141592654;
                 float a      = roughness*roughness;
                 float a2     = a*a;
                 float NdotH  = max(dot(N, H), 0.0);
@@ -103,26 +109,27 @@ Shader "Shader Res/Shader/Model" {
                 // r: ao, g: gloss, b: metallic
                 vec3 aoGlossMetal = texture2D(_SpecularMap, vTexCoord);
 
-                float ao = aoGlossMetal.a;
+                float ao = aoGlossMetal.r;
                 float roughness = 1.0 - aoGlossMetal.g;
                 float metallic = aoGlossMetal.b;
 
                 vec3 N = normalize(vNormal);
-                vec3 V = normalize(_CameraPos - vWorldPos);
+                vec3 V = normalize(_CameraPos - vWorldPos.xyz);
 
                 vec3 F0 = vec3_splat(0.04);
                 F0 = mix(F0, albedo, metallic); // albedo 参与, metallic 参与, F0 参与
 
                 // reflectance equation
                 vec3 Lo = vec3_splat(0.0);
+                float PI = 3.141592654;
                 for (int i = 0; i < 4; ++i)
                 {
                     // calculate per-light radiance
-                    vec3 L = normalize(lightPositions[i] - vWorldPos);
+                    vec3 L = normalize(_LightPositions[i].xyz - vWorldPos.xyz);
                     vec3 H = normalize(V + L);
-                    float distance    = length(lightPositions[i] - vWorldPos);
+                    float distance    = length(_LightPositions[i].xyz - vWorldPos.xyz);
                     float attenuation = 1.0 / (distance * distance);
-                    vec3 radiance     = lightColors[i] * attenuation; // light color 参与     
+                    vec3 radiance     = _LightColors[i] * attenuation; // light color 参与     
 
                     // cook-torrance brdf
                     float NDF = DistributionGGX(N, H, roughness); // roughness 参与
@@ -151,43 +158,7 @@ Shader "Shader Res/Shader/Model" {
             // Output
                 gl_FragColor = vec4(color, 1.0);
             }
-            ENDCG
-        }
-
-        Pass {
-            Name "SHADOWMAP"
-            
-            Vertex {
-                vec4 iPosition : POSITION
-                vec4 iNormal : NORMAL
-                vec2 iTexCoord : TEXCOORD0
-                vec4 iColor : COLOR0
-                vec4 iBlendWeight : BLENDWEIGHT
-                vec4 iBlendIndices : BLENDINDICES
-            }
-
-            Pixel {}
-
-            CGPROGRAM
-            #include "Shader/Define.shader"
-            #include "Shader/Common.shader"
-
-            void VS()
-            {
-            #ifdef STATIC
-                mat4 iWorldMatrix = _WorldMatrix;
-            #else
-                mat4 iWorldMatrix = GetSkinMatrix(iBlendWeight, iBlendIndices);
             #endif
-
-                float3 worldPos = mul(iPosition, iWorldMatrix).xyz;
-                gl_Position = mul(float4(worldPos, 1.0), _ProjViewMatrix);
-            }
-
-            void PS()
-            {
-                gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-            }
             ENDCG
         }
     }

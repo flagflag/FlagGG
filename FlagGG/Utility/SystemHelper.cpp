@@ -442,6 +442,101 @@ namespace FlagGG
 #endif
 			}
 
+			static Container::String GetInternalPath(const Container::String& pathName)
+			{
+				return pathName.Replaced('\\', '/');
+			}
+
+			static void SplitPath(const Container::String& fullPath, Container::String& pathName, Container::String& fileName, Container::String& extension, bool lowercaseExtension = true)
+			{
+				Container::String fullPathCopy = GetInternalPath(fullPath);
+
+				unsigned extPos = fullPathCopy.FindLast('.');
+				unsigned pathPos = fullPathCopy.FindLast('/');
+
+				if (extPos != Container::String::NPOS && (pathPos == Container::String::NPOS || extPos > pathPos))
+				{
+					extension = fullPathCopy.Substring(extPos);
+					if (lowercaseExtension)
+						extension = extension.ToLower();
+					fullPathCopy = fullPathCopy.Substring(0, extPos);
+				}
+				else
+					extension.Clear();
+
+				pathPos = fullPathCopy.FindLast('/');
+				if (pathPos != Container::String::NPOS)
+				{
+					fileName = fullPathCopy.Substring(pathPos + 1);
+					pathName = fullPathCopy.Substring(0, pathPos + 1);
+				}
+				else
+				{
+					fileName = fullPathCopy;
+					pathName.Clear();
+				}
+			}
+
+			Container::String GetPath(const Container::String& fullPath)
+			{
+				Container::String path, file, extension;
+				SplitPath(fullPath, path, file, extension);
+				return path;
+			}
+
+			Container::String GetFileName(const Container::String& fullPath)
+			{
+				Container::String path, file, extension;
+				SplitPath(fullPath, path, file, extension);
+				return file;
+			}
+
+			Container::String GetExtension(const Container::String& fullPath, bool lowercaseExtension)
+			{
+				Container::String path, file, extension;
+				SplitPath(fullPath, path, file, extension, lowercaseExtension);
+				return extension;
+			}
+
+			Container::String GetFileNameAndExtension(const Container::String& fileName, bool lowercaseExtension)
+			{
+				Container::String path, file, extension;
+				SplitPath(fileName, path, file, extension, lowercaseExtension);
+				return file + extension;
+			}
+
+			Container::String ReplaceExtension(const Container::String& fullPath, const Container::String& newExtension)
+			{
+				Container::String path, file, extension;
+				SplitPath(fullPath, path, file, extension);
+				return path + file + newExtension;
+			}
+
+			Container::String GetProgramDir()
+			{
+#if defined(_WIN32)
+				wchar_t exeName[MAX_PATH];
+				exeName[0] = 0;
+				GetModuleFileNameW(nullptr, exeName, MAX_PATH);
+				return GetPath(Container::String(exeName));
+#elif defined(__APPLE__)
+				char exeName[MAX_PATH];
+				memset(exeName, 0, MAX_PATH);
+				unsigned size = MAX_PATH;
+				_NSGetExecutablePath(exeName, &size);
+				return GetPath(Container::String(exeName));
+#elif defined(__linux__)
+				char exeName[MAX_PATH];
+				memset(exeName, 0, MAX_PATH);
+				pid_t pid = getpid();
+				Container::String link = "/proc/" + Container::String(pid) + "/exe";
+				readlink(link.CString(), exeName, MAX_PATH);
+				return GetPath(Container::String(exeName));
+#else
+				return "";
+#endif
+			}
+
 
 			Timer::Timer()
 			{

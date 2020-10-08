@@ -83,6 +83,8 @@ namespace FlagGG
 
 			ShaderParameters& GetShaderParameters();
 
+			void ClearStatus();
+
 			void PostRenderBatch(const Container::Vector<Container::SharedPtr<Batch>>& batches);
 
 			void SetDefaultTextures(TextureClass index, Texture* texture);

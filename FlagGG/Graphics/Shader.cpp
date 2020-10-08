@@ -7,8 +7,10 @@
 #include "IOFrame/Stream/FileStream.h"
 #include "Resource/ResourceCache.h"
 #include "Core/Context.h"
+#include "Utility/SystemHelper.h"
 #include "Log.h"
 #include "bgfx/bgfx.h"
+#include "bgfx/bgfx/tools/shaderc/compile_shader.h"
 
 namespace FlagGG
 {
@@ -96,13 +98,149 @@ namespace FlagGG
 		{
 		}
 
-		static bool CompileShader(const char* buffer, UInt32 bufferSize,
-			ShaderType shaderType, const Container::Vector<Container::String>& defines,
-			Container::String& out)
+		static void WriteCode(IOFrame::Stream::FileStream& file, const Container::PODVector<char>& code, const Container::String& main)
 		{
-			Container::Vector<Container::String> args;
+			const char* index = code.Buffer();
+			const char* eof = code.Buffer() + code.Size();
+			UInt32 count = 0u;
+			while (index != eof)
+			{
+				++count;
+				if (count >= main.Length() && strncmp(index - main.Length() + 1, main.CString(), main.Length()) == 0)
+				{
+					file.WriteStream(code.Buffer(), index - main.Length() + 1 - code.Buffer());
+					file.WriteStream("main", strlen("main"));
+					break;
+				}
+				++index;
+			}
+			file.WriteStream(index + 1, eof - (index + 1));
+		}
 
-			return true;
+		static bool CompileShader(const PassShaderSourceCode& pass, ShaderType shaderType,
+			const Container::Vector<Container::String>& defines, const Container::String& definesString, Container::String& out)
+		{
+			const Container::String shaderFolder = Utility::SystemHelper::GetProgramDir() + "ShaderCache/";
+			Utility::SystemHelper::CreateDir(shaderFolder);
+			const Container::String VPS = shaderType == VS ? "VS" : "PS";
+			const Container::String shaderPathIn = shaderFolder + "_" + VPS + "_" + pass.passName_ + "_" + definesString + "_input.shader";
+			const Container::String shaderPathOut = shaderFolder + "_" + VPS + "_" + pass.passName_ + "_" + definesString + "_ouput.shader";
+			const Container::String varyingFile = shaderFolder + "_" + VPS + "_" + pass.passName_ + "_" + definesString + "_varyingdef.shader";
+			const Container::String include = Utility::SystemHelper::GetProgramDir() + "Res";
+
+			{
+				IOFrame::Stream::FileStream file;
+				file.Open(shaderPathIn, IOFrame::Stream::FileMode::FILE_WRITE);
+
+				if (!file.IsOpen())
+					return false;
+
+				if (shaderType == VS)
+				{
+					file.WriteStream("$input ", strlen("$input "));
+					for (UInt32 i = 0; i < pass.inputVar_.Size(); ++i)
+					{
+						if (i != 0)
+							file.WriteStream(", ", 2);
+						file.WriteStream(pass.inputVar_[i].CString(), pass.inputVar_[i].Length());
+					}
+					file.WriteStream("\n", 1);
+
+					file.WriteStream("$output ", strlen("$output "));
+					for (UInt32 i = 0; i < pass.outputVar_.Size(); ++i)
+					{
+						if (i != 0)
+							file.WriteStream(", ", 2);
+						file.WriteStream(pass.outputVar_[i].CString(), pass.outputVar_[i].Length());
+					}
+					file.WriteStream("\n", 1);
+				}
+				else
+				{
+					file.WriteStream("$input ", strlen("$input "));
+					for (UInt32 i = 0; i < pass.outputVar_.Size(); ++i)
+					{
+						if (i != 0)
+							file.WriteStream(", ", 2);
+						file.WriteStream(pass.outputVar_[i].CString(), pass.outputVar_[i].Length());
+					}
+					file.WriteStream("\n", 1);
+				}
+
+				WriteCode(file, pass.sourceCode_, shaderType == VS ? "VS" : "PS");
+				file.Close();
+			}
+
+			{
+				IOFrame::Stream::FileStream file;
+				file.Open(varyingFile, IOFrame::Stream::FileMode::FILE_WRITE);
+				if (!file.IsOpen())
+					return false;
+
+				file.WriteStream(pass.pixelVaryingDef_.Buffer(), pass.pixelVaryingDef_.Size());
+				file.WriteStream("\n", 1);
+				file.WriteStream(pass.vertexVaryingDef_.Buffer(), pass.vertexVaryingDef_.Size());
+				file.Close();
+			}
+
+			Container::Vector<Container::String> argsArray;
+			argsArray.Push("-f");
+			argsArray.Push(shaderPathIn);
+
+			argsArray.Push("-o");
+			argsArray.Push(shaderPathOut);
+
+			argsArray.Push("--depends");
+
+			argsArray.Push("-i");
+			argsArray.Push(include);
+
+			argsArray.Push("--varyingdef");
+			argsArray.Push(varyingFile);
+
+			argsArray.Push("--platform");
+			argsArray.Push("windows");
+
+			// 默认dx11
+			argsArray.Push("--profile");
+			argsArray.Push(shaderType == VS ? "vs_4_0" : "ps_4_0");
+
+			argsArray.Push("--type");
+			argsArray.Push(shaderType == VS ? "vertex" : "fragment");
+#if _DEBUG
+			argsArray.Push("--debug");
+			argsArray.Push("--disasm");
+#else
+			argsArray.Push("-O");
+			argsArray.Push("3");
+#endif
+			argsArray.Push("--define");
+			Container::String defineJoin;
+			defineJoin.Join(defines, ";");
+			if (shaderType == VS)
+				defineJoin.Append(";VERTEX");
+			else
+				defineJoin.Append(";PIXEL");
+			argsArray.Push(defineJoin);
+
+			const char* argv[64];
+			for (unsigned i = 0; i < argsArray.Size(); ++i)
+				argv[i] = argsArray[i].CString();
+
+			int retCode = bgfx::CommandCompileShader(argsArray.Size(), argv);
+
+			if (retCode == 0)
+			{
+				IOFrame::Stream::FileStream file;
+				file.Open(shaderPathOut, IOFrame::Stream::FileMode::FILE_READ);
+				if (!file.IsOpen())
+					return false;
+
+				out.Resize(file.GetSize());
+				file.ReadStream(&out[0], out.Length());
+			}
+
+			return retCode == 0;
 		}
 
 		void Shader::Initialize()
@@ -114,13 +252,13 @@ namespace FlagGG
 				return;
 			}
 
-			const bgfx::Memory* mem = nullptr;
-			if (!CompileShader(pass_.sourceCode_.Buffer(), pass_.sourceCode_.Size(), shaderType_, defines_, compiledSourceCode_))
+			if (!CompileShader(pass_, shaderType_, defines_, definesString_, compiledSourceCode_))
 			{
 				FLAGGG_LOG_ERROR("Failed to compile shader.");
 				return;
 			}
 
+			const bgfx::Memory* mem = bgfx::makeRef(compiledSourceCode_.CString(), compiledSourceCode_.Length());
 			bgfx::ShaderHandle handle = bgfx::createShader(mem);
 			ResetHandler(handle);
 
@@ -191,6 +329,9 @@ namespace FlagGG
 
 		void ShaderProgram::UniformAndSamplers(Shader* shader)
 		{
+			if (!shader)
+				return;
+
 			for (auto& it : shader->GetShaderParameterDescs())
 			{
 				const auto& desc = it.second_;

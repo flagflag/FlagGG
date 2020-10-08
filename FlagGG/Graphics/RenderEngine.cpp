@@ -315,6 +315,11 @@ namespace FlagGG
 			return shaderParameters_;
 		}
 
+		void RenderEngine::ClearStatus()
+		{
+			currentViewId_ = 0u;
+		}
+
 		void RenderEngine::PostRenderBatch(const Container::Vector<Container::SharedPtr<Batch>>& batches)
 		{
 			batches_.Clear();
@@ -443,29 +448,43 @@ namespace FlagGG
 					bgfx::Attachment attachments[2];
 					auto* renderTexture = renderTarget_->GetParentTexture();
 					auto* depthTexture = depthStencil_->GetParentTexture();
-					auto renderHandle = renderTexture->GetSrcHandler<bgfx::TextureHandle>();
-					auto depthHandle = depthTexture->GetSrcHandler<bgfx::TextureHandle>();
 
-					auto fbKey = Container::MakePair(renderHandle.idx, depthHandle.idx);
-					auto itFB = frameBufferMap_.Find(fbKey);
-					if (itFB == frameBufferMap_.End())
+					if (renderTexture || depthTexture)
 					{
-						attachments[0].init(
-							renderHandle,
-							bgfx::Access::Write,
-							renderTarget_->GetBgfxLayer(),
-							0);
+						auto renderHandle = renderTexture->GetSrcHandler<bgfx::TextureHandle>();
+						auto depthHandle = depthTexture ? depthTexture->GetSrcHandler<bgfx::TextureHandle>() : bgfx::TextureHandle{ 0 };
 
-						attachments[1].init(
-							depthHandle,
-							bgfx::Access::Write,
-							depthStencil_->GetBgfxLayer(),
-							0);
+						auto fbKey = Container::MakePair(renderHandle.idx, depthHandle.idx);
+						auto itFB = frameBufferMap_.Find(fbKey);
+						if (itFB == frameBufferMap_.End())
+						{
+							UInt32 num = 0u;
 
-						currentFramebuffer_ = bgfx::createFrameBuffer(2, attachments);
+							attachments[0].init(
+								renderHandle,
+								bgfx::Access::Write,
+								renderTarget_->GetBgfxLayer(),
+								0);
+							++num;
+
+							if (depthTexture)
+							{
+								attachments[1].init(
+									depthHandle,
+									bgfx::Access::Write,
+									depthStencil_->GetBgfxLayer(),
+									0);
+								++num;
+							}
+
+							currentFramebuffer_ = bgfx::createFrameBuffer(num, attachments);
+							frameBufferMap_.Insert(Container::MakePair(fbKey, currentFramebuffer_));
+						}
+						else
+							currentFramebuffer_ = itFB->second_;
 					}
 					else
-						currentFramebuffer_ = itFB->second_;
+						currentFramebuffer_ = BGFX_INVALID_HANDLE;
 
 					++currentViewId_;
 					bgfx::resetView(currentViewId_);
@@ -592,22 +611,14 @@ namespace FlagGG
 		{
 			PreDraw(indexStart, indexCount, vertexStart, vertexCount);
 
-			bgfx::ProgramHandle handle = bgfx::createProgram(
-				vertexShader_->GetSrcHandler<bgfx::ShaderHandle>(),
-				pixelShader_->GetSrcHandler<bgfx::ShaderHandle>());
-
-			bgfx::submit(0, handle);
+			bgfx::submit(0, shaderProgram_->GetSrcHandler<bgfx::ProgramHandle>());
 		}
 
 		void RenderEngine::DrawCall(UInt32 vertexStart, UInt32 vertexCount)
 		{
 			PreDraw(0, 0, vertexStart, vertexCount);
 
-			bgfx::ProgramHandle handle = bgfx::createProgram(
-				vertexShader_->GetSrcHandler<bgfx::ShaderHandle>(),
-				pixelShader_->GetSrcHandler<bgfx::ShaderHandle>());
-
-			bgfx::submit(0, handle);
+			bgfx::submit(0, shaderProgram_->GetSrcHandler<bgfx::ProgramHandle>());
 		}
 
 		void RenderEngine::SetRenderTarget(Viewport* viewport, bool renderShadowMap)

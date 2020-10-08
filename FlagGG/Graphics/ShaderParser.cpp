@@ -242,12 +242,12 @@ namespace FlagGG
 				}
 				else if(key == "Vertex")
 				{
-					if (!ParseVertex(pass.varyingDef_))
+					if (!ParseVertex(pass.vertexVaryingDef_, pass.inputVar_))
 						return false;
 				}
 				else if (key == "Pixel")
 				{
-					if (!ParsePixel(pass.varyingDef_))
+					if (!ParsePixel(pass.pixelVaryingDef_, pass.outputVar_))
 						return false;
 				}
 				else if (key == "CGPROGRAM")
@@ -257,9 +257,14 @@ namespace FlagGG
 				}
 			}
 
+			if (pass.passName_.Front() == '\"' && pass.passName_.Back() == '\"')
+				pass.passName_ = pass.passName_.Substring(1, pass.passName_.Length() - 2);
 			auto& _pass = passShaderSourceCodeMap_[pass.passName_];
 			_pass.passName_ = pass.passName_;
-			_pass.varyingDef_.Swap(pass.varyingDef_);
+			_pass.vertexVaryingDef_.Swap(pass.vertexVaryingDef_);
+			_pass.pixelVaryingDef_.Swap(pass.pixelVaryingDef_);
+			_pass.inputVar_.Swap(pass.inputVar_);
+			_pass.outputVar_.Swap(pass.outputVar_);
 			_pass.sourceCode_.Swap(pass.sourceCode_);	
 
 			return AcceptRight();
@@ -292,7 +297,22 @@ namespace FlagGG
 			return AcceptRight();
 		}
 
-		bool ShaderParser::ParseVertex(Container::PODVector<char>& varyingDef)
+		static Container::String AcceptVar(const Container::String& line)
+		{
+			Container::String ret;
+			const char* index = line.CString();
+			const char* eof = index + line.Length();
+			while (index != eof && *index != ' ' && *index != '\t') ++index;
+			while (index != eof && (*index == ' ' || *index == '\t'))++index;
+			while (index != eof && *index != ' ' && *index != '\t' && *index != ':')
+			{
+				ret.Append(*index);
+				++index;
+			}
+			return ret;
+		}
+
+		bool ShaderParser::ParseVertex(Container::PODVector<char>& varyingDef, Container::Vector<Container::String>& varName)
 		{
 			if (!AcceptLeft())
 				return false;
@@ -305,12 +325,14 @@ namespace FlagGG
 				memcpy(&varyingDef[0] + size, token.CString(), token.Length());
 				varyingDef[varyingDef.Size() - 2] = ';';
 				varyingDef[varyingDef.Size() - 1] = '\n';
+
+				varName.Push(AcceptVar(token));
 			}
 
 			return AcceptRight();
 		}
 
-		bool ShaderParser::ParsePixel(Container::PODVector<char>& varyingDef)
+		bool ShaderParser::ParsePixel(Container::PODVector<char>& varyingDef, Container::Vector<Container::String>& varName)
 		{
 			if (!AcceptLeft())
 				return false;
@@ -323,6 +345,8 @@ namespace FlagGG
 				memcpy(&varyingDef[0] + size, token.CString(), token.Length());
 				varyingDef[varyingDef.Size() - 2] = ';';
 				varyingDef[varyingDef.Size() - 1] = '\n';
+
+				varName.Push(AcceptVar(token));
 			}
 
 			return AcceptRight();

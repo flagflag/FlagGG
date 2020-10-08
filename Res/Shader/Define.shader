@@ -10,7 +10,9 @@ uniform vec4 _ElapsedTimeT;
 uniform vec4 _CameraPosT;
 uniform vec4 _LightPosT;
 uniform vec4 _LightDirT;
-uniform vec4 _CameraPosT;
+
+uniform vec4 _LightPositions[10];
+uniform vec4 _LightColors[10];
 
 SAMPLER2D(_DiffuseMap, 1);
 SAMPLER2D(_NormalMap, 2);
@@ -24,4 +26,3 @@ SAMPLER2D(_ShadowMap, 6);
 #define _CameraPos _CameraPosT.xyz
 #define _LightPos _LightPosT.xyz
 #define _LightDir _LightDirT.xyz
-#define _CameraPos _CameraPosT.xyz

@@ -54,6 +54,18 @@ namespace FlagGG
 
 			FlagGG_API Math::IntRect GetDesktopRect();
 
+			FlagGG_API Container::String GetPath(const Container::String& fullPath);
+
+			FlagGG_API Container::String GetFileName(const Container::String& fullPath);
+
+			FlagGG_API Container::String GetExtension(const Container::String& fullPath, bool lowercaseExtension);
+
+			FlagGG_API Container::String GetFileNameAndExtension(const Container::String& fileName, bool lowercaseExtension);
+
+			FlagGG_API Container::String ReplaceExtension(const Container::String& fullPath, const Container::String& newExtension);
+
+			FlagGG_API Container::String GetProgramDir();
+
 			class FlagGG_API Timer
 			{
 			public:

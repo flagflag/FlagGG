@@ -3,6 +3,7 @@
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Window.h"
 #endif
+#include "Utility/SystemHelper.h"
 #include "bgfx/bgfx.h"
 
 using namespace FlagGG::Math;
@@ -19,7 +20,7 @@ namespace FlagGG
 		context_ = new Context();
 		input_ = new Input(context_);
 		cache_ = new ResourceCache(context_);
-		cache_->AddResourceDir("../../../Res");
+		cache_->AddResourceDir(Utility::SystemHelper::GetProgramDir() + "Res");
 		context_->RegisterVariable<Input>(input_.Get(), "input");
 		context_->RegisterVariable<ResourceCache>(cache_.Get(), "ResourceCache");
 	}
@@ -59,6 +60,8 @@ namespace FlagGG
 
 		RenderEngine::Instance()->GetShaderParameters().SetValue(SP_DELTA_TIME, timeStep);
 		RenderEngine::Instance()->GetShaderParameters().SetValue(SP_ELAPSED_TIME, elapsedTime_);
+
+		RenderEngine::Instance()->ClearStatus();
 
 		for (const auto& viewport : viewports_)
 		{
