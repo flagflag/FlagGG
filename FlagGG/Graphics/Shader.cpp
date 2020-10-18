@@ -122,10 +122,11 @@ namespace FlagGG
 		{
 			const Container::String shaderFolder = Utility::SystemHelper::GetProgramDir() + "ShaderCache/";
 			Utility::SystemHelper::CreateDir(shaderFolder);
+			const Container::String name = Utility::SystemHelper::GetFileName(pass.fileName_);
 			const Container::String VPS = shaderType == VS ? "VS" : "PS";
-			const Container::String shaderPathIn = shaderFolder + "_" + VPS + "_" + pass.passName_ + "_" + definesString + "_input.shader";
-			const Container::String shaderPathOut = shaderFolder + "_" + VPS + "_" + pass.passName_ + "_" + definesString + "_ouput.shader";
-			const Container::String varyingFile = shaderFolder + "_" + VPS + "_" + pass.passName_ + "_" + definesString + "_varyingdef.shader";
+			const Container::String shaderPathIn = shaderFolder + name + "_" + VPS + "_" + pass.passName_ + "_" + definesString + "_input.shader";
+			const Container::String shaderPathOut = shaderFolder + name + "_" + VPS + "_" + pass.passName_ + "_" + definesString + "_ouput.shader";
+			const Container::String varyingFile = shaderFolder + name + "_" + VPS + "_" + pass.passName_ + "_" + definesString + "_varyingdef.shader";
 			const Container::String include = Utility::SystemHelper::GetProgramDir() + "Res";
 
 			{
@@ -137,6 +138,7 @@ namespace FlagGG
 
 				if (shaderType == VS)
 				{
+					file.WriteStream(pass.prepareDefines_.CString(), pass.prepareDefines_.Length());
 					file.WriteStream("$input ", strlen("$input "));
 					for (UInt32 i = 0; i < pass.inputVar_.Size(); ++i)
 					{

@@ -2,10 +2,10 @@
 	mat4 GetSkinMatrix(vec4 blendWeights, vec4 blendIndices)
 	{
 		return 
-		_SkinMatrices[blendIndices.x] * blendWeights.x +
-		_SkinMatrices[blendIndices.y] * blendWeights.y +
-		_SkinMatrices[blendIndices.z] * blendWeights.z +
-		_SkinMatrices[blendIndices.w] * blendWeights.w;
+		u_model[blendIndices.x] * blendWeights.x +
+		u_model[blendIndices.y] * blendWeights.y +
+		u_model[blendIndices.z] * blendWeights.z +
+		u_model[blendIndices.w] * blendWeights.w;
 	}
 #endif
 

@@ -1,6 +1,7 @@
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Texture.h"
 #include "Graphics/Texture2D.h"
+#include "Graphics/Window.h"
 #include "Scene/Node.h"
 #include "Scene/Component.h"
 #include "Scene/Light.h"
@@ -329,6 +330,11 @@ namespace FlagGG
 			}
 		}
 
+		void RenderEngine::SetBackbuffer(Backbuffer* backbuffer)
+		{
+			backbuffer_ = backbuffer;
+		}
+
 		void RenderEngine::SetShaderParameter(Scene::Camera* camera, const RenderContext* renderContext)
 		{
 			camera_ = camera;
@@ -389,18 +395,6 @@ namespace FlagGG
 		{
 			primitiveType_ = primitiveType;
 		}
-
-		static const char* bgfxSamplerUniform[]=
-		{
-			"s_texColor",
-			"s_texDiff",
-			"s_texNormal",
-			"s_texSpecular",
-			"s_texEmissive",
-			"s_texEnvironment",
-			"s_texShadowmap",
-		};
-		static_assert(_countof(bgfxSamplerUniform) == MAX_TEXTURE_CLASS, "bgfxSamplerUniform num invalid.");
 
 		void RenderEngine::PreDraw(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 vertexCount)
 		{
@@ -484,7 +478,9 @@ namespace FlagGG
 							currentFramebuffer_ = itFB->second_;
 					}
 					else
-						currentFramebuffer_ = BGFX_INVALID_HANDLE;
+					{
+						currentFramebuffer_ = backbuffer_ ? backbuffer_->handle_ : bgfx::FrameBufferHandle BGFX_INVALID_HANDLE;
+					}
 
 					++currentViewId_;
 					bgfx::resetView(currentViewId_);
@@ -611,14 +607,14 @@ namespace FlagGG
 		{
 			PreDraw(indexStart, indexCount, vertexStart, vertexCount);
 
-			bgfx::submit(0, shaderProgram_->GetSrcHandler<bgfx::ProgramHandle>());
+			bgfx::submit(currentViewId_, shaderProgram_->GetSrcHandler<bgfx::ProgramHandle>());
 		}
 
 		void RenderEngine::DrawCall(UInt32 vertexStart, UInt32 vertexCount)
 		{
 			PreDraw(0, 0, vertexStart, vertexCount);
 
-			bgfx::submit(0, shaderProgram_->GetSrcHandler<bgfx::ProgramHandle>());
+			bgfx::submit(currentViewId_, shaderProgram_->GetSrcHandler<bgfx::ProgramHandle>());
 		}
 
 		void RenderEngine::SetRenderTarget(Viewport* viewport, bool renderShadowMap)
@@ -772,6 +768,7 @@ namespace FlagGG
 
 			for (const auto& batch : batches_)
 			{
+				vertexBuffer->SetDynamic(true);
 				vertexBuffer->SetSize(batch->GetVertexCount(), vertexElement);
 				char* data = (char*)vertexBuffer->Lock(0, vertexBuffer->GetVertexCount());
 				memcpy(data, batch->GetVertexs(), batch->GetVertexCount() * batch->GetVertexSize());

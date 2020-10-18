@@ -26,6 +26,8 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
+		struct Backbuffer;
+
 		class FlagGG_API RenderEngine : public Utility::Singleton<RenderEngine, AsyncFrame::NullMutex, Core::Context*>
 		{
 		public:
@@ -87,6 +89,8 @@ namespace FlagGG
 
 			void PostRenderBatch(const Container::Vector<Container::SharedPtr<Batch>>& batches);
 
+			void SetBackbuffer(Backbuffer* backbuffer);
+
 			void SetDefaultTextures(TextureClass index, Texture* texture);
 
 			void SetRasterizerState(RasterizerState rasterizerState);
@@ -121,6 +125,8 @@ namespace FlagGG
 
 		private:
 			void CreateShadowRasterizerState();
+
+			Backbuffer* backbuffer_{};
 
 			bgfx::ViewId currentViewId_{};
 			bgfx::FrameBufferHandle currentFramebuffer_;

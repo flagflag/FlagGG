@@ -59,6 +59,8 @@ namespace FlagGG
 				return false;
 			}
 
+			fileName_ = token.Substring(1, token.Length() - 2);
+
 			if (!ParseShader())
 				return false;
 
@@ -242,7 +244,7 @@ namespace FlagGG
 				}
 				else if(key == "Vertex")
 				{
-					if (!ParseVertex(pass.vertexVaryingDef_, pass.inputVar_))
+					if (!ParseVertex(pass.vertexVaryingDef_, pass.inputVar_, pass.prepareDefines_))
 						return false;
 				}
 				else if (key == "Pixel")
@@ -260,9 +262,11 @@ namespace FlagGG
 			if (pass.passName_.Front() == '\"' && pass.passName_.Back() == '\"')
 				pass.passName_ = pass.passName_.Substring(1, pass.passName_.Length() - 2);
 			auto& _pass = passShaderSourceCodeMap_[pass.passName_];
+			_pass.fileName_ = fileName_;
 			_pass.passName_ = pass.passName_;
 			_pass.vertexVaryingDef_.Swap(pass.vertexVaryingDef_);
 			_pass.pixelVaryingDef_.Swap(pass.pixelVaryingDef_);
+			_pass.prepareDefines_.Swap(pass.prepareDefines_);
 			_pass.inputVar_.Swap(pass.inputVar_);
 			_pass.outputVar_.Swap(pass.outputVar_);
 			_pass.sourceCode_.Swap(pass.sourceCode_);	
@@ -312,7 +316,50 @@ namespace FlagGG
 			return ret;
 		}
 
-		bool ShaderParser::ParseVertex(Container::PODVector<char>& varyingDef, Container::Vector<Container::String>& varName)
+		static Container::String AcceptDesc(const Container::String& line)
+		{
+			const char* index = line.CString() + line.Length() - 1;
+			const char* eof = line.CString();
+			while (index != eof && (*index == '\r' || *index == '\n' || *index == ' ' || *index == '\t')) --index;
+			const char* tail = index;
+			while (index != eof && (isalpha(*index) || isdigit(*index))) --index;
+			if (index == eof)
+				return "";
+			Container::String ret(index + 1, tail - index);
+			return ret;
+		}
+
+		static Container::HashMap<Container::String, Container::String> descToName =
+		{
+			{ "POSITION", "a_position" },
+			{ "NORMAL", "a_normal" },
+			{ "TANGENT", "a_tangent" },
+			{ "BITANGENT", "a_bitangent", },
+			{ "COLOR", "a_color0" },
+			{ "COLOR0", "a_color0" },
+			{ "COLOR1", "a_color1" },
+			{ "COLOR2", "a_color2" },
+			{ "COLOR3", "a_color3" },
+			{ "BLENDINDICES", "a_indices" },
+			{ "BLENDWEIGHT", "a_weight" },
+			{ "TEXCOORD", "a_texcoord0" },
+			{ "TEXCOORD0", "a_texcoord0" },
+			{ "TEXCOORD1", "a_texcoord1" },
+			{ "TEXCOORD2", "a_texcoord2" },
+			{ "TEXCOORD3", "a_texcoord3" },
+			{ "TEXCOORD4", "a_texcoord4" },
+			{ "TEXCOORD5", "a_texcoord5" },
+			{ "TEXCOORD6", "a_texcoord6" },
+			{ "TEXCOORD7", "a_texcoord7" },
+			{ "DATA", "i_data0" },
+			{ "DATA0", "i_data0" },
+			{ "DATA1", "i_data1" },
+			{ "DATA2", "i_data2" },
+			{ "DATA3", "i_data3" },
+			{ "DATA4", "i_data4" },
+		};
+
+		bool ShaderParser::ParseVertex(Container::PODVector<char>& varyingDef, Container::Vector<Container::String>& varName, Container::String& prepareDefines)
 		{
 			if (!AcceptLeft())
 				return false;
@@ -320,13 +367,29 @@ namespace FlagGG
 			Container::String token;
 			while (AcceptLine(token))
 			{
-				UInt32 size = varyingDef.Size();
-				varyingDef.Resize(varyingDef.Size() + token.Length() + 2);
-				memcpy(&varyingDef[0] + size, token.CString(), token.Length());
-				varyingDef[varyingDef.Size() - 2] = ';';
-				varyingDef[varyingDef.Size() - 1] = '\n';
+				auto name = AcceptVar(token);
+				auto desc = AcceptDesc(token);
 
-				varName.Push(AcceptVar(token));
+				if (descToName.Contains(desc))
+				{
+					auto srcName = descToName[desc];
+
+					token.Replace(name, srcName);
+
+					UInt32 size = varyingDef.Size();
+					varyingDef.Resize(varyingDef.Size() + token.Length() + 2);
+					memcpy(&varyingDef[0] + size, token.CString(), token.Length());
+					varyingDef[varyingDef.Size() - 2] = ';';
+					varyingDef[varyingDef.Size() - 1] = '\n';
+
+					varName.Push(srcName);
+					prepareDefines += "#define " + name + " " + srcName + "\n";
+				}
+				else
+				{
+					FLAGGG_LOG_ERROR("Vertex Desc Error => the desc[%s] is invalid.", desc.CString());
+					return false;
+				}
 			}
 
 			return AcceptRight();

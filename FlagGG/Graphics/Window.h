@@ -9,6 +9,7 @@
 #include "Core/DeviceEvent.h"
 #include "Container/Ptr.h"
 #include "Container/Vector.h"
+#include "bgfx/bgfx.h"
 
 #include <stdint.h>
 
@@ -16,6 +17,11 @@ namespace FlagGG
 {
 	namespace Graphics
 	{
+		struct Backbuffer
+		{
+			bgfx::FrameBufferHandle handle_;
+		};
+
 		struct DefferedMessage
 		{
 			HWND handler_;
@@ -92,6 +98,8 @@ namespace FlagGG
 		private:
 			Core::Context* context_;
 			Core::Input* input_;
+
+			Backbuffer backbuffer_;
 
 			Container::SharedPtr<Viewport> viewport_;
 

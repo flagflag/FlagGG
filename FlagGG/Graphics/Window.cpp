@@ -173,10 +173,12 @@ namespace FlagGG
 
 		void Window::CreateSwapChain()
 		{
+			
 		}
 
 		void Window::UpdateSwapChain(UInt32 width, UInt32 height)
 		{
+			backbuffer_.handle_ = bgfx::createFrameBuffer(window_, width, height);
 		}
 
 		UInt32 Window::GetWidth()
@@ -233,6 +235,7 @@ namespace FlagGG
 
 		void Window::Render()
 		{
+			RenderEngine::Instance()->SetBackbuffer(&backbuffer_);
 			RenderEngine::Instance()->Render(viewport_);
 
 			// RenderEngine::Instance()->RenderBatch(viewport_);

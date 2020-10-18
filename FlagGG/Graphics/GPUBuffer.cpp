@@ -43,9 +43,11 @@ namespace FlagGG
 
 			srcBuffer_ = new char[gpuBufferSize_];
 
-			const bgfx::Memory* mem = bgfx::copy(srcBuffer_, gpuBufferSize_);
-
-			Create(mem, dynamic_);
+			if (dynamic_)
+			{
+				const bgfx::Memory* mem = bgfx::copy(srcBuffer_, gpuBufferSize_);
+				Create(mem, dynamic_);
+			}
 			
 			return true;
 		}
@@ -74,7 +76,10 @@ namespace FlagGG
 				return;
 
 			const bgfx::Memory* mem = bgfx::copy(srcBuffer_, gpuBufferSize_);
-			UpdateBuffer(mem);
+			if (dynamic_)
+				UpdateBuffer(mem);
+			else
+				Create(mem, dynamic_);
 		}
 
 		IOFrame::Buffer::IOBuffer* GPUBuffer::LockStaticBuffer(UInt32 start, UInt32 count)

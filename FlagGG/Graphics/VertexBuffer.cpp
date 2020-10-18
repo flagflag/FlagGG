@@ -160,7 +160,8 @@ namespace FlagGG
 
 		void VertexBuffer::UpdateBuffer(const bgfx::Memory* mem)
 		{
-			bgfx::update(GetSrcHandler<bgfx::DynamicVertexBufferHandle>(), 0u, mem);
+			if (dynamic_)
+				bgfx::update(GetSrcHandler<bgfx::DynamicVertexBufferHandle>(), 0u, mem);
 		}
 	}
 }

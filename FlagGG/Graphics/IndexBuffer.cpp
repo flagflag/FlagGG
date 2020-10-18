@@ -40,7 +40,8 @@ namespace FlagGG
 
 		void IndexBuffer::UpdateBuffer(const bgfx::Memory* mem)
 		{
-			bgfx::update(GetSrcHandler<bgfx::DynamicIndexBufferHandle>(), 0u, mem);
+			if (dynamic_)
+				bgfx::update(GetSrcHandler<bgfx::DynamicIndexBufferHandle>(), 0u, mem);
 		}
 	}
 }

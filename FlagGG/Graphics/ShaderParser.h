@@ -26,10 +26,12 @@ namespace FlagGG
 
 		struct PassShaderSourceCode
 		{
+			Container::String fileName_;
 			Container::String passName_;
 			Container::PODVector<char> vertexVaryingDef_;
 			Container::PODVector<char> pixelVaryingDef_;
 			Container::PODVector<char> sourceCode_;
+			Container::String prepareDefines_;
 			Container::Vector<Container::String> inputVar_;
 			Container::Vector<Container::String> outputVar_;
 		};
@@ -64,7 +66,7 @@ namespace FlagGG
 
 			bool ParseTags();
 
-			bool ParseVertex(Container::PODVector<char>& varyingDef, Container::Vector<Container::String>& varName);
+			bool ParseVertex(Container::PODVector<char>& varyingDef, Container::Vector<Container::String>& varName, Container::String& prepareDefines);
 
 			bool ParsePixel(Container::PODVector<char>& varyingDef, Container::Vector<Container::String>& varName);
 
@@ -107,6 +109,8 @@ namespace FlagGG
 
 			const char* index_;
 			const char* eof_;
+
+			Container::String fileName_;
 
 			Container::Vector<ShaderProperty> properties_;
 			ShaderTags shaderTags_;
