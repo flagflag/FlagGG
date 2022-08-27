@@ -66,15 +66,15 @@ VertexElement DEFAULT_VERTEX_ELEMENT[] =
 	VertexElement(VE_INT, SEM_OBJECT_INDEX, 0, false),			// object index
 };
 
-const FlagGG::Container::String SP_WORLD_MATRIX("worldMatrix");
-const FlagGG::Container::String SP_VIEW_MATRIX("viewMatrix");
-const FlagGG::Container::String SP_PROJVIEW_MATRIX("projviewMatrix");
-const FlagGG::Container::String SP_SKIN_MATRICES("skinMatrices");
-const FlagGG::Container::String SP_DELTA_TIME("deltaTime");
-const FlagGG::Container::String SP_ELAPSED_TIME("elapsedTime");
-const FlagGG::Container::String SP_CAMERA_POS("cameraPos");
-const FlagGG::Container::String SP_LIGHT_POS("lightPos");
-const FlagGG::Container::String SP_LIGHT_DIR("lightDir");
-const FlagGG::Container::String SP_LIGHT_VIEW_MATRIX("lightViewMatrix");
-const FlagGG::Container::String SP_LIGHT_PROJVIEW_MATRIX("lightProjviewMatrix");
+const FlagGG::Container::String SP_WORLD_MATRIX("WorldMatrix");
+const FlagGG::Container::String SP_VIEW_MATRIX("ViewMatrix");
+const FlagGG::Container::String SP_PROJVIEW_MATRIX("ProjviewMatrix");
+const FlagGG::Container::String SP_SKIN_MATRICES("SkinMatrices");
+const FlagGG::Container::String SP_DELTA_TIME("DeltaTime");
+const FlagGG::Container::String SP_ELAPSED_TIME("ElapsedTime");
+const FlagGG::Container::String SP_CAMERA_POS("CameraPos");
+const FlagGG::Container::String SP_LIGHT_POS("LightPos");
+const FlagGG::Container::String SP_LIGHT_DIR("LightDir");
+const FlagGG::Container::String SP_LIGHT_VIEW_MATRIX("LightViewMatrix");
+const FlagGG::Container::String SP_LIGHT_PROJVIEW_MATRIX("LightProjViewMatrix");
 

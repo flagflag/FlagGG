@@ -7,6 +7,7 @@
 #include "IOFrame/Stream/FileStream.h"
 #include "Resource/ResourceCache.h"
 #include "Core/Context.h"
+#include "Core/CryAssert.h"
 #include "Utility/SystemHelper.h"
 #include "Log.h"
 #include "bgfx/bgfx.h"
@@ -203,9 +204,25 @@ namespace FlagGG
 			argsArray.Push("--platform");
 			argsArray.Push("windows");
 
-			// 默认dx11
-			argsArray.Push("--profile");
-			argsArray.Push(shaderType == VS ? "vs_4_0" : "ps_4_0");
+			switch(bgfx::getCaps()->rendererType)
+			{
+			case bgfx::RendererType::Direct3D9:
+			case bgfx::RendererType::Direct3D11:
+			case bgfx::RendererType::Direct3D12:
+				argsArray.Push("--profile");
+				argsArray.Push(shaderType == VS ? "vs_4_0" : "ps_4_0");
+				break;
+
+			case bgfx::RendererType::OpenGL:
+				argsArray.Push("--profile");
+				argsArray.Push("120");
+				break;
+
+			case bgfx::RendererType::OpenGLES:
+				argsArray.Push("--profile");
+				argsArray.Push("310_es");
+				break;
+			}
 
 			argsArray.Push("--type");
 			argsArray.Push(shaderType == VS ? "vertex" : "fragment");
@@ -257,6 +274,7 @@ namespace FlagGG
 			if (!CompileShader(pass_, shaderType_, defines_, definesString_, compiledSourceCode_))
 			{
 				FLAGGG_LOG_ERROR("Failed to compile shader.");
+				CRY_ASSERT_MESSAGE(false, "Failed to compile shader.");
 				return;
 			}
 
@@ -276,17 +294,24 @@ namespace FlagGG
 						bgfx::UniformInfo info;
 						bgfx::getUniformInfo(uniformHandle, info);
 
-						ShaderParameterDesc desc;
-						desc.name_ = &info.name[1];
+						Container::String name = &info.name[1];
+						ShaderParameterDesc& desc = shaderParameterDescMap_[name];
+						desc.name_ = name;
 						desc.handle_ = uniformHandle;
 						desc.type_ = info.type;
 						desc.num_ = info.num;
 						desc.offset_ = 0;
 						desc.size_ = 0;
-
-						shaderParameterDescMap[desc.name_] = desc;
 					}
 				}
+
+				Container::String debugShaderName = Utility::SystemHelper::GetFileName(pass_.fileName_) + "_" + definesString_;
+				bgfx::setName(handle, debugShaderName.CString(), debugShaderName.Length());
+			}
+			else
+			{
+				FLAGGG_LOG_ERROR("Failed to create shader.");
+				CRY_ASSERT_MESSAGE(false, "Failed to create shader.");
 			}
 		}
 
@@ -320,8 +345,23 @@ namespace FlagGG
 
 		ShaderProgram::ShaderProgram(Shader* vsShader, Shader* psShader)
 		{
+			for (auto& handle : texSamplers_)
+			{
+				handle = BGFX_INVALID_HANDLE;
+			}
 			UniformAndSamplers(vsShader);
 			UniformAndSamplers(psShader);
+			if (vsShader && psShader)
+			{
+				bgfx::ProgramHandle handle = bgfx::createProgram(
+					vsShader->GetSrcHandler<bgfx::ShaderHandle>(), psShader->GetSrcHandler<bgfx::ShaderHandle>());
+				ResetHandler(handle);
+				if (!bgfx::isValid(handle))
+				{
+					FLAGGG_LOG_ERROR("Failed to create program.");
+					CRY_ASSERT_MESSAGE(false, "Failed to create program.");
+				}
+			}
 		}
 
 		bool ShaderProgram::IsValid()

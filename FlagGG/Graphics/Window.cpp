@@ -147,23 +147,10 @@ namespace FlagGG
 				return false;
 			}
 
-			bgfx::FrameBufferHandle handle = bgfx::createFrameBuffer(window_, rect.Width(), rect.Height());
-			ResetHandler(handle);
-
-			RenderSurface* renderTargetSurface = new RenderSurface(nullptr);
-			renderTargetSurface->ResetHandler(handle);
-
-			RenderSurface* depthStencilSurface = new RenderSurface(nullptr);
-			depthStencilSurface->ResetHandler(handle);
-
 			viewport_ = new Viewport();
 			viewport_->Resize(Math::IntRect(0, 0, rect.Width(), rect.Height()));
-			viewport_->SetRenderTarget(renderTargetSurface);
-			viewport_->SetDepthStencil(depthStencilSurface);
-
-			bgfx::PlatformData data;
-			data.nwh = window_;
-			bgfx::setPlatformData(data);
+			viewport_->SetRenderTarget(nullptr);
+			viewport_->SetDepthStencil(nullptr);
 
 			CreateSwapChain();
 			UpdateSwapChain(rect.Width(), rect.Height());
@@ -179,6 +166,7 @@ namespace FlagGG
 		void Window::UpdateSwapChain(UInt32 width, UInt32 height)
 		{
 			backbuffer_.handle_ = bgfx::createFrameBuffer(window_, width, height);
+			ResetHandler(backbuffer_.handle_);
 		}
 
 		UInt32 Window::GetWidth()

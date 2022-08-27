@@ -2,10 +2,10 @@
 	mat4 GetSkinMatrix(vec4 blendWeights, vec4 blendIndices)
 	{
 		return 
-		u_model[blendIndices.x] * blendWeights.x +
-		u_model[blendIndices.y] * blendWeights.y +
-		u_model[blendIndices.z] * blendWeights.z +
-		u_model[blendIndices.w] * blendWeights.w;
+		u_model[int(blendIndices.x)] * blendWeights.x +
+		u_model[int(blendIndices.y)] * blendWeights.y +
+		u_model[int(blendIndices.z)] * blendWeights.z +
+		u_model[int(blendIndices.w)] * blendWeights.w;
 	}
 #endif
 
@@ -29,15 +29,15 @@ vec2 GetQuadTexCoord(vec4 clipPos)
 
 float GetDepth(vec4 clipPos)
 {
-    return dot(clipPos.zw, float2(0.0, 1.0 / 1000000000.0));
+    return dot(clipPos.zw, vec2(0.0, 1.0 / 1000000000.0));
 }
 
 vec4 EncodeFloatRGBA(float value)
 {
 	vec4 kEncodeMul = vec4(1.0, 255.0, 65025.0, 16581375.0);
     float kEncodeBit = 1.0 / 255.0;
-    float4 enc = kEncodeMul * value;
-    enc = frac(enc);
+    vec4 enc = kEncodeMul * value;
+    enc = fract(enc);
     enc -= enc.yzww * kEncodeBit;
     return enc;
 }

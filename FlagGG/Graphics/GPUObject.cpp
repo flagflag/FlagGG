@@ -9,7 +9,7 @@ namespace FlagGG
 		GPUHandler GPUHandler::INVALID;
 
 		GPUHandler::GPUHandler() :
-			idx_(0u),
+			idx_(bgfx::kInvalidHandle),
 			type_(GPU_Invalid),
 			refCount_(nullptr)
 		{}

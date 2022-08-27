@@ -57,7 +57,7 @@ namespace FlagGG
 
 			ShaderType GetType();
 
-			const Container::HashMap<Container::String, ShaderParameterDesc>& GetShaderParameterDescs() const { return shaderParameterDescMap; }
+			const Container::HashMap<Container::String, ShaderParameterDesc>& GetShaderParameterDescs() const { return shaderParameterDescMap_; }
 
 		private:
 			ShaderType shaderType_{ None };
@@ -69,7 +69,7 @@ namespace FlagGG
 
 			Container::String compiledSourceCode_;
 
-			Container::HashMap<Container::String, ShaderParameterDesc> shaderParameterDescMap;
+			Container::HashMap<Container::String, ShaderParameterDesc> shaderParameterDescMap_;
 		};
 
 		class FlagGG_API ShaderProgram : public GPUObject, public Container::RefCounted
@@ -82,6 +82,8 @@ namespace FlagGG
 			void Initialize() override {};
 
 			const ShaderParameterDesc* GetUniformDesc(const Container::String& parameterName);
+
+			const Container::HashMap<Container::String, ShaderParameterDesc>& GetUniformDescMap() const { return uniformDescMap_; }
 
 			bgfx::UniformHandle GetTexSamplers(UInt32 index) { return texSamplers_[index]; }
 		

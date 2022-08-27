@@ -7,13 +7,13 @@ namespace FlagGG
 	{
 		bool ShaderParameters::AddParametersDefineImpl(Container::String key, UInt32 typeSize, bgfx::UniformType::Enum type, UInt32 num)
 		{
-			if (descs.Contains(key))
+			if (descs_.Contains(key))
 				return false;
 
 			if (!dataBuffer_)
 				dataBuffer_ = new IOFrame::Buffer::StringBuffer();
 
-			ShaderParameterDesc& desc = descs[key];
+			ShaderParameterDesc& desc = descs_[key];
 			desc.name_ = key;
 			desc.offset_ = dataBuffer_->GetSize();
 			desc.size_ = typeSize;
@@ -33,8 +33,8 @@ namespace FlagGG
 			if (!dataBuffer_)
 				return false;
 
-			auto it = descs.Find(key);
-			if (it == descs.End() || bufferSize != it->second_.size_)
+			auto it = descs_.Find(key);
+			if (it == descs_.End() || bufferSize != it->second_.size_)
 				return false;
 
 			dataBuffer_->Seek(it->second_.offset_);
@@ -63,15 +63,26 @@ namespace FlagGG
 				return;
 
 			dataBuffer_->ClearIndex();
-			for (auto it : descs)
+			//for (auto it : descs)
+			//{
+			//	const auto* uniformDesc = program->GetUniformDesc(it.second_.name_);
+			//	if (uniformDesc)
+			//	{
+			//		dataBuffer_->Seek(it.second_.offset_);
+			//		tempBuffer_.Resize(it.second_.size_);
+			//		dataBuffer_->ReadStream(&tempBuffer_[0], it.second_.size_);
+			//		bgfx::setUniform(uniformDesc->handle_, &tempBuffer_[0], it.second_.num_);
+			//	}
+			//}
+			for (const auto& it : program->GetUniformDescMap())
 			{
-				const auto* uniformDesc = program->GetUniformDesc(it.second_.name_);
-				if (uniformDesc)
+				auto paramIt = descs_.Find(it.first_);
+				if (paramIt != descs_.End())
 				{
-					dataBuffer_->Seek(it.second_.offset_);
-					tempBuffer_.Resize(it.second_.size_);
-					dataBuffer_->ReadStream(&tempBuffer_[0], it.second_.size_);
-					bgfx::setUniform(uniformDesc->handle_, &tempBuffer_[0], it.second_.num_);
+					dataBuffer_->Seek(paramIt->second_.offset_);
+					tempBuffer_.Resize(paramIt->second_.size_);
+					dataBuffer_->ReadStream(&tempBuffer_[0], paramIt->second_.size_);
+					bgfx::setUniform(it.second_.handle_, &tempBuffer_[0], it.second_.num_);
 				}
 			}
 		}

@@ -34,6 +34,10 @@ namespace FlagGG
 
 			FlagGG_API UInt64 HiresTick();
 
+			FlagGG_API Container::String GetTimeStamp();
+
+			FlagGG_API Container::String GetTimeStamp(const Container::String& fmt);
+
 			FlagGG_API bool ParseCommand(const char** argv, UInt32 argc, Config::LJSONValue& result);
 
 			FlagGG_API bool DirExists(const Container::String& path);

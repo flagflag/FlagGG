@@ -6,12 +6,14 @@
 #include "Scene/Component.h"
 #include "Scene/Light.h"
 #include "Math/Math.h"
+#include "Core/CryAssert.h"
 #include "Log.h"
 #include "IOFrame/Buffer/IOBufferAux.h"
 #include "Resource/ResourceCache.h"
 #include "Math/Color.h"
 #include "bgfx/bgfx.h"
 #include "bx/math.h"
+#include "bx/string.h"
 
 namespace FlagGG
 {
@@ -23,11 +25,26 @@ namespace FlagGG
 			void fatal(const char* _filePath, uint16_t _line, bgfx::Fatal::Enum _code, const char* _str) override
 			{
 				FLAGGG_LOG_CRITICAL("bgfx => file[{}] line[{}] error[{}] msg[{}].", _filePath, _line, _code, _str);
+				CRY_ASSERT_MESSAGE(false, "bgfx => fatal");
 			}
 
 			void traceVargs(const char* _filePath, uint16_t _line, const char* _format, va_list _argList) override
 			{
-
+				char temp[2048];
+				char* out = temp;
+				va_list argListCopy;
+				va_copy(argListCopy, _argList);
+				int32_t len = bx::snprintf(out, sizeof(temp), "%s (%d): ", _filePath, _line);
+				int32_t total = len + bx::vsnprintf(out + len, sizeof(temp) - len, _format, argListCopy);
+				va_end(argListCopy);
+				if ((int32_t)sizeof(temp) < total)
+				{
+					out = (char*)alloca(total + 1);
+					bx::memCopy(out, temp, len);
+					bx::vsnprintf(out + len, total - len, _format, _argList);
+				}
+				out[total] = '\0';
+				FLAGGG_LOG_INFO(out);
 			}
 
 			void profilerBegin(const char* _name, uint32_t _abgr, const char* _filePath, uint16_t _line) override
@@ -120,11 +137,30 @@ namespace FlagGG
 			CreateShadowRasterizerState();
 
 			bgfx::Init init;
-			init.type = bgfx::RendererType::Direct3D11;
-			init.resolution.width = 200;
-			init.resolution.height = 200;
-			init.resolution.reset = 0u;
+			init.type = bgfx::RendererType::/*Direct3D11*/OpenGL;
+			init.resolution.width = 1;
+			init.resolution.height = 1;
+			init.resolution.reset = BGFX_RESET_VSYNC;
 			init.callback = &BGFX_CALLBACK;
+			auto& pd = init.platformData;
+#if _WIN32
+			HWND hWnd = CreateWindowExW(
+				0,
+				WindowDevice::className_,
+				L"",
+				WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX,
+				0,
+				0,
+				0,
+				0,
+				(HWND)nullptr,
+				nullptr,
+				nullptr,
+				this
+			);
+
+			pd.nwh = hWnd;
+#endif
 			if (!bgfx::init(init))
 			{
 				FLAGGG_LOG_ERROR("bgfx::init failed.");
@@ -409,10 +445,12 @@ namespace FlagGG
 				bgfx::setTransform(&Mtx4x4, renderContext_->numWorldTransform_);
 
 				float viewMtx[16];
-				camera_->GetViewMatrix(viewMtx);
+				auto viewMat4 = camera_->GetViewMatrix().ToMatrix4();
+				memcpy(viewMtx, viewMat4.Data(), sizeof(viewMat4));
 
 				float projMtx[16];
-				camera_->GetProjectionMatrix(projMtx);
+				auto projMat4 = camera_->GetProjectionMatrix();
+				memcpy(projMtx, projMat4.Data(), sizeof(projMat4));
 
 				if (memcmp(viewMtx_, viewMtx, 64) != 0 ||
 					memcmp(projMtx_, projMtx, 64) != 0)
@@ -440,8 +478,8 @@ namespace FlagGG
 				if (renderTargetDirty_)
 				{
 					bgfx::Attachment attachments[2];
-					auto* renderTexture = renderTarget_->GetParentTexture();
-					auto* depthTexture = depthStencil_->GetParentTexture();
+					auto* renderTexture = renderTarget_ ? renderTarget_->GetParentTexture() : nullptr;
+					auto* depthTexture = depthStencil_ ? depthStencil_->GetParentTexture() : nullptr;
 
 					if (renderTexture || depthTexture)
 					{
@@ -487,7 +525,11 @@ namespace FlagGG
 					bgfx::setViewMode(currentViewId_, bgfx::ViewMode::Default);
 
 					bgfx::setViewFrameBuffer(currentViewId_, currentFramebuffer_);
-					bgfx::setViewClear(currentViewId_, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL, Math::Color::BLACK.ToHash(), 1.0f, 0);
+					bgfx::setViewRect(currentViewId_, viewportRect_.Top(), viewportRect_.Left(), viewportRect_.Width(), viewportRect_.Height());
+					bgfx::setViewClear(currentViewId_, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL, 1, 1.0f, 0);
+					bgfx::touch(currentViewId_);
+
+					renderTargetDirty_ = false;
 				}
 
 				++currentViewId_;
@@ -562,6 +604,8 @@ namespace FlagGG
 				inShaderParameters_->SubmitUniforms(shaderProgram_);
 				inShaderParameters_ = nullptr;
 			}
+
+			shaderParameters_.SubmitUniforms(shaderProgram_);
 
 			// if (rasterizerStateDirty_)
 			{

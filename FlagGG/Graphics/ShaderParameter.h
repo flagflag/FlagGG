@@ -49,7 +49,7 @@ namespace FlagGG
 			friend class RenderEngine;
 
 		private:
-			Container::HashMap<Container::String, ShaderParameterDesc> descs;
+			Container::HashMap<Container::String, ShaderParameterDesc> descs_;
 
 			Container::SharedPtr<IOFrame::Buffer::StringBuffer> dataBuffer_;
 

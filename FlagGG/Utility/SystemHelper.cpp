@@ -1,6 +1,9 @@
 #include "SystemHelper.h"
 #include "Container/Str.h"
+#include "Format.h"
 
+#include <ctime>
+#include <chrono>
 #if _WIN32
 #include <windows.h>
 #include <shlwapi.h>
@@ -119,6 +122,25 @@ namespace FlagGG
 				gettimeofday(&time, nullptr);
 				return time.tv_sec * 1000000LL + time.tv_usec;
 #endif
+			}
+
+			Container::String GetTimeStamp()
+			{
+				return GetTimeStamp("%Y-%m-%d %H_%M_%S");
+			}
+
+			Container::String GetTimeStamp(const Container::String& fmt)
+			{
+				auto now = std::chrono::system_clock::now();
+
+				time_t sysTime = std::chrono::system_clock::to_time_t(now);
+				char dateTime[64];
+				strftime(dateTime, sizeof(dateTime), fmt.CString(), localtime(&sysTime));
+
+				auto duration = now.time_since_epoch();
+				auto secs = std::chrono::duration_cast<std::chrono::seconds>(duration);
+				auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() - secs.count() * 1000LL;
+				return Format::ToString("%s_%03lld", dateTime, msec);
 			}
 
 			bool ParseCommand(const char** argv, UInt32 argc, Config::LJSONValue& result)
