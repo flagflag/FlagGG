@@ -137,7 +137,8 @@ namespace FlagGG
 			CreateShadowRasterizerState();
 
 			bgfx::Init init;
-			init.type = bgfx::RendererType::/*Direct3D11*/OpenGL;
+			// init.type = bgfx::RendererType::Direct3D11;
+			init.type = bgfx::RendererType::OpenGL;
 			init.resolution.width = 1;
 			init.resolution.height = 1;
 			init.resolution.reset = BGFX_RESET_VSYNC;

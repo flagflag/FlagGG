@@ -26,6 +26,8 @@ namespace FlagGG
 
 			Shader* GetShader(ShaderType type, const Container::String& passName, const Container::Vector<Container::String>& defines);
 
+			const Container::HashMap<Container::String, unsigned>& GetSamplerRegisters() const { return samplerRegisters_; }
+
 		protected:
 			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
@@ -34,6 +36,7 @@ namespace FlagGG
 		private:
 			ShaderParser shaderParser_;
 
+			Container::HashMap<Container::String, unsigned> samplerRegisters_;
 			Container::HashMap<Container::String, Container::Vector<Container::SharedPtr<Shader>>> shadersMap_;
 		};
 
@@ -49,17 +52,23 @@ namespace FlagGG
 
 			void Initialize() override;
 
+			void SetShaderCode(ShaderCode* shaderCode);
+
 			void SetType(ShaderType type);
 
 			void SetDefines(const Container::Vector<Container::String>& defines);
 
 			const Container::String& GetDefinesString() const;
 
+			ShaderCode* GetShaderCode() const { return shaderCode_; }
+
 			ShaderType GetType();
 
 			const Container::HashMap<Container::String, ShaderParameterDesc>& GetShaderParameterDescs() const { return shaderParameterDescMap_; }
 
 		private:
+			Container::WeakPtr<ShaderCode> shaderCode_;
+
 			ShaderType shaderType_{ None };
 
 			const PassShaderSourceCode& pass_;

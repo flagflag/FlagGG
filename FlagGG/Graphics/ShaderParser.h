@@ -5,18 +5,33 @@
 #include "Container/Str.h"
 #include "Container/Vector.h"
 #include "Container/HashMap.h"
+#include "Container/Variant.h"
 
 namespace FlagGG
 {
 	namespace Graphics
 	{
-		/// ±à¼­Æ÷Ê¹ÓÃµÄÊôĞÔ£¬ÓÃÓÚ¿ÉÊÓ»¯µ÷shader²ÎÊı
+		enum ShaderPropertyType
+		{
+			ShaderPropertyUnknown = 0,
+			ShaderPropertyInt,
+			ShaderPropertyFloat,
+			ShaderPropertyVector2,
+			ShaderPropertyVector3,
+			ShaderPropertyVector4,
+			ShaderPropertySampler2D,
+			ShaderPropertySampler2DArray,
+			ShaderPropertySampler3D,
+			ShaderPropertySamplerCube,
+		};
+
+		/// ç¼–è¾‘å™¨ä½¿ç”¨çš„å±æ€§ï¼Œç”¨äºå¯è§†åŒ–è°ƒshaderå‚æ•°
 		struct ShaderProperty
 		{
 			Container::String name_;
 			Container::String desc_;
-			Container::String type_;
-			Container::String defaultValue_;
+			ShaderPropertyType type_;
+			Container::FVariant defaultValue_;
 		};
 
 		struct ShaderTags
@@ -34,6 +49,7 @@ namespace FlagGG
 			Container::String prepareDefines_;
 			Container::Vector<Container::String> inputVar_;
 			Container::Vector<Container::String> outputVar_;
+			Container::Vector<Container::String> shaderParameterDefines_;
 		};
 
 		class ShaderParser
@@ -41,8 +57,8 @@ namespace FlagGG
 		public:
 			ShaderParser(Core::Context* context);
 
-			/// ½âÎö×Ô¶¨ÒåµÄshader¸ñÊ½£¬±ä³ÉbgfxµÄshader¸ñÊ½
-			/// ×Ô¶¨Òåshader¸ñÊ½ºÍUnity3DµÄshader¸ñÊ½Ò»ÖÂ
+			/// è§£æè‡ªå®šä¹‰çš„shaderæ ¼å¼ï¼Œå˜æˆbgfxçš„shaderæ ¼å¼
+			/// è‡ªå®šä¹‰shaderæ ¼å¼å’ŒUnity3Dçš„shaderæ ¼å¼ä¸€è‡´
 			bool Parse(const char* buffer, UInt32 bufferSize);
 
 			void Clear();

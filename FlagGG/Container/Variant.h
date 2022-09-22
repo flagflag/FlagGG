@@ -244,5 +244,7 @@ namespace FlagGG
 			Math::Ray,
 			Math::Color
 		> FVariant;
+
+		FlagGG_API void StringToVariant(const String& inStr, FVariant& outValue);
 	}
 }

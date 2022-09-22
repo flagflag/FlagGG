@@ -178,12 +178,12 @@ void GameApplication::CreateScene()
 	dissolveHero_->SetName("DissolveHero");
 	scene_->AddChild(dissolveHero_);
 
-	//terrain_ = new Terrain(context_);
-	//terrain_->Create(64);
-	//terrain_->SetScale(Vector3(1, 0.4, 1));
-	//terrain_->SetPosition(Vector3(-80, -5, 0));
-	//terrain_->SetName("Terrain");
-	//scene_->AddChild(terrain_);
+	terrain_ = new Terrain(context_);
+	terrain_->Create(64);
+	terrain_->SetScale(Vector3(1, 0.4, 1));
+	terrain_->SetPosition(Vector3(-80, -5, 0));
+	terrain_->SetName("Terrain");
+	scene_->AddChild(terrain_);
 
 #if 0
 	auto* lightNode = new Unit(context_);

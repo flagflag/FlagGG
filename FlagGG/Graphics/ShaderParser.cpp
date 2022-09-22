@@ -269,7 +269,52 @@ namespace FlagGG
 			_pass.prepareDefines_.Swap(pass.prepareDefines_);
 			_pass.inputVar_.Swap(pass.inputVar_);
 			_pass.outputVar_.Swap(pass.outputVar_);
-			_pass.sourceCode_.Swap(pass.sourceCode_);	
+			_pass.sourceCode_.Swap(pass.sourceCode_);
+			for (auto& property : properties_)
+			{
+				switch (property.type_)
+				{
+				case ShaderPropertyInt:
+					_pass.shaderParameterDefines_.Push("uniform int " + property.name_ + ";");
+					break;
+
+				case ShaderPropertyFloat:
+					_pass.shaderParameterDefines_.Push("uniform float " + property.name_ + ";");
+					break;
+
+				case ShaderPropertyVector2:
+					_pass.shaderParameterDefines_.Push("uniform vec2 " + property.name_ + ";");
+					break;
+
+				case ShaderPropertyVector3:
+					_pass.shaderParameterDefines_.Push("uniform vec3 " + property.name_ + ";");
+					break;
+
+				case ShaderPropertyVector4:
+					_pass.shaderParameterDefines_.Push("uniform vec4 " + property.name_ + ";");
+					break;
+
+				case ShaderPropertySampler2D:
+					_pass.shaderParameterDefines_.Push(Utility::Format::ToString("SAMPLER2D(%s, %d);",
+						property.name_.CString(), property.defaultValue_.Get<unsigned>()));
+					break;
+
+				case ShaderPropertySampler2DArray:
+					_pass.shaderParameterDefines_.Push(Utility::Format::ToString("SAMPLER2DARRAY(%s, %d);",
+						property.name_.CString(), property.defaultValue_.Get<unsigned>()));
+					break;
+
+				case ShaderPropertySampler3D:
+					_pass.shaderParameterDefines_.Push(Utility::Format::ToString("SAMPLER3D(%s, %d);",
+						property.name_.CString(), property.defaultValue_.Get<unsigned>()));
+					break;
+
+				case ShaderPropertySamplerCube:
+					_pass.shaderParameterDefines_.Push(Utility::Format::ToString("SAMPLERCUBE(%s, %d);",
+						property.name_.CString(), property.defaultValue_.Get<unsigned>()));
+					break;
+				}
+			}
 
 			return AcceptRight();
 		}
@@ -549,6 +594,24 @@ namespace FlagGG
 			return !IsEof() && (*index_ == '\r' || *index_ == '\n');
 		}
 
+		static ShaderPropertyType StringToShaderPropertyType(const Container::String& inStr)
+		{
+#define GET_SHADER_PROPERTY_TYPE_IF(inStr, typeStr, typeEnum) \
+		if (inStr == #typeStr) \
+			return ShaderProperty ## typeEnum
+
+			GET_SHADER_PROPERTY_TYPE_IF(inStr, Int, Int);
+			GET_SHADER_PROPERTY_TYPE_IF(inStr, Float, Float);
+			GET_SHADER_PROPERTY_TYPE_IF(inStr, Vector2, Vector2);
+			GET_SHADER_PROPERTY_TYPE_IF(inStr, Vector3, Vector3);
+			GET_SHADER_PROPERTY_TYPE_IF(inStr, Vector4, Vector4);
+			GET_SHADER_PROPERTY_TYPE_IF(inStr, 2D, Sampler2D);
+			GET_SHADER_PROPERTY_TYPE_IF(inStr, 2DArray, Sampler2DArray);
+			GET_SHADER_PROPERTY_TYPE_IF(inStr, 3D, Sampler3D);
+			GET_SHADER_PROPERTY_TYPE_IF(inStr, Cube, SamplerCube);
+			return ShaderPropertyUnknown;
+		}
+
 		bool ShaderParser::AcceptProperty(ShaderProperty& property)
 		{
 			bool ret = AcceptRight();
@@ -571,10 +634,15 @@ namespace FlagGG
 
 			Foward();
 
-			if (!AcceptToken(')', property.type_))
+			Container::String token;
+
+			// type
+			if (!AcceptToken(')', token))
 			{
 				return false;
 			}
+
+			property.type_ = StringToShaderPropertyType(token);
 
 			Foward();
 
@@ -583,10 +651,13 @@ namespace FlagGG
 				false;
 			}
 
-			if (!AcceptToken('\n', property.defaultValue_))
+			// default value
+			if (!AcceptToken('\n', token))
 			{
 				return false;
 			}
+
+			StringToVariant(token, property.defaultValue_);
 
 			Foward();
 

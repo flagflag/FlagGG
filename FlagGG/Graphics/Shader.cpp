@@ -64,6 +64,7 @@ namespace FlagGG
 			}
 
 			Container::SharedPtr<Shader> shader(new Shader(itPass->second_));
+			shader->SetShaderCode(this);
 			shader->SetType(type);
 			shader->SetDefines(newDefines);
 			shader->Initialize();
@@ -79,6 +80,14 @@ namespace FlagGG
 
 			shaderParser_.Clear();
 			bool ret = shaderParser_.Parse(buffer.CString(), buffer.Length());
+
+			for (auto& property : shaderParser_.GetShaderProperties())
+			{
+				if (property.type_ >= ShaderPropertySampler2D && property.type_ <= ShaderPropertySamplerCube)
+				{
+					samplerRegisters_[property.name_] = property.defaultValue_.Get<unsigned>();
+				}
+			}
 
 			return ret;
 		}
@@ -167,6 +176,12 @@ namespace FlagGG
 							file.WriteStream(", ", 2);
 						file.WriteStream(pass.outputVar_[i].CString(), pass.outputVar_[i].Length());
 					}
+					file.WriteStream("\n", 1);
+				}
+
+				for (auto& spe : pass.shaderParameterDefines_)
+				{
+					file.WriteStream(spe.CString(), spe.Length());
 					file.WriteStream("\n", 1);
 				}
 
@@ -320,6 +335,11 @@ namespace FlagGG
 			return GetHandler();
 		}
 
+		void Shader::SetShaderCode(ShaderCode* shaderCode)
+		{
+			shaderCode_ = shaderCode;
+		}
+
 		void Shader::SetType(ShaderType type)
 		{
 			shaderType_ = type;
@@ -383,6 +403,15 @@ namespace FlagGG
 					if (itClass != TEXTURE_CLASS.End())
 					{
 						texSamplers_[itClass->second_] = desc.handle_;
+					}
+					else
+					{
+						const auto& registers = shader->GetShaderCode()->GetSamplerRegisters();
+						auto itReg = registers.Find(desc.name_);
+						if (itReg != registers.End() && itReg->second_ < MAX_TEXTURE_CLASS)
+						{
+							texSamplers_[itReg->second_] = desc.handle_;
+						}
 					}
 				}
 				else
