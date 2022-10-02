@@ -1,6 +1,9 @@
 #include <Lua/LuaVM.h>
+#include <Lua/LuaBinding/LuaBinding.h>
+#include <Lua/LuaBinding/LuaExtend.h>
 #include <Core/Profiler.h>
 #include <Math/Vector3.h>
+#include <Container/RefCounted.h>
 #include <Log.h>
 
 #include <string>
@@ -11,6 +14,14 @@ public:
 	int Normal(FlagGG::Lua::LuaVM* vm)
 	{
 		printf("%s\n", vm->Get<const char*>(1));
+		return 0;
+	}
+
+	int Alert(FlagGG::Lua::LuaVM* vm)
+	{
+#if _WIN32
+		MessageBoxA(nullptr,  vm->Get<const char*>(1), "", 0);
+#endif
 		return 0;
 	}
 };
@@ -110,6 +121,55 @@ static int Test2(lua_State* L)
 	return 0;
 }
 
+class TestBase : public FlagGG::Container::RefCounted
+{
+public:
+	TestBase()
+	{
+		FLAGGG_LOG_INFO("TestBase ctor");
+	}
+
+	~TestBase()
+	{
+		FLAGGG_LOG_INFO("TestBase dtor");
+	}
+
+	virtual void RunTest()
+	{
+		FLAGGG_LOG_INFO("TestBase::RunTest");
+	}
+};
+
+static int luaex_TestBase_Ctor(lua_State* L)
+{
+	TestBase* cls = new TestBase();
+	FlagGG::Lua::luaex_pushusertyperef(L, "TestBase", cls);
+	return 1;
+}
+
+static int luaex_TestBase_Dtor(lua_State* L)
+{
+	TestBase* cls = (TestBase*)FlagGG::Lua::luaex_tousertype(L, 1, "TestBase");
+	if (cls)
+		cls->ReleaseRef();
+	return 0;
+}
+
+static int luaex_TestBase_RunTest(lua_State* L)
+{
+	TestBase* cls = (TestBase*)FlagGG::Lua::luaex_tousertype(L, -1, "TestBase");
+	cls->RunTest();
+	return 0;
+}
+
+static int luaex_RunTest(lua_State* L)
+{
+	TestBase* cls = (TestBase*)FlagGG::Lua::luaex_tousertype(L, 1, "TestBase");
+	FlagGG::Lua::UserTypeRef luaWrapper("TestBase", cls, L);
+	luaWrapper.Call("RunTest2");
+	return 0;
+}
+
 void Run()
 {
 	FlagGG::Utility::SystemHelper::HiresTimer::InitSupported();
@@ -134,7 +194,8 @@ void Run()
 		"log",
 		&logInstance,
 		{
-			LUA_API_PROXY(LuaLog, Normal, "normal")
+			LUA_API_PROXY(LuaLog, Normal, "normal"),
+			LUA_API_PROXY(LuaLog, Alert, "alert"),
 		}
 	);
 
@@ -190,6 +251,60 @@ end
 	luaVM.CallEvent("Test.normal", temp1);
 	const FlagGG::Container::String temp2("2333");
 	luaVM.CallEvent("Test.normal", temp2);
+
+
+	lua_State* L = luaVM;
+	FlagGG::Lua::luaex_beginclass(L, "TestBase", "", luaex_TestBase_Ctor, luaex_TestBase_Dtor);
+		FlagGG::Lua::luaex_classfunction(L, "RunTest", luaex_TestBase_RunTest);
+	FlagGG::Lua::luaex_endclass(L);
+	FlagGG::Lua::luaex_globalfunction(L, "RunTest", luaex_RunTest);
+
+	luaVM.ExecuteScript(R"(
+local SceneNode = class('SceneNode')
+
+function SceneNode:ctor()
+
+end
+
+function SceneNode:RunTest()
+	log.normal('SceneNode:RunTest')
+end
+
+function SceneNode:__gc()
+
+end
+
+local Context = GetContext()
+local TestClass1 = class('TestClass1', Context.TestBase)
+
+function TestClass1:ctor()
+	log.normal('TestClass1:ctor')
+end
+
+function TestClass1:RunTest()
+	Context.TestBase.RunTest(self)
+	log.normal('TestClass::RunTest')
+end
+
+function TestClass1:RunTest2()
+	log.normal('TestClass::RunTest2')
+end
+
+function TestClass1:__gc()
+	log.normal('TestClass1:dtor')
+end
+
+_G.SceneNode = SceneNode
+_G.TestClass1 = TestClass1
+
+local test = TestClass1.new()
+test:RunTest()
+
+local test2 = SceneNode.new()
+test2:RunTest()
+
+RunTest(test)
+)");
 }
 
 int main()

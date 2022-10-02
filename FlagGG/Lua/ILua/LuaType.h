@@ -2,7 +2,9 @@
 #define __LUA_TYPE__
 
 #include "Container/Str.h"
+#include "Container/RefCounted.h"
 #include "Lua/ILua/LuaUtil.h"
+#include "Lua/LuaBinding/LuaExtend.h"
 #include "Core/BaseTypes.h"
 
 #include <lua.hpp>
@@ -65,6 +67,60 @@ namespace FlagGG
 			Int32 ref_;
 			Int32* refCount_;
 		};
+
+		class FlagGG_API UserTypeRef
+		{
+		public:
+			UserTypeRef();
+
+			UserTypeRef(const Container::String& userType, void* userValue, lua_State* L = nullptr);
+
+			UserTypeRef(const Container::String& userType, Container::RefCounted* userValue, lua_State* L = nullptr);
+
+			UserTypeRef(const UserTypeRef& ref);
+
+			UserTypeRef(UserTypeRef&& ref);
+
+			UserTypeRef& operator=(const UserTypeRef&) = default;
+
+			template < int returnCount = 0, class ... Args >
+			void Call(const Container::String& eventName, Args ... args);
+
+			Container::String userType_;
+			void* userValue_;
+			Container::RefCounted* userValueRef_;
+			lua_State* L_;
+		};
+
+		template <>
+		struct Setter<UserTypeRef>
+		{
+			static void Set(lua_State* L, const UserTypeRef& userTypeRef)
+			{
+				if (userTypeRef.userValue_)
+					luaex_pushusertype(L, userTypeRef.userType_.CString(), userTypeRef.userValue_);
+				else
+					luaex_pushusertyperef(L, userTypeRef.userType_.CString(), userTypeRef.userValueRef_);
+			}
+		};
+
+		template < int returnCount, class ... Args >
+		void UserTypeRef::Call(const Container::String& eventName, Args ... args)
+		{
+			SetParam(L_, *this);
+			lua_pushstring(L_, eventName.CString());
+			lua_gettable(L_, -2);
+			if (lua_isfunction(L_, -1) || lua_iscfunction(L_, -1))
+			{
+				SetParam(L_, std::forward<Args>(args)...);
+				CallImpl(L_, sizeof...(args), returnCount);
+				lua_pop(L_, 1);
+			}
+			else
+			{
+				lua_pop(L_, 2);
+			}
+		}
 
 		inline Type::_ TypeOf(lua_State* L, int index) { return lua_type(L, index); }
 

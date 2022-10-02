@@ -1,4 +1,6 @@
 #include "Lua/LuaVM.h"
+#include "Lua/LuaBinding/LuaBinding.h"
+#include "Lua/LuaBinding/LuaExtend.h"
 #include "Log.h"
 #include "Container/ArrayPtr.h"
 #include "Core/BaseTypes.h"
@@ -7,6 +9,14 @@ namespace FlagGG
 {
 	namespace Lua
 	{
+#include"Lua/LuaBinding/Class.lua"
+
+		static int luaex_GetContext(lua_State* L)
+		{
+			luaex_pushcontext(L);
+			return 1;
+		}
+
 		LuaVM::LuaVM() :
 			luaState_(nullptr)
 		{ }
@@ -20,6 +30,9 @@ namespace FlagGG
 		{
 			luaState_ = luaL_newstate();
 			luaL_openlibs(luaState_);
+
+			luaex_globalfunction(luaState_, "GetContext", luaex_GetContext);
+			ExecuteScript(ClassDefine);
 
 			callHistory_.Clear();
 			callHistory_.Push(luaState_);

@@ -60,6 +60,46 @@ namespace FlagGG
 				}
 			}
 		}
+
+		UserTypeRef::UserTypeRef() :
+			userValue_(nullptr),
+			L_(nullptr)
+		{}
+
+		UserTypeRef::UserTypeRef(const Container::String& userType, void* userValue, lua_State* L) :
+			userType_(userType),
+			userValue_(userValue),
+			userValueRef_(nullptr),
+			L_(L)
+		{
+
+		}
+
+		UserTypeRef::UserTypeRef(const Container::String& userType, Container::RefCounted* userValue, lua_State* L) :
+			userType_(userType),
+			userValue_(nullptr),
+			userValueRef_(userValue),
+			L_(L)
+		{
+
+		}
+
+		UserTypeRef::UserTypeRef(const UserTypeRef& ref)
+		{
+			userType_ = ref.userType_;
+			userValue_ = ref.userValue_;
+			userValueRef_ = ref.userValueRef_;
+			L_ = ref.L_;
+		}
+
+		UserTypeRef::UserTypeRef(UserTypeRef&& ref) :
+			userType_(std::move(ref.userType_)),
+			userValue_(ref.userValue_),
+			userValueRef_(ref.userValueRef_),
+			L_(ref.L_)
+		{
+
+		}
 	}
 }
 
