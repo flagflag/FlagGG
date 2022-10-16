@@ -67,6 +67,8 @@ namespace FlagGG
 				UInt32 ReadStream(void* data, UInt32 dataSize) override;
 				UInt32 WriteStream(const void* data, UInt32 dataSize) override;
 
+				void WriteString(const Container::String& value) override;
+
 				void ToString(Container::String& result) override;
 				void ToBuffer(Container::SharedArrayPtr<char>& buffer, UInt32& bufferSize) override;
 

@@ -96,6 +96,11 @@ namespace FlagGG
 				WriteStream(&value, sizeof(value));
 			}
 
+			void IOBufferAdaptor::WriteString(const Container::String& value)
+			{
+				WriteStream(value.CString(), value.Length());
+			}
+
 			void IOBufferAdaptor::ToString(Container::String& result)
 			{
 				UInt32 bufferSize = GetSize();

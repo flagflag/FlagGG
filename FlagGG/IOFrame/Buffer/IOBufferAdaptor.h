@@ -41,6 +41,8 @@ namespace FlagGG
 				void ReadFloat(Real& value) override;
 				void WriteFloat(Real value) override;
 
+				void WriteString(const Container::String& value) override;
+
 				void ToString(Container::String& result) override;
 				void ToBuffer(Container::SharedArrayPtr<char>& buffer, UInt32& bufferSize) override;
 			};

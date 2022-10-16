@@ -261,6 +261,11 @@ namespace FlagGG
 				return dataSize;
 			}
 
+			void NetBuffer::WriteString(const Container::String& value)
+			{
+				WriteStream(value.CString(), value.Length());
+			}
+
 			void NetBuffer::ToString(Container::String& result)
 			{
 				if (buffers_.Size() <= 0)

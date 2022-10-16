@@ -179,10 +179,14 @@ namespace FlagGG
 					file.WriteStream("\n", 1);
 				}
 
-				for (auto& spe : pass.shaderParameterDefines_)
+				if (!pass.shaderParameterDefines_.Empty())
 				{
-					file.WriteStream(spe.CString(), spe.Length());
-					file.WriteStream("\n", 1);
+
+					file.WriteString("#define SHADER_LAB_SAMPLER_SLOT ");
+					for (unsigned i = 0; i < pass.shaderParameterDefines_.Size(); ++i)
+					{
+						file.WriteString(pass.shaderParameterDefines_[i]);
+					}
 				}
 
 				WriteCode(file, pass.sourceCode_, shaderType == VS ? "VS" : "PS");

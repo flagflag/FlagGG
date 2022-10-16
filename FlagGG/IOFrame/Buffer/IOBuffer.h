@@ -54,6 +54,8 @@ namespace FlagGG
 				virtual void ReadFloat(Real& value) = 0;
 				virtual void WriteFloat(Real value) = 0;
 
+				virtual void WriteString(const Container::String& value) = 0;
+
 				virtual void ToString(Container::String& result) = 0;
 				virtual void ToBuffer(Container::SharedArrayPtr<char>& buffer, UInt32& bufferSize) = 0;
 			};
