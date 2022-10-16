@@ -662,7 +662,7 @@ namespace FlagGG
 							else if (Container::StringHash(variableDesc.name_) == SP_SKIN_MATRICES)
 							{
 								memcpy(data + variableDesc.offset_, skinMatrix_,
-									Math::Min(variableDesc.size_, numSkinMatrix_ * sizeof(Math::Matrix3x4)));
+									Math::Min(variableDesc.size_, numSkinMatrix_ * (UInt32)sizeof(Math::Matrix3x4)));
 							}
 						};
 
