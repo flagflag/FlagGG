@@ -9,6 +9,11 @@ namespace FlagGG
 		Resource::Resource(Core::Context* context) :
 			context_(context)
 		{ }
+		
+		void Resource::SetName(const Container::String& name)
+		{
+			name_ = name;
+		}
 
 		bool Resource::LoadFile(const Container::String& filepath)
 		{

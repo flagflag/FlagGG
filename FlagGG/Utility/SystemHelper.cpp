@@ -1,6 +1,9 @@
 #include "SystemHelper.h"
 #include "Container/Str.h"
+#include "Format.h"
 
+#include <ctime>
+#include <chrono>
 #if _WIN32
 #include <windows.h>
 #include <shlwapi.h>
@@ -119,6 +122,25 @@ namespace FlagGG
 				gettimeofday(&time, nullptr);
 				return time.tv_sec * 1000000LL + time.tv_usec;
 #endif
+			}
+
+			Container::String GetTimeStamp()
+			{
+				return GetTimeStamp("%Y-%m-%d %H_%M_%S");
+			}
+
+			Container::String GetTimeStamp(const Container::String& fmt)
+			{
+				auto now = std::chrono::system_clock::now();
+
+				time_t sysTime = std::chrono::system_clock::to_time_t(now);
+				char dateTime[64];
+				strftime(dateTime, sizeof(dateTime), fmt.CString(), localtime(&sysTime));
+
+				auto duration = now.time_since_epoch();
+				auto secs = std::chrono::duration_cast<std::chrono::seconds>(duration);
+				auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() - secs.count() * 1000LL;
+				return Format::ToString("%s_%03lld", dateTime, msec);
 			}
 
 			bool ParseCommand(const char** argv, UInt32 argc, Config::LJSONValue& result)
@@ -442,6 +464,100 @@ namespace FlagGG
 #endif
 			}
 
+			static Container::String GetInternalPath(const Container::String& pathName)
+			{
+				return pathName.Replaced('\\', '/');
+			}
+
+			static void SplitPath(const Container::String& fullPath, Container::String& pathName, Container::String& fileName, Container::String& extension, bool lowercaseExtension = true)
+			{
+				Container::String fullPathCopy = GetInternalPath(fullPath);
+
+				unsigned extPos = fullPathCopy.FindLast('.');
+				unsigned pathPos = fullPathCopy.FindLast('/');
+
+				if (extPos != Container::String::NPOS && (pathPos == Container::String::NPOS || extPos > pathPos))
+				{
+					extension = fullPathCopy.Substring(extPos);
+					if (lowercaseExtension)
+						extension = extension.ToLower();
+					fullPathCopy = fullPathCopy.Substring(0, extPos);
+				}
+				else
+					extension.Clear();
+
+				pathPos = fullPathCopy.FindLast('/');
+				if (pathPos != Container::String::NPOS)
+				{
+					fileName = fullPathCopy.Substring(pathPos + 1);
+					pathName = fullPathCopy.Substring(0, pathPos + 1);
+				}
+				else
+				{
+					fileName = fullPathCopy;
+					pathName.Clear();
+				}
+			}
+
+			Container::String GetPath(const Container::String& fullPath)
+			{
+				Container::String path, file, extension;
+				SplitPath(fullPath, path, file, extension);
+				return path;
+			}
+
+			Container::String GetFileName(const Container::String& fullPath)
+			{
+				Container::String path, file, extension;
+				SplitPath(fullPath, path, file, extension);
+				return file;
+			}
+
+			Container::String GetExtension(const Container::String& fullPath, bool lowercaseExtension)
+			{
+				Container::String path, file, extension;
+				SplitPath(fullPath, path, file, extension, lowercaseExtension);
+				return extension;
+			}
+
+			Container::String GetFileNameAndExtension(const Container::String& fileName, bool lowercaseExtension)
+			{
+				Container::String path, file, extension;
+				SplitPath(fileName, path, file, extension, lowercaseExtension);
+				return file + extension;
+			}
+
+			Container::String ReplaceExtension(const Container::String& fullPath, const Container::String& newExtension)
+			{
+				Container::String path, file, extension;
+				SplitPath(fullPath, path, file, extension);
+				return path + file + newExtension;
+			}
+
+			Container::String GetProgramDir()
+			{
+#if defined(_WIN32)
+				wchar_t exeName[MAX_PATH];
+				exeName[0] = 0;
+				GetModuleFileNameW(nullptr, exeName, MAX_PATH);
+				return GetPath(Container::String(exeName));
+#elif defined(__APPLE__)
+				char exeName[MAX_PATH];
+				memset(exeName, 0, MAX_PATH);
+				unsigned size = MAX_PATH;
+				_NSGetExecutablePath(exeName, &size);
+				return GetPath(Container::String(exeName));
+#elif defined(__linux__)
+				char exeName[MAX_PATH];
+				memset(exeName, 0, MAX_PATH);
+				pid_t pid = getpid();
+				Container::String link = "/proc/" + Container::String(pid) + "/exe";
+				readlink(link.CString(), exeName, MAX_PATH);
+				return GetPath(Container::String(exeName));
+#else
+				return "";
+#endif
+			}
 
 			Timer::Timer()
 			{

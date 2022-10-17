@@ -16,7 +16,7 @@ namespace FlagGG
 #define FileAPI_Open(file, filePath, fileMode) (file = _wfopen(filePath.CString(), fileMode))
 #define ModeText(mode) L##mode
 #define FileAPI_Close(file) { fclose(FileHandler(file)); file = nullptr; }
-#define FileAPI_IsOpen(file) (file && !feof(FileHandler(file_)))
+#define FileAPI_IsOpen(file) (file && !feof(FileHandler(file)))
 #define FileAPI_SeekFromBegin(file, delta) fseek(FileHandler(file), delta, SEEK_SET)
 #define FileAPI_SeekToBegin(file) fseek(FileHandler(file), 0, SEEK_SET)
 #define FileAPI_SeekToEnd(file) fseek(FileHandler(file), 0, SEEK_END)
@@ -25,14 +25,14 @@ namespace FlagGG
 #define FileAPI_SimpleWrite(file, value) fwrite(&value, sizeof(value), 1, FileHandler(file))
 #define FileAPI_ReadStream(file, data, dataSize) (fread(data, dataSize, 1, FileHandler(file)) * dataSize)
 #define FileAPI_WriteStream(file, data, dataSize) (fwrite(data, dataSize, 1, FileHandler(file)) * dataSize)
-#define FileAPI_IsEof(file) (!!feof(FileHandler(file)))
+#define FileAPI_IsEof(file) (feof(FileHandler(file)) != 0)
 #else
 #define FilePathString Container::String
 #define FormatPath(filePath) Container::String(filePath.Replaced('/', '\\'))
 #define FileAPI_Open(file, filePath, fileMode) (file = fopen(filePath.CString(), fileMode))
 #define ModeText(mode) mode
 #define FileAPI_Close(file) { fclose(FileHandler(file)); file = nullptr; }
-#define FileAPI_IsOpen(file) (file && !feof(FileHandler(file_)))
+#define FileAPI_IsOpen(file) (file && !feof(FileHandler(file)))
 #define FileAPI_SeekFromBegin(file, delta) fseek(FileHandler(file), delta, SEEK_SET)
 #define FileAPI_SeekToBegin(file) fseek(FileHandler(file), 0, SEEK_SET)
 #define FileAPI_SeekToEnd(file) fseek(FileHandler(file), 0, SEEK_END)
@@ -41,7 +41,7 @@ namespace FlagGG
 #define FileAPI_SimpleWrite(file, value) fwrite(&value, sizeof(value), 1, FileHandler(file))
 #define FileAPI_ReadStream(file, data, dataSize) (fread(data, dataSize, 1, FileHandler(file)) * dataSize)
 #define FileAPI_WriteStream(file, data, dataSize) (fwrite(data, dataSize, 1, FileHandler(file)) * dataSize)
-#define FileAPI_IsEof(file) (!!feof(FileHandler(file)))
+#define FileAPI_IsEof(file) (feof(FileHandler(file)) != 0)
 #endif
 
 			FileStream::FileStream() :

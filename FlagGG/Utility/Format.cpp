@@ -17,7 +17,7 @@ namespace FlagGG
 				Container::String buffer;
 				buffer.Resize(len);
 
-				vsnprintf(&buffer[0], len, format, va);
+				vsnprintf(&buffer[0], len + 1, format, va);
 				va_end(va);
 
 				return buffer;

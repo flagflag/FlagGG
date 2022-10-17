@@ -37,6 +37,10 @@ namespace FlagGG
 
 			UInt32 GetIndexCount() const;
 
+			UInt32 GetVertexStart() const;
+
+			UInt32 GetVertexCount() const;
+
 		private:
 			PrimitiveType primitiveType_;
 

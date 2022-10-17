@@ -18,6 +18,10 @@ namespace FlagGG
 
 			~Resource() override = default;
 
+			void SetName(const Container::String& name);
+
+			const Container::String& GetName() const { return name_; }
+
 			bool LoadFile(const Container::String& filepath);
 
 			bool LoadFile(IOFrame::Buffer::IOBuffer* stream);
@@ -41,6 +45,8 @@ namespace FlagGG
 			virtual bool EndSave();
 
 			Core::Context* context_;
+
+			Container::String name_;
 
 			UInt32 memoryUse_{ 0 };
 		};

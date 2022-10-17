@@ -31,6 +31,7 @@ namespace FlagGG
 				if (!res)
 				{
 					res = new T(context_);
+					res->SetName(path);
 					if (!LoadResource(formatPath, res))
 					{
 						return nullptr;

@@ -18,7 +18,7 @@ namespace FlagGG
 		context_ = new Context();
 		input_ = new Input(context_);
 		cache_ = new ResourceCache(context_);
-		cache_->AddResourceDir("../../../Res");
+		cache_->AddResourceDir(Utility::SystemHelper::GetProgramDir() + "Res");
 		context_->RegisterVariable<Input>(input_.Get(), "input");
 		context_->RegisterVariable<ResourceCache>(cache_.Get(), "ResourceCache");
 	}

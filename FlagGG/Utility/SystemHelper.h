@@ -34,6 +34,10 @@ namespace FlagGG
 
 			FlagGG_API UInt64 HiresTick();
 
+			FlagGG_API Container::String GetTimeStamp();
+
+			FlagGG_API Container::String GetTimeStamp(const Container::String& fmt);
+
 			FlagGG_API bool ParseCommand(const char** argv, UInt32 argc, Config::LJSONValue& result);
 
 			FlagGG_API bool DirExists(const Container::String& path);
@@ -53,6 +57,18 @@ namespace FlagGG
 			FlagGG_API void FindFiles(const Container::String& dirPath, const Container::String& pattern, bool recursive, int fileMode, Container::Vector<Container::String>& fileNames);
 
 			FlagGG_API Math::IntRect GetDesktopRect();
+
+			FlagGG_API Container::String GetPath(const Container::String& fullPath);
+
+			FlagGG_API Container::String GetFileName(const Container::String& fullPath);
+
+			FlagGG_API Container::String GetExtension(const Container::String& fullPath, bool lowercaseExtension);
+
+			FlagGG_API Container::String GetFileNameAndExtension(const Container::String& fileName, bool lowercaseExtension);
+
+			FlagGG_API Container::String ReplaceExtension(const Container::String& fullPath, const Container::String& newExtension);
+
+			FlagGG_API Container::String GetProgramDir();
 
 			class FlagGG_API Timer
 			{
