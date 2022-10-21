@@ -4,6 +4,7 @@
 #include "Export.h"
 #include "Container/Str.h"
 #include "AsyncFrame/Mutex.h"
+#include "Utility/Format.h"
 #include "spdlog/spdlog.h"
 
 namespace FlagGG
@@ -55,5 +56,16 @@ namespace FlagGG
 #define FLAGGG_LOG_ERROR(format, ...) FlagGG::Logger::GetInstance()->Default()->error(format, ##__VA_ARGS__)
 
 #define FLAGGG_LOG_CRITICAL(format, ...) FlagGG::Logger::GetInstance()->Default()->critical(format, ##__VA_ARGS__)
+
+
+#define FLAGGG_LOG_STD_DEBUG(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::Utility::Format::ToString(format, ##__VA_ARGS__).CString())
+
+#define FLAGGG_LOG_STD_INFO(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::Utility::Format::ToString(format, ##__VA_ARGS__).CString())
+
+#define FLAGGG_LOG_STD_WARN(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::Utility::Format::ToString(format, ##__VA_ARGS__).CString())
+
+#define FLAGGG_LOG_STD_ERROR(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::Utility::Format::ToString(format, ##__VA_ARGS__).CString())
+
+#define FLAGGG_LOG_STD_CRITICAL(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::Utility::Format::ToString(format, ##__VA_ARGS__).CString())
 
 #endif
