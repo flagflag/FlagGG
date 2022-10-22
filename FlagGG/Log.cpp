@@ -1,6 +1,7 @@
 #include "Log.h"
 #include "Define.h"
 #include "Allocator/SmartMemory.hpp"
+#include "Utility/SystemHelper.h"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -13,9 +14,14 @@ namespace FlagGG
 	{
 		try
 		{
-			auto FlagGGLog = spdlog::basic_logger_mt(FLAGGG_LOG, "FlagGGLog.log");
+			Container::String logDir = Utility::SystemHelper::GetProgramDir() + "logs";
+			if (!Utility::SystemHelper::DirExists(logDir))
+				Utility::SystemHelper::CreateDir(logDir);
+			Container::String logPath = logDir + "/FlagGGLog-" + Utility::SystemHelper::GetTimeStamp() + ".log";
+			auto FlagGGLog = spdlog::basic_logger_mt(FLAGGG_LOG, logPath.CString());
 			FlagGGLog->flush_on(spdlog::level::debug);
 			spdlog::register_logger(FlagGGLog);
+
 		}
 		catch (spdlog::spdlog_ex& ex)
 		{
