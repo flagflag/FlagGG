@@ -36,26 +36,14 @@ namespace LuaGameEngine
 	int Player::Create(lua_State* L)
 	{
 		Engine* engine = GetEngine(L);
-		auto* player = engine->GetPlayer(lua_tointeger(L, 2));
-		if (player)
-		{
-			player->AddRef();
-			lua_newtable(L);
-			lua_getmetatable(L, 1);
-			lua_setmetatable(L, -2);
-			SetEntry(L, -1, player);
-		}
-		else
-		{
-			lua_pushnil(L);
-		}
+		auto* player = engine->GetPlayer(lua_tointeger(L, 1));
+		SetEntry<Player>(L, player);
 		return 1;
 	}
 
 	int Player::Destroy(lua_State* L)
 	{
-		Engine* engine = GetEngine(L);
-		auto* player = engine->GetPlayer(lua_tointeger(L, 2));
+		Player* player = GetEntry<Player>(L, 1);
 		player->ReleaseRef();
 		return 0;
 	}

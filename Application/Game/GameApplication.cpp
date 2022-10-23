@@ -12,6 +12,7 @@
 #include "GameApplication.h"
 #include "GamePlay/ThirdPersonPerspective.h"
 #include "GamePlay/GamePlayOnline.h"
+#include "GamePlay/GamePlayLocal.h"
 
 static int Begin(lua_State* L)
 {
@@ -52,7 +53,11 @@ void GameApplication::Start()
 	perspective_->SetNode(mainHero_);
 	perspective_->Reset();
 
+#if 0
 	gameplay_ = new GamePlayOnline(context_);
+#else
+	gameplay_ = new GamePlayLocal(context_);
+#endif
 	gameplay_->Initialize(scene_);
 	context_->RegisterVariable<GamePlayBase>(gameplay_, "GamePlayBase");
 
@@ -77,12 +82,23 @@ void GameApplication::Start()
 
 	FLAGGG_LOG_INFO("start application.");
 
-	const String luaCodePath = commandParam_["CodePath"].GetString();
+	String luaCodePath;
+	if (commandParam_.Contains("CodePath"))
+		luaCodePath = commandParam_["CodePath"].GetString();
+	else
+		luaCodePath = Utility::SystemHelper::GetProgramDir() + "Res/Script/lua/";
 	luaVM_->SetLoaderPath(luaCodePath);
+#if 0
 	if (!luaVM_->Execute(luaCodePath + "main.lua"))
 	{
 		FLAGGG_LOG_ERROR("Failed to execute main.lua.");
 	}
+#else
+	if (!luaVM_->Execute(luaCodePath + "local_game.lua"))
+	{
+		FLAGGG_LOG_ERROR("Failed to execute local_game.lua.");
+	}
+#endif
 }
 
 void GameApplication::Stop()
@@ -114,6 +130,8 @@ void GameApplication::Update(float timeStep)
 			material->GetShaderParameters()->SetValue("dissolveTime", dissolveTime);
 		}
 	}
+
+	gameplay_->FrameUpdate(timeStep);
 }
 
 void GameApplication::Create2DBatch()

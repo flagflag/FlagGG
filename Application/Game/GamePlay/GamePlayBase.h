@@ -24,6 +24,8 @@ public:
 
 	virtual void EndGame() = 0;
 
+	virtual void FrameUpdate(float timeStep) = 0;
+
 private:
 
 };

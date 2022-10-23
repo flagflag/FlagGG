@@ -26,6 +26,8 @@ public:
 
 	void EndGame() override;
 
+	void FrameUpdate(float timeStep) override;
+
 protected:
 #ifdef FLAGGG_PROTO
 	void OnGameMessageRecived(UInt32 messageType, ::google::protobuf::Message* message);

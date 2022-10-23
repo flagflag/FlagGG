@@ -4,6 +4,7 @@
 #include "Log.h"
 #include "Container/ArrayPtr.h"
 #include "Core/BaseTypes.h"
+#include "Core/CryAssert.h"
 
 namespace FlagGG
 {
@@ -83,6 +84,7 @@ namespace FlagGG
 			if (luaL_dofile(luaState_, filePath.CString()))
 			{
 				FLAGGG_LOG_ERROR("execute lua file failed, error message: {}.", lua_tostring(luaState_, -1));
+				CRY_ASSERT_MESSAGE(false, "execute lua file failed");
 
 				lua_pop(luaState_, 1);
 
@@ -97,6 +99,7 @@ namespace FlagGG
 			if (luaL_dostring(luaState_, scriptCode.CString()))
 			{
 				FLAGGG_LOG_ERROR("execute lua code failed, error message: {}.", lua_tostring(luaState_, -1));
+				CRY_ASSERT_MESSAGE(false, "execute lua code failed");
 
 				lua_pop(luaState_, 1);
 

@@ -6,13 +6,9 @@ namespace LuaGameEngine
 {
 	int Movement::Create(lua_State* L)
 	{
-		lua_newtable(L);
-		lua_getmetatable(L, 1);
-		lua_setmetatable(L, -2);
 		Engine* engine = GetEngine(L);
 		Movement* movement = engine->CreateObject<Movement>();
-		movement->AddRef();
-		SetEntry(L, -1, movement);
+		SetEntry<Movement>(L, movement);
 		return 1;
 	}
 
@@ -43,6 +39,6 @@ namespace LuaGameEngine
 	{
 		Movement* movement = GetEntry<Movement>(L, 1);
 		lua_pushboolean(L, movement->IsActive());
-		return 0;
+		return 1;
 	}
 }

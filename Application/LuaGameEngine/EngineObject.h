@@ -21,8 +21,8 @@ namespace LuaGameEngine
 		inline void SetValid(bool isValid) { isValid_ = isValid; }
 
 	private:
-		bool isValid_;
+		bool isValid_{};
 
-		int refCount_;
+		int refCount_{};
 	};
 }

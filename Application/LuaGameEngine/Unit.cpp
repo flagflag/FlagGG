@@ -87,14 +87,10 @@ namespace LuaGameEngine
 	}
 
 	int Unit::Create(lua_State* L)
-	{
-		lua_newtable(L);
-		lua_getmetatable(L, 1);
-		lua_setmetatable(L, -2);		
+	{		
 		Engine* engine = GetEngine(L);
 		Unit* unit = engine->CreateObject<Unit>();
-		unit->AddRef();
-		SetEntry(L, -1, unit);
+		SetEntry<Unit>(L, unit);
 		return 1;
 	}
 
@@ -132,7 +128,7 @@ namespace LuaGameEngine
 		lua_pushnumber(L, rot.y_);
 		lua_pushnumber(L, rot.z_);
 		lua_pushnumber(L, rot.w_);
-		return 3;
+		return 4;
 	}
 
 	int Unit::GetScale(lua_State* L)

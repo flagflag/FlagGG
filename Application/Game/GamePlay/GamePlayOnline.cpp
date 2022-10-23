@@ -78,6 +78,11 @@ void GamePlayOnline::EndGame()
 #endif
 }
 
+void GamePlayOnline::FrameUpdate(float timeStep)
+{
+
+}
+
 #ifdef FLAGGG_PROTO
 void GamePlayOnline::OnGameMessageRecived(UInt32 messageType, ::google::protobuf::Message* message)
 {

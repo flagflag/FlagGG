@@ -4,10 +4,13 @@
 #include "ControlerImpl.h"
 
 #include <Lua/ILua/LuaUtil.h>
+#include <Lua/LuaBinding/LuaBinding.h>
 #include <Log.h>
 
 namespace LuaGameEngine
 {
+	using namespace FlagGG::Lua;
+
 	EngineImpl::EngineImpl(lua_State* L) :
 		L_(L),
 		controler_(new ControlerImpl(L))
@@ -155,7 +158,7 @@ namespace LuaGameEngine
 		peddingResolve_.Push(object); \
 		return object; \
 	}, \
-		[&](EngineObject* object) \
+	[&](EngineObject* object) \
 	{ \
 		peddingResolve_.Remove(object); \
 		object->SetValid(false); \
@@ -165,18 +168,16 @@ namespace LuaGameEngine
 	void EngineImpl::RegisterEngineObjectType()
 	{
 		REGISTER_TYPE(Unit, unitPool_);
-		REGISTER_TYPE(Movement, movementPool_);
+		// REGISTER_TYPE(Movement, movementPool_);
 		REGISTER_TYPE(Spell, spellPool_);
 		REGISTER_TYPE(Buff, buffPool_);
 	}
 
 	void EngineImpl::CreateEngineEntry()
 	{
-		lua_newtable(L_);
-		lua_setglobal(L_, "engine");
-
+		lua_pushliteral(L_, "LuaGameEngine");
 		lua_pushlightuserdata(L_, this);
-		lua_setglobal(L_, "context");
+		lua_rawset(L_, LUA_REGISTRYINDEX);
 	}
 
 #ifdef GetUserName
@@ -185,50 +186,39 @@ namespace LuaGameEngine
 
 	void EngineImpl::CreatePlayerClass()
 	{
-		const luaL_Reg lib[] = 
-		{
-			{ "create", &Player::Create },
-			{ "get_user_id", &Player::GetUserId },
-			{ "get_user_name", &Player::GetUserName },
-			{ "get_control_unit", &Player::GetControlUnit },
-			{ "set_user_id", &Player::SetUserId },
-			{ "set_user_name", &Player::SetUserName },
-			{ "set_control_unit", &Player::SetControlUnit },
-			{ nullptr, nullptr }
-		};
-		CreateClass(L_, "player", lib, &Player::Destroy);
+		luaex_beginclass(L_, "Player", "", &Player::Create, &Player::Destroy);
+			luaex_classfunction(L_, "get_user_id", &Player::GetUserId);
+			luaex_classfunction(L_, "get_user_name", &Player::GetUserName);
+			luaex_classfunction(L_, "get_control_unit", &Player::GetControlUnit);
+			luaex_classfunction(L_, "set_user_id", &Player::SetUserId);
+			luaex_classfunction(L_, "set_user_name", &Player::SetUserName);
+			luaex_classfunction(L_, "set_control_unit", &Player::SetControlUnit);
+		luaex_endclass(L_);
 	}
 
 	void EngineImpl::CreateUnitClass()
 	{
-		const luaL_Reg lib[] =
-		{
-			{ "create", &Unit::Create },
-			{ "get_name", &Unit::GetName },
-			{ "get_position", &Unit::GetPosition },
-			{ "get_rotation", &Unit::GetRotation },
-			{ "get_scale", &Unit::GetScale },
-			{ "set_name", &Unit::SetName },
-			{ "set_position", &Unit::SetPosition },
-			{ "set_rotation", &Unit::SetRotation },
-			{ "set_scale", &Unit::SetScale },
-			{ "add_movement", &Unit::AddMovement },
-			{ "remove_movement", &Unit::RemoveMovement },
-			{ nullptr, nullptr, }
-		};
-		CreateClass(L_, "unit", lib, &Unit::Destroy);
+		luaex_beginclass(L_, "Unit", "", &Unit::Create, &Unit::Destroy);
+			luaex_classfunction(L_, "create", &Unit::Create);
+			luaex_classfunction(L_, "get_name", &Unit::GetName);
+			luaex_classfunction(L_, "get_position", &Unit::GetPosition);
+			luaex_classfunction(L_, "get_rotation", &Unit::GetRotation);
+			luaex_classfunction(L_, "get_scale", &Unit::GetScale);
+			luaex_classfunction(L_, "set_name", &Unit::SetName);
+			luaex_classfunction(L_, "set_position", &Unit::SetPosition);
+			luaex_classfunction(L_, "set_rotation", &Unit::SetRotation);
+			luaex_classfunction(L_, "set_scale", &Unit::SetScale);
+			luaex_classfunction(L_, "add_movement", &Unit::AddMovement);
+			luaex_classfunction(L_, "remove_movement", &Unit::RemoveMovement);
+		luaex_endclass(L_);
 	}
 
 	void EngineImpl::CreateMovementClass()
 	{
-		const luaL_Reg lib[]=
-		{
-			{ "create", &Movement::Create },
-			{ "start", &Movement::Start },
-			{ "stop", &Movement::Stop },
-			{ "is_active", &Movement::IsActive },
-			{ nullptr, nullptr }
-		};
-		CreateClass(L_, "movement", lib, &Movement::Destroy);
+		luaex_beginclass(L_, "Movement", "", &Movement::Create, &Movement::Destroy);
+			luaex_classfunction(L_, "start", &Movement::Start);
+			luaex_classfunction(L_, "stop", &Movement::Stop);
+			luaex_classfunction(L_, "is_active", &Movement::IsActive);
+		luaex_endclass(L_);
 	}
 }
