@@ -10,8 +10,10 @@ LuaScript
 *.vcxproj.user
 *.sln.docstates
 build
+build_asm
 bin
 .vscode
 .DS_Store
 *.pb.h
 *.pb.cc
+emsdk

@@ -275,7 +275,7 @@ macro (add_html_shell)
             if (NOT EXISTS ${CMAKE_BINARY_DIR}/Source/shell.html)
                 file (READ ${EMSCRIPTEN_ROOT_PATH}/src/shell.html HTML_SHELL)
                 string (REPLACE "<!doctype html>" "#!/usr/bin/env ${EMSCRIPTEN_EMRUN_BROWSER}\n<!-- This is a generated file. DO NOT EDIT!-->\n\n<!doctype html>" HTML_SHELL "${HTML_SHELL}")     # Stringify to preserve semicolons
-                string (REPLACE "<body>" "<body>\n<script>document.body.innerHTML=document.body.innerHTML.replace(/^#!.*\\n/, '');</script>\n<a href=\"https://urho3d.github.io\" title=\"FlagGG Homepage\"><img src=\"https://urho3d.github.io/assets/images/logo.png\" alt=\"link to https://urho3d.github.io\" height=\"80\" width=\"160\" /></a>\n" HTML_SHELL "${HTML_SHELL}")
+                string (REPLACE "<body>" "<body>\n<script>document.body.innerHTML=document.body.innerHTML.replace(/^#!.*\\n/, '');</script>\n<a href=\"https://github.com/flagflag/FlagGG\" title=\"FlagGG Homepage\"><img src=\"https://github.com/flagflag/FlagGG/images/logo.png\" alt=\"link to https://github.com/flagflag/FlagGG\" height=\"80\" width=\"160\" /></a>\n" HTML_SHELL "${HTML_SHELL}")
                 file (WRITE ${CMAKE_BINARY_DIR}/Source/shell.html "${HTML_SHELL}")
             endif ()
             set (HTML_SHELL ${CMAKE_BINARY_DIR}/Source/shell.html)
@@ -824,7 +824,7 @@ macro (setup_main_executable)
     if ((EXE_TYPE STREQUAL MACOSX_BUNDLE OR FLAGGG_PACKAGING) AND RESOURCE_DIRS)
         if (FLAGGG_PACKAGING)
             # FlagGG project builds the PackageTool as required; downstream project uses PackageTool found in the FlagGG build tree or FlagGG SDK
-            find_Urho3d_tool (PACKAGE_TOOL PackageTool
+            find_FlagGG_tool (PACKAGE_TOOL PackageTool
                 HINTS ${CMAKE_BINARY_DIR}/bin/tool ${FLAGGG_HOME}/bin/tool
                 DOC "Path to PackageTool" MSG_MODE WARNING)
             if (CMAKE_PROJECT_NAME STREQUAL FlagGG)
