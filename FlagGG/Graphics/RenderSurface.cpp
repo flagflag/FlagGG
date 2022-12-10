@@ -3,24 +3,23 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		RenderSurface::RenderSurface(Texture* parentTexture) :
-			parentTexture_(parentTexture)
-		{ }
 
-		void RenderSurface::Initialize()
-		{
-		}
+RenderSurface::RenderSurface(Texture* parentTexture) :
+	parentTexture_(parentTexture)
+{ }
 
-		bool RenderSurface::IsValid()
-		{
-			return GetHandler() != nullptr;
-		}
+void RenderSurface::Initialize()
+{
+}
 
-		Texture* RenderSurface::GetParentTexture()
-		{
-			return parentTexture_;
-		}
-	}
+bool RenderSurface::IsValid()
+{
+	return GetHandler() != nullptr;
+}
+
+Texture* RenderSurface::GetParentTexture()
+{
+	return parentTexture_;
+}
+
 }

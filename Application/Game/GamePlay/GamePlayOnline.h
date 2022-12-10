@@ -11,14 +11,14 @@
 #include <Core/Context.h>
 #include <Container/HashMap.h>
 
-using namespace FlagGG::Core;
+using namespace FlagGG;
 
 class GamePlayOnline : public GamePlayBase
 {
 public:
 	explicit GamePlayOnline(Context* context);
 
-	void Initialize(FlagGG::Scene::Scene* scene) override;
+	void Initialize(Scene* scene) override;
 
 	void Login(const LuaFunction& callback) override;
 

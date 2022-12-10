@@ -6,70 +6,69 @@
 
 namespace FlagGG
 {
-	namespace Config
-	{
-		class FlagGG_API LJSONError
-		{
-		public:
-			void DumpError(const Byte* bufferStart, const Byte* bufferEnd, const Byte* bufferIndex, const Container::String& content);
 
-			void SetFilePath(const Container::String& filePath);
+class FlagGG_API LJSONError
+{
+public:
+	void DumpError(const Byte* bufferStart, const Byte* bufferEnd, const Byte* bufferIndex, const String& content);
 
-			void Dump();
+	void SetFilePath(const String& filePath);
 
-			void Clear();
+	void Dump();
 
-			bool HasError();
+	void Clear();
 
-		private:
-			Container::String filePath_;
+	bool HasError();
 
-			Container::Vector<Container::String> errors_;
-		};
+private:
+	String filePath_;
 
-		// Like JSON Parser
-		class FlagGG_API LJSONParser
-		{
-		public:
-			LJSONParser();
+	Vector<String> errors_;
+};
 
-			virtual ~LJSONParser();
+// Like JSON Parser
+class FlagGG_API LJSONParser
+{
+public:
+	LJSONParser();
 
-			bool Load(const char* buffer, UInt32 bufferSize, LJSONValue& value);
+	virtual ~LJSONParser();
 
-		protected:
-			bool StartAccept(const LJSONValue& parent, LJSONValue& node, const Container::String& rootType);
+	bool Load(const char* buffer, UInt32 bufferSize, LJSONValue& value);
 
-			bool HasNext();
+protected:
+	bool StartAccept(const LJSONValue& parent, LJSONValue& node, const String& rootType);
 
-			bool AcceptComment();
+	bool HasNext();
 
-			Container::String AcceptType();
+	bool AcceptComment();
 
-			bool AcceptKey(Container::String& key);
+	String AcceptType();
 
-			bool AcceptContent(Container::String& content);
+	bool AcceptKey(String& key);
 
-			bool AcceptValidChar(char& c);
+	bool AcceptContent(String& content);
 
-			void Back();
+	bool AcceptValidChar(char& c);
 
-			bool ToValue(const LJSONValue& parent, const Container::String& type, const Container::String& content, LJSONValue& value);
+	void Back();
 
-		private:
-			const Byte* bufferStart_;
-			const Byte* bufferEnd_;
-			const Byte* index_;
+	bool ToValue(const LJSONValue& parent, const String& type, const String& content, LJSONValue& value);
 
-			AutomaticMachinePtr emptyState_;
-			AutomaticMachinePtr commentState_;
-			AutomaticMachinePtr keywordState_;
-			AutomaticMachinePtr variableState_;
-			AutomaticMachinePtr contentState_;
+private:
+	const Byte* bufferStart_;
+	const Byte* bufferEnd_;
+	const Byte* index_;
 
-			LJSONError error_;
-		};
-	}
+	AutomaticMachinePtr emptyState_;
+	AutomaticMachinePtr commentState_;
+	AutomaticMachinePtr keywordState_;
+	AutomaticMachinePtr variableState_;
+	AutomaticMachinePtr contentState_;
+
+	LJSONError error_;
+};
+
 }
 
 

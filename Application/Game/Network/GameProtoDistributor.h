@@ -8,8 +8,7 @@
 #include <Core/Context.h>
 #include <Container/RefCounted.h>
 
-using namespace FlagGG::Core;
-using namespace FlagGG::Container;
+using namespace FlagGG;
 
 namespace GameProtoEvent
 {

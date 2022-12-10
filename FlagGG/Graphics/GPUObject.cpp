@@ -4,32 +4,31 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		GPUObject::GPUObject() :
-			gpuHandler_(nullptr)
-		{
-		}
 
-		GPUObject::GPUObject(GPUHandler handler) :
-			gpuHandler_(handler)
-		{
-		}
+GPUObject::GPUObject() :
+	gpuHandler_(nullptr)
+{
+}
 
-		GPUObject::~GPUObject()
-		{
-			SAFE_RELEASE(gpuHandler_);
-		}
+GPUObject::GPUObject(GPUHandler handler) :
+	gpuHandler_(handler)
+{
+}
 
-		GPUHandler GPUObject::GetHandler()
-		{
-			return gpuHandler_;
-		}
+GPUObject::~GPUObject()
+{
+	SAFE_RELEASE(gpuHandler_);
+}
 
-		void GPUObject::ResetHandler(GPUHandler handler)
-		{
-			SAFE_RELEASE(gpuHandler_);
-			gpuHandler_ = handler;
-		}
-	}
+GPUHandler GPUObject::GetHandler()
+{
+	return gpuHandler_;
+}
+
+void GPUObject::ResetHandler(GPUHandler handler)
+{
+	SAFE_RELEASE(gpuHandler_);
+	gpuHandler_ = handler;
+}
+
 }

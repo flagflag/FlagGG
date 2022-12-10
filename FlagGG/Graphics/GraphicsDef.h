@@ -147,14 +147,14 @@ enum
 
 extern FlagGG_API VertexElement DEFAULT_VERTEX_ELEMENT[MAX_DEFAULT_VERTEX_ELEMENT];
 
-extern FlagGG_API const FlagGG::Container::StringHash SP_WORLD_MATRIX;
-extern FlagGG_API const FlagGG::Container::StringHash SP_VIEW_MATRIX;
-extern FlagGG_API const FlagGG::Container::StringHash SP_PROJVIEW_MATRIX;
-extern FlagGG_API const FlagGG::Container::StringHash SP_SKIN_MATRICES;
-extern FlagGG_API const FlagGG::Container::StringHash SP_DELTA_TIME;
-extern FlagGG_API const FlagGG::Container::StringHash SP_ELAPSED_TIME;
-extern FlagGG_API const FlagGG::Container::StringHash SP_CAMERA_POS;
-extern FlagGG_API const FlagGG::Container::StringHash SP_LIGHT_POS;
-extern FlagGG_API const FlagGG::Container::StringHash SP_LIGHT_DIR;
-extern FlagGG_API const FlagGG::Container::StringHash SP_LIGHT_VIEW_MATRIX;
-extern FlagGG_API const FlagGG::Container::StringHash SP_LIGHT_PROJVIEW_MATRIX;
+extern FlagGG_API const FlagGG::StringHash SP_WORLD_MATRIX;
+extern FlagGG_API const FlagGG::StringHash SP_VIEW_MATRIX;
+extern FlagGG_API const FlagGG::StringHash SP_PROJVIEW_MATRIX;
+extern FlagGG_API const FlagGG::StringHash SP_SKIN_MATRICES;
+extern FlagGG_API const FlagGG::StringHash SP_DELTA_TIME;
+extern FlagGG_API const FlagGG::StringHash SP_ELAPSED_TIME;
+extern FlagGG_API const FlagGG::StringHash SP_CAMERA_POS;
+extern FlagGG_API const FlagGG::StringHash SP_LIGHT_POS;
+extern FlagGG_API const FlagGG::StringHash SP_LIGHT_DIR;
+extern FlagGG_API const FlagGG::StringHash SP_LIGHT_VIEW_MATRIX;
+extern FlagGG_API const FlagGG::StringHash SP_LIGHT_PROJVIEW_MATRIX;

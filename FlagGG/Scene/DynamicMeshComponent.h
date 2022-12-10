@@ -10,53 +10,52 @@
 
 namespace FlagGG
 {
-	namespace Scene
-	{
-		class FlagGG_API DynamicMeshComponent : public Component
-		{
-			OBJECT_OVERRIDE(DynamicMeshComponent, Component);
-		public:
-			DynamicMeshComponent();
 
-			void SetSize(UInt32 width, UInt32 height);
+class FlagGG_API DynamicMeshComponent : public Component
+{
+	OBJECT_OVERRIDE(DynamicMeshComponent, Component);
+public:
+	DynamicMeshComponent();
 
-			void SetElementSize(Real elementSize);
+	void SetSize(UInt32 width, UInt32 height);
 
-			void SetMaterial(Graphics::Material* material);
+	void SetElementSize(Real elementSize);
 
-			bool IsDrawable() override;
+	void SetMaterial(Material* material);
 
-			Graphics::RenderContext* GetRenderContext() override;
+	bool IsDrawable() override;
 
-			void Update(Real timeStep) override;
+	RenderContext* GetRenderContext() override;
 
-			void SetViewMask(UInt32 viewMask) override;
+	void Update(Real timeStep) override;
 
-			virtual Real GetHeight(Int32 x, Int32 y, Int32 verticesNumX, Int32 verticesNumY);
+	void SetViewMask(UInt32 viewMask) override;
 
-			virtual Math::Vector3 GetNormal(Int32 x, Int32 y, Int32 verticesNumX, Int32 verticesNumY);
+	virtual Real GetHeight(Int32 x, Int32 y, Int32 verticesNumX, Int32 verticesNumY);
 
-			virtual Math::Vector2 GetUV(Int32 x, Int32 y, Int32 verticesNumX, Int32 verticesNumY);
+	virtual Vector3 GetNormal(Int32 x, Int32 y, Int32 verticesNumX, Int32 verticesNumY);
 
-			virtual const Container::PODVector<VertexElement>& GetVertexElement();
+	virtual Vector2 GetUV(Int32 x, Int32 y, Int32 verticesNumX, Int32 verticesNumY);
 
-		protected:
-			void CreateGeometry();
+	virtual const PODVector<VertexElement>& GetVertexElement();
 
-		private:
-			UInt32 width_;
-			UInt32 height_;
-			Real elementSize_;
+protected:
+	void CreateGeometry();
 
-			Container::SharedPtr<Graphics::Material> material_;
-			Container::SharedPtr<Graphics::Geometry> geometry_;
-			Container::SharedPtr<Graphics::VertexBuffer> vertexBuffer_;
-			Container::SharedPtr<Graphics::IndexBuffer> indexBuffer_;
+private:
+	UInt32 width_;
+	UInt32 height_;
+	Real elementSize_;
 
-			Graphics::RenderContext renderContext_;
+	SharedPtr<Material> material_;
+	SharedPtr<Geometry> geometry_;
+	SharedPtr<VertexBuffer> vertexBuffer_;
+	SharedPtr<IndexBuffer> indexBuffer_;
 
-			bool geometryDirty_;
-			bool hasGeometry_;
-		};
-	}
+	RenderContext renderContext_;
+
+	bool geometryDirty_;
+	bool hasGeometry_;
+};
+
 }

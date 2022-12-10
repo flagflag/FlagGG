@@ -15,32 +15,28 @@
 
 namespace FlagGG
 {
-	namespace AsyncFrame
-	{
-		namespace Thread
-		{
-			class FlagGG_API UniqueThread : public KernelObject::HandleObject, public KernelObject::Runtime, public Container::RefCounted
-			{
-			public:
-				UniqueThread(std::function < void(void) > thread_func);
 
-				~UniqueThread() override;
+class FlagGG_API UniqueThread : public HandleObject, public Runtime, public RefCounted
+{
+public:
+	UniqueThread(std::function < void(void) > thread_func);
 
-				void Stop() override;
+	~UniqueThread() override;
 
-				void WaitForStop() override;
+	void Stop() override;
 
-				void WaitForStop(UInt32 wait_time) override;
+	void WaitForStop() override;
+
+	void WaitForStop(UInt32 wait_time) override;
 
 #ifndef _WIN32
-				pthread_mutex_t mutex_;
-				pthread_cond_t cond_;
+	pthread_mutex_t mutex_;
+	pthread_cond_t cond_;
 #endif
-			};
+};
 
-			typedef Container::SharedPtr < UniqueThread > UniqueThreadPtr;
-		}
-	}
+typedef SharedPtr < UniqueThread > UniqueThreadPtr;
+
 }
 
 #endif

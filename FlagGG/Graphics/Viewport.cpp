@@ -3,90 +3,89 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		UInt32 Viewport::GetX() const
-		{
-			return rect_.left_;
-		}
 
-		UInt32 Viewport::GetY() const
-		{
-			return rect_.top_;
-		}
+UInt32 Viewport::GetX() const
+{
+	return rect_.left_;
+}
 
-		UInt32 Viewport::GetWidth() const
-		{
-			return rect_.Width();
-		}
+UInt32 Viewport::GetY() const
+{
+	return rect_.top_;
+}
 
-		UInt32 Viewport::GetHeight() const
-		{
-			return rect_.Height();
-		}
+UInt32 Viewport::GetWidth() const
+{
+	return rect_.Width();
+}
 
-		void Viewport::Resize(const Math::IntRect& rect)
-		{
-			rect_ = rect;
-		}
+UInt32 Viewport::GetHeight() const
+{
+	return rect_.Height();
+}
 
-		const Math::IntRect& Viewport::GetSize() const
-		{
-			return rect_;
-		}
+void Viewport::Resize(const IntRect& rect)
+{
+	rect_ = rect;
+}
 
-		RenderSurface* Viewport::GetRenderTarget() const
-		{
-			return renderTarget_;
-		}
+const IntRect& Viewport::GetSize() const
+{
+	return rect_;
+}
 
-		void Viewport::SetRenderTarget(RenderSurface* renderTarget)
-		{
-			renderTarget_ = renderTarget;
-		}
+RenderSurface* Viewport::GetRenderTarget() const
+{
+	return renderTarget_;
+}
 
-		RenderSurface* Viewport::GetDepthStencil() const
-		{
-			return depthStencil_;
-		}
+void Viewport::SetRenderTarget(RenderSurface* renderTarget)
+{
+	renderTarget_ = renderTarget;
+}
 
-		void Viewport::SetDepthStencil(RenderSurface* depthStencil)
-		{
-			depthStencil_ = depthStencil;
-		}
+RenderSurface* Viewport::GetDepthStencil() const
+{
+	return depthStencil_;
+}
 
-		void Viewport::SetViewport()
-		{
-			D3D11_VIEWPORT d3d11Viewport;
-			d3d11Viewport.TopLeftX = GetX();
-			d3d11Viewport.TopLeftY = GetY();
-			d3d11Viewport.Width = GetWidth();
-			d3d11Viewport.Height = GetHeight();
-			d3d11Viewport.MinDepth = 0.0f;
-			d3d11Viewport.MaxDepth = 1.0f;
+void Viewport::SetDepthStencil(RenderSurface* depthStencil)
+{
+	depthStencil_ = depthStencil;
+}
 
-			RenderEngine::Instance()->GetDeviceContext()->RSSetViewports(1, &d3d11Viewport);
-		}
+void Viewport::SetViewport()
+{
+	D3D11_VIEWPORT d3d11Viewport;
+	d3d11Viewport.TopLeftX = GetX();
+	d3d11Viewport.TopLeftY = GetY();
+	d3d11Viewport.Width = GetWidth();
+	d3d11Viewport.Height = GetHeight();
+	d3d11Viewport.MinDepth = 0.0f;
+	d3d11Viewport.MaxDepth = 1.0f;
 
-		Scene::Camera* Viewport::GetCamera() const
-		{
-			return camera_;
-		}
+	RenderEngine::Instance()->GetDeviceContext()->RSSetViewports(1, &d3d11Viewport);
+}
 
-		void Viewport::SetCamera(Scene::Camera* camera)
-		{
-			camera_ = camera;
-		}
+Camera* Viewport::GetCamera() const
+{
+	return camera_;
+}
 
-		Scene::Scene* Viewport::GetScene() const
-		{
-			return scene_;
-		}
+void Viewport::SetCamera(Camera* camera)
+{
+	camera_ = camera;
+}
 
-		void Viewport::SetScene(Scene::Scene* scene)
-		{
-			scene_ = scene;
-		}
-	}
+Scene* Viewport::GetScene() const
+{
+	return scene_;
+}
+
+void Viewport::SetScene(Scene* scene)
+{
+	scene_ = scene;
+}
+
 }
 

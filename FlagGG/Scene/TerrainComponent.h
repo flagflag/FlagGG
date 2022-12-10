@@ -10,41 +10,40 @@
 
 namespace FlagGG
 {
-	namespace Scene
-	{
-		class FlagGG_API TerrainComponent : public Component
-		{
-			OBJECT_OVERRIDE(TerrainComponent, Component);
-		public:
-			void SetPathSize(UInt32 pathSize);
 
-			void SetHeightMap(Resource::Image* image);
+class FlagGG_API TerrainComponent : public Component
+{
+	OBJECT_OVERRIDE(TerrainComponent, Component);
+public:
+	void SetPathSize(UInt32 pathSize);
 
-			void SetMaterial(Graphics::Material* material);
+	void SetHeightMap(Image* image);
 
-			bool IsDrawable() override;
+	void SetMaterial(Material* material);
 
-			Graphics::RenderContext* GetRenderContext() override;
+	bool IsDrawable() override;
 
-		protected:
-			void CreateGeometry();
+	RenderContext* GetRenderContext() override;
 
-		private:
-			UInt32 pathSize_;
+protected:
+	void CreateGeometry();
 
-			Math::IntVector2 patchesNum_;
-			Math::IntVector2 verticesNum_;
-			Math::Vector2 patchWorldSize_;
-			Math::Vector2 patchWorldOrigin_;
-			Math::Matrix3x4 indentity_;
+private:
+	UInt32 pathSize_;
 
-			Container::SharedPtr<Resource::Image> heightMap_;
-			Container::SharedPtr<Graphics::Material> material_;
-			Container::SharedPtr<Graphics::Geometry> geometry_;
-			Container::SharedPtr<Graphics::VertexBuffer> vertexBuffer_;
-			Container::SharedPtr<Graphics::IndexBuffer> indexBuffer_;
+	IntVector2 patchesNum_;
+	IntVector2 verticesNum_;
+	Vector2 patchWorldSize_;
+	Vector2 patchWorldOrigin_;
+	Matrix3x4 indentity_;
 
-			Graphics::RenderContext renderContext_;
-		};
-	}
+	SharedPtr<Image> heightMap_;
+	SharedPtr<Material> material_;
+	SharedPtr<Geometry> geometry_;
+	SharedPtr<VertexBuffer> vertexBuffer_;
+	SharedPtr<IndexBuffer> indexBuffer_;
+
+	RenderContext renderContext_;
+};
+
 }

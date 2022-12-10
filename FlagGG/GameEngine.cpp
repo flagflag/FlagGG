@@ -4,89 +4,89 @@
 #include "Graphics/Window.h"
 #endif
 
-using namespace FlagGG::Math;
-
 namespace FlagGG
 {
-	void GameEngine::SetFrameRate(Real rate)
-	{
-		frameRate_ = rate;
-	}
 
-	void GameEngine::CreateCoreObject()
-	{
-		context_ = new Context();
-		input_ = new Input(context_);
-		cache_ = new ResourceCache(context_);
-		cache_->AddResourceDir(Utility::SystemHelper::GetProgramDir() + "Res");
-		context_->RegisterVariable<Input>(input_.Get(), "input");
-		context_->RegisterVariable<ResourceCache>(cache_.Get(), "ResourceCache");
-	}
+void GameEngine::SetFrameRate(Real rate)
+{
+	frameRate_ = rate;
+}
 
-	void GameEngine::Start()
-	{
-		CreateCoreObject();
+void GameEngine::CreateCoreObject()
+{
+	context_ = new Context();
+	input_ = new Input(context_);
+	cache_ = new ResourceCache(context_);
+	cache_->AddResourceDir(GetProgramDir() + "Res");
+	context_->RegisterVariable<Input>(input_.Get(), "input");
+	context_->RegisterVariable<ResourceCache>(cache_.Get(), "ResourceCache");
+}
 
-#ifdef _WIN32
-		WindowDevice::Initialize();
-		RenderEngine::CreateInstance(context_)->Initialize();
-#endif
-
-		isRunning_ = true;
-		elapsedTime_ = 0.0f;
-		timer_.Reset();
-	}
-
-	bool GameEngine::IsRunning()
-	{
-		return isRunning_;
-	}
-
-	void GameEngine::RunFrame()
-	{
-		UInt32 deltaTime = timer_.GetMilliSeconds(true);
-		Real timeStep = (Real)deltaTime / 1000.0f;
-		elapsedTime_ += timeStep;
-
-		context_->SendEvent<Frame::FRAME_BEGIN_HANDLER>(Frame::FRAME_BEGIN, timeStep);
+void GameEngine::Start()
+{
+	CreateCoreObject();
 
 #ifdef _WIN32
-		WindowDevice::Update();
+	WindowDevice::Initialize();
+	RenderEngine::CreateInstance(context_)->Initialize();
 #endif
 
-		context_->SendEvent<Frame::LOGIC_UPDATE_HANDLER>(Frame::LOGIC_UPDATE, timeStep);
+	isRunning_ = true;
+	elapsedTime_ = 0.0f;
+	timer_.Reset();
+}
+
+bool GameEngine::IsRunning()
+{
+	return isRunning_;
+}
+
+void GameEngine::RunFrame()
+{
+	UInt32 deltaTime = timer_.GetMilliSeconds(true);
+	Real timeStep = (Real)deltaTime / 1000.0f;
+	elapsedTime_ += timeStep;
+
+	context_->SendEvent<Frame::FRAME_BEGIN_HANDLER>(Frame::FRAME_BEGIN, timeStep);
 
 #ifdef _WIN32
-		RenderEngine::Instance()->GetShaderParameters().SetValue(SP_DELTA_TIME, timeStep);
-		RenderEngine::Instance()->GetShaderParameters().SetValue(SP_ELAPSED_TIME, elapsedTime_);
-
-		for (const auto& viewport : viewports_)
-		{
-			RenderEngine::Instance()->Render(viewport);
-		}
-
-		WindowDevice::Render();
+	WindowDevice::Update();
 #endif
 
-		context_->SendEvent<Frame::FRAME_END_HANDLER>(Frame::FRAME_END, timeStep);
+	context_->SendEvent<Frame::LOGIC_UPDATE_HANDLER>(Frame::LOGIC_UPDATE, timeStep);
 
-		Real sleepTime = 1000.0f / frameRate_ - timer_.GetMilliSeconds(false);
-		if (sleepTime > 0.0f)
-		{
-			SystemHelper::Sleep(sleepTime);
-		}
+#ifdef _WIN32
+	RenderEngine::Instance()->GetShaderParameters().SetValue(SP_DELTA_TIME, timeStep);
+	RenderEngine::Instance()->GetShaderParameters().SetValue(SP_ELAPSED_TIME, elapsedTime_);
 
-		context_->SendEvent<Frame::FRAME_END_HANDLER>(Frame::FRAME_END, timeStep);
-	}
-
-	void GameEngine::Stop()
+	for (const auto& viewport : viewports_)
 	{
-		isRunning_ = false;
+		RenderEngine::Instance()->Render(viewport);
+	}
+
+	WindowDevice::Render();
+#endif
+
+	context_->SendEvent<Frame::FRAME_END_HANDLER>(Frame::FRAME_END, timeStep);
+
+	Real sleepTime = 1000.0f / frameRate_ - timer_.GetMilliSeconds(false);
+	if (sleepTime > 0.0f)
+	{
+		Sleep(sleepTime);
+	}
+
+	context_->SendEvent<Frame::FRAME_END_HANDLER>(Frame::FRAME_END, timeStep);
+}
+
+void GameEngine::Stop()
+{
+	isRunning_ = false;
 
 #ifdef _WIN32
-		WindowDevice::Uninitialize();
-		RenderEngine::Instance()->Uninitialize();
-		RenderEngine::DestroyInstance();
+	WindowDevice::Uninitialize();
+	RenderEngine::Instance()->Uninitialize();
+	RenderEngine::DestroyInstance();
 #endif
-	}
+}
+
 }

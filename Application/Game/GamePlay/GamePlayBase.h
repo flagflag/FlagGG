@@ -4,8 +4,7 @@
 #include <Lua/LuaVM.h>
 #include <Scene/Scene.h>
 
-using namespace FlagGG::Container;
-using namespace FlagGG::Lua;
+using namespace FlagGG;
 
 enum SyncMode
 {
@@ -16,7 +15,7 @@ enum SyncMode
 class GamePlayBase : public RefCounted
 {
 public:
-	virtual void Initialize(FlagGG::Scene::Scene* scene) = 0;
+	virtual void Initialize(Scene* scene) = 0;
 
 	virtual void Login(const LuaFunction& callback) = 0;
 

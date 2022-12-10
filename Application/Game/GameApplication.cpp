@@ -86,7 +86,7 @@ void GameApplication::Start()
 	if (commandParam_.Contains("CodePath"))
 		luaCodePath = commandParam_["CodePath"].GetString();
 	else
-		luaCodePath = Utility::SystemHelper::GetProgramDir() + "Res/Script/lua/";
+		luaCodePath = GetProgramDir() + "Res/Script/lua/";
 	luaVM_->SetLoaderPath(luaCodePath);
 #if 0
 	if (!luaVM_->Execute(luaCodePath + "main.lua"))
@@ -136,7 +136,7 @@ void GameApplication::Update(float timeStep)
 
 void GameApplication::Create2DBatch()
 {
-	Container::Vector<Container::SharedPtr<Batch>> batches;
+	Vector<SharedPtr<Batch>> batches;
 
 	SharedPtr<Batch2D> batch(new Batch2D());
 	batch->AddTriangle(
@@ -157,7 +157,7 @@ void GameApplication::Create2DBatch()
 void GameApplication::CreateScene()
 {
 #ifdef _WIN32
-	scene_ = new FlagGG::Scene::Scene(context_);
+	scene_ = new Scene(context_);
 	scene_->Start();
 
 	scene_->CreateComponent<Octree>();

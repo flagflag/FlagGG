@@ -5,26 +5,25 @@
 
 namespace FlagGG
 {
-	namespace Core
-	{
-		UInt32 AddEvent(const char* fileName, const char* eventName)
-		{
-			static Container::HashMap<Container::String, UInt32> eventMap;
-			static UInt32 eventCount = 0u;
-			static Container::String key;
 
-			key.Clear();
-			key.Append(Utility::SystemHelper::FormatPath(fileName).ToLower());
-			key.Append('#');
-			key.Append(eventName);
+UInt32 AddEvent(const char* fileName, const char* eventName)
+{
+	static HashMap<String, UInt32> eventMap;
+	static UInt32 eventCount = 0u;
+	static String key;
 
-			auto it = eventMap.Find(key);
-			if (it != eventMap.End())
-				return it->second_;
+	key.Clear();
+	key.Append(FormatPath(fileName).ToLower());
+	key.Append('#');
+	key.Append(eventName);
 
-			++eventCount;
-			eventMap.Insert(MakePair(key, eventCount));
-			return eventCount;
-		}
-	}
+	auto it = eventMap.Find(key);
+	if (it != eventMap.End())
+		return it->second_;
+
+	++eventCount;
+	eventMap.Insert(MakePair(key, eventCount));
+	return eventCount;
+}
+
 }

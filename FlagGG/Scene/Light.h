@@ -8,13 +8,12 @@
 
 namespace FlagGG
 {
-	namespace Scene
-	{
-		class FlagGG_API Light : public Camera
-		{
-			OBJECT_OVERRIDE(Light, Camera);
-		public:
-			Light();
-		};
-	}
+
+class FlagGG_API Light : public Camera
+{
+	OBJECT_OVERRIDE(Light, Camera);
+public:
+	Light();
+};
+
 }

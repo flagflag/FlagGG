@@ -9,23 +9,25 @@
 
 namespace LuaGameEngine
 {
-	class Engine;
-	class InternalEvent;
 
-	template < class T >
-	void SetEntry(lua_State* L, EngineObject* entry)
-	{
-		if (FlagGG::Lua::luaex_pushusertype(L, T::GetTypeNameStatic().CString(), entry))
-			entry->AddRef();
-	}
+class Engine;
+class InternalEvent;
 
-	template < class T >
-	T* GetEntry(lua_State* L, int idx)
-	{
-		return (T*)FlagGG::Lua::luaex_tousertype(L, idx, T::GetTypeNameStatic().CString());
-	}
+template < class T >
+void SetEntry(lua_State* L, EngineObject* entry)
+{
+	if (luaex_pushusertype(L, T::GetTypeNameStatic().CString(), entry))
+		entry->AddRef();
+}
 
-	LuaGameEngine_API Engine* GetEngine(lua_State* L);
+template < class T >
+T* GetEntry(lua_State* L, int idx)
+{
+	return (T*)luaex_tousertype(L, idx, T::GetTypeNameStatic().CString());
+}
 
-	LuaGameEngine_API InternalEvent* GetInternalEvent(lua_State* L);
+LuaGameEngine_API Engine* GetEngine(lua_State* L);
+
+LuaGameEngine_API InternalEvent* GetInternalEvent(lua_State* L);
+
 }

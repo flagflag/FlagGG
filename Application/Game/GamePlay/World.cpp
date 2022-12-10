@@ -9,12 +9,12 @@ World::World(Context* context) :
 	context_->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, World::HandleUpdate, this));
 }
 
-void World::SetScene(FlagGG::Scene::Scene* scene)
+void World::SetScene(Scene* scene)
 {
 	scene_ = scene;
 }
 
-FlagGG::Scene::Scene* World::GetScene() const
+Scene* World::GetScene() const
 {
 	return scene_;
 }

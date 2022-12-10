@@ -17,35 +17,34 @@ typedef std::string GPUHandler;
 
 namespace FlagGG
 {
-	namespace Graphics
+
+class FlagGG_API GPUObject
+{
+public:
+	GPUObject();
+
+	GPUObject(GPUHandler handler);
+
+	virtual ~GPUObject();
+
+	GPUHandler GetHandler();
+
+	virtual bool IsValid() = 0;
+
+	virtual void Initialize() = 0;
+
+	template < typename Type >
+	Type* GetObject()
 	{
-		class FlagGG_API GPUObject
-		{
-		public:
-			GPUObject();
-
-			GPUObject(GPUHandler handler);
-
-			virtual ~GPUObject();
-
-			GPUHandler GetHandler();
-
-			virtual bool IsValid() = 0;
-
-			virtual void Initialize() = 0;
-
-			template < typename Type >
-			Type* GetObject()
-			{
-				return static_cast<Type*>(GetHandler());
-			}
-
-			void ResetHandler(GPUHandler handler);
-
-		private:
-			GPUHandler gpuHandler_;
-		};
+		return static_cast<Type*>(GetHandler());
 	}
+
+	void ResetHandler(GPUHandler handler);
+
+private:
+	GPUHandler gpuHandler_;
+};
+
 }
 
 #endif

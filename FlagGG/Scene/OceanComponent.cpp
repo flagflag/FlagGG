@@ -2,8 +2,5 @@
 
 namespace FlagGG
 {
-	namespace Scene
-	{
 
-	}
 }

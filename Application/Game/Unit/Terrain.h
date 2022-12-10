@@ -3,8 +3,7 @@
 #include <Core/Context.h>
 #include <Scene/Node.h>
 
-using namespace FlagGG::Scene;
-using namespace FlagGG::Core;
+using namespace FlagGG;
 
 class Terrain : public Node
 {

@@ -13,66 +13,68 @@
 #include "IOFrame/Context/UDPContext.h"
 #include "IOFrame/ThreadPool/UDPThreadPool.h"
 
-namespace FlagGG
+namespace FlagGG { namespace IOFrame {
+
+namespace TCP
 {
-	namespace IOFrame
-	{
-		namespace TCP
-		{
-			IOThreadPoolPtr CreateThreadPool(Size threadCount)
-			{
+
+IOThreadPoolPtr CreateThreadPool(Size threadCount)
+{
 #ifndef FLAGGG_NO_BOOST
-				return IOThreadPoolPtr(new NetThreadPool(threadCount));
+	return IOThreadPoolPtr(new NetThreadPool(threadCount));
 #else
-				return IOThreadPoolPtr(new UDPThreadPool());
+	return IOThreadPoolPtr(new UDPThreadPool());
 #endif
-			}
-
-			Buffer::IOBufferPtr CreateBuffer()
-			{
-				return Buffer::IOBufferPtr(new Buffer::NetBuffer());
-			}
-
-			Acceptor::IOAcceptorPtr CreateAcceptor(Handler::EventHandler* handler, Size threadCount)
-			{
-#ifndef FLAGGG_NO_BOOST
-				return Acceptor::IOAcceptorPtr(new Acceptor::TCPAcceptor(Handler::EventHandlerPtr(handler), threadCount));
-#else
-				return Acceptor::IOAcceptorPtr(new Acceptor::UDPAcceptor(Handler::EventHandlerPtr(handler)));
-#endif
-			}
-
-			Connector::IOConnectorPtr CreateConnector(Handler::EventHandler* handler, IOThreadPoolPtr& threadPool)
-			{
-#ifndef FLAGGG_NO_BOOST
-				return Connector::IOConnectorPtr(new Connector::TCPConnector(Handler::EventHandlerPtr(handler), threadPool));
-#else
-				return Connector::IOConnectorPtr(new Connector::UDPConnector(Handler::EventHandlerPtr(handler), threadPool));
-#endif
-			}
-		}
-
-		namespace UDP
-		{
-			IOThreadPoolPtr CreateThreadPool()
-			{
-				return IOThreadPoolPtr(new UDPThreadPool());
-			}
-
-			Buffer::IOBufferPtr CreateBuffer()
-			{
-				return Buffer::IOBufferPtr(new Buffer::NetBuffer());
-			}
-
-			Acceptor::IOAcceptorPtr CreateAcceptor(Handler::EventHandler* handler)
-			{
-				return Acceptor::IOAcceptorPtr(new Acceptor::UDPAcceptor(Handler::EventHandlerPtr(handler)));
-			}
-
-			Connector::IOConnectorPtr CreateConnector(Handler::EventHandler* handler, IOThreadPoolPtr& threadPool)
-			{
-				return Connector::IOConnectorPtr(new Connector::UDPConnector(Handler::EventHandlerPtr(handler), threadPool));
-			}
-		}
-	}
 }
+
+Buffer::IOBufferPtr CreateBuffer()
+{
+	return Buffer::IOBufferPtr(new Buffer::NetBuffer());
+}
+
+Acceptor::IOAcceptorPtr CreateAcceptor(Handler::EventHandler* handler, Size threadCount)
+{
+#ifndef FLAGGG_NO_BOOST
+	return Acceptor::IOAcceptorPtr(new Acceptor::TCPAcceptor(Handler::EventHandlerPtr(handler), threadCount));
+#else
+	return Acceptor::IOAcceptorPtr(new Acceptor::UDPAcceptor(Handler::EventHandlerPtr(handler)));
+#endif
+}
+
+Connector::IOConnectorPtr CreateConnector(Handler::EventHandler* handler, IOThreadPoolPtr& threadPool)
+{
+#ifndef FLAGGG_NO_BOOST
+	return Connector::IOConnectorPtr(new Connector::TCPConnector(Handler::EventHandlerPtr(handler), threadPool));
+#else
+	return Connector::IOConnectorPtr(new Connector::UDPConnector(Handler::EventHandlerPtr(handler), threadPool));
+#endif
+}
+
+} // namespace TCP
+
+namespace UDP
+{
+
+IOThreadPoolPtr CreateThreadPool()
+{
+	return IOThreadPoolPtr(new UDPThreadPool());
+}
+
+Buffer::IOBufferPtr CreateBuffer()
+{
+	return Buffer::IOBufferPtr(new Buffer::NetBuffer());
+}
+
+Acceptor::IOAcceptorPtr CreateAcceptor(Handler::EventHandler* handler)
+{
+	return Acceptor::IOAcceptorPtr(new Acceptor::UDPAcceptor(Handler::EventHandlerPtr(handler)));
+}
+
+Connector::IOConnectorPtr CreateConnector(Handler::EventHandler* handler, IOThreadPoolPtr& threadPool)
+{
+	return Connector::IOConnectorPtr(new Connector::UDPConnector(Handler::EventHandlerPtr(handler), threadPool));
+}
+
+} // namespace UDP
+
+}}

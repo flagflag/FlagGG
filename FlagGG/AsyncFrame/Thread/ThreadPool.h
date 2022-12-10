@@ -8,32 +8,28 @@
 
 namespace FlagGG
 {
-	namespace AsyncFrame
-	{
-		namespace Thread
-		{
-			class FlagGG_API ThreadPool : public KernelObject::Runtime, public Container::RefCounted
-			{
-			public:
-				ThreadPool(UInt32 threadCount);
 
-				~ThreadPool() override = default;
+class FlagGG_API ThreadPool : public Runtime, public RefCounted
+{
+public:
+	ThreadPool(UInt32 threadCount);
 
-				void Add(ThreadTask task_func);
+	~ThreadPool() override = default;
 
-				void Start();
+	void Add(ThreadTask task_func);
 
-				void Stop() override;
+	void Start();
 
-				void WaitForStop() override;
+	void Stop() override;
 
-				void WaitForStop(UInt32 wait_time) override;
+	void WaitForStop() override;
 
-			private:
-				Container::Vector<SharedThreadPtr> threads_;
-			};
-		}
-	}
+	void WaitForStop(UInt32 wait_time) override;
+
+private:
+	Vector<SharedThreadPtr> threads_;
+};
+
 }
 
 #endif

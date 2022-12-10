@@ -4,7 +4,7 @@
 #include "AsyncFrame/LockFree/ThreadRef.h"
 #include "AsyncFrame/LockFree/Intrinsics.h"
 
-namespace FlagGG { namespace AsyncFrame { namespace LockFree {
+namespace FlagGG {
 
 /// @file
 /// Lock-free freelists for concurrent access.
@@ -176,6 +176,6 @@ class ThreadSafeFreeListNode : public ThreadSafeRefCount< T, DeletePolicy >
       }
 };
 
-}}}
+}
 
 #endif // _THREADSAFEFREELIST_H_

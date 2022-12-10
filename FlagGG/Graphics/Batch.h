@@ -9,52 +9,51 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		class Texture;
 
-		typedef Container::Vector<Real>VertexVector;
+class Texture;
 
-		enum BatchType
-		{
-			DRAW_LINE = 0,
-			DRAW_TRIANGLE = 1,
-		};
+typedef Vector<Real>VertexVector;
 
-		class FlagGG_API Batch : public Container::RefCounted
-		{
-		public:
-			Batch(BatchType type, Texture* texture, VertexVector* vertexs, Size vertexSize);
+enum BatchType
+{
+	DRAW_LINE = 0,
+	DRAW_TRIANGLE = 1,
+};
 
-			virtual ~Batch();
+class FlagGG_API Batch : public RefCounted
+{
+public:
+	Batch(BatchType type, Texture* texture, VertexVector* vertexs, Size vertexSize);
 
-			const char* GetVertexs() const;
+	virtual ~Batch();
 
-			unsigned GetVertexSize() const;
+	const char* GetVertexs() const;
 
-			unsigned GetVertexCount() const;
+	unsigned GetVertexSize() const;
 
-			Texture* GetTexture() const;
+	unsigned GetVertexCount() const;
 
-			void SetTexture(Texture* texture);
+	Texture* GetTexture() const;
 
-			BatchType GetType() const;
+	void SetTexture(Texture* texture);
 
-		protected:
-			VertexVector* vertexs_;
-			bool owner_;
+	BatchType GetType() const;
 
-			unsigned vertexSize_;
+protected:
+	VertexVector* vertexs_;
+	bool owner_;
+
+	unsigned vertexSize_;
 			
-			unsigned vertexStart_;
+	unsigned vertexStart_;
 
-			unsigned vertexEnd_;
+	unsigned vertexEnd_;
 
-			Container::SharedPtr<Texture> texture_;
+	SharedPtr<Texture> texture_;
 
-			BatchType type_;
-		};
-	}
+	BatchType type_;
+};
+
 }
 
 #endif

@@ -4,43 +4,42 @@
 
 namespace FlagGG
 {
-	namespace Container
-	{
-		class FlagGG_API StringHash
-		{
-		public:
-			StringHash() NOEXCEPT;
 
-			StringHash(const char* str) NOEXCEPT;
+class FlagGG_API StringHash
+{
+public:
+	StringHash() NOEXCEPT;
 
-			StringHash(const String& str) NOEXCEPT;
+	StringHash(const char* str) NOEXCEPT;
 
-			StringHash(UInt32 value) NOEXCEPT;
+	StringHash(const String& str) NOEXCEPT;
 
-			StringHash(const StringHash& value) NOEXCEPT;
+	StringHash(UInt32 value) NOEXCEPT;
 
-			StringHash& operator=(const StringHash& rhs) NOEXCEPT = default;
+	StringHash(const StringHash& value) NOEXCEPT;
 
-			StringHash operator+(const StringHash& rhs) const;
+	StringHash& operator=(const StringHash& rhs) NOEXCEPT = default;
 
-			StringHash& operator+=(const StringHash& rhs);
+	StringHash operator+(const StringHash& rhs) const;
 
-			bool operator==(const StringHash& rhs) const;
+	StringHash& operator+=(const StringHash& rhs);
 
-			bool operator!=(const StringHash& rhs) const;
+	bool operator==(const StringHash& rhs) const;
 
-			bool operator<(const StringHash& rhs) const;
+	bool operator!=(const StringHash& rhs) const;
 
-			bool operator>(const StringHash& rhs) const;
+	bool operator<(const StringHash& rhs) const;
 
-			explicit operator bool() const;
+	bool operator>(const StringHash& rhs) const;
 
-			UInt32 ToHash() const;
+	explicit operator bool() const;
 
-			static const StringHash ZERO;
+	UInt32 ToHash() const;
 
-		private:
-			UInt32 value_;
-		};
-	}
+	static const StringHash ZERO;
+
+private:
+	UInt32 value_;
+};
+
 }

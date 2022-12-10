@@ -7,9 +7,8 @@
 
 namespace FlagGG
 {
-	namespace Config
-	{
-		FlagGG_API bool ParseStringVector(const LJSONValue& value, Container::Vector<Container::String>& result);
-	}
+
+FlagGG_API bool ParseStringVector(const LJSONValue& value, Vector<String>& result);
+
 }
 

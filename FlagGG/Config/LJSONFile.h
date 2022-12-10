@@ -6,26 +6,25 @@
 
 namespace FlagGG
 {
-	namespace Config
-	{
-		// Like JSON File
-		class FlagGG_API LJSONFile : public Resource::Resource
-		{
-		public:
-			LJSONFile(Core::Context* context);
 
-			~LJSONFile() override = default;
+// Like JSON File
+class FlagGG_API LJSONFile : public Resource
+{
+public:
+	LJSONFile(Context* context);
 
-			const LJSONValue& GetRoot() const;
+	~LJSONFile() override = default;
 
-		protected:
-			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
+	const LJSONValue& GetRoot() const;
 
-			bool EndLoad() override;
+protected:
+	bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
-		private:
-			LJSONValue root_;
-		};
-	}
+	bool EndLoad() override;
+
+private:
+	LJSONValue root_;
+};
+
 }
 

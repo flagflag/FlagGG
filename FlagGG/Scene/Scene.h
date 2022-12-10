@@ -6,39 +6,38 @@
 
 namespace FlagGG
 {
-	namespace Scene
-	{
-		class Light;
 
-		class FlagGG_API Scene : public Node
-		{
-		public:
-			Scene(Core::Context* context);
+class Light;
 
-			~Scene() override;
+class FlagGG_API Scene : public Node
+{
+public:
+	Scene(Context* context);
 
-			void Start();
+	~Scene() override;
 
-			void Stop();
+	void Start();
 
-			void Update(const NodeUpdateContext& updateContext) override;
+	void Stop();
 
-			void Update(Node* node, const NodeUpdateContext& updateContext);
+	void Update(const NodeUpdateContext& updateContext) override;
 
-			void Render(Container::PODVector<Graphics::RenderContext*>& renderContexts) override;
+	void Update(Node* node, const NodeUpdateContext& updateContext);
 
-			void HandleUpdate(Real timeStep);
+	void Render(PODVector<RenderContext*>& renderContexts) override;
 
-			void GetLights(Container::PODVector<Light*>& lights);
+	void HandleUpdate(Real timeStep);
 
-		protected:
-			void Render(Node* node, Container::PODVector<Graphics::RenderContext*>& renderContexts);
+	void GetLights(PODVector<Light*>& lights);
 
-			void GetLights(Node* node, Container::PODVector<Light*>& lights);
+protected:
+	void Render(Node* node, PODVector<RenderContext*>& renderContexts);
 
-			Core::Context* context_;
+	void GetLights(Node* node, PODVector<Light*>& lights);
 
-			bool isRunning_;
-		};
-	}
+	Context* context_;
+
+	bool isRunning_;
+};
+
 }

@@ -16,105 +16,107 @@
 
 namespace LuaGameEngine
 {
-	enum Status
-	{
-		Idle		= 1 << 0,
-		Relax		= 1 << 1,
-		Walk		= 1 << 2,
-		Running		= 1 << 3,
-		Jump		= 1 << 4,
-		Attack		= 1 << 5,
-		CastSpell	= 1 << 6,
-	};
 
-	struct LuaGameEngine_API Transform
-	{
-		FlagGG::Math::Vector3 position_;
-		FlagGG::Math::Quaternion rotation_;
-		FlagGG::Math::Vector3 scale_;
-	};
+enum Status
+{
+	Idle		= 1 << 0,
+	Relax		= 1 << 1,
+	Walk		= 1 << 2,
+	Running		= 1 << 3,
+	Jump		= 1 << 4,
+	Attack		= 1 << 5,
+	CastSpell	= 1 << 6,
+};
 
-	struct LuaGameEngine_API Attribute
-	{
-		float moveSpeed_;
-		float attackSpeed_;
-	};
+struct LuaGameEngine_API Transform
+{
+	Vector3 position_;
+	Quaternion rotation_;
+	Vector3 scale_;
+};
 
-	class LuaGameEngine_API Unit : public EngineObject
-	{
-		OBJECT_OVERRIDE(Unit, EngineObject);
-	public:
-		Unit();
+struct LuaGameEngine_API Attribute
+{
+	float moveSpeed_;
+	float attackSpeed_;
+};
 
-		~Unit() override;
+class LuaGameEngine_API Unit : public EngineObject
+{
+	OBJECT_OVERRIDE(Unit, EngineObject);
+public:
+	Unit();
 
-		void Update();
+	~Unit() override;
 
-		Int64 GetId() const { return unitId_; }
+	void Update();
 
-		const FlagGG::Container::String& GetName() const { return name_; }
+	Int64 GetId() const { return unitId_; }
 
-		const FlagGG::Math::Vector3& GetPosition() const { return position_; }
+	const String& GetName() const { return name_; }
 
-		const FlagGG::Math::Quaternion& GetRotation() const { return rotation_; }
+	const Vector3& GetPosition() const { return position_; }
 
-		const FlagGG::Math::Vector3& GetScale() const { return scale_; }
+	const Quaternion& GetRotation() const { return rotation_; }
 
-		Int32 GetStatus() const { return status_; }
+	const Vector3& GetScale() const { return scale_; }
 
-		const Attribute& GetAttribute() const { return attribute_; }
+	Int32 GetStatus() const { return status_; }
 
-		Movement* GetCurrentMovement() const { return *movements_.Begin(); }
+	const Attribute& GetAttribute() const { return attribute_; }
 
-		Spell* GetCurrentSpell() const { return spell_; }
+	Movement* GetCurrentMovement() const { return *movements_.Begin(); }
 
-		const UInt32 GetNumBuff() const { return buffs_.Size(); }
+	Spell* GetCurrentSpell() const { return spell_; }
 
-		Buff* GetBuff(UInt32 index) const { return buffs_[index]; }
+	const UInt32 GetNumBuff() const { return buffs_.Size(); }
 
-		void SetName(const FlagGG::Container::String& name);
+	Buff* GetBuff(UInt32 index) const { return buffs_[index]; }
 
-		void SetPosition(const FlagGG::Math::Vector3& position);
+	void SetName(const String& name);
 
-		void SetRotation(const FlagGG::Math::Quaternion& rotation);
+	void SetPosition(const Vector3& position);
 
-		void SetScale(const FlagGG::Math::Vector3& scale);
+	void SetRotation(const Quaternion& rotation);
 
-		void SetStatus(Int32 status);
+	void SetScale(const Vector3& scale);
 
-		void AddMovement(Movement* movement);
+	void SetStatus(Int32 status);
 
-		void RemoveMovement(Movement* movement);
+	void AddMovement(Movement* movement);
 
-		static int Create(lua_State* L);
-		static int Destroy(lua_State* L);
-		static int GetName(lua_State* L);
-		static int GetPosition(lua_State* L);
-		static int GetRotation(lua_State* L);
-		static int GetScale(lua_State* L);
-		static int SetName(lua_State* L);
-		static int SetPosition(lua_State* L);
-		static int SetRotation(lua_State* L);
-		static int SetScale(lua_State* L);
-		static int AddMovement(lua_State* L);
-		static int RemoveMovement(lua_State* L);
+	void RemoveMovement(Movement* movement);
 
-	private:
-		static Int64 unitIdCount_;
+	static int Create(lua_State* L);
+	static int Destroy(lua_State* L);
+	static int GetName(lua_State* L);
+	static int GetPosition(lua_State* L);
+	static int GetRotation(lua_State* L);
+	static int GetScale(lua_State* L);
+	static int SetName(lua_State* L);
+	static int SetPosition(lua_State* L);
+	static int SetRotation(lua_State* L);
+	static int SetScale(lua_State* L);
+	static int AddMovement(lua_State* L);
+	static int RemoveMovement(lua_State* L);
 
-		Int64 unitId_;
-		FlagGG::Container::String name_;
+private:
+	static Int64 unitIdCount_;
 
-		FlagGG::Math::Vector3 position_;
-		FlagGG::Math::Quaternion rotation_;
-		FlagGG::Math::Vector3 scale_;
+	Int64 unitId_;
+	String name_;
 
-		Int32 status_;
-		Attribute attribute_;
+	Vector3 position_;
+	Quaternion rotation_;
+	Vector3 scale_;
 
-		FlagGG::Container::List<Movement*> movements_;
-		Spell* spell_;
-		FlagGG::Container::PODVector<Buff*> buffs_;
-	};
+	Int32 status_;
+	Attribute attribute_;
+
+	List<Movement*> movements_;
+	Spell* spell_;
+	PODVector<Buff*> buffs_;
+};
+
 }
 

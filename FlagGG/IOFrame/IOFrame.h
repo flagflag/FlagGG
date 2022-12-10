@@ -1,5 +1,4 @@
-#ifndef __IOFRAME__
-#define __IOFRAME__
+#pragma once
 
 #include "IOFrame/Buffer/IOBuffer.h"
 #include "IOFrame/Acceptor/IOAcceptor.h"
@@ -10,32 +9,32 @@
 #include "IOFrame/Handler/EventHandler.h"
 #include "IOFrame/ThreadPool/IOThreadPool.h"
 
-namespace FlagGG
+namespace FlagGG { namespace IOFrame {
+
+namespace TCP
 {
-	namespace IOFrame
-	{
-		namespace TCP
-		{
-			IOThreadPoolPtr FlagGG_API CreateThreadPool(Size threadCount);
 
-			Buffer::IOBufferPtr FlagGG_API CreateBuffer();
+IOThreadPoolPtr FlagGG_API CreateThreadPool(Size threadCount);
 
-			Acceptor::IOAcceptorPtr FlagGG_API CreateAcceptor(Handler::EventHandler* handler, Size threadCount);
+Buffer::IOBufferPtr FlagGG_API CreateBuffer();
 
-			Connector::IOConnectorPtr FlagGG_API CreateConnector(Handler::EventHandler* handler, IOThreadPoolPtr& threadPool);
-		}
+Acceptor::IOAcceptorPtr FlagGG_API CreateAcceptor(Handler::EventHandler* handler, Size threadCount);
 
-		namespace UDP
-		{
-			IOThreadPoolPtr FlagGG_API CreateThreadPool();
+Connector::IOConnectorPtr FlagGG_API CreateConnector(Handler::EventHandler* handler, IOThreadPoolPtr& threadPool);
 
-			Buffer::IOBufferPtr FlagGG_API CreateBuffer();
-
-			Acceptor::IOAcceptorPtr FlagGG_API CreateAcceptor(Handler::EventHandler* handler);
-
-			Connector::IOConnectorPtr FlagGG_API CreateConnector(Handler::EventHandler* handler, IOThreadPoolPtr& threadPool);
-		}
-	}
 }
 
-#endif
+namespace UDP
+{
+
+IOThreadPoolPtr FlagGG_API CreateThreadPool();
+
+Buffer::IOBufferPtr FlagGG_API CreateBuffer();
+
+Acceptor::IOAcceptorPtr FlagGG_API CreateAcceptor(Handler::EventHandler* handler);
+
+Connector::IOConnectorPtr FlagGG_API CreateConnector(Handler::EventHandler* handler, IOThreadPoolPtr& threadPool);
+
+}
+
+}}

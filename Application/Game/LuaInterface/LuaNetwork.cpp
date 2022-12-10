@@ -101,7 +101,7 @@ void LuaNetwork::OnClosed(NetworkType type, IOFrame::Context::IOContextPtr conte
 	}
 }
 
-void LuaNetwork::OnError(NetworkType type, IOFrame::Context::IOContextPtr context, int errorCode, Container::String errorMsg)
+void LuaNetwork::OnError(NetworkType type, IOFrame::Context::IOContextPtr context, int errorCode, String errorMsg)
 {
 	if (initialized[type])
 	{

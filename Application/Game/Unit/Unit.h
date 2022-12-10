@@ -6,11 +6,7 @@
 #include <Container/Str.h>
 #include <Container/List.h>
 
-using namespace FlagGG::Core;
-using namespace FlagGG::Math;
-using namespace FlagGG::Scene;
-using namespace FlagGG::Graphics;
-using namespace FlagGG::Container;
+using namespace FlagGG;
 
 class Unit : public Node
 {

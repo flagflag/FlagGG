@@ -12,67 +12,66 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		class FlagGG_API Model : public Resource::Resource
-		{
-		public:
-			Model(Core::Context* context);
 
-			void SetVertexBuffers(const Container::Vector<Container::SharedPtr<VertexBuffer>>& vertexBuffers);
+class FlagGG_API Model : public Resource
+{
+public:
+	Model(Context* context);
 
-			void SetIndexBuffers(const Container::Vector<Container::SharedPtr<IndexBuffer>>& indexBuffers);
+	void SetVertexBuffers(const Vector<SharedPtr<VertexBuffer>>& vertexBuffers);
 
-			void SetBoneMappings(const Container::Vector<Container::PODVector<UInt32>>& boneMappings);
+	void SetIndexBuffers(const Vector<SharedPtr<IndexBuffer>>& indexBuffers);
 
-			void SetNumGeometries(UInt32 numGeometries);
+	void SetBoneMappings(const Vector<PODVector<UInt32>>& boneMappings);
 
-			void SetNumGeometryLodLevels(UInt32 index, UInt32 num);
+	void SetNumGeometries(UInt32 numGeometries);
 
-			bool SetGeometry(UInt32 index, UInt32 lodLevel, Geometry* geometry);
+	void SetNumGeometryLodLevels(UInt32 index, UInt32 num);
 
-			void SetBoundingBox(Math::BoundingBox& box);
+	bool SetGeometry(UInt32 index, UInt32 lodLevel, Geometry* geometry);
 
-			const Container::Vector<Container::SharedPtr<VertexBuffer>>& GetVertexBuffers() const;
+	void SetBoundingBox(BoundingBox& box);
 
-			const Container::Vector<Container::SharedPtr<IndexBuffer>>& GetIndexBuffers() const;
+	const Vector<SharedPtr<VertexBuffer>>& GetVertexBuffers() const;
 
-			const Container::Vector<Container::PODVector<UInt32>>& GetBoneMappings() const;
+	const Vector<SharedPtr<IndexBuffer>>& GetIndexBuffers() const;
 
-			const Scene::Skeleton& GetSkeleton() const;
+	const Vector<PODVector<UInt32>>& GetBoneMappings() const;
 
-			const Container::Vector <Container::Vector<Container::SharedPtr<Geometry>>>& GetGeometries() const;
+	const Skeleton& GetSkeleton() const;
 
-			Geometry* GetGeometry(UInt32 index, UInt32 lodLevel) const;
+	const Vector <Vector<SharedPtr<Geometry>>>& GetGeometries() const;
 
-			UInt32 GetNumGeometries() const;
+	Geometry* GetGeometry(UInt32 index, UInt32 lodLevel) const;
 
-			UInt32 GetNumGeometryLodLevels(UInt32 index) const;
+	UInt32 GetNumGeometries() const;
 
-			const Math::BoundingBox& GetBoundingBox() const;
+	UInt32 GetNumGeometryLodLevels(UInt32 index) const;
 
-		protected:
-			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
+	const BoundingBox& GetBoundingBox() const;
 
-			bool EndLoad() override;
+protected:
+	bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
-			bool BeginSave(IOFrame::Buffer::IOBuffer* stream) override;
+	bool EndLoad() override;
 
-			bool EndSave() override;
+	bool BeginSave(IOFrame::Buffer::IOBuffer* stream) override;
 
-		private:
-			Container::Vector<Container::SharedPtr<VertexBuffer>> vertexBuffers_;
+	bool EndSave() override;
 
-			Container::Vector<Container::SharedPtr<IndexBuffer>> indexBuffers_;
+private:
+	Vector<SharedPtr<VertexBuffer>> vertexBuffers_;
 
-			// 每个数组表示不同lod下的图形
-			Container::Vector <Container::Vector<Container::SharedPtr<Geometry>>> geometries_;
+	Vector<SharedPtr<IndexBuffer>> indexBuffers_;
 
-			Container::Vector<Container::PODVector<UInt32>> boneMappings_;
+	// 每个数组表示不同lod下的图形
+	Vector <Vector<SharedPtr<Geometry>>> geometries_;
 
-			Scene::Skeleton skeleton_;
+	Vector<PODVector<UInt32>> boneMappings_;
 
-			Math::BoundingBox boundingBox_;
-		};
-	}
+	Skeleton skeleton_;
+
+	BoundingBox boundingBox_;
+};
+
 }

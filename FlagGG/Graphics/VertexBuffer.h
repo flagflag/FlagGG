@@ -5,33 +5,32 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		class FlagGG_API VertexBuffer : public GPUBuffer
-		{
-		public:
-			UInt32 GetBindFlags() override;
 
-			bool SetSize(UInt32 vertexCount, const Container::PODVector<VertexElement>& vertexElements);
+class FlagGG_API VertexBuffer : public GPUBuffer
+{
+public:
+	UInt32 GetBindFlags() override;
 
-			UInt32 GetVertexSize() const;
+	bool SetSize(UInt32 vertexCount, const PODVector<VertexElement>& vertexElements);
 
-			UInt32 GetVertexCount() const;
+	UInt32 GetVertexSize() const;
 
-			const Container::PODVector<VertexElement>& GetElements() const;
+	UInt32 GetVertexCount() const;
 
-			static Container::PODVector<VertexElement> GetElements(UInt32 elementMask);
+	const PODVector<VertexElement>& GetElements() const;
 
-			static UInt32 GetVertexSize(const Container::PODVector<VertexElement>& elements);
+	static PODVector<VertexElement> GetElements(UInt32 elementMask);
 
-		protected:
-			void UpdateOffset();
+	static UInt32 GetVertexSize(const PODVector<VertexElement>& elements);
 
-		private:
-			Container::PODVector<VertexElement> vertexElements_;
+protected:
+	void UpdateOffset();
 
-			UInt32 vertexSize_{ 0 };
-			UInt32 vertexCount_{ 0 };
-		};
-	}
+private:
+	PODVector<VertexElement> vertexElements_;
+
+	UInt32 vertexSize_{ 0 };
+	UInt32 vertexCount_{ 0 };
+};
+
 }

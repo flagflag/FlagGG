@@ -3,7 +3,7 @@
 
 #include "AsyncFrame/LockFree/ThreadFreeList.h"
 
-namespace FlagGG { namespace AsyncFrame { namespace LockFree {
+namespace FlagGG {
 
 /// Fast, lock-free double-ended queue for concurrent access.
 ///
@@ -451,6 +451,6 @@ bool ThreadSafeDeque< T >::TryPopBack( ValueType& outValue )
    return true;
 }
 
-}}}
+}
 
 #endif // _THREADSAFEDEQUE_H_

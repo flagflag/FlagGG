@@ -5,10 +5,12 @@
 
 namespace LuaGameEngine
 {
-	class LuaGameEngine_API Spell : public EngineObject
-	{
-		OBJECT_OVERRIDE(Spell, EngineObject);
-	public:
 
-	};
+class LuaGameEngine_API Spell : public EngineObject
+{
+	OBJECT_OVERRIDE(Spell, EngineObject);
+public:
+
+};
+
 }

@@ -1,28 +1,20 @@
-﻿#ifndef __IO_HANDLER__
-#define __IO_HANDLER__
+﻿#pragma once
 
 #include "IOFrame/Handler/EventHandler.h"
 #include "Export.h"
 
-namespace FlagGG
+namespace FlagGG { namespace IOFrame { namespace Handler {
+
+class FlagGG_API IOHandler
 {
-	namespace IOFrame
-	{
-		namespace Handler
-		{
-			class FlagGG_API IOHandler
-			{
-			public:
-				virtual ~IOHandler() = default;
+public:
+	virtual ~IOHandler() = default;
 
-				virtual void OnRegisterd(Handler::EventHandlerPtr handler) = 0;
+	virtual void OnRegisterd(Handler::EventHandlerPtr handler) = 0;
 
-				virtual void OnOpend() = 0;
+	virtual void OnOpend() = 0;
 
-				virtual void OnClosed() = 0;
-			};
-		}
-	}
-}
+	virtual void OnClosed() = 0;
+};
 
-#endif
+}}}

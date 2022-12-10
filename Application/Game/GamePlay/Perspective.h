@@ -7,9 +7,7 @@
 #include <Scene/Camera.h>
 #include <Scene/Node.h>
 
-using namespace FlagGG::Graphics;
-using namespace FlagGG::Scene;
-using namespace FlagGG::Container;
+using namespace FlagGG;
 
 class Perspective : public RefCounted
 {

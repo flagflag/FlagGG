@@ -4,7 +4,7 @@
 #include <LuaGameEngine/Init.h>
 #include <Log.h>
 
-GameLogicServer::GameLogicServer(const FlagGG::Config::LJSONValue& commandParam) :
+GameLogicServer::GameLogicServer(const LJSONValue& commandParam) :
 	commandParam_(commandParam)
 {}
 
@@ -40,7 +40,7 @@ void GameLogicServer::Update(float timeStep)
 
 void GameLogicServer::CreateLuaVM()
 {
-	luaVM_ = new FlagGG::Lua::LuaVM();
+	luaVM_ = new LuaVM();
 	luaVM_->Open();
 	if (!luaVM_->IsOpen())
 	{
@@ -66,11 +66,11 @@ void GameLogicServer::CreateNetwork()
 	tcpNetwork_ = new TCPNetwork(context_);
 	udpNetwork_ = new UDPNetwork(context_);
 
-	tcpAcceptor_ = FlagGG::IOFrame::TCP::CreateAcceptor(tcpNetwork_, 1);
+	tcpAcceptor_ = IOFrame::TCP::CreateAcceptor(tcpNetwork_, 1);
 	tcpAcceptor_->Bind("127.0.0.1", 5000);
 	tcpAcceptor_->Start();
 
-	udpAcceptor_ = FlagGG::IOFrame::UDP::CreateAcceptor(udpNetwork_);
+	udpAcceptor_ = IOFrame::UDP::CreateAcceptor(udpNetwork_);
 	udpAcceptor_->Bind("127.0.0.1", 5000);
 	udpAcceptor_->Start();
 }

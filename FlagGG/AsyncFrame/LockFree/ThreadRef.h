@@ -5,7 +5,7 @@
 #include "AsyncFrame/LockFree/TypeTraits.h"
 #include "Core/BaseMacro.h"
 
-namespace FlagGG { namespace AsyncFrame { namespace LockFree {
+namespace FlagGG {
 
 //--------------------------------------------------------------------------
 //    ThreadSafeRefCount.
@@ -346,6 +346,6 @@ inline T& Deref( const ThreadSafeRef< T >& ref )
    return *ref;
 }
 
-}}}
+}
 
 #endif // _THREADSAFEREFCOUNT_H_

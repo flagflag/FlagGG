@@ -2,85 +2,83 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		void Geometry::SetPrimitiveType(PrimitiveType type)
-		{
-			primitiveType_ = type;
-		}
 
-		void Geometry::SetVertexBuffer(UInt32 index, VertexBuffer* vertexBuffer)
-		{
-			if (index >= vertexBuffers_.Size())
-				vertexBuffers_.Resize(index + 1);
+void Geometry::SetPrimitiveType(PrimitiveType type)
+{
+	primitiveType_ = type;
+}
 
-			vertexBuffers_[index] = vertexBuffer;
-		}
+void Geometry::SetVertexBuffer(UInt32 index, VertexBuffer* vertexBuffer)
+{
+	if (index >= vertexBuffers_.Size())
+		vertexBuffers_.Resize(index + 1);
 
-		void Geometry::SetIndexBuffer(IndexBuffer* indexBuffer)
-		{
-			indexBuffer_ = indexBuffer;
-		}
+	vertexBuffers_[index] = vertexBuffer;
+}
 
-		void Geometry::SetDataRange(UInt32 indexStart, UInt32 indexCount)
-		{
-			indexStart_ = indexStart;
-			indexCount_ = indexCount;
-			vertexStart_ = 0;
-			vertexCount_ = 0;
-		}
+void Geometry::SetIndexBuffer(IndexBuffer* indexBuffer)
+{
+	indexBuffer_ = indexBuffer;
+}
 
-		void Geometry::SetLodDistance(float distance)
-		{
-			lodDistance_ = distance;
-		}
+void Geometry::SetDataRange(UInt32 indexStart, UInt32 indexCount)
+{
+	indexStart_ = indexStart;
+	indexCount_ = indexCount;
+	vertexStart_ = 0;
+	vertexCount_ = 0;
+}
 
-		const Container::Vector<Container::SharedPtr<VertexBuffer>>& Geometry::GetVertexBuffers() const
-		{
-			return vertexBuffers_;
-		}
+void Geometry::SetLodDistance(float distance)
+{
+	lodDistance_ = distance;
+}
 
-		VertexBuffer* Geometry::GetVertexBuffer(UInt32 index) const
-		{
-			if (index >= vertexBuffers_.Size())
-				return nullptr;
-			return vertexBuffers_[index];
-		}
+const Vector<SharedPtr<VertexBuffer>>& Geometry::GetVertexBuffers() const
+{
+	return vertexBuffers_;
+}
 
-		IndexBuffer* Geometry::GetIndexBuffer() const
-		{
-			return indexBuffer_;
-		}
+VertexBuffer* Geometry::GetVertexBuffer(UInt32 index) const
+{
+	if (index >= vertexBuffers_.Size())
+		return nullptr;
+	return vertexBuffers_[index];
+}
 
-		float Geometry::GetLodDistance() const
-		{
-			return lodDistance_;
-		}
+IndexBuffer* Geometry::GetIndexBuffer() const
+{
+	return indexBuffer_;
+}
 
-		PrimitiveType Geometry::GetPrimitiveType() const
-		{
-			return primitiveType_;
-		}
+float Geometry::GetLodDistance() const
+{
+	return lodDistance_;
+}
 
-		UInt32 Geometry::GetIndexStart() const
-		{
-			return indexStart_;
-		}
+PrimitiveType Geometry::GetPrimitiveType() const
+{
+	return primitiveType_;
+}
 
-		UInt32 Geometry::GetIndexCount() const
-		{
-			return indexCount_;
-		}
+UInt32 Geometry::GetIndexStart() const
+{
+	return indexStart_;
+}
 
-		UInt32 Geometry::GetVertexStart() const
-		{
-			return vertexStart_;
-		}
+UInt32 Geometry::GetIndexCount() const
+{
+	return indexCount_;
+}
 
-		UInt32 Geometry::GetVertexCount() const
-		{
-			return vertexCount_;
-		}
+UInt32 Geometry::GetVertexStart() const
+{
+	return vertexStart_;
+}
 
-	}
+UInt32 Geometry::GetVertexCount() const
+{
+	return vertexCount_;
+}
+
 }

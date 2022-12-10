@@ -6,16 +6,18 @@
 
 namespace LuaGameEngine
 {
-	class ControlerImpl : public Controler
-	{
-	public:
-		ControlerImpl(lua_State* L);
 
-		void StartDirectionMove(Int64 userId, const FlagGG::Math::Vector3& direction) override;
+class ControlerImpl : public Controler
+{
+public:
+	ControlerImpl(lua_State* L);
 
-		void StopDirectionMove(Int64 userId) override;
+	void StartDirectionMove(Int64 userId, const Vector3& direction) override;
 
-	private:
-		lua_State* L_;
-	};
+	void StopDirectionMove(Int64 userId) override;
+
+private:
+	lua_State* L_;
+};
+
 }

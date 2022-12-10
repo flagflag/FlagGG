@@ -1,32 +1,24 @@
 ﻿#ifndef FLAGGG_NO_BOOST
-#ifndef __TCP_CONTEXT__
-#define __TCP_CONTEXT__
+#pragma once
 
 #include "IOContext.h"
 
-namespace FlagGG
+namespace FlagGG { namespace IOFrame { namespace Context {
+
+class TCPContext : public IOContext
 {
-	namespace IOFrame
-	{
-		namespace Context
-		{
-			class TCPContext : public IOContext
-			{
-			public:
-				TCPContext(Channel::IOChannelPtr channel);
+public:
+	TCPContext(Channel::IOChannelPtr channel);
 
-				~TCPContext() override = default;
+	~TCPContext() override = default;
 
-				Channel::IOChannelPtr GetChannel() override;
+	Channel::IOChannelPtr GetChannel() override;
 
-			private:
-				Channel::IOChannelPtr channel_;
-			};
+private:
+	Channel::IOChannelPtr channel_;
+};
 
-			typedef Container::SharedPtr < TCPContext > TCPContextPtr;
-		}
-	}
-}
-
-#endif
+typedef SharedPtr<TCPContext> TCPContextPtr;
+	
+}}}
 #endif

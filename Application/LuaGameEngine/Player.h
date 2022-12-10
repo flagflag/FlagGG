@@ -10,38 +10,40 @@
 
 namespace LuaGameEngine
 {
-	class LuaGameEngine_API Player : public EngineObject
-	{
-		OBJECT_OVERRIDE(Player, EngineObject);
-	public:
-		~Player() override;
 
-		Int64 GetUserId() const { return userId_; }
+class LuaGameEngine_API Player : public EngineObject
+{
+	OBJECT_OVERRIDE(Player, EngineObject);
+public:
+	~Player() override;
 
-		const FlagGG::Container::String& GetUserName() { return userName_; }
+	Int64 GetUserId() const { return userId_; }
 
-		Unit* GetControlUnit() const { return controlUnit_; }
+	const String& GetUserName() { return userName_; }
 
-		void SetUserId(Int64 userId);
+	Unit* GetControlUnit() const { return controlUnit_; }
 
-		void SetUserName(const FlagGG::Container::String& userName);
+	void SetUserId(Int64 userId);
 
-		void SetControlUnit(Unit* unit);
+	void SetUserName(const String& userName);
+
+	void SetControlUnit(Unit* unit);
 
 
-		static int Create(lua_State* L);
-		static int Destroy(lua_State* L);
-		static int GetUserId(lua_State* L);
-		static int GetUserName(lua_State* L);
-		static int GetControlUnit(lua_State* L);
-		static int SetUserId(lua_State* L);
-		static int SetUserName(lua_State* L);
-		static int SetControlUnit(lua_State* L);
+	static int Create(lua_State* L);
+	static int Destroy(lua_State* L);
+	static int GetUserId(lua_State* L);
+	static int GetUserName(lua_State* L);
+	static int GetControlUnit(lua_State* L);
+	static int SetUserId(lua_State* L);
+	static int SetUserName(lua_State* L);
+	static int SetControlUnit(lua_State* L);
 
-	private:
-		Int64 userId_;
-		FlagGG::Container::String userName_;
+private:
+	Int64 userId_;
+	String userName_;
 
-		Unit* controlUnit_;
-	};
+	Unit* controlUnit_;
+};
+
 }

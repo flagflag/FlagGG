@@ -21,7 +21,7 @@ void LuaEventAdaptor::OnStopGame()
 
 }
 
-static Proto::Game::Vector3D* ToProtoVector3(const FlagGG::Math::Vector3& vec)
+static Proto::Game::Vector3D* ToProtoVector3(const Vector3& vec)
 {
 	Proto::Game::Vector3D* protoVec = new Proto::Game::Vector3D();
 	protoVec->set_x(vec.x_);
@@ -30,7 +30,7 @@ static Proto::Game::Vector3D* ToProtoVector3(const FlagGG::Math::Vector3& vec)
 	return protoVec;
 }
 
-static Proto::Game::Quaternion* ToProtoQuaternion(const FlagGG::Math::Quaternion& qua)
+static Proto::Game::Quaternion* ToProtoQuaternion(const Quaternion& qua)
 {
 	Proto::Game::Quaternion* protoQua = new Proto::Game::Quaternion();
 	protoQua->set_x(qua.x_);
@@ -61,8 +61,8 @@ static Proto::Game::UnitAttribute* ToProtoAttribute(const LuaGameEngine::Attribu
 static Proto::Game::UnitMovementInfo* ToProtoMovementInfo(LuaGameEngine::Movement* movement)
 {
 	Proto::Game::UnitMovementInfo* protoMovement = new Proto::Game::UnitMovementInfo();
-	Proto::Game::Vector3D* vec = ToProtoVector3(FlagGG::Math::Vector3::ZERO);
-	Proto::Game::Quaternion* qua = ToProtoQuaternion(FlagGG::Math::Quaternion::IDENTITY);
+	Proto::Game::Vector3D* vec = ToProtoVector3(Vector3::ZERO);
+	Proto::Game::Quaternion* qua = ToProtoQuaternion(Quaternion::IDENTITY);
 	Proto::Game::Transform* startTrans = new Proto::Game::Transform();
 	startTrans->set_allocated_position(vec);
 	startTrans->set_allocated_rotation(qua);

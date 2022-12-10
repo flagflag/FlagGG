@@ -8,52 +8,51 @@
 
 namespace FlagGG
 {
-	namespace Scene
-	{
-		class Node;
-		class OctreeNode;
 
-		class FlagGG_API Component : public Core::Object
-		{
-			OBJECT_OVERRIDE(Component, Object);
-		public:
-			~Component() override;
+class Node;
+class OctreeNode;
 
-			virtual void Update(Real timeStep) {}
+class FlagGG_API Component : public Object
+{
+	OBJECT_OVERRIDE(Component, Object);
+public:
+	~Component() override;
 
-			virtual bool IsDrawable() { return false; }
+	virtual void Update(Real timeStep) {}
 
-			virtual Graphics::RenderContext* GetRenderContext() { return nullptr; }
+	virtual bool IsDrawable() { return false; }
 
-			virtual void UpdateTreeDirty();
+	virtual RenderContext* GetRenderContext() { return nullptr; }
 
-			virtual void OnUpdateWorldBoundingBox() {}
+	virtual void UpdateTreeDirty();
 
-			virtual void ProcessRayQuery(const RayOctreeQuery& query, Container::PODVector<RayQueryResult>& results);
+	virtual void OnUpdateWorldBoundingBox() {}
 
-			const Math::BoundingBox& GetWorldBoundingBox();
+	virtual void ProcessRayQuery(const RayOctreeQuery& query, PODVector<RayQueryResult>& results);
 
-			void SetNode(Node* node);
+	const BoundingBox& GetWorldBoundingBox();
 
-			Node* GetNode() const;
+	void SetNode(Node* node);
 
-			void SetOcNode(OctreeNode* ocnode);
+	Node* GetNode() const;
 
-			OctreeNode* GetOcNode();
+	void SetOcNode(OctreeNode* ocnode);
 
-			virtual void SetViewMask(UInt32 viewMask);
-			UInt32 GetViewMask() const;
+	OctreeNode* GetOcNode();
 
-		protected:
-			Container::WeakPtr<Node> node_;
+	virtual void SetViewMask(UInt32 viewMask);
+	UInt32 GetViewMask() const;
 
-			Math::BoundingBox worldBoundingBox_;
+protected:
+	WeakPtr<Node> node_;
 
-			bool worldBoundingBoxDirty_{ true };
+	BoundingBox worldBoundingBox_;
 
-			OctreeNode* ocnode_{ nullptr };
+	bool worldBoundingBoxDirty_{ true };
 
-			UInt32 viewMask_{ 0u };
-		};
-	}
+	OctreeNode* ocnode_{ nullptr };
+
+	UInt32 viewMask_{ 0u };
+};
+
 }

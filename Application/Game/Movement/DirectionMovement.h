@@ -3,8 +3,7 @@
 #include <Scene/BaseMovement.h>
 #include <Math/Vector3.h>
 
-using namespace FlagGG::Scene;
-using namespace FlagGG::Math;
+using namespace FlagGG;
 
 class DirectionMovement : public BaseMovement
 {

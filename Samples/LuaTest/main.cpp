@@ -8,16 +8,18 @@
 
 #include <string>
 
+using namespace FlagGG;
+
 class LuaLog
 {
 public:
-	int Normal(FlagGG::Lua::LuaVM* vm)
+	int Normal(LuaVM* vm)
 	{
 		printf("%s\n", vm->Get<const char*>(1));
 		return 0;
 	}
 
-	int Alert(FlagGG::Lua::LuaVM* vm)
+	int Alert(LuaVM* vm)
 	{
 #if _WIN32
 		MessageBoxA(nullptr,  vm->Get<const char*>(1), "", 0);
@@ -26,7 +28,7 @@ public:
 	}
 };
 
-FlagGG::Core::ProfilerBlock proBlock(nullptr, "Test");
+ProfilerBlock proBlock(nullptr, "Test");
 
 static int ProfilerBegin(lua_State *L)
 {
@@ -48,7 +50,7 @@ static int OutputProfiler(lua_State* L)
 	return 0;
 }
 
-FlagGG::Math::Vector3 parseVector3(const std::string& val, const FlagGG::Math::Vector3& defaultValue = FlagGG::Math::Vector3::ZERO)
+Vector3 parseVector3(const std::string& val, const Vector3& defaultValue = Vector3::ZERO)
 {
 	const int Dimension = 3;
 	const char* begin = val.c_str();
@@ -61,10 +63,10 @@ FlagGG::Math::Vector3 parseVector3(const std::string& val, const FlagGG::Math::V
 			return defaultValue;
 		begin = end;
 	}
-	return FlagGG::Math::Vector3(value[0], value[1], value[2]);
+	return Vector3(value[0], value[1], value[2]);
 }
 
-void castTypeFromString(FlagGG::Math::Vector3 &arg, const std::string& str)
+void castTypeFromString(Vector3 &arg, const std::string& str)
 {
 	arg = parseVector3(str);
 }
@@ -86,13 +88,13 @@ T getStruct(lua_State* L, Int32 index)
 	return EngineUnmarshallData<T>()(lua_tostring(L, index));
 }
 
-FlagGG::Math::Vector3 GetVector3(lua_State* L, int index)
+Vector3 GetVector3(lua_State* L, int index)
 {
 	int len = lua_rawlen(L, index);
 	if (len < 3)
-		return FlagGG::Math::Vector3::ZERO;
+		return Vector3::ZERO;
 
-	FlagGG::Math::Vector3 vec3;
+	Vector3 vec3;
 
 	lua_rawgeti(L, index, 1);
 	vec3.x_ = lua_tonumber(L, -1);
@@ -111,17 +113,17 @@ FlagGG::Math::Vector3 GetVector3(lua_State* L, int index)
 
 static int Test1(lua_State* L)
 {
-	FlagGG::Math::Vector3 param1 = getStruct<FlagGG::Math::Vector3>(L, -1);
+	Vector3 param1 = getStruct<Vector3>(L, -1);
 	return 0;
 }
 
 static int Test2(lua_State* L)
 {
-	FlagGG::Math::Vector3 param1 = GetVector3(L, 1);
+	Vector3 param1 = GetVector3(L, 1);
 	return 0;
 }
 
-class TestBase : public FlagGG::Container::RefCounted
+class TestBase : public RefCounted
 {
 public:
 	TestBase()
@@ -143,13 +145,13 @@ public:
 static int luaex_TestBase_Ctor(lua_State* L)
 {
 	TestBase* cls = new TestBase();
-	FlagGG::Lua::luaex_pushusertyperef(L, "TestBase", cls);
+	luaex_pushusertyperef(L, "TestBase", cls);
 	return 1;
 }
 
 static int luaex_TestBase_Dtor(lua_State* L)
 {
-	TestBase* cls = (TestBase*)FlagGG::Lua::luaex_tousertype(L, 1, "TestBase");
+	TestBase* cls = (TestBase*)luaex_tousertype(L, 1, "TestBase");
 	if (cls)
 		cls->ReleaseRef();
 	return 0;
@@ -157,29 +159,29 @@ static int luaex_TestBase_Dtor(lua_State* L)
 
 static int luaex_TestBase_RunTest(lua_State* L)
 {
-	TestBase* cls = (TestBase*)FlagGG::Lua::luaex_tousertype(L, -1, "TestBase");
+	TestBase* cls = (TestBase*)luaex_tousertype(L, -1, "TestBase");
 	cls->RunTest();
 	return 0;
 }
 
 static int luaex_RunTest(lua_State* L)
 {
-	TestBase* cls = (TestBase*)FlagGG::Lua::luaex_tousertype(L, 1, "TestBase");
-	FlagGG::Lua::UserTypeRef luaWrapper("TestBase", cls, L);
+	TestBase* cls = (TestBase*)luaex_tousertype(L, 1, "TestBase");
+	UserTypeRef luaWrapper("TestBase", cls, L);
 	luaWrapper.Call("RunTest2");
 	return 0;
 }
 
 void Run()
 {
-	FlagGG::Utility::SystemHelper::HiresTimer::InitSupported();
+	HiresTimer::InitSupported();
 
 	enum
 	{
 		_2333 = 0
 	};
 
-	FlagGG::Lua::LuaVM luaVM;
+	LuaVM luaVM;
 	luaVM.Open();
 	if (!luaVM.IsOpen())
 	{
@@ -246,18 +248,18 @@ end
 	luaVM.CallEvent("Test.normal", "2333");
 	const char* temp0 = "2333";
 	luaVM.CallEvent("Test.normal", temp0);
-	luaVM.CallEvent("Test.normal", FlagGG::Container::String("2333"));
-	FlagGG::Container::String temp1("2333");
+	luaVM.CallEvent("Test.normal", String("2333"));
+	String temp1("2333");
 	luaVM.CallEvent("Test.normal", temp1);
-	const FlagGG::Container::String temp2("2333");
+	const String temp2("2333");
 	luaVM.CallEvent("Test.normal", temp2);
 
 
 	lua_State* L = luaVM;
-	FlagGG::Lua::luaex_beginclass(L, "TestBase", "", luaex_TestBase_Ctor, luaex_TestBase_Dtor);
-		FlagGG::Lua::luaex_classfunction(L, "RunTest", luaex_TestBase_RunTest);
-	FlagGG::Lua::luaex_endclass(L);
-	FlagGG::Lua::luaex_globalfunction(L, "RunTest", luaex_RunTest);
+	luaex_beginclass(L, "TestBase", "", luaex_TestBase_Ctor, luaex_TestBase_Dtor);
+		luaex_classfunction(L, "RunTest", luaex_TestBase_RunTest);
+	luaex_endclass(L);
+	luaex_globalfunction(L, "RunTest", luaex_RunTest);
 
 	luaVM.ExecuteScript(R"(
 local SceneNode = class('SceneNode')

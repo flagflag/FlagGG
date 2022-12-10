@@ -8,44 +8,43 @@
 
 namespace FlagGG
 {
-	namespace Scene
-	{
-		class FlagGG_API StaticMeshComponent : public Component
-		{
-			OBJECT_OVERRIDE(StaticMeshComponent, Component);
-		public:
-			void Update(Real timeStep) override;
 
-			bool IsDrawable() override;
+class FlagGG_API StaticMeshComponent : public Component
+{
+	OBJECT_OVERRIDE(StaticMeshComponent, Component);
+public:
+	void Update(Real timeStep) override;
 
-			Graphics::RenderContext* GetRenderContext() override;
+	bool IsDrawable() override;
 
-			void OnUpdateWorldBoundingBox() override;
+	RenderContext* GetRenderContext() override;
 
-			void ProcessRayQuery(const RayOctreeQuery& query, Container::PODVector<RayQueryResult>& results) override;
+	void OnUpdateWorldBoundingBox() override;
 
-			void SetViewMask(UInt32 viewMask) override;
+	void ProcessRayQuery(const RayOctreeQuery& query, PODVector<RayQueryResult>& results) override;
 
-			void SetModel(Graphics::Model* model);
+	void SetViewMask(UInt32 viewMask) override;
 
-			void SetMaterial(Graphics::Material* material);
+	void SetModel(Model* model);
 
-			Graphics::Model* GetModel();
+	void SetMaterial(Material* material);
 
-			Graphics::Material* GetMaterial();
+	Model* GetModel();
 
-		protected:
-			virtual void OnModel();
+	Material* GetMaterial();
 
-			virtual void OnMaterial();
+protected:
+	virtual void OnModel();
 
-			Container::SharedPtr<Graphics::Model> model_;
+	virtual void OnMaterial();
 
-			Container::SharedPtr<Graphics::Material> material_;
+	SharedPtr<Model> model_;
 
-			Graphics::RenderContext renderContext_;
+	SharedPtr<Material> material_;
 
-			Math::BoundingBox boundingBox_;
-		};
-	}
+	RenderContext renderContext_;
+
+	BoundingBox boundingBox_;
+};
+
 }

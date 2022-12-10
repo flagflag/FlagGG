@@ -6,20 +6,19 @@
 
 namespace FlagGG
 {
-	namespace AsyncFrame
-	{
-		class FlagGG_API ConditionVariable : public KernelObject::HandleObject
-		{
-		public:
-			ConditionVariable();
 
-			~ConditionVariable() override;
+class FlagGG_API ConditionVariable : public HandleObject
+{
+public:
+	ConditionVariable();
 
-			void Wait(KernelObject::HandleObject* object);
+	~ConditionVariable() override;
 
-			void Wait(KernelObject::HandleObject* object, UInt32 waitTime);
+	void Wait(HandleObject* object);
 
-			void Trigger();
-		};
-	}
+	void Wait(HandleObject* object, UInt32 waitTime);
+
+	void Trigger();
+};
+
 }

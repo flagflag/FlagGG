@@ -10,19 +10,18 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		class FlagGG_API VertexFormat : public GPUObject, public Container::RefCounted
-		{
-		public:
-			VertexFormat(Shader* VSShader, VertexBuffer** vertexBuffer);
 
-			bool IsValid() override;
+class FlagGG_API VertexFormat : public GPUObject, public RefCounted
+{
+public:
+	VertexFormat(Shader* VSShader, VertexBuffer** vertexBuffer);
 
-		private:
-			void Initialize() override;
-		};
-	}
+	bool IsValid() override;
+
+private:
+	void Initialize() override;
+};
+
 }
 
 #endif

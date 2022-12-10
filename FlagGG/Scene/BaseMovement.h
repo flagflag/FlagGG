@@ -8,27 +8,26 @@
 
 namespace FlagGG
 {
-	namespace Scene
-	{
-		class BaseMovement : public Core::Object
-		{
-			OBJECT_OVERRIDE(BaseMovement, Object);
-		public:
-			void SetOwner(Node* node);
 
-			Node* GetOwner() const;
+class BaseMovement : public Object
+{
+	OBJECT_OVERRIDE(BaseMovement, Object);
+public:
+	void SetOwner(Node* node);
 
-			virtual void Start() = 0;
+	Node* GetOwner() const;
 
-			virtual void Stop() = 0;
+	virtual void Start() = 0;
 
-			virtual void Update(Real timeStep, Math::Vector3& posDelta, Math::Quaternion& rotDelta) = 0;
+	virtual void Stop() = 0;
 
-			virtual bool IsActive() const = 0;
+	virtual void Update(Real timeStep, Vector3& posDelta, Quaternion& rotDelta) = 0;
 
-		protected:
-			Container::WeakPtr<Node> owner_;
-		};
-	}
+	virtual bool IsActive() const = 0;
+
+protected:
+	WeakPtr<Node> owner_;
+};
+
 }
 

@@ -4,7 +4,7 @@
 
 #include "LuaGameEngine/LuaEvent.h"
 
-using namespace FlagGG::Container;
+using namespace FlagGG;
 
 namespace google
 {

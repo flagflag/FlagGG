@@ -10,12 +10,11 @@
 
 namespace FlagGG
 {
-	namespace Scene
-	{
-		class FlagGG_API OceanComponent : public DynamicMeshComponent
-		{
-			OBJECT_OVERRIDE(OceanComponent, DynamicMeshComponent);
-		public:
-		};
-	}
+
+class FlagGG_API OceanComponent : public DynamicMeshComponent
+{
+	OBJECT_OVERRIDE(OceanComponent, DynamicMeshComponent);
+public:
+};
+
 }

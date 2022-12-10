@@ -14,7 +14,7 @@ GamePlayOnline::GamePlayOnline(Context* context) :
 #endif
 }
 
-void GamePlayOnline::Initialize(FlagGG::Scene::Scene* scene)
+void GamePlayOnline::Initialize(Scene* scene)
 {
 	world_ = new World(context_);
 	world_->SetScene(scene);

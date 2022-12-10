@@ -11,82 +11,81 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		class Texture;
-		class Shader;
 
-		struct FlagGG_API RenderPass
-		{
-			Container::SharedPtr<Shader> vertexShader_;
-			Container::SharedPtr<Shader> pixelShader_;
-		};
+class Texture;
+class Shader;
 
-		class FlagGG_API Material : public Resource::Resource
-		{
-		public:
-			Material(Core::Context* context);
+struct FlagGG_API RenderPass
+{
+	SharedPtr<Shader> vertexShader_;
+	SharedPtr<Shader> pixelShader_;
+};
 
-			~Material() override = default;
+class FlagGG_API Material : public Resource
+{
+public:
+	Material(Context* context);
 
-			void SetTexture(Texture* texture);
+	~Material() override = default;
 
-			void SetTexture(TextureClass textureClass, Texture* texture);
+	void SetTexture(Texture* texture);
 
-			void SetVertexShader(Shader* vertexShader);
+	void SetTexture(TextureClass textureClass, Texture* texture);
 
-			void SetPixelShader(Shader* pixelShader);
+	void SetVertexShader(Shader* vertexShader);
 
-			void SetRenderPass(RenderPassType type, const RenderPass& renderPass);
+	void SetPixelShader(Shader* pixelShader);
 
-			void SetFillMode(FillMode fillMode);
+	void SetRenderPass(RenderPassType type, const RenderPass& renderPass);
 
-			void SetCullMode(CullMode cullMode);
+	void SetFillMode(FillMode fillMode);
 
-			void SetDepthWrite(bool depthWrite);
+	void SetCullMode(CullMode cullMode);
+
+	void SetDepthWrite(bool depthWrite);
 
 
-			Container::SharedPtr<Texture> GetTexture();
+	SharedPtr<Texture> GetTexture();
 
-			Container::SharedPtr<Texture> GetTexture(UInt32 index);
+	SharedPtr<Texture> GetTexture(UInt32 index);
 
-			Container::SharedPtr<Shader> GetVertexShader();
+	SharedPtr<Shader> GetVertexShader();
 
-			Container::SharedPtr<Shader> GetPixelShader();
+	SharedPtr<Shader> GetPixelShader();
 
-			Container::HashMap<UInt32, RenderPass>& GetRenderPass();
+	HashMap<UInt32, RenderPass>& GetRenderPass();
 
-			Container::SharedPtr<ShaderParameters> GetShaderParameters();
+	SharedPtr<ShaderParameters> GetShaderParameters();
 
-			FillMode GetFillMode() const;
+	FillMode GetFillMode() const;
 
-			CullMode GetCullMode() const;
+	CullMode GetCullMode() const;
 
-			bool GetDepthWrite() const;
+	bool GetDepthWrite() const;
 
-			const RasterizerState GetRasterizerState() const;
+	const RasterizerState GetRasterizerState() const;
 
-			void CreateShaderParameters();
+	void CreateShaderParameters();
 
-		protected:
-			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
+protected:
+	bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
-			bool EndLoad() override;
+	bool EndLoad() override;
 
-		protected:
-			Container::SharedPtr<Texture> textures_[MAX_TEXTURE_CLASS];
+protected:
+	SharedPtr<Texture> textures_[MAX_TEXTURE_CLASS];
 
-			Container::SharedPtr<Shader> vsShader_;
+	SharedPtr<Shader> vsShader_;
 
-			Container::SharedPtr<Shader> psShader_;
+	SharedPtr<Shader> psShader_;
 
-			Container::SharedPtr<ShaderParameters> shaderParameters_;
+	SharedPtr<ShaderParameters> shaderParameters_;
 
-			Container::HashMap<UInt32, RenderPass> renderPass_;
+	HashMap<UInt32, RenderPass> renderPass_;
 
-			RasterizerState rasterizerState_;
-		};
-	}
+	RasterizerState rasterizerState_;
+};
+
 }
 
 #endif

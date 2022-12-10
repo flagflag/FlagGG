@@ -13,47 +13,43 @@
 
 namespace FlagGG
 {
-	namespace AsyncFrame
-	{
-		namespace Thread
-		{
-			typedef std::function < void(void) > ThreadTask;
 
-			class FlagGG_API SharedThread : public KernelObject::Runtime, public Container::RefCounted
-			{
-			public:
-				SharedThread();
+typedef std::function < void(void) > ThreadTask;
 
-				~SharedThread() override;
+class FlagGG_API SharedThread : public Runtime, public RefCounted
+{
+public:
+	SharedThread();
 
-				void Start();
+	~SharedThread() override;
 
-				void Stop() override;
+	void Start();
 
-				void WaitForStop() override;
+	void Stop() override;
 
-				void WaitForStop(UInt32 wait_time) override;
+	void WaitForStop() override;
 
-				void Add(ThreadTask task_func);
+	void WaitForStop(UInt32 wait_time) override;
 
-				void ForceStop();
+	void Add(ThreadTask task_func);
 
-				UInt32 WaitingTime();
+	void ForceStop();
 
-			protected:
-				void WorkThread();
+	UInt32 WaitingTime();
 
-			private:
-				ConditionQueue<ThreadTask>	taskQueue_;
+protected:
+	void WorkThread();
 
-				UniqueThreadPtr				thread_;
+private:
+	ConditionQueue<ThreadTask>	taskQueue_;
 
-				std::atomic<bool>			running_;
-			};
+	UniqueThreadPtr				thread_;
 
-			typedef Container::SharedPtr < SharedThread > SharedThreadPtr;
-		}
-	}
+	std::atomic<bool>			running_;
+};
+
+typedef SharedPtr < SharedThread > SharedThreadPtr;
+
 }
 
 #endif

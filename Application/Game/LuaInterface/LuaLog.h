@@ -4,9 +4,7 @@
 #include <Lua/LuaVM.h>
 #include <Container/Ptr.h>
 
-using namespace FlagGG::Core;
-using namespace FlagGG::Lua;
-using namespace FlagGG::Container;
+using namespace FlagGG;
 
 class LuaLog : public RefCounted
 {

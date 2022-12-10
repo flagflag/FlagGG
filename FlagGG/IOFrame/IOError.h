@@ -1,5 +1,4 @@
-﻿#ifndef __IO_ERROR__
-#define __IO_ERROR__
+﻿#pragma once
 
 #ifndef FLAGGG_NO_BOOST
 #include <boost/asio/error.hpp>
@@ -15,44 +14,37 @@
 		handler->ErrorCatch(context, error); \
 	}
 
-namespace FlagGG
-{
-	namespace IOFrame
-	{
-		namespace Error
-		{
+namespace FlagGG { namespace IOFrame { namespace Error {
+
 #ifndef FLAGGG_NO_BOOST
-			class IOError : public ErrorCode
-			{
-			public:
-				IOError(boost::system::error_code error_code);
+class IOError : public ErrorCode
+{
+public:
+	IOError(boost::system::error_code error_code);
 
-				~IOError() { }
+	~IOError() { }
 
-				int Value() const override;
+	int Value() const override;
 
-				Container::String Message() const override;
+	String Message() const override;
 
-			private:
-				boost::system::error_code errorCode_;
-			};
+private:
+	boost::system::error_code errorCode_;
+};
 #endif
 
-			class CustomIOError : public ErrorCode
-			{
-			public:
-				CustomIOError(int value, const Container::String& message);
+class CustomIOError : public ErrorCode
+{
+public:
+	CustomIOError(int value, const String& message);
 
-				int Value() const override;
+	int Value() const override;
 
-				Container::String Message() const override;
+	String Message() const override;
 
-			private:
-				int value_;
-				Container::String message_;
-			};
-		}
-	}
-}
+private:
+	int value_;
+	String message_;
+};
 
-#endif
+}}}

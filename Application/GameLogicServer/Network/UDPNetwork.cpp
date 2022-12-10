@@ -6,26 +6,23 @@
 #include <AsyncFrame/Mutex.h>
 #include <Math/Quaternion.h>
 
-using namespace FlagGG::Core;
-using namespace FlagGG::AsyncFrame;
-
 UDPNetwork::UDPNetwork(Context* context) :
 	context_(context)
 {
-	buffer = FlagGG::IOFrame::UDP::CreateBuffer();
+	buffer = IOFrame::UDP::CreateBuffer();
 }
 
-void UDPNetwork::ChannelRegisterd(FlagGG::IOFrame::Context::IOContextPtr context)
+void UDPNetwork::ChannelRegisterd(IOFrame::Context::IOContextPtr context)
 {
 
 }
 
-void UDPNetwork::ChannelOpend(FlagGG::IOFrame::Context::IOContextPtr context)
+void UDPNetwork::ChannelOpend(IOFrame::Context::IOContextPtr context)
 {
 
 }
 
-void UDPNetwork::ChannelClosed(FlagGG::IOFrame::Context::IOContextPtr context)
+void UDPNetwork::ChannelClosed(IOFrame::Context::IOContextPtr context)
 {
 	for (auto it = channels_.Begin(); it != channels_.End(); ++it)
 	{
@@ -44,7 +41,7 @@ void UDPNetwork::ChannelClosed(FlagGG::IOFrame::Context::IOContextPtr context)
 	}
 }
 
-void UDPNetwork::MessageRecived(FlagGG::IOFrame::Context::IOContextPtr context, FlagGG::IOFrame::Buffer::IOBufferPtr buffer)
+void UDPNetwork::MessageRecived(IOFrame::Context::IOContextPtr context, IOFrame::Buffer::IOBufferPtr buffer)
 {
 	String bufferContent;
 	buffer->ToString(bufferContent);
@@ -72,7 +69,7 @@ void UDPNetwork::MessageRecived(FlagGG::IOFrame::Context::IOContextPtr context, 
 	}
 }
 
-void UDPNetwork::ErrorCatch(FlagGG::IOFrame::Context::IOContextPtr context, const FlagGG::ErrorCode& error_code)
+void UDPNetwork::ErrorCatch(IOFrame::Context::IOContextPtr context, const ErrorCode& error_code)
 {
 
 }
@@ -94,7 +91,7 @@ void UDPNetwork::Send(Int64 userId, UInt32 messageType, ::google::protobuf::Mess
 	it->second_->Write(buffer);
 }
 
-void UDPNetwork::HandleRequestLogin(FlagGG::IOFrame::Context::IOContextPtr context, const std::string& messageBody)
+void UDPNetwork::HandleRequestLogin(IOFrame::Context::IOContextPtr context, const std::string& messageBody)
 {
 	Proto::Game::RequestLogin request;
 	request.ParseFromString(messageBody);
@@ -113,7 +110,7 @@ void UDPNetwork::HandleRequestLogin(FlagGG::IOFrame::Context::IOContextPtr conte
 	});
 }
 
-void UDPNetwork::HandleRequestStartGame(FlagGG::IOFrame::Context::IOContextPtr context, const std::string& messageBody)
+void UDPNetwork::HandleRequestStartGame(IOFrame::Context::IOContextPtr context, const std::string& messageBody)
 {
 	Proto::Game::RequestStartGame request;
 	request.ParseFromString(messageBody);
@@ -126,13 +123,13 @@ void UDPNetwork::HandleRequestStartGame(FlagGG::IOFrame::Context::IOContextPtr c
 	});
 }
 
-void UDPNetwork::HandleRequestStartMove(FlagGG::IOFrame::Context::IOContextPtr context, const std::string& messageBody)
+void UDPNetwork::HandleRequestStartMove(IOFrame::Context::IOContextPtr context, const std::string& messageBody)
 {
 	Proto::Game::RequestStartMove request;
 	request.ParseFromString(messageBody);
 
 	Int64 userId = request.user_id();
-	FlagGG::Math::Quaternion direction(request.rotation().w(), request.rotation().x(), request.rotation().y(), request.rotation().z());
+	Quaternion direction(request.rotation().w(), request.rotation().x(), request.rotation().y(), request.rotation().z());
 
 	auto* forwarder = context_->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
 	forwarder->Forward([&, userId]
@@ -141,7 +138,7 @@ void UDPNetwork::HandleRequestStartMove(FlagGG::IOFrame::Context::IOContextPtr c
 	});
 }
 
-void UDPNetwork::HandleRequestStopMove(FlagGG::IOFrame::Context::IOContextPtr context, const std::string& messageBody)
+void UDPNetwork::HandleRequestStopMove(IOFrame::Context::IOContextPtr context, const std::string& messageBody)
 {
 	Proto::Game::RequestStopMove request;
 	request.ParseFromString(messageBody);

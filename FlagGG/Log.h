@@ -9,42 +9,44 @@
 
 namespace FlagGG
 {
-    enum LogType
-    {
-        LOG_DEBUG = 0,
-        LOG_INFO,
-		LOG_WARN,
-        LOG_ERROR,
-		LOG_CRITICAL
-    };
 
-    void FlagGG_API Log(LogType log_type, const char* format, ...);
+enum LogType
+{
+    LOG_DEBUG = 0,
+    LOG_INFO,
+	LOG_WARN,
+    LOG_ERROR,
+	LOG_CRITICAL
+};
 
-	class FlagGG_API Logger
-	{
-	public:
-		Logger();
+void FlagGG_API Log(LogType log_type, const char* format, ...);
 
-		virtual ~Logger();
+class FlagGG_API Logger
+{
+public:
+	Logger();
 
-		std::shared_ptr<spdlog::logger> Default();
+	virtual ~Logger();
 
-		void AddLogger(const Container::String& name, const Container::String& path);
+	std::shared_ptr<spdlog::logger> Default();
 
-		void RemoveLogger(const Container::String& name);
+	void AddLogger(const String& name, const String& path);
 
-		std::shared_ptr<spdlog::logger> GetLogger(const Container::String& name);
+	void RemoveLogger(const String& name);
 
-		static Logger* GetInstance();
+	std::shared_ptr<spdlog::logger> GetLogger(const String& name);
 
-		static void DestroyInstance();
+	static Logger* GetInstance();
 
-	private:
-		static volatile bool initialized_;
-		static Logger* logger_;
+	static void DestroyInstance();
 
-		static AsyncFrame::Mutex mutex_;
-	};
+private:
+	static volatile bool initialized_;
+	static Logger* logger_;
+
+	static Mutex mutex_;
+};
+
 }
 
 #define FLAGGG_LOG_DEBUG(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(format, ##__VA_ARGS__)
@@ -58,14 +60,14 @@ namespace FlagGG
 #define FLAGGG_LOG_CRITICAL(format, ...) FlagGG::Logger::GetInstance()->Default()->critical(format, ##__VA_ARGS__)
 
 
-#define FLAGGG_LOG_STD_DEBUG(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::Utility::Format::ToString(format, ##__VA_ARGS__).CString())
+#define FLAGGG_LOG_STD_DEBUG(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
 
-#define FLAGGG_LOG_STD_INFO(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::Utility::Format::ToString(format, ##__VA_ARGS__).CString())
+#define FLAGGG_LOG_STD_INFO(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
 
-#define FLAGGG_LOG_STD_WARN(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::Utility::Format::ToString(format, ##__VA_ARGS__).CString())
+#define FLAGGG_LOG_STD_WARN(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
 
-#define FLAGGG_LOG_STD_ERROR(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::Utility::Format::ToString(format, ##__VA_ARGS__).CString())
+#define FLAGGG_LOG_STD_ERROR(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
 
-#define FLAGGG_LOG_STD_CRITICAL(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::Utility::Format::ToString(format, ##__VA_ARGS__).CString())
+#define FLAGGG_LOG_STD_CRITICAL(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
 
 #endif

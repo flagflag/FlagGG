@@ -1,4 +1,4 @@
-static const Container::String ClassDefine = R"(
+static const String ClassDefine = R"(
 local Context = GetContext()
 Context.ClassMap = {}
 

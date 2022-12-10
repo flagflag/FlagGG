@@ -2,7 +2,7 @@
 
 #include <Container/Ptr.h>
 
-using namespace FlagGG::Container;
+using namespace FlagGG;
 
 class Lobby : public RefCounted
 {

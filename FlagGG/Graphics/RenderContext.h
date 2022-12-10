@@ -16,31 +16,30 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		struct FlagGG_API RenderContext
-		{
-			GeometryType geometryType_{ GEOMETRY_STATIC };
 
-			Container::Vector<Container::SharedPtr<Geometry>> geometries_;
+struct FlagGG_API RenderContext
+{
+	GeometryType geometryType_{ GEOMETRY_STATIC };
 
-			Container::Vector<Container::SharedPtr<Texture>> textures_;
+	Vector<SharedPtr<Geometry>> geometries_;
 
-			Container::SharedPtr<Shader> vertexShader_;
-			Container::SharedPtr<Shader> pixelShader_;
+	Vector<SharedPtr<Texture>> textures_;
 
-			const Math::Matrix3x4* worldTransform_{ nullptr };
-			UInt32 numWorldTransform_{ 0 };
+	SharedPtr<Shader> vertexShader_;
+	SharedPtr<Shader> pixelShader_;
 
-			Container::HashMap<UInt32, RenderPass>* renderPass_{ nullptr };
+	const Matrix3x4* worldTransform_{ nullptr };
+	UInt32 numWorldTransform_{ 0 };
 
-			Container::SharedPtr<ShaderParameters> shaderParameters_{ nullptr };
+	HashMap<UInt32, RenderPass>* renderPass_{ nullptr };
 
-			UInt32 viewMask_{ 0u };
+	SharedPtr<ShaderParameters> shaderParameters_{ nullptr };
 
-			RasterizerState rasterizerState_;
-		};
-	}
+	UInt32 viewMask_{ 0u };
+
+	RasterizerState rasterizerState_;
+};
+
 }
 
 #endif

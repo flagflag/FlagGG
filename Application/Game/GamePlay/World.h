@@ -13,9 +13,9 @@ class World : public RefCounted
 public:
 	World(Context* context);
 
-	void SetScene(FlagGG::Scene::Scene* scene);
+	void SetScene(Scene* scene);
 
-	FlagGG::Scene::Scene* GetScene() const;
+	Scene* GetScene() const;
 
 	Unit* CreateUnit(Int64 unitId);
 
@@ -39,5 +39,5 @@ private:
 
 	SharedPtr<Terrain> terrain_;
 
-	SharedPtr<FlagGG::Scene::Scene> scene_;
+	SharedPtr<Scene> scene_;
 };

@@ -14,95 +14,91 @@
 
 namespace FlagGG
 {
-	namespace AsyncFrame
-	{
-		namespace Process
-		{
-			class FlagGG_API ParameterList
-			{
-			public:
-				ParameterList();
 
-				virtual ~ParameterList();
+class FlagGG_API ParameterList
+{
+public:
+	ParameterList();
 
-				//--------------------------------- utf-16 -----------------------------
+	virtual ~ParameterList();
 
-				void Add(const std::wstring& param_name);
+	//--------------------------------- utf-16 -----------------------------
 
-				void Add(const std::wstring& param_name, const std::wstring& param);
+	void Add(const std::wstring& param_name);
 
-				void Add(const std::wstring& param_name, Int32 param);
+	void Add(const std::wstring& param_name, const std::wstring& param);
 
-				void Add(const std::wstring& param_name, Int64 param);
+	void Add(const std::wstring& param_name, Int32 param);
 
-				void Add(const std::wstring& param_name, double param);
+	void Add(const std::wstring& param_name, Int64 param);
 
-				void Add(const std::wstring& param_name, long double param);
+	void Add(const std::wstring& param_name, double param);
 
-				//------------------------------------ utf-8 -----------------------------
+	void Add(const std::wstring& param_name, long double param);
 
-				void Add(const std::string& param_name);
+	//------------------------------------ utf-8 -----------------------------
 
-				void Add(const std::string& param_name, std::string& param);
+	void Add(const std::string& param_name);
 
-				void Add(const std::string& param_name, Int32 param);
+	void Add(const std::string& param_name, std::string& param);
 
-				void Add(const std::string& param_name, Int64 param);
+	void Add(const std::string& param_name, Int32 param);
 
-				void Add(const std::string& param_name, double param);
+	void Add(const std::string& param_name, Int64 param);
 
-				void Add(const std::string& param_name, long double param);
+	void Add(const std::string& param_name, double param);
 
-				friend class Builder;
+	void Add(const std::string& param_name, long double param);
 
-			private:
-				std::vector < std::wstring > list_;
-			};
+	friend class Builder;
 
-			class FlagGG_API ProcessObject : public KernelObject::HandleObject, public KernelObject::Runtime, public Container::RefCounted
-			{
-			public:
-				ProcessObject();
+private:
+	std::vector < std::wstring > list_;
+};
 
-				~ProcessObject() override = default;
+class FlagGG_API ProcessObject : public HandleObject, public Runtime, public RefCounted
+{
+public:
+	ProcessObject();
 
-				UInt32 GetID();
+	~ProcessObject() override = default;
 
-				void Stop() override;
+	UInt32 GetID();
 
-				void WaitForStop() override;
+	void Stop() override;
 
-				void WaitForStop(UInt32 wait_time) override;
+	void WaitForStop() override;
 
-				friend class Builder;
+	void WaitForStop(UInt32 wait_time) override;
 
-			private:
-				UInt32 id_;
-			};
+	friend class Builder;
 
-			typedef Container::SharedPtr < ProcessObject > ProcessObjectPtr;
+private:
+	UInt32 id_;
+};
 
-			class FlagGG_API Builder
-			{
-			public:
-				//--------------------------------- utf-16 ------------------------------------------
+typedef SharedPtr < ProcessObject > ProcessObjectPtr;
 
-				static ProcessObjectPtr CreateProcess(const std::wstring& proc_path);
+class FlagGG_API Builder
+{
+public:
+	//--------------------------------- utf-16 ------------------------------------------
 
-				static ProcessObjectPtr CreateProcess(const std::wstring& proc_path, const std::wstring& param);
+	static ProcessObjectPtr CreateProcess(const std::wstring& proc_path);
 
-				static ProcessObjectPtr CreateProcess(const std::wstring& proc_path, const ParameterList& param);
+	static ProcessObjectPtr CreateProcess(const std::wstring& proc_path, const std::wstring& param);
 
-				//------------------------------------ utf-8 ----------------------------------------
+	static ProcessObjectPtr CreateProcess(const std::wstring& proc_path, const ParameterList& param);
 
-				static ProcessObjectPtr CreateProcess(const std::string& proc_path);
+	//------------------------------------ utf-8 ----------------------------------------
 
-				static ProcessObjectPtr CreateProcess(const std::string& proc_path, const std::string& param);
+	static ProcessObjectPtr CreateProcess(const std::string& proc_path);
 
-				static ProcessObjectPtr CreateProcess(const std::string& proc_path, const ParameterList& param);
-			};
-		}
-	}
+	static ProcessObjectPtr CreateProcess(const std::string& proc_path, const std::string& param);
+
+	static ProcessObjectPtr CreateProcess(const std::string& proc_path, const ParameterList& param);
+};
+
 }
 
 #endif

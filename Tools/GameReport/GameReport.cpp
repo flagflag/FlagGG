@@ -7,7 +7,7 @@
 #include "GameReport.h"
 
 static FlagGG::IOFrame::Acceptor::IOAcceptorPtr g_pAcceptor;
-static FlagGG::Container::Vector<FlagGG::IOFrame::Channel::IOChannelPtr> g_vecChannels;
+static FlagGG::Vector<FlagGG::IOFrame::Channel::IOChannelPtr> g_vecChannels;
 static FlagGG::IOFrame::Buffer::IOBufferPtr g_pBuffer;
 
 void GameReport_CPUProfilerBegin(const char* pszName)

@@ -4,24 +4,23 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		class FlagGG_API IndexBuffer : public GPUBuffer
-		{
-		public:
-			UInt32 GetBindFlags() override;
 
-			bool SetSize(UInt32 indexSize, UInt32 indexCount);
+class FlagGG_API IndexBuffer : public GPUBuffer
+{
+public:
+	UInt32 GetBindFlags() override;
 
-			UInt32 GetIndexSize() const;
+	bool SetSize(UInt32 indexSize, UInt32 indexCount);
 
-			UInt32 GetIndexCount() const;
+	UInt32 GetIndexSize() const;
 
-		protected:
+	UInt32 GetIndexCount() const;
 
-			UInt32 indexSize_{ 0 };
-			UInt32 indexCount_{ 0 };
-		};
-	}
+protected:
+
+	UInt32 indexSize_{ 0 };
+	UInt32 indexCount_{ 0 };
+};
+
 }
 

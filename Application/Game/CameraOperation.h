@@ -7,15 +7,12 @@
 #include <Core/Context.h>
 #include <Math/Vector2.h>
 
-using namespace FlagGG::Core;
-using namespace FlagGG::Scene;
-using namespace FlagGG::Container;
-using namespace FlagGG::Math;
+using namespace FlagGG;
 
 class CameraOperation : public RefCounted
 {
 public:
-	CameraOperation(FlagGG::Core::Context* context, Camera* inCamera);
+	CameraOperation(Context* context, Camera* inCamera);
 
 	SharedPtr<Camera> GetCamera();
 

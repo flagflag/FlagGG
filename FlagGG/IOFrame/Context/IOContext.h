@@ -1,26 +1,18 @@
-﻿#ifndef __IO_CHNTEXT__
-#define __IO_CHNTEXT__
+﻿#pragma once
 
 #include "IOFrame/Channel/IOChannel.h"
 #include "Export.h"
 
-namespace FlagGG
+namespace FlagGG { namespace IOFrame { namespace Context {
+
+class FlagGG_API IOContext : public RefCounted
 {
-	namespace IOFrame
-	{
-		namespace Context
-		{
-			class FlagGG_API IOContext : public Container::RefCounted
-			{
-			public:
-				virtual ~IOContext() = default;
+public:
+	virtual ~IOContext() = default;
 
-				virtual Channel::IOChannelPtr GetChannel() = 0;
-			};
+	virtual Channel::IOChannelPtr GetChannel() = 0;
+};
 
-			typedef Container::SharedPtr < IOContext > IOContextPtr;
-		}
-	}
-}
+typedef SharedPtr < IOContext > IOContextPtr;
 
-#endif
+}}}

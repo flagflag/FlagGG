@@ -12,47 +12,41 @@
 #include "Utility/SystemHelper.h"
 #include "Launcher.h"
 
-using namespace FlagGG::Core;
-using namespace FlagGG::Container;
-#ifdef _WIN32
-using namespace FlagGG::Graphics;
-#endif
-using namespace FlagGG::Resource;
-using namespace FlagGG::Utility;
-
 namespace FlagGG
 {
-	class FlagGG_API GameEngine : public Launcher
-	{
-	public:
-		void SetFrameRate(Real rate);
 
-	protected:
-		void Start() override;
+class FlagGG_API GameEngine : public Launcher
+{
+public:
+	void SetFrameRate(Real rate);
 
-		void Stop() override;
+protected:
+	void Start() override;
 
-		bool IsRunning() override;
+	void Stop() override;
 
-		void RunFrame() override;
+	bool IsRunning() override;
 
-		void CreateCoreObject();
+	void RunFrame() override;
 
-		SharedPtr<Context> context_;
+	void CreateCoreObject();
 
-		SharedPtr<Input> input_;
+	SharedPtr<Context> context_;
 
-		SharedPtr<ResourceCache> cache_;
+	SharedPtr<Input> input_;
+
+	SharedPtr<ResourceCache> cache_;
 
 #ifdef _WIN32
-		Vector<SharedPtr<Viewport>> viewports_;
+	Vector<SharedPtr<Viewport>> viewports_;
 #endif
 
-		SystemHelper::Timer timer_;
-		Real elapsedTime_{ 0.0f };
+	Timer timer_;
+	Real elapsedTime_{ 0.0f };
 
-		bool isRunning_{ false };
+	bool isRunning_{ false };
 
-		Real frameRate_{ 99999.0f }; // �����óɲ���֡����
-	};
+	Real frameRate_{ 99999.0f };
+};
+
 }

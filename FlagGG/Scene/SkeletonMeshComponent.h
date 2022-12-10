@@ -8,46 +8,45 @@
 
 namespace FlagGG
 {
-	namespace Scene
-	{
-		class FlagGG_API SkeletonMeshComponent : public StaticMeshComponent
-		{
-			OBJECT_OVERRIDE(SkeletonMeshComponent, StaticMeshComponent);
-		public:
-			SkeletonMeshComponent();
 
-			void Update(Real timeStep) override;
+class FlagGG_API SkeletonMeshComponent : public StaticMeshComponent
+{
+	OBJECT_OVERRIDE(SkeletonMeshComponent, StaticMeshComponent);
+public:
+	SkeletonMeshComponent();
 
-			void UpdateTreeDirty() override;
+	void Update(Real timeStep) override;
 
-			void OnUpdateWorldBoundingBox() override;
+	void UpdateTreeDirty() override;
 
-			Skeleton& GetSkeleton();
+	void OnUpdateWorldBoundingBox() override;
 
-		protected:
-			void OnModel() override;
+	Skeleton& GetSkeleton();
 
-			void SetSkeleton(const Skeleton& skeleton);
+protected:
+	void OnModel() override;
 
-			void SetBoneMappings(const Container::Vector<Container::PODVector<UInt32>>& boneMappings);
+	void SetSkeleton(const Skeleton& skeleton);
 
-			void UpdateSkinning();
+	void SetBoneMappings(const Vector<PODVector<UInt32>>& boneMappings);
 
-			void UpdateBoneBoundingBox();
+	void UpdateSkinning();
 
-		private:
-			bool skinningDirty_;
-			bool boneBoundingBoxDirty_;
+	void UpdateBoneBoundingBox();
+
+private:
+	bool skinningDirty_;
+	bool boneBoundingBoxDirty_;
 		
-			Skeleton skeleton_;
+	Skeleton skeleton_;
 
-			Container::PODVector<Math::Matrix3x4> skinMatrices_;
+	PODVector<Matrix3x4> skinMatrices_;
 
-			Container::Vector<Container::PODVector<Math::Matrix3x4>> geometrySkinMatrices_;
+	Vector<PODVector<Matrix3x4>> geometrySkinMatrices_;
 
-			Container::Vector<Container::PODVector<Math::Matrix3x4*>> geometrySkinMatrixPtrs_;
+	Vector<PODVector<Matrix3x4*>> geometrySkinMatrixPtrs_;
 
-			Math::BoundingBox boneBoundingBox_;
-		};
-	}
+	BoundingBox boneBoundingBox_;
+};
+
 }

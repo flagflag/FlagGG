@@ -8,43 +8,42 @@
 
 namespace FlagGG
 {
-	namespace Scene
-	{
-		struct BoneTrack
-		{
-			Bone* bone_{ nullptr };
-			const AnimationTrack* track_{ nullptr };
-		};
 
-		class FlagGG_API AnimationComponent : public Component
-		{
-			OBJECT_OVERRIDE(AnimationComponent, Component);
-		public:
-			void Update(Real timeStep) override;
+struct BoneTrack
+{
+	Bone* bone_{ nullptr };
+	const AnimationTrack* track_{ nullptr };
+};
 
-			void SetAnimation(Animation* animation);
+class FlagGG_API AnimationComponent : public Component
+{
+	OBJECT_OVERRIDE(AnimationComponent, Component);
+public:
+	void Update(Real timeStep) override;
 
-			void Play(bool isLoop);
+	void SetAnimation(Animation* animation);
 
-			void Stop();
+	void Play(bool isLoop);
 
-			void Pause(bool pause);
+	void Stop();
 
-		protected:
-			void SetAnimationTrack();
+	void Pause(bool pause);
 
-			void UpdateAnimation(Real timeStep);
+protected:
+	void SetAnimationTrack();
 
-			void UpdateBoneTrack(BoneTrack& boneTrack);
+	void UpdateAnimation(Real timeStep);
 
-		private:
-			Container::SharedPtr<Animation> animation_;
-			Container::PODVector<BoneTrack> boneTracks_;
+	void UpdateBoneTrack(BoneTrack& boneTrack);
 
-			Real animTime_{ 0.0f };
-			bool startPlay_{ false };
-			bool isPaused_{ false };
-			bool isLoop_{ false };
-		};
-	}
+private:
+	SharedPtr<Animation> animation_;
+	PODVector<BoneTrack> boneTracks_;
+
+	Real animTime_{ 0.0f };
+	bool startPlay_{ false };
+	bool isPaused_{ false };
+	bool isLoop_{ false };
+};
+
 }

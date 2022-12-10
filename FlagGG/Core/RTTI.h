@@ -6,45 +6,44 @@
 
 namespace FlagGG
 {
-	namespace Core
-	{
-		class FlagGG_API TypeInfo
-		{
-		public:
-			TypeInfo(const char* typeName, const TypeInfo* baseTypeInfo);
-			~TypeInfo();
 
-			bool IsTypeOf(Container::StringHash type) const;
-			bool IsTypeOf(const TypeInfo* typeInfo) const;
-			template<typename T> bool IsTypeOf() const { return IsTypeOf(T::GetTypeInfoStatic()); }
+class FlagGG_API TypeInfo
+{
+public:
+	TypeInfo(const char* typeName, const TypeInfo* baseTypeInfo);
+	~TypeInfo();
 
-			Container::StringHash GetType() const { return type_; }
-			const Container::String& GetTypeName() const { return typeName_; }
-			const TypeInfo* GetBaseTypeInfo() const { return baseTypeInfo_; }
+	bool IsTypeOf(StringHash type) const;
+	bool IsTypeOf(const TypeInfo* typeInfo) const;
+	template<typename T> bool IsTypeOf() const { return IsTypeOf(T::GetTypeInfoStatic()); }
 
-		private:
-			Container::StringHash type_;
-			Container::String typeName_;
-			const TypeInfo* baseTypeInfo_;
-		};
+	StringHash GetType() const { return type_; }
+	const String& GetTypeName() const { return typeName_; }
+	const TypeInfo* GetBaseTypeInfo() const { return baseTypeInfo_; }
 
-		class FlagGG_API RTTIObject
-		{
-		public:
-			virtual ~RTTIObject();
+private:
+	StringHash type_;
+	String typeName_;
+	const TypeInfo* baseTypeInfo_;
+};
 
-			virtual Container::StringHash GetType() const = 0;
-			virtual const Container::String& GetTypeName() const = 0;
-			virtual const TypeInfo* GetTypeInfo() const = 0;
+class FlagGG_API RTTIObject
+{
+public:
+	virtual ~RTTIObject();
 
-			static const TypeInfo* GetTypeInfoStatic() { return nullptr; }
-			bool IsInstanceOf(Container::StringHash type) const;
-			bool IsInstanceOf(const TypeInfo* typeInfo) const;
-			template<typename T> bool IsInstanceOf() const { return IsInstanceOf(T::GetTypeInfoStatic()); }
-			template<typename T> T* DynamicCast() { return IsInstanceOf<T>() ? static_cast<T*>(this) : nullptr; }
-			template<typename T> const T* DynamicCast() const { return IsInstanceOf<T>() ? static_cast<const T*>(this) : nullptr; }
-		};
-	}
+	virtual StringHash GetType() const = 0;
+	virtual const String& GetTypeName() const = 0;
+	virtual const TypeInfo* GetTypeInfo() const = 0;
+
+	static const TypeInfo* GetTypeInfoStatic() { return nullptr; }
+	bool IsInstanceOf(StringHash type) const;
+	bool IsInstanceOf(const TypeInfo* typeInfo) const;
+	template<typename T> bool IsInstanceOf() const { return IsInstanceOf(T::GetTypeInfoStatic()); }
+	template<typename T> T* DynamicCast() { return IsInstanceOf<T>() ? static_cast<T*>(this) : nullptr; }
+	template<typename T> const T* DynamicCast() const { return IsInstanceOf<T>() ? static_cast<const T*>(this) : nullptr; }
+};
+
 }
 
 #define OBJECT_OVERRIDE(typeName, baseTypeName) \
@@ -52,10 +51,10 @@ namespace FlagGG
         using ClassName = typeName; \
         using BaseClassName = baseTypeName; \
 		using SuperClassName = baseTypeName; \
-        virtual FlagGG::Container::StringHash GetType() const override { return GetTypeInfoStatic()->GetType(); } \
-        virtual const FlagGG::Container::String& GetTypeName() const override { return GetTypeInfoStatic()->GetTypeName(); } \
-        virtual const FlagGG::Core::TypeInfo* GetTypeInfo() const override { return GetTypeInfoStatic(); } \
-        static FlagGG::Container::StringHash GetTypeStatic() { return GetTypeInfoStatic()->GetType(); } \
-        static const FlagGG::Container::String& GetTypeNameStatic() { return GetTypeInfoStatic()->GetTypeName(); } \
-        static const FlagGG::Core::TypeInfo* GetTypeInfoStatic() { static const FlagGG::Core::TypeInfo typeInfoStatic(#typeName, BaseClassName::GetTypeInfoStatic()); return &typeInfoStatic; } \
+        virtual FlagGG::StringHash GetType() const override { return GetTypeInfoStatic()->GetType(); } \
+        virtual const FlagGG::String& GetTypeName() const override { return GetTypeInfoStatic()->GetTypeName(); } \
+        virtual const FlagGG::TypeInfo* GetTypeInfo() const override { return GetTypeInfoStatic(); } \
+        static FlagGG::StringHash GetTypeStatic() { return GetTypeInfoStatic()->GetType(); } \
+        static const FlagGG::String& GetTypeNameStatic() { return GetTypeInfoStatic()->GetTypeName(); } \
+        static const FlagGG::TypeInfo* GetTypeInfoStatic() { static const FlagGG::TypeInfo typeInfoStatic(#typeName, BaseClassName::GetTypeInfoStatic()); return &typeInfoStatic; } \
 

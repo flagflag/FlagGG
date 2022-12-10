@@ -5,30 +5,29 @@
 
 namespace FlagGG
 {
-	namespace AsyncFrame
-	{
-		class FlagGG_API NullMutex final
-		{
-		public:
-			inline void Lock() {}
 
-			inline bool TryLock() { return false; }
+class FlagGG_API NullMutex final
+{
+public:
+	inline void Lock() {}
 
-			inline void UnLock() {}
-		};
+	inline bool TryLock() { return false; }
 
-		class FlagGG_API Mutex : public KernelObject::HandleObject
-		{
-		public:
-			Mutex();
+	inline void UnLock() {}
+};
 
-			~Mutex() override;
+class FlagGG_API Mutex : public HandleObject
+{
+public:
+	Mutex();
 
-			void Lock();
+	~Mutex() override;
 
-			bool TryLock();
+	void Lock();
 
-			void UnLock();
-		};
-	}
+	bool TryLock();
+
+	void UnLock();
+};
+
 }

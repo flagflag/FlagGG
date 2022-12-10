@@ -4,12 +4,11 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		class FlagGG_API ConstantBuffer : public GPUBuffer
-		{
-		public:
-			UInt32 GetBindFlags() override;
-		};
-	}
+
+class FlagGG_API ConstantBuffer : public GPUBuffer
+{
+public:
+	UInt32 GetBindFlags() override;
+};
+
 }

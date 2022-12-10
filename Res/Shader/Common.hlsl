@@ -48,3 +48,54 @@ float DecodeFloatRG(float2 enc)
     float2 kDecodeDot = float2(1.0, 1.0 / 255.0);
     return dot(enc, kDecodeDot);
 }
+
+float GammaToLinearSpaceExact(float value)
+{
+    if (value <= 0.04045f)
+        return value / 12.92f;
+    else if (value < 1.0f)
+        return pow((value + 0.055f)/1.055f, 2.4f);
+    else
+        return pow(value, 2.2f);
+}
+
+float LinearToGammaSpaceExact(float value)
+{
+    if (value <= 0.0f)
+        return 0.0f;
+    else if (value <= 0.0031308f)
+        return 12.92f * value;
+    else if (value < 1.0f)
+        return 1.055f * pow(value, 0.4166667f) - 0.055f;
+    else
+        return pow(value, 0.45454545f);
+}
+
+float3 GammaToLinearSpace(float3 sRGB)
+{
+    // Approximate version from http://chilliant.blogspot.com.au/2012/08/srgb-approximations-for-hlsl.html?m=1
+    return sRGB * (sRGB * (sRGB * 0.305306011f + 0.682171111f) + 0.012522878f);
+
+    // Precise version, useful for debugging.
+    //return float3(GammaToLinearSpaceExact(sRGB.r), GammaToLinearSpaceExact(sRGB.g), GammaToLinearSpaceExact(sRGB.b));
+}
+
+float4 GammaToLinearSpace(float4 sRGB)
+{
+    return float4(GammaToLinearSpace(sRGB.rgb), sRGB.a);
+}
+
+float3 LinearToGammaSpace(float3 linRGB)
+{
+    linRGB = max(linRGB, float3(0.f, 0.f, 0.f));
+    // An almost-perfect approximation from http://chilliant.blogspot.com.au/2012/08/srgb-approximations-for-hlsl.html?m=1
+    return max(1.055f * pow(linRGB, float3(0.416666667f, 0.416666667f, 0.416666667f)) - 0.055f, 0.f);
+
+    // Exact version, useful for debugging.
+    //return float3(LinearToGammaSpaceExact(linRGB.r), LinearToGammaSpaceExact(linRGB.g), LinearToGammaSpaceExact(linRGB.b));
+}
+
+float4 LinearToGammaSpace(float4 linRGB)
+{
+    return float4(LinearToGammaSpace(linRGB.rgb), linRGB.a);
+}

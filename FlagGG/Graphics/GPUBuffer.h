@@ -8,35 +8,34 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		class FlagGG_API GPUBuffer : public GPUObject, public Container::RefCounted
-		{
-		public:
-			bool IsValid() override;
 
-			bool SetSize(UInt32 byteCount);
+class FlagGG_API GPUBuffer : public GPUObject, public RefCounted
+{
+public:
+	bool IsValid() override;
 
-			void* Lock(UInt32 start, UInt32 count);
+	bool SetSize(UInt32 byteCount);
 
-			void Unlock();
+	void* Lock(UInt32 start, UInt32 count);
 
-			IOFrame::Buffer::IOBuffer* LockStaticBuffer(UInt32 start, UInt32 count);
+	void Unlock();
 
-			void UnlockStaticBuffer();
+	IOFrame::Buffer::IOBuffer* LockStaticBuffer(UInt32 start, UInt32 count);
 
-			IOFrame::Buffer::IOBuffer* LockDynamicBuffer();
+	void UnlockStaticBuffer();
 
-			void UnlockDynamicBuffer();
+	IOFrame::Buffer::IOBuffer* LockDynamicBuffer();
 
-			virtual UInt32 GetBindFlags() = 0;
+	void UnlockDynamicBuffer();
 
-		protected:
-			void Initialize() override;
+	virtual UInt32 GetBindFlags() = 0;
 
-			Container::SharedPtr<IOFrame::Buffer::IOBuffer> buffer_;
+protected:
+	void Initialize() override;
 
-			UInt32 gpuBufferSize_{ 0u };
-		};
-	}
+	SharedPtr<IOFrame::Buffer::IOBuffer> buffer_;
+
+	UInt32 gpuBufferSize_{ 0u };
+};
+
 }

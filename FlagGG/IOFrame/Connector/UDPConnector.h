@@ -6,33 +6,28 @@
 #include "IOFrame/Buffer/IOBuffer.h"
 #include "IOFrame/ThreadPool/IOThreadPool.h"
 
-namespace FlagGG
+namespace FlagGG { namespace IOFrame { namespace Connector {
+
+class UDPConnector : public IOConnector
 {
-	namespace IOFrame
-	{
-		namespace Connector
-		{
-			class UDPConnector : public IOConnector
-			{
-			public:
-				UDPConnector(Handler::EventHandlerPtr handler, IOFrame::IOThreadPoolPtr& thread_pool);
+public:
+	UDPConnector(Handler::EventHandlerPtr handler, IOFrame::IOThreadPoolPtr& thread_pool);
 
-				bool Connect(const char* ip, UInt16 port) override;
+	bool Connect(const char* ip, UInt16 port) override;
 
-				bool Disconnect() override;
+	bool Disconnect() override;
 
-				bool Write(Buffer::IOBufferPtr buffer) override;
+	bool Write(Buffer::IOBufferPtr buffer) override;
 
-			protected:
-				void PacketReciver(SLNet::Packet* packet);
+protected:
+	void PacketReciver(SLNet::Packet* packet);
 
-			private:
-				Channel::UDPChannelPtr		channel_;
+private:
+	Channel::UDPChannelPtr		channel_;
 
-				Handler::EventHandlerPtr	handler_;
-			};
+	Handler::EventHandlerPtr	handler_;
+};
 
-			typedef Container::SharedPtr < UDPConnector > UDPConnectorPtr;
-		}
-	}
-}
+typedef SharedPtr<UDPConnector> UDPConnectorPtr;
+
+}}}

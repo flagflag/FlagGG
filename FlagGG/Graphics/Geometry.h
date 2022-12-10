@@ -8,52 +8,51 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		class FlagGG_API Geometry : public Container::RefCounted
-		{
-		public:
-			void SetPrimitiveType(PrimitiveType type);
+
+class FlagGG_API Geometry : public RefCounted
+{
+public:
+	void SetPrimitiveType(PrimitiveType type);
 			
-			void SetVertexBuffer(UInt32 index, VertexBuffer* vertexBuffer);
+	void SetVertexBuffer(UInt32 index, VertexBuffer* vertexBuffer);
 
-			void SetIndexBuffer(IndexBuffer* indexBuffer);
+	void SetIndexBuffer(IndexBuffer* indexBuffer);
 
-			void SetDataRange(UInt32 indexStart, UInt32 indexCount);
+	void SetDataRange(UInt32 indexStart, UInt32 indexCount);
 
-			void SetLodDistance(float distance);
+	void SetLodDistance(float distance);
 
-			const Container::Vector<Container::SharedPtr<VertexBuffer>>& GetVertexBuffers() const;
+	const Vector<SharedPtr<VertexBuffer>>& GetVertexBuffers() const;
 
-			VertexBuffer* GetVertexBuffer(UInt32 index) const;
+	VertexBuffer* GetVertexBuffer(UInt32 index) const;
 
-			IndexBuffer* GetIndexBuffer() const;
+	IndexBuffer* GetIndexBuffer() const;
 
-			float GetLodDistance() const;
+	float GetLodDistance() const;
 
-			PrimitiveType GetPrimitiveType() const;
+	PrimitiveType GetPrimitiveType() const;
 
-			UInt32 GetIndexStart() const;
+	UInt32 GetIndexStart() const;
 
-			UInt32 GetIndexCount() const;
+	UInt32 GetIndexCount() const;
 
-			UInt32 GetVertexStart() const;
+	UInt32 GetVertexStart() const;
 
-			UInt32 GetVertexCount() const;
+	UInt32 GetVertexCount() const;
 
-		private:
-			PrimitiveType primitiveType_;
+private:
+	PrimitiveType primitiveType_;
 
-			Container::Vector<Container::SharedPtr<VertexBuffer>> vertexBuffers_;
+	Vector<SharedPtr<VertexBuffer>> vertexBuffers_;
 
-			Container::SharedPtr<IndexBuffer> indexBuffer_;
+	SharedPtr<IndexBuffer> indexBuffer_;
 
-			UInt32 indexStart_;
-			UInt32 indexCount_;
-			UInt32 vertexStart_;
-			UInt32 vertexCount_;
+	UInt32 indexStart_;
+	UInt32 indexCount_;
+	UInt32 vertexStart_;
+	UInt32 vertexCount_;
 			
-			float lodDistance_;
-		};
-	}
+	float lodDistance_;
+};
+
 }

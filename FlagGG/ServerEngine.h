@@ -8,37 +8,36 @@
 #include "Launcher.h"
 
 using namespace FlagGG::Core;
-using namespace FlagGG::Container;
-using namespace FlagGG::Resource;
-using namespace FlagGG::Utility;
 
 namespace FlagGG
 {
-	class FlagGG_API ServerEngine : public Launcher
-	{
-	public:
-		void SetFrameRate(Real rate);
 
-	protected:
-		void Start() override;
+class FlagGG_API ServerEngine : public Launcher
+{
+public:
+	void SetFrameRate(Real rate);
 
-		void Stop() override;
+protected:
+	void Start() override;
 
-		bool IsRunning() override;
+	void Stop() override;
 
-		void RunFrame() override;
+	bool IsRunning() override;
 
-		void CreateCoreObject();
+	void RunFrame() override;
 
-		SharedPtr<Context> context_;
+	void CreateCoreObject();
 
-		SharedPtr<ResourceCache> cache_;
+	SharedPtr<Context> context_;
 
-		SystemHelper::Timer timer_;
-		Real elapsedTime_{ 0.0f };
+	SharedPtr<ResourceCache> cache_;
 
-		bool isRunning_{ false };
+	Timer timer_;
+	Real elapsedTime_{ 0.0f };
 
-		Real frameRate_{ 99999.0f };
-	};
+	bool isRunning_{ false };
+
+	Real frameRate_{ 99999.0f };
+};
+
 }

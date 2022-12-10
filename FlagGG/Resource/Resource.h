@@ -9,48 +9,47 @@
 
 namespace FlagGG
 {
-	namespace Resource
-	{
-		class FlagGG_API Resource : public Container::RefCounted
-		{
-		public:
-			Resource(Core::Context* context);
 
-			~Resource() override = default;
+class FlagGG_API Resource : public RefCounted
+{
+public:
+	Resource(Context* context);
 
-			void SetName(const Container::String& name);
+	~Resource() override = default;
 
-			const Container::String& GetName() const { return name_; }
+	void SetName(const String& name);
 
-			bool LoadFile(const Container::String& filepath);
+	const String& GetName() const { return name_; }
 
-			bool LoadFile(IOFrame::Buffer::IOBuffer* stream);
+	bool LoadFile(const String& filepath);
 
-			bool SaveFile(const Container::String& filepath);
+	bool LoadFile(IOFrame::Buffer::IOBuffer* stream);
 
-			bool SaveFile(IOFrame::Buffer::IOBuffer* stream);
+	bool SaveFile(const String& filepath);
 
-			void SetMemoryUse(UInt32 memoryUse);
+	bool SaveFile(IOFrame::Buffer::IOBuffer* stream);
 
-			UInt32 GetMemoryUse() const;
+	void SetMemoryUse(UInt32 memoryUse);
 
-		protected:
-			// 至于BeginLoad为什么定义成非共享指针的原因：LoadFile是在栈上创建IOBuffer的子类
-			virtual bool BeginLoad(IOFrame::Buffer::IOBuffer* stream);
+	UInt32 GetMemoryUse() const;
 
-			virtual bool EndLoad();
+protected:
+	// 至于BeginLoad为什么定义成非共享指针的原因：LoadFile是在栈上创建IOBuffer的子类
+	virtual bool BeginLoad(IOFrame::Buffer::IOBuffer* stream);
 
-			virtual bool BeginSave(IOFrame::Buffer::IOBuffer* stream);
+	virtual bool EndLoad();
 
-			virtual bool EndSave();
+	virtual bool BeginSave(IOFrame::Buffer::IOBuffer* stream);
 
-			Core::Context* context_;
+	virtual bool EndSave();
 
-			Container::String name_;
+	Context* context_;
 
-			UInt32 memoryUse_{ 0 };
-		};
-	}
+	String name_;
+
+	UInt32 memoryUse_{ 0 };
+};
+
 }
 
 #endif

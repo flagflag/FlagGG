@@ -2,24 +2,19 @@
 
 #include "IOContext.h"
 
-namespace FlagGG
+namespace FlagGG { namespace IOFrame { namespace Context {
+
+class UDPContext : public IOContext
 {
-	namespace IOFrame
-	{
-		namespace Context
-		{
-			class UDPContext : public IOContext
-			{
-			public:
-				UDPContext(Channel::IOChannelPtr channel);
+public:
+	UDPContext(Channel::IOChannelPtr channel);
 
-				Channel::IOChannelPtr GetChannel() override;
+	Channel::IOChannelPtr GetChannel() override;
 
-			private:
-				Channel::IOChannelPtr channel_;
-			};
+private:
+	Channel::IOChannelPtr channel_;
+};
 
-			typedef Container::SharedPtr < UDPContext > UDPContextPtr;
-		}
-	}
-}
+typedef SharedPtr<UDPContext> UDPContextPtr;
+
+}}}

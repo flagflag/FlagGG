@@ -3,7 +3,7 @@
 
 #include <Windows.h>
 
-CameraOperation::CameraOperation(FlagGG::Core::Context* context, Camera* inCamera) :
+CameraOperation::CameraOperation(Context* context, Camera* inCamera) :
 	camera_(inCamera)
 {
 	camera_->Walk(-5.0);

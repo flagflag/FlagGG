@@ -10,52 +10,51 @@
 
 namespace FlagGG
 {
-	namespace Scene
-	{
-		struct FlagGG_API OctreeNode
-		{
-			OctreeNode(const Math::BoundingBox& box, UInt32 level);
 
-			~OctreeNode();
+struct FlagGG_API OctreeNode
+{
+	OctreeNode(const BoundingBox& box, UInt32 level);
 
-			void AddElement(Component* component);
+	~OctreeNode();
 
-			void RemoveElement(Component* component);
+	void AddElement(Component* component);
 
-			OctreeNode* children_[8]{ nullptr };
+	void RemoveElement(Component* component);
 
-			UInt32 level_;
-			Math::BoundingBox box_;
-			Math::BoundingBox cullingBox_;
-			Container::PODVector<Component*> components_;
-		};
+	OctreeNode* children_[8]{ nullptr };
 
-		class FlagGG_API Octree : public Component
-		{
-		public:
-			explicit Octree();
+	UInt32 level_;
+	BoundingBox box_;
+	BoundingBox cullingBox_;
+	PODVector<Component*> components_;
+};
 
-			~Octree() override = default;
+class FlagGG_API Octree : public Component
+{
+public:
+	explicit Octree();
 
-			void Raycast(RayOctreeQuery& query);
+	~Octree() override = default;
 
-			void InsertElement(Component* component);
+	void Raycast(RayOctreeQuery& query);
 
-		protected:
-			bool CheckInsert(OctreeNode* node, const Math::BoundingBox& box);
+	void InsertElement(Component* component);
 
-			void InsertElement(OctreeNode* node, Component* component);
+protected:
+	bool CheckInsert(OctreeNode* node, const BoundingBox& box);
 
-			OctreeNode* GetOrCreateChild(OctreeNode* node, UInt32 index);
+	void InsertElement(OctreeNode* node, Component* component);
 
-			void RaycastImpl(OctreeNode* node, RayOctreeQuery& query);
+	OctreeNode* GetOrCreateChild(OctreeNode* node, UInt32 index);
 
-		private:
-			OctreeNode root_;
+	void RaycastImpl(OctreeNode* node, RayOctreeQuery& query);
 
-			UInt32 maxLevel_;
+private:
+	OctreeNode root_;
 
-			Container::Allocator<OctreeNode> nodeAllocator_;
-		};
-	}
+	UInt32 maxLevel_;
+
+	Allocator<OctreeNode> nodeAllocator_;
+};
+
 }

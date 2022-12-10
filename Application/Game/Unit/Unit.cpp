@@ -11,10 +11,6 @@
 
 #include "Unit/Unit.h"
 
-using namespace FlagGG::Graphics;
-using namespace FlagGG::Resource;
-using namespace FlagGG::Config;
-
 Unit::Unit(Context* context) :
 	Node(),
 	context_(context),

@@ -13,64 +13,63 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		// IDXGISwapChain*;
-		class FlagGG_API Viewport : public Container::RefCounted
-		{
-		public:
-			~Viewport() override = default;
 
-			UInt32 GetX() const;
+// IDXGISwapChain*;
+class FlagGG_API Viewport : public RefCounted
+{
+public:
+	~Viewport() override = default;
 
-			UInt32 GetY() const;
+	UInt32 GetX() const;
 
-			UInt32 GetWidth() const;
+	UInt32 GetY() const;
 
-			UInt32 GetHeight() const;
+	UInt32 GetWidth() const;
 
-			void Resize(const Math::IntRect& rect);
+	UInt32 GetHeight() const;
 
-			const Math::IntRect& GetSize() const;
+	void Resize(const IntRect& rect);
 
-			RenderSurface* GetRenderTarget() const;
+	const IntRect& GetSize() const;
 
-			void SetRenderTarget(RenderSurface* renderTarget);
+	RenderSurface* GetRenderTarget() const;
 
-			RenderSurface* GetDepthStencil() const;
+	void SetRenderTarget(RenderSurface* renderTarget);
 
-			void SetDepthStencil(RenderSurface* depthStencil);
+	RenderSurface* GetDepthStencil() const;
 
-			Scene::Camera* GetCamera() const;
+	void SetDepthStencil(RenderSurface* depthStencil);
 
-			void SetCamera(Scene::Camera* camera);
+	Camera* GetCamera() const;
 
-			Scene::Scene* GetScene() const;
+	void SetCamera(Camera* camera);
 
-			void SetScene(Scene::Scene* scene);
+	Scene* GetScene() const;
 
-			void SetViewport();
+	void SetScene(Scene* scene);
 
-		protected:
-			void CreateRenderTarget();
+	void SetViewport();
 
-			void CreateSwapChain();
+protected:
+	void CreateRenderTarget();
 
-			void CreateDepthStencilView();
+	void CreateSwapChain();
+
+	void CreateDepthStencilView();
 			
-		protected:
-			Container::SharedPtr<RenderSurface> renderTarget_;
-			Container::SharedPtr<RenderSurface> depthStencil_;
+protected:
+	SharedPtr<RenderSurface> renderTarget_;
+	SharedPtr<RenderSurface> depthStencil_;
 
-			Container::SharedPtr<Scene::Camera> camera_;
+	SharedPtr<Camera> camera_;
 
-			Container::SharedPtr<Scene::Scene> scene_;
+	SharedPtr<Scene> scene_;
 
-			ID3D11DepthStencilView* depthStencialView_{ nullptr };
+	ID3D11DepthStencilView* depthStencialView_{ nullptr };
 
-			Math::IntRect rect_;
-		};
-	}
+	IntRect rect_;
+};
+
 }
 
 #endif

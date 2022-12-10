@@ -16,13 +16,13 @@ namespace FlagGG
 				return errorCode_.value();
 			}
 
-			Container::String IOError::Message() const
+			String IOError::Message() const
 			{
 				return errorCode_.message().c_str();
 			}
 #endif
 
-			CustomIOError::CustomIOError(int value, const Container::String& message) :
+			CustomIOError::CustomIOError(int value, const String& message) :
 				value_(value),
 				message_(message)
 			{}
@@ -32,7 +32,7 @@ namespace FlagGG
 				return value_;
 			}
 
-			Container::String CustomIOError::Message() const
+			String CustomIOError::Message() const
 			{
 				return message_;
 			}

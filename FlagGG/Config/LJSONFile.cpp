@@ -8,36 +8,35 @@
 
 namespace FlagGG
 {
-	namespace Config
+
+LJSONFile::LJSONFile(Context* context) :
+	Resource(context)
+{ }
+
+const LJSONValue& LJSONFile::GetRoot() const
+{
+	return root_;
+}
+
+bool LJSONFile::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
+{
+	String buffer;
+	stream->ToString(buffer);
+
+	LJSONParser parser;
+	if (!parser.Load(buffer.CString(), buffer.Length(), root_))
 	{
-		LJSONFile::LJSONFile(Core::Context* context) :
-			Resource(context)
-		{ }
+		FLAGGG_LOG_ERROR("parse json file failed.");
 
-		const LJSONValue& LJSONFile::GetRoot() const
-		{
-			return root_;
-		}
-
-		bool LJSONFile::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
-		{
-			Container::String buffer;
-			stream->ToString(buffer);
-
-			LJSONParser parser;
-			if (!parser.Load(buffer.CString(), buffer.Length(), root_))
-			{
-				FLAGGG_LOG_ERROR("parse json file failed.");
-
-				return false;
-			}
-
-			return true;
-		}
-
-		bool LJSONFile::EndLoad()
-		{
-			return true;
-		}
+		return false;
 	}
+
+	return true;
+}
+
+bool LJSONFile::EndLoad()
+{
+	return true;
+}
+
 }

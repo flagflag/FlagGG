@@ -11,91 +11,90 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		static const int MAX_TEXTURE_QUALITY_LEVELS = 3;
 
-		enum TextureUsage
-		{
-			TEXTURE_STATIC = 0,
-			TEXTURE_DYNAMIC,
-			TEXTURE_RENDERTARGET,
-			TEXTURE_DEPTHSTENCIL
-		};
+static const int MAX_TEXTURE_QUALITY_LEVELS = 3;
 
-		//Base Class, ID3D11Texture2D or ID3D11Texture3D
-		class FlagGG_API Texture : public GPUObject, public Resource::Resource
-		{
-		public:
-			Texture(Core::Context* context);
+enum TextureUsage
+{
+	TEXTURE_STATIC = 0,
+	TEXTURE_DYNAMIC,
+	TEXTURE_RENDERTARGET,
+	TEXTURE_DEPTHSTENCIL
+};
 
-			~Texture() override;
+//Base Class, ID3D11Texture2D or ID3D11Texture3D
+class FlagGG_API Texture : public GPUObject, public Resource
+{
+public:
+	Texture(Context* context);
 
-			bool IsValid() override;
+	~Texture() override;
 
-			void Initialize() override;
+	bool IsValid() override;
 
-			void SetNumLevels(UInt32 levels);
+	void Initialize() override;
 
-			Int32 GetWidth() const;
+	void SetNumLevels(UInt32 levels);
 
-			Int32 GetHeight() const;
+	Int32 GetWidth() const;
 
-			Int32 GetDepth() const;
+	Int32 GetHeight() const;
 
-			Int32 GetLevelWidth(UInt32 level) const;
+	Int32 GetDepth() const;
 
-			Int32 GetLevelHeight(UInt32 level) const;
+	Int32 GetLevelWidth(UInt32 level) const;
 
-			Int32 GetLevelDepth(UInt32 level) const;
+	Int32 GetLevelHeight(UInt32 level) const;
 
-			UInt32 GetRowDataSize(Int32 width) const;
+	Int32 GetLevelDepth(UInt32 level) const;
 
-			bool IsCompressed() const;
+	UInt32 GetRowDataSize(Int32 width) const;
 
-			UInt32 GetComponents() const;
+	bool IsCompressed() const;
 
-			virtual RenderSurface* GetRenderSurface() const { return nullptr; }
+	UInt32 GetComponents() const;
 
-			virtual RenderSurface* GetRenderSurface(UInt32 index) const { return nullptr; }
+	virtual RenderSurface* GetRenderSurface() const { return nullptr; }
 
-			friend class RenderEngine;
+	virtual RenderSurface* GetRenderSurface(UInt32 index) const { return nullptr; }
 
-		protected:
+	friend class RenderEngine;
 
-			virtual bool Create() { return false; }
-			void Release();
+protected:
 
-			static UInt32 CheckMaxLevels(Int32 width, Int32 height, UInt32 requestedLevels);
-			static UInt32 CheckMaxLevels(Int32 width, Int32 height, Int32 depth, UInt32 requestedLevels);
-			static UInt32 GetSRGBFormat(UInt32 format);
-			static UInt32 GetDSVFormat(UInt32 format);
-			static UInt32 GetSRVFormat(UInt32 format);
+	virtual bool Create() { return false; }
+	void Release();
 
-		protected:
-			UInt32 levels_{ 0 };
-			UInt32 requestedLevels_{ 0 };
+	static UInt32 CheckMaxLevels(Int32 width, Int32 height, UInt32 requestedLevels);
+	static UInt32 CheckMaxLevels(Int32 width, Int32 height, Int32 depth, UInt32 requestedLevels);
+	static UInt32 GetSRGBFormat(UInt32 format);
+	static UInt32 GetDSVFormat(UInt32 format);
+	static UInt32 GetSRVFormat(UInt32 format);
 
-			Int32 width_{ 0 };
-			Int32 height_{ 0 };
-			Int32 depth_{ 0 };
-			UInt32 format_{ 0 };
-			Int32 multiSample_{ 1 };
-			bool autoResolve_{ false };
+protected:
+	UInt32 levels_{ 0 };
+	UInt32 requestedLevels_{ 0 };
 
-			bool sRGB_{ false };
+	Int32 width_{ 0 };
+	Int32 height_{ 0 };
+	Int32 depth_{ 0 };
+	UInt32 format_{ 0 };
+	Int32 multiSample_{ 1 };
+	bool autoResolve_{ false };
 
-			TextureUsage usage_{ TEXTURE_STATIC };
+	bool sRGB_{ false };
 
-			UInt32 mipsToSkip_[MAX_TEXTURE_QUALITY_LEVELS];
+	TextureUsage usage_{ TEXTURE_STATIC };
 
-			ID3D11Resource* resolveTexture_{ nullptr };
+	UInt32 mipsToSkip_[MAX_TEXTURE_QUALITY_LEVELS];
 
-			ID3D11ShaderResourceView* shaderResourceView_{ nullptr };
+	ID3D11Resource* resolveTexture_{ nullptr };
 
-			ID3D11SamplerState* sampler_{ nullptr };
-		};
-	}
+	ID3D11ShaderResourceView* shaderResourceView_{ nullptr };
+
+	ID3D11SamplerState* sampler_{ nullptr };
+};
+
 }
 
 #endif

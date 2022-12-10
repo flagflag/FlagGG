@@ -13,10 +13,6 @@
 #include <Scene/Octree.h>
 #include <Log.h>
 
-using namespace FlagGG::Math;
-using namespace FlagGG::Utility;
-using namespace FlagGG::Graphics;
-
 void EditorApplication::Start()
 {
 	GameEngine::Start();
@@ -51,7 +47,7 @@ void EditorApplication::Update(float timeStep)
 
 void EditorApplication::CreateScene()
 {
-	scene_ = new FlagGG::Scene::Scene(context_);
+	scene_ = new Scene(context_);
 	scene_->Start();
 
 	scene_->CreateComponent<Octree>();
@@ -99,7 +95,7 @@ void EditorApplication::CreateScene()
 
 void EditorApplication::SetupWindow()
 {
-	IntRect rect = SystemHelper::GetDesktopRect();
+	IntRect rect = GetDesktopRect();
 
 	// 创建一张shaderMap
 	static SharedPtr<Texture2D> shadowMap_;

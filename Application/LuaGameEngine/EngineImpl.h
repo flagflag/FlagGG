@@ -14,66 +14,68 @@
 
 namespace LuaGameEngine
 {
-	class EngineImpl : public Engine, public InternalEvent
-	{
-	public:
-		EngineImpl(lua_State* L);
 
-		~EngineImpl() override;
+class EngineImpl : public Engine, public InternalEvent
+{
+public:
+	EngineImpl(lua_State* L);
 
-		EngineObject* CreateObjectImpl(const char* className) override;
+	~EngineImpl() override;
 
-		void DestroyObject(EngineObject* object) override;
+	EngineObject* CreateObjectImpl(const char* className) override;
 
-		void RegisterEventHandler(LuaEventHandler* handler) override;
+	void DestroyObject(EngineObject* object) override;
 
-		void UnregisterEventHandler(LuaEventHandler* handler) override;
+	void RegisterEventHandler(LuaEventHandler* handler) override;
 
-		void AddUser(const LuaUserInfo& info) override;
+	void UnregisterEventHandler(LuaEventHandler* handler) override;
 
-		void RemoveUser(Int64 userId) override;
+	void AddUser(const LuaUserInfo& info) override;
 
-		EngineObject* GetPlayer(Int64 userId) override;
+	void RemoveUser(Int64 userId) override;
 
-		void OnStart() override;
+	EngineObject* GetPlayer(Int64 userId) override;
 
-		void OnStop() override;
+	void OnStart() override;
 
-		void OnFrameUpdate(float timeStep) override;
+	void OnStop() override;
 
-		Controler* GetControler() override;
+	void OnFrameUpdate(float timeStep) override;
 
-		void OnAfterCreateObject(EngineObject* object) override;
+	Controler* GetControler() override;
 
-		void OnBeforeDestroyObject(EngineObject* object) override;
+	void OnAfterCreateObject(EngineObject* object) override;
 
-	protected:
-		void RegisterEngineObjectType();
+	void OnBeforeDestroyObject(EngineObject* object) override;
 
-		void CreateEngineEntry();
+protected:
+	void RegisterEngineObjectType();
 
-		void CreatePlayerClass();
+	void CreateEngineEntry();
 
-		void CreateUnitClass();
+	void CreatePlayerClass();
 
-		void CreateMovementClass();
+	void CreateUnitClass();
 
-	private:
-		lua_State* L_;
+	void CreateMovementClass();
 
-		FlagGG::Container::PODVector<LuaEventHandler*> handlers_;
+private:
+	lua_State* L_;
 
-		FlagGG::Container::HashMap<Int64, FlagGG::Container::SharedPtr<Player>> players_;
+	PODVector<LuaEventHandler*> handlers_;
 
-		FlagGG::Container::IoC<EngineObject> engineObjectCreator_;
+	HashMap<Int64, SharedPtr<Player>> players_;
 
-		FlagGG::Core::ObjectPool<Unit> unitPool_;
-		FlagGG::Core::ObjectPool<Movement> movementPool_;
-		FlagGG::Core::ObjectPool<Spell> spellPool_;
-		FlagGG::Core::ObjectPool<Buff> buffPool_;
+	IoC<EngineObject> engineObjectCreator_;
 
-		FlagGG::Container::PODVector<EngineObject*> peddingResolve_;
+	ObjectPool<Unit> unitPool_;
+	ObjectPool<Movement> movementPool_;
+	ObjectPool<Spell> spellPool_;
+	ObjectPool<Buff> buffPool_;
 
-		Controler* controler_;
-	};
+	PODVector<EngineObject*> peddingResolve_;
+
+	Controler* controler_;
+};
+
 }

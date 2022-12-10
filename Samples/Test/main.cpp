@@ -8,7 +8,7 @@
 
 #define TAB "    "
 
-using namespace FlagGG::Config;
+using namespace FlagGG;
 
 void Print(const LJSONValue& root, const std::string& t = "")
 {
@@ -44,7 +44,7 @@ void Print(const LJSONValue& root, const std::string& t = "")
 	}
 	else if (root.IsString())
 	{
-		const FlagGG::Container::String& content = root.GetString();
+		const String& content = root.GetString();
 		bool flag = content.Find('\n');
 		printf("%s\"%s\"%s,\n", flag ? "(" : "", content.CString(), flag ? ")" : "");
 	}
@@ -52,7 +52,7 @@ void Print(const LJSONValue& root, const std::string& t = "")
 
 void Run()
 {
-	FlagGG::Core::Context context;
+	Context context;
 	LJSONFile jsonFile(&context);
 	if (!jsonFile.LoadFile("../../../Samples/Test/TestConfig.ljson"))
 	{
@@ -67,38 +67,38 @@ void Run()
 
 void Run2()
 {
-	FlagGG::Container::FVariant v1(100);
-	FlagGG::Container::FVariant v2 = 110u;
-	FlagGG::Container::FVariant v3(FlagGG::Container::String("2333"));
-	FlagGG::Container::FVariant v4(0.1f);
+	FVariant v1(100);
+	FVariant v2 = 110u;
+	FVariant v3(String("2333"));
+	FVariant v4(0.1f);
 
-	printf("%d %u %s %f\n", v1.Get<int>(), v2.Get<unsigned>(), v3.Get<FlagGG::Container::String>().CString(), v4.Get<float>());
+	printf("%d %u %s %f\n", v1.Get<int>(), v2.Get<unsigned>(), v3.Get<String>().CString(), v4.Get<float>());
 
-	const FlagGG::Container::FVariant& cv3 = v3;
-	FlagGG::Container::String t = cv3.Get<FlagGG::Container::String>();
+	const FVariant& cv3 = v3;
+	String t = cv3.Get<String>();
 
-	FlagGG::Container::FVariant v5(v1);
-	FlagGG::Container::FVariant v6 = v2;
-	FlagGG::Container::FVariant v7;
-	FlagGG::Container::FVariant v8;
+	FVariant v5(v1);
+	FVariant v6 = v2;
+	FVariant v7;
+	FVariant v8;
 	v7 = v3;
-	v8 = FlagGG::Container::FVariant(0.1f);
+	v8 = FVariant(0.1f);
 
-	printf("%d %u %s %f\n", v5.Get<int>(), v6.Get<unsigned>(), v7.Get<FlagGG::Container::String>().CString(), v8.Get<float>());
+	printf("%d %u %s %f\n", v5.Get<int>(), v6.Get<unsigned>(), v7.Get<String>().CString(), v8.Get<float>());
 
 	v1 = 0.1f;
-	v2 = FlagGG::Container::String("2333");
+	v2 = String("2333");
 	v3.Set(110u);
 	v4.Set(100);
 
-	printf("%f %s %u %d\n", v1.Get<float>(), v2.Get<FlagGG::Container::String>().CString(), v3.Get<unsigned>(), v4.Get<int>());
+	printf("%f %s %u %d\n", v1.Get<float>(), v2.Get<String>().CString(), v3.Get<unsigned>(), v4.Get<int>());
 
-	FlagGG::Container::FVariant test;
-	test = FlagGG::Math::Vector2(100, 100);
+	FVariant test;
+	test = Vector2(100, 100);
 
-	printf("(%f, %f)\n", test.Get<FlagGG::Math::Vector2>().x_, test.Get<FlagGG::Math::Vector2>().y_);
+	printf("(%f, %f)\n", test.Get<Vector2>().x_, test.Get<Vector2>().y_);
 
-	auto temp = [](const FlagGG::Math::Vector2& value)
+	auto temp = [](const Vector2& value)
 	{
 		printf("Visit ==> Vector2(%f, %f)\n", value.x_, value.y_);
 	};

@@ -9,54 +9,53 @@
 
 namespace FlagGG
 {
-	namespace Core
-	{
-		class Context;
 
-		class FlagGG_API KeyState
-		{
-		public:
-			bool OnCtrl();
+class Context;
 
-			bool OnAlt();
+class FlagGG_API KeyState
+{
+public:
+	bool OnCtrl();
 
-			bool OnShift();
+	bool OnAlt();
 
-		private:
+	bool OnShift();
 
-		};
+private:
 
-		class FlagGG_API Input : public Container::RefCounted
-		{
-		public:
-			Input(Context* context);
+};
 
-			~Input() override = default;
+class FlagGG_API Input : public RefCounted
+{
+public:
+	Input(Context* context);
 
-			Math::IntVector2 GetMousePos() const;
+	~Input() override = default;
 
-			void ShowMouse();
+	IntVector2 GetMousePos() const;
 
-			void HideMouse();
+	void ShowMouse();
 
-			bool IsMouseShow() const;
+	void HideMouse();
 
-			void OnKeyDown(KeyState* keyState, UInt32 keyCode);
+	bool IsMouseShow() const;
 
-			void OnKeyUp(KeyState* keyState, UInt32 keyCode);
+	void OnKeyDown(KeyState* keyState, UInt32 keyCode);
 
-			void OnMouseDown(KeyState* keyState, MouseKey mouseKey);
+	void OnKeyUp(KeyState* keyState, UInt32 keyCode);
 
-			void OnMouseUp(KeyState* keyState, MouseKey mouseKey);
+	void OnMouseDown(KeyState* keyState, MouseKey mouseKey);
 
-			void OnMouseMove(KeyState* keyState, const Math::Vector2& delta);
+	void OnMouseUp(KeyState* keyState, MouseKey mouseKey);
 
-		private:
-			Context* context_;
+	void OnMouseMove(KeyState* keyState, const Vector2& delta);
 
-			bool isMouseShow_;
-		};
-	}
+private:
+	Context* context_;
+
+	bool isMouseShow_;
+};
+
 }
 
 #endif

@@ -8,108 +8,107 @@
 
 namespace FlagGG
 {
-	namespace Math
-	{
-		class FlagGG_API Quaternion
-		{
-		public:
-			Quaternion() NOEXCEPT;
 
-			Quaternion(const Quaternion& quat) NOEXCEPT;
+class FlagGG_API Quaternion
+{
+public:
+	Quaternion() NOEXCEPT;
 
-			Quaternion(Real w, Real x, Real y, Real z) NOEXCEPT;
+	Quaternion(const Quaternion& quat) NOEXCEPT;
 
-			explicit Quaternion(const Real* data) NOEXCEPT;
+	Quaternion(Real w, Real x, Real y, Real z) NOEXCEPT;
 
-			Quaternion(Real angle, const Vector3& axis) NOEXCEPT;
+	explicit Quaternion(const Real* data) NOEXCEPT;
 
-			explicit Quaternion(Real angle) NOEXCEPT;
+	Quaternion(Real angle, const Vector3& axis) NOEXCEPT;
 
-			Quaternion(Real x, Real y, Real z) NOEXCEPT;
+	explicit Quaternion(Real angle) NOEXCEPT;
 
-			Quaternion(const Vector3& start, const Vector3& end) NOEXCEPT;
+	Quaternion(Real x, Real y, Real z) NOEXCEPT;
 
-			Quaternion(const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis) NOEXCEPT;
+	Quaternion(const Vector3& start, const Vector3& end) NOEXCEPT;
 
-			explicit Quaternion(const Matrix3& matrix) NOEXCEPT;
+	Quaternion(const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis) NOEXCEPT;
 
-			Quaternion& operator =(const Quaternion& rhs) NOEXCEPT;
-			Quaternion& operator +=(const Quaternion& rhs);
+	explicit Quaternion(const Matrix3& matrix) NOEXCEPT;
 
-			Quaternion& operator *=(Real rhs);
+	Quaternion& operator =(const Quaternion& rhs) NOEXCEPT;
+	Quaternion& operator +=(const Quaternion& rhs);
 
-			bool operator ==(const Quaternion& rhs) const;
+	Quaternion& operator *=(Real rhs);
 
-			bool operator !=(const Quaternion& rhs) const;
+	bool operator ==(const Quaternion& rhs) const;
 
-			Quaternion operator *(Real rhs) const;
+	bool operator !=(const Quaternion& rhs) const;
 
-			Quaternion operator -() const;
+	Quaternion operator *(Real rhs) const;
 
-			Quaternion operator +(const Quaternion& rhs) const;
+	Quaternion operator -() const;
 
-			Quaternion operator -(const Quaternion& rhs) const;
+	Quaternion operator +(const Quaternion& rhs) const;
 
-			Quaternion operator *(const Quaternion& rhs) const;
+	Quaternion operator -(const Quaternion& rhs) const;
 
-			Vector3 operator *(const Vector3& rhs) const;
+	Quaternion operator *(const Quaternion& rhs) const;
 
-			void FromAngleAxis(Real angle, const Vector3& axis);
+	Vector3 operator *(const Vector3& rhs) const;
 
-			void FromEulerAngles(Real x, Real y, Real z);
+	void FromAngleAxis(Real angle, const Vector3& axis);
 
-			void FromRotationTo(const Vector3& start, const Vector3& end);
+	void FromEulerAngles(Real x, Real y, Real z);
 
-			void FromAxes(const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis);
+	void FromRotationTo(const Vector3& start, const Vector3& end);
 
-			void FromRotationMatrix(const Matrix3& matrix);
+	void FromAxes(const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis);
+
+	void FromRotationMatrix(const Matrix3& matrix);
 			
-			bool FromLookRotation(const Vector3& direction, const Vector3& up = Vector3::UP);
+	bool FromLookRotation(const Vector3& direction, const Vector3& up = Vector3::UP);
 
-			void Normalize();
+	void Normalize();
 
-			Quaternion Normalized() const;
+	Quaternion Normalized() const;
 
-			Quaternion Inverse() const;
+	Quaternion Inverse() const;
 
-			Real LengthSquared() const;
+	Real LengthSquared() const;
 
-			Real DotProduct(const Quaternion& rhs) const;
+	Real DotProduct(const Quaternion& rhs) const;
 
-			bool Equals(const Quaternion& rhs) const;
+	bool Equals(const Quaternion& rhs) const;
 
-			bool IsNaN() const;
+	bool IsNaN() const;
 
-			Quaternion Conjugate() const;
+	Quaternion Conjugate() const;
 
-			Vector3 EulerAngles() const;
+	Vector3 EulerAngles() const;
 
-			Real YawAngle() const;
+	Real YawAngle() const;
 
-			Real PitchAngle() const;
+	Real PitchAngle() const;
 
-			Real RollAngle() const;
+	Real RollAngle() const;
 
-			Vector3 Axis() const;
+	Vector3 Axis() const;
 
-			Real Angle() const;
+	Real Angle() const;
 
-			Matrix3 RotationMatrix() const;
+	Matrix3 RotationMatrix() const;
 
-			Quaternion Slerp(const Quaternion& rhs, Real t) const;
+	Quaternion Slerp(const Quaternion& rhs, Real t) const;
 
-			Quaternion Nlerp(const Quaternion& rhs, Real t, bool shortestPath = false) const;
+	Quaternion Nlerp(const Quaternion& rhs, Real t, bool shortestPath = false) const;
 
-			const Real* Data() const { return &w_; }
+	const Real* Data() const { return &w_; }
 
-			Container::String ToString() const;
+	String ToString() const;
 
-			Real w_;
-			Real x_;
-			Real y_;
-			Real z_;
+	Real w_;
+	Real x_;
+	Real y_;
+	Real z_;
 
-			static const Quaternion IDENTITY;
-		};
-	}
+	static const Quaternion IDENTITY;
+};
+
 }

@@ -7,10 +7,11 @@
 
 #include "Network/LuaEventAdaptor.h"
 
-using namespace FlagGG::Container;
-using namespace FlagGG::Core;
+#include <string>
 
-class UDPNetwork : public FlagGG::IOFrame::Handler::EventHandler, public NetworkSender
+using namespace FlagGG;
+
+class UDPNetwork : public IOFrame::Handler::EventHandler, public NetworkSender
 {
 public:
 	explicit UDPNetwork(Context* context);
@@ -18,21 +19,21 @@ public:
 	void Send(Int64 userId, UInt32 messageType, ::google::protobuf::Message* message) override;
 
 protected:
-	void ChannelRegisterd(FlagGG::IOFrame::Context::IOContextPtr context) override;
-	void ChannelOpend(FlagGG::IOFrame::Context::IOContextPtr context) override;
-	void ChannelClosed(FlagGG::IOFrame::Context::IOContextPtr context) override;
-	void MessageRecived(FlagGG::IOFrame::Context::IOContextPtr context, FlagGG::IOFrame::Buffer::IOBufferPtr buffer) override;
-	void ErrorCatch(FlagGG::IOFrame::Context::IOContextPtr context, const FlagGG::ErrorCode& error_code) override;
+	void ChannelRegisterd(IOFrame::Context::IOContextPtr context) override;
+	void ChannelOpend(IOFrame::Context::IOContextPtr context) override;
+	void ChannelClosed(IOFrame::Context::IOContextPtr context) override;
+	void MessageRecived(IOFrame::Context::IOContextPtr context, IOFrame::Buffer::IOBufferPtr buffer) override;
+	void ErrorCatch(IOFrame::Context::IOContextPtr context, const ErrorCode& error_code) override;
 
-	void HandleRequestLogin(FlagGG::IOFrame::Context::IOContextPtr context, const std::string& messageBody);
-	void HandleRequestStartGame(FlagGG::IOFrame::Context::IOContextPtr context, const std::string& messageBody);
-	void HandleRequestStartMove(FlagGG::IOFrame::Context::IOContextPtr context, const std::string& messageBody);
-	void HandleRequestStopMove(FlagGG::IOFrame::Context::IOContextPtr context, const std::string& messageBody);
+	void HandleRequestLogin(IOFrame::Context::IOContextPtr context, const std::string& messageBody);
+	void HandleRequestStartGame(IOFrame::Context::IOContextPtr context, const std::string& messageBody);
+	void HandleRequestStartMove(IOFrame::Context::IOContextPtr context, const std::string& messageBody);
+	void HandleRequestStopMove(IOFrame::Context::IOContextPtr context, const std::string& messageBody);
 
 private:
 	Context* context_;
 
-	HashMap<Int64, FlagGG::IOFrame::Channel::IOChannelPtr> channels_;
+	HashMap<Int64, IOFrame::Channel::IOChannelPtr> channels_;
 
-	FlagGG::IOFrame::Buffer::IOBufferPtr buffer;
+	IOFrame::Buffer::IOBufferPtr buffer;
 };

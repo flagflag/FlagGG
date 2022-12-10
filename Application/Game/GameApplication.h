@@ -25,11 +25,7 @@
 #include "GamePlay/GamePlayBase.h"
 #include "GamePlay/Perspective.h"
 
-using namespace FlagGG::Config;
-using namespace FlagGG::Lua;
-#ifdef _WIN32
-using namespace FlagGG::Scene;
-#endif
+using namespace FlagGG;
 
 class GameApplication : public GameEngine
 {
@@ -63,7 +59,7 @@ private:
 	SharedPtr<Window> window_;
 	SharedPtr<Camera> camera_;
 	SharedPtr<Camera> reflectionCamera_;
-	SharedPtr<FlagGG::Scene::Scene> scene_;
+	SharedPtr<Scene> scene_;
 
 	SharedPtr<Texture2D> renderTexture_[2];
 	SharedPtr<Texture2D> shadowMap_;

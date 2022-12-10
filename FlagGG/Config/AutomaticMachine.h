@@ -8,129 +8,128 @@
 
 namespace FlagGG
 {
-	namespace Config
-	{
+
 #define AM_MID_SIGN '='
 
-		static const UInt32 CHAR_COUNT = 256;
+static const UInt32 CHAR_COUNT = 256;
 
-		class StateNode;
-		typedef StateNode* StatePtr;
+class StateNode;
+typedef StateNode* StatePtr;
 
-		typedef struct StateNode
-		{
-			StateNode();
+typedef struct StateNode
+{
+	StateNode();
 
-			StatePtr next[CHAR_COUNT];
-		};
+	StatePtr next[CHAR_COUNT];
+};
 
-		class AutomaticMachine
-		{
-		public:
-			virtual ~AutomaticMachine() = default;
+class AutomaticMachine
+{
+public:
+	virtual ~AutomaticMachine() = default;
 
-			virtual bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, Container::String& token) = 0;
+	virtual bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, String& token) = 0;
 
-		protected:
-			void LinkSet(StatePtr state1, StatePtr state2, const char* set);
+protected:
+	void LinkSet(StatePtr state1, StatePtr state2, const char* set);
 
-			void LinkNoneSet(StatePtr state1, StatePtr state2, const char* set);
+	void LinkNoneSet(StatePtr state1, StatePtr state2, const char* set);
 
-			void LinkNoneSet(StatePtr state, const char* set);
-		};
+	void LinkNoneSet(StatePtr state, const char* set);
+};
 
-		typedef AutomaticMachine* AutomaticMachinePtr;
+typedef AutomaticMachine* AutomaticMachinePtr;
 
-		class EmptyAutomaticMachine : public AutomaticMachine
-		{
-		public:
-			EmptyAutomaticMachine();
+class EmptyAutomaticMachine : public AutomaticMachine
+{
+public:
+	EmptyAutomaticMachine();
 
-			~EmptyAutomaticMachine() override = default;
+	~EmptyAutomaticMachine() override = default;
 
-			bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, Container::String& token) override;
+	bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, String& token) override;
 
-		private:
-			StateNode pool_[1];
+private:
+	StateNode pool_[1];
 
-			StatePtr start_;
-		};
+	StatePtr start_;
+};
 
-		class CommentAutomationMachine : public EmptyAutomaticMachine
-		{
-		public:
-			CommentAutomationMachine() = default;
+class CommentAutomationMachine : public EmptyAutomaticMachine
+{
+public:
+	CommentAutomationMachine() = default;
 
-			~CommentAutomationMachine() override = default;
+	~CommentAutomationMachine() override = default;
 
-			bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, Container::String& token) override;
-		};
+	bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, String& token) override;
+};
 
-		class TypeKeywordAutomaticMachine : public AutomaticMachine
-		{
-		public:
-			TypeKeywordAutomaticMachine();
+class TypeKeywordAutomaticMachine : public AutomaticMachine
+{
+public:
+	TypeKeywordAutomaticMachine();
 
-			~TypeKeywordAutomaticMachine() override = default;
+	~TypeKeywordAutomaticMachine() override = default;
 
-			bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, Container::String& token) override;
+	bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, String& token) override;
 
-		private:
-			StateNode pool_[3];
+private:
+	StateNode pool_[3];
 
-			StatePtr start_;
-			StatePtr token_;
-			StatePtr end_;
+	StatePtr start_;
+	StatePtr token_;
+	StatePtr end_;
 
-			std::vector<Container::String> keywords_;
-		};
+	std::vector<String> keywords_;
+};
 
-		class VariableAutomaticMachine : public AutomaticMachine
-		{
-		public:
-			VariableAutomaticMachine();
+class VariableAutomaticMachine : public AutomaticMachine
+{
+public:
+	VariableAutomaticMachine();
 
-			~VariableAutomaticMachine() override = default;
+	~VariableAutomaticMachine() override = default;
 
-			bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, Container::String& token) override;
+	bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, String& token) override;
 
-		private:
-			StateNode pool_[6];
+private:
+	StateNode pool_[6];
 
-			StatePtr start_;
-			StatePtr end_;
-			StatePtr token_;
-			StatePtr quotationStart_;
-			StatePtr quotationEnd_;
-			StatePtr escapes_;
-		};
+	StatePtr start_;
+	StatePtr end_;
+	StatePtr token_;
+	StatePtr quotationStart_;
+	StatePtr quotationEnd_;
+	StatePtr escapes_;
+};
 
-		class ContentAutomaticMachine : public AutomaticMachine
-		{
-		public:
-			ContentAutomaticMachine();
+class ContentAutomaticMachine : public AutomaticMachine
+{
+public:
+	ContentAutomaticMachine();
 
-			~ContentAutomaticMachine() override = default;
+	~ContentAutomaticMachine() override = default;
 
-			bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, Container::String& token) override;
+	bool Accapt(const Byte* bufferStart, const Byte* bufferEnd, const Byte*& index, String& token) override;
 
-		private:
-			StateNode pool_[11];
+private:
+	StateNode pool_[11];
 
-			StatePtr start_;
-			StatePtr end_;
-			StatePtr token_;
-			StatePtr quotationStart_;
-			StatePtr quotationEnd_;
-			StatePtr escapes_;
+	StatePtr start_;
+	StatePtr end_;
+	StatePtr token_;
+	StatePtr quotationStart_;
+	StatePtr quotationEnd_;
+	StatePtr escapes_;
 
-			StatePtr leftBracket_;
-			StatePtr rightBracket_;
-			StatePtr textStart_;
-			StatePtr textEnd_;
-			StatePtr textEscapes_;
-		};
-	}
+	StatePtr leftBracket_;
+	StatePtr rightBracket_;
+	StatePtr textStart_;
+	StatePtr textEnd_;
+	StatePtr textEscapes_;
+};
+
 }
 
 

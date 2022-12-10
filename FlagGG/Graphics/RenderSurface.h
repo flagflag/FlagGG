@@ -9,34 +9,33 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		class Texture;
 
-		// ID3D11RenderTargetView*;
-		// ID3D11DepthStencilView*
-		class FlagGG_API RenderSurface : public GPUObject, public Container::RefCounted
-		{
-		public:
-			RenderSurface(Texture* parentTexture);
+class Texture;
 
-			~RenderSurface() override = default;
+// ID3D11RenderTargetView*;
+// ID3D11DepthStencilView*
+class FlagGG_API RenderSurface : public GPUObject, public RefCounted
+{
+public:
+	RenderSurface(Texture* parentTexture);
 
-			bool IsValid() override;
+	~RenderSurface() override = default;
 
-			Texture* GetParentTexture();
+	bool IsValid() override;
 
-			friend class Texture2D;
+	Texture* GetParentTexture();
 
-		protected:
-			void Initialize() override;
+	friend class Texture2D;
 
-		private:
-			Texture* parentTexture_{ nullptr };
+protected:
+	void Initialize() override;
 
-			void* readOnlyView_{ nullptr };
-		};
-	}
+private:
+	Texture* parentTexture_{ nullptr };
+
+	void* readOnlyView_{ nullptr };
+};
+
 }
 
 #endif

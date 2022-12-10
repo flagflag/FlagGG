@@ -5,8 +5,7 @@
 
 namespace FlagGG
 {
-	namespace Core
-	{
-		FlagGG_API UInt32 AddEvent(const char* fileName, const char* eventName);
-	}
+
+FlagGG_API UInt32 AddEvent(const char* fileName, const char* eventName);
+
 }

@@ -7,11 +7,6 @@
 
 #include "Unit/Terrain.h"
 
-using namespace FlagGG::Container;
-using namespace FlagGG::Resource;
-using namespace FlagGG::Graphics;
-using namespace FlagGG::Math;
-
 Terrain::Terrain(Context* context) :
 	context_(context)
 { }

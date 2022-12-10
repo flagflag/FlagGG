@@ -1,6 +1,5 @@
 ﻿#ifndef FLAGGG_NO_BOOST
-#ifndef __NET_THREAD_POOL__
-#define __NET_THREAD_POOL__
+#pragma once
 
 #include <boost/asio/io_service.hpp>
 
@@ -9,43 +8,39 @@
 #include "AsyncFrame/Thread/UniqueThread.h"
 #include "IOThreadPool.h"
 
-namespace FlagGG
+namespace FlagGG { namespace IOFrame {
+
+class NetThreadPool : public IOThreadPool
 {
-	namespace IOFrame
-	{
-		class NetThreadPool : public IOThreadPool
-		{
-		public:
-			NetThreadPool(Size threadCount);
+public:
+	NetThreadPool(Size threadCount);
 
-			~NetThreadPool() override = default;
+	~NetThreadPool() override = default;
 
-			void Start() override;
+	void Start() override;
 
-			void Stop() override;
+	void Stop() override;
 
-			void WaitForStop() override;
+	void WaitForStop() override;
 
-			boost::asio::io_service& getService();
+	boost::asio::io_service& getService();
 
-		private:
-			void NetThread();
+private:
+	void NetThread();
 
-			void WaitForStop(UInt32 wait_time) override { };
+	void WaitForStop(UInt32 wait_time) override { };
 
-		private:
-			Size												threadCount_;
+private:
+	Size												threadCount_;
 
-			boost::asio::io_service								service_;
+	boost::asio::io_service								service_;
 
-			std::vector < AsyncFrame::Thread::UniqueThreadPtr > threadGroup_;
+	std::vector<UniqueThreadPtr>						threadGroup_;
 
-			std::atomic < bool >								running_;
-		};
+	std::atomic<bool>									running_;
+};
 
-		typedef Container::SharedPtr < NetThreadPool > NetThreadPoolPtr;
-	}
-}
+typedef SharedPtr<NetThreadPool> NetThreadPoolPtr;
 
-#endif
+}}
 #endif

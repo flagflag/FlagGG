@@ -8,30 +8,26 @@ typedef void* KernelHandle;
 
 namespace FlagGG
 {
-	namespace AsyncFrame
+
+class FlagGG_API HandleObject
+{
+public:
+	HandleObject();
+
+	virtual ~HandleObject();
+
+	KernelHandle GetHandler();
+
+	template < typename Type >
+	Type* GetObject()
 	{
-		namespace KernelObject
-		{
-			class FlagGG_API HandleObject
-			{
-			public:
-				HandleObject();
-
-				virtual ~HandleObject();
-
-				KernelHandle GetHandler();
-
-				template < typename Type >
-				Type* GetObject()
-				{
-					return static_cast<Type*>(GetHandler());
-				}
-
-			protected:
-				KernelHandle handle_;
-			};
-		}
+		return static_cast<Type*>(GetHandler());
 	}
+
+protected:
+	KernelHandle handle_;
+};
+
 }
 
 #endif

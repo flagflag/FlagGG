@@ -8,30 +8,29 @@
 
 namespace FlagGG
 {
-	namespace AsyncFrame
-	{
-		class FlagGG_API Locker
-		{
-		public:
-			Locker(Mutex& mutex);
 
-			virtual ~Locker();
+class FlagGG_API Locker
+{
+public:
+	Locker(Mutex& mutex);
 
-		private:
-			Mutex& mutex_;
-		};
+	virtual ~Locker();
 
-		class FlagGG_API RecursiveLocker
-		{
-		public:
-			RecursiveLocker(std::recursive_mutex& mutex);
+private:
+	Mutex& mutex_;
+};
 
-			virtual ~RecursiveLocker();
+class FlagGG_API RecursiveLocker
+{
+public:
+	RecursiveLocker(std::recursive_mutex& mutex);
 
-		private:
-			std::recursive_mutex& mutex_;
-		};
-	}
+	virtual ~RecursiveLocker();
+
+private:
+	std::recursive_mutex& mutex_;
+};
+
 }
 
 #endif

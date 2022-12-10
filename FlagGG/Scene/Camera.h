@@ -11,95 +11,94 @@
 
 namespace FlagGG
 {
-	namespace Scene
-	{
-		enum CameraType
-		{
-			LAND_OBJECT = 0,
-			AIRCRAFT,
-		};
 
-		class FlagGG_API Camera : public Component
-		{
-			OBJECT_OVERRIDE(Camera, Component);
-		public:
-			Camera();
+enum CameraType
+{
+	LAND_OBJECT = 0,
+	AIRCRAFT,
+};
 
-			void Strafe(Real units);
-			void Fly(Real units);
-			void Walk(Real units);
+class FlagGG_API Camera : public Component
+{
+	OBJECT_OVERRIDE(Camera, Component);
+public:
+	Camera();
 
-			void Pitch(Real angle);
-			void Yaw(Real angle);
-			void Roll(Real angle);
+	void Strafe(Real units);
+	void Fly(Real units);
+	void Walk(Real units);
 
-			Math::Matrix3x4 GetViewMatrix();
-			Math::Matrix4 GetProjectionMatrix();
+	void Pitch(Real angle);
+	void Yaw(Real angle);
+	void Roll(Real angle);
 
-			CameraType GetCameraType() const;
-			void SetCameraType(CameraType cameraType);
+	Matrix3x4 GetViewMatrix();
+	Matrix4 GetProjectionMatrix();
 
-			// 远裁剪面
-			void SetFarClip(Real farClip);
-			Real GetFarClip() const;
+	CameraType GetCameraType() const;
+	void SetCameraType(CameraType cameraType);
 
-			// 近裁剪面
-			void SetNearClip(Real nearClip);
-			Real GetNearClip() const;
+	// 远裁剪面
+	void SetFarClip(Real farClip);
+	Real GetFarClip() const;
 
-			// 设置横纵比例
-			void SetAspect(Real aspect);
-			Real GetAspect() const;
+	// 近裁剪面
+	void SetNearClip(Real nearClip);
+	Real GetNearClip() const;
 
-			// 设置透视范围基础距离
-			void SetZoom(Real zoom);
-			Real GetZoom() const;
+	// 设置横纵比例
+	void SetAspect(Real aspect);
+	Real GetAspect() const;
 
-			// 设置透视范围角度
-			void SetFov(Real fov);
-			Real GetFov() const;
+	// 设置透视范围基础距离
+	void SetZoom(Real zoom);
+	Real GetZoom() const;
 
-			// 设置正交模式
-			void SetOrthographic(bool enable);
-			bool GetOrthographics() const;
+	// 设置透视范围角度
+	void SetFov(Real fov);
+	Real GetFov() const;
 
-			void SetOrthoSize(float orthoSize);
-			float GetOrthoSize() const;
+	// 设置正交模式
+	void SetOrthographic(bool enable);
+	bool GetOrthographics() const;
 
-			Math::Vector3 GetRight() const;
-			Math::Vector3 GetUp() const;
-			Math::Vector3 GetLook() const;
+	void SetOrthoSize(float orthoSize);
+	float GetOrthoSize() const;
 
-			bool IsProjectionValid() const;
+	Vector3 GetRight() const;
+	Vector3 GetUp() const;
+	Vector3 GetLook() const;
 
-			Math::Ray GetScreenRay(Real x, Real y);
-			Math::Vector3 ScreenPosToWorldPos(const Math::Vector3& screenPos);
-			Math::Vector2 WorldPosToScreenPos(const Math::Vector3& worldPos);
+	bool IsProjectionValid() const;
 
-			void SetUseReflection(bool useReflection);
-			bool GetUseReflection() const;
+	Ray GetScreenRay(Real x, Real y);
+	Vector3 ScreenPosToWorldPos(const Vector3& screenPos);
+	Vector2 WorldPosToScreenPos(const Vector3& worldPos);
 
-			void SetReflectionPlane(const Math::Plane& plane);
+	void SetUseReflection(bool useReflection);
+	bool GetUseReflection() const;
 
-		protected:
-			void Correct(Math::Vector3& right, Math::Vector3& up, Math::Vector3& look);
+	void SetReflectionPlane(const Plane& plane);
 
-		private:
-			CameraType cameraType_{ LAND_OBJECT };
+protected:
+	void Correct(Vector3& right, Vector3& up, Vector3& look);
 
-			Real farClip_{ 1.0f };
-			Real nearClip_{ 100.0f };
-			Real aspect_{ 1.0f };
-			Real fov_{ 45.0f };
-			Real zoom_{ 1.0f };
-			Math::Vector2 projOffset_{ Math::Vector2::ZERO };
+private:
+	CameraType cameraType_{ LAND_OBJECT };
 
-			bool orthographic_{ false };
-			float orthoSize_{ 20.0f };
+	Real farClip_{ 1.0f };
+	Real nearClip_{ 100.0f };
+	Real aspect_{ 1.0f };
+	Real fov_{ 45.0f };
+	Real zoom_{ 1.0f };
+	Vector2 projOffset_{ Vector2::ZERO };
 
-			bool useReflection_{ false };
-			Math::Plane reflectionPlane_{ Math::Plane::UP };
-			Math::Matrix3x4 reflectionMatrix_{ Math::Matrix3x4::IDENTITY };
-		};
-	}
+	bool orthographic_{ false };
+	float orthoSize_{ 20.0f };
+
+	bool useReflection_{ false };
+	Plane reflectionPlane_{ Plane::UP };
+	Matrix3x4 reflectionMatrix_{ Matrix3x4::IDENTITY };
+};
+
 }

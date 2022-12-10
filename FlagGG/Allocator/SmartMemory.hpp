@@ -7,50 +7,49 @@
 
 namespace FlagGG
 {
-	namespace Allocator
+
+template < class Type = char >
+class FlagGG_API SmartMemory
+{
+public:
+	SmartMemory(size_t count,
+	Type* default_memory = nullptr)
+		: memory_(nullptr)
 	{
-		template < class Type = char >
-		class FlagGG_API SmartMemory
+		if (count > 0)
 		{
-		public:
-			SmartMemory(size_t count,
-			Type* default_memory = nullptr)
-				: memory_(nullptr)
+			if (default_memory)
 			{
-				if (count > 0)
-				{
-					if (default_memory)
-					{
-						memory_ = default_memory;
-					}
-					else
-					{
-						memory_ = (Type*)malloc(count * (sizeof (Type)));
-					}
-
-					default_ = !!default_memory;			
-				}
+				memory_ = default_memory;
+			}
+			else
+			{
+				memory_ = (Type*)malloc(count * (sizeof (Type)));
 			}
 
-			virtual ~SmartMemory()
-			{
-				if (memory_ && !default_)
-				{
-					free(memory_);
-				}
-			}
-
-			Type* Get()
-			{
-				return memory_;
-			}
-
-		private:
-			Type* memory_;
-
-			bool default_;
-		};
+			default_ = !!default_memory;			
+		}
 	}
+
+	virtual ~SmartMemory()
+	{
+		if (memory_ && !default_)
+		{
+			free(memory_);
+		}
+	}
+
+	Type* Get()
+	{
+		return memory_;
+	}
+
+private:
+	Type* memory_;
+
+	bool default_;
+};
+
 }
 
 #endif

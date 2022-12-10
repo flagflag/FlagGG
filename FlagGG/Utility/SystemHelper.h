@@ -18,95 +18,91 @@ namespace FlagGG
 
 namespace FlagGG
 {
-	namespace Utility
-	{
-		namespace SystemHelper
-		{
-			extern const char* const PATH_SEPARATOR;
 
-			FlagGG_API Container::String FormatPath(const Container::String& path);
+extern const char* const PATH_SEPARATOR;
 
-			// 单位：毫秒
-			FlagGG_API void Sleep(uint64_t time);
+FlagGG_API String FormatPath(const String& path);
 
-			// 单位：毫秒
-			FlagGG_API UInt32 Tick();
+// 单位：毫秒
+FlagGG_API void Sleep(uint64_t time);
 
-			FlagGG_API UInt64 HiresTick();
+// 单位：毫秒
+FlagGG_API UInt32 Tick();
 
-			FlagGG_API Container::String GetTimeStamp();
+FlagGG_API UInt64 HiresTick();
 
-			FlagGG_API Container::String GetTimeStamp(const Container::String& fmt);
+FlagGG_API String GetTimeStamp();
 
-			FlagGG_API bool ParseCommand(const char** argv, UInt32 argc, Config::LJSONValue& result);
+FlagGG_API String GetTimeStamp(const String& fmt);
 
-			FlagGG_API bool DirExists(const Container::String& path);
+FlagGG_API bool ParseCommand(const char** argv, UInt32 argc, LJSONValue& result);
 
-			FlagGG_API bool FileExists(const Container::String& path);
+FlagGG_API bool DirExists(const String& path);
 
-			FlagGG_API bool CreateDir(const Container::String& path);
+FlagGG_API bool FileExists(const String& path);
 
-			FlagGG_API bool HasAccess(const Container::String& path);
+FlagGG_API bool CreateDir(const String& path);
 
-			enum FindFilesMode
-			{
-				FindFilesMode_Dir = 1,
-				FindFilesMode_File = 2,
-			};
+FlagGG_API bool HasAccess(const String& path);
 
-			FlagGG_API void FindFiles(const Container::String& dirPath, const Container::String& pattern, bool recursive, int fileMode, Container::Vector<Container::String>& fileNames);
+enum FindFilesMode
+{
+	FindFilesMode_Dir = 1,
+	FindFilesMode_File = 2,
+};
 
-			FlagGG_API Math::IntRect GetDesktopRect();
+FlagGG_API void FindFiles(const String& dirPath, const String& pattern, bool recursive, int fileMode, Vector<String>& fileNames);
 
-			FlagGG_API Container::String GetPath(const Container::String& fullPath);
+FlagGG_API IntRect GetDesktopRect();
 
-			FlagGG_API Container::String GetFileName(const Container::String& fullPath);
+FlagGG_API String GetPath(const String& fullPath);
 
-			FlagGG_API Container::String GetExtension(const Container::String& fullPath, bool lowercaseExtension);
+FlagGG_API String GetFileName(const String& fullPath);
 
-			FlagGG_API Container::String GetFileNameAndExtension(const Container::String& fileName, bool lowercaseExtension);
+FlagGG_API String GetExtension(const String& fullPath, bool lowercaseExtension);
 
-			FlagGG_API Container::String ReplaceExtension(const Container::String& fullPath, const Container::String& newExtension);
+FlagGG_API String GetFileNameAndExtension(const String& fileName, bool lowercaseExtension);
 
-			FlagGG_API Container::String GetProgramDir();
+FlagGG_API String ReplaceExtension(const String& fullPath, const String& newExtension);
 
-			class FlagGG_API Timer
-			{
-			public:
-				Timer();
+FlagGG_API String GetProgramDir();
 
-				UInt32 GetMilliSeconds(bool reset);
+class FlagGG_API Timer
+{
+public:
+	Timer();
 
-				void Reset();
+	UInt32 GetMilliSeconds(bool reset);
 
-			private:
-				UInt32 startTime_;
-			};
+	void Reset();
 
-			class FlagGG_API HiresTimer
-			{
-				friend class FlagGG::Core::Profiler;
+private:
+	UInt32 startTime_;
+};
 
-			public:
-				HiresTimer();
+class FlagGG_API HiresTimer
+{
+	friend class Profiler;
 
-				UInt64 GetUSec(bool reset);
-				void Reset();
+public:
+	HiresTimer();
 
-				static void InitSupported();
+	UInt64 GetUSec(bool reset);
+	void Reset();
 
-				static bool IsSupported() { return supported; }
+	static void InitSupported();
 
-				static UInt64 GetFrequency() { return frequency; }
+	static bool IsSupported() { return supported; }
 
-			private:
-				UInt64 startTime_{};
+	static UInt64 GetFrequency() { return frequency; }
 
-				static bool supported;
-				static UInt64 frequency;
-			};
-		}
-	}
+private:
+	UInt64 startTime_{};
+
+	static bool supported;
+	static UInt64 frequency;
+};
+
 }
 
 #endif

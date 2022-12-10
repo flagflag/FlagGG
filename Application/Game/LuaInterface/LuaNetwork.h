@@ -6,9 +6,7 @@
 
 #include "Network/NetworkAdaptor.h"
 
-using namespace FlagGG::Core;
-using namespace FlagGG::Lua;
-using namespace FlagGG::Container;
+using namespace FlagGG;
 
 class LuaNetwork : public RefCounted
 {
@@ -30,7 +28,7 @@ protected:
 
 	void OnClosed(NetworkType type, IOFrame::Context::IOContextPtr context);
 
-	void OnError(NetworkType type, IOFrame::Context::IOContextPtr context, int errorCode, Container::String errorMsg);
+	void OnError(NetworkType type, IOFrame::Context::IOContextPtr context, int errorCode, String errorMsg);
 
 	void OnMessageRecived(NetworkType type, IOFrame::Context::IOContextPtr context, IOFrame::Buffer::IOBufferPtr buffer);
 

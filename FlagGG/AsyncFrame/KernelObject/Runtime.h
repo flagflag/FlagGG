@@ -7,23 +7,19 @@
 
 namespace FlagGG
 {
-	namespace AsyncFrame
-	{
-		namespace KernelObject
-		{
-			class FlagGG_API Runtime
-			{
-			public:
-				virtual ~Runtime() = default;
 
-				virtual void Stop() = 0;
+class FlagGG_API Runtime
+{
+public:
+	virtual ~Runtime() = default;
 
-				virtual void WaitForStop() = 0;
+	virtual void Stop() = 0;
 
-				virtual void WaitForStop(UInt32) = 0;
-			};
-		}
-	}
+	virtual void WaitForStop() = 0;
+
+	virtual void WaitForStop(UInt32) = 0;
+};
+
 }
 
 #endif

@@ -5,20 +5,19 @@
 
 namespace FlagGG
 {
-	namespace Lua
-	{
-		struct FlagGG_API StackGuard
-		{
-		public:
-			StackGuard(lua_State* L) : L_(L), top_(lua_gettop(L_)) { }
 
-			~StackGuard() { lua_settop(L_, top_); }
+struct FlagGG_API StackGuard
+{
+public:
+	StackGuard(lua_State* L) : L_(L), top_(lua_gettop(L_)) { }
 
-		private:
-			lua_State* L_;
+	~StackGuard() { lua_settop(L_, top_); }
 
-			int top_;
-		};
-	}
+private:
+	lua_State* L_;
+
+	int top_;
+};
+
 }
 

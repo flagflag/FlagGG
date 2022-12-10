@@ -20,7 +20,6 @@ static const char* NETWORK_TYPE_NAME[] = {
 
 
 using namespace FlagGG;
-using namespace FlagGG::Container;
 
 namespace NetworkEvent
 {

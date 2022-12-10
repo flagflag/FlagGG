@@ -15,7 +15,7 @@ void RunLuaVM()
 
 int main(int argc, const char* argv[])
 {
-	if (SystemHelper::ParseCommand(argv + 1, argc - 1, commandParam))
+	if (ParseCommand(argv + 1, argc - 1, commandParam))
 	{
 		RunLuaVM();
 	}

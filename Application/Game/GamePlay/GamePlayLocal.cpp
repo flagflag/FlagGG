@@ -9,7 +9,7 @@ GamePlayLocal::GamePlayLocal(Context* context) :
 	engine_ = LuaGameEngine::CreateEngine(*luaVM);
 }
 
-void GamePlayLocal::Initialize(FlagGG::Scene::Scene* scene)
+void GamePlayLocal::Initialize(Scene* scene)
 {
 	world_ = new World(context_);
 	world_->SetScene(scene);

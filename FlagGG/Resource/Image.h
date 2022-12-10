@@ -10,177 +10,176 @@
 
 namespace FlagGG
 {
-	namespace Resource
-	{
-		enum CompressedFormat
-		{
-			CF_NONE = 0,
-			CF_RGBA,
-			CF_DXT1,
-			CF_DXT3,
-			CF_DXT5,
-			CF_ETC1,
-			CF_PVRTC_RGB_2BPP,
-			CF_PVRTC_RGBA_2BPP,
-			CF_PVRTC_RGB_4BPP,
-			CF_PVRTC_RGBA_4BPP,
-		};
 
-		struct FlagGG_API CompressedLevel
-		{
-			bool Decompress(UInt8* dest);
+enum CompressedFormat
+{
+	CF_NONE = 0,
+	CF_RGBA,
+	CF_DXT1,
+	CF_DXT3,
+	CF_DXT5,
+	CF_ETC1,
+	CF_PVRTC_RGB_2BPP,
+	CF_PVRTC_RGBA_2BPP,
+	CF_PVRTC_RGB_4BPP,
+	CF_PVRTC_RGBA_4BPP,
+};
 
-			UInt8* data_{};
+struct FlagGG_API CompressedLevel
+{
+	bool Decompress(UInt8* dest);
 
-			CompressedFormat format_{ CF_NONE };
+	UInt8* data_{};
 
-			Int32 width_{};
+	CompressedFormat format_{ CF_NONE };
 
-			Int32 height_{};
+	Int32 width_{};
 
-			Int32 depth_{};
+	Int32 height_{};
 
-			UInt32 blockSize_{};
+	Int32 depth_{};
 
-			UInt32 dataSize_{};
+	UInt32 blockSize_{};
 
-			UInt32 rowSize_{};
+	UInt32 dataSize_{};
 
-			UInt32 rows_{};
-		};
+	UInt32 rowSize_{};
 
-		class FlagGG_API Image : public FlagGG::Resource::Resource
-		{
-		public:
-			explicit Image(Core::Context* context);
+	UInt32 rows_{};
+};
 
-			~Image() override;
+class FlagGG_API Image : public Resource
+{
+public:
+	explicit Image(Context* context);
 
-			bool SetSize(int width, int height, unsigned components);
+	~Image() override;
 
-			bool SetSize(int width, int height, int depth, unsigned components);
+	bool SetSize(int width, int height, unsigned components);
 
-			void SetData(const unsigned char* pixelData);
+	bool SetSize(int width, int height, int depth, unsigned components);
 
-			void SetPixel(int x, int y, const Math::Color& color);
+	void SetData(const unsigned char* pixelData);
 
-			void SetPixel(int x, int y, int z, const Math::Color& color);
+	void SetPixel(int x, int y, const Color& color);
 
-			void SetPixelInt(int x, int y, unsigned uintColor);
+	void SetPixel(int x, int y, int z, const Color& color);
 
-			void SetPixelInt(int x, int y, int z, unsigned uintColor);
+	void SetPixelInt(int x, int y, unsigned uintColor);
 
-			bool FlipHorizontal();
+	void SetPixelInt(int x, int y, int z, unsigned uintColor);
 
-			bool FlipVertical();
+	bool FlipHorizontal();
 
-			bool Resize(int width, int height);
+	bool FlipVertical();
 
-			void Clear(const Math::Color& color);
+	bool Resize(int width, int height);
 
-			void ClearInt(unsigned uintColor);
+	void Clear(const Color& color);
 
-			bool SaveBMP(const Container::String& fileName) const;
+	void ClearInt(unsigned uintColor);
 
-			bool SavePNG(const Container::String& fileName) const;
+	bool SaveBMP(const String& fileName) const;
 
-			bool SaveTGA(const Container::String& fileName) const;
+	bool SavePNG(const String& fileName) const;
 
-			bool SaveJPG(const Container::String& fileName, int quality) const;
+	bool SaveTGA(const String& fileName) const;
 
-			bool SaveDDS(const Container::String& fileName) const;
+	bool SaveJPG(const String& fileName, int quality) const;
 
-			bool IsCubemap() const { return cubemap_; }
+	bool SaveDDS(const String& fileName) const;
 
-			bool IsArray() const { return array_; }
+	bool IsCubemap() const { return cubemap_; }
 
-			bool IsSRGB() const { return sRGB_; }
+	bool IsArray() const { return array_; }
 
-			Math::Color GetPixel(int x, int y) const;
+	bool IsSRGB() const { return sRGB_; }
 
-			Math::Color GetPixel(int x, int y, int z) const;
+	Color GetPixel(int x, int y) const;
 
-			unsigned GetPixelInt(int x, int y) const;
+	Color GetPixel(int x, int y, int z) const;
 
-			unsigned GetPixelInt(int x, int y, int z) const;
+	unsigned GetPixelInt(int x, int y) const;
 
-			Math::Color GetPixelBilinear(Real x, Real y) const;
+	unsigned GetPixelInt(int x, int y, int z) const;
 
-			Math::Color GetPixelTrilinear(Real x, Real y, Real z) const;
+	Color GetPixelBilinear(Real x, Real y) const;
 
-			int GetWidth() const { return width_; }
+	Color GetPixelTrilinear(Real x, Real y, Real z) const;
 
-			int GetHeight() const { return height_; }
+	int GetWidth() const { return width_; }
 
-			int GetDepth() const { return depth_; }
+	int GetHeight() const { return height_; }
 
-			unsigned GetComponents() const { return components_; }
+	int GetDepth() const { return depth_; }
 
-			unsigned char* GetData() const { return data_; }
+	unsigned GetComponents() const { return components_; }
 
-			bool IsCompressed() const;
+	unsigned char* GetData() const { return data_; }
 
-			CompressedFormat GetCompressedFormat() const { return compressedFormat_; }
+	bool IsCompressed() const;
 
-			unsigned GetNumCompressedLevels() const { return numCompressedLevels_; }
+	CompressedFormat GetCompressedFormat() const { return compressedFormat_; }
 
-			Container::SharedPtr<Image> GetNextLevel() const;
+	unsigned GetNumCompressedLevels() const { return numCompressedLevels_; }
 
-			Container::SharedPtr<Image> GetNextSibling() const { return nextSibling_; }
+	SharedPtr<Image> GetNextLevel() const;
 
-			Container::SharedPtr<Image> ConvertToRGBA() const;
+	SharedPtr<Image> GetNextSibling() const { return nextSibling_; }
 
-			CompressedLevel GetCompressedLevel(unsigned index) const;
+	SharedPtr<Image> ConvertToRGBA() const;
 
-			Image* GetSubimage(const Math::IntRect& rect) const;
+	CompressedLevel GetCompressedLevel(unsigned index) const;
 
-			void PrecalculateLevels();
+	Image* GetSubimage(const IntRect& rect) const;
 
-			bool HasAlphaChannel() const;
+	void PrecalculateLevels();
 
-			bool SetSubimage(const Image* image, const Math::IntRect& rect);
+	bool HasAlphaChannel() const;
 
-			void CleanupLevels();
+	bool SetSubimage(const Image* image, const IntRect& rect);
 
-			void GetLevels(Container::PODVector<Image*>& levels);
+	void CleanupLevels();
 
-			void GetLevels(Container::PODVector<const Image*>& levels) const;
+	void GetLevels(PODVector<Image*>& levels);
 
-		protected:
-			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
+	void GetLevels(PODVector<const Image*>& levels) const;
 
-			bool EndLoad() override;
+protected:
+	bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
-			bool Save(IOFrame::Buffer::IOBuffer* stream) const;
+	bool EndLoad() override;
 
-			static unsigned char* GetImageData(IOFrame::Buffer::IOBuffer* stream, int& width, int& height, unsigned& components);
+	bool Save(IOFrame::Buffer::IOBuffer* stream) const;
 
-			static void FreeImageData(unsigned char* pixelData);
+	static unsigned char* GetImageData(IOFrame::Buffer::IOBuffer* stream, int& width, int& height, unsigned& components);
 
-		private:
-			Int32 width_{ 0 };
+	static void FreeImageData(unsigned char* pixelData);
 
-			Int32 height_{ 0 };
+private:
+	Int32 width_{ 0 };
 
-			Int32 depth_{ 0 };
+	Int32 height_{ 0 };
 
-			UInt32 components_{ 0 };
+	Int32 depth_{ 0 };
 
-			UInt32 numCompressedLevels_{ 0 };
+	UInt32 components_{ 0 };
 
-			bool cubemap_{ false };
+	UInt32 numCompressedLevels_{ 0 };
 
-			bool array_{ false };
+	bool cubemap_{ false };
 
-			bool sRGB_{ false };
+	bool array_{ false };
 
-			CompressedFormat compressedFormat_{ CF_NONE };
+	bool sRGB_{ false };
 
-			Container::SharedArrayPtr<UInt8> data_;
+	CompressedFormat compressedFormat_{ CF_NONE };
 
-			Container::SharedPtr<Image> nextLevel_;
+	SharedArrayPtr<UInt8> data_;
 
-			Container::SharedPtr<Image> nextSibling_;
-		};
-	}
+	SharedPtr<Image> nextLevel_;
+
+	SharedPtr<Image> nextSibling_;
+};
+
 }

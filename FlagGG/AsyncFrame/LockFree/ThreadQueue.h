@@ -3,7 +3,7 @@
 
 #include "AsyncFrame/LockFree/ThreadRef.h"
 
-namespace FlagGG { namespace AsyncFrame { namespace LockFree {
+namespace FlagGG {
 
 template< typename T, typename K = float32, bool SORT_MIN_TO_MAX = false, UInt32 MAX_LEVEL = 4, UInt32 PROBABILISTIC_BIAS = 50 >
 struct ThreadSafePriorityQueue
@@ -642,6 +642,6 @@ void ThreadSafePriorityQueueWithUpdate< T, K, SORT_MIN_TO_MAX, MAX_LEVEL, PROBAB
    }
 }
 
-}}}
+}
 
 #endif // !_THREADSAFEPRIORITYQUEUE_H_

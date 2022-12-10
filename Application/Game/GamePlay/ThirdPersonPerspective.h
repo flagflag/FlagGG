@@ -8,8 +8,7 @@
 #include <Math/Vector3.h>
 #include <Math/Quaternion.h>
 
-using namespace FlagGG::Core;
-using namespace FlagGG::Math;
+using namespace FlagGG;
 
 class ThirdPersonPerspective : public Perspective
 {

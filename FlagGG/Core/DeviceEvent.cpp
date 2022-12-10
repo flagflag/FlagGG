@@ -5,60 +5,59 @@
 
 namespace FlagGG
 {
-	namespace Core
-	{
-		Input::Input(Context* context) :
-			context_(context),
-			isMouseShow_(true)
-		{ }
 
-		Math::IntVector2 Input::GetMousePos() const
-		{
-			POINT point;
-			::GetCursorPos(&point);
-			return Math::IntVector2(point.x, point.y);
-		}
+Input::Input(Context* context) :
+	context_(context),
+	isMouseShow_(true)
+{ }
 
-		void Input::ShowMouse()
-		{
-			::ShowCursor(TRUE);
-			isMouseShow_ = true;
-		}
+IntVector2 Input::GetMousePos() const
+{
+	POINT point;
+	::GetCursorPos(&point);
+	return IntVector2(point.x, point.y);
+}
 
-		void Input::HideMouse()
-		{
-			::ShowCursor(FALSE);
-			isMouseShow_ = false;
-		}
+void Input::ShowMouse()
+{
+	::ShowCursor(TRUE);
+	isMouseShow_ = true;
+}
 
-		bool Input::IsMouseShow() const
-		{
-			return isMouseShow_;
-		}
+void Input::HideMouse()
+{
+	::ShowCursor(FALSE);
+	isMouseShow_ = false;
+}
 
-		void Input::OnKeyDown(KeyState* keyState, UInt32 keyCode)
-		{
-			context_->SendEvent<InputEvent::KEY_DOWN_HANDLER>(InputEvent::KEY_DOWN, keyState, keyCode);
-		}
+bool Input::IsMouseShow() const
+{
+	return isMouseShow_;
+}
 
-		void Input::OnKeyUp(KeyState* keyState, UInt32 keyCode)
-		{
-			context_->SendEvent<InputEvent::KEY_UP_HANDLER>(InputEvent::KEY_UP, keyState, keyCode);
-		}
+void Input::OnKeyDown(KeyState* keyState, UInt32 keyCode)
+{
+	context_->SendEvent<InputEvent::KEY_DOWN_HANDLER>(InputEvent::KEY_DOWN, keyState, keyCode);
+}
 
-		void Input::OnMouseDown(KeyState* keyState, MouseKey mouseKey)
-		{
-			context_->SendEvent<InputEvent::MOUSE_DOWN_HANDLER>(InputEvent::MOUSE_DOWN, keyState, mouseKey);
-		}
+void Input::OnKeyUp(KeyState* keyState, UInt32 keyCode)
+{
+	context_->SendEvent<InputEvent::KEY_UP_HANDLER>(InputEvent::KEY_UP, keyState, keyCode);
+}
 
-		void Input::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
-		{
-			context_->SendEvent<InputEvent::MOUSE_UP_HANDLER>(InputEvent::MOUSE_UP, keyState, mouseKey);
-		}
+void Input::OnMouseDown(KeyState* keyState, MouseKey mouseKey)
+{
+	context_->SendEvent<InputEvent::MOUSE_DOWN_HANDLER>(InputEvent::MOUSE_DOWN, keyState, mouseKey);
+}
 
-		void Input::OnMouseMove(KeyState* keyState, const Math::Vector2& delta)
-		{
-			context_->SendEvent<InputEvent::MOUSE_MOVE_HANDLER>(InputEvent::MOUSE_MOVE, keyState, delta);
-		}
-	}
+void Input::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
+{
+	context_->SendEvent<InputEvent::MOUSE_UP_HANDLER>(InputEvent::MOUSE_UP, keyState, mouseKey);
+}
+
+void Input::OnMouseMove(KeyState* keyState, const Vector2& delta)
+{
+	context_->SendEvent<InputEvent::MOUSE_MOVE_HANDLER>(InputEvent::MOUSE_MOVE, keyState, delta);
+}
+
 }

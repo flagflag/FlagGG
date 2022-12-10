@@ -8,29 +8,25 @@
 
 namespace FlagGG
 {
-	namespace AsyncFrame
+
+HandleObject::HandleObject()
+	: handle_(NULL_HANDLE)
+{ }
+
+HandleObject::~HandleObject()
+{
+	if (handle_)
 	{
-		namespace KernelObject
-		{
-			HandleObject::HandleObject()
-				: handle_(NULL_HANDLE)
-			{ }
-
-			HandleObject::~HandleObject()
-			{
-				if (handle_)
-				{
 #if _WIN32
-					CloseHandle((HANDLE)handle_);
+		CloseHandle((HANDLE)handle_);
 #endif
-					handle_ = NULL_HANDLE;
-				}
-			}
-
-			KernelHandle HandleObject::GetHandler()
-			{
-				return handle_;
-			}
-		}
+		handle_ = NULL_HANDLE;
 	}
+}
+
+KernelHandle HandleObject::GetHandler()
+{
+	return handle_;
+}
+
 }

@@ -9,27 +9,26 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		class FlagGG_API Batch3D : public Batch
-		{
-		public:
-			Batch3D(BatchType type, Texture* texture, VertexVector* vertexs = nullptr);
 
-			~Batch3D() override = default;
+class FlagGG_API Batch3D : public Batch
+{
+public:
+	Batch3D(BatchType type, Texture* texture, VertexVector* vertexs = nullptr);
 
-			void AddTriangle(const Math::Vector3& v1, const Math::Vector3& v2, const Math::Vector3& v3,
-				const Math::Vector2& uv1, const Math::Vector2& uv2, const Math::Vector2& uv3, 
-				const Math::Vector3& n1, const Math::Vector3& n2, const Math::Vector3& n3,
-				unsigned color);
+	~Batch3D() override = default;
 
-			void AddLine(const Math::Vector3& v1, const Math::Vector3& v2,
-				const Math::Vector2& uv1, const Math::Vector2& uv2,
-				unsigned color);
+	void AddTriangle(const Vector3& v1, const Vector3& v2, const Vector3& v3,
+		const Vector2& uv1, const Vector2& uv2, const Vector2& uv3, 
+		const Vector3& n1, const Vector3& n2, const Vector3& n3,
+		unsigned color);
 
-			void AddBlob(const void* data, unsigned size);
-		};
-	}
+	void AddLine(const Vector3& v1, const Vector3& v2,
+		const Vector2& uv1, const Vector2& uv2,
+		unsigned color);
+
+	void AddBlob(const void* data, unsigned size);
+};
+
 }
 
 #endif

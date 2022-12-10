@@ -2,8 +2,6 @@
 
 namespace FlagGG
 {
-	namespace Lua
-	{
-	}
+
 }
 

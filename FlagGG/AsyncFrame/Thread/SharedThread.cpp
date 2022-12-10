@@ -4,109 +4,105 @@
 
 namespace FlagGG
 {
-	namespace AsyncFrame
+
+SharedThread::SharedThread()
+	: thread_(nullptr)
+	, running_(false)
+{ }
+
+SharedThread::~SharedThread()
+{
+	Stop();
+	WaitForStop();
+}
+
+void SharedThread::Start()
+{
+	if (!running_)
 	{
-		namespace Thread
-		{
-			SharedThread::SharedThread()
-				: thread_(nullptr)
-				, running_(false)
-			{ }
+		running_ = true;
 
-			SharedThread::~SharedThread()
-			{
-				Stop();
-				WaitForStop();
-			}
+		thread_ = new UniqueThread(std::bind(&SharedThread::WorkThread, this));
+	}		
+}
 
-			void SharedThread::Start()
-			{
-				if (!running_)
-				{
-					running_ = true;
+void SharedThread::Stop()
+{
+	if (running_ && thread_)
+	{
+		running_ = false;
+		taskQueue_.Release();
+	}
+}
 
-					thread_ = new UniqueThread(std::bind(&SharedThread::WorkThread, this));
-				}		
-			}
+void SharedThread::ForceStop()
+{
+	if (running_ && thread_)
+	{
+		running_ = false;
+		taskQueue_.Release();
 
-			void SharedThread::Stop()
-			{
-				if (running_ && thread_)
-				{
-					running_ = false;
-					taskQueue_.Release();
-				}
-			}
+		thread_->Stop();
+	}
+}
 
-			void SharedThread::ForceStop()
-			{
-				if (running_ && thread_)
-				{
-					running_ = false;
-					taskQueue_.Release();
+void SharedThread::WaitForStop()
+{
+	if (thread_)
+	{
+		thread_->WaitForStop();
+	}
+}
 
-					thread_->Stop();
-				}
-			}
+void SharedThread::WaitForStop(UInt32 wait_time)
+{
+	if (thread_)
+	{
+		thread_->WaitForStop(wait_time);
+	}
+}
 
-			void SharedThread::WaitForStop()
-			{
-				if (thread_)
-				{
-					thread_->WaitForStop();
-				}
-			}
+void SharedThread::Add(ThreadTask task_func)
+{
+	if (running_ && thread_)
+	{
+		taskQueue_.PushBack(task_func);
+	}
+}
 
-			void SharedThread::WaitForStop(UInt32 wait_time)
-			{
-				if (thread_)
-				{
-					thread_->WaitForStop(wait_time);
-				}
-			}
-
-			void SharedThread::Add(ThreadTask task_func)
-			{
-				if (running_ && thread_)
-				{
-					taskQueue_.PushBack(task_func);
-				}
-			}
-
-			UInt32 SharedThread::WaitingTime()
-			{
-				return (UInt32)taskQueue_.Size();
-			}
+UInt32 SharedThread::WaitingTime()
+{
+	return (UInt32)taskQueue_.Size();
+}
 
 #define CHECK_EXIT() if (!running_) break;
 
-			void SharedThread::WorkThread()
-			{
-				FLAGGG_LOG_INFO("Shared thread start.");
+void SharedThread::WorkThread()
+{
+	FLAGGG_LOG_INFO("Shared thread start.");
 
-				ConditionQueue<ThreadTask>::Objects objects;
+	ConditionQueue<ThreadTask>::Objects objects;
 
-				while (running_)
-				{
-					taskQueue_.Swap(objects);
+	while (running_)
+	{
+		taskQueue_.Swap(objects);
 
-					CHECK_EXIT();
+		CHECK_EXIT();
 
-					for (auto it = objects.Begin(); it != objects.End(); ++it)
-					{
-						CHECK_EXIT();
+		for (auto it = objects.Begin(); it != objects.End(); ++it)
+		{
+			CHECK_EXIT();
 
-						if ((*it))
-							(*it)();
-					}
-
-					objects.Clear();
-
-					CHECK_EXIT();
-				}
-
-				FLAGGG_LOG_INFO("Shared thread stop.");
-			}
+			if ((*it))
+				(*it)();
 		}
+
+		objects.Clear();
+
+		CHECK_EXIT();
 	}
+
+	FLAGGG_LOG_INFO("Shared thread stop.");
+}
+
 }

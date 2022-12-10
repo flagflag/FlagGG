@@ -9,9 +9,6 @@
 #include <Graphics/Window.h>
 
 using namespace FlagGG;
-using namespace FlagGG::Scene;
-using namespace FlagGG::Container;
-using namespace FlagGG::Graphics;
 
 class EditorApplication : public GameEngine
 {
@@ -32,7 +29,7 @@ protected:
 	void WindowClose(void* window);
 
 private:
-	SharedPtr<FlagGG::Scene::Scene> scene_;
+	SharedPtr<Scene> scene_;
 
 	SharedPtr<Node> importNode_;
 

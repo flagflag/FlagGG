@@ -6,15 +6,17 @@
 
 namespace FlagGG
 {
-	class FlagGG_API ErrorCode
-	{
-	public:
-		virtual ~ErrorCode() {};
 
-		virtual int Value() const = 0;
+class FlagGG_API ErrorCode
+{
+public:
+	virtual ~ErrorCode() {};
 
-		virtual Container::String Message() const = 0;
-	};
+	virtual int Value() const = 0;
+
+	virtual String Message() const = 0;
+};
+
 }
 
 #endif

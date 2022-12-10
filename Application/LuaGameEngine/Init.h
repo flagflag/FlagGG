@@ -7,7 +7,9 @@
 
 namespace LuaGameEngine
 {
-	LuaGameEngine_API Engine* CreateEngine(lua_State* L);
 
-	LuaGameEngine_API void DestroyEngine(Engine* engine);
+LuaGameEngine_API Engine* CreateEngine(lua_State* L);
+
+LuaGameEngine_API void DestroyEngine(Engine* engine);
+
 }

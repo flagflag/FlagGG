@@ -8,58 +8,57 @@
 
 namespace FlagGG
 {
-	namespace Resource
+
+class FlagGG_API ResourceCache : public RefCounted
+{
+public:
+	ResourceCache(Context* context);
+
+	template < class T >
+	SharedPtr<T> GetResource(const String& path)
 	{
-		class FlagGG_API ResourceCache : public Container::RefCounted
+		String formatPath = FormatReousrcePath(path);
+
+		SharedPtr<Resource> res;
+
+		if (!CheckResource(formatPath, res))
 		{
-		public:
-			ResourceCache(Core::Context* context);
+			return nullptr;
+		}
 
-			template < class T >
-			Container::SharedPtr<T> GetResource(const Container::String& path)
+		// 存在资源，但没加载过
+		if (!res)
+		{
+			res = new T(context_);
+			res->SetName(path);
+			if (!LoadResource(formatPath, res))
 			{
-				Container::String formatPath = FormatReousrcePath(path);
-
-				Container::SharedPtr<Resource> res;
-
-				if (!CheckResource(formatPath, res))
-				{
-					return nullptr;
-				}
-
-				// 存在资源，但没加载过
-				if (!res)
-				{
-					res = new T(context_);
-					res->SetName(path);
-					if (!LoadResource(formatPath, res))
-					{
-						return nullptr;
-					}
-				}
-
-				return Container::StaticCast<T>(res);
+				return nullptr;
 			}
+		}
 
-			Container::SharedPtr<IOFrame::Buffer::IOBuffer> GetFile(const Container::String& path);
-
-			void AddResourceDir(const Container::String& path);
-
-			static Container::String FormatReousrcePath(const Container::String& path);
-
-		protected:
-			bool CheckResource(const Container::String& path, Container::SharedPtr<Resource>& res);
-
-			bool LoadResource(const Container::String& path, Container::SharedPtr<Resource>& res);
-
-		private:
-			Core::Context* context_;
-
-			Container::String resourceDir_;
-
-			Container::HashMap<Container::String, Container::SharedPtr<Resource>> resources_;
-		};
+		return StaticCast<T>(res);
 	}
+
+	SharedPtr<IOFrame::Buffer::IOBuffer> GetFile(const String& path);
+
+	void AddResourceDir(const String& path);
+
+	static String FormatReousrcePath(const String& path);
+
+protected:
+	bool CheckResource(const String& path, SharedPtr<Resource>& res);
+
+	bool LoadResource(const String& path, SharedPtr<Resource>& res);
+
+private:
+	Context* context_;
+
+	String resourceDir_;
+
+	HashMap<String, SharedPtr<Resource>> resources_;
+};
+
 }
 
 #endif

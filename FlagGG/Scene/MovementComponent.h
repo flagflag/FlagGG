@@ -6,25 +6,24 @@
 
 namespace FlagGG
 {
-	namespace Scene
-	{
-		class FlagGG_API MovementComponent : public Component
-		{
-			OBJECT_OVERRIDE(MovementComponent, Component);
-		public:
-			void AddMovement(BaseMovement* baseMovment);
 
-			void RemoveMovement(BaseMovement* baseMovment);
+class FlagGG_API MovementComponent : public Component
+{
+	OBJECT_OVERRIDE(MovementComponent, Component);
+public:
+	void AddMovement(BaseMovement* baseMovment);
 
-			void RemoveMovement(Container::StringHash className);
+	void RemoveMovement(BaseMovement* baseMovment);
 
-			void RemoveAllMovement();
+	void RemoveMovement(StringHash className);
 
-		protected:
-			void Update(Real timeStep) override;
+	void RemoveAllMovement();
 
-			Container::List<Container::SharedPtr<BaseMovement>> movements_;
-		};
-	}
+protected:
+	void Update(Real timeStep) override;
+
+	List<SharedPtr<BaseMovement>> movements_;
+};
+
 }
 

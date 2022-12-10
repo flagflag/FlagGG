@@ -7,42 +7,40 @@
 #include <atomic>
 #include <functional>
 
-namespace FlagGG
+namespace FlagGG { namespace IOFrame {
+
+class UDPThreadPool : public IOThreadPool
 {
-	namespace IOFrame
-	{
-		class UDPThreadPool : public IOThreadPool
-		{
-		public:
-			UDPThreadPool();
+public:
+	UDPThreadPool();
 
-			~UDPThreadPool() override;
+	~UDPThreadPool() override;
 
-			void Start() override;
+	void Start() override;
 
-			void Stop() override;
+	void Stop() override;
 
-			void WaitForStop() override;
+	void WaitForStop() override;
 
-			SLNet::RakPeerInterface* getService();
+	SLNet::RakPeerInterface* getService();
 
-			void SetPacketReciver(std::function<void(SLNet::Packet* packet)> func);
+	void SetPacketReciver(std::function<void(SLNet::Packet* packet)> func);
 
-		private:
-			void NetThread();
+private:
+	void NetThread();
 
-			void WaitForStop(UInt32 wait_time) override { };
+	void WaitForStop(UInt32 wait_time) override { };
 
-		private:
-			SLNet::RakPeerInterface*					rakPeer_;
+private:
+	SLNet::RakPeerInterface*					rakPeer_;
 
-			AsyncFrame::Thread::UniqueThreadPtr			thread_;
+	UniqueThreadPtr								thread_;
 
-			std::atomic < bool >						running_;
+	std::atomic < bool >						running_;
 
-			std::function<void(SLNet::Packet* packet)> reciver_;
-		};
+	std::function<void(SLNet::Packet* packet)> reciver_;
+};
 
-		typedef Container::SharedPtr < UDPThreadPool > UDPThreadPoolPtr;
-	}
-}
+typedef SharedPtr<UDPThreadPool> UDPThreadPoolPtr;
+	
+}}

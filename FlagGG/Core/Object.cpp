@@ -2,8 +2,7 @@
 
 namespace FlagGG
 {
-	namespace Core
-	{
-		Object::~Object() = default;
-	}
+
+Object::~Object() = default;
+
 }

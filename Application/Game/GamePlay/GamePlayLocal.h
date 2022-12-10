@@ -11,14 +11,14 @@ namespace LuaGameEngine
 	class Engine;
 }
 
-using namespace FlagGG::Core;
+using namespace FlagGG;
 
 class GamePlayLocal : public GamePlayBase
 {
 public:
 	explicit GamePlayLocal(Context* context);
 
-	void Initialize(FlagGG::Scene::Scene* scene) override;
+	void Initialize(Scene* scene) override;
 
 	void Login(const LuaFunction& callback) override;
 

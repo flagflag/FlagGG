@@ -9,8 +9,6 @@
 #include <Core/Context.h>
 
 using namespace FlagGG;
-using namespace FlagGG::Container;
-using namespace FlagGG::Core;
 
 class Network : public IOFrame::Handler::EventHandler
 {

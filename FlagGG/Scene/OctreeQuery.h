@@ -9,47 +9,46 @@
 
 namespace FlagGG
 {
-	namespace Scene
-	{
-		class Node;
-		class Component;
 
-		enum RayQueryLevel
-		{
-			RAY_QUERY_AABB = 0,
-			RAY_QUERY_OBB,
-			RAY_QUERY_TRIANGLE,
-		};
+class Node;
+class Component;
 
-		class FlagGG_API RayQueryResult
-		{
-		public:
-			RayQueryResult() = default;
+enum RayQueryLevel
+{
+	RAY_QUERY_AABB = 0,
+	RAY_QUERY_OBB,
+	RAY_QUERY_TRIANGLE,
+};
 
-			~RayQueryResult() = default;
+class FlagGG_API RayQueryResult
+{
+public:
+	RayQueryResult() = default;
+
+	~RayQueryResult() = default;
 			
-			Math::Vector3 position_;
-			Math::Vector3 normal_;
-			Real distance_;
-			Component* component_{ nullptr };
-			Node* node_{ nullptr };
-		};
+	Vector3 position_;
+	Vector3 normal_;
+	Real distance_;
+	Component* component_{ nullptr };
+	Node* node_{ nullptr };
+};
 
-		class FlagGG_API RayOctreeQuery
-		{
-		public:
-			RayOctreeQuery(Container::PODVector<RayQueryResult>& results, const Math::Ray& ray,
-				RayQueryLevel level = RAY_QUERY_TRIANGLE, Real maxDistance = Math::F_INFINITY) :
-				results_(results),
-				ray_(ray),
-				level_(level),
-				maxDistance_(maxDistance)
-			{}
+class FlagGG_API RayOctreeQuery
+{
+public:
+	RayOctreeQuery(PODVector<RayQueryResult>& results, const Ray& ray,
+		RayQueryLevel level = RAY_QUERY_TRIANGLE, Real maxDistance = F_INFINITY) :
+		results_(results),
+		ray_(ray),
+		level_(level),
+		maxDistance_(maxDistance)
+	{}
 
-			Container::PODVector<RayQueryResult>& results_;
-			RayQueryLevel level_;
-			Real maxDistance_;
-			Math::Ray ray_;
-		};
-	}
+	PODVector<RayQueryResult>& results_;
+	RayQueryLevel level_;
+	Real maxDistance_;
+	Ray ray_;
+};
+
 }

@@ -3,7 +3,7 @@
 
 #include "GameLogicServer.h"
 
-FlagGG::Config::LJSONValue commandParam;
+LJSONValue commandParam;
 
 void Run()
 {
@@ -13,7 +13,7 @@ void Run()
 
 int main(int argc, const char* argv[])
 {
-	if (SystemHelper::ParseCommand(argv + 1, argc - 1, commandParam))
+	if (ParseCommand(argv + 1, argc - 1, commandParam))
 	{
 		Run();
 	}

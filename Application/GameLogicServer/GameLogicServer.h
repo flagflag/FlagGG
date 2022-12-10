@@ -12,20 +12,17 @@
 #include "Network/UDPNetwork.h"
 #include "Network/LuaEventAdaptor.h"
 
-using namespace FlagGG::Container;
-using namespace FlagGG::Core;
-using namespace FlagGG::AsyncFrame;
-using namespace FlagGG::Math;
+using namespace FlagGG;
 
 namespace LuaGameEngine
 {
-	class Engine;
+class Engine;
 }
 
 class GameLogicServer : public FlagGG::ServerEngine
 {
 public:
-	GameLogicServer(const FlagGG::Config::LJSONValue& commandParam);
+	GameLogicServer(const LJSONValue& commandParam);
 
 protected:
 	void Start() override;
@@ -42,9 +39,9 @@ protected:
 	void HandleStopMove(Int64 userId);
 
 private:
-	FlagGG::Config::LJSONValue commandParam_;
+	LJSONValue commandParam_;
 
-	SharedPtr<FlagGG::Lua::LuaVM> luaVM_;
+	SharedPtr<LuaVM> luaVM_;
 
 	FlagGG::IOFrame::Acceptor::IOAcceptorPtr tcpAcceptor_;
 	FlagGG::IOFrame::Acceptor::IOAcceptorPtr udpAcceptor_;

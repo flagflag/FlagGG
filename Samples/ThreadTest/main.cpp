@@ -5,6 +5,8 @@
 #include <Utility/SystemHelper.h>
 #include <Log.h>
 
+using namespace FlagGG;
+
 static UInt32 count = 0;
 void ThreadFunc(Int32 index)
 {
@@ -14,7 +16,7 @@ void ThreadFunc(Int32 index)
 
 void OneThreadTest()
 {
-	FlagGG::AsyncFrame::Thread::SharedThread thread;
+	SharedThread thread;
 	thread.Start();
 
 	for (UInt32 i = 0; i < 1e5; ++i)
@@ -22,19 +24,19 @@ void OneThreadTest()
 		thread.Add(std::bind(&ThreadFunc, i));
 	}
 
-	FlagGG::Utility::SystemHelper::Sleep(10000000);
+	FlagGG::Sleep(10000000);
 }
 
 void MultiThreadTest()
 {
-	FlagGG::AsyncFrame::Thread::SharedThread thread;
+	SharedThread thread;
 
 	thread.Start();
 
-	FlagGG::AsyncFrame::Thread::UniqueThreadPtr workThread[4];
+	UniqueThreadPtr workThread[4];
 	for (UInt32 i = 0; i < 4; ++i)
 	{
-		workThread[i] = new FlagGG::AsyncFrame::Thread::UniqueThread([&]
+		workThread[i] = new UniqueThread([&]
 		{
 			for (UInt32 j = 0; j < 1e5; ++j)
 			{
@@ -43,14 +45,14 @@ void MultiThreadTest()
 		});
 	}
 
-	FlagGG::Utility::SystemHelper::Sleep(10000000);
+	FlagGG::Sleep(10000000);
 }
 
-static FlagGG::AsyncFrame::LockFree::ThreadSafeDeque<int> g_queue;
-FlagGG::Container::Vector<int> g_ret;
+static ThreadSafeDeque<int> g_queue;
+Vector<int> g_ret;
 void LockFreeQueueTest()
 {
-	FlagGG::AsyncFrame::Thread::UniqueThread thread([&]
+	UniqueThread thread([&]
 	{
 		while (true)
 		{
@@ -70,7 +72,7 @@ void LockFreeQueueTest()
 		g_queue.PushBack(i);
 	}
 
-	FlagGG::Utility::SystemHelper::Sleep(2000);
+	FlagGG::Sleep(2000);
 
 	for (UInt32 i = 0; i < 1e5; ++i)
 	{

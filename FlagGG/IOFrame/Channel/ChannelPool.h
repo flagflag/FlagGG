@@ -1,20 +1,12 @@
-﻿#ifndef __CHANNEL_POOL__
-#define __CHANNEL_POOL__
+﻿#pragma once
 
 #include "IOFrame/Channel/IOChannel.h"
 
-namespace FlagGG
+namespace FlagGG { namespace IOFrame { namespace Channel {
+
+class ChannelPool
 {
-	namespace IOFrame
-	{
-		namespace Channel
-		{
-			class ChannelPool
-			{
 
-			};
-		}
-	}
-}
+};
 
-#endif
+}}}

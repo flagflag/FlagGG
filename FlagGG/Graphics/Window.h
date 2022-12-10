@@ -14,104 +14,103 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		struct DefferedMessage
-		{
-			HWND handler_;
-			UINT message_;
-			WPARAM wParam_;
-			LPARAM lParam_;
-		};
 
-		class Window;
+struct DefferedMessage
+{
+	HWND handler_;
+	UINT message_;
+	WPARAM wParam_;
+	LPARAM lParam_;
+};
 
-		class FlagGG_API WindowDevice
-		{
-		public:
-			static void Initialize();
+class Window;
 
-			static void Uninitialize();
+class FlagGG_API WindowDevice
+{
+public:
+	static void Initialize();
 
-			static void Update();
+	static void Uninitialize();
 
-			static void Render();
+	static void Update();
 
-			static void RegisterWinMessage(Window* wv);
+	static void Render();
 
-			static void UnregisterWinMessage(Window* wv);
+	static void RegisterWinMessage(Window* wv);
 
-			static const wchar_t* className_;
+	static void UnregisterWinMessage(Window* wv);
 
-			static Container::Vector<Container::SharedPtr<Window>> recivers_;
+	static const wchar_t* className_;
 
-			static Container::PODVector<DefferedMessage> defferedMsgs_;
-		};
+	static Vector<SharedPtr<Window>> recivers_;
 
-		class FlagGG_API Window : public GPUObject, public Container::RefCounted
-		{
-		public:
-			Window(Core::Context* context, void* parentWindow, const Math::IntRect& rect);
+	static PODVector<DefferedMessage> defferedMsgs_;
+};
 
-			~Window() override;
+class FlagGG_API Window : public GPUObject, public RefCounted
+{
+public:
+	Window(Context* context, void* parentWindow, const IntRect& rect);
 
-			UInt32 GetWidth();
+	~Window() override;
 
-			UInt32 GetHeight();
+	UInt32 GetWidth();
 
-			Math::IntVector2 GetMousePos() const;
+	UInt32 GetHeight();
 
-			bool IsForegroundWindow() const;
+	IntVector2 GetMousePos() const;
 
-			void Resize(UInt32 width, UInt32 height);
+	bool IsForegroundWindow() const;
 
-			void* GetWindow();
+	void Resize(UInt32 width, UInt32 height);
 
-			void Show();
+	void* GetWindow();
 
-			void Hide();
+	void Show();
 
-			void Render();
+	void Hide();
 
-			Viewport* GetViewport() const;
+	void Render();
 
-			void WinProc(UINT message, WPARAM wParam, LPARAM lParam);
+	Viewport* GetViewport() const;
 
-			bool IsValid() override;
+	void WinProc(UINT message, WPARAM wParam, LPARAM lParam);
 
-		protected:
+	bool IsValid() override;
 
-			void Initialize() override;
+protected:
 
-			bool Create(void* parentWindow, const Math::IntRect& rect);
+	void Initialize() override;
 
-			void CreateSwapChain();
+	bool Create(void* parentWindow, const IntRect& rect);
 
-			void UpdateSwapChain(UInt32 width, UInt32 height);
+	void CreateSwapChain();
 
-		private:
-			Core::Context* context_;
-			Core::Input* input_;
+	void UpdateSwapChain(UInt32 width, UInt32 height);
 
-			ID3D11Texture2D* depthTexture_{ nullptr };
-			Container::SharedPtr<Viewport> viewport_;
+private:
+	Context* context_;
+	Input* input_;
 
-			UInt32 multiSample_{ 1 };
+	ID3D11Texture2D* depthTexture_{ nullptr };
+	SharedPtr<Viewport> viewport_;
 
-			bool sRGB_{ true };
+	UInt32 multiSample_{ 1 };
 
-			void* window{ nullptr };
+	bool sRGB_{ true };
 
-			void* parentWindow_{ nullptr };
+	void* window{ nullptr };
 
-			Math::IntRect rect_;
+	void* parentWindow_{ nullptr };
 
-			UInt32 vertexSize_{ 0 };
-			UInt32 vertexCount_{ 0 };
+	IntRect rect_;
 
-			POINT mousePos_;
-		};
-	}
+	UInt32 vertexSize_{ 0 };
+	UInt32 vertexCount_{ 0 };
+
+	POINT mousePos_;
+};
+
 }
 
 #endif

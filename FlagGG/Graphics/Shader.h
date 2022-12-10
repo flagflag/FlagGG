@@ -15,98 +15,97 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		class Shader;
 
-		// shader源码
-		class FlagGG_API ShaderCode : public Resource::Resource
-		{
-		public:
-			ShaderCode(Core::Context* context);
+class Shader;
 
-			Shader* GetShader(ShaderType type, const Container::Vector<Container::String>& defines);
+// shader源码
+class FlagGG_API ShaderCode : public Resource
+{
+public:
+	ShaderCode(Context* context);
 
-		protected:
-			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
+	Shader* GetShader(ShaderType type, const Vector<String>& defines);
 
-			bool EndLoad() override;
+protected:
+	bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
-			bool PreCompileShaderCode(const char* head, const char* tail, Container::String& out);
+	bool EndLoad() override;
 
-		private:
-			Container::Vector<Container::SharedPtr<Shader>> shaders_;
+	bool PreCompileShaderCode(const char* head, const char* tail, String& out);
 
-			// shader代码
-			Container::SharedArrayPtr<char> buffer_;
-			UInt32 bufferSize_{ 0 };
-		};
+private:
+	Vector<SharedPtr<Shader>> shaders_;
 
-		struct ConstantBufferVariableDesc
-		{
-			Container::String name_;
-			UInt32 offset_;
-			UInt32 size_;
-		};
+	// shader代码
+	SharedArrayPtr<char> buffer_;
+	UInt32 bufferSize_{ 0 };
+};
 
-		struct ConstantBufferDesc
-		{
-			Container::String name_;
-			UInt32 size_;
-			Container::Vector<ConstantBufferVariableDesc> variableDescs_;
-		};
+struct ConstantBufferVariableDesc
+{
+	String name_;
+	UInt32 offset_;
+	UInt32 size_;
+};
 
-		struct TextureDesc
-		{
-			Container::String textureName_;
-			Container::String samplerName_;
-		};
+struct ConstantBufferDesc
+{
+	String name_;
+	UInt32 size_;
+	Vector<ConstantBufferVariableDesc> variableDescs_;
+};
 
-		// 经过编译的shader，是GPU对象
-		class FlagGG_API Shader : public GPUObject, public Container::RefCounted
-		{
-		public:
-			Shader(Container::SharedArrayPtr<char> buffer, UInt32 bufferSize);
+struct TextureDesc
+{
+	String textureName_;
+	String samplerName_;
+};
 
-			~Shader() override;
+// 经过编译的shader，是GPU对象
+class FlagGG_API Shader : public GPUObject, public RefCounted
+{
+public:
+	Shader(SharedArrayPtr<char> buffer, UInt32 bufferSize);
 
-			bool IsValid() override;
+	~Shader() override;
 
-			void Initialize() override;
+	bool IsValid() override;
 
-			void SetType(ShaderType type);
+	void Initialize() override;
 
-			void SetDefines(const Container::Vector<Container::String>& defines);
+	void SetType(ShaderType type);
 
-			Container::String GetDefinesString() const;
+	void SetDefines(const Vector<String>& defines);
 
-			ShaderType GetType();
+	String GetDefinesString() const;
 
-			ID3DBlob* GetByteCode();
+	ShaderType GetType();
 
-			const Container::HashMap<UInt32, ConstantBufferDesc>& GetContantBufferVariableDesc() const;
+	ID3DBlob* GetByteCode();
 
-			const Container::HashMap<UInt32, TextureDesc>& GetTextureDesc() const;
+	const HashMap<UInt32, ConstantBufferDesc>& GetContantBufferVariableDesc() const;
 
-		protected:
-			void AnalysisReflection(ID3DBlob* compileCode);
+	const HashMap<UInt32, TextureDesc>& GetTextureDesc() const;
 
-		private:
-			// shader代码
-			Container::SharedArrayPtr<char> buffer_;
-			UInt32 bufferSize_{ 0 };
+protected:
+	void AnalysisReflection(ID3DBlob* compileCode);
 
-			ID3DBlob* shaderCode_{ nullptr };
+private:
+	// shader代码
+	SharedArrayPtr<char> buffer_;
+	UInt32 bufferSize_{ 0 };
 
-			ShaderType shaderType_{ None };
+	ID3DBlob* shaderCode_{ nullptr };
 
-			Container::Vector<Container::String> defines_;
-			Container::String definesString_;
+	ShaderType shaderType_{ None };
 
-			Container::HashMap<UInt32, ConstantBufferDesc> constantBufferDescs_;
-			Container::HashMap<UInt32, TextureDesc> textureDescs_;
-		};
-	}
+	Vector<String> defines_;
+	String definesString_;
+
+	HashMap<UInt32, ConstantBufferDesc> constantBufferDescs_;
+	HashMap<UInt32, TextureDesc> textureDescs_;
+};
+
 }
 
 #endif

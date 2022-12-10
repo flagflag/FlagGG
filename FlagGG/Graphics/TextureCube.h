@@ -8,38 +8,37 @@
 
 namespace FlagGG
 {
-	namespace Graphics
-	{
-		class FlagGG_API TextureCube : public Texture
-		{
-		public:
-			TextureCube(Core::Context* context);
 
-			bool SetSize(UInt32 size, UInt32 format, TextureUsage usage = TEXTURE_STATIC, Int32 multiSample = 1);
+class FlagGG_API TextureCube : public Texture
+{
+public:
+	TextureCube(Context* context);
 
-			bool SetData(CubeMapFace face, UInt32 level, Int32 x, Int32 y, Int32 width, Int32 height, const void* data);
+	bool SetSize(UInt32 size, UInt32 format, TextureUsage usage = TEXTURE_STATIC, Int32 multiSample = 1);
 
-			bool SetData(CubeMapFace face, FlagGG::Resource::Image* image, bool useAlpha = false);
+	bool SetData(CubeMapFace face, UInt32 level, Int32 x, Int32 y, Int32 width, Int32 height, const void* data);
 
-			bool GetData(CubeMapFace face, UInt32 level, void* dest);
+	bool SetData(CubeMapFace face, Image* image, bool useAlpha = false);
 
-			Container::SharedPtr<FlagGG::Resource::Image> GetImage(CubeMapFace face);
+	bool GetData(CubeMapFace face, UInt32 level, void* dest);
 
-			RenderSurface* GetRenderSurface() const override;
+	SharedPtr<Image> GetImage(CubeMapFace face);
 
-			RenderSurface* GetRenderSurface(UInt32 index) const override;
+	RenderSurface* GetRenderSurface() const override;
 
-		protected:
-			bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
+	RenderSurface* GetRenderSurface(UInt32 index) const override;
 
-			bool EndLoad() override;
+protected:
+	bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
-			bool Create() override;
+	bool EndLoad() override;
 
-		private:
-			Container::SharedPtr<RenderSurface> renderSurfaces_[MAX_CUBEMAP_FACES];
+	bool Create() override;
 
-			UInt32 faceMemoryUse_[MAX_CUBEMAP_FACES];
-		};
-	}
+private:
+	SharedPtr<RenderSurface> renderSurfaces_[MAX_CUBEMAP_FACES];
+
+	UInt32 faceMemoryUse_[MAX_CUBEMAP_FACES];
+};
+
 }

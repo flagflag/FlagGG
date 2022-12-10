@@ -5,10 +5,12 @@
 
 namespace LuaGameEngine
 {
-	class LuaGameEngine_API Buff : public EngineObject
-	{
-		OBJECT_OVERRIDE(Buff, EngineObject)
-	public:
 
-	};
+class LuaGameEngine_API Buff : public EngineObject
+{
+	OBJECT_OVERRIDE(Buff, EngineObject)
+public:
+
+};
+
 }
