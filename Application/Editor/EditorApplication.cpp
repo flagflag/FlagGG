@@ -70,8 +70,9 @@ void EditorApplication::CreateScene()
 	unit->SetScale(Vector3(0.001, 0.001, 0.001));
 	scene_->AddChild(unit);
 
+#if 0
 	Importer::SetContext(context_);
-	SharedPtr<Node> importNode = Importer::ImportScene("G:/Kitbash3D - Utopia/Kitbash3d_Utopia.FBX");
+	SharedPtr<Node> importNode = Importer::ImportScene("D:/ThirdModels/Kitbash3D - Utopia/Kitbash3d_Utopia.FBX");
 	if (importNode)
 	{
 		importNode_ = importNode;
@@ -79,6 +80,7 @@ void EditorApplication::CreateScene()
 		importNode_->SetScale(Vector3(0.001, 0.001, 0.001));
 		scene_->AddChild(importNode_);
 	}
+#endif
 
 	SharedPtr<Node> lightNode(new Node());
 	lightNode->CreateComponent<Light>();
@@ -121,7 +123,7 @@ void EditorApplication::OnKeyUp(KeyState* keyState, unsigned keyCode)
 	if (keyCode == VK_F1)
 	{
 		Importer::SetContext(context_);
-		SharedPtr<Node> importNode = Importer::ImportScene("G:/Kitbash3D-Space Colony/Kitbash3d_SpaceColony.FBX");
+		SharedPtr<Node> importNode = Importer::ImportScene("D:/ThirdModels/Kitbash3D-Space Colony/Kitbash3d_SpaceColony.FBX");
 		if (importNode)
 		{
 			importNode_ = importNode;

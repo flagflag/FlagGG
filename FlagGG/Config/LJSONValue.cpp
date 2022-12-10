@@ -215,6 +215,11 @@ namespace FlagGG
 			return (*this);
 		}
 
+		bool LJSONValue::IsNull() const
+		{
+			return type_ == LJSON_NULL;
+		}
+
 		bool LJSONValue::IsBool() const
 		{
 			return type_ == LJSON_BOOL;
@@ -308,6 +313,12 @@ namespace FlagGG
 			}
 
 			return Utility::Format::ToDouble(*stringValue_);
+		}
+
+		void LJSONValue::Set(const LJSONString& key, const LJSONValue& value)
+		{
+			CheckType(LJSON_OBJECT);
+			(*objectValue_)[key] = value;
 		}
 
 		LJSONValue& LJSONValue::Append()

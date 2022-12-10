@@ -6,6 +6,7 @@
 #include "IOFrame/Stream/FileStream.h"
 #include "Resource/ResourceCache.h"
 #include "Core/Context.h"
+#include "Core/CryAssert.h"
 #include "Log.h"
 
 #include <d3dcompiler.h>
@@ -217,6 +218,8 @@ namespace FlagGG
 				if (errorMsgs)
 				{
 					FLAGGG_LOG_ERROR("Error code: {}", (const char*)errorMsgs->GetBufferPointer());
+
+					CRY_ASSERT_MESSAGE(false, (const char*)errorMsgs->GetBufferPointer());
 
 					SAFE_RELEASE(errorMsgs);
 				}

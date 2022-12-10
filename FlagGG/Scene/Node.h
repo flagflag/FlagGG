@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Export.h"
-#include "Container/RefCounted.h"
+#include "Core/Object.h"
 #include "Container/Vector.h"
 #include "Container/Ptr.h"
 #include "Container/Str.h"
@@ -29,8 +29,9 @@ namespace FlagGG
 			Octree* octree_;
 		};
 
-		class FlagGG_API Node : public Container::RefCounted
+		class FlagGG_API Node : public Core::Object
 		{
+			OBJECT_OVERRIDE(Node, Object);
 		public:
 			Node();
 

@@ -69,6 +69,7 @@ namespace FlagGG
 			LJSONValue& operator=(const LJSONValue& value);
 
 			// 判断值类型
+			bool IsNull() const;
 			bool IsBool() const;
 			bool IsNumber() const;
 			bool IsString() const;
@@ -89,6 +90,8 @@ namespace FlagGG
 			const Int32 ToInt() const;
 			const UInt32 ToUInt() const;
 			const double ToDouble() const;
+
+			void Set(const LJSONString& key, const LJSONValue& value);
 
 			// 数组操作
 			LJSONValue& Append();

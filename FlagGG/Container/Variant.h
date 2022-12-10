@@ -8,6 +8,7 @@
 #include "Container/Str.h"
 #include "Container/StringHash.h"
 #include "Container/Swap.h"
+#include "Container/HashMap.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
@@ -244,5 +245,7 @@ namespace FlagGG
 			Math::Ray,
 			Math::Color
 		> FVariant;
+
+		using FVariantMap = HashMap<StringHash, FVariant>;
 	}
 }
