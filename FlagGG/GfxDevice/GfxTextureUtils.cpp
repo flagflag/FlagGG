@@ -1,5 +1,6 @@
 #include "GfxTextureUtils.h"
 #include "Math/Math.h"
+#include "Log.h"
 
 namespace FlagGG
 {
@@ -104,6 +105,11 @@ TextureDetail TEXTURE_FORMAT_DETAIL[] =
 	{   8,  1, 1,  1, 1, 1,  0, 8,  0,  0,  0,  0, TEXTURE_ENCODING_UNORM }, // D0S8
 };
 
+bool GfxTextureUtils::IsCompressed(TextureFormat format)
+{
+	return format < TEXTURE_FORMAT_UNKNOWN;
+}
+
 const TextureDetail& GfxTextureUtils::GetTextureDetail(TextureFormat format)
 {
 	return TEXTURE_FORMAT_DETAIL[format];
@@ -111,10 +117,9 @@ const TextureDetail& GfxTextureUtils::GetTextureDetail(TextureFormat format)
 
 TextureMipInfo GfxTextureUtils::GetTextureMipInfo(TextureFormat format, UInt32 width, UInt32 height, UInt32 depth, UInt32 level)
 {
-	TextureMipInfo mipInfo;
+	TextureMipInfo mipInfo{};
 
-	const TextureDetail& detail = GetTextureDetail(format);
-	if (!detail.isCompressed_)
+	if (!IsCompressed(format))
 	{
 		mipInfo.width_ = Max(width >> level, 1u);
 		mipInfo.height_ = Max(height >> level, 1u);
@@ -123,6 +128,7 @@ TextureMipInfo GfxTextureUtils::GetTextureMipInfo(TextureFormat format, UInt32 w
 	else
 	{
 		// 压缩格式比较特殊，后面再补上吧
+		FLAGGG_LOG_ERROR("COmpressed texture mip info error.");
 	}
 
 	return mipInfo;
@@ -130,7 +136,7 @@ TextureMipInfo GfxTextureUtils::GetTextureMipInfo(TextureFormat format, UInt32 w
 
 UInt32 GfxTextureUtils::GetRowDataSize(TextureFormat format, Int32 width)
 {
-	return GetTextureDetail(format).bitsPerPixel_ * width;
+	return GetTextureDetail(format).bitsPerPixel_ * width / 8;
 }
 
 UInt32 GfxTextureUtils::CheckMaxLevels(UInt32 width, UInt32 height, UInt32 requestedLevels)

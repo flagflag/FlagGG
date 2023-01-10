@@ -9,7 +9,6 @@ namespace FlagGG
 
 struct TextureDetail
 {
-	bool isCompressed_;   // 是否是压缩格式
 	UInt8 bitsPerPixel_;  // 纹理每像素的bits数
 	UInt8 blockWidth_;    // 块压缩纹理，每块的宽度
 	UInt8 blockHeight_;   // 块压缩纹理，每块的高度
@@ -22,7 +21,7 @@ struct TextureDetail
 	UInt8 gBits_;         // 纹理g通道的bits数
 	UInt8 bBits_;         // 纹理b通道的bits数
 	UInt8 aBits_;         // 纹理a通道的bits数
-	UInt8 encodingType_;  // 纹理编码类型 
+	UInt8 encodingType_;  // 纹理编码类型
 };
 
 struct TextureMipInfo
@@ -35,6 +34,8 @@ struct TextureMipInfo
 class FlagGG_API GfxTextureUtils
 {
 public:
+	static bool IsCompressed(TextureFormat format);
+
 	// 获取纹理格式的细节
 	static const TextureDetail& GetTextureDetail(TextureFormat format);
 

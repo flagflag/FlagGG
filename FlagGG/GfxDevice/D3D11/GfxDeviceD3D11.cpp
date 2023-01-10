@@ -37,6 +37,16 @@ static const DXGI_FORMAT d3dElementFormats[] =
 	DXGI_FORMAT_R8G8B8A8_UNORM
 };
 
+GfxDevice* GfxDevice::CreateDevice()
+{
+	return GfxDeviceD3D11::CreateInstance();
+}
+
+void GfxDevice::DestroyDevice()
+{
+	GfxDeviceD3D11::DestroyDevice();
+}
+
 GfxDevice* GfxDevice::GetDevice()
 {
 	return GfxDeviceD3D11::Instance();
@@ -219,6 +229,28 @@ void GfxDeviceD3D11::PrepareDraw()
 		static ID3D11SamplerState* vertexSamplerState[MAX_TEXTURE_CLASS] = {};
 		static ID3D11ShaderResourceView* pixelShaderResourceView[MAX_TEXTURE_CLASS] = {};
 		static ID3D11SamplerState* pixelSamplerState[MAX_TEXTURE_CLASS] = {};
+
+		static ID3D11SamplerState* sampler = nullptr;
+		if (!sampler)
+		{
+			D3D11_SAMPLER_DESC samplerDesc;
+			memset(&samplerDesc, 0, sizeof(samplerDesc));
+			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+			samplerDesc.MaxAnisotropy = 4;
+			samplerDesc.MinLOD = -D3D11_FLOAT32_MAX;
+			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+
+			HRESULT hr = device_->CreateSamplerState(&samplerDesc, &sampler);
+			if (hr != 0)
+			{
+				FLAGGG_LOG_ERROR("CreateSamplerState failed.");
+				D3D11_SAFE_RELEASE(sampler);
+			}
+		}
 
 		for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
 		{

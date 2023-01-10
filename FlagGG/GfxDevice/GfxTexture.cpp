@@ -5,6 +5,7 @@ namespace FlagGG
 
 GfxTexture::GfxTexture()
 	: GfxObject()
+	, textureDesc_{ TEXTURE_FORMAT_RGBA8, 1, 1, 1, 1, 1, 0, false, 1, false, false, TEXTURE_STATIC }
 {
 
 }
@@ -107,6 +108,11 @@ const TextureDetail& GfxTexture::GetDetail() const
 const TextureMipInfo& GfxTexture::GetMipInfo(UInt32 level) const
 {
 	return GfxTextureUtils::GetTextureMipInfo(textureDesc_.format_, textureDesc_.width_, textureDesc_.height_, textureDesc_.depth_, level);
+}
+
+bool GfxTexture::IsCompressed() const
+{
+	return GfxTextureUtils::IsCompressed(textureDesc_.format_);
 }
 
 }

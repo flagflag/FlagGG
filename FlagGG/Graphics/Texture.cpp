@@ -46,7 +46,7 @@ Int32 Texture::GetDepth() const
 
 bool Texture::IsCompressed() const
 {
-	return gfxTexture_->GetDetail().isCompressed_;
+	return gfxTexture_->IsCompressed();
 }
 
 UInt32 Texture::GetComponents() const

@@ -44,10 +44,6 @@ public:
 	ID3D11ShaderResourceView* GetD3D11ShaderResourceView() const { return shaderResourceView_; }
 
 protected:
-	static UInt32 GetSRGBFormat(UInt32 format);
-	static UInt32 GetDSVFormat(UInt32 format);
-	static UInt32 GetSRVFormat(UInt32 format);
-
 	void CreateTexture2D();
 	void CreateTexture3D();
 	void CreateTextureCube();
@@ -55,16 +51,16 @@ protected:
 
 private:
 	// texture 2d
-	ID3D11Texture2D* d3d11Texture2D_;
+	ID3D11Texture2D* d3d11Texture2D_{};
 
 	// texture 3d
-	ID3D11Texture3D* d3d11Texture3D_;
+	ID3D11Texture3D* d3d11Texture3D_{};
 
 	// resolve texture
-	ID3D11Resource* resolveTexture_;
+	ID3D11Resource* resolveTexture_{};
 
 	// shader resource view
-	ID3D11ShaderResourceView* shaderResourceView_;
+	ID3D11ShaderResourceView* shaderResourceView_{};
 
 	// render surfaces
 	Vector<SharedPtr<GfxRenderSurfaceD3D11>> gfxRenderSurfaces_;

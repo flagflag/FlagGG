@@ -44,8 +44,11 @@ bool TextureCube::SetSize(UInt32 size, TextureFormat format,
 	gfxTexture_->SetWidth(size);
 	gfxTexture_->SetHeight(size);
 	gfxTexture_->SetDepth(1u);
+	gfxTexture_->SetLayers(0);
+	gfxTexture_->SetCube(true);
 	gfxTexture_->SetMultiSample(multiSample);
 	gfxTexture_->SetAutoResolve(false);
+	gfxTexture_->SetSRGB(false);
 	gfxTexture_->SetUsage(usage);
 	gfxTexture_->Apply(nullptr);
 

@@ -126,6 +126,10 @@ public:
 	virtual GfxProgram* CreateProgram();
 
 public:
+	static GfxDevice* CreateDevice();
+
+	static void DestroyDevice();
+
 	// 获取d3d11设备
 	static GfxDevice* GetDevice();
 

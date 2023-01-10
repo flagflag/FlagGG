@@ -41,14 +41,14 @@ void RenderEngine::CreateShadowRasterizerState()
 
 void RenderEngine::Initialize()
 {
-	gfxDevice_ = GfxDevice::GetDevice();
+	gfxDevice_ = GfxDevice::CreateDevice();
 
 	CreateShadowRasterizerState();
 }
 
 void RenderEngine::Uninitialize()
 {
-
+	GfxDevice::DestroyDevice();
 }
 
 void RenderEngine::SetTextureQuality(MaterialQuality quality)

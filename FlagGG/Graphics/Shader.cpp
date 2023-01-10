@@ -158,7 +158,7 @@ Shader::~Shader()
 
 void Shader::Compile()
 {
-	gfxShader_->SetShaderType(VS);
+	gfxShader_->SetShaderType(shaderType_);
 	gfxShader_->SetDefines(defines_);
 	gfxShader_->SetShaderSource(buffer_, bufferSize_);
 	gfxShader_->Compile();

@@ -97,6 +97,9 @@ public:
 	// 获取纹理mip信息
 	const TextureMipInfo& GetMipInfo(UInt32 level) const;
 
+	// 纹理是否压缩
+	bool IsCompressed() const;
+
 protected:
 	TextureDesc textureDesc_;
 };
