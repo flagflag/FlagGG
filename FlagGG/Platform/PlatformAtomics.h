@@ -9,12 +9,3 @@
 #else
 #error
 #endif
-
-namespace FlagGG
-{
-
-struct GenericPlatformAtomics
-{
-};
-
-}

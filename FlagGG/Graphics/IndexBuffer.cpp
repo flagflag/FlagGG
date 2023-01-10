@@ -16,6 +16,8 @@ bool IndexBuffer::SetSize(UInt32 indexSize, UInt32 indexCount, bool dynamic)
 	gfxBuffer_->SetAccess(BUFFER_WRITE);
 	gfxBuffer_->SetUsage(dynamic ? BUFFER_DYNAMIC : BUFFER_STATIC);
 	gfxBuffer_->Apply(nullptr);
+
+	return true;
 }
 
 UInt32 IndexBuffer::GetIndexSize() const

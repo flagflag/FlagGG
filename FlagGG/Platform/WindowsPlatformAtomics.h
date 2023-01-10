@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "Platform/PlatformAtomics.h"
 #include "Core/BaseMacro.h"
 #include "Core/BaseTypes.h"
 #include <intrin.h>
@@ -11,7 +12,7 @@
 namespace FlagGG
 {
 
-struct FlagGG_API WindowPlatformAtomics : public GenericPlatformAtomics
+struct FlagGG_API WindowPlatformAtomics
 {
 	static_assert(sizeof(Int8) == sizeof(char) && alignof(Int8) == alignof(char), "Int8 must be compatible with char");
 	static_assert(sizeof(Int16) == sizeof(short) && alignof(Int16) == alignof(short), "Int16 must be compatible with short");
@@ -30,7 +31,7 @@ struct FlagGG_API WindowPlatformAtomics : public GenericPlatformAtomics
 
 	static FORCEINLINE Int32 InterlockedIncrement(volatile Int32* value)
 	{
-		return (Int32)_InterlockedIncrement((long*)value);
+		return (Int32)::_InterlockedIncrement((long*)value);
 	}
 
 	static FORCEINLINE Int64 InterlockedIncrement(volatile Int64* value)
@@ -260,7 +261,7 @@ struct FlagGG_API WindowPlatformAtomics : public GenericPlatformAtomics
 
 	static FORCEINLINE void AtomicStore_Relaxed(volatile Int64* src, Int64 val)
 	{
-		* src = val;
+		*src = val;
 	}
 
 	// AtomicRead64 has been deprecated, please use AtomicRead's overload instead

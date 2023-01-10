@@ -1,5 +1,4 @@
 #include "Graphics/VertexBuffer.h"
-#include "GfxDevice/VertexDescFactory.h"
 #include "Log.h"
 
 namespace FlagGG
@@ -7,7 +6,10 @@ namespace FlagGG
 
 static const PODVector<VertexElement> EMPTY_VERTEX_ELEMENT;
 
-VertexBuffer::~VertexBuffer() = default;
+VertexBuffer::~VertexBuffer()
+{
+
+}
 
 bool VertexBuffer::SetSize(UInt32 vertexCount, const PODVector<VertexElement>& vertexElements, bool dynamic)
 {

@@ -2,6 +2,7 @@
 #include "Graphics/RenderEngine.h"
 #include "GfxDevice/GfxDevice.h"
 #include "GfxDevice/GfxTexture.h"
+#include "GfxDevice/GfxRenderSurface.h"
 #include "Math/Math.h"
 #include "Log.h"
 
@@ -56,6 +57,16 @@ UInt32 Texture::GetComponents() const
 	}
 
 	return gfxTexture_->GetDetail().bitsPerPixel_ / 4;
+}
+
+GfxRenderSurface* Texture::GetRenderSurface() const
+{
+	return gfxTexture_->GetRenderSurface();
+}
+
+GfxRenderSurface* Texture::GetRenderSurface(UInt32 index) const
+{
+	return gfxTexture_->GetRenderSurface(index);
 }
 
 //void Texture::Initialize()

@@ -1,20 +1,32 @@
 #pragma once
 
 #include "Graphics/GraphicsDef.h"
-#include "Graphics/ShaderParameter.h"
 #include "Container/Vector.h"
 #include "Container/Ptr.h"
+#include "Container/FlagSet.h"
 #include "Math/Rect.h"
+#include "Math/Color.h"
 
 namespace FlagGG
 {
 
+class Window;
+class GfxSwapChain;
 class GfxBuffer;
 class GfxTexture;
 class GfxShader;
 class GfxProgram;
 class GfxRenderSurface;
 class VertexDescription;
+class ShaderParameters;
+
+enum ClearTarget : UInt32
+{
+	CLEAR_COLOR = 0x1,
+	CLEAR_DEPTH = 0x2,
+	CLEAR_STENCIL = 0x4,
+};
+FLAGGG_FLAGSET(ClearTarget, ClearTargetFlags);
 
 class GfxDevice
 {
@@ -27,8 +39,20 @@ public:
 	/*                        渲染指令                        */
 	/**********************************************************/
 
-	// 设置RenderSurface
-	virtual void SetRenderSurface(GfxRenderSurface* gfxRenderSuraface);
+	// 清理RenderTarget、DepthStencil
+	virtual void Clear(ClearTargetFlags flags , const Color& color = Color::TRANSPARENT_BLACK, float depth = 1.0f, unsigned stencil = 0);
+
+	// 设置RenderTarget
+	virtual void SetRenderTarget(GfxRenderSurface* gfxRenderTarget);
+
+	// 设置DepthStencil
+	virtual void SetDepthStencil(GfxRenderSurface* gfxDepthStencil);
+
+	// 设置Viewport
+	virtual void SetViewport(const Rect& viewport);
+
+	// 设置Viewport
+	virtual void SetViewport(const IntRect& viewport);
 
 	// 设置VertexBuffer
 	virtual void SetVertexBuffer(GfxBuffer* gfxVertexBuffer);
@@ -86,6 +110,9 @@ public:
 	/*                     创建Gfx对象                        */
 	/**********************************************************/
 
+	// 创建交换链
+	virtual GfxSwapChain* CreateSwapChain(Window* window);
+
 	// 创建纹理
 	virtual GfxTexture* CreateTexture();
 
@@ -103,6 +130,16 @@ public:
 	static GfxDevice* GetDevice();
 
 protected:
+	// 准备提交的rt depth stencil
+	SharedPtr<GfxRenderSurface> renderTarget_;
+	SharedPtr<GfxRenderSurface> depthStencil_;
+	bool renderTargetDirty_{};
+	bool depthStencilDirty_{};
+
+	// 准备提交的viewport
+	Rect viewport_;
+	bool viewportDirty_{};
+
 	// 准备提交的vbs
 	Vector<SharedPtr<GfxBuffer>> vertexBuffers_;
 	bool vertexBufferDirty_{};

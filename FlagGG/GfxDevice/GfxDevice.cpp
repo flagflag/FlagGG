@@ -1,15 +1,52 @@
 #include "GfxDevice.h"
+#include "GfxDevice/GfxRenderSurface.h"
+#include "GfxDevice/GfxBuffer.h"
+#include "GfxDevice/GfxTexture.h"
+#include "GfxDevice/GfxShader.h"
+#include "GfxDevice/VertexDescFactory.h"
+#include "Graphics/ShaderParameter.h"
 
 namespace FlagGG
 {
 
-GfxDevice::GfxDevice() = default;
-
-GfxDevice::~GfxDevice() = default;
-
-void GfxDevice::SetRenderSurface(GfxRenderSurface* gfxRenderSuraface)
+GfxDevice::GfxDevice()
 {
 
+}
+
+GfxDevice::~GfxDevice()
+{
+
+}
+
+void GfxDevice::Clear(ClearTargetFlags flags, const Color& color/* = Color::TRANSPARENT_BLACK*/, float depth/* = 1.0f*/, unsigned stencil/* = 0*/)
+{
+
+}
+
+void GfxDevice::SetRenderTarget(GfxRenderSurface* gfxRenderTarget)
+{
+	renderTarget_ = gfxRenderTarget;
+	renderTargetDirty_ = true;
+}
+
+void GfxDevice::SetDepthStencil(GfxRenderSurface* gfxDepthStencil)
+{
+	depthStencil_ = gfxDepthStencil;
+	depthStencilDirty_ = true;
+}
+
+void GfxDevice::SetViewport(const Rect& viewport)
+{
+	viewport_ = viewport;
+	viewportDirty_ = true;
+}
+
+void GfxDevice::SetViewport(const IntRect& viewport)
+{
+	viewport_.min_ = Vector2(viewport.Min());
+	viewport_.max_ = Vector2(viewport.Max());
+	viewportDirty_ = true;
 }
 
 void GfxDevice::SetVertexBuffer(GfxBuffer* gfxVertexBuffer)
@@ -124,6 +161,11 @@ void GfxDevice::Draw(UInt32 vertexStart, UInt32 vertexCount)
 void GfxDevice::DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart/* = 0u*/)
 {
 
+}
+
+GfxSwapChain* GfxDevice::CreateSwapChain(Window* window)
+{
+	return nullptr;
 }
 
 GfxTexture* GfxDevice::CreateTexture()

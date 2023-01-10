@@ -27,6 +27,9 @@ public:
 	/*                        渲染指令                        */
 	/**********************************************************/
 
+	// 清理RenderTarget、DepthStencil
+	void Clear(ClearTargetFlags flags, const Color& color = Color::TRANSPARENT_BLACK, float depth = 1.0f, unsigned stencil = 0) override;
+
 	// 提交渲染指令
 	void Draw(UInt32 vertexStart, UInt32 vertexCount) override;
 
@@ -37,6 +40,9 @@ public:
 	/**********************************************************/
 	/*                     创建Gfx对象                        */
 	/**********************************************************/
+
+	// 创建交换链
+	GfxSwapChain* CreateSwapChain(Window* window) override;
 
 	// 创建纹理
 	GfxTexture* CreateTexture() override;
@@ -67,7 +73,7 @@ public:
 
 protected:
 	// 提交渲染指令之前预处理工作
-	bool PrepareDraw();
+	void PrepareDraw();
 
 	void PrepareRasterizerState();
 

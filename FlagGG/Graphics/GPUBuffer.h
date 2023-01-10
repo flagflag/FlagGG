@@ -1,7 +1,6 @@
 #pragma once
 #include "Export.h"
 #include "Graphics/GraphicsDef.h"
-#include "Graphics/GPUObject.h"
 #include "Container/RefCounted.h"
 #include "IOFrame/Buffer/IOBuffer.h"
 #include "Core/BaseTypes.h"

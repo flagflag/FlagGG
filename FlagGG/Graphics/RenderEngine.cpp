@@ -9,7 +9,6 @@
 #include "IOFrame/Buffer/IOBufferAux.h"
 #include "Resource/ResourceCache.h"
 #include "GfxDevice/GfxDevice.h"
-#include "GfxDevice/D3D11/GfxDeviceD3D11.h"
 
 #include <assert.h>
 
@@ -50,55 +49,6 @@ void RenderEngine::Initialize()
 void RenderEngine::Uninitialize()
 {
 
-}
-
-ID3D11Device* RenderEngine::GetDevice()
-{
-	// 暂时这样写，先测试
-	return GfxDeviceD3D11::Instance()->GetD3D11Device();
-}
-
-ID3D11DeviceContext* RenderEngine::GetDeviceContext()
-{
-	// 暂时这样写，先测试
-	return GfxDeviceD3D11::Instance()->GetD3D11DeviceContext();
-}
-
-bool RenderEngine::CheckMultiSampleSupport(DXGI_FORMAT format, UInt32 sampleCount)
-{
-	if (sampleCount < 2)
-	{
-		return true;
-	}
-
-	UINT numLevels = 0;
-	if (FAILED(GetDevice()->CheckMultisampleQualityLevels(format, sampleCount, &numLevels)))
-	{
-		return false;
-	}
-
-	return numLevels > 0;
-}
-
-UInt32 RenderEngine::GetMultiSampleQuality(DXGI_FORMAT format, UInt32 sampleCount)
-{
-	if (sampleCount < 2)
-	{
-		return 0;
-	}
-
-	if (GetDevice()->GetFeatureLevel() >= D3D_FEATURE_LEVEL_10_1)
-	{
-		return 0xffffffff;
-	}
-
-	UINT numLevels = 0;
-	if (FAILED(GetDevice()->CheckMultisampleQualityLevels(format, sampleCount, &numLevels)) || !numLevels)
-	{
-		return 0;
-	}
-
-	return numLevels - 1;
 }
 
 void RenderEngine::SetTextureQuality(MaterialQuality quality)
@@ -330,16 +280,20 @@ void RenderEngine::SetShaderParameter(Camera* camera, const RenderContext* rende
 
 void RenderEngine::SetVertexBuffers(const Vector<SharedPtr<VertexBuffer>>& vertexBuffers)
 {
-	vertexBuffers_.Clear();
-	for (auto vertexBuffer : vertexBuffers)
-		vertexBuffers_.Push(vertexBuffer);
-	vertexBufferDirty_ = true;
+	gfxDevice_->ClearVertexBuffer();
+
+	for (UInt32 i = 0; i < vertexBuffers.Size(); ++i)
+	{
+		gfxDevice_->AddVertexBuffer(vertexBuffers[i]->GetGfxRef());
+	}
+
+	gfxDevice_->SetVertexDescription(vertexBuffers[0]->GetVertexDescription());
 }
 
 void RenderEngine::SetIndexBuffer(IndexBuffer* indexBuffer)
 {
-	indexBuffer_ = indexBuffer;
-	indexBufferDirty_ = true;
+	if (indexBuffer)
+		gfxDevice_->SetIndexBuffer(indexBuffer->GetGfxRef());
 }
 
 void RenderEngine::SetVertexShader(Shader* shader)
@@ -358,10 +312,9 @@ void RenderEngine::SetTextures(const Vector<SharedPtr<Texture>>& textures)
 {
 	for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
 	{
-		textures_[i] = i < textures.Size() && textures[i] ? textures[i] : defaultTextures_[i];
+		auto texture = i < textures.Size() && textures[i] ? textures[i] : defaultTextures_[i];
+		gfxDevice_->SetTexture(i, texture->GetGfxRef());
 	}
-
-	texturesDirty_ = true;
 }
 
 void RenderEngine::SetDefaultTextures(TextureClass index, Texture* texture)
@@ -371,66 +324,19 @@ void RenderEngine::SetDefaultTextures(TextureClass index, Texture* texture)
 
 void RenderEngine::SetRasterizerState(RasterizerState rasterizerState)
 {
-	rasterizerState_ = rasterizerState;
-	rasterizerStateDirty_ = true;
+	gfxDevice_->SetBlendMode(rasterizerState.blendMode_);
+	gfxDevice_->SetCullMode(rasterizerState.cullMode_);
+	gfxDevice_->SetFillMode(rasterizerState.fillMode_);
+	gfxDevice_->SetDepthWrite(rasterizerState.depthWrite_);
 }
 
 void RenderEngine::SetPrimitiveType(PrimitiveType primitiveType)
 {
-	primitiveType_ = primitiveType;
+	gfxDevice_->SetPrimitiveType(primitiveType);
 }
-
-static const D3D11_FILL_MODE d3d11FillMode[] =
-{
-	D3D11_FILL_WIREFRAME,
-	D3D11_FILL_SOLID,
-};
-
-static const D3D11_CULL_MODE d3d11CullMode[] = 
-{
-	D3D11_CULL_NONE,
-	D3D11_CULL_FRONT,
-	D3D11_CULL_BACK,
-};
 
 void RenderEngine::PreDraw()
 {
-	// 设置渲染模式
-	if (rasterizerStateDirty_)
-	{
-		gfxDevice_->SetBlendMode(rasterizerState_.blendMode_);
-		gfxDevice_->SetCullMode(rasterizerState_.cullMode_);
-		gfxDevice_->SetFillMode(rasterizerState_.fillMode_);
-		gfxDevice_->SetDepthWrite(rasterizerState_.depthWrite_);
-
-		rasterizerStateDirty_ = false;
-	}
-
-	// 设置图元类型
-	gfxDevice_->SetPrimitiveType(primitiveType_);
-
-	// 设置vertexBuffer
-	if (vertexBufferDirty_)
-	{
-		gfxDevice_->ClearVertexBuffer();
-		for (UInt32 i = 0; i < vertexBuffers_.Size(); ++i)
-		{
-			gfxDevice_->AddVertexBuffer(vertexBuffers_[i]->GetGfxRef());
-		}
-
-		gfxDevice_->SetVertexDescription(vertexBuffers_[0]->Get);
-
-		vertexBufferDirty_ = false;
-	}
-
-
-	// 设置indexBuffer
-	if (indexBufferDirty_)
-	{
-		gfxDevice_->SetIndexBuffer(indexBuffer_->GetGfxRef());
-		indexBufferDirty_ = false;
-	}
-
 	if (vertexShaderDirty_ || pixelShaderDirty_)
 	{
 		gfxDevice_->SetShaders(vertexShader_->GetGfxRef(), pixelShader_->GetGfxRef());
@@ -441,46 +347,6 @@ void RenderEngine::PreDraw()
 
 	gfxDevice_->SetEngineShaderParameters(shaderParameters_);
 	gfxDevice_->SetMaterialShaderParameters(inShaderParameters_);
-
-	// 设置纹理
-	if (texturesDirty_)
-	{
-		for (UInt32 slotID = 0; slotID < MAX_TEXTURE_CLASS; ++slotID)
-		{
-			if (textures_)
-			{
-				gfxDevice_->SetTexture(slotID, textures_[slotID]->GetGfxRef());
-			}
-		}
-
-		texturesDirty_ = false;
-	}
-
-	// 设置渲染表面和深度模板
-	if (renderTargetDirty_)
-	{
-		auto* renderTargetView = renderTarget_->GetObject<ID3D11RenderTargetView>();
-		auto* depthStencilView = depthStencil_->GetObject<ID3D11DepthStencilView>();
-		Color color(0.0f, 0.0f, 0.0f, 1.0f);
-
-		if (renderShadowMap_)
-		{
-			renderTargetView = defaultTextures_[TEXTURE_CLASS_SHADOWMAP]->GetRenderSurface()->GetObject<ID3D11RenderTargetView>();
-			color = Color(1.0f, 1.0f, 1.0f, 1.0f);
-		}
-
-		if (rasterizerState_.depthWrite_)
-		{
-			deviceContext_->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
-			deviceContext_->ClearRenderTargetView(renderTargetView, color.Data());
-			deviceContext_->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0, 0);
-		}
-		else
-		{
-			deviceContext_->OMSetRenderTargets(1, &renderTargetView, nullptr);
-		}
-		renderTargetDirty_ = false;
-	}
 }
 
 void RenderEngine::DrawCallIndexed(UInt32 indexStart, UInt32 indexCount)
@@ -501,10 +367,10 @@ void RenderEngine::DrawCall(UInt32 vertexStart, UInt32 vertexCount)
 
 void RenderEngine::SetRenderTarget(Viewport* viewport, bool renderShadowMap)
 {
-	renderTarget_ = viewport->GetRenderTarget();
-	depthStencil_ = viewport->GetDepthStencil();
 	renderShadowMap_ = renderShadowMap;
-	renderTargetDirty_ = true;
+
+	gfxDevice_->SetRenderTarget(viewport->GetRenderTarget());
+	gfxDevice_->SetDepthStencil(viewport->GetDepthStencil());
 }
 
 void RenderEngine::Render(Viewport* viewport)

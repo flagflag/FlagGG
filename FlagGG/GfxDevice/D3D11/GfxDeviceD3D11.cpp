@@ -1,10 +1,12 @@
 #include "GfxDeviceD3D11.h"
 #include "GfxD3D11Defines.h"
+#include "GfxSwapChainD3D11.h"
 #include "GfxTextureD3D11.h"
-#include "GfxBufferD3D11.h"
 #include "GfxShaderD3D11.h"
+#include "GfxRenderSurfaceD3D11.h"
 #include "GfxDevice/GfxProgram.h"
 #include "GfxDevice/VertexDescFactory.h"
+#include "Graphics/ShaderParameter.h"
 
 #include "Log.h"
 
@@ -79,6 +81,41 @@ GfxDeviceD3D11::~GfxDeviceD3D11()
 	}
 }
 
+void GfxDeviceD3D11::Clear(ClearTargetFlags flags, const Color& color/* = Color::TRANSPARENT_BLACK*/, float depth/* = 1.0f*/, unsigned stencil/* = 0*/)
+{
+	if (flags & CLEAR_COLOR)
+	{
+		auto renderTargetD3D11 = DynamicCast<GfxRenderSurfaceD3D11>(renderTarget_);
+		if (renderTargetD3D11)
+		{
+			auto* renderTargetView = renderTargetD3D11->GetRenderTargetView();
+			if (renderTargetView)
+			{
+				deviceContext_->ClearRenderTargetView(renderTargetView, color.Data());
+			}
+		}
+	}
+
+	UINT clearDepthStencilFlags = 0;
+	if (flags & CLEAR_DEPTH)
+		clearDepthStencilFlags |= D3D11_CLEAR_DEPTH;
+	if (flags & CLEAR_STENCIL)
+		clearDepthStencilFlags |= D3D11_CLEAR_STENCIL;
+
+	if (clearDepthStencilFlags)
+	{
+		auto depthStencilD3D11 = DynamicCast<GfxRenderSurfaceD3D11>(depthStencil_);
+		if (depthStencilD3D11)
+		{
+			auto* depthStencilView = depthStencilD3D11->GetDepthStencilView();
+			if (depthStencilView)
+			{
+				deviceContext_->ClearDepthStencilView(depthStencilView, clearDepthStencilFlags, depth, stencil);
+			}
+		}
+	}
+}
+
 void GfxDeviceD3D11::Draw(UInt32 vertexStart, UInt32 vertexCount)
 {
 	PrepareDraw();
@@ -93,7 +130,7 @@ void GfxDeviceD3D11::DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 ve
 	deviceContext_->DrawIndexed(indexCount, indexStart, vertexStart);
 }
 
-bool GfxDeviceD3D11::PrepareDraw()
+void GfxDeviceD3D11::PrepareDraw()
 {
 	static GfxBufferD3D11* vertexBuffers[MAX_VERTEX_BUFFER_COUNT + 1] = { 0 };
 
@@ -178,10 +215,10 @@ bool GfxDeviceD3D11::PrepareDraw()
 
 	if (texturesDirty_)
 	{
-		static ID3D11ShaderResourceView* vertexShaderResourceView[MAX_TEXTURE_CLASS] = { nullptr };
-		static ID3D11SamplerState* vertexSamplerState[MAX_TEXTURE_CLASS] = { nullptr };
-		static ID3D11ShaderResourceView* pixelShaderResourceView[MAX_TEXTURE_CLASS] = { nullptr };
-		static ID3D11SamplerState* pixelSamplerState[MAX_TEXTURE_CLASS] = { nullptr };
+		static ID3D11ShaderResourceView* vertexShaderResourceView[MAX_TEXTURE_CLASS] = {};
+		static ID3D11SamplerState* vertexSamplerState[MAX_TEXTURE_CLASS] = {};
+		static ID3D11ShaderResourceView* pixelShaderResourceView[MAX_TEXTURE_CLASS] = {};
+		static ID3D11SamplerState* pixelSamplerState[MAX_TEXTURE_CLASS] = {};
 
 		for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
 		{
@@ -191,13 +228,13 @@ bool GfxDeviceD3D11::PrepareDraw()
 				if (vertexShaderD3D11->GetTextureDesc().Contains(i))
 				{
 					vertexShaderResourceView[i] = currentTexture->GetD3D11ShaderResourceView();
-					vertexSamplerState[i] = currentTexture->sampler_;
+					// vertexSamplerState[i] = currentTexture->sampler_;
 				}
 
 				if (pixelShaderD3D11->GetTextureDesc().Contains(i))
 				{
 					pixelShaderResourceView[i] = currentTexture->GetD3D11ShaderResourceView();
-					pixelSamplerState[i] = currentTexture->sampler_;
+					// pixelSamplerState[i] = currentTexture->sampler_;
 				}
 			}
 			else
@@ -216,6 +253,42 @@ bool GfxDeviceD3D11::PrepareDraw()
 		deviceContext_->PSSetSamplers(0, MAX_TEXTURE_CLASS, pixelSamplerState);
 
 		texturesDirty_ = false;
+	}
+
+	if (renderTargetDirty_ || depthStencilDirty_)
+	{
+		auto renderTargetD3D11 = DynamicCast<GfxRenderSurfaceD3D11>(renderTarget_);
+		auto depthStencilD3D11 = DynamicCast<GfxRenderSurfaceD3D11>(depthStencil_);
+
+		auto* renderTargetView = renderTargetD3D11 ? renderTargetD3D11->GetRenderTargetView() : nullptr;
+		auto* depthStencilView = depthStencilD3D11 ? depthStencilD3D11->GetDepthStencilView() : nullptr;
+
+		if (rasterizerState_.depthWrite_)
+		{
+			deviceContext_->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+		}
+		else
+		{
+			deviceContext_->OMSetRenderTargets(1, &renderTargetView, nullptr);
+		}
+
+		renderTargetDirty_ = false;
+		depthStencilDirty_ = false;
+	}
+
+	if (viewportDirty_)
+	{
+		D3D11_VIEWPORT d3d11Viewport;
+		d3d11Viewport.TopLeftX = viewport_.Left();
+		d3d11Viewport.TopLeftY = viewport_.Top();
+		d3d11Viewport.Width = viewport_.Width();
+		d3d11Viewport.Height = viewport_.Height();
+		d3d11Viewport.MinDepth = 0.0f;
+		d3d11Viewport.MaxDepth = 1.0f;
+
+		deviceContext_->RSSetViewports(1, &d3d11Viewport);
+
+		viewportDirty_ = false;
 	}
 }
 
@@ -336,7 +409,7 @@ ID3D11InputLayout* GfxDeviceD3D11::GetD3D11InputLayout(VertexDescription* verteD
 	if (!shaderBlob)
 	{
 		FLAGGG_LOG_ERROR("Failed to create vertext layout, shader code is nullptr.");
-		return;
+		return nullptr;
 	}
 
 	ID3D11InputLayout* inputLayout = nullptr;
@@ -352,6 +425,11 @@ ID3D11InputLayout* GfxDeviceD3D11::GetD3D11InputLayout(VertexDescription* verteD
 	d3d11InputLayoutMap_[key] = inputLayout;
 
 	return inputLayout;
+}
+
+GfxSwapChain* GfxDeviceD3D11::CreateSwapChain(Window* window)
+{
+	return new GfxSwapChainD3D11(window);
 }
 
 GfxTexture* GfxDeviceD3D11::CreateTexture()

@@ -20,7 +20,7 @@ bool Texture2D::SetSize(Int32 width, Int32 height, TextureFormat format,
 	if (width <= 0 || height <= 0)
 	{
 		FLAGGG_LOG_ERROR("Zero or negative texture dimensions.");
-		return;
+		return false;
 	}
 
 	multiSample = Clamp(multiSample, 1, 16);
@@ -298,16 +298,6 @@ SharedPtr<Image> Texture2D::GetImage()
 
 	//return image;
 	return nullptr;
-}
-
-RenderSurface* Texture2D::GetRenderSurface() const
-{
-	return renderSurface_;
-}
-
-RenderSurface* Texture2D::GetRenderSurface(UInt32 index) const
-{
-	return renderSurface_;
 }
 
 }

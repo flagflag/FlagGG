@@ -19,7 +19,7 @@ GPUBuffer::~GPUBuffer()
 
 void* GPUBuffer::Lock(UInt32 start, UInt32 count)
 {
-	gfxBuffer_->BeginWrite(start, count);
+	return gfxBuffer_->BeginWrite(start, count);
 }
 
 void GPUBuffer::Unlock()

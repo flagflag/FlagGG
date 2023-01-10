@@ -23,8 +23,6 @@ protected:
 	bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
 	bool EndLoad() override;
-
-	bool Create() override;
 };
 
 }

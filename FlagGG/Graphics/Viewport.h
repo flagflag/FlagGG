@@ -1,9 +1,7 @@
-#ifndef __VIEWPORT__
-#define __VIEWPORT__
+#pragma once
 
 #include "Export.h"
 
-#include "Graphics/RenderSurface.h"
 #include "Graphics/RenderContext.h"
 #include "Scene/Camera.h"
 #include "Container/Ptr.h"
@@ -11,14 +9,17 @@
 #include "Math/Rect.h"
 #include "Scene/Scene.h"
 
+#include "GfxDevice/GfxRenderSurface.h"
+
 namespace FlagGG
 {
 
-// IDXGISwapChain*;
+class GfxRenderSurface;
+
 class FlagGG_API Viewport : public RefCounted
 {
 public:
-	~Viewport() override = default;
+	~Viewport() override;
 
 	UInt32 GetX() const;
 
@@ -32,13 +33,13 @@ public:
 
 	const IntRect& GetSize() const;
 
-	RenderSurface* GetRenderTarget() const;
+	GfxRenderSurface* GetRenderTarget() const;
 
-	void SetRenderTarget(RenderSurface* renderTarget);
+	void SetRenderTarget(GfxRenderSurface* renderTarget);
 
-	RenderSurface* GetDepthStencil() const;
+	GfxRenderSurface* GetDepthStencil() const;
 
-	void SetDepthStencil(RenderSurface* depthStencil);
+	void SetDepthStencil(GfxRenderSurface* depthStencil);
 
 	Camera* GetCamera() const;
 
@@ -49,27 +50,16 @@ public:
 	void SetScene(Scene* scene);
 
 	void SetViewport();
-
-protected:
-	void CreateRenderTarget();
-
-	void CreateSwapChain();
-
-	void CreateDepthStencilView();
 			
 protected:
-	SharedPtr<RenderSurface> renderTarget_;
-	SharedPtr<RenderSurface> depthStencil_;
+	SharedPtr<GfxRenderSurface> renderTarget_;
+	SharedPtr<GfxRenderSurface> depthStencil_;
 
 	SharedPtr<Camera> camera_;
 
 	SharedPtr<Scene> scene_;
 
-	ID3D11DepthStencilView* depthStencialView_{ nullptr };
-
 	IntRect rect_;
 };
 
 }
-
-#endif

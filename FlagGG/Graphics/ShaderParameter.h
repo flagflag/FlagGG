@@ -2,7 +2,7 @@
 
 #include "Container/HashMap.h"
 #include "Container/Vector.h"
-#include "Graphics/GPUBuffer.h"
+#include "Graphics/ConstantBuffer.h"
 #include "IOFrame/Buffer/StringBuffer.h"
 
 #include <stdint.h>
@@ -19,7 +19,7 @@ struct ShaderParameterDesc
 class FlagGG_API ShaderParameters : public RefCounted
 {
 public:
-	void WriteToBuffer(GPUBuffer* buffer);
+	void WriteToBuffer(ConstantBuffer* buffer);
 
 	template < class Type >
 	bool AddParametersDefine(StringHash key)

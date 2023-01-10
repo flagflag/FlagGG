@@ -1,9 +1,7 @@
-#ifndef __SHADER__
-#define __SHADER__
+#pragma once
 
 #include "Export.h"
 
-#include "Graphics/GPUObject.h"
 #include "Graphics/GraphicsDef.h"
 #include "Graphics/ShaderParameter.h"
 #include "Resource/Resource.h"
@@ -76,5 +74,3 @@ private:
 };
 
 }
-
-#endif

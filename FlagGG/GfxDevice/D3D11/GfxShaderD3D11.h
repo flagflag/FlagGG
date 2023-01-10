@@ -14,14 +14,14 @@ struct ConstantBufferVariableDesc
 	UInt32 size_;
 };
 
-struct ConstantBufferDesc
+struct D3D11ConstantBufferDesc
 {
 	String name_;
 	UInt32 size_;
 	Vector<ConstantBufferVariableDesc> variableDescs_;
 };
 
-struct TextureDesc
+struct D3D11ShaderTextureDesc
 {
 	String textureName_;
 	String samplerName_;
@@ -39,10 +39,10 @@ public:
 	void Compile() override;
 
 	// 获取ConstantBuffer描述
-	const HashMap<UInt32, ConstantBufferDesc>& GetContantBufferVariableDesc() const { return constantBufferDescs_; }
+	const HashMap<UInt32, D3D11ConstantBufferDesc>& GetContantBufferVariableDesc() const { return constantBufferDescs_; }
 
 	// 获取纹理描述
-	const HashMap<UInt32, TextureDesc>& GetTextureDesc() const { return textureDescs_; }
+	const HashMap<UInt32, D3D11ShaderTextureDesc>& GetTextureDesc() const { return textureDescs_; }
 
 
 	// 
@@ -62,8 +62,8 @@ private:
 	ID3D11VertexShader* vertexShader_{};
 	ID3D11PixelShader* pixelShader_{};
 
-	HashMap<UInt32, ConstantBufferDesc> constantBufferDescs_;
-	HashMap<UInt32, TextureDesc> textureDescs_;
+	HashMap<UInt32, D3D11ConstantBufferDesc> constantBufferDescs_;
+	HashMap<UInt32, D3D11ShaderTextureDesc> textureDescs_;
 };
 
 }

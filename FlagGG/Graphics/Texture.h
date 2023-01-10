@@ -6,7 +6,6 @@
 
 #include "Export.h"
 
-#include "Graphics/RenderSurface.h"
 #include "Graphics/GraphicsDef.h"
 #include "Resource/Resource.h"
 
@@ -16,6 +15,7 @@ namespace FlagGG
 {
 
 class GfxTexture;
+class GfxRenderSurface;
 
 static const int MAX_TEXTURE_QUALITY_LEVELS = 3;
 
@@ -45,10 +45,13 @@ public:
 	UInt32 GetComponents() const;
 
 	// 获取Surface
-	virtual RenderSurface* GetRenderSurface() const { return nullptr; }
+	GfxRenderSurface* GetRenderSurface() const;
 
 	// 获取Surface。如果是Cube纹理index填写Face（详见枚举类型CubeMapFace）。如果是Array纹理index填写数组下标。
-	virtual RenderSurface* GetRenderSurface(UInt32 index) const { return nullptr; }
+	GfxRenderSurface* GetRenderSurface(UInt32 index) const;
+
+	// 获取Gfx引用
+	GfxTexture* GetGfxRef() const { return gfxTexture_; }
 
 	friend class RenderEngine;
 

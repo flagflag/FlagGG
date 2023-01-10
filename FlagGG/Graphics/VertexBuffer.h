@@ -6,6 +6,7 @@
 
 #include "GPUBuffer.h"
 #include "Container/Vector.h"
+#include "GfxDevice/VertexDescFactory.h"
 
 namespace FlagGG
 {
@@ -30,6 +31,9 @@ public:
 
 	// 获取顶点的个数
 	UInt32 GetVertexCount() const;
+
+	// 获取顶点描述
+	VertexDescription* GetVertexDescription() const { return vertexDesc_; }
 
 	// 获取顶点描述
 	const PODVector<VertexElement>& GetElements() const;

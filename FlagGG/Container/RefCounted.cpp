@@ -52,7 +52,7 @@ int RefCounted::WeakRefs() const
 }
 
 ThreadSafeRefCounted::ThreadSafeRefCounted() :
-	refCount_(new ThreadSafeRefCount())
+	refCount_(new FThreadSafeRefCount())
 {
 	// Hold a weak ref to self to avoid possible double delete of the refcount
 	refCount_->weakRefs_.Increment();

@@ -9,13 +9,14 @@
 #include "Utility/Singleton.h"
 #include "AsyncFrame/Mutex.h"
 #include "Graphics/GraphicsDef.h"
+#include "Container/Vector.h"
 #include "Container/HashMap.h"
 #include "Container/Ptr.h"
 
 namespace FlagGG
 {
 
-class VertexDescription : public ThreadSafeRefCounted
+class FlagGG_API VertexDescription : public ThreadSafeRefCounted
 {
 public:
 	VertexDescription(UInt32 uuid, const PODVector<VertexElement>& elements)
@@ -42,9 +43,11 @@ private:
 	PODVector<VertexElement> elements_;
 };
 
-class VertexDescFactory : public Singleton<VertexDescFactory, NullMutex>
+class FlagGG_API VertexDescFactory : public Singleton<VertexDescFactory, NullMutex>
 {
 public:
+	~VertexDescFactory() override;
+
 	// 创建顶点描述
 	VertexDescription* Create(const PODVector<VertexElement>& elements);
 

@@ -187,6 +187,10 @@ public:
 
 	Real Bottom() const { return max_.y_; }
 
+	Real Width() const { return max_.x_ - min_.x_; }
+
+	Real Height() const { return max_.y_ - min_.y_; }
+
 	Vector2 min_;
 	Vector2 max_;
 

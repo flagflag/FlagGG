@@ -32,16 +32,10 @@ bool TextureCube::SetSize(UInt32 size, TextureFormat format,
 		return false;
 	}
 
-	for (UInt32 i = 0; i < MAX_CUBEMAP_FACES; ++i)
-	{
-		renderSurfaces_[i].Reset();
-	}
-
 	if (usage >= TEXTURE_RENDERTARGET)
 	{
 		for (UInt32 i = 0; i < MAX_CUBEMAP_FACES; ++i)
 		{
-			renderSurfaces_[i] = new RenderSurface(this);
 			faceMemoryUse_[i] = 0u;
 		}
 	}
@@ -377,16 +371,6 @@ SharedPtr<Image> TextureCube::GetImage(CubeMapFace face)
 
 	//return image;
 	return nullptr;
-}
-
-RenderSurface* TextureCube::GetRenderSurface() const
-{
-	return renderSurfaces_[0];
-}
-
-RenderSurface* TextureCube::GetRenderSurface(UInt32 index) const
-{
-	return renderSurfaces_[index < MAX_CUBEMAP_FACES ? index : MAX_CUBEMAP_FACES];
 }
 
 }

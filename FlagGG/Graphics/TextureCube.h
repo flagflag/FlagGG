@@ -48,20 +48,12 @@ public:
 	// 从GPU回读纹理数据，以Image格式返回数据
 	SharedPtr<Image> GetImage(CubeMapFace face);
 
-	// 获取Surface，返回第0个cube face的Surface
-	RenderSurface* GetRenderSurface() const override;
-
-	// 获取Surface，index为cube face
-	RenderSurface* GetRenderSurface(UInt32 index) const override;
-
 protected:
 	bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
 	bool EndLoad() override;
 
 private:
-	SharedPtr<RenderSurface> renderSurfaces_[MAX_CUBEMAP_FACES];
-
 	UInt32 faceMemoryUse_[MAX_CUBEMAP_FACES];
 };
 

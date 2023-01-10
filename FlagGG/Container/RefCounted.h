@@ -7,7 +7,7 @@ namespace FlagGG
 {
 
 /// Reference count base class
-struct IRefCount
+struct FlagGG_API IRefCount
 {
 	virtual ~IRefCount() {}
 
@@ -94,17 +94,17 @@ private:
 };
 
 /// Reference count structure.
-struct FlagGG_API ThreadSafeRefCount : public IRefCount
+struct FlagGG_API FThreadSafeRefCount : public IRefCount
 {
 	/// Construct.
-	ThreadSafeRefCount() :
+	FThreadSafeRefCount() :
 		refs_(0),
 		weakRefs_(0)
 	{
 	}
 
 	/// Destruct.
-	~ThreadSafeRefCount() override
+	~FThreadSafeRefCount() override
 	{
 		// Set reference counts below zero to fire asserts if this object is still accessed
 		refs_.Set(-1);
@@ -154,11 +154,11 @@ public:
 	int WeakRefs() const;
 
 	/// Return pointer to the reference count structure.
-	ThreadSafeRefCount* RefCountPtr() { return refCount_; }
+	FThreadSafeRefCount* RefCountPtr() { return refCount_; }
 
 private:
 	/// Pointer to the reference count structure.
-	ThreadSafeRefCount* refCount_;
+	FThreadSafeRefCount* refCount_;
 };
 
 }

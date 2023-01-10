@@ -1,5 +1,4 @@
-#ifndef __WIN_VIEWPORT__
-#define __WIN_VIEWPORT__
+#pragma once
 
 #include "Export.h"
 
@@ -24,6 +23,7 @@ struct DefferedMessage
 };
 
 class Window;
+class GfxSwapChain;
 
 class FlagGG_API WindowDevice
 {
@@ -47,7 +47,7 @@ public:
 	static PODVector<DefferedMessage> defferedMsgs_;
 };
 
-class FlagGG_API Window : public GPUObject, public RefCounted
+class FlagGG_API Window : public RefCounted
 {
 public:
 	Window(Context* context, void* parentWindow, const IntRect& rect);
@@ -76,12 +76,7 @@ public:
 
 	void WinProc(UINT message, WPARAM wParam, LPARAM lParam);
 
-	bool IsValid() override;
-
 protected:
-
-	void Initialize() override;
-
 	bool Create(void* parentWindow, const IntRect& rect);
 
 	void CreateSwapChain();
@@ -92,8 +87,9 @@ private:
 	Context* context_;
 	Input* input_;
 
-	ID3D11Texture2D* depthTexture_{ nullptr };
 	SharedPtr<Viewport> viewport_;
+
+	SharedPtr<GfxSwapChain> gfxSwapChain_;
 
 	UInt32 multiSample_{ 1 };
 
@@ -113,4 +109,3 @@ private:
 
 }
 
-#endif

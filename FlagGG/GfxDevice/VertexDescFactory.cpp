@@ -4,6 +4,11 @@
 namespace FlagGG
 {
 
+VertexDescFactory::~VertexDescFactory()
+{
+
+}
+
 VertexDescription* VertexDescFactory::Create(const PODVector<VertexElement>& elements)
 {
 	PODVector<VertexElement> formatElements = elements;
@@ -48,7 +53,8 @@ void VertexDescFactory::DestroyUnusedVertexDec()
 
 UInt32 VertexDescFactory::HashVertexElement(const PODVector<VertexElement>& elements)
 {
-
+	// TODO:
+	return 0u;
 }
 
 }

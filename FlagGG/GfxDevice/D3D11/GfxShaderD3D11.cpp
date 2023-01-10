@@ -147,14 +147,14 @@ void GfxShaderD3D11::AnalysisReflection(ID3DBlob* compileCode)
 
 		case D3D_SIT_TEXTURE:
 		{
-			TextureDesc& desc = textureDescs_[bindDesc.BindPoint];
+			D3D11ShaderTextureDesc& desc = textureDescs_[bindDesc.BindPoint];
 			desc.textureName_ = bindDesc.Name;
 		}
 		break;
 
 		case D3D_SIT_SAMPLER:
 		{
-			TextureDesc& desc = textureDescs_[bindDesc.BindPoint];
+			D3D11ShaderTextureDesc& desc = textureDescs_[bindDesc.BindPoint];
 			desc.samplerName_ = bindDesc.Name;
 		}
 		break;

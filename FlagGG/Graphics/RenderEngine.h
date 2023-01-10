@@ -1,14 +1,10 @@
-#ifndef __RENDER_ENGINE__
-#define __RENDER_ENGINE__
+#pragma once
 
 #include "Export.h"
 #include "Graphics/GraphicsDef.h"
 #include "Graphics/Viewport.h"
-#include "Graphics/VertexFormat.h"
 #include "Graphics/RenderContext.h"
-#include "Graphics/ConstantBuffer.h"
 #include "Graphics/ShaderParameter.h"
-#include "Graphics/Texture2D.h"
 #include "Graphics/Batch.h"
 #include "Scene/Camera.h"
 #include "Resource/Image.h"
@@ -17,19 +13,13 @@
 #include "AsyncFrame/Mutex.h"
 #include "Core/Context.h"
 
-#include <d3d11.h>
-
 #include <stdio.h>
 #include <stdint.h>
 
-#define SAFE_RELEASE(p) \
-	if ((p)) \
-	{ \
-		((IUnknown*)p)->Release();  p = nullptr; \
-	}
-
 namespace FlagGG
 {
+
+class GfxDevice;
 
 class FlagGG_API RenderEngine : public Singleton<RenderEngine, NullMutex, Context*>
 {
@@ -39,14 +29,6 @@ public:
 	void Initialize();
 
 	void Uninitialize();
-
-	ID3D11Device* GetDevice();
-
-	ID3D11DeviceContext* GetDeviceContext();
-
-	bool CheckMultiSampleSupport(DXGI_FORMAT format, UInt32 sampleCount);
-
-	UInt32 GetMultiSampleQuality(DXGI_FORMAT format, UInt32 sampleCount);
 
 	void SetTextureQuality(MaterialQuality quality);
 
@@ -129,22 +111,12 @@ public:
 private:
 	void CreateShadowRasterizerState();
 
-	RasterizerState rasterizerState_;
 	RasterizerState shadowRasterizerState_;
-	bool rasterizerStateDirty_{ false };
 
 	const Matrix3x4* skinMatrix_{ nullptr };
 	UInt32 numSkinMatrix_{ 0u };
 
 	MaterialQuality textureQuality_{ QUALITY_HIGH };
-
-	PrimitiveType primitiveType_;
-
-	Vector<SharedPtr<VertexBuffer>> vertexBuffers_;
-	bool vertexBufferDirty_{ false };
-
-	SharedPtr<IndexBuffer> indexBuffer_;
-	bool indexBufferDirty_{ false };
 
 	SharedPtr<Shader> vertexShader_{ nullptr };
 	bool vertexShaderDirty_{ false };
@@ -152,18 +124,12 @@ private:
 	SharedPtr<Shader> pixelShader_{ nullptr };
 	bool pixelShaderDirty_{ false };
 
-	SharedPtr<Texture> textures_[MAX_TEXTURE_CLASS];
 	SharedPtr<Texture> defaultTextures_[MAX_TEXTURE_CLASS];
-	SharedPtr<Texture2D> envTexture_;
-	bool texturesDirty_{ false };
 
 	SharedPtr<ShaderParameters> shaderParameters_;
 	SharedPtr<ShaderParameters> inShaderParameters_;
 
-	SharedPtr<RenderSurface> renderTarget_;
-	SharedPtr<RenderSurface> depthStencil_;
 	bool renderShadowMap_{ false };
-	bool renderTargetDirty_{ false };
 
 	Vector<SharedPtr<Batch>> batches_;
 
@@ -172,5 +138,3 @@ private:
 };
 
 }
-
-#endif

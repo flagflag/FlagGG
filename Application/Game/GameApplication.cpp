@@ -256,13 +256,12 @@ void GameApplication::SetupWindow()
 	shadowMap_ = new Texture2D(context_);
 	shadowMap_->SetNumLevels(1);
 	shadowMap_->SetSize(rect.Width(), rect.Height(), RenderEngine::GetRGBFormat(), TEXTURE_RENDERTARGET);
-	shadowMap_->Initialize();
 	RenderEngine::Instance()->SetDefaultTextures(TEXTURE_CLASS_SHADOWMAP, shadowMap_);
 
 	renderTexture_[0] = new Texture2D(context_);
 	renderTexture_[0]->SetNumLevels(1);
 	renderTexture_[0]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetRGBFormat(), TEXTURE_RENDERTARGET);
-	renderTexture_[0]->Initialize();
+
 	renderTexture_[1] = new Texture2D(context_);
 	renderTexture_[1]->SetNumLevels(1);
 	renderTexture_[1]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetDepthStencilFormat(), TEXTURE_DEPTHSTENCIL);
@@ -270,7 +269,7 @@ void GameApplication::SetupWindow()
 	rttTexture_[0] = new Texture2D(context_);
 	rttTexture_[0]->SetNumLevels(1);
 	rttTexture_[0]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetRGBFormat(), TEXTURE_RENDERTARGET);
-	rttTexture_[0]->Initialize();
+
 	rttTexture_[1] = new Texture2D(context_);
 	rttTexture_[1]->SetNumLevels(1);
 	rttTexture_[1]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetDepthStencilFormat(), TEXTURE_DEPTHSTENCIL);

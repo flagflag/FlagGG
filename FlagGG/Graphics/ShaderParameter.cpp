@@ -37,19 +37,17 @@ bool ShaderParameters::SetValueImpl(StringHash key, const void* buffer, UInt32 b
 	return true;
 }
 
-void ShaderParameters::WriteToBuffer(GPUBuffer* buffer)
+void ShaderParameters::WriteToBuffer(ConstantBuffer* buffer)
 {
 	if (!dataBuffer_)
 		return;
 
 	UInt32 dataSize = dataBuffer_->GetSize();
-	if (buffer->SetSize(dataSize))
-	{
-		void* data = buffer->Lock(0, dataSize);
-		dataBuffer_->ClearIndex();
-		dataBuffer_->ReadStream(data, dataSize);
-		buffer->Unlock();
-	}
+	buffer->SetSize(dataSize);
+	void* data = buffer->Lock(0, dataSize);
+	dataBuffer_->ClearIndex();
+	dataBuffer_->ReadStream(data, dataSize);
+	buffer->Unlock();
 }
 
 }

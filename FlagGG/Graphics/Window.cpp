@@ -1,6 +1,8 @@
 #include "Graphics/Window.h"
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Texture.h"
+#include "GfxDevice/GfxDevice.h"
+#include "GfxDevice/GfxSwapChain.h"
 #include "Log.h"
 
 #include <windows.h>
@@ -119,7 +121,7 @@ Window::Window(Context* context, void* parentWindow, const IntRect& rect) :
 
 Window::~Window()
 {
-	SAFE_RELEASE(depthTexture_);
+
 }
 
 bool Window::Create(void* parentWindow, const IntRect& rect)
@@ -153,112 +155,18 @@ bool Window::Create(void* parentWindow, const IntRect& rect)
 
 void Window::CreateSwapChain()
 {
-	IDXGISwapChain* swapChain = nullptr;
-
-	HWND handler_ = (HWND)GetWindow();
-
-	DXGI_SWAP_CHAIN_DESC swapChainDesc;
-	memset(&swapChainDesc, 0, sizeof(swapChainDesc));
-	swapChainDesc.BufferCount = 1;
-	swapChainDesc.BufferDesc.Width = GetWidth();
-	swapChainDesc.BufferDesc.Height = GetHeight();
-	swapChainDesc.BufferDesc.Format = sRGB_ ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM;
-	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapChainDesc.OutputWindow = handler_;
-	swapChainDesc.SampleDesc.Count = (UINT)multiSample_;
-	swapChainDesc.SampleDesc.Quality = RenderEngine::Instance()->GetMultiSampleQuality(swapChainDesc.BufferDesc.Format, multiSample_);
-	swapChainDesc.Windowed = TRUE;
-	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-
-	IDXGIDevice* dxgiDevice = nullptr;
-	RenderEngine::Instance()->GetDevice()->QueryInterface(IID_IDXGIDevice, (void**)&dxgiDevice);
-	IDXGIAdapter* dxgiAdapter = nullptr;
-	dxgiDevice->GetParent(IID_IDXGIAdapter, (void**)&dxgiAdapter);
-	IDXGIFactory* dxgiFactory = nullptr;
-	dxgiAdapter->GetParent(IID_IDXGIFactory, (void**)&dxgiFactory);
-	HRESULT hr = dxgiFactory->CreateSwapChain(RenderEngine::Instance()->GetDevice(), &swapChainDesc, &swapChain);
-	dxgiFactory->MakeWindowAssociation(handler_, DXGI_MWA_NO_ALT_ENTER | DXGI_MWA_NO_WINDOW_CHANGES);
-
-	SAFE_RELEASE(dxgiDevice);
-	SAFE_RELEASE(dxgiAdapter);
-	SAFE_RELEASE(dxgiFactory);
-
-	if (hr != 0)
-	{
-		FLAGGG_LOG_ERROR("CreateSwapChain failed.");
-
-		SAFE_RELEASE(swapChain);
-
-		return;
-	}
-
-	ResetHandler(swapChain);
+	gfxSwapChain_ = GfxDevice::GetDevice()->CreateSwapChain(this);
 }
 
 void Window::UpdateSwapChain(UInt32 width, UInt32 height)
 {
-	GetObject<IDXGISwapChain>()->ResizeBuffers(1, (UINT)width, (UINT)height,
-		DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+	gfxSwapChain_->Resize(width, height);
 
 	viewport_.Reset();
-
-	ID3D11Texture2D* backBuffer;
-	HRESULT hr = GetObject<IDXGISwapChain>()->GetBuffer(0, IID_ID3D11Texture2D, (void**)&backBuffer);
-	if (FAILED(hr))
-	{
-		SAFE_RELEASE(backBuffer);
-		FLAGGG_LOG_ERROR("Faild to get backbuffer from SwapChain.");
-		return;
-	}
-
-	ID3D11RenderTargetView* renderTargetView;
-	hr = RenderEngine::Instance()->GetDevice()->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView);
-	if (FAILED(hr))
-	{
-		SAFE_RELEASE(renderTargetView);
-		FLAGGG_LOG_ERROR("Failed to create RenderTargetView for SwapChain.");
-		return;
-	}
-	SharedPtr<RenderSurface> renderTarget(new RenderSurface(nullptr));
-	renderTarget->ResetHandler(renderTargetView);
-
-	D3D11_TEXTURE2D_DESC depthDesc;
-	memset(&depthDesc, 0, sizeof depthDesc);
-	depthDesc.Width = (UINT)width;
-	depthDesc.Height = (UINT)height;
-	depthDesc.MipLevels = 1;
-	depthDesc.ArraySize = 1;
-	depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthDesc.SampleDesc.Count = (UINT)multiSample_;
-	depthDesc.SampleDesc.Quality = RenderEngine::Instance()->GetMultiSampleQuality(depthDesc.Format, multiSample_);
-	depthDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	depthDesc.CPUAccessFlags = 0;
-	depthDesc.MiscFlags = 0;
-
-	hr = RenderEngine::Instance()->GetDevice()->CreateTexture2D(&depthDesc, nullptr, &depthTexture_);
-	if (FAILED(hr))
-	{
-		SAFE_RELEASE(depthTexture_);
-		FLAGGG_LOG_ERROR("Failed to create depth texture.");
-		return;
-	}
-
-	ID3D11DepthStencilView* depthStencilView;
-	hr = RenderEngine::Instance()->GetDevice()->CreateDepthStencilView(depthTexture_, nullptr, &depthStencilView);
-	if (FAILED(hr))
-	{
-		SAFE_RELEASE(depthStencilView);
-		FLAGGG_LOG_ERROR("Failed to create depth-stencil view.");
-		return;
-	}
-	SharedPtr<RenderSurface> depthStencil(new RenderSurface(nullptr));
-	depthStencil->ResetHandler(depthStencilView);
-
 	viewport_ = new Viewport();
 	viewport_->Resize(IntRect(0, 0, width, height));
-	viewport_->SetRenderTarget(renderTarget);
-	viewport_->SetDepthStencil(depthStencil);
+	viewport_->SetRenderTarget(gfxSwapChain_->GetRenderTarget());
+	viewport_->SetDepthStencil(gfxSwapChain_->GetDepthStencil());
 }
 
 UInt32 Window::GetWidth()
@@ -319,7 +227,7 @@ void Window::Render()
 
 	RenderEngine::Instance()->RenderBatch(viewport_);
 
-	GetObject<IDXGISwapChain>()->Present(0, 0);
+	gfxSwapChain_->Present();
 }
 
 Viewport* Window::GetViewport() const
@@ -393,16 +301,6 @@ void Window::WinProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 		break;
 	}
-}
-
-bool Window::IsValid()
-{
-	return window && GetHandler();
-}
-
-void Window::Initialize()
-{
-	// do nothing
 }
 
 }
