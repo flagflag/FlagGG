@@ -1,36 +1,35 @@
 #include "Graphics/VertexBuffer.h"
+#include "GfxDevice/VertexDescFactory.h"
 #include "Log.h"
 
 namespace FlagGG
 {
 
-UInt32 VertexBuffer::GetBindFlags()
-{
-	return D3D11_BIND_VERTEX_BUFFER;
-}
+static const PODVector<VertexElement> EMPTY_VERTEX_ELEMENT;
 
-bool VertexBuffer::SetSize(UInt32 vertexCount, const PODVector<VertexElement>& vertexElements)
+VertexBuffer::~VertexBuffer() = default;
+
+bool VertexBuffer::SetSize(UInt32 vertexCount, const PODVector<VertexElement>& vertexElements, bool dynamic)
 {
 	vertexSize_ = GetVertexSize(vertexElements);
 	vertexCount_ = vertexCount;
-	vertexElements_ = vertexElements;
 
-	if (!GPUBuffer::SetSize(vertexSize_ * vertexCount_))
+	vertexDesc_ = VertexDescFactory::Instance()->Create(vertexElements);
+
+	if (!vertexDesc_)
 	{
+		FLAGGG_LOG_ERROR("VertexBuffer create vertex description failed.");
 		return false;
 	}
 
-	UpdateOffset();
-}
+	gfxBuffer_->SetStride(vertexSize_);
+	gfxBuffer_->SetSize(vertexSize_ * vertexCount_);
+	gfxBuffer_->SetBind(BUFFER_VERTEX);
+	gfxBuffer_->SetAccess(BUFFER_WRITE);
+	gfxBuffer_->SetUsage(dynamic ? BUFFER_DYNAMIC : BUFFER_STATIC);
+	gfxBuffer_->Apply(nullptr);
 
-void VertexBuffer::UpdateOffset()
-{
-	UInt32 offset = 0;
-	for (auto& element : vertexElements_)
-	{
-		element.offset_ = offset;
-		offset += VERTEX_ELEMENT_TYPE_SIZE[element.vertexElementType_];
-	}
+	return true;
 }
 
 UInt32 VertexBuffer::GetVertexSize() const
@@ -45,7 +44,7 @@ UInt32 VertexBuffer::GetVertexCount() const
 
 const PODVector<VertexElement>& VertexBuffer::GetElements() const
 {
-	return vertexElements_;
+	return vertexDesc_ ? vertexDesc_->GetElements() : EMPTY_VERTEX_ELEMENT;
 }
 
 PODVector<VertexElement> VertexBuffer::GetElements(UInt32 elementMask)

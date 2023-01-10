@@ -5,16 +5,17 @@
 #include "Container/RefCounted.h"
 #include "IOFrame/Buffer/IOBuffer.h"
 #include "Core/BaseTypes.h"
+#include "GfxDevice/GfxBuffer.h"
 
 namespace FlagGG
 {
 
-class FlagGG_API GPUBuffer : public GPUObject, public RefCounted
+class FlagGG_API GPUBuffer : public RefCounted
 {
 public:
-	bool IsValid() override;
+	explicit GPUBuffer();
 
-	bool SetSize(UInt32 byteCount);
+	~GPUBuffer() override;
 
 	void* Lock(UInt32 start, UInt32 count);
 
@@ -24,18 +25,13 @@ public:
 
 	void UnlockStaticBuffer();
 
-	IOFrame::Buffer::IOBuffer* LockDynamicBuffer();
-
-	void UnlockDynamicBuffer();
-
-	virtual UInt32 GetBindFlags() = 0;
+	// 获取gfx引用
+	GfxBuffer* GetGfxRef() const { return gfxBuffer_; }
 
 protected:
-	void Initialize() override;
-
 	SharedPtr<IOFrame::Buffer::IOBuffer> buffer_;
 
-	UInt32 gpuBufferSize_{ 0u };
+	SharedPtr<GfxBuffer> gfxBuffer_;
 };
 
 }

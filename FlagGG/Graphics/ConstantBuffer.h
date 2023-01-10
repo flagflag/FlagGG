@@ -8,7 +8,7 @@ namespace FlagGG
 class FlagGG_API ConstantBuffer : public GPUBuffer
 {
 public:
-	UInt32 GetBindFlags() override;
+	void SetSize(UInt32 size);
 };
 
 }

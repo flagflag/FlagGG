@@ -1,3 +1,7 @@
+//
+// 索引缓冲区
+//
+
 #pragma once
 
 #include "Graphics/GPUBuffer.h"
@@ -8,12 +12,18 @@ namespace FlagGG
 class FlagGG_API IndexBuffer : public GPUBuffer
 {
 public:
-	UInt32 GetBindFlags() override;
+	/**
+	 * 设置ib的大小
+	 * indexSize   - ib元素的个数
+	 * indexCount  - ib元素的大小
+	 * dynamic     - 是否是动态bufer
+	 */
+	bool SetSize(UInt32 indexSize, UInt32 indexCount, bool dynamic = true);
 
-	bool SetSize(UInt32 indexSize, UInt32 indexCount);
-
+	// 获取ib元素大小
 	UInt32 GetIndexSize() const;
 
+	// 获取ib元素个数
 	UInt32 GetIndexCount() const;
 
 protected:

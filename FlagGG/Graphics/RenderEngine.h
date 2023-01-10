@@ -52,42 +52,42 @@ public:
 
 	MaterialQuality GetTextureQuality();
 
-	static UInt32 GetFormat(CompressedFormat format);
+	static TextureFormat GetFormat(CompressedFormat format);
 
 	/// Return the API-specific alpha texture format.
-	static UInt32 GetAlphaFormat();
+	static TextureFormat GetAlphaFormat();
 	/// Return the API-specific luminance texture format.
-	static UInt32 GetLuminanceFormat();
+	static TextureFormat GetLuminanceFormat();
 	/// Return the API-specific luminance alpha texture format.
-	static UInt32 GetLuminanceAlphaFormat();
+	static TextureFormat GetLuminanceAlphaFormat();
 	/// Return the API-specific RGB texture format.
-	static UInt32 GetRGBFormat();
+	static TextureFormat GetRGBFormat();
 	/// Return the API-specific RGBA texture format.
-	static UInt32 GetRGBAFormat();
+	static TextureFormat GetRGBAFormat();
 	/// Return the API-specific RGBA 16-bit texture format.
-	static UInt32 GetRGBA16Format();
+	static TextureFormat GetRGBA16Format();
 	/// Return the API-specific RGBA 16-bit float texture format.
-	static UInt32 GetRGBAFloat16Format();
+	static TextureFormat GetRGBAFloat16Format();
 	/// Return the API-specific RGBA 32-bit float texture format.
-	static UInt32 GetRGBAFloat32Format();
+	static TextureFormat GetRGBAFloat32Format();
 	/// Return the API-specific RG 16-bit texture format.
-	static UInt32 GetRG16Format();
+	static TextureFormat GetRG16Format();
 	/// Return the API-specific RG 16-bit float texture format.
-	static UInt32 GetRGFloat16Format();
+	static TextureFormat GetRGFloat16Format();
 	/// Return the API-specific RG 32-bit float texture format.
-	static UInt32 GetRGFloat32Format();
+	static TextureFormat GetRGFloat32Format();
 	/// Return the API-specific single channel 16-bit float texture format.
-	static UInt32 GetFloat16Format();
+	static TextureFormat GetFloat16Format();
 	/// Return the API-specific single channel 32-bit float texture format.
-	static UInt32 GetFloat32Format();
+	static TextureFormat GetFloat32Format();
 	/// Return the API-specific linear depth texture format.
-	static UInt32 GetLinearDepthFormat();
+	static TextureFormat GetLinearDepthFormat();
 	/// Return the API-specific hardware depth-stencil texture format.
-	static UInt32 GetDepthStencilFormat();
+	static TextureFormat GetDepthStencilFormat();
 	/// Return the API-specific readable hardware depth format, or 0 if not supported.
-	static UInt32 GetReadableDepthFormat();
+	static TextureFormat GetReadableDepthFormat();
 	/// Return the API-specific texture format from a textual description, for example "rgb".
-	static UInt32 GetFormat(const String& formatName);
+	static TextureFormat GetFormat(const String& formatName);
 
 	// 最大骨骼数
 	static UInt32 GetMaxBonesNum();
@@ -126,35 +126,13 @@ public:
 
 	void RenderBatch(Viewport* viewport);
 
-protected:
-	void CopyShaderParameterToBuffer(Shader* shader, ConstantBuffer* buffer);
-
-	VertexFormat* CacheVertexFormat(Shader* VSShader, VertexBuffer** vertexBuffer);
-
 private:
-	enum ConstBufferType
-	{
-		CONST_BUFFER_WORLD = 0,
-		CONST_BUFFER_SKIN,
-		CONST_BUFFER_VS,
-		CONST_BUFFER_PS,
-		MAX_CONST_BUFFER,
-	};
-
-	void CreateDevice();
-
 	void CreateShadowRasterizerState();
-
-	ID3D11Device* device_{ nullptr };
-	ID3D11DeviceContext* deviceContext_{ nullptr };
 
 	RasterizerState rasterizerState_;
 	RasterizerState shadowRasterizerState_;
 	bool rasterizerStateDirty_{ false };
-	HashMap<UInt32, ID3D11RasterizerState*> rasterizerStates_;
 
-	ConstantBuffer vsConstantBuffer_[MAX_CONST_BUFFER_COUNT];
-	ConstantBuffer psConstantBuffer_[MAX_CONST_BUFFER_COUNT];
 	const Matrix3x4* skinMatrix_{ nullptr };
 	UInt32 numSkinMatrix_{ 0u };
 
@@ -179,9 +157,7 @@ private:
 	SharedPtr<Texture2D> envTexture_;
 	bool texturesDirty_{ false };
 
-	HashMap<uint64_t, SharedPtr<VertexFormat>> vertexFormatCache_;
-
-	ShaderParameters shaderParameters_;
+	SharedPtr<ShaderParameters> shaderParameters_;
 	SharedPtr<ShaderParameters> inShaderParameters_;
 
 	SharedPtr<RenderSurface> renderTarget_;
@@ -192,6 +168,7 @@ private:
 	Vector<SharedPtr<Batch>> batches_;
 
 	Context* context_;
+	GfxDevice* gfxDevice_;
 };
 
 }

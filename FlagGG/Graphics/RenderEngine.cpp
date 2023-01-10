@@ -8,6 +8,8 @@
 #include "Log.h"
 #include "IOFrame/Buffer/IOBufferAux.h"
 #include "Resource/ResourceCache.h"
+#include "GfxDevice/GfxDevice.h"
+#include "GfxDevice/D3D11/GfxDeviceD3D11.h"
 
 #include <assert.h>
 
@@ -17,47 +19,17 @@ namespace FlagGG
 RenderEngine::RenderEngine(Context* context) :
 	context_(context)
 {
-	shaderParameters_.AddParametersDefine<Matrix3x4>(SP_WORLD_MATRIX);
-	shaderParameters_.AddParametersDefine<Matrix3x4>(SP_VIEW_MATRIX);
-	shaderParameters_.AddParametersDefine<Matrix4>(SP_PROJVIEW_MATRIX);
-	shaderParameters_.AddParametersDefine<float>(SP_DELTA_TIME);
-	shaderParameters_.AddParametersDefine<float>(SP_ELAPSED_TIME);
-	shaderParameters_.AddParametersDefine<Vector3>(SP_CAMERA_POS);
-	shaderParameters_.AddParametersDefine<Vector3>(SP_LIGHT_POS);
-	shaderParameters_.AddParametersDefine<Vector3>(SP_LIGHT_DIR);
-	shaderParameters_.AddParametersDefine<Matrix3x4>(SP_LIGHT_VIEW_MATRIX);
-	shaderParameters_.AddParametersDefine<Matrix4>(SP_LIGHT_PROJVIEW_MATRIX);
-}
-
-void RenderEngine::CreateDevice()
-{
-	unsigned createDeviceFlags = 0;
-#if defined( DEBUG ) || defined( _DEBUG )
-	//createDeviceFlags |=  D3D11_CREATE_DEVICE_DEBUG;
-#endif
-
-	HRESULT hr = D3D11CreateDevice(
-		nullptr,
-		D3D_DRIVER_TYPE_HARDWARE,
-		nullptr,
-		createDeviceFlags,
-		nullptr,
-		0,
-		D3D11_SDK_VERSION,
-		&device_,
-		nullptr,
-		&deviceContext_
-		);
-
-	if (hr != 0)
-	{
-		FLAGGG_LOG_ERROR("D3D11CreateDevice failed.");
-
-		SAFE_RELEASE(device_);
-		SAFE_RELEASE(deviceContext_);
-
-		return;
-	}
+	shaderParameters_ = new ShaderParameters();
+	shaderParameters_->AddParametersDefine<Matrix3x4>(SP_WORLD_MATRIX);
+	shaderParameters_->AddParametersDefine<Matrix3x4>(SP_VIEW_MATRIX);
+	shaderParameters_->AddParametersDefine<Matrix4>(SP_PROJVIEW_MATRIX);
+	shaderParameters_->AddParametersDefine<float>(SP_DELTA_TIME);
+	shaderParameters_->AddParametersDefine<float>(SP_ELAPSED_TIME);
+	shaderParameters_->AddParametersDefine<Vector3>(SP_CAMERA_POS);
+	shaderParameters_->AddParametersDefine<Vector3>(SP_LIGHT_POS);
+	shaderParameters_->AddParametersDefine<Vector3>(SP_LIGHT_DIR);
+	shaderParameters_->AddParametersDefine<Matrix3x4>(SP_LIGHT_VIEW_MATRIX);
+	shaderParameters_->AddParametersDefine<Matrix4>(SP_LIGHT_PROJVIEW_MATRIX);
 }
 
 void RenderEngine::CreateShadowRasterizerState()
@@ -70,29 +42,26 @@ void RenderEngine::CreateShadowRasterizerState()
 
 void RenderEngine::Initialize()
 {
-	CreateDevice();
+	gfxDevice_ = GfxDevice::GetDevice();
 
 	CreateShadowRasterizerState();
 }
 
 void RenderEngine::Uninitialize()
 {
-	SAFE_RELEASE(device_);
-	SAFE_RELEASE(deviceContext_);
-	for (auto it = rasterizerStates_.Begin(); it != rasterizerStates_.End(); ++it)
-	{
-		SAFE_RELEASE(it->second_);
-	}
+
 }
 
 ID3D11Device* RenderEngine::GetDevice()
 {
-	return device_;
+	// 暂时这样写，先测试
+	return GfxDeviceD3D11::Instance()->GetD3D11Device();
 }
 
 ID3D11DeviceContext* RenderEngine::GetDeviceContext()
 {
-	return deviceContext_;
+	// 暂时这样写，先测试
+	return GfxDeviceD3D11::Instance()->GetD3D11DeviceContext();
 }
 
 bool RenderEngine::CheckMultiSampleSupport(DXGI_FORMAT format, UInt32 sampleCount)
@@ -142,108 +111,142 @@ MaterialQuality RenderEngine::GetTextureQuality()
 	return textureQuality_;
 }
 
-UInt32 RenderEngine::GetFormat(CompressedFormat format)
+TextureFormat RenderEngine::GetFormat(CompressedFormat format)
 {
+	//switch (format)
+	//{
+	//case CF_RGBA:
+	//	return DXGI_FORMAT_R8G8B8A8_UNORM;
+
+	//case CF_DXT1:
+	//	return DXGI_FORMAT_BC1_UNORM;
+
+	//case CF_DXT3:
+	//	return DXGI_FORMAT_BC2_UNORM;
+
+	//case CF_DXT5:
+	//	return DXGI_FORMAT_BC3_UNORM;
+
+	//default:
+	//	return 0;
+	//}
+
 	switch (format)
 	{
 	case CF_RGBA:
-		return DXGI_FORMAT_R8G8B8A8_UNORM;
+		return TEXTURE_FORMAT_RGBA8;
 
 	case CF_DXT1:
-		return DXGI_FORMAT_BC1_UNORM;
+		return TEXTURE_FORMAT_BC1;
 
 	case CF_DXT3:
-		return DXGI_FORMAT_BC2_UNORM;
+		return TEXTURE_FORMAT_BC2;
 
 	case CF_DXT5:
-		return DXGI_FORMAT_BC3_UNORM;
+		return TEXTURE_FORMAT_BC3;
 
 	default:
-		return 0;
+		return TEXTURE_FORMAT_UNKNOWN;
 	}
 }
 
-UInt32 RenderEngine::GetAlphaFormat()
+TextureFormat RenderEngine::GetAlphaFormat()
 {
-	return DXGI_FORMAT_A8_UNORM;
+	// return DXGI_FORMAT_A8_UNORM;
+	return TEXTURE_FORMAT_A8;
 }
 
-UInt32 RenderEngine::GetLuminanceFormat()
+TextureFormat RenderEngine::GetLuminanceFormat()
 {
-	return DXGI_FORMAT_R8_UNORM;
+	// return DXGI_FORMAT_R8_UNORM;
+	return TEXTURE_FORMAT_R8;
 }
 
-UInt32 RenderEngine::GetLuminanceAlphaFormat()
+TextureFormat RenderEngine::GetLuminanceAlphaFormat()
 {
-	return DXGI_FORMAT_R8G8_UNORM;
+	// return DXGI_FORMAT_R8G8_UNORM;
+	return TEXTURE_FORMAT_RG8;
 }
 
-UInt32 RenderEngine::GetRGBFormat()
+TextureFormat RenderEngine::GetRGBFormat()
 {
-	return DXGI_FORMAT_R8G8B8A8_UNORM;
+	// return DXGI_FORMAT_R8G8B8A8_UNORM;
+	return TEXTURE_FORMAT_RGB8;
 }
 
-UInt32 RenderEngine::GetRGBAFormat()
+TextureFormat RenderEngine::GetRGBAFormat()
 {
-	return DXGI_FORMAT_R8G8B8A8_UNORM;
+	// return DXGI_FORMAT_R8G8B8A8_UNORM;
+	return TEXTURE_FORMAT_RGBA8;
 }
 
-UInt32 RenderEngine::GetRGBA16Format()
+TextureFormat RenderEngine::GetRGBA16Format()
 {
-	return DXGI_FORMAT_R16G16B16A16_UNORM;
+	// return DXGI_FORMAT_R16G16B16A16_UNORM;
+	return TEXTURE_FORMAT_RGBA16;
 }
 
-UInt32 RenderEngine::GetRGBAFloat16Format()
+TextureFormat RenderEngine::GetRGBAFloat16Format()
 {
-	return DXGI_FORMAT_R16G16B16A16_FLOAT;
+	// return DXGI_FORMAT_R16G16B16A16_FLOAT;
+	return TEXTURE_FORMAT_RGBA16F;
 }
 
-UInt32 RenderEngine::GetRGBAFloat32Format()
+TextureFormat RenderEngine::GetRGBAFloat32Format()
 {
-	return DXGI_FORMAT_R32G32B32A32_FLOAT;
+	// return DXGI_FORMAT_R32G32B32A32_FLOAT;
+	return TEXTURE_FORMAT_RGBA32F;
 }
 
-UInt32 RenderEngine::GetRG16Format()
+TextureFormat RenderEngine::GetRG16Format()
 {
-	return DXGI_FORMAT_R16G16_UNORM;
+	// return DXGI_FORMAT_R16G16_UNORM;
+	return TEXTURE_FORMAT_RG16;
 }
 
-UInt32 RenderEngine::GetRGFloat16Format()
+TextureFormat RenderEngine::GetRGFloat16Format()
 {
-	return DXGI_FORMAT_R16G16_FLOAT;
+	// return DXGI_FORMAT_R16G16_FLOAT;
+	return TEXTURE_FORMAT_RG16F;
 }
 
-UInt32 RenderEngine::GetRGFloat32Format()
+TextureFormat RenderEngine::GetRGFloat32Format()
 {
-	return DXGI_FORMAT_R32G32_FLOAT;
+	// return DXGI_FORMAT_R32G32_FLOAT;
+	return TEXTURE_FORMAT_RG32F;
 }
 
-UInt32 RenderEngine::GetFloat16Format()
+TextureFormat RenderEngine::GetFloat16Format()
 {
-	return DXGI_FORMAT_R16_FLOAT;
+	// return DXGI_FORMAT_R16_FLOAT;
+	return TEXTURE_FORMAT_R16F;
 }
 
-UInt32 RenderEngine::GetFloat32Format()
+TextureFormat RenderEngine::GetFloat32Format()
 {
-	return DXGI_FORMAT_R32_FLOAT;
+	// return DXGI_FORMAT_R32_FLOAT;
+	return TEXTURE_FORMAT_R32F;
 }
 
-UInt32 RenderEngine::GetLinearDepthFormat()
+TextureFormat RenderEngine::GetLinearDepthFormat()
 {
-	return DXGI_FORMAT_R32_FLOAT;
+	// return DXGI_FORMAT_R32_FLOAT;
+	return TEXTURE_FORMAT_R32F;
 }
 
-UInt32 RenderEngine::GetDepthStencilFormat()
+TextureFormat RenderEngine::GetDepthStencilFormat()
 {
-	return DXGI_FORMAT_R24G8_TYPELESS;
+	// return DXGI_FORMAT_R24G8_TYPELESS;
+	return TEXTURE_FORMAT_D24S8;
 }
 
-UInt32 RenderEngine::GetReadableDepthFormat()
+TextureFormat RenderEngine::GetReadableDepthFormat()
 {
-	return DXGI_FORMAT_R24G8_TYPELESS;
+	// return DXGI_FORMAT_R24G8_TYPELESS;
+	return TEXTURE_FORMAT_D24S8;
 }
 
-UInt32 RenderEngine::GetFormat(const String& formatName)
+TextureFormat RenderEngine::GetFormat(const String& formatName)
 {
 	String nameLower = formatName.ToLower().Trimmed();
 
@@ -290,7 +293,7 @@ UInt32 RenderEngine::GetMaxBonesNum()
 
 ShaderParameters& RenderEngine::GetShaderParameters()
 {
-	return shaderParameters_;
+	return *shaderParameters_;
 }
 
 void RenderEngine::PostRenderBatch(const Vector<SharedPtr<Batch>>& batches)
@@ -310,10 +313,10 @@ void RenderEngine::SetShaderParameter(Camera* camera, const RenderContext* rende
 	// 视图矩阵，投影矩阵，蒙皮矩阵等
 	if (camera && renderContext->worldTransform_ && renderContext->numWorldTransform_)
 	{
-		shaderParameters_.SetValue(SP_WORLD_MATRIX, *renderContext->worldTransform_);
-		shaderParameters_.SetValue(SP_VIEW_MATRIX, camera->GetViewMatrix());
-		shaderParameters_.SetValue(SP_PROJVIEW_MATRIX, camera->GetProjectionMatrix() * camera->GetViewMatrix());
-		shaderParameters_.SetValue(SP_CAMERA_POS, camera->GetNode()->GetWorldPosition());
+		shaderParameters_->SetValue(SP_WORLD_MATRIX, *renderContext->worldTransform_);
+		shaderParameters_->SetValue(SP_VIEW_MATRIX, camera->GetViewMatrix());
+		shaderParameters_->SetValue(SP_PROJVIEW_MATRIX, camera->GetProjectionMatrix() * camera->GetViewMatrix());
+		shaderParameters_->SetValue(SP_CAMERA_POS, camera->GetNode()->GetWorldPosition());
 
 		if (renderContext->geometryType_ == GEOMETRY_SKINNED)
 		{
@@ -377,21 +380,6 @@ void RenderEngine::SetPrimitiveType(PrimitiveType primitiveType)
 	primitiveType_ = primitiveType;
 }
 
-VertexFormat* RenderEngine::CacheVertexFormat(Shader* VSShader, VertexBuffer** vertexBuffer)
-{
-	auto hashValue = reinterpret_cast<uint64_t>(VSShader);
-	auto it = vertexFormatCache_.Find(hashValue);
-	if (it != vertexFormatCache_.End())
-	{
-		return it->second_;
-	}
-
-	SharedPtr<VertexFormat> vertexFormat(new VertexFormat(VSShader, vertexBuffer));
-	vertexFormatCache_[hashValue] = vertexFormat;
-
-	return vertexFormat;
-}
-
 static const D3D11_FILL_MODE d3d11FillMode[] =
 {
 	D3D11_FILL_WIREFRAME,
@@ -407,79 +395,31 @@ static const D3D11_CULL_MODE d3d11CullMode[] =
 
 void RenderEngine::PreDraw()
 {
-	static VertexBuffer* vertexBuffers[MAX_VERTEX_BUFFER_COUNT + 1] = { 0 };
-
 	// 设置渲染模式
 	if (rasterizerStateDirty_)
 	{
-		UInt32 stateHash = rasterizerState_.GetHash();
-		if (!rasterizerStates_.Contains(stateHash))
-		{
-			D3D11_RASTERIZER_DESC stateDesc;
-			memset(&stateDesc, 0, sizeof(stateDesc));
-			stateDesc.FillMode = d3d11FillMode[rasterizerState_.fillMode_];
-			stateDesc.CullMode = d3d11CullMode[rasterizerState_.cullMode_];
-			stateDesc.FrontCounterClockwise = false;
-			stateDesc.DepthBias = 0;
-			stateDesc.DepthBiasClamp = 0.0f;
+		gfxDevice_->SetBlendMode(rasterizerState_.blendMode_);
+		gfxDevice_->SetCullMode(rasterizerState_.cullMode_);
+		gfxDevice_->SetFillMode(rasterizerState_.fillMode_);
+		gfxDevice_->SetDepthWrite(rasterizerState_.depthWrite_);
 
-			stateDesc.SlopeScaledDepthBias = 0;
-			stateDesc.DepthClipEnable = false;
-			stateDesc.ScissorEnable = rasterizerState_.scissorTest_ ? true : false;
-			stateDesc.MultisampleEnable = false;
-			stateDesc.AntialiasedLineEnable = false;
-
-			ID3D11RasterizerState* newRasterizerState = nullptr;
-
-			HRESULT hr = device_->CreateRasterizerState(&stateDesc, &newRasterizerState);
-			if (hr != 0)
-			{
-				FLAGGG_LOG_ERROR("CreateRasterizerState failed.");
-
-				SAFE_RELEASE(newRasterizerState);
-
-				return;
-			}
-
-			rasterizerStates_.Insert(MakePair(stateHash, newRasterizerState));
-		}
-
-		deviceContext_->RSSetState(rasterizerStates_[stateHash]);
 		rasterizerStateDirty_ = false;
 	}
 
 	// 设置图元类型
-	switch (primitiveType_)
-	{
-	case PRIMITIVE_LINE:
-		deviceContext_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-		break;
-
-	case PRIMITIVE_TRIANGLE:
-		deviceContext_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		break;
-	}
+	gfxDevice_->SetPrimitiveType(primitiveType_);
 
 	// 设置vertexBuffer
 	if (vertexBufferDirty_)
 	{
-		static ID3D11Buffer* d3dVertexBuffers[MAX_VERTEX_BUFFER_COUNT] = { nullptr };
-		static UInt32 d3dVertexBufferCount{ 0 };
-		static UInt32 d3dVertexSize[MAX_VERTEX_BUFFER_COUNT] = { 0 };
-		static UInt32 d3dVertexOffset[MAX_VERTEX_BUFFER_COUNT] = { 0 };
-
-		d3dVertexBufferCount = Min<UInt32>(vertexBuffers_.Size(), MAX_VERTEX_BUFFER_COUNT);
-
-		for (UInt32 i = 0; i < d3dVertexBufferCount; ++i)
+		gfxDevice_->ClearVertexBuffer();
+		for (UInt32 i = 0; i < vertexBuffers_.Size(); ++i)
 		{
-			const SharedPtr<VertexBuffer>& vertexBuffer = vertexBuffers_[i];
-			vertexBuffers[i] = vertexBuffer;
-			d3dVertexBuffers[i] = vertexBuffer->GetObject<ID3D11Buffer>();
-			d3dVertexSize[i] = vertexBuffer->GetVertexSize();
-			d3dVertexOffset[i] = 0;
+			gfxDevice_->AddVertexBuffer(vertexBuffers_[i]->GetGfxRef());
 		}
 
-		deviceContext_->IASetVertexBuffers(0, d3dVertexBufferCount, d3dVertexBuffers, d3dVertexSize, d3dVertexOffset);
+		gfxDevice_->SetVertexDescription(vertexBuffers_[0]->Get);
+
 		vertexBufferDirty_ = false;
 	}
 
@@ -487,106 +427,32 @@ void RenderEngine::PreDraw()
 	// 设置indexBuffer
 	if (indexBufferDirty_)
 	{
-		deviceContext_->IASetIndexBuffer(indexBuffer_->GetObject<ID3D11Buffer>(),
-			indexBuffer_->GetIndexSize() == sizeof(UInt16) ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
+		gfxDevice_->SetIndexBuffer(indexBuffer_->GetGfxRef());
 		indexBufferDirty_ = false;
 	}
 
-	// 设置vertexShader
-	if (vertexShaderDirty_)
+	if (vertexShaderDirty_ || pixelShaderDirty_)
 	{
-		deviceContext_->VSSetShader(vertexShader_->GetObject<ID3D11VertexShader>(), nullptr, 0);
-		vertexShaderDirty_ = false;
-	}
+		gfxDevice_->SetShaders(vertexShader_->GetGfxRef(), pixelShader_->GetGfxRef());
 
-	// 设置pxielShader
-	if (pixelShaderDirty_)
-	{
-		deviceContext_->PSSetShader(pixelShader_->GetObject<ID3D11PixelShader>(), nullptr, 0);
+		vertexShaderDirty_ = false;
 		pixelShaderDirty_ = false;
 	}
 
-	// 设置constBuffer
-	{
-		CopyShaderParameterToBuffer(vertexShader_, vsConstantBuffer_);
-		CopyShaderParameterToBuffer(pixelShader_, psConstantBuffer_);
-
-		static ID3D11Buffer* d3dVSConstantBuffer[MAX_CONST_BUFFER_COUNT] = { nullptr };
-		static ID3D11Buffer* d3dPSConstantBuffer[MAX_CONST_BUFFER_COUNT] = { nullptr };
-		for (UInt32 i = 0; i < MAX_CONST_BUFFER; ++i)
-		{
-			d3dVSConstantBuffer[i] = vsConstantBuffer_[i].GetObject<ID3D11Buffer>();
-			d3dPSConstantBuffer[i] = psConstantBuffer_[i].GetObject<ID3D11Buffer>();
-		}
-
-		deviceContext_->VSSetConstantBuffers(0, MAX_CONST_BUFFER, d3dVSConstantBuffer);
-		deviceContext_->PSSetConstantBuffers(0, MAX_CONST_BUFFER, d3dPSConstantBuffer);
-	}
-
-	// 设置vertex格式
-	VertexFormat* vertexFormat = CacheVertexFormat(vertexShader_, vertexBuffers);
-	deviceContext_->IASetInputLayout(vertexFormat->GetObject<ID3D11InputLayout>());
+	gfxDevice_->SetEngineShaderParameters(shaderParameters_);
+	gfxDevice_->SetMaterialShaderParameters(inShaderParameters_);
 
 	// 设置纹理
 	if (texturesDirty_)
 	{
-		static ID3D11ShaderResourceView* shaderResourceView[MAX_TEXTURE_CLASS] = { nullptr };
-		static ID3D11SamplerState* samplerState[MAX_TEXTURE_CLASS] = { nullptr };
-
-		for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
+		for (UInt32 slotID = 0; slotID < MAX_TEXTURE_CLASS; ++slotID)
 		{
-			if (textures_[i])
+			if (textures_)
 			{
-				shaderResourceView[i] = textures_[i]->shaderResourceView_;
-				samplerState[i] = textures_[i]->sampler_;
-			}
-			else
-			{
-				shaderResourceView[i] = nullptr;
-				samplerState[i] = nullptr;
+				gfxDevice_->SetTexture(slotID, textures_[slotID]->GetGfxRef());
 			}
 		}
 
-		if (!shaderResourceView[TEXTURE_CLASS_ENVIRONMENT] &&
-			pixelShader_->GetTextureDesc().Contains(TEXTURE_CLASS_ENVIRONMENT))
-		{
-			// 直接渲染到backbuffer，需要创建一张环境贴图，然后将backbuffer拷贝到环境贴图
-			Texture* renderTargetTexture = renderTarget_->GetParentTexture();
-
-			if (!envTexture_)
-			{
-				envTexture_ = new Texture2D(nullptr);
-				envTexture_->SetNumLevels(1);
-				envTexture_->Initialize();
-			}
-
-			if (!renderTargetTexture)
-			{
-				//envTexture_->SetSize(400, 400, GetRGBFormat(), TEXTURE_DYNAMIC);
-			}
-			// 渲染到贴图，直接把当前贴图作为环境贴图采样
-			// 修正：不能直接作为环境贴图传入，在shader里会变成NoResource，可能是应为renderTarget不能即读又写吧
-			else
-			{
-				if (envTexture_->GetWidth() != renderTargetTexture->GetWidth() ||
-					envTexture_->GetHeight() != renderTargetTexture->GetHeight())
-					envTexture_->SetSize(renderTargetTexture->GetWidth(), renderTargetTexture->GetHeight(), GetRGBFormat(), TEXTURE_DYNAMIC);
-				SharedArrayPtr<char> data(new char[envTexture_->GetWidth() * envTexture_->GetHeight() * envTexture_->GetComponents()]);
-				static_cast<Texture2D*>(renderTargetTexture)->GetData(0, data);
-				envTexture_->SetData(0, 0, 0, envTexture_->GetWidth(), envTexture_->GetHeight(), data);
-			}
-
-			if (envTexture_)
-			{
-				shaderResourceView[TEXTURE_CLASS_ENVIRONMENT] = envTexture_->shaderResourceView_;
-				samplerState[TEXTURE_CLASS_ENVIRONMENT] = envTexture_->sampler_;
-			}
-		}
-
-		//deviceContext->VSSetShaderResources(0, MAX_TEXTURE_CLASS, shaderResourceView_);
-		//deviceContext->VSSetSamplers(0, MAX_TEXTURE_CLASS, samplerState_);
-		deviceContext_->PSSetShaderResources(0, MAX_TEXTURE_CLASS, shaderResourceView);
-		deviceContext_->PSSetSamplers(0, MAX_TEXTURE_CLASS, samplerState);
 		texturesDirty_ = false;
 	}
 
@@ -622,7 +488,7 @@ void RenderEngine::DrawCallIndexed(UInt32 indexStart, UInt32 indexCount)
 	PreDraw();
 
 	// draw call index
-	deviceContext_->DrawIndexed(indexCount, indexStart, 0);
+	gfxDevice_->DrawIndexed(indexCount, indexStart, 0);
 }
 
 void RenderEngine::DrawCall(UInt32 vertexStart, UInt32 vertexCount)
@@ -630,48 +496,7 @@ void RenderEngine::DrawCall(UInt32 vertexStart, UInt32 vertexCount)
 	PreDraw();
 
 	// draw call
-	deviceContext_->Draw(vertexCount, vertexStart);
-}
-
-void RenderEngine::CopyShaderParameterToBuffer(Shader* shader, ConstantBuffer* buffer)
-{
-	if (!shader || !buffer)
-		return;
-
-	const auto& constantBufferVariableDesc = shader->GetContantBufferVariableDesc();
-	for (auto it = constantBufferVariableDesc.Begin(); it != constantBufferVariableDesc.End(); ++it)
-	{
-		if (it->first_ < MAX_CONST_BUFFER)
-		{
-			auto& constantBuffer = buffer[it->first_];
-			const auto& bufferDesc = it->second_;
-			constantBuffer.SetSize(bufferDesc.size_);
-			char* data = static_cast<char*>(constantBuffer.Lock(0, bufferDesc.size_));
-			for (const auto& variableDesc : bufferDesc.variableDescs_)
-			{
-				auto CopyParam = [&](ShaderParameters& shaderParam)
-				{
-					auto it2 = shaderParam.descs.Find(variableDesc.name_);
-					if (it2 != shaderParam.descs.End())
-					{
-						shaderParam.dataBuffer_->Seek(it2->second_.offset_);
-						shaderParam.dataBuffer_->ReadStream(data + variableDesc.offset_,
-							Min(variableDesc.size_, it2->second_.size_));
-					}
-					else if (StringHash(variableDesc.name_) == SP_SKIN_MATRICES)
-					{
-						memcpy(data + variableDesc.offset_, skinMatrix_,
-							Min(variableDesc.size_, numSkinMatrix_ * (UInt32)sizeof(Matrix3x4)));
-					}
-				};
-
-				CopyParam(shaderParameters_);
-				if (inShaderParameters_)
-					CopyParam(*inShaderParameters_);
-			}
-			constantBuffer.Unlock();
-		}
-	}
+	gfxDevice_->Draw(vertexCount, vertexStart);
 }
 
 void RenderEngine::SetRenderTarget(Viewport* viewport, bool renderShadowMap)
@@ -755,10 +580,10 @@ void RenderEngine::Render(Viewport* viewport)
 		{
 			Node* lightNode = lights[0]->GetNode();
 			lights[0]->SetAspect(aspect);
-			shaderParameters_.SetValue(SP_LIGHT_POS, lightNode->GetWorldPosition());
-			shaderParameters_.SetValue(SP_LIGHT_DIR, lightNode->GetWorldRotation() * Vector3::FORWARD);
-			shaderParameters_.SetValue(SP_LIGHT_VIEW_MATRIX, lights[0]->GetViewMatrix());
-			shaderParameters_.SetValue(SP_LIGHT_PROJVIEW_MATRIX, lights[0]->GetProjectionMatrix() * lights[0]->GetViewMatrix());
+			shaderParameters_->SetValue(SP_LIGHT_POS, lightNode->GetWorldPosition());
+			shaderParameters_->SetValue(SP_LIGHT_DIR, lightNode->GetWorldRotation() * Vector3::FORWARD);
+			shaderParameters_->SetValue(SP_LIGHT_VIEW_MATRIX, lights[0]->GetViewMatrix());
+			shaderParameters_->SetValue(SP_LIGHT_PROJVIEW_MATRIX, lights[0]->GetProjectionMatrix() * lights[0]->GetViewMatrix());
 		}
 
 		camera->SetAspect(aspect);

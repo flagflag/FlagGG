@@ -37,7 +37,7 @@ public:
 
 	bool SetValueImpl(StringHash key, const void* buffer, UInt32 bufferSize);
 
-	friend class RenderEngine;
+	friend class GfxDeviceD3D11;
 
 private:
 	HashMap<StringHash, ShaderParameterDesc> descs;

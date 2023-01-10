@@ -1,6 +1,7 @@
 #include "Graphics/Texture3D.h"
 #include "Graphics/RenderEngine.h"
 #include "Graphics/GraphicsDef.h"
+#include "GfxDevice/GfxTexture.h"
 #include "Math/Math.h"
 #include "Log.h"
 
@@ -9,56 +10,7 @@
 namespace FlagGG
 {
 
-bool Texture3D::Create()
-{
-	Release();
-
-	if (!width_ || !height_ || !depth_)
-	{
-		return false;
-	}
-
-	levels_ = CheckMaxLevels(width_, height_, depth_, requestedLevels_);
-
-	D3D11_TEXTURE3D_DESC textureDesc;
-	memset(&textureDesc, 0, sizeof textureDesc);
-	textureDesc.Width = (UINT)width_;
-	textureDesc.Height = (UINT)height_;
-	textureDesc.Depth = (UINT)depth_;
-	textureDesc.MipLevels = usage_ != TEXTURE_DYNAMIC ? levels_ : 1;
-	textureDesc.Format = (DXGI_FORMAT)(sRGB_ ? GetSRGBFormat(format_) : format_);
-	textureDesc.Usage = usage_ == TEXTURE_DYNAMIC ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	textureDesc.CPUAccessFlags = usage_ == TEXTURE_DYNAMIC ? D3D11_CPU_ACCESS_WRITE : 0;
-
-	ID3D11Texture3D* texture3D = nullptr;
-	HRESULT hr = RenderEngine::Instance()->GetDevice()->CreateTexture3D(&textureDesc, nullptr, &texture3D);
-	if (FAILED(hr))
-	{
-		FLAGGG_LOG_ERROR("Failed to create texture3d.");
-		SAFE_RELEASE(texture3D);
-		return false;
-	}
-
-	ResetHandler(texture3D);
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC resourceViewDesc;
-	memset(&resourceViewDesc, 0, sizeof resourceViewDesc);
-	resourceViewDesc.Format = (DXGI_FORMAT)GetSRVFormat(textureDesc.Format);
-	resourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
-	resourceViewDesc.Texture3D.MipLevels = usage_ != TEXTURE_DYNAMIC ? (UINT)levels_ : 1;
-			
-	hr = RenderEngine::Instance()->GetDevice()->CreateShaderResourceView(GetObject<ID3D11Resource>(), &resourceViewDesc, &shaderResourceView_);
-	if (FAILED(hr))
-	{
-		FLAGGG_LOG_ERROR("Failed to create shader resource view.");
-		return false;
-	}
-
-	return true;
-}
-
-bool Texture3D::SetSize(Int32 width, Int32 height, Int32 depth, UInt32 format, TextureUsage usage/* = TEXTURE_STATIC*/)
+bool Texture3D::SetSize(Int32 width, Int32 height, Int32 depth, TextureFormat format, TextureUsage usage/* = TEXTURE_STATIC*/)
 {
 	if (width <= 0 || height <= 0 || depth <= 0)
 	{
@@ -72,101 +24,21 @@ bool Texture3D::SetSize(Int32 width, Int32 height, Int32 depth, UInt32 format, T
 		return false;
 	}
 
-	usage_ = usage;
+	gfxTexture_->SetFormat(format);
+	gfxTexture_->SetWidth(width);
+	gfxTexture_->SetHeight(height);
+	gfxTexture_->SetDepth(depth);
+	gfxTexture_->SetMultiSample(1u);
+	gfxTexture_->SetAutoResolve(false);
+	gfxTexture_->SetUsage(usage);
+	gfxTexture_->Apply(nullptr);
 
-	width_ = width;
-	height_ = height;
-	depth_ = depth;
-	format_ = format;
-
-	return Create();
+	return true;
 }
 
 bool Texture3D::SetData(UInt32 level, Int32 x, Int32 y, Int32 z, Int32 width, Int32 height, Int32 depth, const void* data)
 {
-	if (!data)
-	{
-		FLAGGG_LOG_ERROR("Texture3D ==> set nullptr data.");
-		return false;
-	}
-
-	if (level >= levels_)
-	{
-		FLAGGG_LOG_ERROR("Texture3D ==> illegal mip level.");
-		return false;
-	}
-
-	Int32 levelWidth = GetLevelWidth(level);
-	Int32 levelHeight = GetLevelHeight(level);
-	Int32 levelDepth = GetLevelDepth(level);
-	if (x < 0 || x + width > levelWidth || y < 0 || y + height >levelHeight || z < 0 || z + depth > levelDepth || width <= 0 || height <= 0 || depth <= 0)
-	{
-		FLAGGG_LOG_ERROR("Texture3D ==> illegal dimensions.");
-		return false;
-	}
-
-	if (IsCompressed())
-	{
-		x &= ~3;
-		y &= ~3;
-		width += 3;
-		width &= 0xfffffffc;
-		height += 3;
-		height &= 0xfffffffc;
-	}
-
-	const uint8_t* src = static_cast<const uint8_t*>(data);
-	UInt32 rowSize = GetRowDataSize(width);
-	UInt32 rowStart = GetRowDataSize(x);
-	UInt32 subResource = D3D11CalcSubresource(level, 0, levels_);
-
-	if (usage_ == TEXTURE_DYNAMIC)
-	{
-		if (IsCompressed())
-		{
-			height = (height + 3) >> 2;
-			y >>= 2;
-		}
-
-		D3D11_MAPPED_SUBRESOURCE mappedData;
-		mappedData.pData = nullptr;
-
-		HRESULT hr = RenderEngine::Instance()->GetDeviceContext()->Map(GetObject<ID3D11Resource>(),
-			subResource, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-
-		if (FAILED(hr) || !mappedData.pData)
-		{
-			FLAGGG_LOG_ERROR("Failed to update texture resource.");
-			return false;
-		}
-		else
-		{
-			for (Int32 page = 0; page < depth; ++page)
-			{
-				for (Int32 row = 0; row < height; ++row)
-					memcpy((uint8_t*)mappedData.pData + (page + z) * mappedData.DepthPitch + (row + y) * mappedData.RowPitch + rowStart,
-						src + row * rowSize, rowSize);
-			}
-
-			RenderEngine::Instance()->GetDeviceContext()->Unmap(GetObject<ID3D11Resource>(), subResource);
-		}
-	}
-	else
-	{
-		if (IsCompressed())
-			levelHeight = (levelHeight + 3) >> 2;
-
-		D3D11_BOX destBox;
-		destBox.left = (UINT)x;
-		destBox.right = (UINT)(x + width);
-		destBox.top = (UINT)y;
-		destBox.bottom = (UINT)(y + height);
-		destBox.front = (UINT)z;
-		destBox.back = (UINT)(z + depth);
-
-		RenderEngine::Instance()->GetDeviceContext()->UpdateSubresource(GetObject<ID3D11Resource>(), subResource, &destBox, data, rowSize, levelHeight * rowSize);
-	}
-
+	gfxTexture_->UpdateTextureSubRegion(data, 0u, level, x, y, z, width, height, depth);
 	return true;
 }
 
@@ -181,6 +53,8 @@ bool Texture3D::SetData(Image* image, bool useAlpha/* = false*/)
 	SharedPtr<Image> mipImage;
 	UInt32 memoryUse = sizeof(Texture3D);
 	MaterialQuality quality = RenderEngine::Instance()->GetTextureQuality();
+
+	const TextureDesc& desc = gfxTexture_->GetDesc();
 
 	if (!image->IsCompressed())
 	{
@@ -198,7 +72,7 @@ bool Texture3D::SetData(Image* image, bool useAlpha/* = false*/)
 		Int32 levelWidth = image->GetWidth();
 		Int32 levelHeight = image->GetHeight();
 		Int32 levelDepth = image->GetDepth();
-		UInt32 format = 0;
+		TextureFormat format = TEXTURE_FORMAT_UNKNOWN;
 
 		// Discard unnecessary mip levels
 		for (UInt32 i = 0; i < mipsToSkip_[quality]; ++i)
@@ -213,30 +87,30 @@ bool Texture3D::SetData(Image* image, bool useAlpha/* = false*/)
 		switch (components)
 		{
 		case 1:
-			format = RenderEngine::GetAlphaFormat();
+			format = TEXTURE_FORMAT_A8;
 			break;
 
 		case 4:
-			format = RenderEngine::GetRGBAFormat();
+			format = TEXTURE_FORMAT_RGBA8;
 			break;
 
 		default: break;
 		}
 
 		// If image was previously compressed, reset number of requested levels to avoid error if level count is too high for new size
-		if (IsCompressed() && requestedLevels_ > 1)
-			requestedLevels_ = 0;
+		//if (IsCompressed() && desc.requestedLevels_ > 1)
+		//	requestedLevels_ = 0;
 		if (!SetSize(levelWidth, levelHeight, levelDepth, format))
 		{
 			return false;
 		}
 
-		for (UInt32 i = 0; i < levels_; ++i)
+		for (UInt32 i = 0; i < desc.levels_; ++i)
 		{
 			SetData(i, 0, 0, 0, levelWidth, levelHeight, levelDepth, levelData);
 			memoryUse += levelWidth * levelHeight * levelDepth * components;
 
-			if (i < levels_ - 1)
+			if (i < desc.levels_ - 1)
 			{
 				mipImage = image->GetNextLevel(); image = mipImage;
 				levelData = image->GetData();
@@ -252,12 +126,12 @@ bool Texture3D::SetData(Image* image, bool useAlpha/* = false*/)
 		Int32 height = image->GetHeight();
 		Int32 depth = image->GetDepth();
 		UInt32 levels = image->GetNumCompressedLevels();
-		UInt32 format = RenderEngine::GetFormat(image->GetCompressedFormat());
+		TextureFormat format = RenderEngine::GetFormat(image->GetCompressedFormat());
 		bool needDecompress = false;
 
-		if (!format)
+		if (format == TEXTURE_FORMAT_UNKNOWN)
 		{
-			format = RenderEngine::GetRGBAFormat();
+			format = TEXTURE_FORMAT_RGBA8;
 			needDecompress = true;
 		}
 
@@ -276,7 +150,7 @@ bool Texture3D::SetData(Image* image, bool useAlpha/* = false*/)
 			return false;
 		}
 
-		for (UInt32 i = 0; i < levels_ && i < levels - mipsToSkip; ++i)
+		for (UInt32 i = 0; i < desc.levels_ && i < levels - mipsToSkip; ++i)
 		{
 			CompressedLevel level = image->GetCompressedLevel(i + mipsToSkip);
 			if (!needDecompress)
@@ -302,17 +176,17 @@ bool Texture3D::SetData(Image* image, bool useAlpha/* = false*/)
 
 bool Texture3D::GetData(UInt32 level, void* dest)
 {
-	return true;
+	return false;
 }
 
 bool Texture3D::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 {
-	return true;
+	return false;
 }
 
 bool Texture3D::EndLoad()
 {
-	return true;
+	return false;
 }
 
 }

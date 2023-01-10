@@ -5,17 +5,17 @@
 namespace FlagGG
 {
 
-UInt32 IndexBuffer::GetBindFlags()
-{
-	return D3D11_BIND_INDEX_BUFFER;
-}
-
-bool IndexBuffer::SetSize(UInt32 indexSize, UInt32 indexCount)
+bool IndexBuffer::SetSize(UInt32 indexSize, UInt32 indexCount, bool dynamic)
 {
 	indexSize_ = indexSize;
 	indexCount_ = indexCount;
 
-	return GPUBuffer::SetSize(indexSize_ * indexCount_);
+	gfxBuffer_->SetStride(indexSize_);
+	gfxBuffer_->SetSize(indexSize_ * indexCount);
+	gfxBuffer_->SetBind(BUFFER_INDEX);
+	gfxBuffer_->SetAccess(BUFFER_WRITE);
+	gfxBuffer_->SetUsage(dynamic ? BUFFER_DYNAMIC : BUFFER_STATIC);
+	gfxBuffer_->Apply(nullptr);
 }
 
 UInt32 IndexBuffer::GetIndexSize() const

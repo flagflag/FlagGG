@@ -21,7 +21,8 @@ UInt32 RasterizerState::GetHash() const
 	return (depthWrite_ ? 1 : 0) |
 		((scissorTest_ ? 1 : 0) << 1) |
 		((UInt32)fillMode_ << 2) |
-		((UInt32)cullMode_ << 4);
+		((UInt32)cullMode_ << 4) |
+		blendMode_;
 }
 
 UInt32 VERTEX_ELEMENT_TYPE_SIZE[MAX_VERTEX_ELEMENT_TYPE] =

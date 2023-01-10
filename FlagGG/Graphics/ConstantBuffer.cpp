@@ -3,9 +3,14 @@
 namespace FlagGG
 {
 
-UInt32 ConstantBuffer::GetBindFlags()
+void ConstantBuffer::SetSize(UInt32 size)
 {
-	return D3D11_BIND_CONSTANT_BUFFER;
+	gfxBuffer_->SetStride(4u);
+	gfxBuffer_->SetSize(size);
+	gfxBuffer_->SetBind(BUFFER_UNIFORM);
+	gfxBuffer_->SetAccess(BUFFER_WRITE);
+	gfxBuffer_->SetUsage(BUFFER_STATIC);
+	gfxBuffer_->Apply(nullptr);
 }
 
 }

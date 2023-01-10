@@ -137,10 +137,10 @@ public:
 		T* ptr = ptr_;
 		if (ptr_)
 		{
-			RefCount* refCount = RefCountPtr();
-			++refCount->refs_; // 2 refs
+			IRefCount* refCount = RefCountPtr();
+			refCount->AddRef(); // 2 refs
 			Reset(); // 1 ref
-			--refCount->refs_; // 0 refs
+			refCount->ReleaseRef(); // 0 refs
 		}
 		return ptr;
 	}
@@ -175,7 +175,7 @@ public:
 	int WeakRefs() const { return ptr_ ? ptr_->WeakRefs() : 0; }
 
 	/// Return pointer to the RefCount structure.
-	RefCount* RefCountPtr() const { return ptr_ ? ptr_->RefCountPtr() : nullptr; }
+	IRefCount* RefCountPtr() const { return ptr_ ? ptr_->RefCountPtr() : nullptr; }
 
 	/// Return hash value for HashSet & HashMap.
 	unsigned ToHash() const { return (unsigned)((size_t)ptr_ / sizeof(T)); }
@@ -321,7 +321,7 @@ public:
 	/// Assign from a raw pointer.
 	WeakPtr<T>& operator =(T* ptr)
 	{
-		RefCount* refCount = ptr ? ptr->RefCountPtr() : nullptr;
+		IRefCount* refCount = ptr ? ptr->RefCountPtr() : nullptr;
 
 		if (ptr_ == ptr && refCount_ == refCount)
 			return *this;
@@ -419,7 +419,15 @@ public:
 	bool NotNull() const { return refCount_ != nullptr; }
 
 	/// Return the object's reference count, or 0 if null pointer or if object has expired.
-	int Refs() const { return (refCount_ && refCount_->refs_ >= 0) ? refCount_->refs_ : 0; }
+	int Refs() const
+	{
+		if (refCount_)
+		{
+			Int32 refs = refCount_->Refs();
+			return refs >= 0 ? refs : 0;
+		}
+		return 0;
+	}
 
 	/// Return the object's weak reference count.
 	int WeakRefs() const
@@ -427,14 +435,14 @@ public:
 		if (!Expired())
 			return ptr_->WeakRefs();
 		else
-			return refCount_ ? refCount_->weakRefs_ : 0;
+			return refCount_ ? refCount_->WeakRefs() : 0;
 	}
 
 	/// Return whether the object has expired. If null pointer, always return true.
-	bool Expired() const { return refCount_ ? refCount_->refs_ < 0 : true; }
+	bool Expired() const { return refCount_ ? refCount_->Refs() < 0 : true; }
 
 	/// Return pointer to the RefCount structure.
-	RefCount* RefCountPtr() const { return refCount_; }
+	IRefCount* RefCountPtr() const { return refCount_; }
 
 	/// Return hash value for HashSet & HashMap.
 	unsigned ToHash() const { return (unsigned)((size_t)ptr_ / sizeof(T)); }
@@ -447,8 +455,8 @@ private:
 	{
 		if (refCount_)
 		{
-			assert(refCount_->weakRefs_ >= 0);
-			++(refCount_->weakRefs_);
+			assert(refCount_->WeakRefs() >= 0);
+			refCount_->AddWeakRef();
 		}
 	}
 
@@ -457,10 +465,10 @@ private:
 	{
 		if (refCount_)
 		{
-			assert(refCount_->weakRefs_ > 0);
-			--(refCount_->weakRefs_);
+			assert(refCount_->WeakRefs() > 0);
+			Int32 weakRefs = refCount_->ReleaseWeakRef();
 
-			if (Expired() && !refCount_->weakRefs_)
+			if (Expired() && !weakRefs)
 				delete refCount_;
 		}
 
@@ -471,7 +479,7 @@ private:
 	/// Pointer to the object.
 	T* ptr_;
 	/// Pointer to the RefCount structure.
-	RefCount* refCount_;
+	IRefCount* refCount_;
 };
 
 /// Perform a static cast from one weak pointer type to another.

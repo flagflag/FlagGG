@@ -1,10 +1,13 @@
-#ifndef __TEXTURE__
-#define __TEXTURE__
+//
+// 引擎层纹理基类
+//
+
+#pragma once
 
 #include "Export.h"
 
-#include "Graphics/GPUObject.h"
 #include "Graphics/RenderSurface.h"
+#include "Graphics/GraphicsDef.h"
 #include "Resource/Resource.h"
 
 #include <stdint.h>
@@ -12,89 +15,47 @@
 namespace FlagGG
 {
 
+class GfxTexture;
+
 static const int MAX_TEXTURE_QUALITY_LEVELS = 3;
 
-enum TextureUsage
-{
-	TEXTURE_STATIC = 0,
-	TEXTURE_DYNAMIC,
-	TEXTURE_RENDERTARGET,
-	TEXTURE_DEPTHSTENCIL
-};
-
-//Base Class, ID3D11Texture2D or ID3D11Texture3D
-class FlagGG_API Texture : public GPUObject, public Resource
+class FlagGG_API Texture : public Resource
 {
 public:
 	Texture(Context* context);
 
 	~Texture() override;
 
-	bool IsValid() override;
-
-	void Initialize() override;
-
+	// 设置纹理mips层数
 	void SetNumLevels(UInt32 levels);
 
+	// 获取纹理宽度
 	Int32 GetWidth() const;
 
+	// 获取纹理高度
 	Int32 GetHeight() const;
 
+	// 获取纹理深度（2D纹理返回1，3D纹理返回实际深度）
 	Int32 GetDepth() const;
 
-	Int32 GetLevelWidth(UInt32 level) const;
-
-	Int32 GetLevelHeight(UInt32 level) const;
-
-	Int32 GetLevelDepth(UInt32 level) const;
-
-	UInt32 GetRowDataSize(Int32 width) const;
-
+	// 纹理是否是压缩
 	bool IsCompressed() const;
 
+	// 获取纹理Components数。例如：RGBA8，components=4
 	UInt32 GetComponents() const;
 
+	// 获取Surface
 	virtual RenderSurface* GetRenderSurface() const { return nullptr; }
 
+	// 获取Surface。如果是Cube纹理index填写Face（详见枚举类型CubeMapFace）。如果是Array纹理index填写数组下标。
 	virtual RenderSurface* GetRenderSurface(UInt32 index) const { return nullptr; }
 
 	friend class RenderEngine;
 
 protected:
-
-	virtual bool Create() { return false; }
-	void Release();
-
-	static UInt32 CheckMaxLevels(Int32 width, Int32 height, UInt32 requestedLevels);
-	static UInt32 CheckMaxLevels(Int32 width, Int32 height, Int32 depth, UInt32 requestedLevels);
-	static UInt32 GetSRGBFormat(UInt32 format);
-	static UInt32 GetDSVFormat(UInt32 format);
-	static UInt32 GetSRVFormat(UInt32 format);
-
-protected:
-	UInt32 levels_{ 0 };
-	UInt32 requestedLevels_{ 0 };
-
-	Int32 width_{ 0 };
-	Int32 height_{ 0 };
-	Int32 depth_{ 0 };
-	UInt32 format_{ 0 };
-	Int32 multiSample_{ 1 };
-	bool autoResolve_{ false };
-
-	bool sRGB_{ false };
-
-	TextureUsage usage_{ TEXTURE_STATIC };
-
 	UInt32 mipsToSkip_[MAX_TEXTURE_QUALITY_LEVELS];
 
-	ID3D11Resource* resolveTexture_{ nullptr };
-
-	ID3D11ShaderResourceView* shaderResourceView_{ nullptr };
-
-	ID3D11SamplerState* sampler_{ nullptr };
+	SharedPtr<GfxTexture> gfxTexture_;
 };
 
 }
-
-#endif

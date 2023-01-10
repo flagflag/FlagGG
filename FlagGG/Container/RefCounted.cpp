@@ -1,24 +1,8 @@
 #include "Container/RefCounted.h"
-
-extern "C"
-{
-	#include "jemalloc/include/jemalloc/jemalloc.h"
-}
-
-#include <assert.h>
+#include "Core/CryAssert.h"
 
 namespace FlagGG
 {
-
-void* RefCount::operator new(size_t byteSize)
-{
-	return je_malloc(byteSize);
-}
-
-void RefCount::operator delete(void* object)
-{
-	je_free(object);
-}
 
 RefCounted::RefCounted() :
 	refCount_(new RefCount())
@@ -29,9 +13,9 @@ RefCounted::RefCounted() :
 
 RefCounted::~RefCounted()
 {
-	assert(refCount_);
-	assert(refCount_->refs_ == 0);
-	assert(refCount_->weakRefs_ > 0);
+	CRY_ASSERT(refCount_);
+	CRY_ASSERT(refCount_->refs_ == 0);
+	CRY_ASSERT(refCount_->weakRefs_ > 0);
 
 	// Mark object as expired, release the self weak ref and delete the refcount if no other weak refs exist
 	refCount_->refs_ = -1;
@@ -44,13 +28,13 @@ RefCounted::~RefCounted()
 
 void RefCounted::AddRef()
 {
-	assert(refCount_->refs_ >= 0);
+	CRY_ASSERT(refCount_->refs_ >= 0);
 	(refCount_->refs_)++;
 }
 
 void RefCounted::ReleaseRef()
 {
-	assert(refCount_->refs_ > 0);
+	CRY_ASSERT(refCount_->refs_ > 0);
 	(refCount_->refs_)--;
 	if (!refCount_->refs_)
 		delete this;
@@ -67,29 +51,51 @@ int RefCounted::WeakRefs() const
 	return refCount_->weakRefs_ - 1;
 }
 
-void* RefCounted::operator new(size_t byteSize)
+ThreadSafeRefCounted::ThreadSafeRefCounted() :
+	refCount_(new ThreadSafeRefCount())
 {
-	return je_malloc(byteSize);
+	// Hold a weak ref to self to avoid possible double delete of the refcount
+	refCount_->weakRefs_.Increment();
 }
 
-void* RefCounted::operator new(size_t byteSize, void* buffer)
+ThreadSafeRefCounted::~ThreadSafeRefCounted()
 {
-	return buffer;
+	CRY_ASSERT(refCount_);
+	CRY_ASSERT(refCount_->refs_.GetValue() == 0);
+	CRY_ASSERT(refCount_->weakRefs_.GetValue() > 0);
+
+	// Mark object as expired, release the self weak ref and delete the refcount if no other weak refs exist
+	refCount_->refs_.Set(-1);
+	Int32 weakRefs = refCount_->weakRefs_.Decrement();
+	if (!weakRefs)
+		delete refCount_;
+
+	refCount_ = nullptr;
 }
 
-void* RefCounted::operator new[](size_t byteSize)
+void ThreadSafeRefCounted::AddRef()
 {
-	return je_malloc(byteSize);
+	CRY_ASSERT(refCount_->refs_.GetValue() >= 0);
+	refCount_->refs_.Increment();
 }
 
-void RefCounted::operator delete(void* object)
+void ThreadSafeRefCounted::ReleaseRef()
 {
-	je_free(object);
+	CRY_ASSERT(refCount_->refs_.GetValue() > 0);
+	Int32 refs = refCount_->refs_.Decrement();
+	if (!refs)
+		delete this;
 }
 
-void RefCounted::operator delete[](void* object)
+int ThreadSafeRefCounted::Refs() const
 {
-	je_free(object);
+	return refCount_->refs_.GetValue();
+}
+
+int ThreadSafeRefCounted::WeakRefs() const
+{
+	// Subtract one to not return the internally held reference
+	return refCount_->weakRefs_.GetValue() - 1;
 }
 
 }
