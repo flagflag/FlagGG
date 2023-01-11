@@ -25,9 +25,9 @@ public:
 	ID3D11DepthStencilView* GetDepthStencilView() const { return depthStencilView_; }
 
 private:
-	ID3D11RenderTargetView* renderTargetView_;
+	ID3D11RenderTargetView* renderTargetView_{};
 
-	ID3D11DepthStencilView* depthStencilView_;
+	ID3D11DepthStencilView* depthStencilView_{};
 };
 
 }

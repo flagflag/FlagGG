@@ -40,7 +40,7 @@ public:
 	/**********************************************************/
 
 	// 清理RenderTarget、DepthStencil
-	virtual void Clear(ClearTargetFlags flags , const Color& color = Color::TRANSPARENT_BLACK, float depth = 1.0f, unsigned stencil = 0);
+	virtual void Clear(ClearTargetFlags flags , const Color& color = Color::BLACK, float depth = 1.0f, unsigned stencil = 0);
 
 	// 设置RenderTarget
 	virtual void SetRenderTarget(GfxRenderSurface* gfxRenderTarget);

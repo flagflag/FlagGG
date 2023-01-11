@@ -1,5 +1,6 @@
 #include "VertexDescFactory.h"
 #include "AsyncFrame/Locker.h"
+#include "Math/Math.h"
 
 namespace FlagGG
 {
@@ -53,8 +54,13 @@ void VertexDescFactory::DestroyUnusedVertexDec()
 
 UInt32 VertexDescFactory::HashVertexElement(const PODVector<VertexElement>& elements)
 {
-	// TODO:
-	return 0u;
+	UInt32 hashValue = 0;
+	for (const auto& el : elements)
+	{
+		hashValue = SDBM_Hash(hashValue, ((((el.perInstance_ ? 1 : 0) << 3) | el.vertexElementType_) << 4) | el.vertexElementSemantic_);
+		hashValue = SDBM_Hash(hashValue, el.index_);
+	}
+	return hashValue;
 }
 
 }

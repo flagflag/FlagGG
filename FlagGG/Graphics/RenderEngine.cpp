@@ -29,6 +29,7 @@ RenderEngine::RenderEngine(Context* context) :
 	shaderParameters_->AddParametersDefine<Vector3>(SP_LIGHT_DIR);
 	shaderParameters_->AddParametersDefine<Matrix3x4>(SP_LIGHT_VIEW_MATRIX);
 	shaderParameters_->AddParametersDefine<Matrix4>(SP_LIGHT_PROJVIEW_MATRIX);
+	shaderParameters_->AddParametersDefineImpl(SP_SKIN_MATRICES, sizeof(Matrix3x4) * GetMaxBonesNum());
 }
 
 void RenderEngine::CreateShadowRasterizerState()
@@ -121,7 +122,7 @@ TextureFormat RenderEngine::GetLuminanceAlphaFormat()
 TextureFormat RenderEngine::GetRGBFormat()
 {
 	// return DXGI_FORMAT_R8G8B8A8_UNORM;
-	return TEXTURE_FORMAT_RGB8;
+	return TEXTURE_FORMAT_RGBA8;
 }
 
 TextureFormat RenderEngine::GetRGBAFormat()
@@ -270,12 +271,12 @@ void RenderEngine::SetShaderParameter(Camera* camera, const RenderContext* rende
 
 		if (renderContext->geometryType_ == GEOMETRY_SKINNED)
 		{
-			skinMatrix_ = renderContext->worldTransform_;
-			numSkinMatrix_ = renderContext->numWorldTransform_;
+			shaderParameters_->SetValueImpl(SP_SKIN_MATRICES, renderContext->worldTransform_, renderContext->numWorldTransform_ * sizeof(Matrix3x4));
 		}
 	}
 
-	inShaderParameters_ = renderContext->shaderParameters_;
+	gfxDevice_->SetEngineShaderParameters(shaderParameters_);
+	gfxDevice_->SetMaterialShaderParameters(renderContext->shaderParameters_);
 }
 
 void RenderEngine::SetVertexBuffers(const Vector<SharedPtr<VertexBuffer>>& vertexBuffers)
@@ -296,16 +297,12 @@ void RenderEngine::SetIndexBuffer(IndexBuffer* indexBuffer)
 		gfxDevice_->SetIndexBuffer(indexBuffer->GetGfxRef());
 }
 
-void RenderEngine::SetVertexShader(Shader* shader)
+void RenderEngine::SetShaders(Shader* vertexShader, Shader* pixelShader)
 {
-	vertexShader_ = shader;
-	vertexShaderDirty_ = true;
-}
-
-void RenderEngine::SetPixelShader(Shader* shader)
-{
-	pixelShader_ = shader;
-	pixelShaderDirty_ = true;
+	if (vertexShader && pixelShader)
+	{
+		gfxDevice_->SetShaders(vertexShader->GetGfxRef(), pixelShader->GetGfxRef());
+	}
 }
 
 void RenderEngine::SetTextures(const Vector<SharedPtr<Texture>>& textures)
@@ -336,42 +333,35 @@ void RenderEngine::SetPrimitiveType(PrimitiveType primitiveType)
 	gfxDevice_->SetPrimitiveType(primitiveType);
 }
 
-void RenderEngine::PreDraw()
-{
-	if (vertexShaderDirty_ || pixelShaderDirty_)
-	{
-		gfxDevice_->SetShaders(vertexShader_->GetGfxRef(), pixelShader_->GetGfxRef());
-
-		vertexShaderDirty_ = false;
-		pixelShaderDirty_ = false;
-	}
-
-	gfxDevice_->SetEngineShaderParameters(shaderParameters_);
-	gfxDevice_->SetMaterialShaderParameters(inShaderParameters_);
-}
-
 void RenderEngine::DrawCallIndexed(UInt32 indexStart, UInt32 indexCount)
 {
-	PreDraw();
-
-	// draw call index
-	gfxDevice_->DrawIndexed(indexCount, indexStart, 0);
+	gfxDevice_->DrawIndexed(indexStart, indexCount, 0);
 }
 
 void RenderEngine::DrawCall(UInt32 vertexStart, UInt32 vertexCount)
 {
-	PreDraw();
-
-	// draw call
-	gfxDevice_->Draw(vertexCount, vertexStart);
+	gfxDevice_->Draw(vertexStart, vertexCount);
 }
 
-void RenderEngine::SetRenderTarget(Viewport* viewport, bool renderShadowMap)
+void RenderEngine::SetRenderTarget(Viewport* viewport)
 {
-	renderShadowMap_ = renderShadowMap;
-
 	gfxDevice_->SetRenderTarget(viewport->GetRenderTarget());
 	gfxDevice_->SetDepthStencil(viewport->GetDepthStencil());
+}
+
+bool RenderEngine::SetShadowMap()
+{
+	if (defaultTextures_[TEXTURE_CLASS_SHADOWMAP])
+	{
+		gfxDevice_->SetRenderTarget(defaultTextures_[TEXTURE_CLASS_SHADOWMAP]->GetRenderSurface());
+		gfxDevice_->SetDepthStencil(nullptr);
+
+		gfxDevice_->Clear(CLEAR_COLOR, Color::WHITE);
+
+		return true;
+	}
+
+	return false;
 }
 
 void RenderEngine::Render(Viewport* viewport)
@@ -394,11 +384,9 @@ void RenderEngine::Render(Viewport* viewport)
 
 	PODVector<Light*> lights;
 	scene->GetLights(lights);
-			
-	SetRenderTarget(viewport, true);
 
-	// 放射相机不处理阴影
-	if (!camera->GetUseReflection())
+	// 反射相机不处理阴影
+	if (!camera->GetUseReflection() && SetShadowMap())
 	{
 		for (auto light : lights)
 		{
@@ -414,8 +402,7 @@ void RenderEngine::Render(Viewport* viewport)
 					light->SetAspect(aspect);
 					SetRasterizerState(shadowRasterizerState_);
 					SetShaderParameter(light, renderContext);
-					SetVertexShader(it->second_.vertexShader_);
-					SetPixelShader(it->second_.pixelShader_);
+					SetShaders(it->second_.vertexShader_, it->second_.pixelShader_);
 					for (const auto& geometry : renderContext->geometries_)
 					{
 						SetVertexBuffers(geometry->GetVertexBuffers());
@@ -427,13 +414,10 @@ void RenderEngine::Render(Viewport* viewport)
 			}
 		}
 	}
-	else
-	{
-		// 这步操作用来清理阴影贴图
-		PreDraw();
-	}
 
-	SetRenderTarget(viewport, false);
+	SetRenderTarget(viewport);
+	gfxDevice_->Clear(CLEAR_COLOR | CLEAR_DEPTH | CLEAR_STENCIL);
+
 	for (const auto& renderContext : renderContexts)
 	{
 		if ((renderContext->viewMask_ & camera->GetViewMask()) != renderContext->viewMask_)
@@ -456,8 +440,7 @@ void RenderEngine::Render(Viewport* viewport)
 		camera->SetAspect(aspect);
 		SetRasterizerState(renderContext->rasterizerState_);
 		SetShaderParameter(camera, renderContext);
-		SetVertexShader(renderContext->vertexShader_);
-		SetPixelShader(renderContext->pixelShader_);
+		SetShaders(renderContext->vertexShader_, renderContext->pixelShader_);
 		SetTextures(renderContext->textures_);
 
 		for (const auto& geometry : renderContext->geometries_)
@@ -491,7 +474,7 @@ void RenderEngine::RenderBatch(Viewport* viewport)
 
 	viewport->SetViewport();
 
-	SetRenderTarget(viewport, false);
+	SetRenderTarget(viewport);
 
 	if (!vertexBuffer)
 	{
@@ -520,8 +503,7 @@ void RenderEngine::RenderBatch(Viewport* viewport)
 		vertexBuffers.Push(vertexBuffer);
 
 		SetVertexBuffers(vertexBuffers);
-		SetVertexShader(vertexShader);
-		SetPixelShader(pixelShader);
+		SetShaders(vertexShader, pixelShader);
 
 		textures.Clear();
 		if (batch->GetTexture())

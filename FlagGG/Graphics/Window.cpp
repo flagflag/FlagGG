@@ -108,7 +108,7 @@ void WindowDevice::UnregisterWinMessage(Window* wv)
 
 
 Window::Window(Context* context, void* parentWindow, const IntRect& rect) :
-	window(nullptr),
+	window_(nullptr),
 	parentWindow_(parentWindow),
 	rect_(rect),
 	context_(context),
@@ -126,7 +126,7 @@ Window::~Window()
 
 bool Window::Create(void* parentWindow, const IntRect& rect)
 {
-	window = CreateWindowExW(
+	window_ = CreateWindowExW(
 		0,
 		WindowDevice::className_,
 		L"",
@@ -141,7 +141,7 @@ bool Window::Create(void* parentWindow, const IntRect& rect)
 		this
 		);
 
-	if (!window)
+	if (!window_)
 	{
 		FLAGGG_LOG_ERROR("CreateWindow failed, error code({}).", GetLastError());
 		return false;
@@ -172,14 +172,14 @@ void Window::UpdateSwapChain(UInt32 width, UInt32 height)
 UInt32 Window::GetWidth()
 {
 	RECT rect;
-	::GetWindowRect((HWND)window, &rect);
+	::GetWindowRect((HWND)window_, &rect);
 	return rect.right - rect.left;
 }
 
 UInt32 Window::GetHeight()
 {
 	RECT rect;
-	::GetWindowRect((HWND)window, &rect);
+	::GetWindowRect((HWND)window_, &rect);
 	return rect.bottom - rect.top;
 }
 
@@ -187,18 +187,18 @@ IntVector2 Window::GetMousePos() const
 {
 	POINT point;
 	::GetCursorPos(&point);
-	::ScreenToClient((HWND)window, &point);
+	::ScreenToClient((HWND)window_, &point);
 	return IntVector2(point.x, point.y);
 }
 
 bool Window::IsForegroundWindow() const
 {
-	return ::GetForegroundWindow() == window;
+	return ::GetForegroundWindow() == window_;
 }
 
 void Window::Resize(UInt32 width, UInt32 height)
 {
-	::SetWindowPos((HWND)window, nullptr, 0, 0, width, height, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	::SetWindowPos((HWND)window_, nullptr, 0, 0, width, height, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
 	UpdateSwapChain(width, height);
 
@@ -208,17 +208,17 @@ void Window::Resize(UInt32 width, UInt32 height)
 
 void* Window::GetWindow()
 {
-	return window;
+	return window_;
 }
 
 void Window::Show()
 {
-	::ShowWindow((HWND)window, SW_SHOW);
+	::ShowWindow((HWND)window_, SW_SHOW);
 }
 
 void Window::Hide()
 {
-	::ShowWindow((HWND)window, SW_HIDE);
+	::ShowWindow((HWND)window_, SW_HIDE);
 }
 
 void Window::Render()
@@ -290,14 +290,14 @@ void Window::WinProc(UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			mousePos_.x = GetWidth() / 2;
 			mousePos_.y = GetHeight() / 2;
-			::ClientToScreen((HWND)window, &mousePos_);
+			::ClientToScreen((HWND)window_, &mousePos_);
 			::SetCursorPos(mousePos_.x, mousePos_.y);
 		}
 
 		break;
 
 	case WM_CLOSE:
-		context_->SendEvent<Application::WINDOW_CLOSE_HANDLER>(Application::WINDOW_CLOSE, window);
+		context_->SendEvent<Application::WINDOW_CLOSE_HANDLER>(Application::WINDOW_CLOSE, window_);
 
 		break;
 	}

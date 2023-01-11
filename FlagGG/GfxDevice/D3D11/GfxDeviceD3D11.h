@@ -104,8 +104,6 @@ private:
 	// uniform
 	GfxBufferD3D11 vsConstantBuffer_[MAX_CONST_BUFFER_COUNT];
 	GfxBufferD3D11 psConstantBuffer_[MAX_CONST_BUFFER_COUNT];
-	const Matrix3x4* skinMatrix_{ nullptr };
-	UInt32 numSkinMatrix_{ 0u };
 
 	HashMap<Pair<UInt32, GfxShaderD3D11*>, ID3D11InputLayout*> d3d11InputLayoutMap_;
 };

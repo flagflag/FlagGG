@@ -46,7 +46,8 @@ GfxSwapChainD3D11::GfxSwapChainD3D11(Window* window) :
 
 GfxSwapChainD3D11::~GfxSwapChainD3D11()
 {
-
+	D3D11_SAFE_RELEASE(swapChain_);
+	D3D11_SAFE_RELEASE(depthTexture_);
 }
 
 void GfxSwapChainD3D11::Resize(UInt32 width, UInt32 height)

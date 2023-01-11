@@ -260,13 +260,13 @@ void GfxDeviceD3D11::PrepareDraw()
 				if (vertexShaderD3D11->GetTextureDesc().Contains(i))
 				{
 					vertexShaderResourceView[i] = currentTexture->GetD3D11ShaderResourceView();
-					// vertexSamplerState[i] = currentTexture->sampler_;
+					vertexSamplerState[i] = sampler;
 				}
 
 				if (pixelShaderD3D11->GetTextureDesc().Contains(i))
 				{
 					pixelShaderResourceView[i] = currentTexture->GetD3D11ShaderResourceView();
-					// pixelSamplerState[i] = currentTexture->sampler_;
+					pixelSamplerState[i] = sampler;
 				}
 			}
 			else
@@ -398,11 +398,6 @@ void GfxDeviceD3D11::CopyShaderParameterToBuffer(GfxShaderD3D11* shader, GfxBuff
 						shaderParam.dataBuffer_->ReadStream(data + variableDesc.offset_,
 							Min(variableDesc.size_, it2->second_.size_));
 					}
-					else if (StringHash(variableDesc.name_) == SP_SKIN_MATRICES)
-					{
-						memcpy(data + variableDesc.offset_, skinMatrix_,
-							Min(variableDesc.size_, numSkinMatrix_ * (UInt32)sizeof(Matrix3x4)));
-					}
 				};
 
 				if (engineShaderParameters_)
@@ -411,7 +406,7 @@ void GfxDeviceD3D11::CopyShaderParameterToBuffer(GfxShaderD3D11* shader, GfxBuff
 				if (materialShaderParameters_)
 					CopyParam(*materialShaderParameters_);
 			}
-			constantBuffer.EndWrite(0);
+			constantBuffer.EndWrite(bufferDesc.size_);
 		}
 	}
 }

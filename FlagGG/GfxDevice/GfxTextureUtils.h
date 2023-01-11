@@ -40,7 +40,7 @@ public:
 	static const TextureDetail& GetTextureDetail(TextureFormat format);
 
 	// 获取纹理level层mip的信息
-	static TextureMipInfo GetTextureMipInfo(TextureFormat format, UInt32 width, UInt32 height, UInt32 depth, UInt32 level);
+	static TextureMipInfo GetTextureMipInfo(TextureFormat format, UInt32 width, UInt32 height, UInt32 depth, UInt32 levels, UInt32 level);
 
 	// 根据宽度获取行数据大小
 	static UInt32 GetRowDataSize(TextureFormat format, Int32 width);

@@ -112,6 +112,11 @@ UInt32 HashString(const char* str)
 	return hash;
 }
 
+UInt32 SDBM_Hash(UInt32 hashValue, UInt8 charValue)
+{
+	return static_cast<UInt32>(charValue) + (hashValue << 6u) + (hashValue << 16u) - hashValue;
+}
+
 Matrix4 MatrixTranslation(Real dx, Real dy, Real dz)
 {
 	return Matrix4(

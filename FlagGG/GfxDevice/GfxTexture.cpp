@@ -107,7 +107,7 @@ const TextureDetail& GfxTexture::GetDetail() const
 
 const TextureMipInfo& GfxTexture::GetMipInfo(UInt32 level) const
 {
-	return GfxTextureUtils::GetTextureMipInfo(textureDesc_.format_, textureDesc_.width_, textureDesc_.height_, textureDesc_.depth_, level);
+	return GfxTextureUtils::GetTextureMipInfo(textureDesc_.format_, textureDesc_.width_, textureDesc_.height_, textureDesc_.depth_, textureDesc_.levels_, level);
 }
 
 bool GfxTexture::IsCompressed() const

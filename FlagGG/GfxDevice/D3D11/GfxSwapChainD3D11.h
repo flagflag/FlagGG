@@ -32,7 +32,7 @@ public:
 private:
 	UInt32 multiSample_{ 1 };
 
-	bool sRGB_{ true };
+	bool sRGB_{};
 
 	IDXGISwapChain* swapChain_{};
 	ID3D11Texture2D* depthTexture_{};

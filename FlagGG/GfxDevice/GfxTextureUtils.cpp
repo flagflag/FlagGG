@@ -115,7 +115,7 @@ const TextureDetail& GfxTextureUtils::GetTextureDetail(TextureFormat format)
 	return TEXTURE_FORMAT_DETAIL[format];
 }
 
-TextureMipInfo GfxTextureUtils::GetTextureMipInfo(TextureFormat format, UInt32 width, UInt32 height, UInt32 depth, UInt32 level)
+TextureMipInfo GfxTextureUtils::GetTextureMipInfo(TextureFormat format, UInt32 width, UInt32 height, UInt32 depth, UInt32 levels, UInt32 level)
 {
 	TextureMipInfo mipInfo{};
 
@@ -127,8 +127,25 @@ TextureMipInfo GfxTextureUtils::GetTextureMipInfo(TextureFormat format, UInt32 w
 	}
 	else
 	{
-		// 压缩格式比较特殊，后面再补上吧
-		FLAGGG_LOG_ERROR("COmpressed texture mip info error.");
+		const TextureDetail& detail = GetTextureDetail(format);
+
+		for (UInt32 i = 0; i <= level && i < levels; ++i)
+		{
+			if (i > 0)
+			{
+				width >>= 1;
+				height >>= 1;
+				depth >>= 1;
+			}
+
+			width = Max((UInt32)detail.blockWidth_ * detail.minBlockX_, ((width + detail.blockWidth_ - 1) / detail.blockWidth_) * detail.blockWidth_);
+			height = Max((UInt32)detail.blockHeight_ * detail.minBlockY_, ((height + detail.blockHeight_ - 1) / detail.blockHeight_) * detail.blockHeight_);
+			depth = Max(1u, depth);
+		}
+
+		mipInfo.width_ = width;
+		mipInfo.height_ = height;
+		mipInfo.depth_ = depth;
 	}
 
 	return mipInfo;

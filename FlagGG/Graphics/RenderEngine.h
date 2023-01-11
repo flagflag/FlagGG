@@ -88,17 +88,15 @@ public:
 
 	void SetIndexBuffer(IndexBuffer* indexBuffer);
 
-	void SetVertexShader(Shader* shader);
-
-	void SetPixelShader(Shader* shader);
+	void SetShaders(Shader* vertexShader, Shader* pixelShader);
 
 	void SetTextures(const Vector<SharedPtr<Texture>>& textures);
 
 	void SetPrimitiveType(PrimitiveType primitiveType);
 
-	void SetRenderTarget(Viewport* viewport, bool renderShadowMap = false);
+	void SetRenderTarget(Viewport* viewport);
 
-	void PreDraw();
+	bool SetShadowMap();
 
 	void DrawCallIndexed(UInt32 indexStart, UInt32 indexCount);
 
@@ -113,23 +111,11 @@ private:
 
 	RasterizerState shadowRasterizerState_;
 
-	const Matrix3x4* skinMatrix_{ nullptr };
-	UInt32 numSkinMatrix_{ 0u };
-
 	MaterialQuality textureQuality_{ QUALITY_HIGH };
-
-	SharedPtr<Shader> vertexShader_{ nullptr };
-	bool vertexShaderDirty_{ false };
-
-	SharedPtr<Shader> pixelShader_{ nullptr };
-	bool pixelShaderDirty_{ false };
 
 	SharedPtr<Texture> defaultTextures_[MAX_TEXTURE_CLASS];
 
 	SharedPtr<ShaderParameters> shaderParameters_;
-	SharedPtr<ShaderParameters> inShaderParameters_;
-
-	bool renderShadowMap_{ false };
 
 	Vector<SharedPtr<Batch>> batches_;
 

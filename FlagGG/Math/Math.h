@@ -74,6 +74,8 @@ UInt32 FlagGG_API FloatToRawIntBits(Real value);
 
 UInt32 FlagGG_API HashString(const char* str);
 
+UInt32 FlagGG_API SDBM_Hash(UInt32 hashValue, UInt8 charValue);
+
 // Œª“∆æÿ’Û
 Matrix4 FlagGG_API MatrixTranslation(Real dx, Real dy, Real dz);
 

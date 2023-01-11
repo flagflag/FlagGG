@@ -95,7 +95,7 @@ private:
 
 	bool sRGB_{ true };
 
-	void* window{ nullptr };
+	void* window_{ nullptr };
 
 	void* parentWindow_{ nullptr };
 
