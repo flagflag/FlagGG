@@ -313,7 +313,8 @@ void RenderEngine::SetTextures(const Vector<SharedPtr<Texture>>& textures)
 	for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
 	{
 		auto texture = i < textures.Size() && textures[i] ? textures[i] : defaultTextures_[i];
-		gfxDevice_->SetTexture(i, texture->GetGfxRef());
+		if (texture)
+			gfxDevice_->SetTexture(i, texture->GetGfxRef());
 	}
 }
 

@@ -77,12 +77,10 @@ void TerrainComponent::CreateGeometry()
 	};
 
 	vertexBuffer_->SetSize(verticesNum_.x_ * verticesNum_.y_, vertexElements);
-	UInt32 vertexDataSize = vertexBuffer_->GetVertexCount() * vertexBuffer_->GetVertexSize();
-	auto* buffer1 = vertexBuffer_->LockStaticBuffer(0, vertexDataSize);
+	auto* buffer1 = vertexBuffer_->LockStaticBuffer(0, vertexBuffer_->GetVertexCount());
 
 	indexBuffer_->SetSize(sizeof(UInt32), (verticesNum_.x_ - 1) * (verticesNum_.y_ - 1) * 6);
-	UInt32 indexDataSize = indexBuffer_->GetIndexCount() * indexBuffer_->GetIndexSize();
-	auto* buffer2 = indexBuffer_->LockStaticBuffer(0, indexDataSize);
+	auto* buffer2 = indexBuffer_->LockStaticBuffer(0, indexBuffer_->GetIndexCount());
 
 	// 地形高度图相关
 	const unsigned char* src = heightMap_->GetData();

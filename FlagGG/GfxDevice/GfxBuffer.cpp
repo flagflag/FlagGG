@@ -5,6 +5,7 @@ namespace FlagGG
 
 GfxBuffer::GfxBuffer()
 	: GfxObject()
+	, gfxBufferDesc_{}
 {
 }
 
@@ -30,7 +31,7 @@ void GfxBuffer::SetBind(BufferBindFlags bindFlags)
 
 void GfxBuffer::SetAccess(BufferAccessFlags bindFlags)
 {
-	gfxBufferDesc_.bindFlags_ = bindFlags;
+	gfxBufferDesc_.accessFlags_ = bindFlags;
 }
 
 void GfxBuffer::SetUsage(BufferUsage usage)

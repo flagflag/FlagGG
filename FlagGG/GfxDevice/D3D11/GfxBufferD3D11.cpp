@@ -9,7 +9,7 @@ namespace FlagGG
 
 static D3D11_USAGE d3d11Usage[]=
 {
-	D3D11_USAGE_IMMUTABLE,
+	D3D11_USAGE_DEFAULT,
 	D3D11_USAGE_DYNAMIC
 };
 
@@ -38,17 +38,17 @@ void GfxBufferD3D11::Apply(const void* initialDataPtr)
 	}
 
 	UINT bindFlags = 0;
-	if (gfxBufferDesc_.bindFlags_ & BUFFER_VERTEX)
+	if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_VERTEX)
 		bindFlags |= D3D11_BIND_VERTEX_BUFFER;
-	if (gfxBufferDesc_.bindFlags_ & BUFFER_INDEX)
+	if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_INDEX)
 		bindFlags |= D3D11_BIND_INDEX_BUFFER;
-	if (gfxBufferDesc_.bindFlags_ & BUFFER_UNIFORM)
+	if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_UNIFORM)
 		bindFlags |= D3D11_BIND_CONSTANT_BUFFER;
 
 	UINT accessFlags = 0;
-	if (gfxBufferDesc_.accessFlags_ & BUFFER_WRITE)
+	if (gfxBufferDesc_.accessFlags_ & BUFFER_ACCESS_WRITE)
 		accessFlags |= D3D11_CPU_ACCESS_WRITE;
-	if (gfxBufferDesc_.accessFlags_ & BUFFER_READ)
+	if (gfxBufferDesc_.accessFlags_ & BUFFER_ACCESS_READ)
 		accessFlags |= D3D11_CPU_ACCESS_READ;
 
 	UINT byteCount = gfxBufferDesc_.size_;
@@ -62,12 +62,7 @@ void GfxBufferD3D11::Apply(const void* initialDataPtr)
 	desc.Usage = d3d11Usage[gfxBufferDesc_.usage_];
 	desc.ByteWidth = byteCount;
 
-	D3D11_SUBRESOURCE_DATA d3d11SubData;
-	d3d11SubData.pSysMem = initialDataPtr;
-	d3d11SubData.SysMemPitch = 0;
-	d3d11SubData.SysMemSlicePitch = 0;
-
-	HRESULT hr = GfxDeviceD3D11::Instance()->GetD3D11Device()->CreateBuffer(&desc, &d3d11SubData, &d3d11Buffer_);
+	HRESULT hr = GfxDeviceD3D11::Instance()->GetD3D11Device()->CreateBuffer(&desc, nullptr, &d3d11Buffer_);
 	if (FAILED(hr))
 	{
 		D3D11_SAFE_RELEASE(d3d11Buffer_);
@@ -79,7 +74,7 @@ void GfxBufferD3D11::Apply(const void* initialDataPtr)
 void GfxBufferD3D11::UpdateBuffer(const void* dataPtr)
 {
 	// 静态buffer不修改数据
-	if (gfxBufferDesc_.usage_ == BUFFER_STATIC)
+	if (gfxBufferDesc_.usage_ == BUFFER_USAGE_STATIC)
 	{
 		CRY_ASSERT(false);
 		return;
@@ -96,13 +91,7 @@ void GfxBufferD3D11::UpdateBuffer(const void* dataPtr)
 void GfxBufferD3D11::UpdateBufferRange(const void* dataPtr, UInt32 offset, UInt32 size)
 {
 	// 静态buffer不修改数据
-	if (gfxBufferDesc_.usage_ == BUFFER_STATIC)
-	{
-		CRY_ASSERT(false);
-		return;
-	}
-
-	if (offset + size > gfxBufferDesc_.size_)
+	if (gfxBufferDesc_.usage_ == BUFFER_USAGE_STATIC)
 	{
 		CRY_ASSERT(false);
 		return;
@@ -124,15 +113,29 @@ void* GfxBufferD3D11::BeginWrite(UInt32 offset, UInt32 size)
 		return nullptr;
 	}
 
-	D3D11_MAPPED_SUBRESOURCE mappedData;
-	memset(&mappedData, 0, sizeof mappedData);
-	HRESULT hr = GfxDeviceD3D11::Instance()->GetD3D11DeviceContext()->Map(d3d11Buffer_, 0, d3d11Map[gfxBufferDesc_.usage_], 0, &mappedData);
-	if (FAILED(hr) || !mappedData.pData)
+	if (offset + size > gfxBufferDesc_.size_)
 	{
-		FLAGGG_LOG_ERROR("Failed to Map buffer data.");
+		CRY_ASSERT(false);
 		return nullptr;
 	}
-	return static_cast<char*>(mappedData.pData) + offset;
+
+	if (gfxBufferDesc_.accessFlags_ & BUFFER_ACCESS_WRITE)
+	{
+		D3D11_MAPPED_SUBRESOURCE mappedData;
+		memset(&mappedData, 0, sizeof mappedData);
+		HRESULT hr = GfxDeviceD3D11::Instance()->GetD3D11DeviceContext()->Map(d3d11Buffer_, 0, d3d11Map[gfxBufferDesc_.usage_], 0, &mappedData);
+		if (FAILED(hr) || !mappedData.pData)
+		{
+			FLAGGG_LOG_ERROR("Failed to Map buffer data.");
+			return nullptr;
+		}
+		return static_cast<char*>(mappedData.pData) + offset;
+	}
+	else
+	{
+		shadowdData_.Resize(size);
+		return &shadowdData_[0];
+	}
 }
 
 void GfxBufferD3D11::EndWrite(UInt32 bytesWritten)
@@ -143,7 +146,22 @@ void GfxBufferD3D11::EndWrite(UInt32 bytesWritten)
 		return;
 	}
 
-	GfxDeviceD3D11::Instance()->GetD3D11DeviceContext()->Unmap(d3d11Buffer_, 0);
+	if (gfxBufferDesc_.accessFlags_ & BUFFER_ACCESS_WRITE)
+	{
+		GfxDeviceD3D11::Instance()->GetD3D11DeviceContext()->Unmap(d3d11Buffer_, 0);
+	}
+	else
+	{
+		D3D11_BOX destBox;
+		destBox.left = 0;
+		destBox.right = Min(bytesWritten, shadowdData_.Size());
+		destBox.top = 0;
+		destBox.bottom = 1;
+		destBox.front = 0;
+		destBox.back = 1;
+
+		GfxDeviceD3D11::Instance()->GetD3D11DeviceContext()->UpdateSubresource(d3d11Buffer_, 0, &destBox, &shadowdData_[0], 0, 0);
+	}
 }
 
 }

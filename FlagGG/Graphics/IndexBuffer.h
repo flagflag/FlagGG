@@ -18,7 +18,7 @@ public:
 	 * indexCount  - ib元素的大小
 	 * dynamic     - 是否是动态bufer
 	 */
-	bool SetSize(UInt32 indexSize, UInt32 indexCount, bool dynamic = true);
+	bool SetSize(UInt32 indexSize, UInt32 indexCount, bool dynamic = false);
 
 	// 获取ib元素大小
 	UInt32 GetIndexSize() const;

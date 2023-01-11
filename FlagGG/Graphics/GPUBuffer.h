@@ -31,6 +31,8 @@ protected:
 	SharedPtr<IOFrame::Buffer::IOBuffer> buffer_;
 
 	SharedPtr<GfxBuffer> gfxBuffer_;
+
+	UInt32 lockSize_{};
 };
 
 }

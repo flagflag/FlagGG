@@ -26,9 +26,9 @@ bool VertexBuffer::SetSize(UInt32 vertexCount, const PODVector<VertexElement>& v
 
 	gfxBuffer_->SetStride(vertexSize_);
 	gfxBuffer_->SetSize(vertexSize_ * vertexCount_);
-	gfxBuffer_->SetBind(BUFFER_VERTEX);
-	gfxBuffer_->SetAccess(BUFFER_WRITE);
-	gfxBuffer_->SetUsage(dynamic ? BUFFER_DYNAMIC : BUFFER_STATIC);
+	gfxBuffer_->SetBind(BUFFER_BIND_VERTEX);
+	gfxBuffer_->SetAccess(dynamic ? BUFFER_ACCESS_WRITE : BUFFER_ACCESS_NONE);
+	gfxBuffer_->SetUsage(dynamic ? BUFFER_USAGE_DYNAMIC : BUFFER_USAGE_STATIC);
 	gfxBuffer_->Apply(nullptr);
 
 	return true;

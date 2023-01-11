@@ -377,7 +377,15 @@ void GfxDeviceD3D11::CopyShaderParameterToBuffer(GfxShaderD3D11* shader, GfxBuff
 		{
 			auto& constantBuffer = buffer[it->first_];
 			const auto& bufferDesc = it->second_;
-			constantBuffer.SetSize(bufferDesc.size_);
+			if (constantBuffer.GetDesc().size_ < bufferDesc.size_)
+			{
+				constantBuffer.SetStride(sizeof(float));
+				constantBuffer.SetSize(bufferDesc.size_);
+				constantBuffer.SetBind(BUFFER_BIND_UNIFORM);
+				constantBuffer.SetAccess(BUFFER_ACCESS_NONE);
+				constantBuffer.SetUsage(BUFFER_USAGE_STATIC);
+				constantBuffer.Apply(nullptr);
+			}
 			char* data = static_cast<char*>(constantBuffer.BeginWrite(0, bufferDesc.size_));
 			for (const auto& variableDesc : bufferDesc.variableDescs_)
 			{

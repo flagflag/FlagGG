@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GfxDevice/GfxBuffer.h"
+#include "Container/Vector.h"
 
 #include <d3d11.h>
 
@@ -34,6 +35,8 @@ public:
 
 private:
 	ID3D11Buffer* d3d11Buffer_{};
+
+	PODVector<UInt8> shadowdData_;
 };
 
 }

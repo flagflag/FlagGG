@@ -24,7 +24,7 @@ public:
 	 * vertexElements  - vb顶点描述
 	 * dynamic         - 是否是动态bufer
 	 */
-	bool SetSize(UInt32 vertexCount, const PODVector<VertexElement>& vertexElements, bool dynamic = true);
+	bool SetSize(UInt32 vertexCount, const PODVector<VertexElement>& vertexElements, bool dynamic = false);
 
 	// 获取顶点单个元素的大小
 	UInt32 GetVertexSize() const;
