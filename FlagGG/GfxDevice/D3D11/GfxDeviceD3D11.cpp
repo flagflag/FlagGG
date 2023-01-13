@@ -140,6 +140,11 @@ void GfxDeviceD3D11::DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 ve
 	deviceContext_->DrawIndexed(indexCount, indexStart, vertexStart);
 }
 
+void GfxDeviceD3D11::Flush()
+{
+	deviceContext_->Flush();
+}
+
 void GfxDeviceD3D11::PrepareDraw()
 {
 	static GfxBufferD3D11* vertexBuffers[MAX_VERTEX_BUFFER_COUNT + 1] = { 0 };
@@ -382,8 +387,8 @@ void GfxDeviceD3D11::CopyShaderParameterToBuffer(GfxShaderD3D11* shader, GfxBuff
 				constantBuffer.SetStride(sizeof(float));
 				constantBuffer.SetSize(bufferDesc.size_);
 				constantBuffer.SetBind(BUFFER_BIND_UNIFORM);
-				constantBuffer.SetAccess(BUFFER_ACCESS_NONE);
-				constantBuffer.SetUsage(BUFFER_USAGE_STATIC);
+				constantBuffer.SetAccess(BUFFER_ACCESS_WRITE);
+				constantBuffer.SetUsage(BUFFER_USAGE_DYNAMIC);
 				constantBuffer.Apply(nullptr);
 			}
 			char* data = static_cast<char*>(constantBuffer.BeginWrite(0, bufferDesc.size_));

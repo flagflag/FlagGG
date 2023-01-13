@@ -105,6 +105,9 @@ public:
 	// 提交渲染指令
 	virtual void DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart = 0u);
 
+	// Flush
+	virtual void Flush();
+
 
 	/**********************************************************/
 	/*                     创建Gfx对象                        */

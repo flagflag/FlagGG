@@ -163,6 +163,11 @@ void GfxDevice::DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 vertexS
 
 }
 
+void GfxDevice::Flush()
+{
+
+}
+
 GfxSwapChain* GfxDevice::CreateSwapChain(Window* window)
 {
 	return nullptr;

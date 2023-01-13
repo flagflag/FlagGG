@@ -36,6 +36,9 @@ public:
 	// 提交渲染指令
 	void DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart) override;
 
+	// Flush
+	void Flush() override;
+
 
 	/**********************************************************/
 	/*                     创建Gfx对象                        */
