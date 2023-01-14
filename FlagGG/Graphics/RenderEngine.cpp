@@ -311,7 +311,10 @@ void RenderEngine::SetTextures(const Vector<SharedPtr<Texture>>& textures)
 	{
 		auto texture = i < textures.Size() && textures[i] ? textures[i] : defaultTextures_[i];
 		if (texture)
-			gfxDevice_->SetTexture(i, texture->GetGfxRef());
+		{
+			gfxDevice_->SetTexture(i, texture->GetGfxTextureRef());
+			gfxDevice_->SetSampler(i, texture->GetGfxSamplerRef());
+		}
 	}
 }
 

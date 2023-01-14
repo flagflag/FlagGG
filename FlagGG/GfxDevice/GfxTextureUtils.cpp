@@ -153,7 +153,17 @@ TextureMipInfo GfxTextureUtils::GetTextureMipInfo(TextureFormat format, UInt32 w
 
 UInt32 GfxTextureUtils::GetRowDataSize(TextureFormat format, Int32 width)
 {
-	return GetTextureDetail(format).bitsPerPixel_ * width / 8;
+/*
+      | bits per pixel |  block width |  block height |  block size |
+---------------------------------------------------------------------
+BC1   |       4        |       4      |       4       |       8     |
+ASTC4 |       8        |       4      |       4       |      16     |
+RGBA  |      32        |       1      |       1       |       4     |
+---------------------------------------------------------------------
+*/
+
+	const TextureDetail& detail = GetTextureDetail(format);
+	return (width + detail.blockWidth_ - 1) / detail.blockWidth_ * detail.blockSize_;
 }
 
 UInt32 GfxTextureUtils::CheckMaxLevels(UInt32 width, UInt32 height, UInt32 requestedLevels)

@@ -60,8 +60,11 @@ public:
 	// 获取Surface。如果是Cube纹理index填写Face（详见枚举类型CubeMapFace）。如果是Array纹理index填写数组下标。
 	GfxRenderSurface* GetRenderSurface(UInt32 index) const;
 
-	// 获取Gfx引用
-	GfxTexture* GetGfxRef() const { return gfxTexture_; }
+	// 获取GfxTexture引用
+	GfxTexture* GetGfxTextureRef() const { return gfxTexture_; }
+
+	// 获取GfxSampler引用
+	GfxSampler* GetGfxSamplerRef() const { return gfxSampler_; }
 
 	friend class RenderEngine;
 

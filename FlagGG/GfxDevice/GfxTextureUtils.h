@@ -16,7 +16,7 @@ struct TextureDetail
 	UInt8 bitsPerPixel_;  // 纹理每像素的bits数
 	UInt8 blockWidth_;    // 块压缩纹理，每块的宽度
 	UInt8 blockHeight_;   // 块压缩纹理，每块的高度
-	UInt8 blockSize_;     // 快压缩纹理，每块的大小
+	UInt8 blockSize_;     // 块压缩纹理，每块的大小
 	UInt8 minBlockX_;
 	UInt8 minBlockY_;
 	UInt8 depthBits_;     // 深度的bits数
