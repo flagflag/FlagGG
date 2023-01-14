@@ -45,6 +45,7 @@ int Player::Create(lua_State* L)
 int Player::Destroy(lua_State* L)
 {
 	Player* player = GetEntry<Player>(L, 1);
+	if (!player) return 0;
 	player->ReleaseRef();
 	return 0;
 }

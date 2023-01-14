@@ -98,6 +98,7 @@ int Unit::Create(lua_State* L)
 int Unit::Destroy(lua_State* L)
 {
 	Unit* unit = GetEntry<Unit>(L, 1);
+	if (!unit) return 0;
 	unit->ReleaseRef();
 	Engine* engine = GetEngine(L);
 	engine->DestroyObject(unit);

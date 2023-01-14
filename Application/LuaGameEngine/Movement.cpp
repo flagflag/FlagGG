@@ -16,6 +16,7 @@ int Movement::Create(lua_State* L)
 int Movement::Destroy(lua_State* L)
 {
 	Movement* movement = GetEntry<Movement>(L, 1);
+	if (!movement) return 0;
 	movement->ReleaseRef();
 	Engine* engine = GetEngine(L);
 	engine->DestroyObject(movement);
