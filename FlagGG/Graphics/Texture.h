@@ -15,6 +15,7 @@ namespace FlagGG
 {
 
 class GfxTexture;
+class GfxSampler;
 class GfxRenderSurface;
 
 static const int MAX_TEXTURE_QUALITY_LEVELS = 3;
@@ -28,6 +29,15 @@ public:
 
 	// 设置纹理mips层数
 	void SetNumLevels(UInt32 levels);
+
+	// 设置Filter
+	void SetFilterMode(TextureFilterMode filterMode);
+
+	// 设置寻址方式
+	void SetAddressMode(TextureCoordinate coord, TextureAddressMode addressMode);
+
+	// 设置比较方式
+	void SetComparisonFunc(ComparisonFunc comparisonFunc);
 
 	// 获取纹理宽度
 	Int32 GetWidth() const;
@@ -59,6 +69,8 @@ protected:
 	UInt32 mipsToSkip_[MAX_TEXTURE_QUALITY_LEVELS];
 
 	SharedPtr<GfxTexture> gfxTexture_;
+
+	SharedPtr<GfxSampler> gfxSampler_;
 };
 
 }

@@ -1,3 +1,7 @@
+//
+// 抽象图形层对象
+//
+
 #pragma once
 
 #include "Core/RTTI.h"

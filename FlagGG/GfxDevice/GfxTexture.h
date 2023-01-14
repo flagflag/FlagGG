@@ -1,3 +1,7 @@
+//
+// 抽象图形层纹理
+//
+
 #pragma once
 
 #include "GfxDevice/GfxObject.h"

@@ -1,3 +1,7 @@
+//
+// D3D11图形层纹理
+//
+
 #pragma once
 
 #include "GfxDevice/GfxTexture.h"

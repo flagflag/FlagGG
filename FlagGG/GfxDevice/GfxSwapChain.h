@@ -1,3 +1,7 @@
+//
+// 抽象图形层SwapChain
+//
+
 #pragma once
 
 #include "GfxDevice/GfxObject.h"

@@ -2,6 +2,7 @@
 #include "Graphics/RenderEngine.h"
 #include "GfxDevice/GfxDevice.h"
 #include "GfxDevice/GfxTexture.h"
+#include "GfxDevice/GfxSampler.h"
 #include "GfxDevice/GfxRenderSurface.h"
 #include "Math/Math.h"
 #include "Log.h"
@@ -17,6 +18,7 @@ Texture::Texture(Context* context)
 	mipsToSkip_[2] = 0;
 
 	gfxTexture_ = GfxDevice::GetDevice()->CreateTexture();
+	gfxSampler_ = GfxDevice::GetDevice()->CreateSampler();
 }
 
 Texture::~Texture()
@@ -27,6 +29,21 @@ Texture::~Texture()
 void Texture::SetNumLevels(UInt32 levels)
 {
 	gfxTexture_->SetNumLevels(levels);
+}
+
+void Texture::SetFilterMode(TextureFilterMode filterMode)
+{
+	gfxSampler_->SetFilterMode(filterMode);
+}
+
+void Texture::SetAddressMode(TextureCoordinate coord, TextureAddressMode addressMode)
+{
+	gfxSampler_->SetAddressMode(coord, addressMode);
+}
+
+void Texture::SetComparisonFunc(ComparisonFunc comparisonFunc)
+{
+	gfxSampler_->SetComparisonFunc(comparisonFunc);
 }
 
 Int32 Texture::GetWidth() const

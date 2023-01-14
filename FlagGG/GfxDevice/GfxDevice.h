@@ -1,3 +1,7 @@
+//
+// 抽象图形层设备
+//
+
 #pragma once
 
 #include "Graphics/GraphicsDef.h"
@@ -14,6 +18,7 @@ class Window;
 class GfxSwapChain;
 class GfxBuffer;
 class GfxTexture;
+class GfxSampler;
 class GfxShader;
 class GfxProgram;
 class GfxRenderSurface;
@@ -72,6 +77,9 @@ public:
 	// 在slotID通道绑定纹理
 	virtual void SetTexture(UInt32 slotID, GfxTexture* gfxTexture);
 
+	// 在slotID通道绑定采样器
+	virtual void SetSampler(UInt32 slotID, GfxSampler* gfxSampler);
+
 	// 设置shaders
 	virtual void SetShaders(GfxShader* vertexShader, GfxShader* pixelShader);
 
@@ -118,6 +126,9 @@ public:
 
 	// 创建纹理
 	virtual GfxTexture* CreateTexture();
+
+	// 创建采样器
+	virtual GfxSampler* CreateSampler();
 
 	// 创建buffer
 	virtual GfxBuffer* CreateBuffer();
@@ -167,6 +178,10 @@ protected:
 	// 准备提交的texture
 	SharedPtr<GfxTexture> textures_[MAX_TEXTURE_CLASS];
 	bool texturesDirty_{};
+
+	// 准备提交的sampler
+	SharedPtr<GfxSampler> samplers_[MAX_TEXTURE_CLASS];
+	bool samplerDirty_{};
 
 	// 光栅化状态
 	RasterizerState rasterizerState_;

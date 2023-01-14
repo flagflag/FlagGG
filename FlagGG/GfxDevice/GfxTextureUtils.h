@@ -1,3 +1,7 @@
+//
+// 通用图形层接口
+//
+
 #pragma once
 
 #include "Export.h"

@@ -1,3 +1,7 @@
+//
+// 抽象图形层Shader
+//
+
 #pragma once
 
 #include "GfxDevice/GfxObject.h"

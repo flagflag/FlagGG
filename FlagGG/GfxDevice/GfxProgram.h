@@ -1,3 +1,7 @@
+//
+// 抽象图形层GPU程序
+//
+
 #pragma once
 
 #include "GfxDevice/GfxObject.h"

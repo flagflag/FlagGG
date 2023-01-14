@@ -1,3 +1,7 @@
+//
+// D3D11图形层设备
+//
+
 #pragma once
 
 #include "GfxDevice/GfxDevice.h"
@@ -15,6 +19,7 @@ namespace FlagGG
 
 class GfxShaderD3D11;
 class GfxBufferD3D11;
+class GfxSampler;
 
 class GfxDeviceD3D11 : public GfxDevice, public Singleton<GfxDeviceD3D11, NullMutex>
 {
@@ -84,6 +89,8 @@ protected:
 
 	ID3D11InputLayout* GetD3D11InputLayout(VertexDescription* verteDesc, GfxShaderD3D11* vertexShader);
 
+	ID3D11SamplerState* GetD3D11SamplerState(GfxSampler* gfxSampler);
+
 private:
 	// Constant buffer用途
 	enum ConstBufferType
@@ -109,6 +116,8 @@ private:
 	GfxBufferD3D11 psConstantBuffer_[MAX_CONST_BUFFER_COUNT];
 
 	HashMap<Pair<UInt32, GfxShaderD3D11*>, ID3D11InputLayout*> d3d11InputLayoutMap_;
+
+	HashMap<UInt32, ID3D11SamplerState*> d3d11SamplerStateMap_;
 };
 
 }

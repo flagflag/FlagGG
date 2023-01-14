@@ -1,3 +1,7 @@
+//
+// 抽象图形层Buffer
+//
+
 #pragma once
 
 #include "GfxDevice/GfxObject.h"

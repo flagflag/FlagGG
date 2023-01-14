@@ -3,6 +3,7 @@
 #include "GfxDevice/GfxBuffer.h"
 #include "GfxDevice/GfxTexture.h"
 #include "GfxDevice/GfxShader.h"
+#include "GfxDevice/GfxSampler.h"
 #include "GfxDevice/VertexDescFactory.h"
 #include "Graphics/ShaderParameter.h"
 
@@ -86,6 +87,15 @@ void GfxDevice::SetTexture(UInt32 slotID, GfxTexture* gfxTexture)
 	{
 		textures_[slotID] = gfxTexture;
 		texturesDirty_ = true;
+	}
+}
+
+void GfxDevice::SetSampler(UInt32 slotID, GfxSampler* gfxSampler)
+{
+	if (slotID < MAX_TEXTURE_CLASS)
+	{
+		samplers_[slotID] = gfxSampler;
+		samplerDirty_ = true;
 	}
 }
 
@@ -176,6 +186,11 @@ GfxSwapChain* GfxDevice::CreateSwapChain(Window* window)
 GfxTexture* GfxDevice::CreateTexture()
 {
 	return nullptr;
+}
+
+GfxSampler* GfxDevice::CreateSampler()
+{
+	return new GfxSampler();
 }
 
 GfxBuffer* GfxDevice::CreateBuffer()

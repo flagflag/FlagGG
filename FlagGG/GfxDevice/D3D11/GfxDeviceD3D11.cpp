@@ -5,6 +5,7 @@
 #include "GfxShaderD3D11.h"
 #include "GfxRenderSurfaceD3D11.h"
 #include "GfxDevice/GfxProgram.h"
+#include "GfxDevice/GfxSampler.h"
 #include "GfxDevice/VertexDescFactory.h"
 #include "Graphics/ShaderParameter.h"
 
@@ -37,6 +38,36 @@ static const DXGI_FORMAT d3dElementFormats[] =
 	DXGI_FORMAT_R8G8B8A8_UNORM
 };
 
+static const D3D11_FILTER d3d11Filter[] =
+{
+	D3D11_FILTER_MIN_MAG_MIP_POINT,
+	D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT,
+	D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+	D3D11_FILTER_ANISOTROPIC,
+	D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR,
+	D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT
+};
+
+static const D3D11_TEXTURE_ADDRESS_MODE d3dAddressMode[] =
+{
+	D3D11_TEXTURE_ADDRESS_WRAP,
+	D3D11_TEXTURE_ADDRESS_MIRROR,
+	D3D11_TEXTURE_ADDRESS_CLAMP,
+	D3D11_TEXTURE_ADDRESS_BORDER
+};
+
+static const D3D11_COMPARISON_FUNC d3dComparisonFun[] =
+{
+	D3D11_COMPARISON_NEVER,
+	D3D11_COMPARISON_LESS,
+	D3D11_COMPARISON_EQUAL,
+	D3D11_COMPARISON_LESS_EQUAL,
+	D3D11_COMPARISON_GREATER,
+	D3D11_COMPARISON_NOT_EQUAL,
+	D3D11_COMPARISON_GREATER_EQUAL,
+	D3D11_COMPARISON_ALWAYS
+};
+
 GfxDevice* GfxDevice::CreateDevice()
 {
 	return GfxDeviceD3D11::CreateInstance();
@@ -44,7 +75,7 @@ GfxDevice* GfxDevice::CreateDevice()
 
 void GfxDevice::DestroyDevice()
 {
-	GfxDeviceD3D11::DestroyDevice();
+	GfxDeviceD3D11::DestroyInstance();
 }
 
 GfxDevice* GfxDevice::GetDevice()
@@ -228,34 +259,12 @@ void GfxDeviceD3D11::PrepareDraw()
 		deviceContext_->PSSetConstantBuffers(0, MAX_CONST_BUFFER, d3dPSConstantBuffer);
 	}
 
-	if (texturesDirty_)
+	if (texturesDirty_ || samplerDirty_)
 	{
 		static ID3D11ShaderResourceView* vertexShaderResourceView[MAX_TEXTURE_CLASS] = {};
 		static ID3D11SamplerState* vertexSamplerState[MAX_TEXTURE_CLASS] = {};
 		static ID3D11ShaderResourceView* pixelShaderResourceView[MAX_TEXTURE_CLASS] = {};
 		static ID3D11SamplerState* pixelSamplerState[MAX_TEXTURE_CLASS] = {};
-
-		static ID3D11SamplerState* sampler = nullptr;
-		if (!sampler)
-		{
-			D3D11_SAMPLER_DESC samplerDesc;
-			memset(&samplerDesc, 0, sizeof(samplerDesc));
-			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.MaxAnisotropy = 4;
-			samplerDesc.MinLOD = -D3D11_FLOAT32_MAX;
-			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-
-			HRESULT hr = device_->CreateSamplerState(&samplerDesc, &sampler);
-			if (hr != 0)
-			{
-				FLAGGG_LOG_ERROR("CreateSamplerState failed.");
-				D3D11_SAFE_RELEASE(sampler);
-			}
-		}
 
 		for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
 		{
@@ -265,13 +274,13 @@ void GfxDeviceD3D11::PrepareDraw()
 				if (vertexShaderD3D11->GetTextureDesc().Contains(i))
 				{
 					vertexShaderResourceView[i] = currentTexture->GetD3D11ShaderResourceView();
-					vertexSamplerState[i] = sampler;
+					vertexSamplerState[i] = GetD3D11SamplerState(samplers_[i]);
 				}
 
 				if (pixelShaderD3D11->GetTextureDesc().Contains(i))
 				{
 					pixelShaderResourceView[i] = currentTexture->GetD3D11ShaderResourceView();
-					pixelSamplerState[i] = sampler;
+					pixelSamplerState[i] = GetD3D11SamplerState(samplers_[i]);
 				}
 			}
 			else
@@ -290,6 +299,7 @@ void GfxDeviceD3D11::PrepareDraw()
 		deviceContext_->PSSetSamplers(0, MAX_TEXTURE_CLASS, pixelSamplerState);
 
 		texturesDirty_ = false;
+		samplerDirty_ = false;
 	}
 
 	if (renderTargetDirty_ || depthStencilDirty_)
@@ -465,6 +475,42 @@ ID3D11InputLayout* GfxDeviceD3D11::GetD3D11InputLayout(VertexDescription* verteD
 	d3d11InputLayoutMap_[key] = inputLayout;
 
 	return inputLayout;
+}
+
+ID3D11SamplerState* GfxDeviceD3D11::GetD3D11SamplerState(GfxSampler* gfxSampler)
+{
+	if (!gfxSampler)
+		return nullptr;
+
+	auto it = d3d11SamplerStateMap_.Find(gfxSampler->GetHash());
+	if (it != d3d11SamplerStateMap_.End())
+		return it->second_;
+
+	const SamplerDesc& desc = gfxSampler->GetDesc();
+
+	D3D11_SAMPLER_DESC d3d11SamplerDesc;
+	memset(&d3d11SamplerDesc, 0, sizeof(d3d11SamplerDesc));
+	d3d11SamplerDesc.Filter = d3d11Filter[desc.filterMode_];
+	d3d11SamplerDesc.AddressU = d3dAddressMode[desc.addresMode_[TEXTURE_COORDINATE_U]];
+	d3d11SamplerDesc.AddressV = d3dAddressMode[desc.addresMode_[TEXTURE_COORDINATE_V]];
+	d3d11SamplerDesc.AddressW = d3dAddressMode[desc.addresMode_[TEXTURE_COORDINATE_W]];
+	d3d11SamplerDesc.MaxAnisotropy = 4;
+	d3d11SamplerDesc.MinLOD = -D3D11_FLOAT32_MAX;
+	d3d11SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	d3d11SamplerDesc.ComparisonFunc = d3dComparisonFun[desc.comparisonFunc_];
+
+	ID3D11SamplerState* d3d11SamplerState = nullptr;
+	HRESULT hr = device_->CreateSamplerState(&d3d11SamplerDesc, &d3d11SamplerState);
+	if (hr != 0)
+	{
+		FLAGGG_LOG_ERROR("CreateSamplerState failed.");
+		D3D11_SAFE_RELEASE(d3d11SamplerState);
+		return nullptr;
+	}
+
+	it = d3d11SamplerStateMap_.Insert(MakePair(gfxSampler->GetHash(), d3d11SamplerState));
+
+	return it->second_;
 }
 
 GfxSwapChain* GfxDeviceD3D11::CreateSwapChain(Window* window)
