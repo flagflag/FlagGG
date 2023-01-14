@@ -116,9 +116,17 @@ GfxDeviceD3D11::~GfxDeviceD3D11()
 {
 	D3D11_SAFE_RELEASE(device_);
 	D3D11_SAFE_RELEASE(deviceContext_);
-	for (auto it = rasterizerStates_.Begin(); it != rasterizerStates_.End(); ++it)
+	for (auto& it : rasterizerStates_)
 	{
-		D3D11_SAFE_RELEASE(it->second_);
+		D3D11_SAFE_RELEASE(it.second_);
+	}
+	for (auto& it : d3d11InputLayoutMap_)
+	{
+		D3D11_SAFE_RELEASE(it.second_);
+	}
+	for (auto& it : d3d11SamplerStateMap_)
+	{
+		D3D11_SAFE_RELEASE(it.second_);
 	}
 }
 

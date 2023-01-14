@@ -160,8 +160,12 @@ GfxTextureD3D11::~GfxTextureD3D11()
 
 void GfxTextureD3D11::ReleaseTexture()
 {
+	D3D11_SAFE_RELEASE(resolveTexture_);
+	D3D11_SAFE_RELEASE(shaderResourceView_);
 	D3D11_SAFE_RELEASE(d3d11Texture2D_);
 	D3D11_SAFE_RELEASE(d3d11Texture3D_);
+
+	gfxRenderSurfaces_.Clear();
 }
 
 void GfxTextureD3D11::CreateTexture2D()

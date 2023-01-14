@@ -105,7 +105,9 @@ GfxShaderD3D11::GfxShaderD3D11()
 
 GfxShaderD3D11::~GfxShaderD3D11()
 {
-
+	D3D11_SAFE_RELEASE(shaderCode_);
+	D3D11_SAFE_RELEASE(vertexShader_);
+	D3D11_SAFE_RELEASE(pixelShader_);
 }
 
 void GfxShaderD3D11::AnalysisReflection(ID3DBlob* compileCode)

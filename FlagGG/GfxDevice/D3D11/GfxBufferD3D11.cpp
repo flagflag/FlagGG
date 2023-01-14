@@ -27,7 +27,7 @@ GfxBufferD3D11::GfxBufferD3D11()
 
 GfxBufferD3D11::~GfxBufferD3D11()
 {
-
+	D3D11_SAFE_RELEASE(d3d11Buffer_);
 }
 
 void GfxBufferD3D11::Apply(const void* initialDataPtr)
