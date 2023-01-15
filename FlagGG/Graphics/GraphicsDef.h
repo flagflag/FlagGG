@@ -1,3 +1,7 @@
+//
+// 图形相关类型的定义
+//
+
 #pragma once
 
 #include "Export.h"

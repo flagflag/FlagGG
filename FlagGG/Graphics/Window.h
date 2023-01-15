@@ -1,3 +1,8 @@
+//
+// 窗口
+// 目前只支持了Windows平台
+//
+
 #pragma once
 
 #include "Export.h"

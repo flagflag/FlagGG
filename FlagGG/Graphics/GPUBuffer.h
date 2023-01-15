@@ -1,3 +1,7 @@
+//
+// 引擎层Buffer子类
+//
+
 #pragma once
 #include "Export.h"
 #include "Graphics/GraphicsDef.h"

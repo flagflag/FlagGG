@@ -1,3 +1,7 @@
+//
+// 引擎层ConstantBuffer
+//
+
 #pragma once
 
 #include "Graphics/GPUBuffer.h"

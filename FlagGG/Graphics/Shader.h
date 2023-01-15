@@ -1,3 +1,7 @@
+//
+// 引擎层Shader
+//
+
 #pragma once
 
 #include "Export.h"
@@ -23,6 +27,7 @@ class FlagGG_API ShaderCode : public Resource
 public:
 	ShaderCode(Context* context);
 
+	// 传入shader类型、shader宏，返回shader变种
 	Shader* GetShader(ShaderType type, const Vector<String>& defines);
 
 protected:
@@ -30,6 +35,7 @@ protected:
 
 	bool EndLoad() override;
 
+	// 预处理shader代码
 	bool PreCompileShaderCode(const char* head, const char* tail, String& out);
 
 private:
@@ -47,14 +53,19 @@ public:
 
 	~Shader() override;
 
+	// 设置shader类型
 	void SetType(ShaderType type);
 
+	// 设置shader宏
 	void SetDefines(const Vector<String>& defines);
 
+	// 编译
 	void Compile();
 
+	// 获取shader宏字符串
 	String GetDefinesString() const;
 
+	// 获取shader类型
 	ShaderType GetType();
 
 	// 获取gfx引用
