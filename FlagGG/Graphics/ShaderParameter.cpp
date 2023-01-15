@@ -29,7 +29,7 @@ bool ShaderParameters::SetValueImpl(StringHash key, const void* buffer, UInt32 b
 		return false;
 
 	auto it = descs.Find(key);
-	if (it == descs.End() || bufferSize != it->second_.size_)
+	if (it == descs.End() || bufferSize > it->second_.size_)
 		return false;
 
 	dataBuffer_->Seek(it->second_.offset_);
