@@ -122,11 +122,6 @@ void TerrainComponent::CreateGeometry()
 	renderContext_.viewMask_ = GetViewMask();
 }
 
-bool TerrainComponent::IsDrawable()
-{
-	return true;
-}
-
 RenderContext* TerrainComponent::GetRenderContext()
 {
 	return &renderContext_;

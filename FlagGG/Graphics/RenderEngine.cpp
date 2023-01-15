@@ -194,7 +194,7 @@ TextureFormat RenderEngine::GetDepthStencilFormat()
 TextureFormat RenderEngine::GetReadableDepthFormat()
 {
 	// return DXGI_FORMAT_R24G8_TYPELESS;
-	return TEXTURE_FORMAT_D24S8;
+	return TEXTURE_FORMAT_D24;
 }
 
 TextureFormat RenderEngine::GetFormat(const String& formatName)

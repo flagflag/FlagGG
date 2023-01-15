@@ -117,11 +117,6 @@ void DynamicMeshComponent::CreateGeometry()
 	hasGeometry_ = true;
 }
 
-bool DynamicMeshComponent::IsDrawable()
-{
-	return hasGeometry_;
-}
-
 RenderContext* DynamicMeshComponent::GetRenderContext()
 {
 	return &renderContext_;

@@ -1,18 +1,45 @@
 #include "Scene/Octree.h"
 #include "Container/Sort.h"
+#include "Scene/DrawableComponent.h"
 
 namespace FlagGG
 {
 
-OctreeNode::OctreeNode(const BoundingBox& box, UInt32 level) :
-	box_(box),
-	level_(level)
+	OctreeNode::OctreeNode(const BoundingBox& box, UInt32 level) :
+		box_(box),
+		level_(level)
+	{
+		const auto& halfSize = box_.HalfSize();
+		cullingBox_ = BoundingBox(box_.min_ - halfSize, box_.max_ + halfSize);
+	}
+
+OctreeNode::~OctreeNode()
 {
+	RemoveAllChildren();
+}
+
+void OctreeNode::Reset(const BoundingBox& box, UInt32 level)
+{
+	RemoveAllChildren();
+
+	box_ = box;
+	level_ = level;
+
 	const auto& halfSize = box_.HalfSize();
 	cullingBox_ = BoundingBox(box_.min_ - halfSize, box_.max_ + halfSize);
 }
 
-OctreeNode::~OctreeNode()
+void OctreeNode::AddElement(DrawableComponent* component)
+{
+	components_.Push(component);
+}
+
+void OctreeNode::RemoveElement(DrawableComponent* component)
+{
+	components_.Remove(component);
+}
+
+void OctreeNode::RemoveAllChildren()
 {
 	for (auto& child : children_)
 	{
@@ -24,20 +51,16 @@ OctreeNode::~OctreeNode()
 	}
 }
 
-void OctreeNode::AddElement(Component* component)
-{
-	components_.Push(component);
-}
-
-void OctreeNode::RemoveElement(Component* component)
-{
-	components_.Remove(component);
-}
-
 Octree::Octree() :
 	maxLevel_(8u),
 	root_(BoundingBox(-1000.0f, 1000.0f), 0)
 {
+}
+
+void Octree::SetSize(const BoundingBox& box, UInt32 numLevels)
+{
+	root_.Reset(box, 0);
+	maxLevel_ = numLevels;
 }
 
 void Octree::Raycast(RayOctreeQuery& query)
@@ -69,7 +92,7 @@ void Octree::RaycastImpl(OctreeNode* node, RayOctreeQuery& query)
 	}
 }
 
-void Octree::InsertElement(Component* component)
+void Octree::InsertElement(DrawableComponent* component)
 {
 	InsertElement(&root_, component);
 }
@@ -99,7 +122,7 @@ bool Octree::CheckInsert(OctreeNode* node, const BoundingBox& box)
 	return false;
 }
 
-void Octree::InsertElement(OctreeNode* node, Component* component)
+void Octree::InsertElement(OctreeNode* node, DrawableComponent* component)
 {
 	const BoundingBox& box = component->GetWorldBoundingBox();
 	bool insert = false;

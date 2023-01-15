@@ -1,3 +1,7 @@
+//
+// Component基类
+//
+
 #pragma once
 
 #include "Export.h"
@@ -10,7 +14,6 @@ namespace FlagGG
 {
 
 class Node;
-class OctreeNode;
 
 class FlagGG_API Component : public Object
 {
@@ -18,41 +21,28 @@ class FlagGG_API Component : public Object
 public:
 	~Component() override;
 
+	// 帧更新
 	virtual void Update(Real timeStep) {}
 
-	virtual bool IsDrawable() { return false; }
+	// 控件树发生dirty
+	virtual void UpdateTreeDirty() {}
 
-	virtual RenderContext* GetRenderContext() { return nullptr; }
-
-	virtual void UpdateTreeDirty();
-
-	virtual void OnUpdateWorldBoundingBox() {}
-
-	virtual void ProcessRayQuery(const RayOctreeQuery& query, PODVector<RayQueryResult>& results);
-
-	const BoundingBox& GetWorldBoundingBox();
-
+	// 设置场景节点
 	void SetNode(Node* node);
 
-	Node* GetNode() const;
-
-	void SetOcNode(OctreeNode* ocnode);
-
-	OctreeNode* GetOcNode();
-
+	// 设置相机可见性Mask
 	virtual void SetViewMask(UInt32 viewMask);
-	UInt32 GetViewMask() const;
+
+	// 获取场景节点
+	Node* GetNode() const { return node_; }
+
+	// 获取相机可见性mask
+	UInt32 GetViewMask() const { return viewMask_; }
 
 protected:
 	WeakPtr<Node> node_;
 
-	BoundingBox worldBoundingBox_;
-
-	bool worldBoundingBoxDirty_{ true };
-
-	OctreeNode* ocnode_{ nullptr };
-
-	UInt32 viewMask_{ 0u };
+	UInt32 viewMask_{};
 };
 
 }

@@ -1,3 +1,7 @@
+//
+// 八叉树
+//
+
 #pragma once
 
 #include "Export.h"
@@ -11,24 +15,36 @@
 namespace FlagGG
 {
 
+class DrawableComponent;
+
+// 八叉树节点
 struct FlagGG_API OctreeNode
 {
-	OctreeNode(const BoundingBox& box, UInt32 level);
+	explicit OctreeNode(const BoundingBox& box, UInt32 level);
 
 	~OctreeNode();
 
-	void AddElement(Component* component);
+	// 重置八叉树节点
+	void Reset(const BoundingBox& box, UInt32 level);
 
-	void RemoveElement(Component* component);
+	// 插入component
+	void AddElement(DrawableComponent* component);
+
+	// 删除component
+	void RemoveElement(DrawableComponent* component);
+
+	// 删除所有children
+	void RemoveAllChildren();
 
 	OctreeNode* children_[8]{ nullptr };
 
 	UInt32 level_;
 	BoundingBox box_;
 	BoundingBox cullingBox_;
-	PODVector<Component*> components_;
+	PODVector<DrawableComponent*> components_;
 };
 
+// 八叉树
 class FlagGG_API Octree : public Component
 {
 public:
@@ -36,17 +52,26 @@ public:
 
 	~Octree() override = default;
 
+	// 设置八叉树范围和层数
+	void SetSize(const BoundingBox& box, UInt32 numLevels);
+
+	// 射线查询
 	void Raycast(RayOctreeQuery& query);
 
-	void InsertElement(Component* component);
+	// 插入八叉树节点
+	void InsertElement(DrawableComponent* component);
 
 protected:
+	// 检查ndoe能否插入
 	bool CheckInsert(OctreeNode* node, const BoundingBox& box);
 
-	void InsertElement(OctreeNode* node, Component* component);
+	// 将component插入node节点下
+	void InsertElement(OctreeNode* node, DrawableComponent* component);
 
+	// 获取or创建节点
 	OctreeNode* GetOrCreateChild(OctreeNode* node, UInt32 index);
 
+	// 射线查询实现
 	void RaycastImpl(OctreeNode* node, RayOctreeQuery& query);
 
 private:

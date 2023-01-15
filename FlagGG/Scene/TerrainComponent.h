@@ -1,7 +1,11 @@
+//
+// 地形控件
+//
+
 #pragma once
 
 #include "Export.h"
-#include "Scene/Component.h"
+#include "Scene/DrawableComponent.h"
 #include "Container/Ptr.h"
 #include "Graphics/Material.h"
 #include "Resource/Image.h"
@@ -11,21 +15,27 @@
 namespace FlagGG
 {
 
-class FlagGG_API TerrainComponent : public Component
+class FlagGG_API TerrainComponent : public DrawableComponent
 {
-	OBJECT_OVERRIDE(TerrainComponent, Component);
+	OBJECT_OVERRIDE(TerrainComponent, DrawableComponent);
 public:
+	// 设置路径大小
 	void SetPathSize(UInt32 pathSize);
 
+	// 设置高度图
 	void SetHeightMap(Image* image);
 
+	// 设置材质
 	void SetMaterial(Material* material);
 
-	bool IsDrawable() override;
+	// 是否可渲染
+	bool IsRenderable() override { return true; }
 
+	// 获取渲染上下文
 	RenderContext* GetRenderContext() override;
 
 protected:
+	// 创建图形数据
 	void CreateGeometry();
 
 private:

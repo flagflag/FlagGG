@@ -8,11 +8,6 @@ void StaticMeshComponent::Update(Real timeStep)
 {
 }
 
-bool StaticMeshComponent::IsDrawable()
-{
-	return true;
-}
-
 RenderContext* StaticMeshComponent::GetRenderContext()
 {
 	return &renderContext_;
@@ -28,7 +23,7 @@ void StaticMeshComponent::ProcessRayQuery(const RayOctreeQuery& query, PODVector
 	switch (query.level_)
 	{
 	case RAY_QUERY_AABB:
-		Component::ProcessRayQuery(query, results);
+		DrawableComponent::ProcessRayQuery(query, results);
 		break;
 
 	case RAY_QUERY_OBB:

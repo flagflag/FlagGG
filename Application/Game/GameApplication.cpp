@@ -249,8 +249,7 @@ void GameApplication::SetupWindow()
 	if (commandParam_.Contains("NoWindow"))
 		return;
 
-	// IntRect rect = SystemHelper::GetDesktopRect();
-	IntRect rect(0, 400, 500, 900);
+	IntRect rect = GetDesktopRect();
 
 	// 创建一张shaderMap
 	shadowMap_ = new Texture2D(context_);

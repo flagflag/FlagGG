@@ -1,6 +1,7 @@
 #include "Scene/Node.h"
 #include "Scene/Component.h"
 #include "Scene/Octree.h"
+#include "Scene/DrawableComponent.h"
 
 namespace FlagGG
 {
@@ -26,9 +27,13 @@ void Node::Update(const NodeUpdateContext& updateContext)
 	{
 		compoment->Update(updateContext.timeStep_);
 
-		if (compoment->IsDrawable() && !IsTranspent())
+		if (!IsTranspent())
 		{
-			updateContext.octree_->InsertElement(compoment);
+			if (auto* drawableComponent = compoment->DynamicCast<DrawableComponent>())
+			{
+				if (drawableComponent->IsRenderable())
+					updateContext.octree_->InsertElement(drawableComponent);
+			}
 		}
 	}
 }
@@ -37,10 +42,13 @@ void Node::Render(PODVector<RenderContext*>& renderContexts)
 {
 	for (const auto& compoment : components_)
 	{
-		if (compoment->IsDrawable())
+		if (auto* drawableComponent = compoment->DynamicCast<DrawableComponent>())
 		{
-			RenderContext* renderContext = compoment->GetRenderContext();
-			renderContexts.Push(renderContext);
+			if (drawableComponent->IsRenderable())
+			{
+				RenderContext* renderContext = drawableComponent->GetRenderContext();
+				renderContexts.Push(renderContext);
+			}
 		}
 	}
 }
