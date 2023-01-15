@@ -107,6 +107,6 @@ struct PixelInput
         color = float4(color.xyz * (1.0 - final), 1.0);
     #endif
 
-        return color;
+        return LinearToGammaSpace(color);
     }
 #endif
