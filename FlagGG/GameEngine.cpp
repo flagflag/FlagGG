@@ -47,13 +47,13 @@ void GameEngine::RunFrame()
 	Real timeStep = (Real)deltaTime / 1000.0f;
 	elapsedTime_ += timeStep;
 
-	context_->SendEvent<Frame::FRAME_BEGIN_HANDLER>(Frame::FRAME_BEGIN, timeStep);
+	context_->SendEvent<Frame::FRAME_BEGIN_HANDLER>(timeStep);
 
 #ifdef _WIN32
 	WindowDevice::Update();
 #endif
 
-	context_->SendEvent<Frame::LOGIC_UPDATE_HANDLER>(Frame::LOGIC_UPDATE, timeStep);
+	context_->SendEvent<Frame::LOGIC_UPDATE_HANDLER>(timeStep);
 
 #ifdef _WIN32
 	RenderEngine::Instance()->GetShaderParameters().SetValue(SP_DELTA_TIME, timeStep);
@@ -67,15 +67,13 @@ void GameEngine::RunFrame()
 	WindowDevice::Render();
 #endif
 
-	context_->SendEvent<Frame::FRAME_END_HANDLER>(Frame::FRAME_END, timeStep);
+	context_->SendEvent<Frame::FRAME_END_HANDLER>(timeStep);
 
 	Real sleepTime = 1000.0f / frameRate_ - timer_.GetMilliSeconds(false);
 	if (sleepTime > 0.0f)
 	{
 		Sleep(sleepTime);
 	}
-
-	context_->SendEvent<Frame::FRAME_END_HANDLER>(Frame::FRAME_END, timeStep);
 }
 
 void GameEngine::Stop()

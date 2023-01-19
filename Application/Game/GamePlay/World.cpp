@@ -42,7 +42,7 @@ Unit* World::CreateUnit(Int64 unitId)
 	activeUnits_.Insert(MakePair(unitId, unit));
 	scene_->AddChild(unit);
 
-	context_->SendEvent<GameEvent::CREATE_UNIT_HANDLER>(GameEvent::CREATE_UNIT, unit);
+	context_->SendEvent<GameEvent::CREATE_UNIT_HANDLER>(unit);
 
 	return unit;
 }
@@ -60,7 +60,7 @@ void World::DestroyUnit(Int64 unitId)
 	freeUnits_.Push(currentUnit);
 	scene_->RemoveChild(currentUnit);
 
-	context_->SendEvent<GameEvent::DESTROY_UNIT_HANDLER>(GameEvent::DESTROY_UNIT, currentUnit);
+	context_->SendEvent<GameEvent::DESTROY_UNIT_HANDLER>(currentUnit);
 }
 
 Unit* World::GetUnit(Int64 unitId)

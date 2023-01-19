@@ -33,7 +33,7 @@ void UDPNetwork::ChannelClosed(IOFrame::Context::IOContextPtr context)
 			auto* forwarder = context_->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
 			forwarder->Forward([&]
 			{
-				context_->SendEvent<GameEvent::START_GAME_HANDLER>(GameEvent::STOP_GAME, "...");
+				context_->SendEvent<GameEvent::START_GAME_HANDLER>("...");
 			});
 
 			break;
@@ -106,7 +106,7 @@ void UDPNetwork::HandleRequestLogin(IOFrame::Context::IOContextPtr context, cons
 	auto* forwarder = context_->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
 	forwarder->Forward([&, userId]
 	{
-		context_->SendEvent<GameEvent::USER_LOGIN_HANDLER>(GameEvent::USER_LOGIN, userId);
+		context_->SendEvent<GameEvent::USER_LOGIN_HANDLER>(userId);
 	});
 }
 
@@ -119,7 +119,7 @@ void UDPNetwork::HandleRequestStartGame(IOFrame::Context::IOContextPtr context, 
 	auto* forwarder = context_->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
 	forwarder->Forward([&, gameName]
 	{
-		context_->SendEvent<GameEvent::START_GAME_HANDLER>(GameEvent::START_GAME, gameName.c_str());
+		context_->SendEvent<GameEvent::START_GAME_HANDLER>(gameName.c_str());
 	});
 }
 
@@ -134,7 +134,7 @@ void UDPNetwork::HandleRequestStartMove(IOFrame::Context::IOContextPtr context, 
 	auto* forwarder = context_->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
 	forwarder->Forward([&, userId]
 	{
-		context_->SendEvent<GameEvent::START_MOVE_HANDLER>(GameEvent::START_MOVE, userId, direction);
+		context_->SendEvent<GameEvent::START_MOVE_HANDLER>(userId, direction);
 	});
 }
 
@@ -148,6 +148,6 @@ void UDPNetwork::HandleRequestStopMove(IOFrame::Context::IOContextPtr context, c
 	auto* forwarder = context_->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
 	forwarder->Forward([&, userId]
 	{
-		context_->SendEvent<GameEvent::STOP_MOVE_HANDLER>(GameEvent::STOP_MOVE, userId);
+		context_->SendEvent<GameEvent::STOP_MOVE_HANDLER>(userId);
 	});
 }

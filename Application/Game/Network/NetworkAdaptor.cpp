@@ -69,7 +69,7 @@ void Network::ChannelOpend(IOFrame::Context::IOContextPtr context)
 {
 	mainThreadFunc_.Push([=]()
 	{
-		context_->SendEvent<NetworkEvent::OPEND_HANDLER>(NetworkEvent::OPEND, type_, context);
+		context_->SendEvent<NetworkEvent::OPEND_HANDLER>(type_, context);
 	});
 }
 
@@ -77,7 +77,7 @@ void Network::ChannelClosed(IOFrame::Context::IOContextPtr context)
 {
 	mainThreadFunc_.Push([=]()
 	{
-		context_->SendEvent<NetworkEvent::CLOSED_HANDLER>(NetworkEvent::CLOSED, type_, context);
+		context_->SendEvent<NetworkEvent::CLOSED_HANDLER>(type_, context);
 	});
 }
 
@@ -85,7 +85,7 @@ void Network::MessageRecived(IOFrame::Context::IOContextPtr context, IOFrame::Bu
 {
 	mainThreadFunc_.Push([=]()
 	{
-		context_->SendEvent<NetworkEvent::MESSAGE_RECIVED_HANDLER>(NetworkEvent::MESSAGE_RECIVED, type_, context, buffer);
+		context_->SendEvent<NetworkEvent::MESSAGE_RECIVED_HANDLER>(type_, context, buffer);
 	});
 }
 
@@ -95,7 +95,7 @@ void Network::ErrorCatch(IOFrame::Context::IOContextPtr context, const ErrorCode
 	auto msg = errorCode.Message();
 	mainThreadFunc_.Push([=]()
 	{
-		context_->SendEvent<NetworkEvent::CATCH_ERROR_HANDLER>(NetworkEvent::CATCH_ERROR, type_, context, value, msg);
+		context_->SendEvent<NetworkEvent::CATCH_ERROR_HANDLER>(type_, context, value, msg);
 	});
 }
 

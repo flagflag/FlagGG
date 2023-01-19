@@ -37,27 +37,27 @@ bool Input::IsMouseShow() const
 
 void Input::OnKeyDown(KeyState* keyState, UInt32 keyCode)
 {
-	context_->SendEvent<InputEvent::KEY_DOWN_HANDLER>(InputEvent::KEY_DOWN, keyState, keyCode);
+	context_->SendEvent<InputEvent::KEY_DOWN_HANDLER>(keyState, keyCode);
 }
 
 void Input::OnKeyUp(KeyState* keyState, UInt32 keyCode)
 {
-	context_->SendEvent<InputEvent::KEY_UP_HANDLER>(InputEvent::KEY_UP, keyState, keyCode);
+	context_->SendEvent<InputEvent::KEY_UP_HANDLER>(keyState, keyCode);
 }
 
 void Input::OnMouseDown(KeyState* keyState, MouseKey mouseKey)
 {
-	context_->SendEvent<InputEvent::MOUSE_DOWN_HANDLER>(InputEvent::MOUSE_DOWN, keyState, mouseKey);
+	context_->SendEvent<InputEvent::MOUSE_DOWN_HANDLER>(keyState, mouseKey);
 }
 
 void Input::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
 {
-	context_->SendEvent<InputEvent::MOUSE_UP_HANDLER>(InputEvent::MOUSE_UP, keyState, mouseKey);
+	context_->SendEvent<InputEvent::MOUSE_UP_HANDLER>(keyState, mouseKey);
 }
 
 void Input::OnMouseMove(KeyState* keyState, const Vector2& delta)
 {
-	context_->SendEvent<InputEvent::MOUSE_MOVE_HANDLER>(InputEvent::MOUSE_MOVE, keyState, delta);
+	context_->SendEvent<InputEvent::MOUSE_MOVE_HANDLER>(keyState, delta);
 }
 
 }

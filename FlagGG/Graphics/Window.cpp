@@ -297,7 +297,7 @@ void Window::WinProc(UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_CLOSE:
-		context_->SendEvent<Application::WINDOW_CLOSE_HANDLER>(Application::WINDOW_CLOSE, window_);
+		context_->SendEvent<Application::WINDOW_CLOSE_HANDLER>(window_);
 
 		break;
 	}

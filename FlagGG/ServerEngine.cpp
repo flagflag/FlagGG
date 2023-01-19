@@ -36,17 +36,15 @@ void ServerEngine::RunFrame()
 	Real timeStep = (Real)deltaTime / 1000.0f;
 	elapsedTime_ += timeStep;
 
-	context_->SendEvent<Frame::FRAME_BEGIN_HANDLER>(Frame::FRAME_BEGIN, timeStep);
-	context_->SendEvent<Frame::LOGIC_UPDATE_HANDLER>(Frame::LOGIC_UPDATE, timeStep);
-	context_->SendEvent<Frame::FRAME_END_HANDLER>(Frame::FRAME_END, timeStep);
+	context_->SendEvent<Frame::FRAME_BEGIN_HANDLER>(timeStep);
+	context_->SendEvent<Frame::LOGIC_UPDATE_HANDLER>(timeStep);
+	context_->SendEvent<Frame::FRAME_END_HANDLER>(timeStep);
 
 	Real sleepTime = 1000.0f / frameRate_ - timer_.GetMilliSeconds(false);
 	if (sleepTime > 0.0f)
 	{
 		Sleep(sleepTime);
 	}
-
-	context_->SendEvent<Frame::FRAME_END_HANDLER>(Frame::FRAME_END, timeStep);
 }
 
 void ServerEngine::Stop()

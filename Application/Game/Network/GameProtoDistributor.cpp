@@ -11,7 +11,7 @@ GameProtoDistributor::GameProtoDistributor(Context* context) :
 	{ \
 		ProtoType proto; \
 		proto.ParseFromString(header.message_body()); \
-		context_->SendEvent<GameProtoEvent::MESSAGE_RECIVED_HANDLER>(GameProtoEvent::MESSAGE_RECIVED, header.message_type(), &proto); \
+		context_->SendEvent<GameProtoEvent::MESSAGE_RECIVED_HANDLER>(header.message_type(), &proto); \
 	} \
 	break
 

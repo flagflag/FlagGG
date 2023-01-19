@@ -104,16 +104,16 @@ public:
 		evnets_[eventId].Push(wrapper);
 	}
 
-	template < class FunctionType, class ... Args >
-	void SendEvent(UInt32 eventId, Args&& ... args)
+	template < class HandlerType, class ... Args >
+	void SendEvent(Args&& ... args)
 	{
-		auto it = evnets_.Find(eventId);
+		auto it = evnets_.Find(HandlerType::GetID());
 		if (it != evnets_.End())
 		{
 			Vector<SharedPtr<EventWrapper>>& wrappers = it->second_;
 			for (auto itWrapper = wrappers.Begin(); itWrapper != wrappers.End(); ++itWrapper)
 			{
-				(*static_cast<FunctionType*>((*itWrapper)->GetEvent()))(std::forward<Args>(args)...);
+				(*static_cast<HandlerType::FunctionType*>((*itWrapper)->GetEvent()))(std::forward<Args>(args)...);
 			}
 		}
 	}
