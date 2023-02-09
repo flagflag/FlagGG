@@ -63,7 +63,7 @@ void Octree::SetSize(const BoundingBox& box, UInt32 numLevels)
 	maxLevel_ = numLevels;
 }
 
-void Octree::Raycast(RayOctreeQuery& query)
+void Octree::Raycast(RayOctreeQuery& query) const
 {
 	query.results_.Clear();
 	RaycastImpl(&root_, query);
@@ -74,7 +74,7 @@ void Octree::Raycast(RayOctreeQuery& query)
 	});
 }
 
-void Octree::RaycastImpl(OctreeNode* node, RayOctreeQuery& query)
+void Octree::RaycastImpl(const OctreeNode* node, RayOctreeQuery& query) const
 {
 	Real ocnodeDist = query.ray_.HitDistance(node->cullingBox_);
 	if (ocnodeDist >= query.maxDistance_)
@@ -89,6 +89,40 @@ void Octree::RaycastImpl(OctreeNode* node, RayOctreeQuery& query)
 	{
 		if (child)
 			RaycastImpl(child, query);
+	}
+}
+
+void Octree::GetElements(OctreeQuery& query) const
+{
+	query.result_.Clear();
+	GetElementsImpl(&root_, query, false);
+}
+
+void Octree::GetElementsImpl(const OctreeNode* node, OctreeQuery& query, bool inside) const
+{
+	if (node != &root_)
+	{
+		Intersection res = query.TestOctant(node->cullingBox_, inside);
+		if (res == INSIDE)
+			inside = true;
+		else if (res == OUTSIDE)
+		{
+			// AABB被当前node范围包围
+			return;
+		}
+	}
+
+	if (node->components_.Size())
+	{
+		auto** start = const_cast<DrawableComponent**>(&node->components_[0]);
+		DrawableComponent** end = start + node->components_.Size();
+		query.TestDrawables(start, end, inside);
+	}
+
+	for (auto child : node->children_)
+	{
+		if (child)
+			GetElementsImpl(child, query, inside);
 	}
 }
 

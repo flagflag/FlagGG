@@ -1,4 +1,5 @@
 #include "Graphics/GraphicsDef.h"
+#include "Math/Math.h"
 
 VertexElement::VertexElement() :
 	vertexElementType_(VE_INT),
@@ -79,3 +80,12 @@ const FlagGG::StringHash SP_LIGHT_DIR("lightDir");
 const FlagGG::StringHash SP_LIGHT_VIEW_MATRIX("lightViewMatrix");
 const FlagGG::StringHash SP_LIGHT_PROJVIEW_MATRIX("lightProjviewMatrix");
 
+const const UInt32 DRAWABLE_UNDEFINED = 0x0;
+const const UInt32 DRAWABLE_GEOMETRY = 0x1;
+const const UInt32 DRAWABLE_LIGHT = 0x2;
+const const UInt32 DRAWABLE_PROBE = 0x4;
+const const UInt32 DRAWABLE_ANY = 0xff;
+const const UInt32 DEFAULT_VIEWMASK = FlagGG::F_MAX_UNSIGNED;
+const const UInt32 DEFAULT_LIGHTMASK = FlagGG::F_MAX_UNSIGNED;
+const const UInt32 DEFAULT_SHADOWMASK = FlagGG::F_MAX_UNSIGNED;
+const const UInt32 DEFAULT_PROBEMASK = FlagGG::F_MAX_UNSIGNED;

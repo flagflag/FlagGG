@@ -159,10 +159,19 @@ static RenderPassType ToRenderPassType(const String& name)
 	return RENDER_PASS_TYPE_SHADOW;
 }
 
+RenderPassInfo::~RenderPassInfo()
+{
+
+}
+
 Material::Material(Context* context) :
 	Resource(context),
 	textures_{}
 { }
+
+Material::~Material()
+{
+}
 
 void Material::SetTexture(Texture* texture)
 {
@@ -184,7 +193,7 @@ void Material::SetPixelShader(Shader* pixelShader)
 	psShader_ = pixelShader;
 }
 
-void Material::SetRenderPass(RenderPassType type, const RenderPass& renderPass)
+void Material::SetRenderPass(RenderPassType type, const RenderPassInfo& renderPass)
 {
 	renderPass_[type] = renderPass;
 }
@@ -224,7 +233,7 @@ SharedPtr<Shader> Material::GetPixelShader()
 	return psShader_;
 }
 
-HashMap<UInt32, RenderPass>& Material::GetRenderPass()
+HashMap<UInt32, RenderPassInfo>& Material::GetRenderPass()
 {
 	return renderPass_;
 }
@@ -371,7 +380,7 @@ bool Material::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 			{
 				for (UInt32 i = 0; i < pass.Size(); ++i)
 				{
-					RenderPass renderPass;
+					RenderPassInfo renderPass;
 					vsShaderCode = cache->GetResource<ShaderCode>(pass[i]["vsshader"]["path"].GetString());
 					if (vsShaderCode)
 					{

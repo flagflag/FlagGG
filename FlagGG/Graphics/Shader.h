@@ -27,6 +27,8 @@ class FlagGG_API ShaderCode : public Resource
 public:
 	ShaderCode(Context* context);
 
+	~ShaderCode() override;
+
 	// 传入shader类型、shader宏，返回shader变种
 	Shader* GetShader(ShaderType type, const Vector<String>& defines);
 

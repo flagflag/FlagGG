@@ -65,12 +65,12 @@ void Scene::Update(Node* node, const NodeUpdateContext& updateContext)
 	}
 }
 
-void Scene::Render(PODVector<RenderContext*>& renderContexts)
+void Scene::Render(PODVector<const RenderContext*>& renderContexts)
 {
 	Render(this, renderContexts);
 }
 
-void Scene::Render(Node* node, PODVector<RenderContext*>& renderContexts)
+void Scene::Render(Node* node, PODVector<const RenderContext*>& renderContexts)
 {
 	auto& children = node->GetChildren();
 			

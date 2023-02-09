@@ -44,8 +44,8 @@ namespace InputEvent
 
 namespace Frame
 {
-	DEFINE_EVENT(FRAME_BEGIN,	void(float));
-	DEFINE_EVENT(FRAME_END,		void(float));
+	DEFINE_EVENT(BEGIN_FRAME,	void(float));
+	DEFINE_EVENT(END_FRAME,		void(float));
 	DEFINE_EVENT(LOGIC_UPDATE,	void(float));
 	DEFINE_EVENT(RENDER_UPDATE, void(float));
 }

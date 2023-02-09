@@ -147,7 +147,7 @@ Vector3 Quaternion::operator *(const Vector3& rhs) const
 void Quaternion::FromAngleAxis(Real angle, const Vector3& axis)
 {
 	Vector3 normAxis = axis.Normalized();
-	angle *= DEGTORAD_2;
+	angle *= F_DEGTORAD_2;
 	Real sinAngle = sinf(angle);
 	Real cosAngle = cosf(angle);
 
@@ -160,9 +160,9 @@ void Quaternion::FromAngleAxis(Real angle, const Vector3& axis)
 void Quaternion::FromEulerAngles(Real x, Real y, Real z)
 {
 	// Order of rotations: Z first, then X, then Y (mimics typical FPS camera with gimbal lock at top/bottom)
-	x *= DEGTORAD_2;
-	y *= DEGTORAD_2;
-	z *= DEGTORAD_2;
+	x *= F_DEGTORAD_2;
+	y *= F_DEGTORAD_2;
+	z *= F_DEGTORAD_2;
 	Real sinX = sinf(x);
 	Real cosX = cosf(x);
 	Real sinY = sinf(y);
@@ -354,7 +354,7 @@ Vector3 Quaternion::EulerAngles() const
 		return Vector3(
 			-90.0f,
 			0.0f,
-			-atan2f(2.0f * (x_ * z_ - w_ * y_), 1.0f - 2.0f * (y_ * y_ + z_ * z_)) * RADTODEG
+			-atan2f(2.0f * (x_ * z_ - w_ * y_), 1.0f - 2.0f * (y_ * y_ + z_ * z_)) * F_RADTODEG
 			);
 	}
 	else if (check > 0.995f)
@@ -362,15 +362,15 @@ Vector3 Quaternion::EulerAngles() const
 		return Vector3(
 			90.0f,
 			0.0f,
-			atan2f(2.0f * (x_ * z_ - w_ * y_), 1.0f - 2.0f * (y_ * y_ + z_ * z_)) * RADTODEG
+			atan2f(2.0f * (x_ * z_ - w_ * y_), 1.0f - 2.0f * (y_ * y_ + z_ * z_)) * F_RADTODEG
 			);
 	}
 	else
 	{
 		return Vector3(
-			asinf(check) * RADTODEG,
-			atan2f(2.0f * (x_ * z_ + w_ * y_), 1.0f - 2.0f * (x_ * x_ + y_ * y_)) * RADTODEG,
-			atan2f(2.0f * (x_ * y_ + w_ * z_), 1.0f - 2.0f * (x_ * x_ + z_ * z_)) * RADTODEG
+			asinf(check) * F_RADTODEG,
+			atan2f(2.0f * (x_ * z_ + w_ * y_), 1.0f - 2.0f * (x_ * x_ + y_ * y_)) * F_RADTODEG,
+			atan2f(2.0f * (x_ * y_ + w_ * z_), 1.0f - 2.0f * (x_ * x_ + z_ * z_)) * F_RADTODEG
 			);
 	}
 }

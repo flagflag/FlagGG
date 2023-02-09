@@ -19,9 +19,9 @@ const UInt32 F_MIN_UNSIGNED = 0x00000000;
 const UInt32 F_MAX_UNSIGNED = 0xffffffff;
 const Real F_INFINITY = (Real)HUGE_VAL;
 const Real F_MIN_NEARCLIP = 0.01f;
-const Real DEGTORAD = PI / 180.0f;
-const Real DEGTORAD_2 = PI / 360.0f;
-const Real RADTODEG = 1.0f / DEGTORAD;
+const Real F_DEGTORAD = PI / 180.0f;
+const Real F_DEGTORAD_2 = PI / 360.0f;
+const Real F_RADTODEG = 1.0f / F_DEGTORAD;
 
 bool IsNaN(Real number)
 {

@@ -36,7 +36,7 @@ public:
 
 	virtual void Update(const NodeUpdateContext& updateContext);
 
-	virtual void Render(PODVector<RenderContext*>& renderContexts);
+	virtual void Render(PODVector<const RenderContext*>& renderContexts);
 
 	void SetAttribute(const String& key, FVariant&& value);
 

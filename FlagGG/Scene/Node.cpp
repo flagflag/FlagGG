@@ -38,7 +38,7 @@ void Node::Update(const NodeUpdateContext& updateContext)
 	}
 }
 
-void Node::Render(PODVector<RenderContext*>& renderContexts)
+void Node::Render(PODVector<const RenderContext*>& renderContexts)
 {
 	for (const auto& compoment : components_)
 	{
@@ -46,8 +46,11 @@ void Node::Render(PODVector<RenderContext*>& renderContexts)
 		{
 			if (drawableComponent->IsRenderable())
 			{
-				RenderContext* renderContext = drawableComponent->GetRenderContext();
-				renderContexts.Push(renderContext);
+				const Vector<RenderContext>& _renderContexts = drawableComponent->GetRenderContext();
+				for (auto& renderContext : _renderContexts)
+				{
+					renderContexts.Push(&renderContext);
+				}
 			}
 		}
 	}

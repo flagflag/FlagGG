@@ -6,9 +6,9 @@
 
 #include "Export.h"
 #include "Core/Object.h"
-#include "Graphics/RenderContext.h"
 #include "Math/BoundingBox.h"
 #include "Scene/OctreeQuery.h"
+#include "Container/Ptr.h"
 
 namespace FlagGG
 {

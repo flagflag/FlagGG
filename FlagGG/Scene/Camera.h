@@ -1,3 +1,7 @@
+//
+// 相机
+//
+
 #pragma once
 
 #include "Export.h"
@@ -7,7 +11,8 @@
 #include "Math/Quaternion.h"
 #include "Math/Ray.h"
 #include "Math/Plane.h"
-#include "Scene/Component.h"
+#include "Math/Frustum.h"
+#include "Scene/DrawableComponent.h"
 
 namespace FlagGG
 {
@@ -18,9 +23,9 @@ enum CameraType
 	AIRCRAFT,
 };
 
-class FlagGG_API Camera : public Component
+class FlagGG_API Camera : public DrawableComponent
 {
-	OBJECT_OVERRIDE(Camera, Component);
+	OBJECT_OVERRIDE(Camera, DrawableComponent);
 public:
 	Camera();
 
@@ -34,6 +39,11 @@ public:
 
 	Matrix3x4 GetViewMatrix();
 	Matrix4 GetProjectionMatrix();
+
+	// 获取视椎体
+	const Frustum& GetFrustum() const;
+
+	Matrix3x4 GetEffectiveWorldTransform() const;
 
 	CameraType GetCameraType() const;
 	void SetCameraType(CameraType cameraType);
@@ -83,8 +93,19 @@ public:
 protected:
 	void Correct(Vector3& right, Vector3& up, Vector3& look);
 
+	void UpdateProjection() const;
+
 private:
 	CameraType cameraType_{ LAND_OBJECT };
+
+	mutable Frustum frustum_;
+	mutable bool frustumDirty_{};
+
+	mutable Matrix4 projection_;
+	mutable bool projectionDirty_{};
+
+	mutable Matrix3x4 view_;
+	mutable bool viewDirty_{};
 
 	Real farClip_{ 1.0f };
 	Real nearClip_{ 100.0f };

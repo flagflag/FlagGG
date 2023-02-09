@@ -1,6 +1,7 @@
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Texture.h"
 #include "Graphics/Texture2D.h"
+#include "Graphics/RenderView.h"
 #include "Scene/Node.h"
 #include "Scene/Component.h"
 #include "Scene/Light.h"
@@ -32,19 +33,9 @@ RenderEngine::RenderEngine(Context* context) :
 	shaderParameters_->AddParametersDefineImpl(SP_SKIN_MATRICES, sizeof(Matrix3x4) * GetMaxBonesNum());
 }
 
-void RenderEngine::CreateShadowRasterizerState()
-{
-	shadowRasterizerState_.depthWrite_ = true;
-	shadowRasterizerState_.scissorTest_ = false;
-	shadowRasterizerState_.fillMode_ = FILL_SOLID;
-	shadowRasterizerState_.cullMode_ = CULL_FRONT;
-}
-
 void RenderEngine::Initialize()
 {
 	gfxDevice_ = GfxDevice::CreateDevice();
-
-	CreateShadowRasterizerState();
 }
 
 void RenderEngine::Uninitialize()
@@ -276,7 +267,7 @@ void RenderEngine::SetShaderParameter(Camera* camera, const RenderContext* rende
 	}
 
 	gfxDevice_->SetEngineShaderParameters(shaderParameters_);
-	gfxDevice_->SetMaterialShaderParameters(renderContext->shaderParameters_);
+	gfxDevice_->SetMaterialShaderParameters(renderContext->material_->GetShaderParameters());
 }
 
 void RenderEngine::SetVertexBuffers(const Vector<SharedPtr<VertexBuffer>>& vertexBuffers)
@@ -313,6 +304,18 @@ void RenderEngine::SetTextures(const Vector<SharedPtr<Texture>>& textures)
 		if (texture)
 		{
 			gfxDevice_->SetTexture(i, texture->GetGfxTextureRef());
+		}
+	}
+}
+
+void RenderEngine::SetMaterialTextures(Material* material)
+{
+	for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
+	{
+		auto texture = material->GetTexture(i) ? material->GetTexture(i) : defaultTextures_[i];
+		if (texture)
+		{
+			gfxDevice_->SetTexture(i, texture->GetGfxTextureRef());
 			gfxDevice_->SetSampler(i, texture->GetGfxSamplerRef());
 		}
 	}
@@ -346,114 +349,22 @@ void RenderEngine::DrawCall(UInt32 vertexStart, UInt32 vertexCount)
 	gfxDevice_->Draw(vertexStart, vertexCount);
 }
 
-void RenderEngine::SetRenderTarget(Viewport* viewport)
+void RenderEngine::RenderUpdate(Viewport* viewport)
 {
-	gfxDevice_->SetRenderTarget(viewport->GetRenderTarget());
-	gfxDevice_->SetDepthStencil(viewport->GetDepthStencil());
-}
+	RenderView* renderView = viewport->GetOrCreateRenderView();
+	CRY_ASSERT(renderView);
 
-bool RenderEngine::SetShadowMap()
-{
-	if (defaultTextures_[TEXTURE_CLASS_SHADOWMAP])
-	{
-		gfxDevice_->SetRenderTarget(defaultTextures_[TEXTURE_CLASS_SHADOWMAP]->GetRenderSurface());
-		gfxDevice_->SetDepthStencil(nullptr);
+	renderView->Define(nullptr, viewport);
 
-		gfxDevice_->Clear(CLEAR_COLOR, Color::WHITE);
-
-		return true;
-	}
-
-	return false;
+	renderView->RenderUpdate();
 }
 
 void RenderEngine::Render(Viewport* viewport)
 {
-	if (!viewport) return;
+	RenderView* renderView = viewport->GetOrCreateRenderView();
+	CRY_ASSERT(renderView);
 
-	Camera* camera = viewport->GetCamera();
-	if (!camera)
-		return;
-
-	Scene* scene = viewport->GetScene();
-	if (!scene)
-		return;
-	PODVector<RenderContext*> renderContexts;
-	scene->Render(renderContexts);
-
-	viewport->SetViewport();
-
-	float aspect = (float)viewport->GetWidth() / viewport->GetHeight();
-
-	PODVector<Light*> lights;
-	scene->GetLights(lights);
-
-	// 反射相机不处理阴影
-	if (!camera->GetUseReflection() && SetShadowMap())
-	{
-		for (auto light : lights)
-		{
-			for (const auto& renderContext : renderContexts)
-			{
-				if ((renderContext->viewMask_ & camera->GetViewMask()) != renderContext->viewMask_)
-					continue;
-				if (!renderContext->renderPass_)
-					continue;
-				auto it = renderContext->renderPass_->Find(RENDER_PASS_TYPE_SHADOW);
-				if (it != renderContext->renderPass_->End())
-				{
-					light->SetAspect(aspect);
-					SetRasterizerState(shadowRasterizerState_);
-					SetShaderParameter(light, renderContext);
-					SetShaders(it->second_.vertexShader_, it->second_.pixelShader_);
-					for (const auto& geometry : renderContext->geometries_)
-					{
-						SetVertexBuffers(geometry->GetVertexBuffers());
-						SetIndexBuffer(geometry->GetIndexBuffer());
-						SetPrimitiveType(geometry->GetPrimitiveType());
-						DrawCallIndexed(geometry->GetIndexStart(), geometry->GetIndexCount());
-					}
-				}
-			}
-		}
-	}
-
-	SetRenderTarget(viewport);
-	gfxDevice_->Clear(CLEAR_COLOR | CLEAR_DEPTH | CLEAR_STENCIL);
-
-	for (const auto& renderContext : renderContexts)
-	{
-		if ((renderContext->viewMask_ & camera->GetViewMask()) != renderContext->viewMask_)
-			continue;
-
-		if (lights.Size() > 0
-			// 要不要传灯光的参数，与是否加了阴影通道没关系
-			/* &&
-			renderContext->renderPass_ &&
-			renderContext->renderPass_->Contains(RENDER_PASS_TYPE_SHADOW)*/)
-		{
-			Node* lightNode = lights[0]->GetNode();
-			lights[0]->SetAspect(aspect);
-			shaderParameters_->SetValue(SP_LIGHT_POS, lightNode->GetWorldPosition());
-			shaderParameters_->SetValue(SP_LIGHT_DIR, lightNode->GetWorldRotation() * Vector3::FORWARD);
-			shaderParameters_->SetValue(SP_LIGHT_VIEW_MATRIX, lights[0]->GetViewMatrix());
-			shaderParameters_->SetValue(SP_LIGHT_PROJVIEW_MATRIX, lights[0]->GetProjectionMatrix() * lights[0]->GetViewMatrix());
-		}
-
-		camera->SetAspect(aspect);
-		SetRasterizerState(renderContext->rasterizerState_);
-		SetShaderParameter(camera, renderContext);
-		SetShaders(renderContext->vertexShader_, renderContext->pixelShader_);
-		SetTextures(renderContext->textures_);
-
-		for (const auto& geometry : renderContext->geometries_)
-		{
-			SetVertexBuffers(geometry->GetVertexBuffers());
-			SetIndexBuffer(geometry->GetIndexBuffer());
-			SetPrimitiveType(geometry->GetPrimitiveType());
-			DrawCallIndexed(geometry->GetIndexStart(), geometry->GetIndexCount());
-		}
-	}
+	renderView->Render();
 }
 
 void RenderEngine::RenderBatch(Viewport* viewport)
@@ -475,9 +386,9 @@ void RenderEngine::RenderBatch(Viewport* viewport)
 	if (!viewport)
 		return;
 
-	viewport->SetViewport();
-
-	SetRenderTarget(viewport);
+	gfxDevice_->SetViewport(viewport->GetSize());
+	gfxDevice_->SetRenderTarget(viewport->GetRenderTarget());
+	gfxDevice_->SetDepthStencil(viewport->GetDepthStencil());
 
 	if (!vertexBuffer)
 	{

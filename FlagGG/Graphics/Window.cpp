@@ -80,6 +80,14 @@ void WindowDevice::Update()
 	defferedMsgs_.Clear();
 }
 
+void WindowDevice::RenderUpdate()
+{
+	for (auto& window : recivers_)
+	{
+		window->RenderUpdate();
+	}
+}
+
 void WindowDevice::Render()
 {
 	for (auto& window : recivers_)
@@ -219,6 +227,11 @@ void Window::Show()
 void Window::Hide()
 {
 	::ShowWindow((HWND)window_, SW_HIDE);
+}
+
+void Window::RenderUpdate()
+{
+	RenderEngine::Instance()->RenderUpdate(viewport_);
 }
 
 void Window::Render()

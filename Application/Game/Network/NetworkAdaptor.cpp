@@ -23,7 +23,7 @@ Network::Network(Context* context, NetworkType type) :
 		break;
 	}
 
-	context_->RegisterEvent(EVENT_HANDLER(Frame::FRAME_BEGIN, Network::HandleFrameBegin, this));
+	context_->RegisterEvent(EVENT_HANDLER(Frame::BEGIN_FRAME, Network::HandleFrameBegin, this));
 }
 
 Network::~Network()

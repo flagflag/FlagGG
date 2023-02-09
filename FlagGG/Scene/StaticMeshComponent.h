@@ -23,8 +23,8 @@ public:
 	// 是否可渲染
 	bool IsRenderable() override { return true; }
 
-	// 获取渲染上下文
-	RenderContext* GetRenderContext() override;
+	// 获取DrawableFlags
+	UInt32 GetDrawableFlags() const override { return DRAWABLE_GEOMETRY; }
 
 	// 更新包围盒
 	void OnUpdateWorldBoundingBox() override;
@@ -57,8 +57,6 @@ protected:
 	SharedPtr<Model> model_;
 
 	SharedPtr<Material> material_;
-
-	RenderContext renderContext_;
 
 	BoundingBox boundingBox_;
 };

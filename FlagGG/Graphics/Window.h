@@ -39,6 +39,8 @@ public:
 
 	static void Update();
 
+	static void RenderUpdate();
+
 	static void Render();
 
 	static void RegisterWinMessage(Window* wv);
@@ -74,6 +76,8 @@ public:
 	void Show();
 
 	void Hide();
+
+	void RenderUpdate();
 
 	void Render();
 

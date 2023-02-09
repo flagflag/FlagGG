@@ -6,6 +6,7 @@
 #include "Graphics/RenderContext.h"
 #include "Graphics/ShaderParameter.h"
 #include "Graphics/Batch.h"
+#include "Graphics/Texture.h"
 #include "Scene/Camera.h"
 #include "Resource/Image.h"
 #include "Container/HashMap.h"
@@ -80,6 +81,20 @@ public:
 
 	void SetDefaultTextures(TextureClass index, Texture* texture);
 
+	Texture* GetDefaultTexture(TextureClass index) const { return defaultTextures_[index]; }
+
+	void RenderUpdate(Viewport* viewport);
+
+	void Render(Viewport* viewport);
+
+	void RenderBatch(Viewport* viewport);
+
+
+	/**********************************************************/
+	/*                    引擎层渲染指令                      */
+	/**********************************************************/
+
+	// 设置光栅状态
 	void SetRasterizerState(RasterizerState rasterizerState);
 
 	void SetShaderParameter(Camera* camera, const RenderContext* renderContext);
@@ -92,25 +107,15 @@ public:
 
 	void SetTextures(const Vector<SharedPtr<Texture>>& textures);
 
+	void SetMaterialTextures(Material* material);
+
 	void SetPrimitiveType(PrimitiveType primitiveType);
-
-	void SetRenderTarget(Viewport* viewport);
-
-	bool SetShadowMap();
 
 	void DrawCallIndexed(UInt32 indexStart, UInt32 indexCount);
 
 	void DrawCall(UInt32 vertexStart, UInt32 vertexCount);
 
-	void Render(Viewport* viewport);
-
-	void RenderBatch(Viewport* viewport);
-
 private:
-	void CreateShadowRasterizerState();
-
-	RasterizerState shadowRasterizerState_;
-
 	MaterialQuality textureQuality_{ QUALITY_HIGH };
 
 	SharedPtr<Texture> defaultTextures_[MAX_TEXTURE_CLASS];

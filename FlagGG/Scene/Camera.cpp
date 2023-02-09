@@ -4,8 +4,8 @@
 namespace FlagGG
 {
 
-Camera::Camera() :
-	Component()
+Camera::Camera()
+	: DrawableComponent()
 {
 	viewMask_ = F_MAX_UNSIGNED;
 	reflectionMatrix_ = reflectionPlane_.ReflectionMatrix();
@@ -28,6 +28,10 @@ void Camera::Strafe(Real units)
 		Vector3 right = GetRight();
 		master->SetWorldPosition(master->GetWorldPosition() + right * units);
 	}
+
+	projectionDirty_ = true;
+	viewDirty_ = true;
+	frustumDirty_ = true;
 }
 
 void Camera::Fly(Real units)
@@ -46,6 +50,10 @@ void Camera::Fly(Real units)
 		Vector3 up = GetUp();
 		master->SetWorldPosition(master->GetWorldPosition() + up * units);
 	}
+
+	projectionDirty_ = true;
+	viewDirty_ = true;
+	frustumDirty_ = true;
 }
 
 void Camera::Walk(Real units)
@@ -65,6 +73,10 @@ void Camera::Walk(Real units)
 		Vector3 look = GetLook();
 		master->SetWorldPosition(master->GetWorldPosition() + look * units);
 	}
+
+	projectionDirty_ = true;
+	viewDirty_ = true;
+	frustumDirty_ = true;
 }
 
 void Camera::Correct(Vector3& right, Vector3& up, Vector3& look)
@@ -101,6 +113,10 @@ void Camera::Pitch(Real angle)
 		right.y_, up.y_, look.y_,
 		right.z_, up.z_, look.z_
 		)));
+
+	projectionDirty_ = true;
+	viewDirty_ = true;
+	frustumDirty_ = true;
 }
 
 void Camera::Yaw(Real angle)
@@ -137,6 +153,10 @@ void Camera::Yaw(Real angle)
 		right.y_, up.y_, look.y_,
 		right.z_, up.z_, look.z_
 		)));
+
+	projectionDirty_ = true;
+	viewDirty_ = true;
+	frustumDirty_ = true;
 }
 
 void Camera::Roll(Real angle)
@@ -164,18 +184,32 @@ void Camera::Roll(Real angle)
 			right.y_, up.y_, look.y_,
 			right.z_, up.z_, look.z_
 			)));
+
+		projectionDirty_ = true;
+		viewDirty_ = true;
+		frustumDirty_ = true;
 	}
 }
 
-Matrix3x4 Camera::GetViewMatrix()
+Matrix3x4 Camera::GetEffectiveWorldTransform() const
 {
 	Matrix3x4 transform = node_ ? Matrix3x4(node_->GetWorldPosition(), node_->GetWorldRotation(), 1.0f) : Matrix3x4::IDENTITY;
 	return useReflection_ ? (reflectionMatrix_ * transform).Inverse() : transform.Inverse();
 }
 
-Matrix4 Camera::GetProjectionMatrix()
+Matrix3x4 Camera::GetViewMatrix()
 {
-	Matrix4 projection = Matrix4::ZERO;
+	if (viewDirty_)
+	{
+		view_ = GetEffectiveWorldTransform();
+		viewDirty_ = false;
+	}
+	return view_;
+}
+
+void Camera::UpdateProjection() const
+{
+	projection_ = Matrix4::ZERO;
 
 	if (!orthographic_)
 	{
@@ -184,13 +218,13 @@ Matrix4 Camera::GetProjectionMatrix()
 		Real q = farClip_ / (farClip_ - nearClip_);
 		Real r = -q * nearClip_;
 
-		projection.m00_ = w;
-		projection.m02_ = projOffset_.x_ * 2.0f;
-		projection.m11_ = h;
-		projection.m12_ = projOffset_.y_ * 2.0f;
-		projection.m22_ = q;
-		projection.m23_ = r;
-		projection.m32_ = 1.0f;
+		projection_.m00_ = w;
+		projection_.m02_ = projOffset_.x_ * 2.0f;
+		projection_.m11_ = h;
+		projection_.m12_ = projOffset_.y_ * 2.0f;
+		projection_.m22_ = q;
+		projection_.m23_ = r;
+		projection_.m32_ = 1.0f;
 	}
 	else
 	{
@@ -199,16 +233,44 @@ Matrix4 Camera::GetProjectionMatrix()
 		Real q = 1.0f / farClip_;
 		Real r = 0.0f;
 
-		projection.m00_ = w;
-		projection.m03_ = projOffset_.x_ * 2.0f;
-		projection.m11_ = h;
-		projection.m13_ = projOffset_.y_ * 2.0f;
-		projection.m22_ = q;
-		projection.m23_ = r;
-		projection.m33_ = 1.0f;
+		projection_.m00_ = w;
+		projection_.m03_ = projOffset_.x_ * 2.0f;
+		projection_.m11_ = h;
+		projection_.m13_ = projOffset_.y_ * 2.0f;
+		projection_.m22_ = q;
+		projection_.m23_ = r;
+		projection_.m33_ = 1.0f;
 	}
 
-	return projection;
+	projectionDirty_ = false;
+}
+
+Matrix4 Camera::GetProjectionMatrix()
+{
+	if (projectionDirty_)
+		UpdateProjection();
+	return projection_;
+}
+
+const Frustum& Camera::GetFrustum() const
+{
+	// Use projection_ instead of GetProjection() so that Y-flip has no effect. Update first if necessary
+	if (projectionDirty_)
+		UpdateProjection();
+
+	if (frustumDirty_)
+	{	
+		// If not using a custom projection, prefer calculating frustum from projection parameters instead of matrix
+		// for better accuracy
+		if (!orthographic_)
+			frustum_.Define(fov_, aspect_, zoom_, GetNearClip(), GetFarClip(), GetEffectiveWorldTransform());
+		else
+			frustum_.DefineOrtho(orthoSize_, aspect_, zoom_, GetNearClip(), GetFarClip(), GetEffectiveWorldTransform());
+
+		frustumDirty_ = false;
+	}
+
+	return frustum_;
 }
 
 CameraType Camera::GetCameraType() const

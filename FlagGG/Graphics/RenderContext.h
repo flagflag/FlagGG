@@ -1,5 +1,4 @@
-#ifndef __RENDER_CONTEXT__
-#define __RENDER_CONTEXT__
+#pragma once
 
 #include "Export.h"
 
@@ -10,36 +9,87 @@
 #include "Container/RefCounted.h"
 #include "Container/Ptr.h"
 #include "Container/Vector.h"
+#include "Scene/Light.h"
 #include "Math/Matrix3x4.h"
-
-#include <vector>
 
 namespace FlagGG
 {
 
+class Geometry;
+class Material;
+class Light;
+class Probe;
+class Texture2D;
+class Matrix3x4;
+
+// 渲染批次最小单元
 struct FlagGG_API RenderContext
 {
-	GeometryType geometryType_{ GEOMETRY_STATIC };
+	// 图形类型
+	GeometryType geometryType_{};
+	// 图形数据
+	Geometry* geometry_{};
+	// 世界Transform
+	const Matrix3x4* worldTransform_{};
+	UInt32 numWorldTransform_{};
+	// 材质
+	Material* material_{};
+	// 视图可见性Mask
+	UInt32 viewMask_{};
+};
 
-	Vector<SharedPtr<Geometry>> geometries_;
+struct FlagGG_API RenderBatch
+{
+	RenderBatch();
 
-	Vector<SharedPtr<Texture>> textures_;
+	RenderBatch(const RenderContext& renderContext);
 
-	SharedPtr<Shader> vertexShader_;
-	SharedPtr<Shader> pixelShader_;
+	// 图形类型
+	GeometryType geometryType_{};
+	// 图形数据
+	Geometry* geometry_{};
+	// 材质
+	Material* material_{};
+	// render pass type
+	RenderPassType renderPassType_{};
+	// 探针
+	Probe* probe_{};
+};
 
-	const Matrix3x4* worldTransform_{ nullptr };
-	UInt32 numWorldTransform_{ 0 };
+// 渲染批次队列
+struct FlagGG_API RenderBatchQueue
+{
+	Vector<RenderBatch> renderBatches_;
+	Vector<RenderBatch> renderBatchGroups_;
+};
 
-	HashMap<UInt32, RenderPass>* renderPass_{ nullptr };
+struct FlagGG_API ShadowRenderContext
+{
+	// 灯光
+	Light* light_;
+	// 阴影纹理
+	Texture2D* shadowMap_;
+	// 光照渲染批次队列
+	RenderBatchQueue renderBatchQueue_;
+	// 灯光坐标空间远裁剪
+	Real nearSplit_{};
+	// 灯光坐标空间近裁剪
+	Real farSplit_{};
+};
 
-	SharedPtr<ShaderParameters> shaderParameters_{ nullptr };
+struct FlagGG_API LitRenderContext
+{
+	// 灯光
+	Light* light_;
+	// 阴影纹理
+	Texture2D* shadowMap_;
+	// 光照渲染批次队列
+	RenderBatchQueue renderBatchQueue_;
+};
 
-	UInt32 viewMask_{ 0u };
-
-	RasterizerState rasterizerState_;
+struct FlagGG_API UnlitRenderContext
+{
+	RenderBatchQueue renderBatchQueue_;
 };
 
 }
-
-#endif

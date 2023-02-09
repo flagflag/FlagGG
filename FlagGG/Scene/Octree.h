@@ -56,7 +56,10 @@ public:
 	void SetSize(const BoundingBox& box, UInt32 numLevels);
 
 	// 射线查询
-	void Raycast(RayOctreeQuery& query);
+	void Raycast(RayOctreeQuery& query) const;
+
+	// 用query获取elments
+	void GetElements(OctreeQuery& query) const;
 
 	// 插入八叉树节点
 	void InsertElement(DrawableComponent* component);
@@ -72,7 +75,10 @@ protected:
 	OctreeNode* GetOrCreateChild(OctreeNode* node, UInt32 index);
 
 	// 射线查询实现
-	void RaycastImpl(OctreeNode* node, RayOctreeQuery& query);
+	void RaycastImpl(const OctreeNode* node, RayOctreeQuery& query) const;
+
+	// 用query获取elments
+	void GetElementsImpl(const OctreeNode* node, OctreeQuery& query, bool inside) const;
 
 private:
 	OctreeNode root_;

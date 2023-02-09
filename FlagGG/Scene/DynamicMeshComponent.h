@@ -8,6 +8,7 @@
 #include "Scene/DrawableComponent.h"
 #include "Container/Ptr.h"
 #include "Graphics/Material.h"
+#include "Graphics/Geometry.h"
 #include "Math/Vector2.h"
 #include "Math/Matrix3x4.h"
 #include "Core/BaseTypes.h"
@@ -33,8 +34,8 @@ public:
 	// 是否可渲染
 	bool IsRenderable() override { return hasGeometry_; }
 
-	// 获取渲染上下文
-	RenderContext* GetRenderContext() override;
+	// 获取DrawableFlags
+	UInt32 GetDrawableFlags() const override { return DRAWABLE_GEOMETRY; }
 
 	// 帧更新
 	void Update(Real timeStep) override;
@@ -67,8 +68,6 @@ private:
 	SharedPtr<Geometry> geometry_;
 	SharedPtr<VertexBuffer> vertexBuffer_;
 	SharedPtr<IndexBuffer> indexBuffer_;
-
-	RenderContext renderContext_;
 
 	bool geometryDirty_;
 	bool hasGeometry_;

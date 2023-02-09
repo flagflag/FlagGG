@@ -344,3 +344,13 @@ extern FlagGG_API const FlagGG::StringHash SP_LIGHT_POS;
 extern FlagGG_API const FlagGG::StringHash SP_LIGHT_DIR;
 extern FlagGG_API const FlagGG::StringHash SP_LIGHT_VIEW_MATRIX;
 extern FlagGG_API const FlagGG::StringHash SP_LIGHT_PROJVIEW_MATRIX;
+
+extern FlagGG_API const UInt32 DRAWABLE_UNDEFINED;
+extern FlagGG_API const UInt32 DRAWABLE_GEOMETRY;
+extern FlagGG_API const UInt32 DRAWABLE_LIGHT;
+extern FlagGG_API const UInt32 DRAWABLE_PROBE;
+extern FlagGG_API const UInt32 DRAWABLE_ANY;
+extern FlagGG_API const UInt32 DEFAULT_VIEWMASK;
+extern FlagGG_API const UInt32 DEFAULT_LIGHTMASK;
+extern FlagGG_API const UInt32 DEFAULT_SHADOWMASK;
+extern FlagGG_API const UInt32 DEFAULT_PROBEMASK;

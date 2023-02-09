@@ -30,6 +30,10 @@ ShaderCode::ShaderCode(Context* context) :
 	Resource(context)
 { }
 
+ShaderCode::~ShaderCode()
+{
+}
+
 Shader* ShaderCode::GetShader(ShaderType type, const Vector<String>& defines)
 {
 	Vector<String> newDefines = defines;

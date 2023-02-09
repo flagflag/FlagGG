@@ -43,10 +43,14 @@ void SkeletonMeshComponent::OnModel()
 	UpdateTreeDirty();
 
 	// 设置渲染Context
-	renderContext_.geometryType_ = GEOMETRY_SKINNED;
-	renderContext_.worldTransform_ = &skinMatrices_[0];
-	renderContext_.numWorldTransform_ = skinMatrices_.Size();
-	renderContext_.viewMask_ = GetViewMask();
+	for (UInt32 i = 0; i < renderContexts_.Size(); ++i)
+	{
+		auto& renderContext = renderContexts_[i];
+		renderContext.geometryType_ = GEOMETRY_SKINNED;
+		renderContext.worldTransform_ = &skinMatrices_[0];
+		renderContext.numWorldTransform_ = skinMatrices_.Size();
+		renderContext.viewMask_ = GetViewMask();
+	}
 
 	boneBoundingBox_ = boundingBox_;
 }

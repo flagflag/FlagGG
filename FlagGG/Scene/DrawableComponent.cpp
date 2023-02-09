@@ -48,9 +48,14 @@ void DrawableComponent::SetOcNode(OctreeNode* ocnode)
 	ocnode_ = ocnode;
 }
 
-OctreeNode* DrawableComponent::GetOcNode()
+void DrawableComponent::SetCastShadow(bool castShadow)
 {
-	return ocnode_;
+	castShadow_ = castShadow;
+}
+
+void DrawableComponent::SetHasLitPass(bool hasLitPass)
+{
+	hasLitPass_ = hasLitPass;
 }
 
 }

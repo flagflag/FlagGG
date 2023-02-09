@@ -32,15 +32,11 @@ void TerrainComponent::SetMaterial(Material* material)
 	{
 		material_ = material;
 
-		for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
+		if (renderContexts_.Size())
 		{
-			renderContext_.textures_.Push(material_->GetTexture(i));
+			auto& renderContext = renderContexts_[0];
+			renderContext.material_ = material_;
 		}
-		renderContext_.vertexShader_ = material_->GetVertexShader();
-		renderContext_.pixelShader_ = material_->GetPixelShader();
-		renderContext_.renderPass_ = &material_->GetRenderPass();
-		renderContext_.shaderParameters_ = material_->GetShaderParameters();
-		renderContext_.rasterizerState_ = material_->GetRasterizerState();
 	}
 }
 
@@ -114,17 +110,13 @@ void TerrainComponent::CreateGeometry()
 
 	geometry_->SetDataRange(0, indexBuffer_->GetIndexCount());
 
-	renderContext_.geometryType_ = GEOMETRY_STATIC;
-	renderContext_.geometries_.Clear();
-	renderContext_.geometries_.Push(geometry_);
-	renderContext_.numWorldTransform_ = 1;
-	renderContext_.worldTransform_ = &node_->GetWorldTransform();
-	renderContext_.viewMask_ = GetViewMask();
-}
-
-RenderContext* TerrainComponent::GetRenderContext()
-{
-	return &renderContext_;
+	renderContexts_.Resize(1);
+	auto& renderContext = renderContexts_[0];
+	renderContext.geometryType_ = GEOMETRY_STATIC;
+	renderContext.geometry_ = geometry_;
+	renderContext.numWorldTransform_ = 1;
+	renderContext.worldTransform_ = &node_->GetWorldTransform();
+	renderContext.viewMask_ = GetViewMask();
 }
 
 }

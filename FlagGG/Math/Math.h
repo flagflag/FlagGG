@@ -26,9 +26,9 @@ extern FlagGG_API const UInt32 F_MIN_UNSIGNED;
 extern FlagGG_API const UInt32 F_MAX_UNSIGNED;
 extern FlagGG_API const Real F_INFINITY;
 extern FlagGG_API const Real F_MIN_NEARCLIP;
-extern FlagGG_API const Real DEGTORAD;
-extern FlagGG_API const Real DEGTORAD_2;
-extern FlagGG_API const Real RADTODEG;
+extern FlagGG_API const Real F_DEGTORAD;
+extern FlagGG_API const Real F_DEGTORAD_2;
+extern FlagGG_API const Real F_RADTODEG;
 
 template < class T >
 inline T Max(T value1, T value2)

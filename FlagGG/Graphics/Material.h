@@ -14,8 +14,10 @@ namespace FlagGG
 class Texture;
 class Shader;
 
-struct FlagGG_API RenderPass
+struct FlagGG_API RenderPassInfo
 {
+	~RenderPassInfo();
+
 	SharedPtr<Shader> vertexShader_;
 	SharedPtr<Shader> pixelShader_;
 };
@@ -25,7 +27,7 @@ class FlagGG_API Material : public Resource
 public:
 	Material(Context* context);
 
-	~Material() override = default;
+	~Material() override;
 
 	// 设置纹理
 	void SetTexture(Texture* texture);
@@ -40,7 +42,7 @@ public:
 	void SetPixelShader(Shader* pixelShader);
 
 	// 设置render pass
-	void SetRenderPass(RenderPassType type, const RenderPass& renderPass);
+	void SetRenderPass(RenderPassType type, const RenderPassInfo& renderPass);
 
 	// 设置填充模式
 	void SetFillMode(FillMode fillMode);
@@ -65,7 +67,7 @@ public:
 	SharedPtr<Shader> GetPixelShader();
 
 	// 获取所有render pass
-	HashMap<UInt32, RenderPass>& GetRenderPass();
+	HashMap<UInt32, RenderPassInfo>& GetRenderPass();
 
 	// 获取材质参数
 	SharedPtr<ShaderParameters> GetShaderParameters();
@@ -99,7 +101,7 @@ protected:
 
 	SharedPtr<ShaderParameters> shaderParameters_;
 
-	HashMap<UInt32, RenderPass> renderPass_;
+	HashMap<UInt32, RenderPassInfo> renderPass_;
 
 	RasterizerState rasterizerState_;
 };
