@@ -7,8 +7,11 @@
 namespace FlagGG
 {
 
-void VisibleRenderObjects::Clear()
+void RenderPiplineContext::Clear()
 {
+	renderTarget_ = nullptr;
+	depthStencil_ = nullptr;
+	camera_ = nullptr;
 	drawables_.Clear();
 	lights_.Clear();
 	probes_.Clear();
@@ -50,17 +53,25 @@ CommonRenderPipline::~CommonRenderPipline()
 
 }
 
+void CommonRenderPipline::Clear()
+{
+	shadowRenderPass_->Clear();
+	litRenderPass_[0]->Clear();
+	litRenderPass_[1]->Clear();
+	alphaRenderPass_->Clear();
+}
+
 void CommonRenderPipline::CollectLitBatch()
 {
 // 筛选出"灯+受光"的物体
 	litRenderObjectsResult_.Clear();
 
-	Sort(visibleRenderObjects_.lights_.Begin(), visibleRenderObjects_.lights_.End(), [](Light* _1, Light* _2)
+	Sort(renderPiplineContext_.lights_.Begin(), renderPiplineContext_.lights_.End(), [](Light* _1, Light* _2)
 	{
 		return _1->GetLightType() < _2->GetLightType();
 	});
 
-	for (auto* light : visibleRenderObjects_.lights_)
+	for (auto* light : renderPiplineContext_.lights_)
 	{
 		auto& litRenderObjects = litRenderObjectsResult_.EmplaceBack();
 
@@ -70,7 +81,7 @@ void CommonRenderPipline::CollectLitBatch()
 		switch (type)
 		{
 		case LIGHT_TYPE_DIRECTIONAL:
-			for(auto* drawable : visibleRenderObjects_.drawables_)
+			for(auto* drawable : renderPiplineContext_.drawables_)
 			{
 				litRenderObjects.drawables_.Push(drawable);
 			}
@@ -86,7 +97,7 @@ void CommonRenderPipline::CollectLitBatch()
 		}
 	}
 
-	for (auto* drawable : visibleRenderObjects_.drawables_)
+	for (auto* drawable : renderPiplineContext_.drawables_)
 	{
 		drawable->SetHasLitPass(false);
 	}
@@ -100,6 +111,10 @@ void CommonRenderPipline::CollectLitBatch()
 		for (auto* drawable : litRenderObjects.drawables_)
 		{
 			context.drawable_ = drawable;
+
+			// shadow pass
+			shadowRenderPass_->CollectBatch(&context);
+
 			// litbase
 			if (!drawable->GetHasLitPass())
 			{

@@ -2,6 +2,7 @@
 #include "Graphics/Texture.h"
 #include "Graphics/Texture2D.h"
 #include "Graphics/RenderView.h"
+#include "Graphics/RenderBatch.h"
 #include "Scene/Node.h"
 #include "Scene/Component.h"
 #include "Scene/Light.h"
@@ -270,6 +271,26 @@ void RenderEngine::SetShaderParameter(Camera* camera, const RenderContext* rende
 	gfxDevice_->SetMaterialShaderParameters(renderContext->material_->GetShaderParameters());
 }
 
+void RenderEngine::SetShaderParameter(Camera* camera, const RenderBatch& renderBatch)
+{
+	// 视图矩阵，投影矩阵，蒙皮矩阵等
+	if (camera && renderBatch.worldTransform_ && renderBatch.numWorldTransform_)
+	{
+		shaderParameters_->SetValue(SP_WORLD_MATRIX, *renderBatch.worldTransform_);
+		shaderParameters_->SetValue(SP_VIEW_MATRIX, camera->GetViewMatrix());
+		shaderParameters_->SetValue(SP_PROJVIEW_MATRIX, camera->GetProjectionMatrix() * camera->GetViewMatrix());
+		shaderParameters_->SetValue(SP_CAMERA_POS, camera->GetNode()->GetWorldPosition());
+
+		if (renderBatch.geometryType_ == GEOMETRY_SKINNED)
+		{
+			shaderParameters_->SetValueImpl(SP_SKIN_MATRICES, renderBatch.worldTransform_, renderBatch.numWorldTransform_ * sizeof(Matrix3x4));
+		}
+	}
+
+	gfxDevice_->SetEngineShaderParameters(shaderParameters_);
+	gfxDevice_->SetMaterialShaderParameters(renderBatch.material_->GetShaderParameters());
+}
+
 void RenderEngine::SetVertexBuffers(const Vector<SharedPtr<VertexBuffer>>& vertexBuffers)
 {
 	gfxDevice_->ClearVertexBuffer();
@@ -354,7 +375,7 @@ void RenderEngine::RenderUpdate(Viewport* viewport)
 	RenderView* renderView = viewport->GetOrCreateRenderView();
 	CRY_ASSERT(renderView);
 
-	renderView->Define(nullptr, viewport);
+	renderView->Define(viewport);
 
 	renderView->RenderUpdate();
 }
@@ -367,7 +388,7 @@ void RenderEngine::Render(Viewport* viewport)
 	renderView->Render();
 }
 
-void RenderEngine::RenderBatch(Viewport* viewport)
+void RenderEngine::RenderRawBatch(Viewport* viewport)
 {
 	static PODVector<VertexElement> vertexElement =
 	{

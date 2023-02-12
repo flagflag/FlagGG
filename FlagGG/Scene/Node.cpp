@@ -1,4 +1,5 @@
 #include "Scene/Node.h"
+#include "Scene/Scene.h"
 #include "Scene/Component.h"
 #include "Scene/Octree.h"
 #include "Scene/DrawableComponent.h"
@@ -11,12 +12,19 @@ Node::Node() :
 	nameHash_(0u),
 	isTranspent_(false),
 	parent_(nullptr),
+	ownerScene_(nullptr),
 	dirty_(true),
 	position_(Vector3::ZERO),
 	rotation_(Quaternion::IDENTITY),
 	scale_(Vector3::ONE),
 	worldTransform_(Matrix3x4::IDENTITY)
-{ }
+{
+}
+
+Node::~Node()
+{
+	RemoveAllComponent();
+}
 
 void Node::Update(const NodeUpdateContext& updateContext)
 {
@@ -83,6 +91,10 @@ void Node::AddComponent(Component* component)
 	}
 	components_.Push(sharedComponent);
 	sharedComponent->SetNode(this);
+	if (ownerScene_)
+	{
+		ownerScene_->OnAddToScene(this, component);
+	}
 	sharedComponent->UpdateTreeDirty();
 }
 
@@ -100,12 +112,29 @@ Component* Node::GetComponent(StringHash compClass)
 
 void Node::RemoveComponent(Component* component)
 {
-	components_.Remove(SharedPtr<Component>(component));
+	SharedPtr<Component> componentShared(component);
+	components_.Remove(componentShared);
+	if (ownerScene_)
+	{
+		ownerScene_->OnRemoveFromScene(this, componentShared);
+	}
 }
 
 void Node::RemoveAllComponent()
 {
-	components_.Clear();
+	if (ownerScene_)
+	{
+		while (components_.Size())
+		{
+			SharedPtr<Component> componentShared(components_.Back());
+			components_.Pop();
+			ownerScene_->OnRemoveFromScene(this, componentShared);
+		}
+	}
+	else
+	{
+		components_.Clear();
+	}
 }
 
 void Node::AddChild(Node* node)
@@ -124,9 +153,7 @@ void Node::AddChild(Node* node)
 	}
 	children_.Push(sharedNode);
 	node->parent_ = this;
-			
-	// 更新dirty，类似的会去更新直接矩阵等
-	node->UpdateTreeDirty();
+	node->UpdateTreeDirty(ownerScene_);
 }
 
 void Node::RemoveChild(Node* node)
@@ -134,7 +161,7 @@ void Node::RemoveChild(Node* node)
 	SharedPtr<Node> sharedNode(node);
 	children_.Remove(sharedNode); 
 	node->parent_ = nullptr;
-	node->UpdateTreeDirty();
+	node->UpdateTreeDirty(nullptr);
 }
 
 void Node::RemoveFromParent()
@@ -150,7 +177,7 @@ void Node::RemoveAllChild()
 	for (const auto& child : children_)
 	{
 		child->parent_ = nullptr;
-		child->UpdateTreeDirty();
+		child->UpdateTreeDirty(nullptr);
 	}
 	children_.Clear();
 }
@@ -225,7 +252,7 @@ void Node::SetPosition(const Vector3& position)
 {
 	position_ = position;
 
-	UpdateTreeDirty();
+	MarkTransformDirty();
 }
 
 const Vector3& Node::GetPosition() const
@@ -237,7 +264,7 @@ void Node::SetRotation(const Quaternion& rotation)
 {
 	rotation_ = rotation;
 
-	UpdateTreeDirty();
+	MarkTransformDirty();
 }
 
 const Quaternion& Node::GetRotation() const
@@ -249,7 +276,7 @@ void Node::SetScale(const Vector3& scale)
 {
 	scale_ = scale;
 
-	UpdateTreeDirty();
+	MarkTransformDirty();
 }
 
 const Vector3& Node::GetScale() const
@@ -263,7 +290,7 @@ void Node::SetTransform(const Vector3& position, const Quaternion& rotation, con
 	rotation_ = rotation;
 	scale_ = scale;
 
-	UpdateTreeDirty();
+	MarkTransformDirty();
 }
 
 Matrix3x4 Node::GetTransform() const
@@ -335,21 +362,47 @@ void Node::UpdateWorldTransform() const
 	dirty_ = false;
 }
 
-void Node::UpdateTreeDirty()
+void Node::SetOwnerScene(Scene* scene)
 {
-	if (dirty_) return;
+	ownerScene_ = scene;
+}
 
+void Node::MarkTransformDirty()
+{
 	dirty_ = true;
+}
 
+void Node::UpdateComponentsDirty()
+{
 	for (auto& component : components_)
 	{
 		component->UpdateTreeDirty();
 	}
+}
+
+void Node::UpdateTreeDirty(Scene* scene)
+{
+	MarkTransformDirty();
+
+	for (auto& component : components_)
+	{
+		component->UpdateTreeDirty();
+		if (scene)
+		{
+			scene->OnAddToScene(this, component);
+		}
+		else if (ownerScene_)
+		{
+			ownerScene_->OnRemoveFromScene(this, component);
+		}
+	}
 			
 	for (auto& child : children_)
 	{
-		child->UpdateTreeDirty();
+		child->UpdateTreeDirty(scene);
 	}
+
+	SetOwnerScene(scene);
 }
 
 }

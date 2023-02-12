@@ -6,10 +6,14 @@
 #include "Scene/Scene.h"
 #include "Scene/Camera.h"
 #include "Scene/Octree.h"
+#include "Scene/Light.h"
 #include "GfxDevice/GfxDevice.h"
+#include "GfxDevice/GfxRenderSurface.h"
 
 namespace FlagGG
 {
+
+SharedPtr<RenderPipline> DEFAULT_RENDERPIPLINE(new ForwardRenderPipline());
 
 // 阴影投射者OctreeQuery
 class ShadowCasterOctreeQuery : public FrustumOctreeQuery
@@ -41,10 +45,12 @@ RenderView::RenderView()
 	: gfxDevice_(GfxDevice::GetDevice())
 	, renderEngine_(RenderEngine::Instance())
 {
+#if !OCTREE_QUERY
 	shadowRasterizerState_.depthWrite_ = true;
 	shadowRasterizerState_.scissorTest_ = false;
 	shadowRasterizerState_.fillMode_ = FILL_SOLID;
 	shadowRasterizerState_.cullMode_ = CULL_FRONT;
+#endif
 }
 
 RenderView::~RenderView()
@@ -52,16 +58,19 @@ RenderView::~RenderView()
 
 }
 
-void RenderView::Define(RenderPipline* renderPipline, Viewport* viewport)
+void RenderView::Define(Viewport* viewport)
 {
-	renderPipline_ = renderPipline;
+	renderPipline_ = viewport->GetRenderPipline();
 	renderTarget_ = viewport->GetRenderTarget();
 	depthStencil_ = viewport->GetDepthStencil();
 	scene_ = viewport->GetScene();
 	camera_ = viewport->GetCamera();
 	octree_ = scene_->GetComponent<Octree>();
 	viewport_ = viewport->GetSize();
-	visibleRenderObjects_ = nullptr;
+	renderPiplineContext_ = nullptr;
+
+	if (!renderPipline_)
+		renderPipline_ = DEFAULT_RENDERPIPLINE;
 }
 
 void RenderView::Undefine()
@@ -70,17 +79,22 @@ void RenderView::Undefine()
 	scene_.Reset();
 	camera_.Reset();
 	octree_.Reset();
-	visibleRenderObjects_ = nullptr;
+	renderPiplineContext_ = nullptr;
 }
 
 void RenderView::RenderUpdate()
 {
 #if OCTREE_QUERY
-	visibleRenderObjects_ = &renderPipline_->GetVisibleRenderObjects();
-	visibleRenderObjects_->Clear();
+	renderPiplineContext_ = &renderPipline_->GetRenderPiplineContext();
+	renderPiplineContext_->Clear();
+
+	renderPiplineContext_->renderTarget_ = renderTarget_;
+	renderPiplineContext_->depthStencil_ = depthStencil_;
+	renderPiplineContext_->camera_ = camera_;
 
 	CollectVisibilityObjects();
 
+	renderPipline_->Clear();
 	renderPipline_->CollectBatch();
 #else
 	visibleRenderContext_.Clear();
@@ -100,15 +114,17 @@ void RenderView::CollectVisibilityObjects()
 	{
 		if (auto* light = drawableComponent->DynamicCast<Light>())
 		{
-			visibleRenderObjects_->lights_.Push(light);
+			renderPiplineContext_->lights_.Push(light);
+			// temp
+			light->SetAspect((float)viewport_.Width() / viewport_.Height());
 		}
 		//else if (auto* probe = drawableComponent->DynamicCast<Probe>())
 		//{
-		//	visibleRenderObjects_->probes_.Push(probe);
+		//	renderPiplineContext_->probes_.Push(probe);
 		//}
 		else
 		{
-			visibleRenderObjects_->drawables_.Push(drawableComponent);
+			renderPiplineContext_->drawables_.Push(drawableComponent);
 		}
 	}
 }
@@ -124,9 +140,12 @@ void RenderView::Render()
 	if (!scene_ || !camera_ || !renderPipline_)
 		return;
 
+	float aspect = (float)viewport_.Width() / viewport_.Height();
+	camera_->SetAspect(aspect);
+
 	gfxDevice_->SetViewport(viewport_);
 
-
+	renderPipline_->Render();
 #else
 	if (!scene_ || !camera_ || !renderPipline_)
 		return;
@@ -204,6 +223,7 @@ void RenderView::HandleEndFrame(Real timeStep)
 #endif
 }
 
+#if !OCTREE_QUERY
 bool RenderView::SetShadowMap()
 {
 	if (renderEngine_->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP))
@@ -218,5 +238,6 @@ bool RenderView::SetShadowMap()
 
 	return false;
 }
+#endif
 
 }

@@ -7,23 +7,24 @@
 #include "Export.h"
 
 #include "Graphics/RenderContext.h"
-#include "Graphics/RenderView.h"
 #include "Scene/Camera.h"
 #include "Container/Ptr.h"
 #include "Core/Context.h"
 #include "Math/Rect.h"
 #include "Scene/Scene.h"
-#include "GfxDevice/GfxRenderSurface.h"
 
 namespace FlagGG
 {
 
 class GfxRenderSurface;
 class RenderView;
+class RenderPipline;
 
 class FlagGG_API Viewport : public RefCounted
 {
 public:
+	explicit Viewport();
+
 	~Viewport() override;
 
 	// 获取视口x坐标
@@ -68,6 +69,12 @@ public:
 	// 设置场景
 	void SetScene(Scene* scene);
 
+	// 设置渲染管线
+	void SetRenderPipline(RenderPipline* renderPipline);
+
+	// 获取渲染管线
+	RenderPipline* GetRenderPipline() const { return renderPipline_; }
+
 	// 获取or创建渲染视图
 	RenderView* GetOrCreateRenderView();
 
@@ -76,6 +83,8 @@ public:
 			
 protected:
 	SharedPtr<RenderView> renderView_;
+
+	SharedPtr<RenderPipline> renderPipline_;
 
 	SharedPtr<GfxRenderSurface> renderTarget_;
 	SharedPtr<GfxRenderSurface> depthStencil_;

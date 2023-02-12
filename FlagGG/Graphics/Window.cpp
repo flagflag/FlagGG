@@ -238,7 +238,7 @@ void Window::Render()
 {
 	RenderEngine::Instance()->Render(viewport_);
 
-	RenderEngine::Instance()->RenderBatch(viewport_);
+	RenderEngine::Instance()->RenderRawBatch(viewport_);
 
 	gfxSwapChain_->Present();
 }

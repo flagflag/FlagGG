@@ -1,10 +1,17 @@
 #include "Viewport.h"
 #include "RenderEngine.h"
+#include "Graphics/RenderView.h"
+#include "Graphics/RenderPipline.h"
 #include "GfxDevice/GfxRenderSurface.h"
 #include "GfxDevice/GfxDevice.h"
 
 namespace FlagGG
 {
+
+Viewport::Viewport()
+{
+
+}
 
 Viewport::~Viewport()
 {
@@ -33,6 +40,11 @@ void Viewport::SetCamera(Camera* camera)
 void Viewport::SetScene(Scene* scene)
 {
 	scene_ = scene;
+}
+
+void Viewport::SetRenderPipline(RenderPipline* renderPipline)
+{
+	renderPipline_ = renderPipline;
 }
 
 RenderView* Viewport::GetOrCreateRenderView()

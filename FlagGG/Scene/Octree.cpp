@@ -131,6 +131,16 @@ void Octree::InsertElement(DrawableComponent* component)
 	InsertElement(&root_, component);
 }
 
+void Octree::RemoveElement(DrawableComponent* component)
+{
+
+}
+
+void Octree::RemoveAllElement()
+{
+
+}
+
 bool Octree::CheckInsert(OctreeNode* node, const BoundingBox& box)
 {
 	const auto targetSize = box.Size();

@@ -42,7 +42,7 @@ public:
 protected:
 	WeakPtr<Node> node_;
 
-	UInt32 viewMask_{};
+	UInt32 viewMask_{F_MAX_UNSIGNED};
 };
 
 }

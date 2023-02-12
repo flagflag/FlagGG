@@ -6,10 +6,12 @@
 
 #include "Core/Object.h"
 #include "Core/BaseTypes.h"
+#include "Graphics/RenderBatch.h"
 
 namespace FlagGG
 {
 
+class Camera;
 class Light;
 class DrawableComponent;
 
@@ -28,6 +30,9 @@ public:
 
 	~RenderPass() override;
 
+	// 清理
+	virtual void Clear() = 0;
+
 	// 收集
 	virtual void CollectBatch(RenderPassContext* context) = 0;
 
@@ -35,7 +40,7 @@ public:
 	virtual void SortBatch() = 0;
 
 	// 渲染
-	virtual void RenderBatch(UInt32 layer) = 0;
+	virtual void RenderBatch(Camera* camera, UInt32 layer) = 0;
 };
 
 // ShadowMap pass
@@ -47,6 +52,9 @@ public:
 
 	~ShadowRenderPass() override;
 
+	// 清理
+	void Clear() override;
+
 	// 收集
 	void CollectBatch(RenderPassContext* context) override;
 
@@ -54,7 +62,13 @@ public:
 	void SortBatch() override;
 
 	// 渲染
-	void RenderBatch(UInt32 layer) override;
+	void RenderBatch(Camera* camera, UInt32 layer) override;
+
+private:
+	// 阴影光栅状态
+	RasterizerState shadowRasterizerState_;
+
+	HashMap<Light*, ShadowRenderContext> shadowRenderContextMap_;
 };
 
 // 光照pass
@@ -66,6 +80,9 @@ public:
 
 	~LitRenderPass() override;
 
+	// 清理
+	void Clear() override;
+
 	// 收集
 	void CollectBatch(RenderPassContext* context) override;
 
@@ -73,7 +90,10 @@ public:
 	void SortBatch() override;
 
 	// 渲染
-	void RenderBatch(UInt32 layer) override;
+	void RenderBatch(Camera* camera, UInt32 layer) override;
+
+private:
+	HashMap<Light*, LitRenderContext> litRenderContextMap_;
 };
 
 // 无光pass
@@ -85,6 +105,9 @@ public:
 
 	~AlphaRenderPass() override;
 
+	// 清理
+	void Clear() override;
+
 	// 收集
 	void CollectBatch(RenderPassContext* context) override;
 
@@ -92,7 +115,7 @@ public:
 	void SortBatch() override;
 
 	// 渲染
-	void RenderBatch(UInt32 layer) override;
+	void RenderBatch(Camera* camera, UInt32 layer) override;
 };
 
 }

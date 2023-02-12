@@ -21,6 +21,7 @@ namespace FlagGG
 {
 
 class GfxDevice;
+struct RenderBatch;
 
 class FlagGG_API RenderEngine : public Singleton<RenderEngine, NullMutex, Context*>
 {
@@ -87,7 +88,7 @@ public:
 
 	void Render(Viewport* viewport);
 
-	void RenderBatch(Viewport* viewport);
+	void RenderRawBatch(Viewport* viewport);
 
 
 	/**********************************************************/
@@ -98,6 +99,8 @@ public:
 	void SetRasterizerState(RasterizerState rasterizerState);
 
 	void SetShaderParameter(Camera* camera, const RenderContext* renderContext);
+
+	void SetShaderParameter(Camera* camera, const RenderBatch& renderBatch);
 
 	void SetVertexBuffers(const Vector<SharedPtr<VertexBuffer>>& vertexBuffers);
 

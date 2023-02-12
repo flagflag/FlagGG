@@ -64,6 +64,12 @@ public:
 	// 插入八叉树节点
 	void InsertElement(DrawableComponent* component);
 
+	// 删除八叉树节点
+	void RemoveElement(DrawableComponent* component);
+
+	// 删除所以八叉树节点
+	void RemoveAllElement();
+
 protected:
 	// 检查ndoe能否插入
 	bool CheckInsert(OctreeNode* node, const BoundingBox& box);

@@ -11,7 +11,7 @@ Scene::Scene(Context* context) :
 	context_(context),
 	isRunning_(false)
 {
-
+	SetOwnerScene(this);
 }
 
 Scene::~Scene()
@@ -43,6 +43,11 @@ void Scene::HandleUpdate(Real timeStep)
 	updateContext.scene_ = this;
 	updateContext.octree_ = this->GetComponent<Octree>();
 	Update(updateContext);
+}
+
+void Scene::HandlePreRenderUpdate(Real timeStep)
+{
+
 }
 
 void Scene::Update(const NodeUpdateContext& updateContext)
@@ -101,6 +106,56 @@ void Scene::GetLights(Node* node, PODVector<Light*>& lights)
 	for (const auto& child : node->GetChildren())
 	{
 		GetLights(child, lights);
+	}
+}
+
+void Scene::OnAddToScene(Node* node, Component* component)
+{
+	if (component)
+	{
+		if (node == this && component->IsInstanceOf<Octree>())
+		{
+			octree_ = static_cast<Octree*>(component);
+
+			for (auto* drawable : addToOctreeSet_)
+			{
+				octree_->InsertElement(drawable);
+			}
+		}
+		else if (component->IsInstanceOf<DrawableComponent>())
+		{
+			if (octree_)
+			{
+				octree_->InsertElement(static_cast<DrawableComponent*>(component));
+			}
+			else
+			{
+				addToOctreeSet_.Insert(static_cast<DrawableComponent*>(component));
+			}
+		}
+	}
+}
+
+void Scene::OnRemoveFromScene(Node* node, Component* component)
+{
+	if (component)
+	{
+		if (node == this && component == octree_)
+		{
+			octree_->RemoveAllElement();
+			octree_ = nullptr;
+		}
+		else if (component->IsInstanceOf<DrawableComponent>())
+		{
+			if (octree_)
+			{
+				octree_->RemoveElement(static_cast<DrawableComponent*>(component));
+			}
+			else
+			{
+				addToOctreeSet_.Erase(static_cast<DrawableComponent*>(component));
+			}
+		}
 	}
 }
 

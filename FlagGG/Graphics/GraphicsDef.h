@@ -192,6 +192,7 @@ enum CubeMapFace
 enum RenderPassType : UInt32
 {
 	RENDER_PASS_TYPE_SHADOW = 0,
+	RENDER_PASS_TYPE_LIT,
 	MAX_RENDER_PASS_TYPE,
 };
 

@@ -27,7 +27,7 @@ class Camera;
 class Octree;
 class Light;
 struct RenderContext;
-struct VisibleRenderObjects;
+struct RenderPiplineContext;
 
 class RenderView : public Object
 {
@@ -38,7 +38,7 @@ public:
 	~RenderView() override;
 
 	// 定义数据
-	void Define(RenderPipline* renderPipline, Viewport* viewport);
+	void Define(Viewport* viewport);
 
 	// 取消定义，释放指针强引用
 	void Undefine();
@@ -52,7 +52,9 @@ public:
 protected:
 	void HandleEndFrame(Real timeStep);
 
+#if !OCTREE_QUERY
 	bool SetShadowMap();
+#endif
 
 	// 收集视图可见对象
 	void CollectVisibilityObjects();
@@ -86,12 +88,12 @@ private:
 	// 视口大小
 	IntRect viewport_;
 
-	// 阴影光栅状态
-	RasterizerState shadowRasterizerState_;
-
 #if OCTREE_QUERY
 	PODVector<DrawableComponent*> tempQueryResults_;
 #else
+	// 阴影光栅状态
+	RasterizerState shadowRasterizerState_;
+
 	// 当前视口可见渲染Batch
 	PODVector<const RenderContext*> visibleRenderContext_;
 
@@ -101,7 +103,7 @@ private:
 	PODVector<Light*> visibleLights_;
 #endif
 
-	VisibleRenderObjects* visibleRenderObjects_{};
+	RenderPiplineContext* renderPiplineContext_{};
 };
 
 }

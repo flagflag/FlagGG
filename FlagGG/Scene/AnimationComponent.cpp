@@ -35,7 +35,7 @@ void AnimationComponent::UpdateAnimation(Real timeStep)
 		UpdateBoneTrack(boneTrack);
 	}
 
-	node_->UpdateTreeDirty();
+	node_->UpdateComponentsDirty();
 }
 
 void AnimationComponent::UpdateBoneTrack(BoneTrack& boneTrack)

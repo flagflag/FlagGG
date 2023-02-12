@@ -44,6 +44,8 @@ void TerrainComponent::CreateGeometry()
 {
 	if (pathSize_ == 0 || !heightMap_) return;
 
+	meshBoundingBox_.Clear();
+
 	patchWorldSize_ = Vector2(pathSize_, pathSize_);
 	patchesNum_ = IntVector2(heightMap_->GetWidth() / pathSize_, heightMap_->GetHeight() / pathSize_);
 	verticesNum_ = IntVector2(patchesNum_.x_ * pathSize_, patchesNum_.y_ * pathSize_);
@@ -88,9 +90,12 @@ void TerrainComponent::CreateGeometry()
 		for (UInt32 y = 0; y < verticesNum_.y_; ++y)
 		{
 			Real height = src[imgRow * (verticesNum_.x_ - 1 - x) + y];
-			IOFrame::Buffer::WriteVector3(buffer1, Vector3(x, height, y));
+			Vector3 position(x, height, y);
+			IOFrame::Buffer::WriteVector3(buffer1, position);
 			IOFrame::Buffer::WriteVector3(buffer1, Vector3(1, 1, 1));
 			IOFrame::Buffer::WriteVector2(buffer1, Vector2(1.0f * x / verticesNum_.x_, 1.0f * y / verticesNum_.y_));
+
+			meshBoundingBox_.Merge(position);
 
 			if (x != verticesNum_.x_ - 1 && y != verticesNum_.y_ - 1)
 			{
@@ -117,6 +122,11 @@ void TerrainComponent::CreateGeometry()
 	renderContext.numWorldTransform_ = 1;
 	renderContext.worldTransform_ = &node_->GetWorldTransform();
 	renderContext.viewMask_ = GetViewMask();
+}
+
+void TerrainComponent::OnUpdateWorldBoundingBox()
+{
+	worldBoundingBox_ = meshBoundingBox_.Transformed(node_->GetWorldTransform());
 }
 
 }

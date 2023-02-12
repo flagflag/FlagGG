@@ -14,17 +14,25 @@ struct lua_State;
 namespace FlagGG
 {
 
+class GfxRenderSurface;
 class RenderPass;
 struct RenderContext;
 class DrawableComponent;
+class Camera;
 class Light;
 class Probe;
 
-// 视图内可见对象集合
-struct FlagGG_API VisibleRenderObjects
+// 渲染管线上下文
+struct FlagGG_API RenderPiplineContext
 {
 	void Clear();
 
+	// RenderTarget
+	GfxRenderSurface* renderTarget_{};
+	// DepthStencil
+	GfxRenderSurface* depthStencil_{};
+	// 相机
+	Camera* camera_{};
 	// 视图内可见渲染对象
 	PODVector<DrawableComponent*> drawables_;
 	// 视图内可见灯光
@@ -53,7 +61,10 @@ public:
 	virtual bool RenderShadowMap() const = 0;
 
 	// 获取视图内可见对象集合
-	virtual VisibleRenderObjects& GetVisibleRenderObjects() = 0;
+	virtual RenderPiplineContext& GetRenderPiplineContext() = 0;
+
+	// 清理
+	virtual void Clear() = 0;
 
 	// 收集batch
 	virtual void CollectBatch() = 0;
@@ -76,7 +87,10 @@ public:
 	bool RenderShadowMap() const override { return true; }
 
 	// 获取视图内可见对象集合
-	VisibleRenderObjects& GetVisibleRenderObjects() override { return visibleRenderObjects_; }
+	RenderPiplineContext& GetRenderPiplineContext() override { return renderPiplineContext_; }
+
+	// 清理
+	void Clear() override;
 
 protected:
 	void CollectLitBatch();
@@ -84,7 +98,7 @@ protected:
 	void CollectUnlitBatch();
 
 protected:
-	VisibleRenderObjects visibleRenderObjects_;
+	RenderPiplineContext renderPiplineContext_;
 
 	Vector<LitRenderObjects> litRenderObjectsResult_;
 
@@ -114,9 +128,6 @@ public:
 
 	// 渲染
 	void Render() override;
-
-private:
-	VisibleRenderObjects visibleRenderObjects_;
 };
 
 // 延迟渲染管线
@@ -136,9 +147,6 @@ public:
 
 	// 渲染
 	void Render() override;
-
-private:
-	VisibleRenderObjects visibleRenderObjects_;
 };
 
 class FlagGG_API ScriptRenderPipline : public RenderPipline

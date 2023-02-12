@@ -34,6 +34,8 @@ class FlagGG_API Node : public Object
 public:
 	Node();
 
+	~Node() override;
+
 	virtual void Update(const NodeUpdateContext& updateContext);
 
 	virtual void Render(PODVector<const RenderContext*>& renderContexts);
@@ -122,10 +124,20 @@ public:
 
 	Vector3 GetWorldDirection() const;
 
+	// Called by Scene
+	void SetOwnerScene(Scene* scene);
+
+	Scene* GetOwnerScene() const { return ownerScene_; }
+
 	// 更新节点属性结构dirty状态
-	virtual void UpdateTreeDirty();
+	virtual void UpdateTreeDirty(Scene* scene);
+
+	// 更新所有comgponent的dirty状态
+	void UpdateComponentsDirty();
 
 protected:
+	void MarkTransformDirty();
+
 	void UpdateWorldTransform() const;
 
 	// node名
@@ -147,6 +159,7 @@ private:
 	Vector<SharedPtr<Node>> children_;
 
 	Node* parent_;
+	Scene* ownerScene_;
 
 	bool isTranspent_;
 

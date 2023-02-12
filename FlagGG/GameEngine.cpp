@@ -53,6 +53,8 @@ void GameEngine::RunFrame()
 
 	context_->SendEvent<Frame::LOGIC_UPDATE_HANDLER>(timeStep);
 
+	context_->SendEvent<Frame::PRERENDER_UPDATE_HANDLER>(timeStep);
+
 	for (const auto& viewport : viewports_)
 	{
 		RenderEngine::Instance()->RenderUpdate(viewport);

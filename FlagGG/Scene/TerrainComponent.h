@@ -35,6 +35,9 @@ public:
 	// 获取DrawableFlags
 	UInt32 GetDrawableFlags() const override { return DRAWABLE_GEOMETRY; }
 
+	// 更新包围盒
+	void OnUpdateWorldBoundingBox() override;
+
 protected:
 	// 创建图形数据
 	void CreateGeometry();
@@ -53,6 +56,8 @@ private:
 	SharedPtr<Geometry> geometry_;
 	SharedPtr<VertexBuffer> vertexBuffer_;
 	SharedPtr<IndexBuffer> indexBuffer_;
+
+	BoundingBox meshBoundingBox_;
 };
 
 }
