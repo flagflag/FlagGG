@@ -21,7 +21,7 @@ struct FlagGG_API RenderPassContext
 	DrawableComponent* drawable_;
 };
 
-// »ùÀàpass
+// åŸºç±»pass
 class FlagGG_API RenderPass : public Object
 {
 	OBJECT_OVERRIDE(RenderPass, Object);
@@ -30,16 +30,16 @@ public:
 
 	~RenderPass() override;
 
-	// ÇåÀí
+	// æ¸…ç†
 	virtual void Clear() = 0;
 
-	// ÊÕ¼¯
+	// æ”¶é›†
 	virtual void CollectBatch(RenderPassContext* context) = 0;
 
-	// ÅÅĞò
+	// æ’åº
 	virtual void SortBatch() = 0;
 
-	// äÖÈ¾
+	// æ¸²æŸ“
 	virtual void RenderBatch(Camera* camera, UInt32 layer) = 0;
 };
 
@@ -52,26 +52,26 @@ public:
 
 	~ShadowRenderPass() override;
 
-	// ÇåÀí
+	// æ¸…ç†
 	void Clear() override;
 
-	// ÊÕ¼¯
+	// æ”¶é›†
 	void CollectBatch(RenderPassContext* context) override;
 
-	// ÅÅĞò
+	// æ’åº
 	void SortBatch() override;
 
-	// äÖÈ¾
+	// æ¸²æŸ“
 	void RenderBatch(Camera* camera, UInt32 layer) override;
 
 private:
-	// ÒõÓ°¹âÕ¤×´Ì¬
+	// é˜´å½±å…‰æ …çŠ¶æ€
 	RasterizerState shadowRasterizerState_;
 
 	HashMap<Light*, ShadowRenderContext> shadowRenderContextMap_;
 };
 
-// ¹âÕÕpass
+// å…‰ç…§pass
 class FlagGG_API LitRenderPass : public RenderPass
 {
 	OBJECT_OVERRIDE(LitRenderPass, RenderPass);
@@ -80,23 +80,23 @@ public:
 
 	~LitRenderPass() override;
 
-	// ÇåÀí
+	// æ¸…ç†
 	void Clear() override;
 
-	// ÊÕ¼¯
+	// æ”¶é›†
 	void CollectBatch(RenderPassContext* context) override;
 
-	// ÅÅĞò
+	// æ’åº
 	void SortBatch() override;
 
-	// äÖÈ¾
+	// æ¸²æŸ“
 	void RenderBatch(Camera* camera, UInt32 layer) override;
 
 private:
 	HashMap<Light*, LitRenderContext> litRenderContextMap_;
 };
 
-// ÎŞ¹âpass
+// æ— å…‰pass
 class FlagGG_API AlphaRenderPass : public RenderPass
 {
 	OBJECT_OVERRIDE(AlphaRenderPass, RenderPass);
@@ -105,16 +105,16 @@ public:
 
 	~AlphaRenderPass() override;
 
-	// ÇåÀí
+	// æ¸…ç†
 	void Clear() override;
 
-	// ÊÕ¼¯
+	// æ”¶é›†
 	void CollectBatch(RenderPassContext* context) override;
 
-	// ÅÅĞò
+	// æ’åº
 	void SortBatch() override;
 
-	// äÖÈ¾
+	// æ¸²æŸ“
 	void RenderBatch(Camera* camera, UInt32 layer) override;
 };
 

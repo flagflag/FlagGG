@@ -16,14 +16,14 @@ struct FlagGG_API RenderBatch
 
 	RenderBatch(const RenderContext& renderContext);
 
-	// Í¼ĞÎÀàĞÍ
+	// å›¾å½¢ç±»å‹
 	GeometryType geometryType_{};
-	// Í¼ĞÎÊı¾İ
+	// å›¾å½¢æ•°æ®
 	Geometry* geometry_{};
-	// ÊÀ½çTransform
+	// ä¸–ç•ŒTransform
 	const Matrix3x4* worldTransform_{};
 	UInt32 numWorldTransform_{};
-	// ²ÄÖÊ
+	// æè´¨
 	Material* material_{};
 	// Render pass type
 	RenderPassType renderPassType_{};
@@ -31,11 +31,11 @@ struct FlagGG_API RenderBatch
 	Shader* vertexShader_{};
 	// Pixel shader
 	Shader* pixelShader_{};
-	// Ì½Õë
+	// æ¢é’ˆ
 	Probe* probe_{};
 };
 
-// äÖÈ¾Åú´Î¶ÓÁĞ
+// æ¸²æŸ“æ‰¹æ¬¡é˜Ÿåˆ—
 struct FlagGG_API RenderBatchQueue
 {
 	Vector<RenderBatch> renderBatches_;
@@ -44,25 +44,25 @@ struct FlagGG_API RenderBatchQueue
 
 struct FlagGG_API ShadowRenderContext
 {
-	// µÆ¹â
+	// ç¯å…‰
 	Light* light_{};
-	// ÒõÓ°ÎÆÀí
+	// é˜´å½±çº¹ç†
 	Texture2D* shadowMap_{};
-	// ¹âÕÕäÖÈ¾Åú´Î¶ÓÁĞ
+	// å…‰ç…§æ¸²æŸ“æ‰¹æ¬¡é˜Ÿåˆ—
 	RenderBatchQueue renderBatchQueue_;
-	// µÆ¹â×ø±ê¿Õ¼äÔ¶²Ã¼ô
+	// ç¯å…‰åæ ‡ç©ºé—´è¿œè£å‰ª
 	Real nearSplit_{};
-	// µÆ¹â×ø±ê¿Õ¼ä½ü²Ã¼ô
+	// ç¯å…‰åæ ‡ç©ºé—´è¿‘è£å‰ª
 	Real farSplit_{};
 };
 
 struct FlagGG_API LitRenderContext
 {
-	// µÆ¹â
+	// ç¯å…‰
 	Light* light_{};
-	// ÒõÓ°ÎÆÀí
+	// é˜´å½±çº¹ç†
 	Texture2D* shadowMap_{};
-	// ¹âÕÕäÖÈ¾Åú´Î¶ÓÁĞ
+	// å…‰ç…§æ¸²æŸ“æ‰¹æ¬¡é˜Ÿåˆ—
 	RenderBatchQueue renderBatchQueue_;
 };
 

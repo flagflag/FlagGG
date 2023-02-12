@@ -18,19 +18,19 @@ class Geometry;
 class Material;
 class Matrix3x4;
 
-// äÖÈ¾Åú´Î×îĞ¡µ¥Ôª
+// æ¸²æŸ“æ‰¹æ¬¡æœ€å°å•å…ƒ
 struct FlagGG_API RenderContext
 {
-	// Í¼ĞÎÀàĞÍ
+	// å›¾å½¢ç±»å‹
 	GeometryType geometryType_{};
-	// Í¼ĞÎÊı¾İ
+	// å›¾å½¢æ•°æ®
 	Geometry* geometry_{};
-	// ÊÀ½çTransform
+	// ä¸–ç•ŒTransform
 	const Matrix3x4* worldTransform_{};
 	UInt32 numWorldTransform_{};
-	// ²ÄÖÊ
+	// æè´¨
 	Material* material_{};
-	// ÊÓÍ¼¿É¼ûĞÔMask
+	// è§†å›¾å¯è§æ€§Mask
 	UInt32 viewMask_{};
 };
 
