@@ -13,8 +13,6 @@
 namespace FlagGG
 {
 
-SharedPtr<RenderPipline> DEFAULT_RENDERPIPLINE(new ForwardRenderPipline());
-
 // 阴影投射者OctreeQuery
 class ShadowCasterOctreeQuery : public FrustumOctreeQuery
 {
@@ -70,7 +68,11 @@ void RenderView::Define(Viewport* viewport)
 	renderPiplineContext_ = nullptr;
 
 	if (!renderPipline_)
-		renderPipline_ = DEFAULT_RENDERPIPLINE;
+	{
+		if (!defaultRenderPipline_)
+			defaultRenderPipline_ = new ForwardRenderPipline();
+		renderPipline_ = defaultRenderPipline_;
+	}
 }
 
 void RenderView::Undefine()
@@ -107,6 +109,7 @@ void RenderView::RenderUpdate()
 
 void RenderView::CollectVisibilityObjects()
 {
+#if OCTREE_QUERY
 	FrustumOctreeQuery query(tempQueryResults_, camera_->GetFrustum(), DRAWABLE_ANY, camera_->GetViewMask());
 	octree_->GetElements(query);
 
@@ -127,6 +130,7 @@ void RenderView::CollectVisibilityObjects()
 			renderPiplineContext_->drawables_.Push(drawableComponent);
 		}
 	}
+#endif
 }
 
 void RenderView::RenderShadowMap()

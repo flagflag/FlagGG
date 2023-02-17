@@ -285,7 +285,13 @@ void Camera::SetCameraType(CameraType cameraType)
 
 void Camera::SetFarClip(Real farClip)
 {
-	farClip_ = farClip;
+	if (farClip_ != farClip)
+	{
+		farClip_ = farClip;
+
+		projectionDirty_ = true;
+		frustumDirty_ = true;
+	}
 }
 
 Real Camera::GetFarClip() const
@@ -295,7 +301,13 @@ Real Camera::GetFarClip() const
 
 void Camera::SetNearClip(Real nearClip)
 {
-	nearClip_ = nearClip;
+	if (nearClip_ != nearClip)
+	{
+		nearClip_ = nearClip;
+
+		projectionDirty_ = true;
+		frustumDirty_ = true;
+	}
 }
 
 Real Camera::GetNearClip() const
@@ -305,7 +317,12 @@ Real Camera::GetNearClip() const
 
 void Camera::SetAspect(Real aspect)
 {
-	aspect_ = aspect;
+	if (aspect_ != aspect)
+	{
+		aspect_ = aspect;
+
+		projectionDirty_ = true;
+	}
 }
 
 Real Camera::GetAspect() const
@@ -315,7 +332,12 @@ Real Camera::GetAspect() const
 
 void Camera::SetZoom(Real zoom)
 {
-	zoom_ = zoom;
+	if (zoom_ != zoom)
+	{
+		zoom_ = zoom;
+
+		projectionDirty_ = true;
+	}
 }
 
 Real Camera::GetZoom() const
@@ -325,7 +347,12 @@ Real Camera::GetZoom() const
 
 void Camera::SetFov(Real fov)
 {
-	fov_ = fov;
+	if (fov_ != fov)
+	{
+		fov_ = fov;
+
+		projectionDirty_ = true;
+	}
 }
 
 Real Camera::GetFov() const
@@ -335,7 +362,12 @@ Real Camera::GetFov() const
 
 void Camera::SetOrthographic(bool enable)
 {
-	orthographic_ = enable;
+	if (orthographic_ != enable)
+	{
+		orthographic_ = enable;
+
+		projectionDirty_ = true;
+	}
 }
 
 bool Camera::GetOrthographics() const
@@ -345,7 +377,12 @@ bool Camera::GetOrthographics() const
 
 void Camera::SetOrthoSize(float orthoSize)
 {
-	orthoSize_ = orthoSize;
+	if (orthoSize_ != orthoSize)
+	{
+		orthoSize_ = orthoSize;
+
+		projectionDirty_ = true;
+	}
 }
 
 float Camera::GetOrthoSize() const
@@ -410,7 +447,13 @@ Vector2 Camera::WorldPosToScreenPos(const Vector3& worldPos)
 
 void Camera::SetUseReflection(bool useReflection)
 {
-	useReflection_ = useReflection;
+	if (useReflection_ != useReflection)
+	{
+		useReflection_ = useReflection;
+
+		viewDirty_ = true;
+		frustumDirty_ = true;
+	}
 }
 
 bool Camera::GetUseReflection() const

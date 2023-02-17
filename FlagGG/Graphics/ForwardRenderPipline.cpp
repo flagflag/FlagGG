@@ -36,7 +36,7 @@ void ForwardRenderPipline::Render()
 	RenderEngine* renderEngine = RenderEngine::Instance();
 	GfxDevice* gfxDevice = GfxDevice::GetDevice();
 
-	if (renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP))
+	if (!renderPiplineContext_.camera_->GetUseReflection() && renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP))
 	{
 		gfxDevice->SetRenderTarget(renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP)->GetRenderSurface());
 		gfxDevice->SetDepthStencil(nullptr);

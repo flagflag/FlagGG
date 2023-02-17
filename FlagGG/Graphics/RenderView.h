@@ -67,6 +67,9 @@ private:
 
 	RenderEngine* renderEngine_{};
 
+	// 默认渲染管线
+	SharedPtr<RenderPipline> defaultRenderPipline_;
+
 	// 渲染管线
 	SharedPtr<RenderPipline> renderPipline_;
 

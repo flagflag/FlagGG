@@ -99,13 +99,13 @@ private:
 	CameraType cameraType_{ LAND_OBJECT };
 
 	mutable Frustum frustum_;
-	mutable bool frustumDirty_{};
+	mutable bool frustumDirty_{true};
 
 	mutable Matrix4 projection_;
-	mutable bool projectionDirty_{};
+	mutable bool projectionDirty_{true};
 
 	mutable Matrix3x4 view_;
-	mutable bool viewDirty_{};
+	mutable bool viewDirty_{true};
 
 	Real farClip_{ 1.0f };
 	Real nearClip_{ 100.0f };
