@@ -118,6 +118,9 @@ public:
 
 	void DrawCall(UInt32 vertexStart, UInt32 vertexCount);
 
+	// 渲染RenderBatch
+	void DrawBatch(Camera* camera, const RenderBatch& renderBatch);
+
 private:
 	MaterialQuality textureQuality_{ QUALITY_HIGH };
 

@@ -33,6 +33,8 @@ enum ClearTarget : UInt32
 };
 FLAGGG_FLAGSET(ClearTarget, ClearTargetFlags);
 
+static const unsigned MAX_RENDERTARGET_COUNT = 6;
+
 class GfxDevice
 {
 public:
@@ -49,6 +51,9 @@ public:
 
 	// 设置RenderTarget
 	virtual void SetRenderTarget(GfxRenderSurface* gfxRenderTarget);
+
+	// 设置RenderTarget
+	virtual void SetRenderTarget(UInt8 slotID, GfxRenderSurface* gfxRenderTarget);
 
 	// 设置DepthStencil
 	virtual void SetDepthStencil(GfxRenderSurface* gfxDepthStencil);
@@ -149,7 +154,7 @@ public:
 
 protected:
 	// 准备提交的rt depth stencil
-	SharedPtr<GfxRenderSurface> renderTarget_;
+	SharedPtr<GfxRenderSurface> renderTargets_[MAX_RENDERTARGET_COUNT];
 	SharedPtr<GfxRenderSurface> depthStencil_;
 	bool renderTargetDirty_{};
 	bool depthStencilDirty_{};

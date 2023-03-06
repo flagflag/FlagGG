@@ -38,6 +38,9 @@ static const char* TEXTURE_CLASS[MAX_TEXTURE_CLASS] =
 static const char* RENDER_PASS_TYPE[MAX_RENDER_PASS_TYPE] =
 {
 	"shadow",
+	"forward_lit",
+	"deferred_base",
+	"deferred_lit",
 };
 
 static const UInt32 T_INT = StringHash("int").ToHash();

@@ -134,13 +134,16 @@ void GfxDeviceD3D11::Clear(ClearTargetFlags flags, const Color& color/* = Color:
 {
 	if (flags & CLEAR_COLOR)
 	{
-		auto renderTargetD3D11 = DynamicCast<GfxRenderSurfaceD3D11>(renderTarget_);
-		if (renderTargetD3D11)
+		for (UInt32 slotID = 0; slotID < MAX_RENDERTARGET_COUNT; ++slotID)
 		{
-			auto* renderTargetView = renderTargetD3D11->GetRenderTargetView();
-			if (renderTargetView)
+			auto renderTargetD3D11 = DynamicCast<GfxRenderSurfaceD3D11>(renderTargets_[slotID]);
+			if (renderTargetD3D11)
 			{
-				deviceContext_->ClearRenderTargetView(renderTargetView, color.Data());
+				auto* renderTargetView = renderTargetD3D11->GetRenderTargetView();
+				if (renderTargetView)
+				{
+					deviceContext_->ClearRenderTargetView(renderTargetView, color.Data());
+				}
 			}
 		}
 	}
@@ -312,19 +315,24 @@ void GfxDeviceD3D11::PrepareDraw()
 
 	if (renderTargetDirty_ || depthStencilDirty_)
 	{
-		auto renderTargetD3D11 = DynamicCast<GfxRenderSurfaceD3D11>(renderTarget_);
-		auto depthStencilD3D11 = DynamicCast<GfxRenderSurfaceD3D11>(depthStencil_);
+		static ID3D11RenderTargetView* d3dRenderTargetViews[MAX_RENDERTARGET_COUNT] = {};
 
-		auto* renderTargetView = renderTargetD3D11 ? renderTargetD3D11->GetRenderTargetView() : nullptr;
-		auto* depthStencilView = depthStencilD3D11 ? depthStencilD3D11->GetDepthStencilView() : nullptr;
+		for (UInt32 slotID = 0; slotID < MAX_RENDERTARGET_COUNT; ++slotID)
+		{
+			auto renderTargetD3D11 = DynamicCast<GfxRenderSurfaceD3D11>(renderTargets_[slotID]);
+			d3dRenderTargetViews[slotID] = renderTargetD3D11 ? renderTargetD3D11->GetRenderTargetView() : nullptr;
+		}
+
+		auto depthStencilD3D11 = DynamicCast<GfxRenderSurfaceD3D11>(depthStencil_);
+		auto* d3dDepthStencilView = depthStencilD3D11 ? depthStencilD3D11->GetDepthStencilView() : nullptr;
 
 		if (rasterizerState_.depthWrite_)
 		{
-			deviceContext_->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+			deviceContext_->OMSetRenderTargets(1, d3dRenderTargetViews, d3dDepthStencilView);
 		}
 		else
 		{
-			deviceContext_->OMSetRenderTargets(1, &renderTargetView, nullptr);
+			deviceContext_->OMSetRenderTargets(1, d3dRenderTargetViews, nullptr);
 		}
 
 		renderTargetDirty_ = false;

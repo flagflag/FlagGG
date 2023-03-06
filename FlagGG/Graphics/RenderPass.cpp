@@ -137,7 +137,7 @@ void LitRenderPass::CollectBatch(RenderPassContext* context)
 	for (const auto& renderContext : context->drawable_->GetRenderContext())
 	{
 		auto& renderBatch = renderBatches.EmplaceBack(renderContext);
-		renderBatch.renderPassType_ = RENDER_PASS_TYPE_LIT;
+		renderBatch.renderPassType_ = RENDER_PASS_TYPE_FORWARD_LIT;
 	}
 }
 
@@ -164,14 +164,7 @@ void LitRenderPass::RenderBatch(Camera* camera, UInt32 layer)
 		auto& renderBatches = it.second_.renderBatchQueue_.renderBatches_;
 		for (auto& renderBatch : renderBatches)
 		{
-			renderEngine->SetRasterizerState(renderBatch.material_->GetRasterizerState());
-			renderEngine->SetShaderParameter(camera, renderBatch);
-			renderEngine->SetShaders(renderBatch.material_->GetVertexShader(), renderBatch.material_->GetPixelShader());
-			renderEngine->SetMaterialTextures(renderBatch.material_);
-			renderEngine->SetVertexBuffers(renderBatch.geometry_->GetVertexBuffers());
-			renderEngine->SetIndexBuffer(renderBatch.geometry_->GetIndexBuffer());
-			renderEngine->SetPrimitiveType(renderBatch.geometry_->GetPrimitiveType());
-			renderEngine->DrawCallIndexed(renderBatch.geometry_->GetIndexStart(), renderBatch.geometry_->GetIndexCount());
+			renderEngine->DrawBatch(camera, renderBatch);
 		}
 	}
 }
@@ -206,6 +199,92 @@ void AlphaRenderPass::SortBatch()
 }
 
 void AlphaRenderPass::RenderBatch(Camera* camera, UInt32 layer)
+{
+
+}
+
+/*********************************************************/
+/*                 DeferredBaseRenderPass                */
+/*********************************************************/
+
+DeferredBaseRenderPass::DeferredBaseRenderPass()
+{
+
+}
+
+DeferredBaseRenderPass::~DeferredBaseRenderPass()
+{
+
+}
+
+void DeferredBaseRenderPass::Clear()
+{
+	renderBatchQueue_.renderBatches_.Clear();
+	renderBatchQueue_.renderBatchGroups_.Clear();
+}
+
+void DeferredBaseRenderPass::CollectBatch(RenderPassContext* context)
+{
+	auto& renderBatches = renderBatchQueue_.renderBatches_;
+	for (const auto& renderContext : context->drawable_->GetRenderContext())
+	{
+		auto it = renderContext.material_->GetRenderPass().Find(RENDER_PASS_TYPE_SHADOW);
+		if (it != renderContext.material_->GetRenderPass().End())
+		{
+			auto& renderBatch = renderBatches.EmplaceBack(renderContext);
+			renderBatch.renderPassType_ = RENDER_PASS_TYPE_SHADOW;
+			renderBatch.vertexShader_ = it->second_.vertexShader_;
+			renderBatch.pixelShader_ = it->second_.pixelShader_;
+		}
+	}
+}
+
+void DeferredBaseRenderPass::SortBatch()
+{
+
+}
+
+void DeferredBaseRenderPass::RenderBatch(Camera* camera, UInt32 layer)
+{
+	RenderEngine* renderEngine = RenderEngine::Instance();
+
+	auto& renderBatches = renderBatchQueue_.renderBatches_;
+	for (auto& renderBatch : renderBatches)
+	{
+		renderEngine->DrawBatch(camera, renderBatch);
+	}
+}
+
+/*********************************************************/
+/*                 DeferredBaseRenderPass                */
+/*********************************************************/
+
+DeferredLitRenderPass::DeferredLitRenderPass()
+{
+
+}
+
+DeferredLitRenderPass::~DeferredLitRenderPass()
+{
+
+}
+
+void DeferredLitRenderPass::Clear()
+{
+
+}
+
+void DeferredLitRenderPass::CollectBatch(RenderPassContext* context)
+{
+
+}
+
+void DeferredLitRenderPass::SortBatch()
+{
+
+}
+
+void DeferredLitRenderPass::RenderBatch(Camera* camera, UInt32 layer)
 {
 
 }

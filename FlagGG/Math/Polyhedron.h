@@ -16,7 +16,7 @@ class FlagGG_API Polyhedron
 {
 public:
     /// Construct empty.
-    Polyhedron() noexcept = default;
+    Polyhedron() noexcept {}
     /// Destruct.
     ~Polyhedron() noexcept = default;
 

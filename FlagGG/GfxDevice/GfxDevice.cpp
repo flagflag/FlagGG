@@ -27,8 +27,17 @@ void GfxDevice::Clear(ClearTargetFlags flags, const Color& color/* = Color::TRAN
 
 void GfxDevice::SetRenderTarget(GfxRenderSurface* gfxRenderTarget)
 {
-	renderTarget_ = gfxRenderTarget;
+	renderTargets_[0] = gfxRenderTarget;
 	renderTargetDirty_ = true;
+}
+
+void GfxDevice::SetRenderTarget(UInt8 slotID, GfxRenderSurface* gfxRenderTarget)
+{
+	if (slotID < MAX_RENDERTARGET_COUNT)
+	{
+		renderTargets_[slotID] = gfxRenderTarget;
+		renderTargetDirty_ = true;
+	}
 }
 
 void GfxDevice::SetDepthStencil(GfxRenderSurface* gfxDepthStencil)

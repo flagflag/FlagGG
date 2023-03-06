@@ -90,6 +90,7 @@ void RenderView::RenderUpdate()
 	renderPiplineContext_ = &renderPipline_->GetRenderPiplineContext();
 	renderPiplineContext_->Clear();
 
+	renderPiplineContext_->renderSolution_ = IntVector2(viewport_.Width(), viewport_.Height());
 	renderPiplineContext_->renderTarget_ = renderTarget_;
 	renderPiplineContext_->depthStencil_ = depthStencil_;
 	renderPiplineContext_->camera_ = camera_;

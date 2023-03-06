@@ -8,6 +8,7 @@
 #include "Core/Object.h"
 #include "Container/Vector.h"
 #include "Container/Ptr.h"
+#include "Math/Vector2.h"
 
 struct lua_State;
 
@@ -15,6 +16,7 @@ namespace FlagGG
 {
 
 class GfxRenderSurface;
+class Texture2D;
 class RenderPass;
 struct RenderContext;
 class DrawableComponent;
@@ -27,6 +29,8 @@ struct FlagGG_API RenderPiplineContext
 {
 	void Clear();
 
+	// Render solution
+	IntVector2 renderSolution_;
 	// RenderTarget
 	GfxRenderSurface* renderTarget_{};
 	// DepthStencil
@@ -92,22 +96,23 @@ public:
 	// 清理
 	void Clear() override;
 
+	// 收集batch
+	void CollectBatch() override;
+
 protected:
 	void CollectLitBatch();
 
 	void CollectUnlitBatch();
+
+	// 处理光照batch
+	virtual void OnSolveLitBatch() = 0;
 
 protected:
 	RenderPiplineContext renderPiplineContext_;
 
 	Vector<LitRenderObjects> litRenderObjectsResult_;
 
-	//ShadowRenderContext shadowRenderContext_;
-	//LitRenderContext litRenderContext_;
-	//UnlitRenderContext unlitRenderContext_;
-
 	SharedPtr<RenderPass> shadowRenderPass_;
-	SharedPtr<RenderPass> litRenderPass_[2];
 	SharedPtr<RenderPass> alphaRenderPass_;
 };
 
@@ -120,33 +125,61 @@ public:
 
 	~ForwardRenderPipline() override;
 
-	// 收集batch
-	void CollectBatch() override;
+	// 清理
+	void Clear() override;
+
+	// 处理光照batch
+	void OnSolveLitBatch() override;
 
 	// 渲染前的准备
 	void PrepareRender() override;
 
 	// 渲染
 	void Render() override;
+
+private:
+	SharedPtr<RenderPass> litRenderPass_[2];
 };
 
 // 延迟渲染管线
-class FlagGG_API DefferedRenderPipline : public CommonRenderPipline
+class FlagGG_API DeferredRenderPipline : public CommonRenderPipline
 {
-	OBJECT_OVERRIDE(DefferedRenderPipline, CommonRenderPipline);
+	OBJECT_OVERRIDE(DeferredRenderPipline, CommonRenderPipline);
 public:
-	explicit DefferedRenderPipline();
+	explicit DeferredRenderPipline();
 
-	~DefferedRenderPipline() override;
+	~DeferredRenderPipline() override;
 
-	// 收集batch
-	void CollectBatch() override;
+	// 清理
+	void Clear() override;
+
+	// 处理光照batch
+	void OnSolveLitBatch() override;
 
 	// 渲染前的准备
 	void PrepareRender() override;
 
 	// 渲染
 	void Render() override;
+
+protected:
+	void AllocGBuffers();
+
+private:
+	SharedPtr<RenderPass> baseRenderPass_;
+	SharedPtr<RenderPass> litRenderPass_;
+
+	// rgb - normal
+	// a   - ao
+	SharedPtr<Texture2D> GBufferA_;
+	// r - metallic
+	// g - specular
+	// b - roughness
+	// a - 
+	SharedPtr<Texture2D> GBufferB_;
+	// rgb - base color
+	// a   - directional light shadow factor
+	SharedPtr<Texture2D> GBufferC_;
 };
 
 class FlagGG_API ScriptRenderPipline : public RenderPipline

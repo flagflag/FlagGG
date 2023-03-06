@@ -42,7 +42,6 @@ RenderPipline::~RenderPipline()
 
 CommonRenderPipline::CommonRenderPipline()
 	: shadowRenderPass_(new ShadowRenderPass())
-	, litRenderPass_{ SharedPtr<RenderPass>(new LitRenderPass()), SharedPtr<RenderPass>(new LitRenderPass()) }
 	, alphaRenderPass_(new AlphaRenderPass())
 {
 
@@ -56,14 +55,19 @@ CommonRenderPipline::~CommonRenderPipline()
 void CommonRenderPipline::Clear()
 {
 	shadowRenderPass_->Clear();
-	litRenderPass_[0]->Clear();
-	litRenderPass_[1]->Clear();
 	alphaRenderPass_->Clear();
+}
+
+void CommonRenderPipline::CollectBatch()
+{
+	CollectLitBatch();
+
+	CollectUnlitBatch();
 }
 
 void CommonRenderPipline::CollectLitBatch()
 {
-// É¸Ñ¡³ö"µÆ+ÊÜ¹â"µÄÎïÌå
+// ç­›é€‰å‡º"ç¯+å—å…‰"çš„ç‰©ä½“
 	litRenderObjectsResult_.Clear();
 
 	Sort(renderPiplineContext_.lights_.Begin(), renderPiplineContext_.lights_.End(), [](Light* _1, Light* _2)
@@ -97,37 +101,8 @@ void CommonRenderPipline::CollectLitBatch()
 		}
 	}
 
-	for (auto* drawable : renderPiplineContext_.drawables_)
-	{
-		drawable->SetHasLitPass(false);
-	}
-
-	RenderPassContext context;
-
-// Éú³ÉÊÜ¹âbatch
-	for (auto& litRenderObjects : litRenderObjectsResult_)
-	{
-		context.light_ = litRenderObjects.light_;
-		for (auto* drawable : litRenderObjects.drawables_)
-		{
-			context.drawable_ = drawable;
-
-			// shadow pass
-			shadowRenderPass_->CollectBatch(&context);
-
-			// litbase
-			if (!drawable->GetHasLitPass())
-			{
-				drawable->SetHasLitPass(true);
-				litRenderPass_[0]->CollectBatch(&context);
-			}
-			// light
-			else
-			{
-				litRenderPass_[1]->CollectBatch(&context);
-			}
-		}
-	}
+// ç”Ÿæˆå—å…‰batch
+	OnSolveLitBatch();
 }
 
 void CommonRenderPipline::CollectUnlitBatch()

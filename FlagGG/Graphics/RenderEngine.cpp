@@ -370,6 +370,18 @@ void RenderEngine::DrawCall(UInt32 vertexStart, UInt32 vertexCount)
 	gfxDevice_->Draw(vertexStart, vertexCount);
 }
 
+void RenderEngine::DrawBatch(Camera* camera, const RenderBatch& renderBatch)
+{
+	SetRasterizerState(renderBatch.material_->GetRasterizerState());
+	SetShaderParameter(camera, renderBatch);
+	SetShaders(renderBatch.material_->GetVertexShader(), renderBatch.material_->GetPixelShader());
+	SetMaterialTextures(renderBatch.material_);
+	SetVertexBuffers(renderBatch.geometry_->GetVertexBuffers());
+	SetIndexBuffer(renderBatch.geometry_->GetIndexBuffer());
+	SetPrimitiveType(renderBatch.geometry_->GetPrimitiveType());
+	DrawCallIndexed(renderBatch.geometry_->GetIndexStart(), renderBatch.geometry_->GetIndexCount());
+}
+
 void RenderEngine::RenderUpdate(Viewport* viewport)
 {
 	RenderView* renderView = viewport->GetOrCreateRenderView();

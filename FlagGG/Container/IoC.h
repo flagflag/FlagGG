@@ -16,10 +16,10 @@ public:
 	using Constructor = std::function<ObjectType*(Args&& ... args)>;
 	using Destructor = std::function<void(ObjectType*)>;
 
-	template < class TargetType >
-	void RegisterType(StringHash typeHash)
+	template < class TargetType, class ... ExtraArgs >
+	void RegisterType(StringHash typeHash, ExtraArgs ... extraArgs)
 	{
-		Constructor constructor = [Args&& ... args] { return new TargetType(std::forward<Args>(args)...); };
+		Constructor constructor = [Args&& ... args] { return new TargetType(std::forward<Args>(args)..., extraArgs...); };
 		constructors_.Insert(MakePair(typeHash, constructor));
 	}
 
@@ -30,12 +30,12 @@ public:
 		destructors_.Insert(MakePair(typeHash, std::forward<Destructor>(destructor)));
 	}
 
-	ObjectType* Create(StringHash typeHash, Args ... args)
+	ObjectType* Create(StringHash typeHash, Args&& ... args)
 	{
 		auto it = constructors_.Find(typeHash);
 		if (it == constructors_.End())
 			return nullptr;
-		return (it->second_)(args...);
+		return (it->second_)(std::forward<Args>(args)...);
 	}
 
 	void Destroy(StringHash typeHash, ObjectType* object)

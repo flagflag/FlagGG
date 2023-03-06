@@ -7,6 +7,8 @@ namespace FlagGG
 {
 
 ForwardRenderPipline::ForwardRenderPipline()
+	: CommonRenderPipline()
+	, litRenderPass_{ SharedPtr<RenderPass>(new LitRenderPass()), SharedPtr<RenderPass>(new LitRenderPass()) }
 {
 
 }
@@ -16,19 +18,54 @@ ForwardRenderPipline::~ForwardRenderPipline()
 
 }
 
-void ForwardRenderPipline::CollectBatch()
+void ForwardRenderPipline::Clear()
 {
-	CollectLitBatch();
+	shadowRenderPass_->Clear();
+	alphaRenderPass_->Clear();
+	litRenderPass_[0]->Clear();
+	litRenderPass_[1]->Clear();
+}
 
-	CollectUnlitBatch();
+void ForwardRenderPipline::OnSolveLitBatch()
+{
+	for (auto* drawable : renderPiplineContext_.drawables_)
+	{
+		drawable->SetHasLitPass(false);
+	}
+
+	RenderPassContext context{};
+
+	for (auto& litRenderObjects : litRenderObjectsResult_)
+	{
+		context.light_ = litRenderObjects.light_;
+		for (auto* drawable : litRenderObjects.drawables_)
+		{
+			context.drawable_ = drawable;
+
+			// shadow pass
+			shadowRenderPass_->CollectBatch(&context);
+
+			// litbase
+			if (!drawable->GetHasLitPass())
+			{
+				drawable->SetHasLitPass(true);
+				litRenderPass_[0]->CollectBatch(&context);
+			}
+			// light
+			else
+			{
+				litRenderPass_[1]->CollectBatch(&context);
+			}
+		}
+	}
 }
 
 void ForwardRenderPipline::PrepareRender()
 {
 	shadowRenderPass_->SortBatch();
+	alphaRenderPass_->SortBatch();
 	litRenderPass_[0]->SortBatch();
 	litRenderPass_[1]->SortBatch();
-	alphaRenderPass_->SortBatch();
 }
 
 void ForwardRenderPipline::Render()
