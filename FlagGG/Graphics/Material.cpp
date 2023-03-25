@@ -101,6 +101,17 @@ static const HashMap<StringHash, CullMode> CULL_MODE =
 	{ "CULL_BACK", CULL_BACK },
 };
 
+static const HashMap<StringHash, ComparisonFunc> COMPARE_MODE =
+{
+	{ "COMPARISON_ALWAYS", COMPARISON_ALWAYS },
+	{ "COMPARISON_EQUAL", COMPARISON_EQUAL },
+	{ "COMPARISON_NOT_EQUAL", COMPARISON_NOT_EQUAL },
+	{ "COMPARISON_LESS", COMPARISON_LESS },
+	{ "COMPARISON_LESS_EQUAL", COMPARISON_LESS_EQUAL },
+	{ "COMPARISON_GREATER", COMPARISON_GREATER },
+	{ "COMPARISON_GREATER_EQUAL", COMPARISON_GREATER_EQUAL },
+};
+
 template < class Type >
 void ToStream(const LJSONValue& value, UInt32 count, IOFrame::Buffer::IOBuffer* stream)
 {
@@ -170,7 +181,16 @@ RenderPassInfo::~RenderPassInfo()
 Material::Material(Context* context) :
 	Resource(context),
 	textures_{}
-{ }
+{
+	rasterizerState_.scissorTest_ = false;
+	rasterizerState_.fillMode_ = FILL_SOLID;
+	rasterizerState_.cullMode_ = CULL_BACK;
+	rasterizerState_.blendMode_ = BLEND_REPLACE;
+
+	depthStencilState_.depthWrite_ = true;
+	depthStencilState_.depthTestMode_ = COMPARISON_LESS_EQUAL;
+	depthStencilState_.stencilTest_ = false;
+}
 
 Material::~Material()
 {
@@ -213,7 +233,7 @@ void Material::SetCullMode(CullMode cullMode)
 
 void Material::SetDepthWrite(bool depthWrite)
 {
-	rasterizerState_.depthWrite_ = depthWrite;
+	depthStencilState_.depthWrite_ = depthWrite;
 }
 
 SharedPtr<Texture> Material::GetTexture()
@@ -258,12 +278,7 @@ CullMode Material::GetCullMode() const
 
 bool Material::GetDepthWrite() const
 {
-	return rasterizerState_.depthWrite_;
-}
-
-const RasterizerState Material::GetRasterizerState() const
-{
-	return rasterizerState_;
+	return depthStencilState_.depthWrite_;
 }
 
 void Material::CreateShaderParameters()
@@ -404,11 +419,6 @@ bool Material::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 			}
 		}
 
-		if (root.Contains("depthwrite"))
-		{
-			rasterizerState_.depthWrite_ = root["depthwrite"].GetBool();
-		}
-
 		if (root.Contains("fillmode"))
 		{
 			rasterizerState_.fillMode_ = *FILL_MODE[root["fillmode"].GetString()];
@@ -417,6 +427,41 @@ bool Material::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		if (root.Contains("cullmode"))
 		{
 			rasterizerState_.cullMode_ = *CULL_MODE[root["cullmode"].GetString()];
+		}
+
+		if (root.Contains("depthwrite"))
+		{
+			depthStencilState_.depthWrite_ = root["depthwrite"].GetBool();
+		}
+
+		if (root.Contains("depthtestmode"))
+		{
+			depthStencilState_.depthTestMode_ = *COMPARE_MODE[root["depthtestmode"].GetString()];
+		}
+
+		if (root.Contains("stenciltest"))
+		{
+			depthStencilState_.stencilTest_ = root["stenciltest"].GetBool();
+		}
+
+		if (root.Contains("stenciltestmode"))
+		{
+			depthStencilState_.stencilTestMode_ = *COMPARE_MODE[root["stenciltestmode"].GetString()];
+		}
+
+		if (root.Contains("stencilref"))
+		{
+			depthStencilState_.stencilRef_ = root["stencilref"].GetUInt();
+		}
+
+		if (root.Contains("stencilreadmask"))
+		{
+			depthStencilState_.stencilReadMask_ = root["stencilreadmask"].GetUInt();
+		}
+
+		if (root.Contains("stencilwritemask"))
+		{
+			depthStencilState_.stencilWriteMask_ = root["stencilwritemask"].GetUInt();
 		}
 	}
 	else

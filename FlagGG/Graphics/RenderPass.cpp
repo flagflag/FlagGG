@@ -30,10 +30,14 @@ RenderPass::~RenderPass()
 
 ShadowRenderPass::ShadowRenderPass()
 {
-	shadowRasterizerState_.depthWrite_ = true;
-	shadowRasterizerState_.scissorTest_ = false;
-	shadowRasterizerState_.fillMode_ = FILL_SOLID;
-	shadowRasterizerState_.cullMode_ = CULL_FRONT;
+	rasterizerState_.scissorTest_ = false;
+	rasterizerState_.fillMode_ = FILL_SOLID;
+	rasterizerState_.cullMode_ = CULL_FRONT;
+	rasterizerState_.blendMode_ = BLEND_REPLACE;
+
+	depthStencilState_.depthWrite_ = true;
+	depthStencilState_.depthTestMode_ = COMPARISON_GREATER;
+	depthStencilState_.stencilTest_ = false;
 }
 
 ShadowRenderPass::~ShadowRenderPass()
@@ -89,7 +93,8 @@ void ShadowRenderPass::RenderBatch(Camera* camera, UInt32 layer)
 		auto& renderBatches = it.second_.renderBatchQueue_.renderBatches_;
 		for (auto& renderBatch : renderBatches)
 		{
-			renderEngine->SetRasterizerState(shadowRasterizerState_);
+			renderEngine->SetRasterizerState(rasterizerState_);
+			renderEngine->SetDepthStencilState(depthStencilState_);
 			renderEngine->SetShaderParameter(light, renderBatch);
 			renderEngine->SetShaders(renderBatch.vertexShader_, renderBatch.pixelShader_);
 			renderEngine->SetVertexBuffers(renderBatch.geometry_->GetVertexBuffers());
@@ -228,7 +233,7 @@ void DeferredBaseRenderPass::CollectBatch(RenderPassContext* context)
 	auto& renderBatches = renderBatchQueue_.renderBatches_;
 	for (const auto& renderContext : context->drawable_->GetRenderContext())
 	{
-		auto it = renderContext.material_->GetRenderPass().Find(RENDER_PASS_TYPE_SHADOW);
+		auto it = renderContext.material_->GetRenderPass().Find(RENDER_PASS_TYPE_DEFERRED_BASE);
 		if (it != renderContext.material_->GetRenderPass().End())
 		{
 			auto& renderBatch = renderBatches.EmplaceBack(renderContext);
@@ -253,40 +258,6 @@ void DeferredBaseRenderPass::RenderBatch(Camera* camera, UInt32 layer)
 	{
 		renderEngine->DrawBatch(camera, renderBatch);
 	}
-}
-
-/*********************************************************/
-/*                 DeferredBaseRenderPass                */
-/*********************************************************/
-
-DeferredLitRenderPass::DeferredLitRenderPass()
-{
-
-}
-
-DeferredLitRenderPass::~DeferredLitRenderPass()
-{
-
-}
-
-void DeferredLitRenderPass::Clear()
-{
-
-}
-
-void DeferredLitRenderPass::CollectBatch(RenderPassContext* context)
-{
-
-}
-
-void DeferredLitRenderPass::SortBatch()
-{
-
-}
-
-void DeferredLitRenderPass::RenderBatch(Camera* camera, UInt32 layer)
-{
-
 }
 
 }

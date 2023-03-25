@@ -96,7 +96,9 @@ public:
 	/**********************************************************/
 
 	// 设置光栅状态
-	void SetRasterizerState(RasterizerState rasterizerState);
+	void SetRasterizerState(const RasterizerState& rasterizerState);
+
+	void SetDepthStencilState(const DepthStencilState& depthStencilState);
 
 	void SetShaderParameter(Camera* camera, const RenderContext* renderContext);
 
@@ -121,6 +123,11 @@ public:
 	// 渲染RenderBatch
 	void DrawBatch(Camera* camera, const RenderBatch& renderBatch);
 
+	// 渲染Quad
+	void DrawQuad(Camera* camera);
+
+	Matrix3x4 GetFullscreenQuadTransform(Camera* camera);
+
 private:
 	MaterialQuality textureQuality_{ QUALITY_HIGH };
 
@@ -129,6 +136,11 @@ private:
 	SharedPtr<ShaderParameters> shaderParameters_;
 
 	Vector<SharedPtr<Batch>> batches_;
+
+	SharedPtr<Geometry> orthographicGeometry_;
+	
+	RasterizerState fullscreenQuadRS_;
+	DepthStencilState fullscreenDSS_;
 
 	Context* context_;
 	GfxDevice* gfxDevice_;

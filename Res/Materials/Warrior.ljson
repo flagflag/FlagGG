@@ -51,6 +51,19 @@
 				path = "Shader/Shadow.hlsl",
 				defines = [ "MODEL_SHADOW" ]
 			}
+		},
+		{
+			name = "deferred_base",
+			vsshader = 
+			{
+				path = "Shader/Deferred/ModelMRT.hlsl",
+                defines = [ "SKINNED", "VERTEX_POSITION", "VERTEX_NORMAL", "VERTEX_TEXCOORD" ]
+			},
+			psshader =
+			{
+				path = "Shader/Deferred/ModelMRT.hlsl",
+                defines = [ "VERTEX_POSITION", "VERTEX_NORMAL", "VERTEX_TEXCOORD" ]
+			}
 		}
 	]
 }

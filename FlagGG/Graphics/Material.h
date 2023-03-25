@@ -82,7 +82,10 @@ public:
 	bool GetDepthWrite() const;
 
 	// 获取光栅化状态
-	const RasterizerState GetRasterizerState() const;
+	const RasterizerState& GetRasterizerState() const { return rasterizerState_; }
+
+	// 获取深度模板状态
+	const DepthStencilState& GetDepthStencilState() const { return depthStencilState_; }
 
 	// 创建材质参数集
 	void CreateShaderParameters();
@@ -104,6 +107,8 @@ protected:
 	HashMap<UInt32, RenderPassInfo> renderPass_;
 
 	RasterizerState rasterizerState_;
+
+	DepthStencilState depthStencilState_;
 };
 
 }

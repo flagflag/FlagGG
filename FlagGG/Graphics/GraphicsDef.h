@@ -314,11 +314,24 @@ struct FlagGG_API VertexElement
 
 struct FlagGG_API RasterizerState
 {
-	bool depthWrite_{ true };
 	bool scissorTest_{ false };
 	FillMode fillMode_{ FILL_SOLID };
 	CullMode cullMode_{ CULL_NONE };
 	BlendMode blendMode_{ BLEND_REPLACE };
+
+	UInt32 GetHash() const;
+};
+
+struct FlagGG_API DepthStencilState
+{
+	bool depthWrite_{ true };
+	ComparisonFunc depthTestMode_{ COMPARISON_ALWAYS };
+
+	bool stencilTest_{ false };
+	UInt8 stencilRef_{};
+	UInt8 stencilReadMask_{};
+	UInt8 stencilWriteMask_{};
+	ComparisonFunc stencilTestMode_{ COMPARISON_ALWAYS };
 
 	UInt32 GetHash() const;
 };

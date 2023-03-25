@@ -85,6 +85,9 @@ public:
 	Vector3 ScreenPosToWorldPos(const Vector3& screenPos);
 	Vector2 WorldPosToScreenPos(const Vector3& worldPos);
 
+	void GetFrustumSize(Vector3& nearVec, Vector3& farVec) const;
+	Frustum GetViewSpaceFrustum() const;
+
 	void SetUseReflection(bool useReflection);
 	bool GetUseReflection() const;
 

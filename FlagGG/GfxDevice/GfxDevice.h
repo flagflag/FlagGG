@@ -55,6 +55,9 @@ public:
 	// 设置RenderTarget
 	virtual void SetRenderTarget(UInt8 slotID, GfxRenderSurface* gfxRenderTarget);
 
+	// 重置RenderTargets
+	virtual void ResetRenderTargets();
+
 	// 设置DepthStencil
 	virtual void SetDepthStencil(GfxRenderSurface* gfxDepthStencil);
 
@@ -106,8 +109,14 @@ public:
 	// 设置填充模式
 	virtual void SetFillMode(FillMode fillMode);
 
+	// 设置深度模式
+	virtual void SetDepthTestMode(ComparisonFunc depthTestMode);
+
 	// 设置深度写
 	virtual void SetDepthWrite(bool depthWrite);
+
+	// 设置模板测试
+	virtual void SetStencilTest(bool stencilTest, ComparisonFunc stencilTestMode, UInt32 stencilRef, UInt32 stencilReadMask = F_MAX_UNSIGNED, UInt32 stencilWriteMask = F_MAX_UNSIGNED);
 
 	// 设置裁剪测试
 	virtual void SetScissorTest(bool scissorTest, const IntRect& rect);
@@ -192,6 +201,11 @@ protected:
 	RasterizerState rasterizerState_;
 	// 光珊化状态dirty
 	bool rasterizerStateDirty_{};
+
+	// 深度模板状态
+	DepthStencilState depthStencilState_;
+	// 深度模板状态dirty
+	bool depthStencilStateDirty_{};
 
 	// 图元类型
 	PrimitiveType primitiveType_{ PRIMITIVE_TRIANGLE };

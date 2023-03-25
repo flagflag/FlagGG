@@ -66,7 +66,10 @@ public:
 
 private:
 	// 阴影光栅状态
-	RasterizerState shadowRasterizerState_;
+	RasterizerState rasterizerState_;
+
+	// 阴影深度模板状态
+	DepthStencilState depthStencilState_;
 
 	HashMap<Light*, ShadowRenderContext> shadowRenderContextMap_;
 };
@@ -141,28 +144,6 @@ public:
 
 private:
 	RenderBatchQueue renderBatchQueue_;
-};
-
-// 延迟光照pass
-class FlagGG_API DeferredLitRenderPass : public RenderPass
-{
-	OBJECT_OVERRIDE(DeferredLitRenderPass, RenderPass);
-public:
-	explicit DeferredLitRenderPass();
-
-	~DeferredLitRenderPass() override;
-
-	// 清理
-	void Clear() override;
-
-	// 收集
-	void CollectBatch(RenderPassContext* context) override;
-
-	// 排序
-	void SortBatch() override;
-
-	// 渲染
-	void RenderBatch(Camera* camera, UInt32 layer) override;
 };
 
 }

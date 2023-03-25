@@ -26,6 +26,9 @@ public:
 	 */
 	bool SetSize(UInt32 vertexCount, const PODVector<VertexElement>& vertexElements, bool dynamic = false);
 
+	// 设置vb的数据
+	void SetData(const void* data);
+
 	// 获取顶点单个元素的大小
 	UInt32 GetVertexSize() const;
 

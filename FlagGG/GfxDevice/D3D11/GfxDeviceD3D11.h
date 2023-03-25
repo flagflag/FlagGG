@@ -85,6 +85,8 @@ protected:
 
 	void PrepareRasterizerState();
 
+	void PrepareDepthStencilState();
+
 	void CopyShaderParameterToBuffer(GfxShaderD3D11* shader, GfxBufferD3D11* buffer);
 
 	ID3D11InputLayout* GetD3D11InputLayout(VertexDescription* verteDesc, GfxShaderD3D11* vertexShader);
@@ -110,6 +112,9 @@ private:
 
 	// 光栅化状态缓存
 	HashMap<UInt32, ID3D11RasterizerState*> rasterizerStates_;
+
+	// 深度模板状态缓存
+	HashMap<UInt32, ID3D11DepthStencilState*> depthStencilStates_;
 
 	// uniform
 	GfxBufferD3D11 vsConstantBuffer_[MAX_CONST_BUFFER_COUNT];

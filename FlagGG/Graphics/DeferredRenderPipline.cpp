@@ -2,15 +2,17 @@
 #include "Graphics/RenderPass.h"
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Texture2D.h"
+#include "Graphics/Shader.h"
 #include "GfxDevice/GfxDevice.h"
+#include "Resource/ResourceCache.h"
 
 namespace FlagGG
 {
 
-DeferredRenderPipline::DeferredRenderPipline()
+DeferredRenderPipline::DeferredRenderPipline(Context* context)
 	: CommonRenderPipline()
+	, cache_(context->GetVariable<ResourceCache>("ResourceCache"))
 	, baseRenderPass_(new DeferredBaseRenderPass())
-	, litRenderPass_(new DeferredLitRenderPass())
 {
 
 }
@@ -25,7 +27,6 @@ void DeferredRenderPipline::Clear()
 	shadowRenderPass_->Clear();
 	alphaRenderPass_->Clear();
 	baseRenderPass_->Clear();
-	litRenderPass_->Clear();
 }
 
 void DeferredRenderPipline::OnSolveLitBatch()
@@ -57,7 +58,6 @@ void DeferredRenderPipline::PrepareRender()
 	shadowRenderPass_->SortBatch();
 	alphaRenderPass_->SortBatch();
 	baseRenderPass_->SortBatch();
-	litRenderPass_->SortBatch();
 }
 
 void DeferredRenderPipline::AllocGBuffers()
@@ -75,16 +75,19 @@ void DeferredRenderPipline::AllocGBuffers()
 
 	if (GBufferA_->GetWidth() != renderSolution.x_ || GBufferA_->GetHeight() != renderSolution.y_)
 	{
+		GBufferA_->SetNumLevels(1);
 		GBufferA_->SetSize(renderSolution.x_, renderSolution.y_, TEXTURE_FORMAT_RGBA8, TEXTURE_RENDERTARGET);
 	}
 
 	if (GBufferB_->GetWidth() != renderSolution.x_ || GBufferB_->GetHeight() != renderSolution.y_)
 	{
+		GBufferB_->SetNumLevels(1);
 		GBufferB_->SetSize(renderSolution.x_, renderSolution.y_, TEXTURE_FORMAT_RGBA8, TEXTURE_RENDERTARGET);
 	}
 
 	if (GBufferC_->GetWidth() != renderSolution.x_ || GBufferC_->GetHeight() != renderSolution.y_)
 	{
+		GBufferC_->SetNumLevels(1);
 		GBufferC_->SetSize(renderSolution.x_, renderSolution.y_, TEXTURE_FORMAT_RGBA8, TEXTURE_RENDERTARGET);
 	}
 }
@@ -111,15 +114,39 @@ void DeferredRenderPipline::Render()
 		gfxDevice->SetRenderTarget(1u, GBufferB_->GetRenderSurface());
 		gfxDevice->SetRenderTarget(2u, GBufferC_->GetRenderSurface());
 		gfxDevice->SetDepthStencil(renderPiplineContext_.depthStencil_);
+		gfxDevice->Clear(CLEAR_COLOR | CLEAR_DEPTH | CLEAR_STENCIL);
 
 		baseRenderPass_->RenderBatch(renderPiplineContext_.camera_, 0u);
 	}
 
 	// Render deferred lit to color render target
 	{
-		gfxDevice->SetRenderTarget(4u, renderPiplineContext_.renderTarget_);
+		gfxDevice->SetTexture(0u, GBufferA_->GetGfxTextureRef());
+		gfxDevice->SetTexture(1u, GBufferB_->GetGfxTextureRef());
+		gfxDevice->SetTexture(2u, GBufferC_->GetGfxTextureRef());
 
-		litRenderPass_->RenderBatch(renderPiplineContext_.camera_, 0u);
+		gfxDevice->SetSampler(0u, GBufferA_->GetGfxSamplerRef());
+		gfxDevice->SetSampler(1u, GBufferB_->GetGfxSamplerRef());
+		gfxDevice->SetSampler(2u, GBufferC_->GetGfxSamplerRef());
+
+		gfxDevice->ResetRenderTargets();
+		gfxDevice->SetRenderTarget(0u, renderPiplineContext_.renderTarget_);
+		gfxDevice->SetDepthStencil(renderPiplineContext_.depthStencil_);
+
+		if (!litVertexShader_ || !litPixelShader_)
+		{
+			auto shaderCode = cache_->GetResource<ShaderCode>("Shader/Deferred/LitQuad.hlsl");
+
+			auto vs = shaderCode->GetShader(VS, {});
+			litVertexShader_ = vs->GetGfxRef();
+
+			auto ps = shaderCode->GetShader(PS, {});
+ 			litPixelShader_ = ps->GetGfxRef();
+		}
+
+		gfxDevice->SetShaders(litVertexShader_, litPixelShader_);
+
+		renderEngine->DrawQuad(renderPiplineContext_.camera_);
 	}
 }
 

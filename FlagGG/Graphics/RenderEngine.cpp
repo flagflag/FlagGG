@@ -37,6 +37,42 @@ RenderEngine::RenderEngine(Context* context) :
 void RenderEngine::Initialize()
 {
 	gfxDevice_ = GfxDevice::CreateDevice();
+
+	const Real vertexData[] =
+	{
+		-1, 1, 0,
+		1, 1, 0,
+		1, -1, 0,
+		-1, -1, 0,
+	};
+	SharedPtr<VertexBuffer> vb(new VertexBuffer());
+	PODVector<VertexElement> elements;
+	elements.Push(VertexElement(VE_VECTOR3, SEM_POSITION));
+	vb->SetSize(4, elements);
+	vb->SetData(vertexData);
+
+	const UInt16 indexData[] =
+	{
+		0, 1, 2,
+		2, 3, 0,
+	};
+	SharedPtr<IndexBuffer> ib(new IndexBuffer());
+	ib->SetSize(sizeof(UInt16), 6u);
+	ib->SetData(indexData);
+
+	orthographicGeometry_ = new Geometry();
+	orthographicGeometry_->SetVertexBuffer(0u, vb);
+	orthographicGeometry_->SetIndexBuffer(ib);
+	orthographicGeometry_->SetDataRange(0, ib->GetIndexCount());
+	orthographicGeometry_->SetPrimitiveType(PRIMITIVE_TRIANGLE);
+
+	fullscreenQuadRS_.scissorTest_ = false;
+	fullscreenQuadRS_.fillMode_ = FILL_SOLID;
+	fullscreenQuadRS_.cullMode_ = CULL_NONE;
+	fullscreenQuadRS_.blendMode_ = BLEND_REPLACE;
+
+	fullscreenDSS_.depthWrite_ = false;
+	fullscreenDSS_.stencilTest_ = false;
 }
 
 void RenderEngine::Uninitialize()
@@ -288,7 +324,8 @@ void RenderEngine::SetShaderParameter(Camera* camera, const RenderBatch& renderB
 	}
 
 	gfxDevice_->SetEngineShaderParameters(shaderParameters_);
-	gfxDevice_->SetMaterialShaderParameters(renderBatch.material_->GetShaderParameters());
+	if (renderBatch.material_)
+		gfxDevice_->SetMaterialShaderParameters(renderBatch.material_->GetShaderParameters());
 }
 
 void RenderEngine::SetVertexBuffers(const Vector<SharedPtr<VertexBuffer>>& vertexBuffers)
@@ -325,12 +362,16 @@ void RenderEngine::SetTextures(const Vector<SharedPtr<Texture>>& textures)
 		if (texture)
 		{
 			gfxDevice_->SetTexture(i, texture->GetGfxTextureRef());
+			gfxDevice_->SetSampler(i, texture->GetGfxSamplerRef());
 		}
 	}
 }
 
 void RenderEngine::SetMaterialTextures(Material* material)
 {
+	if (!material)
+		return;
+
 	for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
 	{
 		auto texture = material->GetTexture(i) ? material->GetTexture(i) : defaultTextures_[i];
@@ -347,12 +388,23 @@ void RenderEngine::SetDefaultTextures(TextureClass index, Texture* texture)
 	defaultTextures_[index] = texture;
 }
 
-void RenderEngine::SetRasterizerState(RasterizerState rasterizerState)
+void RenderEngine::SetRasterizerState(const RasterizerState& rasterizerState)
 {
 	gfxDevice_->SetBlendMode(rasterizerState.blendMode_);
 	gfxDevice_->SetCullMode(rasterizerState.cullMode_);
 	gfxDevice_->SetFillMode(rasterizerState.fillMode_);
-	gfxDevice_->SetDepthWrite(rasterizerState.depthWrite_);
+}
+
+void RenderEngine::SetDepthStencilState(const DepthStencilState& depthStencilState)
+{
+	gfxDevice_->SetDepthWrite(depthStencilState.depthWrite_);
+	gfxDevice_->SetDepthTestMode(depthStencilState.depthTestMode_);
+	gfxDevice_->SetStencilTest(
+		depthStencilState.stencilTest_, 
+		depthStencilState.stencilTestMode_,
+		depthStencilState.stencilRef_,
+		depthStencilState.stencilReadMask_,
+		depthStencilState.stencilWriteMask_);
 }
 
 void RenderEngine::SetPrimitiveType(PrimitiveType primitiveType)
@@ -373,13 +425,46 @@ void RenderEngine::DrawCall(UInt32 vertexStart, UInt32 vertexCount)
 void RenderEngine::DrawBatch(Camera* camera, const RenderBatch& renderBatch)
 {
 	SetRasterizerState(renderBatch.material_->GetRasterizerState());
+	SetDepthStencilState(renderBatch.material_->GetDepthStencilState());
 	SetShaderParameter(camera, renderBatch);
-	SetShaders(renderBatch.material_->GetVertexShader(), renderBatch.material_->GetPixelShader());
+	if (renderBatch.vertexShader_ && renderBatch.pixelShader_)
+		SetShaders(renderBatch.vertexShader_, renderBatch.pixelShader_);
+	else
+		SetShaders(renderBatch.material_->GetVertexShader(), renderBatch.material_->GetPixelShader());
 	SetMaterialTextures(renderBatch.material_);
 	SetVertexBuffers(renderBatch.geometry_->GetVertexBuffers());
 	SetIndexBuffer(renderBatch.geometry_->GetIndexBuffer());
 	SetPrimitiveType(renderBatch.geometry_->GetPrimitiveType());
 	DrawCallIndexed(renderBatch.geometry_->GetIndexStart(), renderBatch.geometry_->GetIndexCount());
+}
+
+Matrix3x4 RenderEngine::GetFullscreenQuadTransform(Camera* camera)
+{
+	Matrix3x4 quadTransform;
+	Vector3 nearVec, farVec;
+	// Position the directional light quad in halfway between far & near planes to prevent depth clipping
+	camera->GetFrustumSize(nearVec, farVec);
+	quadTransform.SetTranslation(Vector3(0.0f, 0.0f, (camera->GetNearClip() + camera->GetFarClip()) * 0.5f));
+	quadTransform.SetScale(Vector3(farVec.x_, farVec.y_, 1.0f)); // Will be oversized, but doesn't matter (gets frustum clipped)
+	return camera->GetEffectiveWorldTransform() * quadTransform;
+}
+
+void RenderEngine::DrawQuad(Camera* camera)
+{
+	Matrix3x4 worldTransform = GetFullscreenQuadTransform(camera);
+
+	RenderBatch quadRenderBatch;
+	quadRenderBatch.geometryType_ = GEOMETRY_STATIC;
+	quadRenderBatch.worldTransform_ = &worldTransform;
+	quadRenderBatch.numWorldTransform_ = 1u;
+
+	SetRasterizerState(fullscreenQuadRS_);
+	SetDepthStencilState(fullscreenDSS_);
+	SetShaderParameter(camera, quadRenderBatch);
+	SetVertexBuffers(orthographicGeometry_->GetVertexBuffers());
+	SetIndexBuffer(orthographicGeometry_->GetIndexBuffer());
+	SetPrimitiveType(orthographicGeometry_->GetPrimitiveType());
+	DrawCallIndexed(orthographicGeometry_->GetIndexStart(), orthographicGeometry_->GetIndexCount());
 }
 
 void RenderEngine::RenderUpdate(Viewport* viewport)

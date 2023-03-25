@@ -445,6 +445,28 @@ Vector2 Camera::WorldPosToScreenPos(const Vector3& worldPos)
 	return Vector2::ZERO;
 }
 
+void Camera::GetFrustumSize(Vector3& nearVec, Vector3& farVec) const
+{
+	Frustum viewSpaceFrustum = GetViewSpaceFrustum();
+	nearVec = viewSpaceFrustum.vertices_[0];
+	farVec = viewSpaceFrustum.vertices_[4];
+}
+
+Frustum Camera::GetViewSpaceFrustum() const
+{
+	if (projectionDirty_)
+		UpdateProjection();
+
+	Frustum ret;
+
+	if (!orthographic_)
+		ret.Define(fov_, aspect_, zoom_, GetNearClip(), GetFarClip());
+	else
+		ret.DefineOrtho(orthoSize_, aspect_, zoom_, GetNearClip(), GetFarClip());
+
+	return ret;
+}
+
 void Camera::SetUseReflection(bool useReflection)
 {
 	if (useReflection_ != useReflection)

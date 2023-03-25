@@ -32,19 +32,17 @@
             path = "Textures/TerrainDetail3.dds"
         }
 	},
-	pass =
+    pass =
 	[
 		{
 			name = "deferred_base",
 			vsshader = 
 			{
-				path = "Shader/Deferred/Base.hlsl",
-                defines = [ "VERTEX_POSITION", "VERTEX_NORMAL", "VERTEX_TEXCOORD" ]
+				path = "Shader/Deferred/TerrainMRT.hlsl"
 			},
 			psshader =
 			{
-				path = "Shader/Deferred/Base.hlsl",
-                defines = [ "VERTEX_POSITION", "VERTEX_NORMAL", "VERTEX_TEXCOORD" ]
+				path = "Shader/Deferred/TerrainMRT.hlsl"
 			}
 		}
 	],

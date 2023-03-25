@@ -15,7 +15,10 @@ struct lua_State;
 namespace FlagGG
 {
 
+class Context;
+class ResourceCache;
 class GfxRenderSurface;
+class GfxShader;
 class Texture2D;
 class RenderPass;
 struct RenderContext;
@@ -146,7 +149,7 @@ class FlagGG_API DeferredRenderPipline : public CommonRenderPipline
 {
 	OBJECT_OVERRIDE(DeferredRenderPipline, CommonRenderPipline);
 public:
-	explicit DeferredRenderPipline();
+	explicit DeferredRenderPipline(Context* context);
 
 	~DeferredRenderPipline() override;
 
@@ -166,8 +169,9 @@ protected:
 	void AllocGBuffers();
 
 private:
+	ResourceCache* cache_;
+
 	SharedPtr<RenderPass> baseRenderPass_;
-	SharedPtr<RenderPass> litRenderPass_;
 
 	// rgb - normal
 	// a   - ao
@@ -180,6 +184,9 @@ private:
 	// rgb - base color
 	// a   - directional light shadow factor
 	SharedPtr<Texture2D> GBufferC_;
+
+	SharedPtr<GfxShader> litVertexShader_;
+	SharedPtr<GfxShader> litPixelShader_;
 };
 
 class FlagGG_API ScriptRenderPipline : public RenderPipline

@@ -20,6 +20,13 @@ bool IndexBuffer::SetSize(UInt32 indexSize, UInt32 indexCount, bool dynamic)
 	return true;
 }
 
+void IndexBuffer::SetData(const void* data)
+{
+	void* dest = Lock(0, indexCount_);
+	memcpy(dest, data, indexSize_ * indexCount_);
+	Unlock();
+}
+
 UInt32 IndexBuffer::GetIndexSize() const
 {
 	return indexSize_;

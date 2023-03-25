@@ -31,6 +31,15 @@ void GfxDevice::SetRenderTarget(GfxRenderSurface* gfxRenderTarget)
 	renderTargetDirty_ = true;
 }
 
+void GfxDevice::ResetRenderTargets()
+{
+	for (UInt32 i = 0; i < MAX_RENDERTARGET_COUNT; ++i)
+	{
+		renderTargets_[i] = nullptr;
+	}
+	renderTargetDirty_ = true;
+}
+
 void GfxDevice::SetRenderTarget(UInt8 slotID, GfxRenderSurface* gfxRenderTarget)
 {
 	if (slotID < MAX_RENDERTARGET_COUNT)
@@ -158,12 +167,38 @@ void GfxDevice::SetFillMode(FillMode fillMode)
 	}
 }
 
+void GfxDevice::SetDepthTestMode(ComparisonFunc depthTestMode)
+{
+	if (depthTestMode != depthStencilState_.depthTestMode_)
+	{
+		depthStencilState_.depthTestMode_ = depthTestMode;
+		depthStencilStateDirty_ = true;
+	}
+}
+
 void GfxDevice::SetDepthWrite(bool depthWrite)
 {
-	if (depthWrite != rasterizerState_.depthWrite_)
+	if (depthWrite != depthStencilState_.depthWrite_)
 	{
-		rasterizerState_.depthWrite_ = depthWrite;
-		rasterizerStateDirty_ = true;
+		depthStencilState_.depthWrite_ = depthWrite;
+		depthStencilStateDirty_ = true;
+	}
+}
+
+void GfxDevice::SetStencilTest(bool stencilTest, ComparisonFunc stencilTestMode, UInt32 stencilRef, UInt32 stencilReadMask/* = F_MAX_UNSIGNED*/, UInt32 stencilWriteMask/* = F_MAX_UNSIGNED*/)
+{
+	if (stencilTest != depthStencilState_.stencilTest_ ||
+		stencilTestMode != depthStencilState_.stencilTestMode_ ||
+		stencilRef != depthStencilState_.stencilRef_ ||
+		stencilReadMask != depthStencilState_.stencilReadMask_ ||
+		stencilWriteMask != depthStencilState_.stencilWriteMask_)
+	{
+		depthStencilState_.stencilTest_ = stencilTest;
+		depthStencilState_.stencilTestMode_ = stencilTestMode;
+		depthStencilState_.stencilRef_ = stencilRef;
+		depthStencilState_.stencilReadMask_ = stencilReadMask;
+		depthStencilState_.stencilWriteMask_ = stencilWriteMask;
+		depthStencilStateDirty_ = true;
 	}
 }
 

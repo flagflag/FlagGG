@@ -170,6 +170,12 @@ void GfxDeviceD3D11::Clear(ClearTargetFlags flags, const Color& color/* = Color:
 
 void GfxDeviceD3D11::Draw(UInt32 vertexStart, UInt32 vertexCount)
 {
+	if (!vertexShader_ || !pixelShader_)
+	{
+		CRY_ASSERT(false, "vertex shader or pixel shader is null.");
+		return;
+	}
+
 	PrepareDraw();
 
 	deviceContext_->Draw(vertexCount, vertexStart);
@@ -177,6 +183,12 @@ void GfxDeviceD3D11::Draw(UInt32 vertexStart, UInt32 vertexCount)
 
 void GfxDeviceD3D11::DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart)
 {
+	if (!vertexShader_ || !pixelShader_)
+	{
+		CRY_ASSERT(false, "vertex shader or pixel shader is null.");
+		return;
+	}
+
 	PrepareDraw();
 
 	deviceContext_->DrawIndexed(indexCount, indexStart, vertexStart);
@@ -192,6 +204,8 @@ void GfxDeviceD3D11::PrepareDraw()
 	static GfxBufferD3D11* vertexBuffers[MAX_VERTEX_BUFFER_COUNT + 1] = { 0 };
 
 	PrepareRasterizerState();
+
+	PrepareDepthStencilState();
 
 	auto vertexShaderD3D11 = DynamicCast<GfxShaderD3D11>(vertexShader_);
 	auto pixelShaderD3D11 = DynamicCast<GfxShaderD3D11>(pixelShader_);
@@ -269,6 +283,36 @@ void GfxDeviceD3D11::PrepareDraw()
 		deviceContext_->VSSetConstantBuffers(0, MAX_CONST_BUFFER, d3dVSConstantBuffer);
 		deviceContext_->PSSetConstantBuffers(0, MAX_CONST_BUFFER, d3dPSConstantBuffer);
 	}
+	
+	// 放在设置纹理之前设置RT，原因：如果某个RT下一次Draw时作为纹理调用PSSetShaderResources时会失效（因为没有解绑的RT不允许设置为ShaderResource）
+	if (renderTargetDirty_ || depthStencilDirty_)
+	{
+		static ID3D11RenderTargetView* d3dRenderTargetViews[MAX_RENDERTARGET_COUNT] = {};
+
+		UInt32 renderTargetCount = 0u;
+		for (UInt32 slotID = 0; slotID < MAX_RENDERTARGET_COUNT; ++slotID)
+		{
+			auto renderTargetD3D11 = DynamicCast<GfxRenderSurfaceD3D11>(renderTargets_[slotID]);
+			d3dRenderTargetViews[slotID] = renderTargetD3D11 ? renderTargetD3D11->GetRenderTargetView() : nullptr;
+			if (d3dRenderTargetViews[slotID])
+				renderTargetCount = slotID + 1;
+		}
+
+		auto depthStencilD3D11 = DynamicCast<GfxRenderSurfaceD3D11>(depthStencil_);
+		auto* d3dDepthStencilView = depthStencilD3D11 ? depthStencilD3D11->GetDepthStencilView() : nullptr;
+
+		if (depthStencilState_.depthWrite_)
+		{
+			deviceContext_->OMSetRenderTargets(renderTargetCount, d3dRenderTargetViews, d3dDepthStencilView);
+		}
+		else
+		{
+			deviceContext_->OMSetRenderTargets(renderTargetCount, d3dRenderTargetViews, nullptr);
+		}
+
+		renderTargetDirty_ = false;
+		depthStencilDirty_ = false;
+	}
 
 	if (texturesDirty_ || samplerDirty_)
 	{
@@ -287,11 +331,21 @@ void GfxDeviceD3D11::PrepareDraw()
 					vertexShaderResourceView[i] = currentTexture->GetD3D11ShaderResourceView();
 					vertexSamplerState[i] = GetD3D11SamplerState(samplers_[i]);
 				}
+				else
+				{
+					vertexShaderResourceView[i] = nullptr;
+					vertexSamplerState[i] = nullptr;
+				}
 
 				if (pixelShaderD3D11->GetTextureDesc().Contains(i))
 				{
 					pixelShaderResourceView[i] = currentTexture->GetD3D11ShaderResourceView();
 					pixelSamplerState[i] = GetD3D11SamplerState(samplers_[i]);
+				}
+				else
+				{
+					pixelShaderResourceView[i] = nullptr;
+					pixelSamplerState[i] = nullptr;
 				}
 			}
 			else
@@ -311,32 +365,6 @@ void GfxDeviceD3D11::PrepareDraw()
 
 		texturesDirty_ = false;
 		samplerDirty_ = false;
-	}
-
-	if (renderTargetDirty_ || depthStencilDirty_)
-	{
-		static ID3D11RenderTargetView* d3dRenderTargetViews[MAX_RENDERTARGET_COUNT] = {};
-
-		for (UInt32 slotID = 0; slotID < MAX_RENDERTARGET_COUNT; ++slotID)
-		{
-			auto renderTargetD3D11 = DynamicCast<GfxRenderSurfaceD3D11>(renderTargets_[slotID]);
-			d3dRenderTargetViews[slotID] = renderTargetD3D11 ? renderTargetD3D11->GetRenderTargetView() : nullptr;
-		}
-
-		auto depthStencilD3D11 = DynamicCast<GfxRenderSurfaceD3D11>(depthStencil_);
-		auto* d3dDepthStencilView = depthStencilD3D11 ? depthStencilD3D11->GetDepthStencilView() : nullptr;
-
-		if (rasterizerState_.depthWrite_)
-		{
-			deviceContext_->OMSetRenderTargets(1, d3dRenderTargetViews, d3dDepthStencilView);
-		}
-		else
-		{
-			deviceContext_->OMSetRenderTargets(1, d3dRenderTargetViews, nullptr);
-		}
-
-		renderTargetDirty_ = false;
-		depthStencilDirty_ = false;
 	}
 
 	if (viewportDirty_)
@@ -382,9 +410,7 @@ void GfxDeviceD3D11::PrepareRasterizerState()
 			if (hr != 0)
 			{
 				FLAGGG_LOG_ERROR("CreateRasterizerState failed.");
-
 				D3D11_SAFE_RELEASE(newRasterizerState);
-
 				return;
 			}
 
@@ -393,6 +419,41 @@ void GfxDeviceD3D11::PrepareRasterizerState()
 
 		deviceContext_->RSSetState(rasterizerStates_[stateHash]);
 		rasterizerStateDirty_ = false;
+	}
+}
+
+void GfxDeviceD3D11::PrepareDepthStencilState()
+{
+	if (depthStencilStateDirty_)
+	{
+		UInt32 stateHash = depthStencilState_.GetHash();
+		if (!depthStencilStates_.Contains(stateHash))
+		{
+			D3D11_DEPTH_STENCIL_DESC d3d11DepthStencilDesc;
+			memset(&d3d11DepthStencilDesc, 0, sizeof(d3d11DepthStencilDesc));
+
+			d3d11DepthStencilDesc.DepthEnable = true;
+			d3d11DepthStencilDesc.DepthFunc = d3dComparisonFun[depthStencilState_.depthTestMode_];
+			d3d11DepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+
+			d3d11DepthStencilDesc.StencilEnable = depthStencilState_.stencilTest_;
+			d3d11DepthStencilDesc.StencilReadMask = depthStencilState_.stencilReadMask_;
+			d3d11DepthStencilDesc.StencilWriteMask = depthStencilState_.stencilWriteMask_;
+
+			ID3D11DepthStencilState* d3d11DepthStencilState = nullptr;
+			HRESULT hr = device_->CreateDepthStencilState(&d3d11DepthStencilDesc, &d3d11DepthStencilState);
+			if (FAILED(hr))
+			{
+				FLAGGG_LOG_ERROR("CreateRasterizerState failed.");
+				D3D11_SAFE_RELEASE(d3d11DepthStencilState);
+				return;
+			}
+
+			depthStencilStates_.Insert(MakePair(stateHash, d3d11DepthStencilState));
+		}
+
+		deviceContext_->OMSetDepthStencilState(depthStencilStates_[stateHash], depthStencilState_.stencilRef_);
+		depthStencilStateDirty_ = false;
 	}
 }
 
@@ -464,7 +525,7 @@ ID3D11InputLayout* GfxDeviceD3D11::GetD3D11InputLayout(VertexDescription* verteD
 		desc.SemanticName = semName;
 		desc.SemanticIndex = element.index_;
 		desc.Format = d3dElementFormats[element.vertexElementType_];
-		desc.InputSlot = 0; // �Ȳ�֧�ֶ�VertexBuffer�����в�ͬ�Ĳ��֣����ֳ��Ͽ��ܻ��õ���֮���ڸİɣ�
+		desc.InputSlot = 0; // 先不支持多VertexBuffer可以有不同的布局（部分场合可能会用到，之后在改吧）
 		desc.AlignedByteOffset = element.offset_;
 		desc.InputSlotClass = element.perInstance_ ? D3D11_INPUT_PER_INSTANCE_DATA : D3D11_INPUT_PER_VERTEX_DATA;
 		desc.InstanceDataStepRate = element.perInstance_ ? 1 : 0;

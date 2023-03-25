@@ -20,6 +20,9 @@ public:
 	 */
 	bool SetSize(UInt32 indexSize, UInt32 indexCount, bool dynamic = false);
 
+	// 设置vb的数据
+	void SetData(const void* data);
+
 	// 获取ib元素大小
 	UInt32 GetIndexSize() const;
 

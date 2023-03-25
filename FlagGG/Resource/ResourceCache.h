@@ -1,5 +1,4 @@
-#ifndef __RESOURCE_CACHE__
-#define __RESOURCE_CACHE__
+#pragma once
 
 #include "Container/Str.h"
 #include "Container/HashMap.h"
@@ -60,5 +59,3 @@ private:
 };
 
 }
-
-#endif

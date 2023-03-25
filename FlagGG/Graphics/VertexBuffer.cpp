@@ -34,6 +34,13 @@ bool VertexBuffer::SetSize(UInt32 vertexCount, const PODVector<VertexElement>& v
 	return true;
 }
 
+void VertexBuffer::SetData(const void* data)
+{
+	void* dest = Lock(0, vertexCount_);
+	memcpy(dest, data, vertexSize_ * vertexCount_);
+	Unlock();
+}
+
 UInt32 VertexBuffer::GetVertexSize() const
 {
 	return vertexSize_;
