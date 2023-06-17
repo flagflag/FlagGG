@@ -2,6 +2,7 @@
 
 #include "Container/Allocator.h"
 #include "Container/Swap.h"
+#include "Core/BaseMacro.h"
 
 #include "Export.h"
 
@@ -17,6 +18,41 @@ struct ListNodeBase
 	next_(nullptr)
 	{
 	}
+
+	FORCEINLINE bool IsInList() const
+	{
+		return prev_ || next_;
+	}
+
+	FORCEINLINE bool RemoveFromList()
+	{
+		if (!IsInList())
+			return false;
+
+		prev_->next_ = next_;
+		next_->prev_ = prev_;
+		prev_ = nullptr;
+		next_ = nullptr;
+
+		return true;
+	}
+
+	FORCEINLINE void InsertInList(ListNodeBase* pos)
+	{
+		if (this == pos)
+			return;
+
+		if (IsInList())
+			RemoveFromList();
+
+		prev_ = pos->prev_;
+		next_ = pos;
+		prev_->next_ = this;
+		next_->prev_ = this;
+	}
+
+	ListNodeBase* GetPrev() const { return prev_; }
+	ListNodeBase* GetNext() const { return next_; }
 
 	/// Previous node.
 	ListNodeBase* prev_;

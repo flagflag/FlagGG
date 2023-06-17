@@ -13,6 +13,8 @@
 #include "Math/Plane.h"
 #include "Math/Frustum.h"
 #include "Scene/DrawableComponent.h"
+#include "Scene/TransformComponent.h"
+#include "Container/LinkedList.h"
 
 namespace FlagGG
 {
@@ -23,11 +25,29 @@ enum CameraType
 	AIRCRAFT,
 };
 
-class FlagGG_API Camera : public DrawableComponent
+class FlagGG_API Camera : public DrawableComponent, public ITransformListener
 {
 	OBJECT_OVERRIDE(Camera, DrawableComponent);
 public:
 	Camera();
+
+	// 插入node时调用
+	void OnAddToNode(Node* node) override;
+
+	// 从node删除时调用
+	void OnRemoveFromNode(Node* node) override;
+
+	// Trasnform发生改变
+	void OnTransformChange() override;
+
+	// 位置发生变化
+	void OnPositionChange() override;
+
+	// 旋转发生变化
+	void OnRotationChange() override;
+
+	// 缩放发生变化
+	void OnScaleChange() override;
 
 	void Strafe(Real units);
 	void Fly(Real units);
@@ -73,6 +93,7 @@ public:
 	bool GetOrthographics() const;
 
 	void SetOrthoSize(float orthoSize);
+	void SetOrthoSize(const Vector2& orthoSize);
 	float GetOrthoSize() const;
 
 	Vector3 GetRight() const;
@@ -123,6 +144,8 @@ private:
 	bool useReflection_{ false };
 	Plane reflectionPlane_{ Plane::UP };
 	Matrix3x4 reflectionMatrix_{ Matrix3x4::IDENTITY };
+
+	LinkedListNode<ITransformListener> listenerNode_;
 };
 
 }

@@ -3,6 +3,7 @@
 #include "Scene/Component.h"
 #include "Scene/Octree.h"
 #include "Scene/DrawableComponent.h"
+#include "Scene/TransformComponent.h"
 
 namespace FlagGG
 {
@@ -95,6 +96,7 @@ void Node::AddComponent(Component* component)
 	{
 		ownerScene_->OnAddToScene(this, component);
 	}
+	sharedComponent->OnAddToNode(this);
 	sharedComponent->UpdateTreeDirty();
 }
 
@@ -112,11 +114,12 @@ Component* Node::GetComponent(StringHash compClass)
 
 void Node::RemoveComponent(Component* component)
 {
-	SharedPtr<Component> componentShared(component);
-	components_.Remove(componentShared);
+	SharedPtr<Component> sharedComponent(component);
+	components_.Remove(sharedComponent);
+	sharedComponent->OnRemoveFromNode(this);
 	if (ownerScene_)
 	{
-		ownerScene_->OnRemoveFromScene(this, componentShared);
+		ownerScene_->OnRemoveFromScene(this, sharedComponent);
 	}
 }
 
@@ -126,15 +129,26 @@ void Node::RemoveAllComponent()
 	{
 		while (components_.Size())
 		{
-			SharedPtr<Component> componentShared(components_.Back());
+			SharedPtr<Component> sharedComponent(components_.Back());
 			components_.Pop();
-			ownerScene_->OnRemoveFromScene(this, componentShared);
+			sharedComponent->OnRemoveFromNode(this);
+			ownerScene_->OnRemoveFromScene(this, sharedComponent);
 		}
 	}
 	else
 	{
 		components_.Clear();
 	}
+}
+
+void Node::AddTransformListener(LinkedListNode<ITransformListener>& listenerNode)
+{
+	transformListeners_.Push(listenerNode);
+}
+
+void Node::RemoveTransformListener(LinkedListNode<ITransformListener>& listenerNode)
+{
+	listenerNode.RemoveFromList();
 }
 
 void Node::AddChild(Node* node)
@@ -252,7 +266,12 @@ void Node::SetPosition(const Vector3& position)
 {
 	position_ = position;
 
-	MarkTransformDirty();
+	UpdateTreeTransformDirty();
+
+	for (auto& it : transformListeners_)
+	{
+		it->OnPositionChange();
+	}
 }
 
 const Vector3& Node::GetPosition() const
@@ -264,7 +283,12 @@ void Node::SetRotation(const Quaternion& rotation)
 {
 	rotation_ = rotation;
 
-	MarkTransformDirty();
+	UpdateTreeTransformDirty();
+
+	for (auto& it : transformListeners_)
+	{
+		it->OnRotationChange();
+	}
 }
 
 const Quaternion& Node::GetRotation() const
@@ -276,7 +300,12 @@ void Node::SetScale(const Vector3& scale)
 {
 	scale_ = scale;
 
-	MarkTransformDirty();
+	UpdateTreeTransformDirty();
+
+	for (auto& it : transformListeners_)
+	{
+		it->OnScaleChange();
+	}
 }
 
 const Vector3& Node::GetScale() const
@@ -290,7 +319,12 @@ void Node::SetTransform(const Vector3& position, const Quaternion& rotation, con
 	rotation_ = rotation;
 	scale_ = scale;
 
-	MarkTransformDirty();
+	UpdateTreeTransformDirty();
+
+	for (auto& it : transformListeners_)
+	{
+		it->OnTransformChange();
+	}
 }
 
 Matrix3x4 Node::GetTransform() const
@@ -372,6 +406,21 @@ void Node::MarkTransformDirty()
 	dirty_ = true;
 }
 
+void Node::UpdateTreeTransformDirty()
+{
+	MarkTransformDirty();
+
+	for (auto& child : children_)
+	{
+		for (auto& it : child->transformListeners_)
+		{
+			it->OnTransformChange();
+		}
+
+		child->UpdateTreeTransformDirty();
+	}
+}
+
 void Node::UpdateComponentsDirty()
 {
 	for (auto& component : components_)
@@ -383,6 +432,11 @@ void Node::UpdateComponentsDirty()
 void Node::UpdateTreeDirty(Scene* scene)
 {
 	MarkTransformDirty();
+
+	for (auto& it : transformListeners_)
+	{
+		it->OnTransformChange();
+	}
 
 	for (auto& component : components_)
 	{

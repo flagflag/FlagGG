@@ -7,6 +7,7 @@
 #include "Scene/Camera.h"
 #include "Scene/Octree.h"
 #include "Scene/Light.h"
+#include "Math/Polyhedron.h"
 #include "GfxDevice/GfxDevice.h"
 #include "GfxDevice/GfxRenderSurface.h"
 
@@ -49,6 +50,9 @@ RenderView::RenderView()
 	shadowRasterizerState_.fillMode_ = FILL_SOLID;
 	shadowRasterizerState_.cullMode_ = CULL_FRONT;
 #endif
+
+	shadowCameraNode_ = new Node();
+	shadowCamera_ = shadowCameraNode_->CreateComponent<Camera>();
 }
 
 RenderView::~RenderView()
@@ -110,6 +114,7 @@ void RenderView::RenderUpdate()
 
 void RenderView::CollectVisibilityObjects()
 {
+// 备注：shadowmap收集未写完，有空再补
 #if OCTREE_QUERY
 	FrustumOctreeQuery query(tempQueryResults_, camera_->GetFrustum(), DRAWABLE_ANY, camera_->GetViewMask());
 	octree_->GetElements(query);
@@ -129,6 +134,90 @@ void RenderView::CollectVisibilityObjects()
 		else
 		{
 			renderPiplineContext_->drawables_.Push(drawableComponent);
+		}
+	}
+
+	if (renderPipline_->RenderShadowMap())
+	{
+// 找到第一个平行光
+		Light* dirLight = nullptr;
+		for (auto* light : renderPiplineContext_->lights_)
+		{
+			if (light->GetLightType() == LIGHT_TYPE_DIRECTIONAL)
+			{
+				dirLight = light;
+				break;
+			}
+		}
+
+// 设置平行光阴影相机参数
+		const bool focus = true;
+		const bool nonUniform = true;
+		const float quantize = 0.5f;
+
+		Node* lightNode = dirLight->GetNode();
+		const float extrusionDistance = 100.f;
+		
+		Vector3 pos = camera_->GetNode()->GetWorldPosition() - extrusionDistance * lightNode->GetWorldDirection();
+		shadowCameraNode_->SetTransform(pos, lightNode->GetWorldRotation(), Vector3::ONE);
+
+		Frustum splitFrustum = camera_->GetFrustum();
+		Polyhedron frustumVolume;
+		frustumVolume.Define(splitFrustum);
+
+		const Matrix3x4& lightView = shadowCamera_->GetViewMatrix();
+		frustumVolume.Transform(lightView);
+
+		BoundingBox shadowBox;
+		if (!nonUniform)
+			shadowBox.Define(Sphere(frustumVolume));
+		else
+			shadowBox.Define(frustumVolume);
+
+		shadowCamera_->SetOrthographic(true);
+		shadowCamera_->SetAspect(1.f);
+		shadowCamera_->SetNearClip(0.f);
+		shadowCamera_->SetFarClip(shadowBox.max_.z_);
+
+		const float minX = shadowBox.min_.x_;
+		const float minY = shadowBox.min_.y_;
+		const float maxX = shadowBox.max_.x_;
+		const float maxY = shadowBox.max_.y_;
+
+		Vector2 center((minX + maxX) * 0.5f, (minY + maxY) * 0.5f);
+		Vector2 viewSize(maxX - minX, maxY - minY);
+
+		if (nonUniform)
+		{
+			viewSize.x_ = ceilf(sqrtf(viewSize.x_ / quantize));
+			viewSize.y_ = ceilf(sqrtf(viewSize.y_ / quantize));
+			viewSize.x_ = Max(viewSize.x_ * viewSize.x_ * quantize, 3.f);
+			viewSize.y_ = Max(viewSize.y_ * viewSize.y_ * quantize, 3.f);
+		}
+		else
+		{
+			viewSize.x_ = Max(viewSize.x_, viewSize.y_);
+			viewSize.x_ = ceilf(sqrtf(viewSize.x_ / quantize));
+			viewSize.x_ = Max(viewSize.x_ * viewSize.x_ * quantize, 3.f);
+			viewSize.y_ = viewSize.x_;
+		}
+
+		shadowCamera_->SetOrthoSize(viewSize);
+
+		Quaternion rot(shadowCameraNode_->GetWorldRotation());
+		Vector3 adjust(center.x_, center.y_, 0.f);
+		shadowCameraNode_->SetWorldPosition(shadowCameraNode_->GetWorldPosition() + rot * adjust);
+
+// 找到被平行光视锥体裁剪的物件
+		const Frustum& shadowCameraFrustum = shadowCamera_->GetFrustum();
+
+		ShadowCasterOctreeQuery query(tempQueryResults_, shadowCameraFrustum, DRAWABLE_GEOMETRY, camera_->GetViewMask());
+		octree_->GetElements(query);
+
+// 收集阴影投射者
+		for (auto* shadowCaster : tempQueryResults_)
+		{
+			renderPiplineContext_->shadowCasters_.Push(shadowCaster);
 		}
 	}
 #endif

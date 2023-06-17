@@ -23,6 +23,7 @@ class RenderPipline;
 class GfxRenderSurface;
 class DrawableComponent;
 class Scene;
+class Node;
 class Camera;
 class Octree;
 class Light;
@@ -84,6 +85,10 @@ private:
 
 	// 每帧重置Camera
 	SharedPtr<Camera> camera_;
+
+	// 阴影相机
+	SharedPtr<Camera> shadowCamera_;
+	SharedPtr<Node> shadowCameraNode_;
 
 	// 没帧重置Octree
 	SharedPtr<Octree> octree_;

@@ -5,13 +5,13 @@
 namespace FlagGG
 {
 
-	OctreeNode::OctreeNode(const BoundingBox& box, UInt32 level) :
-		box_(box),
-		level_(level)
-	{
-		const auto& halfSize = box_.HalfSize();
-		cullingBox_ = BoundingBox(box_.min_ - halfSize, box_.max_ + halfSize);
-	}
+OctreeNode::OctreeNode(const BoundingBox& box, UInt32 level) :
+	box_(box),
+	level_(level)
+{
+	const auto& halfSize = box_.HalfSize();
+	cullingBox_ = BoundingBox(box_.min_ - halfSize, box_.max_ + halfSize);
+}
 
 OctreeNode::~OctreeNode()
 {
@@ -36,11 +36,17 @@ void OctreeNode::AddElement(DrawableComponent* component)
 
 void OctreeNode::RemoveElement(DrawableComponent* component)
 {
+	component->SetOcNode(nullptr);
 	components_.Remove(component);
 }
 
 void OctreeNode::RemoveAllChildren()
 {
+	for (auto* drawable : components_)
+	{
+		drawable->SetOcNode(nullptr);
+	}
+
 	for (auto& child : children_)
 	{
 		if (child)

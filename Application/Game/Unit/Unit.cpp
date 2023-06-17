@@ -51,6 +51,7 @@ bool Unit::Load(const String& path, Node* node)
 	{
 		meshComp->SetModel(cache->GetResource<Model>(root["model"].GetString()));
 		meshComp->SetMaterial(material_);
+		meshComp->SetCastShadow(true);
 	}
 
 	if (dynamicType == "Ocean")

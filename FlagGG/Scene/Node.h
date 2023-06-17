@@ -8,6 +8,7 @@
 #include "Container/StringHash.h"
 #include "Container/Variant.h"
 #include "Container/HashMap.h"
+#include "Container/LinkedList.h"
 #include "Graphics/RenderContext.h"
 #include "Math/Vector3.h"
 #include "Math/Quaternion.h"
@@ -18,6 +19,7 @@ namespace FlagGG
 {
 
 // class Component;
+class ITransformListener;
 class Scene;
 class Octree;
 
@@ -65,6 +67,10 @@ public:
 	Component* GetComponent(StringHash compClass);
 
 	void RemoveAllComponent();
+
+	void AddTransformListener(LinkedListNode<ITransformListener>& listenerNode);
+
+	void RemoveTransformListener(LinkedListNode<ITransformListener>& listenerNode);
 
 	void AddChild(Node* node);
 
@@ -138,6 +144,8 @@ public:
 protected:
 	void MarkTransformDirty();
 
+	void UpdateTreeTransformDirty();
+
 	void UpdateWorldTransform() const;
 
 	// node名
@@ -160,6 +168,8 @@ private:
 
 	Node* parent_;
 	Scene* ownerScene_;
+
+	LinkedList<LinkedListNode<ITransformListener>> transformListeners_;
 
 	bool isTranspent_;
 

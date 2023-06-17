@@ -3,31 +3,91 @@
 #include <initializer_list>
 
 #include "Export.h"
+#include "Container/ListBase.h"
 
 namespace FlagGG
 {
 
-/// Singly-linked list node base class.
-struct FlagGG_API LinkedListNode
+template <class T>
+class LinkedListNode : public ListNodeBase
 {
-	/// Construct.
-	LinkedListNode() :
-	next_(nullptr)
-	{
-	}
+public:
+	LinkedListNode(T* data = nullptr)
+		: data_(data)
+	{}
 
-	/// Pointer to next node.
-	LinkedListNode* next_;
+	T& operator*() const { return *data_; }
+	T* operator->() const { return data_; }
+	T* GetData() const { return data_; }
+	void SetData(T* data) { data_ = data; }
+
+	T* data_;
 };
 
 /// Singly-linked list template class. Elements must inherit from LinkedListNode.
 template <class T> class LinkedList
 {
 public:
-	/// Construct empty.
-	LinkedList() :
-		head_(nullptr)
+	/// %List iterator.
+	struct Iterator : public ListIteratorBase
 	{
+		/// Construct.
+		Iterator() = default;
+
+		/// Construct with a node pointer.
+		explicit Iterator(T* ptr) :
+			ListIteratorBase(ptr)
+		{
+		}
+
+		/// Construct with a base node pointer.
+		explicit Iterator(ListNodeBase* ptr)
+			: ListIteratorBase(ptr)
+		{
+		}
+
+		/// Preincrement the pointer.
+		Iterator& operator ++()
+		{
+			GotoNext();
+			return *this;
+		}
+
+		/// Postincrement the pointer.
+		Iterator operator ++(int)
+		{
+			Iterator it = *this;
+			GotoNext();
+			return it;
+		}
+
+		/// Predecrement the pointer.
+		Iterator& operator --()
+		{
+			GotoPrev();
+			return *this;
+		}
+
+		/// Postdecrement the pointer.
+		Iterator operator --(int)
+		{
+			Iterator it = *this;
+			GotoPrev();
+			return it;
+		}
+
+		/// Point to the node value.
+		T* operator ->() const { return static_cast<T*>(ptr_); }
+
+		/// Dereference the node value.
+		T& operator *() const { return *static_cast<T*>(ptr_); }
+	};
+
+	/// Construct empty.
+	LinkedList()
+	{
+		root_.prev_ = &root_;
+		root_.next_ = &root_;
 	}
 
 	/// Non-copyable.
@@ -54,116 +114,118 @@ public:
 	/// Remove all elements.
 	void Clear()
 	{
-		T* element = head_;
-		while (element)
+		ListNodeBase* node = root_.next_;
+		while (node != &root_)
 		{
-			T* next = Next(element);
-			delete element;
-			element = next;
+			ListNodeBase* next = node->next_;
+			node->prev_ = nullptr;
+			node->next_ = nullptr;
+			node = next;
 		}
-		head_ = nullptr;
+		root_.prev_ = &root_;
+		root_.next_ = &root_;
 	}
 
-	/// Insert an element at the beginning.
-	void InsertFront(T* element)
+	/// Insert an element to the end.
+	void Push(T& value) { InsertNode(Tail(), value); }
+
+	/// Insert an element to the beginning.
+	void PushFront(T& value) { InsertNode(Head(), value); }
+
+	/// Insert an element at position.
+	void Insert(const Iterator& dest, T& value) { InsertNode(dest.ptr_, value); }
+
+	/// Erase the last element.
+	void Pop()
 	{
-		if (element)
-		{
-			element->next_ = head_;
-			head_ = element;
-		}
+		if (!Empty())
+			Erase(--End());
 	}
 
-	/// Insert an element at the end.
-	void Insert(T* element)
+	/// Erase the first element.
+	void PopFront()
 	{
-		if (head_)
-		{
-			T* tail = Last();
-			element->next_ = tail->next_;
-			tail->next_ = element;
-		}
-		else
-		{
-			element->next_ = head_;
-			head_ = element;
-		}
+		if (!Empty())
+			Erase(Begin());
 	}
 
-	/// Erase an element. Return true if successful.
-	bool Erase(T* element)
+	/// Erase an element by iterator. Return iterator to the next element.
+	Iterator Erase(Iterator it)
 	{
-		if (element && head_)
-		{
-			if (element == head_)
-			{
-				head_ = Next(element);
-				delete element;
-				return true;
-			}
-			else
-			{
-				T* tail = head_;
-				while (tail && tail->next_ != element)
-					tail = Next(tail);
-				if (tail)
-				{
-					tail->next_ = element->next_;
-					delete element;
-					return true;
-				}
-			}
-		}
-
-		return false;
+		return Iterator(EraseNode(it.ptr_));
 	}
 
-	/// Erase an element when the previous element is known (optimization.) Return true if successful.
-	bool Erase(T* element, T* previous)
+	/// Erase a range by iterators. Return an iterator to the next element.
+	Iterator Erase(const Iterator& start, const Iterator& end)
 	{
-		if (previous && previous->next_ == element)
-		{
-			previous->next_ = element->next_;
-			delete element;
-			return true;
-		}
-		else if (!previous)
-		{
-			if (head_ == element)
-			{
-				head_ = Next(element);
-				delete element;
-				return true;
-			}
-		}
+		Iterator it = start;
+		while (it != end)
+			it = Erase(it);
 
-		return false;
+		return it;
 	}
 
-	/// Return first element, or null if empty.
-	T* First() const { return head_; }
-
-	/// Return last element, or null if empty.
-	T* Last() const
+	/// Return iterator to value, or to the end if not found.
+	Iterator Find(const T& value)
 	{
-		T* element = head_;
-		if (element)
-		{
-			while (element->next_)
-				element = Next(element);
-		}
-		return element;
+		Iterator it = Begin();
+		while (it != End() && *it != value)
+			++it;
+		return it;
 	}
 
-	/// Return next element, or null if no more elements.
-	T* Next(T* element) const { return element ? static_cast<T*>(element->next_) : nullptr; }
+	/// Return iterator to the first element.
+	Iterator Begin() { return Iterator(Head()); }
 
-	/// Return whether is empty.
-	bool Empty() const { return head_ == nullptr; }
+	/// Return iterator to the end.
+	Iterator End() { return Iterator(Tail()); }
+
+	/// Return first element.
+	T& Front() { return *Begin(); }
+
+	/// Return const first element.
+	const T& Front() const { return *Begin(); }
+
+	/// Return last element.
+	T& Back() { return *(--End()); }
+
+	/// Return const last element.
+	const T& Back() const { return *(--End()); }
+
+	/// Return whether list is empty.
+	bool Empty() const { return root_.next_ == &root_; }
 
 private:
-	/// First element.
-	T* head_;
+	/// Return the head node.
+	T* Head() { return static_cast<T*>(root_.next_); }
+
+	/// Return the tail node.
+	ListNodeBase* Tail() { return &root_; }
+
+	/// Allocate and insert a node into the list.
+	void InsertNode(ListNodeBase* dest, T& value)
+	{
+		value.InsertInList(dest);
+	}
+
+	/// Erase and free a node. Return pointer to the next node, or to the end if could not erase.
+	ListNodeBase* EraseNode(ListNodeBase* node)
+	{
+		ListNodeBase* next = node->next_;
+		node->RemoveFromList();
+		return next;
+	}
+
+	/// Last element
+	ListNodeBase root_;
 };
+
+template <class T> typename LinkedList<T>::ConstIterator begin(const LinkedList<T>& v) { return v.Begin(); }
+
+template <class T> typename LinkedList<T>::ConstIterator end(const LinkedList<T>& v) { return v.End(); }
+
+template <class T> typename LinkedList<T>::Iterator begin(LinkedList<T>& v) { return v.Begin(); }
+
+template <class T> typename LinkedList<T>::Iterator end(LinkedList<T>& v) { return v.End(); }
 
 }

@@ -42,6 +42,8 @@ struct FlagGG_API RenderPiplineContext
 	Camera* camera_{};
 	// 视图内可见渲染对象
 	PODVector<DrawableComponent*> drawables_;
+	// 平行光阴影投射者
+	PODVector<DrawableComponent*> shadowCasters_;
 	// 视图内可见灯光
 	PODVector<Light*> lights_;
 	// 视图内可见探针

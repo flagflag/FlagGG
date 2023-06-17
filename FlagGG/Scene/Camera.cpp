@@ -6,9 +6,48 @@ namespace FlagGG
 
 Camera::Camera()
 	: DrawableComponent()
+	, listenerNode_(this)
 {
 	viewMask_ = F_MAX_UNSIGNED;
 	reflectionMatrix_ = reflectionPlane_.ReflectionMatrix();
+}
+
+void Camera::OnAddToNode(Node* node)
+{
+	node->AddTransformListener(listenerNode_);
+}
+
+void Camera::OnRemoveFromNode(Node* node)
+{
+	node->RemoveTransformListener(listenerNode_);
+}
+
+void Camera::OnTransformChange()
+{
+	frustumDirty_ = true;
+	projectionDirty_ = true;
+	viewDirty_ = true;
+}
+
+void Camera::OnPositionChange()
+{
+	frustumDirty_ = true;
+	projectionDirty_ = true;
+	viewDirty_ = true;
+}
+
+void Camera::OnRotationChange()
+{
+	frustumDirty_ = true;
+	projectionDirty_ = true;
+	viewDirty_ = true;
+}
+
+void Camera::OnScaleChange()
+{
+	frustumDirty_ = true;
+	projectionDirty_ = true;
+	viewDirty_ = true;
 }
 
 void Camera::Strafe(Real units)
@@ -322,6 +361,7 @@ void Camera::SetAspect(Real aspect)
 		aspect_ = aspect;
 
 		projectionDirty_ = true;
+		frustumDirty_ = true;
 	}
 }
 
@@ -337,6 +377,7 @@ void Camera::SetZoom(Real zoom)
 		zoom_ = zoom;
 
 		projectionDirty_ = true;
+		frustumDirty_ = true;
 	}
 }
 
@@ -352,6 +393,7 @@ void Camera::SetFov(Real fov)
 		fov_ = fov;
 
 		projectionDirty_ = true;
+		frustumDirty_ = true;
 	}
 }
 
@@ -367,6 +409,7 @@ void Camera::SetOrthographic(bool enable)
 		orthographic_ = enable;
 
 		projectionDirty_ = true;
+		frustumDirty_ = true;
 	}
 }
 
@@ -381,8 +424,18 @@ void Camera::SetOrthoSize(float orthoSize)
 	{
 		orthoSize_ = orthoSize;
 
+		frustumDirty_ = true;
 		projectionDirty_ = true;
 	}
+}
+
+void Camera::SetOrthoSize(const Vector2& orthoSize)
+{
+	orthoSize_ = orthoSize.y_;
+	aspect_ = orthoSize.x_ / orthoSize.y_;
+
+	frustumDirty_ = true;
+	projectionDirty_ = true;
 }
 
 float Camera::GetOrthoSize() const

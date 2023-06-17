@@ -27,6 +27,12 @@ public:
 	// 控件树发生dirty
 	virtual void UpdateTreeDirty() {}
 
+	// 插入node时调用
+	virtual void OnAddToNode(Node* node) {}
+
+	// 从node删除时调用
+	virtual void OnRemoveFromNode(Node* node) {}
+
 	// 设置场景节点
 	void SetNode(Node* node);
 
