@@ -166,13 +166,13 @@ void GameApplication::CreateScene()
 	scene_->AddChild(cameraNode);
 	camera_ = cameraNode->CreateComponent<Camera>();
 	camera_->SetNearClip(0.1f);
-	camera_->SetFarClip(1000000000.0f);
+	camera_->SetFarClip(1e5f);
 
 	auto* reflectionNode = new Node();
 	cameraNode->AddChild(reflectionNode);
 	reflectionCamera_ = reflectionNode->CreateComponent<Camera>();
 	reflectionCamera_->SetNearClip(0.1f);
-	reflectionCamera_->SetFarClip(1000000000.0f);
+	reflectionCamera_->SetFarClip(1e5f);
 	reflectionCamera_->SetViewMask(0xff00);
 	reflectionCamera_->SetUseReflection(true);
 
