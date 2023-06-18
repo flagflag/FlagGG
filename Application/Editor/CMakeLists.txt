@@ -11,12 +11,13 @@ include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 include_directories (${FLAGGG_DIR})
 
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../../3rd/Assimp/include)
+include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../../)
 
 define_source_files (RECURSE GROUP)
 
 setup_main_executable ()
 
-target_link_libraries(${TARGET_NAME} FlagGG Assimp)
+target_link_libraries(${TARGET_NAME} FlagGG Assimp CoreCLRHelper)
 
 setup_test ()
 

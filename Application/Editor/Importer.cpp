@@ -278,7 +278,7 @@ static SharedPtr<Node> BuildNode(const aiScene* aiScn, aiNode* aiNd, aiMatrix4x4
 							texture = new Texture2D(context_);
 							texture->LoadFile(ToTexturePath(texturePath));
 						}
-						if (texture->IsValid())
+						// if (texture->IsValid())
 						{
 							material->SetTexture(TEXTURE_CLASS_UNIVERSAL, texture);
 							material->SetTexture(TEXTURE_CLASS_DIFFUSE, texture);
@@ -293,7 +293,7 @@ static SharedPtr<Node> BuildNode(const aiScene* aiScn, aiNode* aiNd, aiMatrix4x4
 							texture = new Texture2D(context_);
 							texture->LoadFile(ToTexturePath(texturePath));
 						}
-						if (texture->IsValid())
+						// if (texture->IsValid())
 						{
 							material->SetTexture(TEXTURE_CLASS_NORMAL, texture);
 						}
@@ -307,7 +307,7 @@ static SharedPtr<Node> BuildNode(const aiScene* aiScn, aiNode* aiNd, aiMatrix4x4
 							texture = new Texture2D(context_);
 							texture->LoadFile(ToTexturePath(texturePath));
 						}
-						if (texture->IsValid())
+						// if (texture->IsValid())
 						{
 							material->SetTexture(TEXTURE_CLASS_SPECULAR, texture);
 						}
@@ -325,7 +325,7 @@ static SharedPtr<Node> BuildNode(const aiScene* aiScn, aiNode* aiNd, aiMatrix4x4
 							texture = new Texture2D(context_);
 							texture->LoadFile(ToTexturePath(texturePath));
 						}
-						if (texture->IsValid())
+						// if (texture->IsValid())
 						{
 							material->SetTexture(TEXTURE_CLASS_EMISSIVE, texture);
 						}

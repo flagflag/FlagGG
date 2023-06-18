@@ -13,8 +13,8 @@ set (LUA_LIB lua53)
 set (SLikeNet_LIB SLikeNet)
 set (BDFX_LIB bdfx)
 
-# Direct3D
 if (WIN32 OR WIN64)
+    # Direct3D
     include_directories ("C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include")
     link_directories ("C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Samples/C++/Effects11/Debug")
     link_directories ("C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x64")
@@ -28,4 +28,6 @@ if (WIN32 OR WIN64)
     d3dcompiler
     dxgi
     dxguid)
+    # CoreCLR
+    link_directories (${CMAKE_CURRENT_SOURCE_DIR}/../Module/CoreCLRHelper/Runtime)
 endif ()

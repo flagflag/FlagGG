@@ -13,8 +13,17 @@
 #include <Scene/Octree.h>
 #include <Log.h>
 
+EditorApplication::EditorApplication()
+	: GameEngine()
+	, libRuntime_(nullptr)
+{
+
+}
+
 void EditorApplication::Start()
 {
+	InitCSharpEnv();
+
 	GameEngine::Start();
 
 	CreateScene();
@@ -26,6 +35,7 @@ void EditorApplication::Start()
 	context_->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, EditorApplication::Update, this));
 	context_->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, EditorApplication::OnKeyUp, this));
 	context_->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_UP, EditorApplication::OnMouseUp, this));
+	context_->RegisterEvent(EVENT_HANDLER(Frame::END_FRAME, EditorApplication::OnRender, this));
 	context_->RegisterEvent(EVENT_HANDLER(Application::WINDOW_CLOSE, EditorApplication::WindowClose, this));
 
 	FLAGGG_LOG_INFO("Start Editor.");
@@ -42,7 +52,36 @@ void EditorApplication::Stop()
 
 void EditorApplication::Update(float timeStep)
 {
+	OnTick(timeStep);
+}
 
+void EditorApplication::InitCSharpEnv()
+{
+	if (DotNet_Init())
+	{
+		libRuntime_ = DotNet_InitLibRuntime("UIElements");
+
+		if (uiElementsInit.Bind(libRuntime_, "FlagGG.UIElementsInterface", "Init"))
+		{
+			uiElementsInit();
+		}
+		uiElementsTick.Bind(libRuntime_, "FlagGG.UIElementsInterface", "Tick");
+		uiElementsRender.Bind(libRuntime_, "FlagGG.UIElementsInterface", "Render");
+	}
+	else
+	{
+		FLAGGG_LOG_ERROR("Load dot net failed.");
+	}
+}
+
+void EditorApplication::OnTick(Real timeStep)
+{
+	uiElementsTick();
+}
+
+void EditorApplication::OnRender(Real timeStep)
+{
+	uiElementsRender();
 }
 
 void EditorApplication::CreateScene()
@@ -102,7 +141,7 @@ void EditorApplication::SetupWindow()
 	shadowMap_ = new Texture2D(context_);
 	shadowMap_->SetNumLevels(1);
 	shadowMap_->SetSize(rect.Width(), rect.Height(), RenderEngine::GetRGBFormat(), TEXTURE_RENDERTARGET);
-	shadowMap_->Initialize();
+	// shadowMap_->Initialize();
 	RenderEngine::Instance()->SetDefaultTextures(TEXTURE_CLASS_SHADOWMAP, shadowMap_);
 
 	window_ = new Window(context_, nullptr, rect);

@@ -1,6 +1,7 @@
 #ifdef _WIN32
 #include <Graphics/RenderEngine.h>
 #include <Graphics/Batch2D.h>
+#include <Graphics/RenderPipline.h>
 #include <Scene/Light.h>
 #include <Scene/Octree.h>
 #include <Scene/StaticMeshComponent.h>
@@ -151,7 +152,7 @@ void GameApplication::Create2DBatch()
 	);
 	batch->SetTexture(renderTexture_[0]);
 	batches.Push(batch);
-	RenderEngine::Instance()->PostRenderBatch(batches);
+	// RenderEngine::Instance()->PostRenderBatch(batches);
 }
 
 void GameApplication::CreateScene()
@@ -279,7 +280,7 @@ void GameApplication::SetupWindow()
 	rttViewport->SetScene(scene_);
 	rttViewport->SetRenderTarget(rttTexture_[0]->GetRenderSurface());
 	rttViewport->SetDepthStencil(rttTexture_[1]->GetRenderSurface());
-	viewports_.Push(rttViewport);
+	// viewports_.Push(rttViewport);
 
 	auto* waterComp = water_->GetComponent<StaticMeshComponent>();
 	if (waterComp)
@@ -310,12 +311,13 @@ void GameApplication::SetupWindow()
 	viewport->SetScene(scene_);
 	viewport->SetRenderTarget(renderTexture_[0]->GetRenderSurface());
 	viewport->SetDepthStencil(renderTexture_[1]->GetRenderSurface());
-	viewports_.Push(viewport);
+	// viewports_.Push(viewport);
 
 	window_ = new Window(context_, nullptr, rect);
 	window_->Show();
 	window_->GetViewport()->SetCamera(camera_);
 	window_->GetViewport()->SetScene(scene_);
+	// window_->GetViewport()->SetRenderPipline(new DeferredRenderPipline(context_));
 
 	WindowDevice::RegisterWinMessage(window_);
 
