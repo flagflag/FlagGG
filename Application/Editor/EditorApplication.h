@@ -8,7 +8,7 @@
 #include <Scene/Scene.h>
 #include <Graphics/Window.h>
 
-#include "Module/CoreCLRHelper/CoreCLRHelper.h"
+#include "Application/CoreCLRHelper/CoreCLRHelper.h"
 
 using namespace FlagGG;
 

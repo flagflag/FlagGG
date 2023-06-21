@@ -2,11 +2,11 @@
 
 #include <Container/Str.h>
 
-#include "Module/CoreCLRHelper/CoreCLRHelperExport.h"
+#include "Application/CoreCLRHelper/CoreCLRHelperExport.h"
 
-#include "Module/CoreCLRHelper/Runtime/nethost.h"
-#include "Module/CoreCLRHelper/Runtime/coreclr_delegates.h"
-#include "Module/CoreCLRHelper/Runtime/hostfxr.h"
+#include "Application/CoreCLRHelper/Runtime/nethost.h"
+#include "Application/CoreCLRHelper/Runtime/coreclr_delegates.h"
+#include "Application/CoreCLRHelper/Runtime/hostfxr.h"
 
 namespace FlagGG
 {

@@ -24,4 +24,8 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(SolutionDir)\..\bin\RelWithDebInfo\</OutDir>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <DefineConstants></DefineConstants>
+  </PropertyGroup>
+
 </Project>
