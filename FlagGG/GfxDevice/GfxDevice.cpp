@@ -217,6 +217,11 @@ void GfxDevice::DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 vertexS
 
 }
 
+void GfxDevice::DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceCount)
+{
+
+}
+
 void GfxDevice::Flush()
 {
 

@@ -2,6 +2,8 @@
 // D3D11图形层Shader
 //
 
+#pragma once
+
 #include "GfxDevice/GfxShader.h"
 #include "Container/Vector.h"
 #include "Container/HashMap.h"

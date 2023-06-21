@@ -1,5 +1,5 @@
 //
-// D3D11图形层纹理
+// OpenGL图形层纹理
 //
 
 #pragma once
@@ -7,21 +7,20 @@
 #include "GfxDevice/GfxTexture.h"
 #include "Container/Vector.h"
 #include "Container/Ptr.h"
-
-#include <d3d11.h>
+#include "GfxDevice/OpenGL/OpenGLInterface.h"
 
 namespace FlagGG
 {
 
-class GfxRenderSurfaceD3D11;
+class GfxRenderSurfaceOpenGL;
 
-class GfxTextureD3D11 : public GfxTexture
+class GfxTextureOpenGL : public GfxTexture
 {
-	OBJECT_OVERRIDE(GfxTextureD3D11, GfxTexture);
+	OBJECT_OVERRIDE(GfxTextureOpenGL, GfxTexture);
 public:
-	explicit GfxTextureD3D11();
+	explicit GfxTextureOpenGL();
 
-	~GfxTextureD3D11() override;
+	~GfxTextureOpenGL() override;
 
 	// 应用当前设置
 	void Apply(const void* initialDataPtr) override;
@@ -44,9 +43,6 @@ public:
 	// 2.TextureCube，index传入cube的face
 	GfxRenderSurface* GetRenderSurface(UInt32 index) const override;
 
-	// 获取ID3D11ShaderResourceView*
-	ID3D11ShaderResourceView* GetD3D11ShaderResourceView() const { return shaderResourceView_; }
-
 protected:
 	void CreateTexture2D();
 	void CreateTexture3D();
@@ -54,20 +50,13 @@ protected:
 	void ReleaseTexture();
 
 private:
-	// texture 2d
-	ID3D11Texture2D* d3d11Texture2D_{};
-
-	// texture 3d
-	ID3D11Texture3D* d3d11Texture3D_{};
-
-	// resolve texture
-	ID3D11Resource* resolveTexture_{};
-
-	// shader resource view
-	ID3D11ShaderResourceView* shaderResourceView_{};
+	GLuint oglTexture_{};
+	GLenum oglTarget_{};
+	GLenum oglFormat_{};
+	GLenum oglType_{};
 
 	// render surfaces
-	Vector<SharedPtr<GfxRenderSurfaceD3D11>> gfxRenderSurfaces_;
+	Vector<SharedPtr<GfxRenderSurfaceOpenGL>> gfxRenderSurfaces_;
 };
 
 }

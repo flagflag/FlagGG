@@ -33,7 +33,7 @@ enum ClearTarget : UInt32
 };
 FLAGGG_FLAGSET(ClearTarget, ClearTargetFlags);
 
-static const unsigned MAX_RENDERTARGET_COUNT = 6;
+static const unsigned MAX_RENDERTARGET_COUNT = 4;
 
 class GfxDevice
 {
@@ -126,6 +126,9 @@ public:
 
 	// 提交渲染指令
 	virtual void DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart = 0u);
+
+	// 提交渲染指令
+	virtual void DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceCount);
 
 	// Flush
 	virtual void Flush();

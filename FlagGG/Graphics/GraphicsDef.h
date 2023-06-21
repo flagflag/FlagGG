@@ -18,7 +18,8 @@ enum ShaderType
 {
 	None = 0,
 	VS = 1,
-	PS = 2
+	PS = 2,
+	CS = 3,
 };
 
 enum TextureClass : UInt32
