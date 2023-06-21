@@ -59,14 +59,14 @@ void EditorApplication::InitCSharpEnv()
 {
 	if (DotNet_Init())
 	{
-		libRuntime_ = DotNet_InitLibRuntime("UIElements");
+		libRuntime_ = DotNet_InitLibRuntime("ScriptModule");
 
-		if (uiElementsInit.Bind(libRuntime_, "FlagGG.UIElementsInterface", "Init"))
+		if (uiElementsInit.Bind(libRuntime_, "FlagGG.ScriptInterface", "Init"))
 		{
 			uiElementsInit();
 		}
-		uiElementsTick.Bind(libRuntime_, "FlagGG.UIElementsInterface", "Tick");
-		uiElementsRender.Bind(libRuntime_, "FlagGG.UIElementsInterface", "Render");
+		uiElementsTick.Bind(libRuntime_, "FlagGG.ScriptInterface", "Tick");
+		uiElementsRender.Bind(libRuntime_, "FlagGG.ScriptInterface", "Render");
 	}
 	else
 	{

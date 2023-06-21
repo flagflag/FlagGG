@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace FlagGG
 { 
-    public static unsafe class UIElementsInterface
+    public static unsafe class ScriptInterface
     {
         [UnmanagedCallersOnly]
         public static void Init()
