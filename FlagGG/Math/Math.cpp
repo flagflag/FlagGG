@@ -22,6 +22,7 @@ const Real F_MIN_NEARCLIP = 0.01f;
 const Real F_DEGTORAD = PI / 180.0f;
 const Real F_DEGTORAD_2 = PI / 360.0f;
 const Real F_RADTODEG = 1.0f / F_DEGTORAD;
+const Real F_OVERSQRT2 = float(0.7071067811865475244008443621048490);
 
 bool IsNaN(Real number)
 {
@@ -73,6 +74,11 @@ Real Fract(Real number)
 	return number - floor(number);
 }
 
+Real Lerp(float from, float to, float t)
+{
+	return to * t + from * (1.0F - t);
+}
+
 int Compare(Real _1, Real _2)
 {
 	if (fabs(_1 - _2) <  EPS) return 0;
@@ -116,6 +122,24 @@ UInt32 SDBM_Hash(UInt32 hashValue, UInt8 charValue)
 {
 	return static_cast<UInt32>(charValue) + (hashValue << 6u) + (hashValue << 16u) - hashValue;
 }
+
+bool IsPowerOfTwo(UInt32 value)
+{
+	return !(value & (value - 1));
+}
+
+UInt32 NextPowerOfTwo(UInt32 value)
+{
+	// http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
+	--value;
+	value |= value >> 1u;
+	value |= value >> 2u;
+	value |= value >> 4u;
+	value |= value >> 8u;
+	value |= value >> 16u;
+	return ++value;
+}
+
 
 Matrix4 MatrixTranslation(Real dx, Real dy, Real dz)
 {

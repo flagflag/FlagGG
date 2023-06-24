@@ -1,6 +1,7 @@
 #include "EditorApplication.h"
+#include "main.h"
 
-int main()
+int EntryPoint(int argc, const char* argv[])
 {
 	EditorApplication app;
 	app.Run();

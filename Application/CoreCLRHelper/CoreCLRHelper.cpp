@@ -1,6 +1,7 @@
 #include "CoreCLRHelper.h"
 
 #include <Container/HashMap.h>
+#include <Container/ArrayPtr.h>
 #include <Utility/SystemHelper.h>
 #include <Log.h>
 
@@ -20,6 +21,21 @@ struct DotNetLibRuntime
 	load_assembly_and_get_function_pointer_fn loadAssemblyAndGetFunctionPtr_;
 };
 
+static void AddRootDirToEnvVar()
+{
+	String rootDir = GetProgramDir().Replaced('/', '\\');
+	if (rootDir.Back() == '\\')
+		rootDir.Resize(rootDir.Length() - 1);
+
+	int pathStrLength = GetEnvironmentVariableA("PATH", nullptr, 0);
+	SharedArrayPtr<char> buffer(new char[pathStrLength + rootDir.Length() + 2]{});
+	GetEnvironmentVariableA("PATH", buffer.Get(), pathStrLength);
+
+	buffer[pathStrLength - 1] = ';';
+	memcpy(buffer.Get() + pathStrLength, rootDir.CString(), rootDir.Length());
+	SetEnvironmentVariableA("PATH", buffer.Get());
+}
+
 bool DotNet_Init()
 {
 	// Pre-allocate a large buffer for the path to hostfxr
@@ -37,6 +53,9 @@ bool DotNet_Init()
 	DotNet_HostfxrInit = (hostfxr_initialize_for_runtime_config_fn)::GetProcAddress(lib, "hostfxr_initialize_for_runtime_config");
 	DotNet_HostFxrGetDelegate = (hostfxr_get_runtime_delegate_fn)::GetProcAddress(lib, "hostfxr_get_runtime_delegate");
 	DotNet_HostFxrClose = (hostfxr_close_fn)::GetProcAddress(lib, "hostfxr_close");
+
+	// 解决C#导入动态库路径问题
+	AddRootDirToEnvVar();
 
 	return true;
 }
