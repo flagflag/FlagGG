@@ -4,8 +4,9 @@
 
 #include <Log.h>
 #include "GameApplication.h"
+#include "main.h"
 
-LJSONValue commandParam;
+static LJSONValue commandParam;
 
 void RunLuaVM()
 {
@@ -13,7 +14,7 @@ void RunLuaVM()
 	app.Run();
 }
 
-int main(int argc, const char* argv[])
+int EntryPoint(int argc, const char* argv[])
 {
 	if (ParseCommand(argv + 1, argc - 1, commandParam))
 	{

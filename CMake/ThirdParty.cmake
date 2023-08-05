@@ -29,5 +29,5 @@ if (WIN32 OR WIN64)
     dxgi
     dxguid)
     # CoreCLR
-    link_directories (${CMAKE_CURRENT_SOURCE_DIR}/../Module/CoreCLRHelper/Runtime)
+    link_directories (${CMAKE_CURRENT_SOURCE_DIR}/../Application/CoreCLRHelper/Runtime)
 endif ()

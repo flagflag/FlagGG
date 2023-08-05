@@ -29,6 +29,7 @@ extern FlagGG_API const Real F_MIN_NEARCLIP;
 extern FlagGG_API const Real F_DEGTORAD;
 extern FlagGG_API const Real F_DEGTORAD_2;
 extern FlagGG_API const Real F_RADTODEG;
+extern FlagGG_API const Real F_OVERSQRT2;
 
 template < class T >
 inline T Max(T value1, T value2)
@@ -64,6 +65,8 @@ Real FlagGG_API Sqrt(Real number);
 Real FlagGG_API Fract(Real number);
 
 
+Real FlagGG_API Lerp(float from, float to, float t);
+
 int FlagGG_API Compare(Real _1, Real _2);
 
 Real FlagGG_API Equals(Real _1, Real _2);
@@ -75,6 +78,10 @@ UInt32 FlagGG_API FloatToRawIntBits(Real value);
 UInt32 FlagGG_API HashString(const char* str);
 
 UInt32 FlagGG_API SDBM_Hash(UInt32 hashValue, UInt8 charValue);
+
+FlagGG_API bool IsPowerOfTwo(UInt32 value);
+
+FlagGG_API UInt32 NextPowerOfTwo(UInt32 value);
 
 // Œª“∆æÿ’Û
 Matrix4 FlagGG_API MatrixTranslation(Real dx, Real dy, Real dz);

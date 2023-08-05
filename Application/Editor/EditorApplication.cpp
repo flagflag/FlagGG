@@ -1,5 +1,6 @@
 #include "EditorApplication.h"
 #include "Importer.h"
+#include "CSharpExport/CSharpExport.h"
 
 #include <Math/Rect.h>
 #include <Utility/SystemHelper.h>
@@ -59,14 +60,13 @@ void EditorApplication::InitCSharpEnv()
 {
 	if (DotNet_Init())
 	{
-		libRuntime_ = DotNet_InitLibRuntime("UIElements");
+		libRuntime_ = DotNet_InitLibRuntime("ScriptModule");
 
-		if (uiElementsInit.Bind(libRuntime_, "FlagGG.UIElementsInterface", "Init"))
+		DotNetFunction<void()> mathTest;
+		if (mathTest.Bind(libRuntime_, "FlagGG.ScriptInterface", "MathTest"))
 		{
-			uiElementsInit();
+			mathTest();
 		}
-		uiElementsTick.Bind(libRuntime_, "FlagGG.UIElementsInterface", "Tick");
-		uiElementsRender.Bind(libRuntime_, "FlagGG.UIElementsInterface", "Render");
 	}
 	else
 	{
@@ -76,12 +76,12 @@ void EditorApplication::InitCSharpEnv()
 
 void EditorApplication::OnTick(Real timeStep)
 {
-	uiElementsTick();
+	//uiElementsTick();
 }
 
 void EditorApplication::OnRender(Real timeStep)
 {
-	uiElementsRender();
+	//uiElementsRender();
 }
 
 void EditorApplication::CreateScene()
