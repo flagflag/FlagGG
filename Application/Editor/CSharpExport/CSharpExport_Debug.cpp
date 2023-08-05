@@ -7,7 +7,17 @@
 
 using namespace FlagGG;
 
-CSharp_API void DebugDrawLine(Vector3 start, Vector3 end, Color color, float duration, bool depthTest)
+CSharp_API void DebugExport_DebugDrawLine(Vector3 start, Vector3 end, Color color, float duration, bool depthTest)
 {
-	FLAGGG_LOG_INFO("DebugDrawLine");
+	FLAGGG_LOG_INFO("DebugExport_DebugDrawLine");
+}
+
+CSharp_API void DebugExport_PauseEditor()
+{
+	FLAGGG_LOG_INFO("DebugExport_PauseEditor");
+}
+
+CSharp_API void DeveloperConsole_OpenConsoleFile()
+{
+	FLAGGG_LOG_INFO("DeveloperConsole_OpenConsoleFile");
 }

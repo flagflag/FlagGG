@@ -9,7 +9,7 @@ namespace UnityEngine
     // Representation of RGBA colors.
 
     [StructLayout(LayoutKind.Sequential)]
-    [NativeHeader("FlagGG/Math/Color.h")]
+    [NativeHeader("Runtime/Math/Color.h")]
     [NativeClass("Color")]
     [RequiredByNativeCode(Optional = true, GenerateProxy = true)]
     public struct Color : IEquatable<Color>

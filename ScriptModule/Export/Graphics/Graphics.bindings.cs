@@ -1,4 +1,5 @@
 using UnityEngine.Bindings;
+using System.Runtime.InteropServices;
 
 #if UNITY_EDITOR
 namespace UnityEngine
@@ -19,6 +20,7 @@ namespace UnityEngine
     {
         [FreeFunction("GraphicsScripting::DrawTexture")]
         [VisibleToOtherModules("UnityEngine.IMGUIModule")]
+        [DllImport("Editor.dll", EntryPoint = "Graphics_DrawTexture")]
         extern internal static void Internal_DrawTexture(ref Internal_DrawTextureArguments args);
     }
 }

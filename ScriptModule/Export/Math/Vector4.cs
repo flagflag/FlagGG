@@ -8,7 +8,7 @@ using System.Globalization;
 
 namespace UnityEngine
 {
-    [NativeHeader("FlagGG/Math/Vector4.h")]
+    [NativeHeader("Runtime/Math/Vector4.h")]
     [NativeClass("Vector4")]
     [RequiredByNativeCode(Optional = true, GenerateProxy = true)]
     // Representation of four-dimensional vectors.

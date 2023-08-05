@@ -9,7 +9,7 @@ using System.Globalization;
 namespace UnityEngine
 {
     // Representation of 3D vectors and points.
-    [NativeHeader("FlagGG/Math/Vector3.h")]
+    [NativeHeader("Runtime/Math/Vector3.h")]
     [NativeClass("Vector3")]
     [RequiredByNativeCode(Optional = true, GenerateProxy = true)]
     [StructLayout(LayoutKind.Sequential)]

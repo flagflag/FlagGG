@@ -18,7 +18,7 @@ namespace UnityEngine
         public float zFar;
     }
 
-    [NativeType(Header = "FlagGG/Math/Matrix4.h")]
+    [NativeType(Header = "Runtime/Math/Matrix4.h")]
     [NativeHeader("Runtime/Math/MathScripting.h")]
     public partial struct Matrix4x4
     {
