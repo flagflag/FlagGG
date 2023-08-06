@@ -40,7 +40,7 @@ public:
 	virtual void SortBatch() = 0;
 
 	// 渲染
-	virtual void RenderBatch(Camera* camera, UInt32 layer) = 0;
+	virtual void RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer) = 0;
 };
 
 // ShadowMap pass
@@ -62,7 +62,7 @@ public:
 	void SortBatch() override;
 
 	// 渲染
-	void RenderBatch(Camera* camera, UInt32 layer) override;
+	void RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer) override;
 
 private:
 	// 阴影光栅状态
@@ -93,7 +93,7 @@ public:
 	void SortBatch() override;
 
 	// 渲染
-	void RenderBatch(Camera* camera, UInt32 layer) override;
+	void RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer) override;
 
 private:
 	HashMap<Light*, LitRenderContext> litRenderContextMap_;
@@ -118,7 +118,7 @@ public:
 	void SortBatch() override;
 
 	// 渲染
-	void RenderBatch(Camera* camera, UInt32 layer) override;
+	void RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer) override;
 };
 
 // 延迟base pass
@@ -140,7 +140,7 @@ public:
 	void SortBatch() override;
 
 	// 渲染
-	void RenderBatch(Camera* camera, UInt32 layer) override;
+	void RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer) override;
 
 private:
 	RenderBatchQueue renderBatchQueue_;

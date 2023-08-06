@@ -42,9 +42,6 @@ void ForwardRenderPipline::OnSolveLitBatch()
 		{
 			context.drawable_ = drawable;
 
-			// shadow pass
-			shadowRenderPass_->CollectBatch(&context);
-
 			// litbase
 			if (!drawable->GetHasLitPass())
 			{
@@ -57,6 +54,15 @@ void ForwardRenderPipline::OnSolveLitBatch()
 				litRenderPass_[1]->CollectBatch(&context);
 			}
 		}
+	}
+
+	context.light_ = renderPiplineContext_.shadowLight_;
+	for (auto* shadowCaster : renderPiplineContext_.shadowCasters_)
+	{
+		context.drawable_ = shadowCaster;
+
+		// shadow pass
+		shadowRenderPass_->CollectBatch(&context);
 	}
 }
 
@@ -75,20 +81,20 @@ void ForwardRenderPipline::Render()
 
 	if (!renderPiplineContext_.camera_->GetUseReflection() && renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP))
 	{
-		gfxDevice->SetRenderTarget(renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP)->GetRenderSurface());
-		gfxDevice->SetDepthStencil(nullptr);
-		gfxDevice->Clear(CLEAR_COLOR, Color::WHITE);
+		gfxDevice->SetRenderTarget(nullptr);
+		gfxDevice->SetDepthStencil(renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP)->GetRenderSurface());
+		gfxDevice->Clear(CLEAR_DEPTH | CLEAR_STENCIL, Color::WHITE, 1.f, 0);
 
-		shadowRenderPass_->RenderBatch(renderPiplineContext_.camera_, 0u);
+		shadowRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 	}
 	
 	gfxDevice->SetRenderTarget(renderPiplineContext_.renderTarget_);
 	gfxDevice->SetDepthStencil(renderPiplineContext_.depthStencil_);
 	gfxDevice->Clear(CLEAR_COLOR | CLEAR_DEPTH | CLEAR_STENCIL);
 	
-	litRenderPass_[0]->RenderBatch(renderPiplineContext_.camera_, 0u);
-	litRenderPass_[1]->RenderBatch(renderPiplineContext_.camera_, 0u);
-	alphaRenderPass_->RenderBatch(renderPiplineContext_.camera_, 0u);
+	litRenderPass_[0]->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
+	litRenderPass_[1]->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
+	alphaRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 }
 
 }

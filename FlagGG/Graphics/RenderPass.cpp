@@ -36,7 +36,7 @@ ShadowRenderPass::ShadowRenderPass()
 	rasterizerState_.blendMode_ = BLEND_REPLACE;
 
 	depthStencilState_.depthWrite_ = true;
-	depthStencilState_.depthTestMode_ = COMPARISON_GREATER;
+	depthStencilState_.depthTestMode_ = COMPARISON_LESS_EQUAL;
 	depthStencilState_.stencilTest_ = false;
 }
 
@@ -83,19 +83,18 @@ void ShadowRenderPass::SortBatch()
 
 }
 
-void ShadowRenderPass::RenderBatch(Camera* camera, UInt32 layer)
+void ShadowRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer)
 {
 	RenderEngine* renderEngine = RenderEngine::Instance();
 
 	for (auto& it : shadowRenderContextMap_)
 	{
-		Light* light = it.first_;
 		auto& renderBatches = it.second_.renderBatchQueue_.renderBatches_;
 		for (auto& renderBatch : renderBatches)
 		{
-			renderEngine->SetRasterizerState(rasterizerState_);
+			renderEngine->SetRasterizerState(/*rasterizerState_*/renderBatch.material_->GetRasterizerState());
 			renderEngine->SetDepthStencilState(depthStencilState_);
-			renderEngine->SetShaderParameter(light, renderBatch);
+			renderEngine->SetShaderParameter(shadowCamera, renderBatch);
 			renderEngine->SetShaders(renderBatch.vertexShader_, renderBatch.pixelShader_);
 			renderEngine->SetVertexBuffers(renderBatch.geometry_->GetVertexBuffers());
 			renderEngine->SetIndexBuffer(renderBatch.geometry_->GetIndexBuffer());
@@ -151,20 +150,19 @@ void LitRenderPass::SortBatch()
 
 }
 
-void LitRenderPass::RenderBatch(Camera* camera, UInt32 layer)
+void LitRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer)
 {
 	RenderEngine* renderEngine = RenderEngine::Instance();
 
 	for (auto& it : litRenderContextMap_)
 	{
-		Light* light = it.first_;
-		Node* lightNode = light->GetNode();
+		Node* lightCameraNode = shadowCamera->GetNode();
 
 		auto& engineShaderParameters = renderEngine->GetShaderParameters();
-		engineShaderParameters.SetValue(SP_LIGHT_POS, lightNode->GetWorldPosition());
-		engineShaderParameters.SetValue(SP_LIGHT_DIR, lightNode->GetWorldRotation() * Vector3::FORWARD);
-		engineShaderParameters.SetValue(SP_LIGHT_VIEW_MATRIX, light->GetViewMatrix());
-		engineShaderParameters.SetValue(SP_LIGHT_PROJVIEW_MATRIX, light->GetProjectionMatrix() * light->GetViewMatrix());
+		engineShaderParameters.SetValue(SP_LIGHT_POS, lightCameraNode->GetWorldPosition());
+		engineShaderParameters.SetValue(SP_LIGHT_DIR, lightCameraNode->GetWorldRotation() * Vector3::FORWARD);
+		engineShaderParameters.SetValue(SP_LIGHT_VIEW_MATRIX, shadowCamera->GetViewMatrix());
+		engineShaderParameters.SetValue(SP_LIGHT_PROJVIEW_MATRIX, shadowCamera->GetProjectionMatrix() * shadowCamera->GetViewMatrix());
 
 		auto& renderBatches = it.second_.renderBatchQueue_.renderBatches_;
 		for (auto& renderBatch : renderBatches)
@@ -203,7 +201,7 @@ void AlphaRenderPass::SortBatch()
 
 }
 
-void AlphaRenderPass::RenderBatch(Camera* camera, UInt32 layer)
+void AlphaRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer)
 {
 
 }
@@ -249,7 +247,7 @@ void DeferredBaseRenderPass::SortBatch()
 
 }
 
-void DeferredBaseRenderPass::RenderBatch(Camera* camera, UInt32 layer)
+void DeferredBaseRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer)
 {
 	RenderEngine* renderEngine = RenderEngine::Instance();
 

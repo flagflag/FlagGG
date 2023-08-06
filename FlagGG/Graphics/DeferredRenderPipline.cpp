@@ -99,11 +99,11 @@ void DeferredRenderPipline::Render()
 
 	if (!renderPiplineContext_.camera_->GetUseReflection() && renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP))
 	{
-		gfxDevice->SetRenderTarget(renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP)->GetRenderSurface());
-		gfxDevice->SetDepthStencil(nullptr);
-		gfxDevice->Clear(CLEAR_COLOR, Color::WHITE);
+		gfxDevice->SetRenderTarget(nullptr);
+		gfxDevice->SetDepthStencil(renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP)->GetRenderSurface());
+		gfxDevice->Clear(CLEAR_DEPTH | CLEAR_STENCIL, Color::WHITE, 1.f, 0);
 
-		shadowRenderPass_->RenderBatch(renderPiplineContext_.camera_, 0u);
+		shadowRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 	}
 
 	AllocGBuffers();
@@ -116,7 +116,7 @@ void DeferredRenderPipline::Render()
 		gfxDevice->SetDepthStencil(renderPiplineContext_.depthStencil_);
 		gfxDevice->Clear(CLEAR_COLOR | CLEAR_DEPTH | CLEAR_STENCIL);
 
-		baseRenderPass_->RenderBatch(renderPiplineContext_.camera_, 0u);
+		baseRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 	}
 
 	// Render deferred lit to color render target
