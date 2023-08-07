@@ -255,7 +255,7 @@ void GameApplication::SetupWindow()
 	// 创建一张shaderMap
 	shadowMap_ = new Texture2D(context_);
 	shadowMap_->SetNumLevels(1);
-	shadowMap_->SetSize(rect.Width(), rect.Height(), RenderEngine::GetRGBFormat(), TEXTURE_RENDERTARGET);
+	shadowMap_->SetSize(rect.Width(), rect.Height(), RenderEngine::GetReadableDepthFormat(), TEXTURE_DEPTHSTENCIL);
 	RenderEngine::Instance()->SetDefaultTextures(TEXTURE_CLASS_SHADOWMAP, shadowMap_);
 
 	renderTexture_[0] = new Texture2D(context_);

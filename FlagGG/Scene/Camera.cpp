@@ -233,14 +233,14 @@ void Camera::Roll(Real angle)
 Matrix3x4 Camera::GetEffectiveWorldTransform() const
 {
 	Matrix3x4 transform = node_ ? Matrix3x4(node_->GetWorldPosition(), node_->GetWorldRotation(), 1.0f) : Matrix3x4::IDENTITY;
-	return useReflection_ ? (reflectionMatrix_ * transform).Inverse() : transform.Inverse();
+	return useReflection_ ? reflectionMatrix_ * transform : transform;
 }
 
 Matrix3x4 Camera::GetViewMatrix()
 {
 	if (viewDirty_)
 	{
-		view_ = GetEffectiveWorldTransform();
+		view_ = GetEffectiveWorldTransform().Inverse();
 		viewDirty_ = false;
 	}
 	return view_;

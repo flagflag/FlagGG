@@ -20,7 +20,6 @@
 struct PixelInput
 {
 	float4 pos : SV_POSITION;
-    float depth : DEPTH;
 };
 
 #ifdef VERTEX
@@ -37,14 +36,13 @@ struct PixelInput
         
         PixelInput output;
         output.pos = clipPos;
-        output.depth = GetDepth(clipPos);
 
         return output;
     }
 #else
     float4 PS(PixelInput input) : SV_TARGET
     {
-        return EncodeFloatRGBA(input.depth);
+        return float4(1.0, 1.0, 1.0, 1.0);
     }
 #endif
 

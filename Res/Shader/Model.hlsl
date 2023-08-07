@@ -24,7 +24,7 @@
     #endif
     #ifdef SHADOW
         Texture2D shadowMap : register(t6);
-        SamplerState shadowSampler : register(s6);
+        SamplerComparisonState shadowSampler : register(s6);
     #endif
 
     // 材质参数
@@ -100,26 +100,17 @@ struct PixelInput
         float3 ambiColor = ambientColor.rgb * textureColor;
 
     #ifdef SHADOW
-        float bias = 0.001;
-        float2 shadowTex;
-        shadowTex.x = input.shadowPos.x / input.shadowPos.w * 0.5 + 0.5;
-        shadowTex.y = input.shadowPos.y / input.shadowPos.w * (-0.5) + 0.5;
-        if (saturate(shadowTex.x) == shadowTex.x && saturate(shadowTex.y) == shadowTex.y)
-        {
-            float shadowDepth = DecodeFloatRG(shadowMap.Sample(shadowSampler, shadowTex).xy) + bias;
-            float depth = input.shadowPos.z / input.shadowPos.w;
-            if (shadowDepth < depth)
-            {
-                // diffColor = float3(0, 0, 0);
-            }
-        }
+        float3 shadowPos = input.shadowPos.xyz / input.shadowPos.w;
+        float shadow = shadowMap.SampleCmpLevelZero(shadowSampler, shadowPos.xy, shadowPos.z).r;
+    #else
+        float shadow = 1.0;
     #endif
 
         // float ambiPower = ambientColor.a / 255.0;
         // float diffPower = diffuseColor.a / 255.0;
         // float specPower = specularColor.a / 255.0;
         // float4 color = float4(ambientColor.rgb * ambiPower + diffColor * diffPower + specColor * specPower, 1.0);
-        float4 color = float4(ambiColor + diffColor + specColor, 1.0);
+        float4 color = float4(ambiColor + (diffColor + specColor) * shadow, 1.0);
 
     // 溶解特效
     #ifdef DISSOLVE

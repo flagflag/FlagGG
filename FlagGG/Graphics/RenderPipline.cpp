@@ -13,7 +13,9 @@ void RenderPiplineContext::Clear()
 	depthStencil_ = nullptr;
 	camera_ = nullptr;
 	drawables_.Clear();
+	shadowCasters_.Clear();
 	lights_.Clear();
+	shadowLight_ = nullptr;
 	probes_.Clear();
 }
 

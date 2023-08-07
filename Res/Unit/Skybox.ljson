@@ -1,5 +1,6 @@
 {
     geometrytype = "STATIC",
     model = "Model/Box.mdl",
-    material = "Materials/Skybox.ljson"
+    material = "Materials/Skybox.ljson",
+    cast_shadow = false
 }

@@ -114,8 +114,8 @@ void RenderView::RenderUpdate()
 
 void RenderView::CollectVisibilityObjects()
 {
-// 备注：shadowmap收集未写完，有空再补
 #if OCTREE_QUERY
+	tempQueryResults_.Clear();
 	FrustumOctreeQuery query(tempQueryResults_, camera_->GetFrustum(), DRAWABLE_ANY, camera_->GetViewMask());
 	octree_->GetElements(query);
 
@@ -124,8 +124,6 @@ void RenderView::CollectVisibilityObjects()
 		if (auto* light = drawableComponent->DynamicCast<Light>())
 		{
 			renderPiplineContext_->lights_.Push(light);
-			// temp
-			light->SetAspect((float)viewport_.Width() / viewport_.Height());
 		}
 		//else if (auto* probe = drawableComponent->DynamicCast<Probe>())
 		//{
@@ -151,7 +149,6 @@ void RenderView::CollectVisibilityObjects()
 		}
 
 // 设置平行光阴影相机参数
-		const bool focus = true;
 		const bool nonUniform = true;
 		const float quantize = 0.5f;
 
@@ -165,6 +162,25 @@ void RenderView::CollectVisibilityObjects()
 		Polyhedron frustumVolume;
 		frustumVolume.Define(splitFrustum);
 
+		// 裁剪视口内可见物体
+		{
+			BoundingBox litGeometriesBox;
+
+			for (auto* drawable : tempQueryResults_)
+			{
+				if (drawable->GetCastShadows())
+					litGeometriesBox.Merge(drawable->GetWorldBoundingBox());
+			}
+
+			if (litGeometriesBox.Defined())
+			{
+				frustumVolume.Clip(litGeometriesBox);
+				// If volume became empty, restore it to avoid zero size
+				if (frustumVolume.Empty())
+					frustumVolume.Define(splitFrustum);
+			}
+		}
+
 		const Matrix3x4& lightView = shadowCamera_->GetViewMatrix();
 		frustumVolume.Transform(lightView);
 
@@ -177,7 +193,8 @@ void RenderView::CollectVisibilityObjects()
 		shadowCamera_->SetOrthographic(true);
 		shadowCamera_->SetAspect(1.f);
 		shadowCamera_->SetNearClip(0.f);
-		shadowCamera_->SetFarClip(shadowBox.max_.z_);
+		// 算出来的包围盒有问题，先用1e4测是
+		shadowCamera_->SetFarClip(/*shadowBox.max_.z_*/1e4f);
 
 		const float minX = shadowBox.min_.x_;
 		const float minY = shadowBox.min_.y_;
@@ -211,13 +228,18 @@ void RenderView::CollectVisibilityObjects()
 // 找到被平行光视锥体裁剪的物件
 		const Frustum& shadowCameraFrustum = shadowCamera_->GetFrustum();
 
-		ShadowCasterOctreeQuery query(tempQueryResults_, shadowCameraFrustum, DRAWABLE_GEOMETRY, camera_->GetViewMask());
-		octree_->GetElements(query);
+		// 算出来的视锥体有问题，先注释这个判断测是
+		//tempQueryResults_.Clear();
+		//ShadowCasterOctreeQuery query(tempQueryResults_, shadowCameraFrustum, DRAWABLE_GEOMETRY, camera_->GetViewMask());
+		//octree_->GetElements(query);
 
 // 收集阴影投射者
+		renderPiplineContext_->shadowCamera_ = shadowCamera_;
+		renderPiplineContext_->shadowLight_ = dirLight;
 		for (auto* shadowCaster : tempQueryResults_)
 		{
-			renderPiplineContext_->shadowCasters_.Push(shadowCaster);
+			if (shadowCaster->GetCastShadows())
+				renderPiplineContext_->shadowCasters_.Push(shadowCaster);
 		}
 	}
 #endif
