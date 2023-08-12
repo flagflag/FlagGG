@@ -44,13 +44,6 @@ RenderView::RenderView()
 	: gfxDevice_(GfxDevice::GetDevice())
 	, renderEngine_(RenderEngine::Instance())
 {
-#if !OCTREE_QUERY
-	shadowRasterizerState_.depthWrite_ = true;
-	shadowRasterizerState_.scissorTest_ = false;
-	shadowRasterizerState_.fillMode_ = FILL_SOLID;
-	shadowRasterizerState_.cullMode_ = CULL_FRONT;
-#endif
-
 	shadowCameraNode_ = new Node();
 	shadowCamera_ = shadowCameraNode_->CreateComponent<Camera>();
 }
@@ -90,7 +83,6 @@ void RenderView::Undefine()
 
 void RenderView::RenderUpdate()
 {
-#if OCTREE_QUERY
 	renderPiplineContext_ = &renderPipline_->GetRenderPiplineContext();
 	renderPiplineContext_->Clear();
 
@@ -103,18 +95,10 @@ void RenderView::RenderUpdate()
 
 	renderPipline_->Clear();
 	renderPipline_->CollectBatch();
-#else
-	visibleRenderContext_.Clear();
-	visibleLights_.Clear();
-
-	scene_->Render(visibleRenderContext_);
-	scene_->GetLights(visibleLights_);
-#endif
 }
 
 void RenderView::CollectVisibilityObjects()
 {
-#if OCTREE_QUERY
 	tempQueryResults_.Clear();
 	FrustumOctreeQuery query(tempQueryResults_, camera_->GetFrustum(), DRAWABLE_ANY, camera_->GetViewMask());
 	octree_->GetElements(query);
@@ -242,7 +226,6 @@ void RenderView::CollectVisibilityObjects()
 				renderPiplineContext_->shadowCasters_.Push(shadowCaster);
 		}
 	}
-#endif
 }
 
 void RenderView::RenderShadowMap()
@@ -252,7 +235,6 @@ void RenderView::RenderShadowMap()
 
 void RenderView::Render()
 {
-#if OCTREE_QUERY
 	if (!scene_ || !camera_ || !renderPipline_)
 		return;
 
@@ -262,98 +244,11 @@ void RenderView::Render()
 	gfxDevice_->SetViewport(viewport_);
 
 	renderPipline_->Render();
-#else
-	if (!scene_ || !camera_ || !renderPipline_)
-		return;
-
-	gfxDevice_->SetViewport(viewport_);
-
-	float aspect = (float)viewport_.Width() / viewport_.Height();
-
-	// 反射相机不处理阴影
-	if (!camera_->GetUseReflection() && SetShadowMap())
-	{
-		for (auto light : visibleLights_)
-		{
-			for (const auto& renderContext : visibleRenderContext_)
-			{
-				if ((renderContext->viewMask_ & camera_->GetViewMask()) != renderContext->viewMask_)
-					continue;
-				if (!renderContext->material_)
-					continue;
-				auto it = renderContext->material_->GetRenderPass().Find(RENDER_PASS_TYPE_SHADOW);
-				if (it != renderContext->material_->GetRenderPass().End())
-				{
-					light->SetAspect(aspect);
-					renderEngine_->SetRasterizerState(shadowRasterizerState_);
-					renderEngine_->SetShaderParameter(light, renderContext);
-					renderEngine_->SetShaders(it->second_.vertexShader_, it->second_.pixelShader_);
-					renderEngine_->SetVertexBuffers(renderContext->geometry_->GetVertexBuffers());
-					renderEngine_->SetIndexBuffer(renderContext->geometry_->GetIndexBuffer());
-					renderEngine_->SetPrimitiveType(renderContext->geometry_->GetPrimitiveType());
-					renderEngine_->DrawCallIndexed(renderContext->geometry_->GetIndexStart(), renderContext->geometry_->GetIndexCount());
-				}
-			}
-		}
-	}
-
-	gfxDevice_->SetRenderTarget(renderTarget_);
-	gfxDevice_->SetDepthStencil(depthStencil_);
-	gfxDevice_->Clear(CLEAR_COLOR | CLEAR_DEPTH | CLEAR_STENCIL);
-
-	for (const auto& renderContext : visibleRenderContext_)
-	{
-		if ((renderContext->viewMask_ & camera_->GetViewMask()) != renderContext->viewMask_)
-			continue;
-
-		if (visibleLights_.Size() > 0)
-		{
-			Node* lightNode = visibleLights_[0]->GetNode();
-			visibleLights_[0]->SetAspect(aspect);
-			auto& engineShaderParameters = renderEngine_->GetShaderParameters();
-			engineShaderParameters.SetValue(SP_LIGHT_POS, lightNode->GetWorldPosition());
-			engineShaderParameters.SetValue(SP_LIGHT_DIR, lightNode->GetWorldRotation() * Vector3::FORWARD);
-			engineShaderParameters.SetValue(SP_LIGHT_VIEW_MATRIX, visibleLights_[0]->GetViewMatrix());
-			engineShaderParameters.SetValue(SP_LIGHT_PROJVIEW_MATRIX, visibleLights_[0]->GetProjectionMatrix() * visibleLights_[0]->GetViewMatrix());
-		}
-
-		camera_->SetAspect(aspect);
-		renderEngine_->SetRasterizerState(renderContext->material_->GetRasterizerState());
-		renderEngine_->SetShaderParameter(camera_, renderContext);
-		renderEngine_->SetShaders(renderContext->material_->GetVertexShader(), renderContext->material_->GetPixelShader());
-		renderEngine_->SetMaterialTextures(renderContext->material_);
-		renderEngine_->SetVertexBuffers(renderContext->geometry_->GetVertexBuffers());
-		renderEngine_->SetIndexBuffer(renderContext->geometry_->GetIndexBuffer());
-		renderEngine_->SetPrimitiveType(renderContext->geometry_->GetPrimitiveType());
-		renderEngine_->DrawCallIndexed(renderContext->geometry_->GetIndexStart(), renderContext->geometry_->GetIndexCount());
-}
-#endif
 }
 
 void RenderView::HandleEndFrame(Real timeStep)
 {
 	Undefine();
-
-#if !OCTREE_QUERY
-	visibleRenderContext_.Clear();
-#endif
 }
-
-#if !OCTREE_QUERY
-bool RenderView::SetShadowMap()
-{
-	if (renderEngine_->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP))
-	{
-		gfxDevice_->SetRenderTarget(renderEngine_->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP)->GetRenderSurface());
-		gfxDevice_->SetDepthStencil(nullptr);
-
-		gfxDevice_->Clear(CLEAR_COLOR, Color::WHITE);
-
-		return true;
-	}
-
-	return false;
-}
-#endif
 
 }

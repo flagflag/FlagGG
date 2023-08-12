@@ -31,6 +31,7 @@ RenderEngine::RenderEngine(Context* context) :
 	shaderParameters_->AddParametersDefine<Vector3>(SP_LIGHT_DIR);
 	shaderParameters_->AddParametersDefine<Matrix3x4>(SP_LIGHT_VIEW_MATRIX);
 	shaderParameters_->AddParametersDefine<Matrix4>(SP_LIGHT_PROJVIEW_MATRIX);
+	shaderParameters_->AddParametersDefine<Vector2>(SP_SHADOWMAP_PIXEL_TEXELS);
 	shaderParameters_->AddParametersDefineImpl(SP_SKIN_MATRICES, sizeof(Matrix3x4) * GetMaxBonesNum());
 }
 

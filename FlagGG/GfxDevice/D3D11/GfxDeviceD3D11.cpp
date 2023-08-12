@@ -571,8 +571,8 @@ ID3D11SamplerState* GfxDeviceD3D11::GetD3D11SamplerState(GfxSampler* gfxSampler)
 	d3d11SamplerDesc.AddressU = d3dAddressMode[desc.addresMode_[TEXTURE_COORDINATE_U]];
 	d3d11SamplerDesc.AddressV = d3dAddressMode[desc.addresMode_[TEXTURE_COORDINATE_V]];
 	d3d11SamplerDesc.AddressW = d3dAddressMode[desc.addresMode_[TEXTURE_COORDINATE_W]];
-	d3d11SamplerDesc.MaxAnisotropy = 4;
-	d3d11SamplerDesc.MinLOD = -D3D11_FLOAT32_MAX;
+	d3d11SamplerDesc.MaxAnisotropy = 1;
+	d3d11SamplerDesc.MinLOD = 0;
 	d3d11SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	d3d11SamplerDesc.ComparisonFunc = d3dComparisonFun[desc.comparisonFunc_];
 

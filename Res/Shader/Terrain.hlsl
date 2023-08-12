@@ -1,5 +1,8 @@
 #include "Shader/Define.hlsl"
 #include "Shader/Common.hlsl"
+#include "Shader/Sampler.hlsl"
+
+// #define SHADOW_CMP 1
 
 #ifdef VERTEX
     struct VertexInput
@@ -18,13 +21,6 @@
     SamplerState detail1Sampler : register(s1);
     SamplerState detail2Sampler : register(s2);
     SamplerState detail3Sampler : register(s3);
-
-    #ifdef SHADOW
-        Texture2D shadowMap : register(t6);
-        SamplerState shadowSampler : register(s6);
-    #endif
-
-
 #endif
 
 struct PixelInput
@@ -34,8 +30,7 @@ struct PixelInput
     float2 detailTex : TEXCOORD1;
 	float3 nor : NORMAL;
 #ifdef SHADOW
-    float shadowDepth : DEPTH;
-    float4 shadowScreenPos : SCREENPOS;
+    float4 shadowPos : POSITION;
 #endif
 };
 
@@ -54,9 +49,7 @@ struct PixelInput
         output.nor = worldNor;
 
     #ifdef SHADOW
-        float4 shadowClipPos = mul(float4(worldPos, 1.0), lightProjviewMatrix);
-        output.shadowDepth = GetDepth(shadowClipPos);
-        output.shadowScreenPos = GetScreenPos(shadowClipPos);
+        output.shadowPos = GetShadowPos(worldPos);
     #endif
 
         return output;
@@ -75,38 +68,11 @@ struct PixelInput
         float4 color = matDiffColor * diffColor;
 
     #ifdef SHADOW
-        float2 shadowTex = input.shadowScreenPos.xy / input.shadowScreenPos.w;
-        // 接下来几步做法是用step代替if...else...来做到硬件加速
-        float t1 = step(0.0, saturate(shadowTex.x) - shadowTex.x) * step(0.0, shadowTex.x - saturate(shadowTex.x));
-        float t2 = step(0.0, saturate(shadowTex.y) - shadowTex.y) * step(0.0, shadowTex.y - saturate(shadowTex.y));
-        
-        float shadowDepth = DecodeFloatRG(shadowMap.Sample(shadowSampler, shadowTex).xy);
-        float s1 = step(0.0, input.shadowDepth - shadowDepth);
-        float final = t1 * t2 * s1;
-
-        float pixelOffset = 0.002;
-
-        shadowDepth = DecodeFloatRG(shadowMap.Sample(shadowSampler, shadowTex + float2(-pixelOffset, 0)).xy);
-        float s2 = step(0.0, input.shadowDepth - shadowDepth);
-        final += t1 * t2 * s2;
-
-        shadowDepth = DecodeFloatRG(shadowMap.Sample(shadowSampler, shadowTex + float2(pixelOffset, 0)).xy);
-        float s3 = step(0.0, input.shadowDepth - shadowDepth);
-        final += t1 * t2 * s3;
-
-        shadowDepth = DecodeFloatRG(shadowMap.Sample(shadowSampler, shadowTex + float2(0, -pixelOffset)).xy);
-        float s4 = step(0.0, input.shadowDepth - shadowDepth);
-        final += t1 * t2 * s4;
-
-        shadowDepth = DecodeFloatRG(shadowMap.Sample(shadowSampler, shadowTex + float2(0, pixelOffset)).xy);
-        float s5 = step(0.0, input.shadowDepth - shadowDepth);
-        final += t1 * t2 * s5;
-
-        final *= 0.2;
-
-        color = float4(color.xyz * (1.0 - final), 1.0);
+        float shadow = GetShadow(input.shadowPos);
+    #else
+        float shadow = 1.0;
     #endif
 
-        return LinearToGammaSpace(color);
+        return LinearToGammaSpace(color * shadow);
     }
 #endif
