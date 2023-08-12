@@ -11,8 +11,6 @@
 #include "Graphics/GraphicsDef.h"
 #include "Math/Rect.h"
 
-#define OCTREE_QUERY 1
-
 namespace FlagGG
 {
 
@@ -53,10 +51,6 @@ public:
 protected:
 	void HandleEndFrame(Real timeStep);
 
-#if !OCTREE_QUERY
-	bool SetShadowMap();
-#endif
-
 	// 收集视图可见对象
 	void CollectVisibilityObjects();
 
@@ -96,21 +90,10 @@ private:
 	// 视口大小
 	IntRect viewport_;
 
-#if OCTREE_QUERY
+	// 缓存 - 八叉树查询结果
 	PODVector<DrawableComponent*> tempQueryResults_;
-#else
-	// 阴影光栅状态
-	RasterizerState shadowRasterizerState_;
 
-	// 当前视口可见渲染Batch
-	PODVector<const RenderContext*> visibleRenderContext_;
-
-	// 投射阴影的渲染Batch
-	PODVector<const RenderContext*> shadowCasterRenderContext_;
-
-	PODVector<Light*> visibleLights_;
-#endif
-
+	// 渲染管线上下文
 	RenderPiplineContext* renderPiplineContext_{};
 };
 
