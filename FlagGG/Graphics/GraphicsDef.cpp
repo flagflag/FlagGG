@@ -80,6 +80,7 @@ const FlagGG::StringHash SP_LIGHT_POS("lightPos");
 const FlagGG::StringHash SP_LIGHT_DIR("lightDir");
 const FlagGG::StringHash SP_LIGHT_VIEW_MATRIX("lightViewMatrix");
 const FlagGG::StringHash SP_LIGHT_PROJVIEW_MATRIX("lightProjviewMatrix");
+const FlagGG::StringHash SP_SHADOWMAP_PIXEL_TEXELS("shadowMapPixelTexels");
 
 const const UInt32 DRAWABLE_UNDEFINED = 0x0;
 const const UInt32 DRAWABLE_GEOMETRY = 0x1;

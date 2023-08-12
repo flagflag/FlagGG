@@ -360,6 +360,7 @@ extern FlagGG_API const FlagGG::StringHash SP_LIGHT_POS;
 extern FlagGG_API const FlagGG::StringHash SP_LIGHT_DIR;
 extern FlagGG_API const FlagGG::StringHash SP_LIGHT_VIEW_MATRIX;
 extern FlagGG_API const FlagGG::StringHash SP_LIGHT_PROJVIEW_MATRIX;
+extern FlagGG_API const FlagGG::StringHash SP_SHADOWMAP_PIXEL_TEXELS;
 
 extern FlagGG_API const UInt32 DRAWABLE_UNDEFINED;
 extern FlagGG_API const UInt32 DRAWABLE_GEOMETRY;

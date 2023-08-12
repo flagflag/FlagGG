@@ -1,5 +1,6 @@
 #include "Shader/Define.hlsl"
 #include "Shader/Common.hlsl"
+#include "Shader/Sampler.hlsl"
 
 #ifdef VERTEX
     struct VertexInput
@@ -22,11 +23,6 @@
         Texture2D noiseMap : register(t1);
         SamplerState noiseSampler : register(s1);
     #endif
-    #ifdef SHADOW
-        Texture2D shadowMap : register(t6);
-        SamplerComparisonState shadowSampler : register(s6);
-    #endif
-
     // 材质参数
     cbuffer MaterialParam : register(b1)
     {
@@ -75,8 +71,7 @@ struct PixelInput
         output.worldPos = worldPos;
 
     #ifdef SHADOW
-        float4 shadowClipPos = mul(float4(worldPos, 1.0), lightProjviewMatrix);
-        output.shadowPos = shadowClipPos;
+        output.shadowPos = GetShadowPos(worldPos);
     #endif
 
         return output;
@@ -100,8 +95,7 @@ struct PixelInput
         float3 ambiColor = ambientColor.rgb * textureColor;
 
     #ifdef SHADOW
-        float3 shadowPos = input.shadowPos.xyz / input.shadowPos.w;
-        float shadow = shadowMap.SampleCmpLevelZero(shadowSampler, shadowPos.xy, shadowPos.z).r;
+        float shadow = GetShadow(input.shadowPos);
     #else
         float shadow = 1.0;
     #endif

@@ -31,6 +31,7 @@
         float3 lightDir;
         float4x3 lightViewMatrix;
         float4x4 lightProjviewMatrix;
+        float2 shadowMapPixelTexels;
     }
     #define Sample2D(name, tex) name##Map.Sample(name##Sampler, tex)
 #endif
