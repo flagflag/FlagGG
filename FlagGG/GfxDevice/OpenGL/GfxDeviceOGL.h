@@ -5,6 +5,7 @@
 #pragma once
 
 #include "GfxDevice/GfxDevice.h"
+#include "GfxDevice/OpenGL/OpenGLInterface.h"
 #include "Utility/Singleton.h"
 #include "AsyncFrame/Mutex.h"
 #include "Container/HashMap.h"
