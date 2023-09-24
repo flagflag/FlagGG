@@ -16,7 +16,7 @@ namespace FlagGG
 class FlagGG_API TextureCube : public Texture
 {
 public:
-	TextureCube(Context* context);
+	TextureCube();
 
 	/**
 	 * 设置纹理大小

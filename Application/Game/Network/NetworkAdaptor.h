@@ -13,7 +13,7 @@ using namespace FlagGG;
 class Network : public IOFrame::Handler::EventHandler
 {
 public:
-	Network(Context* context_, NetworkType type);
+	Network(NetworkType type);
 
 	~Network() override;
 
@@ -39,8 +39,6 @@ protected:
 	void HandleFrameBegin(float timeStep);
 
 private:
-	Context* context_;
-
 	IOFrame::IOThreadPoolPtr threadPool_;
 
 	IOFrame::Connector::IOConnectorPtr connector_;

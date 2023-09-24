@@ -1,22 +1,22 @@
 #include "GamePlay/GamePlayOnline.h"
 #include "Movement/DirectionMovement.h"
 
+#include <Core/EventManager.h>
 #include <Scene/MovementComponent.h>
 #include <Log.h>
 
-GamePlayOnline::GamePlayOnline(Context* context) :
-	context_(context)
+GamePlayOnline::GamePlayOnline()
 {
-	network_ = context->GetVariable<Network>(NETWORK_TYPE_NAME[NETWORK_TYPE_UDP]);
+	network_ = GetSubsystem<Context>()->GetVariable<Network>(NETWORK_TYPE_NAME[NETWORK_TYPE_UDP]);
 
 #ifdef FLAGGG_PROTO
-	context_->RegisterEvent(EVENT_HANDLER(GameProtoEvent::MESSAGE_RECIVED, GamePlayOnline::OnGameMessageRecived, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(GameProtoEvent::MESSAGE_RECIVED, GamePlayOnline::OnGameMessageRecived, this));
 #endif
 }
 
 void GamePlayOnline::Initialize(Scene* scene)
 {
-	world_ = new World(context_);
+	world_ = new World();
 	world_->SetScene(scene);
 }
 

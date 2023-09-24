@@ -85,7 +85,7 @@ void ShadowRenderPass::SortBatch()
 
 void ShadowRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer)
 {
-	RenderEngine* renderEngine = RenderEngine::Instance();
+	RenderEngine* renderEngine = RenderEngine::InstancePtr();
 
 	for (auto& it : shadowRenderContextMap_)
 	{
@@ -152,7 +152,7 @@ void LitRenderPass::SortBatch()
 
 void LitRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer)
 {
-	RenderEngine* renderEngine = RenderEngine::Instance();
+	RenderEngine* renderEngine = RenderEngine::InstancePtr();
 
 	for (auto& it : litRenderContextMap_)
 	{
@@ -254,7 +254,7 @@ void DeferredBaseRenderPass::SortBatch()
 
 void DeferredBaseRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer)
 {
-	RenderEngine* renderEngine = RenderEngine::Instance();
+	RenderEngine* renderEngine = RenderEngine::InstancePtr();
 
 	auto& renderBatches = renderBatchQueue_.renderBatches_;
 	for (auto& renderBatch : renderBatches)

@@ -1,12 +1,12 @@
 #include "GamePlay/World.h"
 #include "EventDefine/GameEvent.h"
 
+#include <Core/EventManager.h>
 #include <Log.h>
 
-World::World(Context* context) :
-	context_(context)
+World::World()
 {
-	context_->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, World::HandleUpdate, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, World::HandleUpdate, this));
 }
 
 void World::SetScene(Scene* scene)
@@ -31,7 +31,7 @@ Unit* World::CreateUnit(Int64 unitId)
 
 	if (freeUnits_.Empty())
 	{
-		unit = new CEUnit(context_);
+		unit = new CEUnit();
 	}
 	else
 	{
@@ -42,7 +42,7 @@ Unit* World::CreateUnit(Int64 unitId)
 	activeUnits_.Insert(MakePair(unitId, unit));
 	scene_->AddChild(unit);
 
-	context_->SendEvent<GameEvent::CREATE_UNIT_HANDLER>(unit);
+	GetSubsystem<EventManager>()->SendEvent<GameEvent::CREATE_UNIT_HANDLER>(unit);
 
 	return unit;
 }
@@ -60,7 +60,7 @@ void World::DestroyUnit(Int64 unitId)
 	freeUnits_.Push(currentUnit);
 	scene_->RemoveChild(currentUnit);
 
-	context_->SendEvent<GameEvent::DESTROY_UNIT_HANDLER>(currentUnit);
+	GetSubsystem<EventManager>()->SendEvent<GameEvent::DESTROY_UNIT_HANDLER>(currentUnit);
 }
 
 Unit* World::GetUnit(Int64 unitId)

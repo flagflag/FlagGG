@@ -14,7 +14,7 @@ using namespace FlagGG;
 class UDPNetwork : public IOFrame::Handler::EventHandler, public NetworkSender
 {
 public:
-	explicit UDPNetwork(Context* context);
+	explicit UDPNetwork();
 
 	void Send(Int64 userId, UInt32 messageType, ::google::protobuf::Message* message) override;
 
@@ -31,8 +31,6 @@ protected:
 	void HandleRequestStopMove(IOFrame::Context::IOContextPtr context, const std::string& messageBody);
 
 private:
-	Context* context_;
-
 	HashMap<Int64, IOFrame::Channel::IOChannelPtr> channels_;
 
 	IOFrame::Buffer::IOBufferPtr buffer;

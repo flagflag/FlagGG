@@ -20,10 +20,7 @@ namespace GameProtoEvent
 class GameProtoDistributor : public RefCounted
 {
 public:
-	GameProtoDistributor(Context* context);
+	GameProtoDistributor();
 
 	void OnMessageRecived(NetworkType type, IOFrame::Context::IOContextPtr context, IOFrame::Buffer::IOBufferPtr buffer);
-
-private:
-	Context* context_;
 };

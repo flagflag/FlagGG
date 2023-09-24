@@ -26,7 +26,6 @@
 namespace Importer
 {
 
-SharedPtr<Context> context_;
 String importPath_;
 
 static const unsigned MAX_CHANNELS = 4;
@@ -216,7 +215,7 @@ static SharedPtr<Node> BuildNode(const aiScene* aiScn, aiNode* aiNd, aiMatrix4x4
 	if (aiNd->mNumMeshes > 0)
 	{
 		// 创建Node的Component
-		SharedPtr<Model> model(new Model(context_));
+		SharedPtr<Model> model(new Model());
 		model->SetNumGeometries(aiNd->mNumMeshes);
 		Vector<SharedPtr<VertexBuffer>> vertexBuffers;
 		Vector<SharedPtr<IndexBuffer>> indexBuffers;
@@ -265,7 +264,7 @@ static SharedPtr<Node> BuildNode(const aiScene* aiScn, aiNode* aiNd, aiMatrix4x4
 				SharedPtr<Material>& material = materialMap[aiMtrl];
 				if (!material)
 				{
-					material = new Material(context_);
+					material = new Material();
 
 					// 获取材质贴图
 					aiString stringVal;
@@ -275,7 +274,7 @@ static SharedPtr<Node> BuildNode(const aiScene* aiScn, aiNode* aiNd, aiMatrix4x4
 						SharedPtr<Texture2D>& texture = textureMap[texturePath];
 						if (!texture)
 						{
-							texture = new Texture2D(context_);
+							texture = new Texture2D();
 							texture->LoadFile(ToTexturePath(texturePath));
 						}
 						// if (texture->IsValid())
@@ -290,7 +289,7 @@ static SharedPtr<Node> BuildNode(const aiScene* aiScn, aiNode* aiNd, aiMatrix4x4
 						SharedPtr<Texture2D>& texture = textureMap[texturePath];
 						if (!texture)
 						{
-							texture = new Texture2D(context_);
+							texture = new Texture2D();
 							texture->LoadFile(ToTexturePath(texturePath));
 						}
 						// if (texture->IsValid())
@@ -304,7 +303,7 @@ static SharedPtr<Node> BuildNode(const aiScene* aiScn, aiNode* aiNd, aiMatrix4x4
 						SharedPtr<Texture2D>& texture = textureMap[texturePath];
 						if (!texture)
 						{
-							texture = new Texture2D(context_);
+							texture = new Texture2D();
 							texture->LoadFile(ToTexturePath(texturePath));
 						}
 						// if (texture->IsValid())
@@ -322,7 +321,7 @@ static SharedPtr<Node> BuildNode(const aiScene* aiScn, aiNode* aiNd, aiMatrix4x4
 						SharedPtr<Texture2D>& texture = textureMap[texturePath];
 						if (!texture)
 						{
-							texture = new Texture2D(context_);
+							texture = new Texture2D();
 							texture->LoadFile(ToTexturePath(texturePath));
 						}
 						// if (texture->IsValid())
@@ -362,14 +361,14 @@ static SharedPtr<Node> BuildNode(const aiScene* aiScn, aiNode* aiNd, aiMatrix4x4
 						vsdefines.Push("COLOR");
 						psdefines.Push("COLOR");
 					}
-					ShaderCode* vsShaderCode = context_->GetVariable<ResourceCache>("ResourceCache")->GetResource<ShaderCode>("Shader/Model_VS.hlsl");
+					ShaderCode* vsShaderCode = GetSubsystem<ResourceCache>()->GetResource<ShaderCode>("Shader/Model_VS.hlsl");
 					material->SetVertexShader(vsShaderCode->GetShader(VS, vsdefines));
-					ShaderCode* psShaderCode = context_->GetVariable<ResourceCache>("ResourceCache")->GetResource<ShaderCode>("Shader/Model_PS.hlsl");
+					ShaderCode* psShaderCode = GetSubsystem<ResourceCache>()->GetResource<ShaderCode>("Shader/Model_PS.hlsl");
 					material->SetPixelShader(psShaderCode->GetShader(PS, psdefines));
 
 					if (!material->GetTexture())
 					{
-						material->SetTexture(context_->GetVariable<ResourceCache>("ResourceCache")->GetResource<Texture2D>("Textures/White.dds"));
+						material->SetTexture(GetSubsystem<ResourceCache>()->GetResource<Texture2D>("Textures/White.dds"));
 					}
 				}
 				materialList.Push(material);
@@ -381,7 +380,7 @@ static SharedPtr<Node> BuildNode(const aiScene* aiScn, aiNode* aiNd, aiMatrix4x4
 
 		SharedPtr<Material> material = materialList.Size()> 0 ?
 			materialList[0] :
-			context_->GetVariable<ResourceCache>("ResourceCache")->GetResource<Material>("Materials/StaticModel.ljson");
+			GetSubsystem<ResourceCache>()->GetResource<Material>("Materials/StaticModel.ljson");
 
 		StaticMeshComponent* meshComp = node->CreateComponent<StaticMeshComponent>();
 		meshComp->SetModel(model);
@@ -395,11 +394,6 @@ static SharedPtr<Node> BuildNode(const aiScene* aiScn, aiNode* aiNd, aiMatrix4x4
 	}
 
 	return node;
-}
-
-void SetContext(Context* context)
-{
-	context_ = context;
 }
 
 SharedPtr<Node> ImportScene(const String& path)

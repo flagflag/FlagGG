@@ -66,8 +66,8 @@ AnimationKeyFrameInterval AnimationTrack::GetKeyFrameInterval(Real currentTime, 
 	return interval;
 }
 
-Animation::Animation(Context* context) :
-	Resource(context)
+Animation::Animation() :
+	Resource()
 { }
 
 bool Animation::BeginLoad(IOFrame::Buffer::IOBuffer* stream)

@@ -9,8 +9,9 @@
 
 using namespace FlagGG;
 
-class Perspective : public RefCounted
+class Perspective : public Object
 {
+	OBJECT_OVERRIDE(Perspective, Object);
 public:
 	// 设置相机
 	virtual void SetCamera(Camera* camera) = 0;

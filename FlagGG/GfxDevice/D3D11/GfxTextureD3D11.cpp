@@ -170,7 +170,7 @@ void GfxTextureD3D11::ReleaseTexture()
 
 void GfxTextureD3D11::CreateTexture2D()
 {
-	GfxDeviceD3D11* gfxDevice = GfxDeviceD3D11::Instance();
+	GfxDeviceD3D11* gfxDevice = GetSubsystem<GfxDeviceD3D11>();
 	ID3D11Device* d3d11Device = gfxDevice->GetD3D11Device();
 
 	D3D11_TEXTURE2D_DESC textureDesc;
@@ -317,7 +317,7 @@ void GfxTextureD3D11::CreateTexture2D()
 
 void GfxTextureD3D11::CreateTexture3D()
 {
-	GfxDeviceD3D11* gfxDevice = GfxDeviceD3D11::Instance();
+	GfxDeviceD3D11* gfxDevice = GetSubsystem<GfxDeviceD3D11>();
 	ID3D11Device* d3d11Device = gfxDevice->GetD3D11Device();
 
 	D3D11_TEXTURE3D_DESC textureDesc;
@@ -355,7 +355,7 @@ void GfxTextureD3D11::CreateTexture3D()
 
 void GfxTextureD3D11::CreateTextureCube()
 {
-	GfxDeviceD3D11* gfxDevice = GfxDeviceD3D11::Instance();
+	GfxDeviceD3D11* gfxDevice = GetSubsystem<GfxDeviceD3D11>();
 	ID3D11Device* d3d11Device = gfxDevice->GetD3D11Device();
 
 	D3D11_TEXTURE2D_DESC textureDesc;
@@ -544,7 +544,7 @@ void GfxTextureD3D11::UpdateTextureSubRegion(const void* dataPtr, UInt32 index, 
 		D3D11_MAPPED_SUBRESOURCE mappedData;
 		mappedData.pData = nullptr;
 
-		HRESULT hr = GfxDeviceD3D11::Instance()->GetD3D11DeviceContext()->Map(d3d11Texture2D_,
+		HRESULT hr = GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext()->Map(d3d11Texture2D_,
 			subResource, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 
 		if (FAILED(hr) || !mappedData.pData)
@@ -557,7 +557,7 @@ void GfxTextureD3D11::UpdateTextureSubRegion(const void* dataPtr, UInt32 index, 
 			for (Int32 row = 0; row < height; ++row)
 				memcpy((UInt8*)mappedData.pData + (row + y) * mappedData.RowPitch + rowStart, src + row * rowSize, rowSize);
 
-			GfxDeviceD3D11::Instance()->GetD3D11DeviceContext()->Unmap(d3d11Texture2D_, subResource);
+			GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext()->Unmap(d3d11Texture2D_, subResource);
 		}
 	}
 	else
@@ -570,7 +570,7 @@ void GfxTextureD3D11::UpdateTextureSubRegion(const void* dataPtr, UInt32 index, 
 		destBox.front = 0;
 		destBox.back = 1;
 
-		GfxDeviceD3D11::Instance()->GetD3D11DeviceContext()->UpdateSubresource(d3d11Texture2D_, subResource, &destBox, dataPtr, rowSize, 0);
+		GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext()->UpdateSubresource(d3d11Texture2D_, subResource, &destBox, dataPtr, rowSize, 0);
 	}
 }
 
@@ -611,7 +611,7 @@ void GfxTextureD3D11::UpdateTextureSubRegion(const void* dataPtr, UInt32 index, 
 		D3D11_MAPPED_SUBRESOURCE mappedData;
 		mappedData.pData = nullptr;
 
-		HRESULT hr = GfxDeviceD3D11::Instance()->GetD3D11DeviceContext()->Map(d3d11Texture3D_,
+		HRESULT hr = GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext()->Map(d3d11Texture3D_,
 			subResource, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 
 		if (FAILED(hr) || !mappedData.pData)
@@ -628,7 +628,7 @@ void GfxTextureD3D11::UpdateTextureSubRegion(const void* dataPtr, UInt32 index, 
 						src + row * rowSize, rowSize);
 			}
 
-			GfxDeviceD3D11::Instance()->GetD3D11DeviceContext()->Unmap(d3d11Texture3D_, subResource);
+			GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext()->Unmap(d3d11Texture3D_, subResource);
 		}
 	}
 	else
@@ -641,7 +641,7 @@ void GfxTextureD3D11::UpdateTextureSubRegion(const void* dataPtr, UInt32 index, 
 		destBox.front = (UINT)z;
 		destBox.back = (UINT)(z + depth);
 
-		GfxDeviceD3D11::Instance()->GetD3D11DeviceContext()->UpdateSubresource(d3d11Texture3D_, subResource, &destBox, dataPtr, rowSize, mipInfo.height_ * rowSize);
+		GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext()->UpdateSubresource(d3d11Texture3D_, subResource, &destBox, dataPtr, rowSize, mipInfo.height_ * rowSize);
 	}
 }
 

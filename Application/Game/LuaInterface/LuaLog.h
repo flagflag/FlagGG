@@ -1,15 +1,17 @@
 #pragma once
 
+#include <Core/Object.h>
 #include <Core/Context.h>
 #include <Lua/LuaVM.h>
 #include <Container/Ptr.h>
 
 using namespace FlagGG;
 
-class LuaLog : public RefCounted
+class LuaLog : public Object
 {
+	OBJECT_OVERRIDE(LuaLog, Object);
 public:
-	explicit LuaLog(Context* context);
+	explicit LuaLog();
 	
 protected:
 	int Debug(LuaVM* luaVM);
@@ -21,7 +23,4 @@ protected:
 	int Error(LuaVM* luaVM);
 
 	int Critical(LuaVM* luaVM);
-
-private:
-	Context* context_;
 };

@@ -19,8 +19,9 @@ namespace FlagGG
 
 class FlagGG_API Model : public Resource
 {
+	OBJECT_OVERRIDE(Model, Resource);
 public:
-	Model(Context* context);
+	Model();
 
 	// 设置顶点buffers
 	void SetVertexBuffers(const Vector<SharedPtr<VertexBuffer>>& vertexBuffers);

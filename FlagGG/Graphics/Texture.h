@@ -22,8 +22,9 @@ static const int MAX_TEXTURE_QUALITY_LEVELS = 3;
 
 class FlagGG_API Texture : public Resource
 {
+	OBJECT_OVERRIDE(Texture, Resource);
 public:
-	Texture(Context* context);
+	Texture();
 
 	~Texture() override;
 

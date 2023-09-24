@@ -1,7 +1,8 @@
 #include "Network/NetworkAdaptor.h"
 
-Network::Network(Context* context, NetworkType type) :
-	context_(context),
+#include <Core/EventManager.h>
+
+Network::Network(NetworkType type) :
 	type_(type)
 {
 	switch (type)
@@ -23,7 +24,7 @@ Network::Network(Context* context, NetworkType type) :
 		break;
 	}
 
-	context_->RegisterEvent(EVENT_HANDLER(Frame::BEGIN_FRAME, Network::HandleFrameBegin, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(Frame::BEGIN_FRAME, Network::HandleFrameBegin, this));
 }
 
 Network::~Network()
@@ -69,7 +70,7 @@ void Network::ChannelOpend(IOFrame::Context::IOContextPtr context)
 {
 	mainThreadFunc_.Push([=]()
 	{
-		context_->SendEvent<NetworkEvent::OPEND_HANDLER>(type_, context);
+		GetSubsystem<EventManager>()->SendEvent<NetworkEvent::OPEND_HANDLER>(type_, context);
 	});
 }
 
@@ -77,7 +78,7 @@ void Network::ChannelClosed(IOFrame::Context::IOContextPtr context)
 {
 	mainThreadFunc_.Push([=]()
 	{
-		context_->SendEvent<NetworkEvent::CLOSED_HANDLER>(type_, context);
+		GetSubsystem<EventManager>()->SendEvent<NetworkEvent::CLOSED_HANDLER>(type_, context);
 	});
 }
 
@@ -85,7 +86,7 @@ void Network::MessageRecived(IOFrame::Context::IOContextPtr context, IOFrame::Bu
 {
 	mainThreadFunc_.Push([=]()
 	{
-		context_->SendEvent<NetworkEvent::MESSAGE_RECIVED_HANDLER>(type_, context, buffer);
+		GetSubsystem<EventManager>()->SendEvent<NetworkEvent::MESSAGE_RECIVED_HANDLER>(type_, context, buffer);
 	});
 }
 
@@ -95,7 +96,7 @@ void Network::ErrorCatch(IOFrame::Context::IOContextPtr context, const ErrorCode
 	auto msg = errorCode.Message();
 	mainThreadFunc_.Push([=]()
 	{
-		context_->SendEvent<NetworkEvent::CATCH_ERROR_HANDLER>(type_, context, value, msg);
+		GetSubsystem<EventManager>()->SendEvent<NetworkEvent::CATCH_ERROR_HANDLER>(type_, context, value, msg);
 	});
 }
 

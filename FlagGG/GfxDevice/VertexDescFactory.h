@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "Utility/Singleton.h"
+#include "Core/Subsystem.h"
 #include "AsyncFrame/Mutex.h"
 #include "Graphics/GraphicsDef.h"
 #include "Container/Vector.h"
@@ -43,7 +43,7 @@ private:
 	PODVector<VertexElement> elements_;
 };
 
-class FlagGG_API VertexDescFactory : public Singleton<VertexDescFactory, NullMutex>
+class FlagGG_API VertexDescFactory : public Subsystem<VertexDescFactory>
 {
 public:
 	~VertexDescFactory() override;

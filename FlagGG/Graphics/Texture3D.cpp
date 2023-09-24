@@ -10,6 +10,12 @@
 namespace FlagGG
 {
 
+Texture3D::Texture3D() :
+	Texture()
+{
+
+}
+
 bool Texture3D::SetSize(Int32 width, Int32 height, Int32 depth, TextureFormat format, TextureUsage usage/* = TEXTURE_STATIC*/)
 {
 	if (width <= 0 || height <= 0 || depth <= 0)
@@ -55,7 +61,7 @@ bool Texture3D::SetData(Image* image, bool useAlpha/* = false*/)
 
 	SharedPtr<Image> mipImage;
 	UInt32 memoryUse = sizeof(Texture3D);
-	MaterialQuality quality = RenderEngine::Instance()->GetTextureQuality();
+	MaterialQuality quality = RenderEngine::Instance().GetTextureQuality();
 
 	const TextureDesc& desc = gfxTexture_->GetDesc();
 

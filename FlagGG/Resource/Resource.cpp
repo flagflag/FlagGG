@@ -5,8 +5,7 @@
 namespace FlagGG
 {
 
-Resource::Resource(Context* context) :
-	context_(context)
+Resource::Resource()
 { }
 		
 void Resource::SetName(const String& name)

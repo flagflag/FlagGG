@@ -1,4 +1,5 @@
 #ifdef _WIN32
+#include <Core/EventManager.h>
 #include <Graphics/RenderEngine.h>
 #include <Graphics/Batch2D.h>
 #include <Graphics/RenderPipline.h>
@@ -42,12 +43,12 @@ void GameApplication::Start()
 	OpenLuaVM();
 	CreateNetwork();
 
-	context_->RegisterVariable<LuaVM>(luaVM_, "LuaVM");
-	context_->RegisterVariable<Network>(tcpNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_TCP]);
-	context_->RegisterVariable<Network>(udpNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_UDP]);
-	context_->RegisterVariable<Network>(webNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_WEB]);
+	GetSubsystem<Context>()->RegisterVariable<LuaVM>(luaVM_, "LuaVM");
+	GetSubsystem<Context>()->RegisterVariable<Network>(tcpNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_TCP]);
+	GetSubsystem<Context>()->RegisterVariable<Network>(udpNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_UDP]);
+	GetSubsystem<Context>()->RegisterVariable<Network>(webNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_WEB]);
 
-	perspective_ = new ThirdPersonPerspective(context_);
+	perspective_ = new ThirdPersonPerspective();
 	perspective_->SetSyncMode(/*SyncMode_State*/SyncMode_Local);
 	perspective_->SetCamera(camera_);
 	perspective_->SetWindow(window_);
@@ -55,25 +56,25 @@ void GameApplication::Start()
 	perspective_->Reset();
 
 #if 0
-	gameplay_ = new GamePlayOnline(context_);
+	gameplay_ = new GamePlayOnline();
 #else
-	gameplay_ = new GamePlayLocal(context_);
+	gameplay_ = new GamePlayLocal();
 #endif
 	gameplay_->Initialize(scene_);
-	context_->RegisterVariable<GamePlayBase>(gameplay_, "GamePlayBase");
+	GetSubsystem<Context>()->RegisterVariable<GamePlayBase>(gameplay_, "GamePlayBase");
 
-	logModule_ = new LuaLog(context_);
-	networkModule_ = new LuaNetwork(context_);
-	gameplayModule_ = new LuaGamePlay(context_);
+	logModule_ = new LuaLog();
+	networkModule_ = new LuaNetwork();
+	gameplayModule_ = new LuaGamePlay();
 
-	context_->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, GameApplication::Update, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, GameApplication::Update, this));
 #ifdef _WIN32
-	context_->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_DOWN, GameApplication::OnKeyDown, this));
-	context_->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, GameApplication::OnKeyUp, this));
-	context_->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_DOWN, GameApplication::OnMouseDown, this));
-	context_->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_UP, GameApplication::OnMouseUp, this));
-	context_->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_MOVE, GameApplication::OnMouseMove, this));
-	context_->RegisterEvent(EVENT_HANDLER(Application::WINDOW_CLOSE, GameApplication::WindowClose, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_DOWN, GameApplication::OnKeyDown, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, GameApplication::OnKeyUp, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_DOWN, GameApplication::OnMouseDown, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_UP, GameApplication::OnMouseUp, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_MOVE, GameApplication::OnMouseMove, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(Application::WINDOW_CLOSE, GameApplication::WindowClose, this));
 #endif
 
 	if (commandParam_.Contains("FrameRate"))
@@ -158,7 +159,7 @@ void GameApplication::Create2DBatch()
 void GameApplication::CreateScene()
 {
 #ifdef _WIN32
-	scene_ = new Scene(context_);
+	scene_ = new Scene();
 	scene_->Start();
 
 	scene_->CreateComponent<Octree>();
@@ -177,14 +178,14 @@ void GameApplication::CreateScene()
 	reflectionCamera_->SetViewMask(0xff00);
 	reflectionCamera_->SetUseReflection(true);
 
-	mainHero_ = new CEUnit(context_);
+	mainHero_ = new CEUnit();
 	mainHero_->Load("Unit/MainHero.ljson");
 	mainHero_->PlayAnimation("Animation/Warrior_Attack.ani", true);
 	mainHero_->SetPosition(Vector3(0, -4, 10));
 	mainHero_->SetName("MainHero");
 	scene_->AddChild(mainHero_);
 
-	dissolveHero_ = new Unit(context_);
+	dissolveHero_ = new Unit();
 	dissolveHero_->Load("Unit/DissolveHero.ljson");
 	dissolveHero_->SetPosition(Vector3(0, 0, 10));
 	dissolveHero_->SetRotation(Quaternion(180, Vector3(0.0f, 1.0f, 0.0f)));
@@ -192,7 +193,7 @@ void GameApplication::CreateScene()
 	dissolveHero_->SetName("DissolveHero");
 	scene_->AddChild(dissolveHero_);
 
-	terrain_ = new Terrain(context_);
+	terrain_ = new Terrain();
 	terrain_->Create(64);
 	terrain_->SetScale(Vector3(1, 0.4, 1));
 	terrain_->SetPosition(Vector3(-80, -5, 0));
@@ -200,7 +201,7 @@ void GameApplication::CreateScene()
 	scene_->AddChild(terrain_);
 
 #if 0
-	auto* lightNode = new Unit(context_);
+	auto* lightNode = new Unit();
 	lightNode->Load("Unit/MainHero.ljson");
 	lightNode->PlayAnimation("Animation/Kachujin_Walk.ani", true);
 #else
@@ -215,14 +216,14 @@ void GameApplication::CreateScene()
 	scene_->AddChild(lightNode);
 #endif
 
-	skybox_ = new Unit(context_);
+	skybox_ = new Unit();
 	skybox_->Load("Unit/Skybox.ljson");
 	skybox_->SetScale(Vector3(100000, 100000, 100000));
 	skybox_->SetName("Skybox");
 	skybox_->SetTranspent(true);
 	scene_->AddChild(skybox_);
 
-	waterDown_ = new Unit(context_);
+	waterDown_ = new Unit();
 	// waterDown_->Load("Unit/WaterDown.ljson");
 	waterDown_->SetPosition(Vector3(0, -5, 10));
 	waterDown_->SetScale(Vector3(10, 10, 10));
@@ -233,7 +234,7 @@ void GameApplication::CreateScene()
 		comp->SetViewMask(0xff0000); // 不进入水反射
 	scene_->AddChild(waterDown_);
 
-	water_ = new Unit(context_);
+	water_ = new Unit();
 	// water_->Load("Unit/Ocean.ljson");
 	water_->SetPosition(Vector3(0, -4, 10));
 	water_->SetScale(Vector3(0.1, 0.1, 0.1));
@@ -253,28 +254,28 @@ void GameApplication::SetupWindow()
 	IntRect rect = GetDesktopRect();
 
 	// 创建一张shaderMap
-	shadowMap_ = new Texture2D(context_);
+	shadowMap_ = new Texture2D();
 	shadowMap_->SetNumLevels(1);
 	shadowMap_->SetComparisonFunc(COMPARISON_LESS_EQUAL);
 	shadowMap_->SetAddressMode(TEXTURE_COORDINATE_U, TEXTURE_ADDRESS_CLAMP);
 	shadowMap_->SetAddressMode(TEXTURE_COORDINATE_V, TEXTURE_ADDRESS_CLAMP);
 	shadowMap_->SetAddressMode(TEXTURE_COORDINATE_W, TEXTURE_ADDRESS_CLAMP);
 	shadowMap_->SetSize(rect.Width(), rect.Height(), RenderEngine::GetReadableDepthFormat(), TEXTURE_DEPTHSTENCIL);
-	RenderEngine::Instance()->SetDefaultTextures(TEXTURE_CLASS_SHADOWMAP, shadowMap_);
+	RenderEngine::Instance().SetDefaultTextures(TEXTURE_CLASS_SHADOWMAP, shadowMap_);
 
-	renderTexture_[0] = new Texture2D(context_);
+	renderTexture_[0] = new Texture2D();
 	renderTexture_[0]->SetNumLevels(1);
 	renderTexture_[0]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetRGBFormat(), TEXTURE_RENDERTARGET);
 
-	renderTexture_[1] = new Texture2D(context_);
+	renderTexture_[1] = new Texture2D();
 	renderTexture_[1]->SetNumLevels(1);
 	renderTexture_[1]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetDepthStencilFormat(), TEXTURE_DEPTHSTENCIL);
 
-	rttTexture_[0] = new Texture2D(context_);
+	rttTexture_[0] = new Texture2D();
 	rttTexture_[0]->SetNumLevels(1);
 	rttTexture_[0]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetRGBFormat(), TEXTURE_RENDERTARGET);
 
-	rttTexture_[1] = new Texture2D(context_);
+	rttTexture_[1] = new Texture2D();
 	rttTexture_[1]->SetNumLevels(1);
 	rttTexture_[1]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetDepthStencilFormat(), TEXTURE_DEPTHSTENCIL);
 
@@ -317,15 +318,15 @@ void GameApplication::SetupWindow()
 	viewport->SetDepthStencil(renderTexture_[1]->GetRenderSurface());
 	// viewports_.Push(viewport);
 
-	window_ = new Window(context_, nullptr, rect);
+	window_ = new Window(nullptr, rect);
 	window_->Show();
 	window_->GetViewport()->SetCamera(camera_);
 	window_->GetViewport()->SetScene(scene_);
-	// window_->GetViewport()->SetRenderPipline(new DeferredRenderPipline(context_));
+	// window_->GetViewport()->SetRenderPipline(new DeferredRenderPipline());
 
 	WindowDevice::RegisterWinMessage(window_);
 
-	input_->HideMouse();
+	GetSubsystem<Input>()->HideMouse();
 #endif
 }
 
@@ -348,11 +349,11 @@ void GameApplication::OpenLuaVM()
 
 void GameApplication::CreateNetwork()
 {
-	tcpNetwork_ = new Network(context_, NETWORK_TYPE_TCP);
-	udpNetwork_ = new Network(context_, NETWORK_TYPE_UDP);
-	webNetwork_ = new Network(context_, NETWORK_TYPE_WEB);
+	tcpNetwork_ = new Network(NETWORK_TYPE_TCP);
+	udpNetwork_ = new Network(NETWORK_TYPE_UDP);
+	webNetwork_ = new Network(NETWORK_TYPE_WEB);
 
-	gameProtoDstr_ = new GameProtoDistributor(context_);
+	gameProtoDstr_ = new GameProtoDistributor();
 }
 
 #ifdef _WIN32
@@ -411,8 +412,8 @@ void GameApplication::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
 		{
 			const auto& ret = query.results_[0];
 			auto* meshComp = ret.node_->CreateComponent<StaticMeshComponent>();
-			meshComp->SetModel(cache_->GetResource<Model>("Model/Axes.mdl"));
-			meshComp->SetMaterial(cache_->GetResource<Material>("Materials/StaticModel.ljson"));
+			meshComp->SetModel(GetSubsystem<ResourceCache>()->GetResource<Model>("Model/Axes.mdl"));
+			meshComp->SetMaterial(GetSubsystem<ResourceCache>()->GetResource<Material>("Materials/StaticModel.ljson"));
 		}
 	}
 }

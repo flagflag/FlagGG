@@ -9,14 +9,9 @@
 namespace FlagGG
 {
 
-LJSONFile::LJSONFile(Context* context) :
-	Resource(context)
+LJSONFile::LJSONFile() :
+	Resource()
 { }
-
-const LJSONValue& LJSONFile::GetRoot() const
-{
-	return root_;
-}
 
 bool LJSONFile::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 {

@@ -10,12 +10,13 @@ namespace FlagGG
 // Like JSON File
 class FlagGG_API LJSONFile : public Resource
 {
+	OBJECT_OVERRIDE(LJSONFile, Resource);
 public:
-	LJSONFile(Context* context);
+	LJSONFile();
 
 	~LJSONFile() override = default;
 
-	const LJSONValue& GetRoot() const;
+	const LJSONValue& GetRoot() const { return root_; }
 
 protected:
 	bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
@@ -27,4 +28,3 @@ private:
 };
 
 }
-

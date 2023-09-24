@@ -2,10 +2,9 @@
 
 #include "LuaInterface/LuaLog.h"
 
-LuaLog::LuaLog(Context* context) :
-	context_(context)
+LuaLog::LuaLog()
 {
-	LuaVM* luaVM = context->GetVariable<LuaVM>("LuaVM");
+	LuaVM* luaVM = GetSubsystem<Context>()->GetVariable<LuaVM>("LuaVM");
 	luaVM->RegisterCPPEvents(
 		"log",
 		this,

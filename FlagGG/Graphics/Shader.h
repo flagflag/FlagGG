@@ -24,8 +24,9 @@ class Shader;
 // shader源码
 class FlagGG_API ShaderCode : public Resource
 {
+	OBJECT_OVERRIDE(ShaderCode, Resource);
 public:
-	ShaderCode(Context* context);
+	ShaderCode();
 
 	~ShaderCode() override;
 

@@ -8,10 +8,11 @@
 #include <Scene/Scene.h>
 #include <Core/Context.h>
 
-class World : public RefCounted
+class World : public Object
 {
+	OBJECT_OVERRIDE(World, Object);
 public:
-	World(Context* context);
+	World();
 
 	void SetScene(Scene* scene);
 
@@ -31,8 +32,6 @@ protected:
 	void HandleUpdate(float timeStep);
 
 private:
-	Context* context_;
-
 	HashMap<Int64, SharedPtr<Unit>> activeUnits_;
 
 	List<SharedPtr<Unit>> freeUnits_;

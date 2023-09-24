@@ -10,8 +10,8 @@
 namespace FlagGG
 {
 
-Texture::Texture(Context* context)
-	: Resource(context)
+Texture::Texture()
+	: Resource()
 {
 	mipsToSkip_[0] = 2;
 	mipsToSkip_[1] = 1;

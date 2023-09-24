@@ -1,9 +1,9 @@
-#ifndef __DEVICE_EVENT__
-#define __DEVICE_EVENT__
+#pragma once
 
 #include "Export.h"
 #include "Core/Context.h"
 #include "Core/EventDefine.h"
+#include "Core/Subsystem.h"
 #include "Math/Vector2.h"
 #include "Container/RefCounted.h"
 
@@ -25,10 +25,10 @@ private:
 
 };
 
-class FlagGG_API Input : public RefCounted
+class FlagGG_API Input : public Subsystem<Input>
 {
 public:
-	Input(Context* context);
+	Input();
 
 	~Input() override = default;
 
@@ -51,11 +51,7 @@ public:
 	void OnMouseMove(KeyState* keyState, const Vector2& delta);
 
 private:
-	Context* context_;
-
 	bool isMouseShow_;
 };
 
 }
-
-#endif

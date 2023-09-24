@@ -1,7 +1,6 @@
 #include "TCPNetwork.h"
 
-TCPNetwork::TCPNetwork(Context* context) :
-	context_(context)
+TCPNetwork::TCPNetwork()
 {}
 
 void TCPNetwork::ChannelRegisterd(IOFrame::Context::IOContextPtr context)

@@ -1,4 +1,5 @@
 #include "ServerEngine.h"
+#include "Core/EventManager.h"
 
 namespace FlagGG
 {
@@ -10,10 +11,7 @@ void ServerEngine::SetFrameRate(Real rate)
 
 void ServerEngine::CreateCoreObject()
 {
-	context_ = new Context();
-	cache_ = new ResourceCache(context_);
-	cache_->AddResourceDir("../../../Res");
-	context_->RegisterVariable<ResourceCache>(cache_.Get(), "ResourceCache");
+	GetSubsystem<ResourceCache>()->AddResourceDir("../../../Res");
 }
 
 void ServerEngine::Start()
@@ -36,9 +34,9 @@ void ServerEngine::RunFrame()
 	Real timeStep = (Real)deltaTime / 1000.0f;
 	elapsedTime_ += timeStep;
 
-	context_->SendEvent<Frame::BEGIN_FRAME_HANDLER>(timeStep);
-	context_->SendEvent<Frame::LOGIC_UPDATE_HANDLER>(timeStep);
-	context_->SendEvent<Frame::END_FRAME_HANDLER>(timeStep);
+	GetSubsystem<EventManager>()->SendEvent<Frame::BEGIN_FRAME_HANDLER>(timeStep);
+	GetSubsystem<EventManager>()->SendEvent<Frame::LOGIC_UPDATE_HANDLER>(timeStep);
+	GetSubsystem<EventManager>()->SendEvent<Frame::END_FRAME_HANDLER>(timeStep);
 
 	Real sleepTime = 1000.0f / frameRate_ - timer_.GetMilliSeconds(false);
 	if (sleepTime > 0.0f)

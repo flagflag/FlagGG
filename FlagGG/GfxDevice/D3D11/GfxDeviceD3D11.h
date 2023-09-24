@@ -6,6 +6,7 @@
 
 #include "GfxDevice/GfxDevice.h"
 #include "GfxDevice/D3D11/GfxBufferD3D11.h"
+#include "Core/Subsystem.h"
 #include "Container/HashMap.h"
 #include "Utility/Singleton.h"
 #include "AsyncFrame/Mutex.h"
@@ -21,7 +22,7 @@ class GfxShaderD3D11;
 class GfxBufferD3D11;
 class GfxSampler;
 
-class GfxDeviceD3D11 : public GfxDevice, public Singleton<GfxDeviceD3D11, NullMutex>
+class GfxDeviceD3D11 : public GfxDevice, public Subsystem<GfxDeviceD3D11>
 {
 public:
 	explicit GfxDeviceD3D11();

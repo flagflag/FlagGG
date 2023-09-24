@@ -7,8 +7,8 @@
 namespace FlagGG
 {
 
-Model::Model(Context* context) :
-	Resource(context)
+Model::Model() :
+	Resource()
 { }
 
 void Model::SetVertexBuffers(const Vector<SharedPtr<VertexBuffer>>& vertexBuffers)

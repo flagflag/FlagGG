@@ -26,8 +26,8 @@ static String HashVectorString(Vector<String> vecStr)
 	return hash;
 }
 
-ShaderCode::ShaderCode(Context* context) :
-	Resource(context)
+ShaderCode::ShaderCode() :
+	Resource()
 { }
 
 ShaderCode::~ShaderCode()
@@ -98,7 +98,7 @@ bool ShaderCode::PreCompileShaderCode(const char* head, const char* tail, String
 					return false;
 				}
 
-				auto file = context_->GetVariable<ResourceCache>("ResourceCache")->GetFile(relativePath);
+				auto file = GetSubsystem<ResourceCache>()->GetFile(relativePath);
 				if (!file)
 				{
 					FLAGGG_LOG_ERROR("Pre compile shader error: can not open file[{}].", relativePath.CString());

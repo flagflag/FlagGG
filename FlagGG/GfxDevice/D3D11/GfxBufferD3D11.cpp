@@ -62,7 +62,7 @@ void GfxBufferD3D11::Apply(const void* initialDataPtr)
 	desc.Usage = d3d11Usage[gfxBufferDesc_.usage_];
 	desc.ByteWidth = byteCount;
 
-	HRESULT hr = GfxDeviceD3D11::Instance()->GetD3D11Device()->CreateBuffer(&desc, nullptr, &d3d11Buffer_);
+	HRESULT hr = GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device()->CreateBuffer(&desc, nullptr, &d3d11Buffer_);
 	if (FAILED(hr))
 	{
 		D3D11_SAFE_RELEASE(d3d11Buffer_);
@@ -123,7 +123,7 @@ void* GfxBufferD3D11::BeginWrite(UInt32 offset, UInt32 size)
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedData;
 		memset(&mappedData, 0, sizeof mappedData);
-		HRESULT hr = GfxDeviceD3D11::Instance()->GetD3D11DeviceContext()->Map(d3d11Buffer_, 0, d3d11Map[gfxBufferDesc_.usage_], 0, &mappedData);
+		HRESULT hr = GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext()->Map(d3d11Buffer_, 0, d3d11Map[gfxBufferDesc_.usage_], 0, &mappedData);
 		if (FAILED(hr) || !mappedData.pData)
 		{
 			FLAGGG_LOG_ERROR("Failed to Map buffer data.");
@@ -148,7 +148,7 @@ void GfxBufferD3D11::EndWrite(UInt32 bytesWritten)
 
 	if (gfxBufferDesc_.accessFlags_ & BUFFER_ACCESS_WRITE)
 	{
-		GfxDeviceD3D11::Instance()->GetD3D11DeviceContext()->Unmap(d3d11Buffer_, 0);
+		GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext()->Unmap(d3d11Buffer_, 0);
 	}
 	else
 	{
@@ -160,7 +160,7 @@ void GfxBufferD3D11::EndWrite(UInt32 bytesWritten)
 		destBox.front = 0;
 		destBox.back = 1;
 
-		GfxDeviceD3D11::Instance()->GetD3D11DeviceContext()->UpdateSubresource(d3d11Buffer_, 0, &destBox, &shadowdData_[0], 0, 0);
+		GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext()->UpdateSubresource(d3d11Buffer_, 0, &destBox, &shadowdData_[0], 0, 0);
 	}
 }
 

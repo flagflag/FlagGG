@@ -9,7 +9,7 @@ using namespace FlagGG;
 class TCPNetwork : public IOFrame::Handler::EventHandler
 {
 public:
-	explicit TCPNetwork(Context* context);
+	explicit TCPNetwork();
 
 protected:
 	void ChannelRegisterd(IOFrame::Context::IOContextPtr context) override;
@@ -17,7 +17,4 @@ protected:
 	void ChannelClosed(IOFrame::Context::IOContextPtr context) override;
 	void MessageRecived(IOFrame::Context::IOContextPtr context, IOFrame::Buffer::IOBufferPtr buffer) override;
 	void ErrorCatch(IOFrame::Context::IOContextPtr context, const ErrorCode& error_code) override;
-
-private:
-	Context* context_;
 };

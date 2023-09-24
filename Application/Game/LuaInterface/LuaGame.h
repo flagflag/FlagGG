@@ -8,10 +8,11 @@
 
 using namespace FlagGG;
 
-class LuaGamePlay : public RefCounted
+class LuaGamePlay : public Object
 {
+	OBJECT_OVERRIDE(LuaGamePlay, Object);
 public:
-	explicit LuaGamePlay(Context* context);
+	explicit LuaGamePlay();
 
 protected:
 	int Login(LuaVM* luaVM);
@@ -21,8 +22,6 @@ protected:
 	int EndGame(LuaVM* luaVM);
 
 private:
-	Context* context_;
-
 	LuaVM* luaVM_;
 
 	WeakPtr<GamePlayBase> gameplay_;

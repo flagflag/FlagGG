@@ -31,12 +31,6 @@ protected:
 
 	void CreateCoreObject();
 
-	SharedPtr<Context> context_;
-
-	SharedPtr<Input> input_;
-
-	SharedPtr<ResourceCache> cache_;
-
 #ifdef _WIN32
 	Vector<SharedPtr<Viewport>> viewports_;
 #endif

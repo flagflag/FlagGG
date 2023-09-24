@@ -10,8 +10,8 @@
 namespace FlagGG
 {
 
-Texture2D::Texture2D(Context* context) :
-	Texture(context)
+Texture2D::Texture2D() :
+	Texture()
 { }
 
 bool Texture2D::SetSize(Int32 width, Int32 height, TextureFormat format,
@@ -65,7 +65,7 @@ bool Texture2D::SetData(Image* image, bool useAlpha/* = false*/)
 
 	SharedPtr<Image> mipImage;
 	UInt32 memoryUse = sizeof(Texture2D);
-	MaterialQuality quality = RenderEngine::Instance()->GetTextureQuality();
+	MaterialQuality quality = RenderEngine::Instance().GetTextureQuality();
 
 	const TextureDesc& desc = gfxTexture_->GetDesc();
 
@@ -184,7 +184,7 @@ bool Texture2D::SetData(Image* image, bool useAlpha/* = false*/)
 
 bool Texture2D::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 {
-	Image image(context_);
+	Image image;
 	if (!image.LoadFile(stream))
 	{
 		FLAGGG_LOG_ERROR("Failed to load image.");
@@ -289,7 +289,7 @@ bool Texture2D::GetData(UInt32 level, void* dest)
 
 SharedPtr<Image> Texture2D::GetImage()
 {
-	//SharedPtr<Image> image(new Image(context_));
+	//SharedPtr<Image> image(new Image());
 	//if (format_ != RenderEngine::GetRGBAFormat() && format_ != RenderEngine::GetRGBFormat())
 	//{
 	//	FLAGGG_LOG_ERROR("Unsupported texture format, can not convert to Image");

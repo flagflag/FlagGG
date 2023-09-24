@@ -42,7 +42,7 @@ public:
 
 RenderView::RenderView()
 	: gfxDevice_(GfxDevice::GetDevice())
-	, renderEngine_(RenderEngine::Instance())
+	, renderEngine_(RenderEngine::InstancePtr())
 {
 	shadowCameraNode_ = new Node();
 	shadowCamera_ = shadowCameraNode_->CreateComponent<Camera>();

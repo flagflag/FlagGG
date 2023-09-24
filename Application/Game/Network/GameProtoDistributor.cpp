@@ -1,9 +1,10 @@
 #include "Network/GameProtoDistributor.h"
 
-GameProtoDistributor::GameProtoDistributor(Context* context) :
-	context_(context)
+#include <Core/EventManager.h>
+
+GameProtoDistributor::GameProtoDistributor()
 {
-	context_->RegisterEvent(EVENT_HANDLER(NetworkEvent::MESSAGE_RECIVED, GameProtoDistributor::OnMessageRecived, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(NetworkEvent::MESSAGE_RECIVED, GameProtoDistributor::OnMessageRecived, this));
 }
 
 #define IF_DO(MessageType, ProtoType) \
@@ -11,7 +12,7 @@ GameProtoDistributor::GameProtoDistributor(Context* context) :
 	{ \
 		ProtoType proto; \
 		proto.ParseFromString(header.message_body()); \
-		context_->SendEvent<GameProtoEvent::MESSAGE_RECIVED_HANDLER>(header.message_type(), &proto); \
+		GetSubsystem<EventManager>()->SendEvent<GameProtoEvent::MESSAGE_RECIVED_HANDLER>(header.message_type(), &proto); \
 	} \
 	break
 

@@ -28,10 +28,6 @@ protected:
 
 	void CreateCoreObject();
 
-	SharedPtr<Context> context_;
-
-	SharedPtr<ResourceCache> cache_;
-
 	Timer timer_;
 	Real elapsedTime_{ 0.0f };
 

@@ -9,10 +9,11 @@
 
 using namespace FlagGG;
 
-class CameraOperation : public RefCounted
+class CameraOperation : public Object
 {
+	OBJECT_OVERRIDE(CameraOperation, Object);
 public:
-	CameraOperation(Context* context, Camera* inCamera);
+	CameraOperation(Camera* inCamera);
 
 	SharedPtr<Camera> GetCamera();
 

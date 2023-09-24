@@ -1,4 +1,5 @@
 #include "GameEngine.h"
+#include "Core/EventManager.h"
 #ifdef _WIN32
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Window.h"
@@ -14,12 +15,7 @@ void GameEngine::SetFrameRate(Real rate)
 
 void GameEngine::CreateCoreObject()
 {
-	context_ = new Context();
-	input_ = new Input(context_);
-	cache_ = new ResourceCache(context_);
-	cache_->AddResourceDir(GetProgramDir() + "Res");
-	context_->RegisterVariable<Input>(input_.Get(), "input");
-	context_->RegisterVariable<ResourceCache>(cache_.Get(), "ResourceCache");
+	GetSubsystem<ResourceCache>()->AddResourceDir(GetProgramDir() + "Res");
 }
 
 void GameEngine::Start()
@@ -28,7 +24,7 @@ void GameEngine::Start()
 
 #ifdef _WIN32
 	WindowDevice::Initialize();
-	RenderEngine::CreateInstance(context_)->Initialize();
+	RenderEngine::Instance().Initialize();
 #endif
 
 	isRunning_ = true;
@@ -47,32 +43,32 @@ void GameEngine::RunFrame()
 	Real timeStep = (Real)deltaTime / 1000.0f;
 	elapsedTime_ += timeStep;
 
-	context_->SendEvent<Frame::BEGIN_FRAME_HANDLER>(timeStep);
+	GetSubsystem<EventManager>()->SendEvent<Frame::BEGIN_FRAME_HANDLER>(timeStep);
 
 	WindowDevice::Update();
 
-	context_->SendEvent<Frame::LOGIC_UPDATE_HANDLER>(timeStep);
+	GetSubsystem<EventManager>()->SendEvent<Frame::LOGIC_UPDATE_HANDLER>(timeStep);
 
-	context_->SendEvent<Frame::PRERENDER_UPDATE_HANDLER>(timeStep);
+	GetSubsystem<EventManager>()->SendEvent<Frame::PRERENDER_UPDATE_HANDLER>(timeStep);
 
 	for (const auto& viewport : viewports_)
 	{
-		RenderEngine::Instance()->RenderUpdate(viewport);
+		RenderEngine::Instance().RenderUpdate(viewport);
 	}
 
 	WindowDevice::RenderUpdate();
 
-	RenderEngine::Instance()->GetShaderParameters().SetValue(SP_DELTA_TIME, timeStep);
-	RenderEngine::Instance()->GetShaderParameters().SetValue(SP_ELAPSED_TIME, elapsedTime_);
+	RenderEngine::Instance().GetShaderParameters().SetValue(SP_DELTA_TIME, timeStep);
+	RenderEngine::Instance().GetShaderParameters().SetValue(SP_ELAPSED_TIME, elapsedTime_);
 
 	for (const auto& viewport : viewports_)
 	{
-		RenderEngine::Instance()->Render(viewport);
+		RenderEngine::Instance().Render(viewport);
 	}
 
 	WindowDevice::Render();
 
-	context_->SendEvent<Frame::END_FRAME_HANDLER>(timeStep);
+	GetSubsystem<EventManager>()->SendEvent<Frame::END_FRAME_HANDLER>(timeStep);
 
 	Real sleepTime = 1000.0f / frameRate_ - timer_.GetMilliSeconds(false);
 	if (sleepTime > 0.0f)
@@ -87,8 +83,7 @@ void GameEngine::Stop()
 
 #ifdef _WIN32
 	WindowDevice::Uninitialize();
-	RenderEngine::Instance()->Uninitialize();
-	RenderEngine::DestroyInstance();
+	RenderEngine::Instance().Uninitialize();
 #endif
 }
 

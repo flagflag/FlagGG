@@ -1,9 +1,11 @@
 #ifdef _WIN32
 #include "CameraOperation.h"
 
+#include <Core/EventManager.h>
+
 #include <Windows.h>
 
-CameraOperation::CameraOperation(Context* context, Camera* inCamera) :
+CameraOperation::CameraOperation(Camera* inCamera) :
 	camera_(inCamera)
 {
 	camera_->Walk(-5.0);
@@ -12,12 +14,12 @@ CameraOperation::CameraOperation(Context* context, Camera* inCamera) :
 	camera_->Pitch(-0.005f);
 	camera_->Yaw(0.0025f);
 
-	context->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_DOWN, CameraOperation::OnKeyDown, this));
-	context->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, CameraOperation::OnKeyUp, this));
-	context->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_DOWN, CameraOperation::OnMouseDown, this));
-	context->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_UP, CameraOperation::OnMouseUp, this));
-	context->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_MOVE, CameraOperation::OnMouseMove, this));
-	context->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, CameraOperation::HandleUpdate, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_DOWN, CameraOperation::OnKeyDown, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, CameraOperation::OnKeyUp, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_DOWN, CameraOperation::OnMouseDown, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_UP, CameraOperation::OnMouseUp, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_MOVE, CameraOperation::OnMouseMove, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, CameraOperation::HandleUpdate, this));
 }
 
 SharedPtr<Camera> CameraOperation::GetCamera()

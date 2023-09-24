@@ -3,7 +3,9 @@
 #include "Proto/Game.pb.h"
 #endif
 
-ThirdPersonPerspective::ThirdPersonPerspective(Context* context) :
+#include <Core/EventManager.h>
+
+ThirdPersonPerspective::ThirdPersonPerspective() :
 	controlCamera_(new Camera()),
 	lookupNode_(new Node()),
 	isLocked_(false),
@@ -12,12 +14,12 @@ ThirdPersonPerspective::ThirdPersonPerspective(Context* context) :
 	stop_(0.0f, 0.0f, 0.0f, 0.0f),
 	currentRot_(0.0f, 0.0f, 0.0f, 0.0f)
 {
-	network_ = context->GetVariable<Network>(NETWORK_TYPE_NAME[NETWORK_TYPE_UDP]);
+	network_ = GetSubsystem<Context>()->GetVariable<Network>(NETWORK_TYPE_NAME[NETWORK_TYPE_UDP]);
 
 	lookupCamera_ = lookupNode_->CreateComponent<Camera>();
 
-	context->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_MOVE, ThirdPersonPerspective::OnMouseMove, this));
-	context->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, ThirdPersonPerspective::HandleUpdate, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_MOVE, ThirdPersonPerspective::OnMouseMove, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, ThirdPersonPerspective::HandleUpdate, this));
 
 	//        W  S  A  D
 	rotation_[0][0][0][0] = Quaternion(0.0f, 0.0f, 0.0f, 0.0f);

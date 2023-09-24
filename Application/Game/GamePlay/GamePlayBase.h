@@ -12,8 +12,9 @@ enum SyncMode
 	SyncMode_State = 1, // 状态同步，联网游戏
 };
 
-class GamePlayBase : public RefCounted
+class GamePlayBase : public Object
 {
+	OBJECT_OVERRIDE(GamePlayBase, Object);
 public:
 	virtual void Initialize(Scene* scene) = 0;
 

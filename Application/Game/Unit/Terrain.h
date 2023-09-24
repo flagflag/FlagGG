@@ -8,13 +8,11 @@ using namespace FlagGG;
 class Terrain : public Node
 {
 public:
-	Terrain(Context* context);
+	Terrain();
 
 	void Create(UInt32 pathSize);
 
 private:
-	Context* context_;
-
 	UInt32 xCount_;
 	UInt32 yCount_;
 };

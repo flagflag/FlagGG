@@ -14,8 +14,9 @@ class Light;
 
 class FlagGG_API Scene : public Node
 {
+	OBJECT_OVERRIDE(Scene, Node);
 public:
-	Scene(Context* context);
+	Scene();
 
 	~Scene() override;
 
@@ -43,8 +44,6 @@ protected:
 	void Render(Node* node, PODVector<const RenderContext*>& renderContexts);
 
 	void GetLights(Node* node, PODVector<Light*>& lights);
-
-	Context* context_;
 
 	bool isRunning_;
 

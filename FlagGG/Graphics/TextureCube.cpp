@@ -12,8 +12,8 @@
 namespace FlagGG
 {
 
-TextureCube::TextureCube(Context* context) :
-	Texture(context)
+TextureCube::TextureCube() :
+	Texture()
 { }
 
 bool TextureCube::SetSize(UInt32 size, TextureFormat format,
@@ -71,7 +71,7 @@ bool TextureCube::SetData(CubeMapFace face, Image* image, bool useAlpha/* = fals
 
 	SharedPtr<Image> mipImage;
 	UInt32 memoryUse = sizeof(TextureCube);
-	MaterialQuality quality = RenderEngine::Instance()->GetTextureQuality();
+	MaterialQuality quality = RenderEngine::Instance().GetTextureQuality();
 
 	const TextureDesc& desc = gfxTexture_->GetDesc();
 
@@ -231,7 +231,7 @@ bool TextureCube::SetData(CubeMapFace face, Image* image, bool useAlpha/* = fals
 
 bool TextureCube::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 {
-	LJSONFile imageConfig(context_);
+	LJSONFile imageConfig;
 	if (!imageConfig.LoadFile(stream))
 	{
 		FLAGGG_LOG_ERROR("Failed to load cube texture config.");
@@ -247,7 +247,7 @@ bool TextureCube::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 
 	for (UInt32 i = 0; i < value.Size() && i < MAX_CUBEMAP_FACES; ++i)
 	{
-		auto* cache = context_->GetVariable<ResourceCache>("ResourceCache");
+		auto* cache = GetSubsystem<ResourceCache>();
 		SharedPtr<Image> image = cache->GetResource<Image>(value[i].GetString());
 		if (!image)
 		{
@@ -358,7 +358,7 @@ bool TextureCube::GetData(CubeMapFace face, UInt32 level, void* dest)
 
 SharedPtr<Image> TextureCube::GetImage(CubeMapFace face)
 {
-	//SharedPtr<Image> image(new Image(context_));
+	//SharedPtr<Image> image(new Image());
 	//if (format_ != RenderEngine::GetRGBAFormat() && format_ != RenderEngine::GetRGBFormat())
 	//{
 	//	FLAGGG_LOG_ERROR("Unsupported texture format, can not convert to Image");

@@ -22,17 +22,17 @@ GfxSwapChainD3D11::GfxSwapChainD3D11(Window* window) :
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapChainDesc.OutputWindow = handler;
 	swapChainDesc.SampleDesc.Count = (UINT)multiSample_;
-	swapChainDesc.SampleDesc.Quality = GfxDeviceD3D11::Instance()->GetMultiSampleQuality(swapChainDesc.BufferDesc.Format, multiSample_);
+	swapChainDesc.SampleDesc.Quality = GetSubsystem<GfxDeviceD3D11>()->GetMultiSampleQuality(swapChainDesc.BufferDesc.Format, multiSample_);
 	swapChainDesc.Windowed = TRUE;
 	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	IDXGIDevice* dxgiDevice = nullptr;
-	GfxDeviceD3D11::Instance()->GetD3D11Device()->QueryInterface(IID_IDXGIDevice, (void**)&dxgiDevice);
+	GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device()->QueryInterface(IID_IDXGIDevice, (void**)&dxgiDevice);
 	IDXGIAdapter* dxgiAdapter = nullptr;
 	dxgiDevice->GetParent(IID_IDXGIAdapter, (void**)&dxgiAdapter);
 	IDXGIFactory* dxgiFactory = nullptr;
 	dxgiAdapter->GetParent(IID_IDXGIFactory, (void**)&dxgiFactory);
-	HRESULT hr = dxgiFactory->CreateSwapChain(GfxDeviceD3D11::Instance()->GetD3D11Device(), &swapChainDesc, &swapChain_);
+	HRESULT hr = dxgiFactory->CreateSwapChain(GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device(), &swapChainDesc, &swapChain_);
 	dxgiFactory->MakeWindowAssociation(handler, DXGI_MWA_NO_ALT_ENTER | DXGI_MWA_NO_WINDOW_CHANGES);
 
 	D3D11_SAFE_RELEASE(dxgiDevice);
@@ -67,7 +67,7 @@ void GfxSwapChainD3D11::Resize(UInt32 width, UInt32 height)
 	}
 
 	ID3D11RenderTargetView* renderTargetView;
-	hr = GfxDeviceD3D11::Instance()->GetD3D11Device()->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView);
+	hr = GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device()->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView);
 	if (FAILED(hr))
 	{
 		D3D11_SAFE_RELEASE(renderTargetView);
@@ -86,13 +86,13 @@ void GfxSwapChainD3D11::Resize(UInt32 width, UInt32 height)
 	depthDesc.ArraySize = 1;
 	depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depthDesc.SampleDesc.Count = (UINT)multiSample_;
-	depthDesc.SampleDesc.Quality = GfxDeviceD3D11::Instance()->GetMultiSampleQuality(depthDesc.Format, multiSample_);
+	depthDesc.SampleDesc.Quality = GetSubsystem<GfxDeviceD3D11>()->GetMultiSampleQuality(depthDesc.Format, multiSample_);
 	depthDesc.Usage = D3D11_USAGE_DEFAULT;
 	depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	depthDesc.CPUAccessFlags = 0;
 	depthDesc.MiscFlags = 0;
 
-	hr = GfxDeviceD3D11::Instance()->GetD3D11Device()->CreateTexture2D(&depthDesc, nullptr, &depthTexture_);
+	hr = GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device()->CreateTexture2D(&depthDesc, nullptr, &depthTexture_);
 	if (FAILED(hr))
 	{
 		D3D11_SAFE_RELEASE(depthTexture_);
@@ -101,7 +101,7 @@ void GfxSwapChainD3D11::Resize(UInt32 width, UInt32 height)
 	}
 
 	ID3D11DepthStencilView* depthStencilView;
-	hr = GfxDeviceD3D11::Instance()->GetD3D11Device()->CreateDepthStencilView(depthTexture_, nullptr, &depthStencilView);
+	hr = GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device()->CreateDepthStencilView(depthTexture_, nullptr, &depthStencilView);
 	if (FAILED(hr))
 	{
 		D3D11_SAFE_RELEASE(depthStencilView);

@@ -12,8 +12,9 @@ using namespace FlagGG;
 
 class ThirdPersonPerspective : public Perspective
 {
+	OBJECT_OVERRIDE(ThirdPersonPerspective, Perspective);
 public:
-	explicit ThirdPersonPerspective(Context* context);
+	explicit ThirdPersonPerspective();
 
 	// 设置相机
 	void SetCamera(Camera* camera) override;

@@ -1,3 +1,4 @@
+#include "Core/EventManager.h"
 #include "Scene/Scene.h"
 #include "Core/EventDefine.h"
 #include "Scene/Component.h"
@@ -7,8 +8,7 @@
 namespace FlagGG
 {
 
-Scene::Scene(Context* context) :
-	context_(context),
+Scene::Scene() :
 	isRunning_(false)
 {
 	SetOwnerScene(this);
@@ -23,7 +23,7 @@ void Scene::Start()
 {
 	if (!isRunning_)
 	{
-		context_->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, Scene::HandleUpdate, this));
+		GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, Scene::HandleUpdate, this));
 		isRunning_ = true;
 	}
 }

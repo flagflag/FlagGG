@@ -10,9 +10,9 @@
 #include "Scene/Camera.h"
 #include "Resource/Image.h"
 #include "Container/HashMap.h"
-#include "Utility/Singleton.h"
 #include "AsyncFrame/Mutex.h"
 #include "Core/Context.h"
+#include "Core/Subsystem.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -23,10 +23,10 @@ namespace FlagGG
 class GfxDevice;
 struct RenderBatch;
 
-class FlagGG_API RenderEngine : public Singleton<RenderEngine, NullMutex, Context*>
+class FlagGG_API RenderEngine : public Subsystem<RenderEngine>
 {
 public:
-	RenderEngine(Context* context);
+	RenderEngine();
 
 	void Initialize();
 
@@ -142,7 +142,6 @@ private:
 	RasterizerState fullscreenQuadRS_;
 	DepthStencilState fullscreenDSS_;
 
-	Context* context_;
 	GfxDevice* gfxDevice_;
 };
 

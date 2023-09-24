@@ -24,8 +24,9 @@ struct FlagGG_API RenderPassInfo
 
 class FlagGG_API Material : public Resource
 {
+	OBJECT_OVERRIDE(Material, Resource);
 public:
-	Material(Context* context);
+	Material();
 
 	~Material() override;
 

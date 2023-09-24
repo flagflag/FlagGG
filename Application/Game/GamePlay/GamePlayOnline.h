@@ -15,8 +15,9 @@ using namespace FlagGG;
 
 class GamePlayOnline : public GamePlayBase
 {
+	OBJECT_OVERRIDE(GamePlayOnline, GamePlayBase);
 public:
-	explicit GamePlayOnline(Context* context);
+	explicit GamePlayOnline();
 
 	void Initialize(Scene* scene) override;
 
@@ -42,8 +43,6 @@ protected:
 #endif
 
 private:
-	Context* context_;
-
 	SharedPtr<World> world_;
 
 	WeakPtr<Network> network_;

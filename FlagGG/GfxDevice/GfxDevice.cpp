@@ -12,12 +12,12 @@ namespace FlagGG
 
 GfxDevice::GfxDevice()
 {
-	VertexDescFactory::CreateInstance();
+	
 }
 
 GfxDevice::~GfxDevice()
 {
-	VertexDescFactory::DestroyInstance();
+	
 }
 
 void GfxDevice::Clear(ClearTargetFlags flags, const Color& color/* = Color::TRANSPARENT_BLACK*/, float depth/* = 1.0f*/, unsigned stencil/* = 0*/)

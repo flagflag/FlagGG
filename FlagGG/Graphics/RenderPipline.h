@@ -155,7 +155,7 @@ class FlagGG_API DeferredRenderPipline : public CommonRenderPipline
 {
 	OBJECT_OVERRIDE(DeferredRenderPipline, CommonRenderPipline);
 public:
-	explicit DeferredRenderPipline(Context* context);
+	explicit DeferredRenderPipline();
 
 	~DeferredRenderPipline() override;
 

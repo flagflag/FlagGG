@@ -6,10 +6,6 @@
 namespace FlagGG
 {
 
-ResourceCache::ResourceCache(Context* context) :
-	context_(context)
-{ }
-
 SharedPtr<IOFrame::Buffer::IOBuffer> ResourceCache::GetFile(const String& path)
 {
 	String formatPath = resourceDir_ + FormatReousrcePath(path);

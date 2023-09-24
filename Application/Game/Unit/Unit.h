@@ -11,7 +11,7 @@ using namespace FlagGG;
 class Unit : public Node
 {
 public:
-	Unit(Context* context);
+	Unit();
 
 	virtual bool Load(const String& path);
 
@@ -40,8 +40,6 @@ protected:
 	void PlayAnimation(const String& path, bool isLoop, Node* node);
 
 protected:
-	Context* context_;
-
 	Material* material_;
 
 	float speed_;
@@ -52,7 +50,7 @@ protected:
 class CEUnit : public Unit
 {
 public:
-	CEUnit(Context* context);
+	CEUnit();
 
 	bool Load(const String& path) override;
 

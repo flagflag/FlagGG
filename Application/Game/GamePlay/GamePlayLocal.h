@@ -15,8 +15,9 @@ using namespace FlagGG;
 
 class GamePlayLocal : public GamePlayBase
 {
+	OBJECT_OVERRIDE(GamePlayLocal, GamePlayBase);
 public:
-	explicit GamePlayLocal(Context* context);
+	explicit GamePlayLocal();
 
 	void Initialize(Scene* scene) override;
 
@@ -29,8 +30,6 @@ public:
 	void FrameUpdate(float timeStep) override;
 
 private:
-	Context* context_;
-
 	SharedPtr<World> world_;
 
 	LuaGameEngine::Engine* engine_;

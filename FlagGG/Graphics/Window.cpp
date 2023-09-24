@@ -1,3 +1,4 @@
+#include "Core/EventManager.h"
 #include "Graphics/Window.h"
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Texture.h"
@@ -115,12 +116,11 @@ void WindowDevice::UnregisterWinMessage(Window* wv)
 }
 
 
-Window::Window(Context* context, void* parentWindow, const IntRect& rect) :
+Window::Window(void* parentWindow, const IntRect& rect) :
 	window_(nullptr),
 	parentWindow_(parentWindow),
 	rect_(rect),
-	context_(context),
-	input_(context->GetVariable<Input>("input"))
+	input_(GetSubsystem<Input>())
 {
 	Create(parentWindow, rect);
 
@@ -231,14 +231,14 @@ void Window::Hide()
 
 void Window::RenderUpdate()
 {
-	RenderEngine::Instance()->RenderUpdate(viewport_);
+	RenderEngine::Instance().RenderUpdate(viewport_);
 }
 
 void Window::Render()
 {
-	RenderEngine::Instance()->Render(viewport_);
+	RenderEngine::Instance().Render(viewport_);
 
-	RenderEngine::Instance()->RenderRawBatch(viewport_);
+	RenderEngine::Instance().RenderRawBatch(viewport_);
 
 	gfxSwapChain_->Present();
 }
@@ -310,7 +310,7 @@ void Window::WinProc(UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_CLOSE:
-		context_->SendEvent<Application::WINDOW_CLOSE_HANDLER>(window_);
+		GetSubsystem<EventManager>()->SendEvent<Application::WINDOW_CLOSE_HANDLER>(window_);
 
 		break;
 	}

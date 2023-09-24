@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Core/Object.h>
 #include <Core/Context.h>
 #include <Lua/LuaVM.h>
 #include <Container/Ptr.h>
@@ -8,10 +9,11 @@
 
 using namespace FlagGG;
 
-class LuaNetwork : public RefCounted
+class LuaNetwork : public Object
 {
+	OBJECT_OVERRIDE(LuaNetwork, Object);
 public:
-	explicit LuaNetwork(Context* context);
+	explicit LuaNetwork();
 
 protected:
 	int Init(LuaVM* luaVM);
@@ -33,8 +35,6 @@ protected:
 	void OnMessageRecived(NetworkType type, IOFrame::Context::IOContextPtr context, IOFrame::Buffer::IOBufferPtr buffer);
 
 private:
-	Context* context_;
-
 	bool initialized[NETWORK_TYPE_MAX];
 	LuaFunction openCall[NETWORK_TYPE_MAX];
 	LuaFunction closeCall[NETWORK_TYPE_MAX];

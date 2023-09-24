@@ -12,12 +12,10 @@
 namespace FlagGG
 {
 
-#define USE_DDS
-
 class FlagGG_API Texture2D : public Texture
 {
 public:
-	Texture2D(Context* context);
+	Texture2D();
 
 	/**
 	 * 设置纹理大小

@@ -16,7 +16,7 @@ bool VertexBuffer::SetSize(UInt32 vertexCount, const PODVector<VertexElement>& v
 	vertexSize_ = GetVertexSize(vertexElements);
 	vertexCount_ = vertexCount;
 
-	vertexDesc_ = VertexDescFactory::Instance()->Create(vertexElements);
+	vertexDesc_ = GetSubsystem<VertexDescFactory>()->Create(vertexElements);
 
 	if (!vertexDesc_)
 	{

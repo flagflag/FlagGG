@@ -1,9 +1,8 @@
 #include "LuaInterface/LuaGame.h"
 
-LuaGamePlay::LuaGamePlay(Context* context) :
-	context_(context)
+LuaGamePlay::LuaGamePlay()
 {
-	luaVM_ = context->GetVariable<LuaVM>("LuaVM");
+	luaVM_ = GetSubsystem<Context>()->GetVariable<LuaVM>("LuaVM");
 	luaVM_->RegisterCPPEvents(
 		"gameplay",
 		this,
@@ -14,7 +13,7 @@ LuaGamePlay::LuaGamePlay(Context* context) :
 		}
 	);
 
-	gameplay_ = context->GetVariable<GamePlayBase>("GamePlayBase");
+	gameplay_ = GetSubsystem<Context>()->GetVariable<GamePlayBase>("GamePlayBase");
 }
 
 int LuaGamePlay::Login(LuaVM* luaVM)

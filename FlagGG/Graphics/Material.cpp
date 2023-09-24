@@ -178,8 +178,8 @@ RenderPassInfo::~RenderPassInfo()
 
 }
 
-Material::Material(Context* context) :
-	Resource(context),
+Material::Material() :
+	Resource(),
 	textures_{}
 {
 	rasterizerState_.scissorTest_ = false;
@@ -311,7 +311,7 @@ static SharedPtr<Texture> LoadTexture(ResourceCache* cache, const LJSONValue& te
 
 bool Material::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 {
-	LJSONFile file(context_);
+	LJSONFile file;
 	if (!file.LoadFile(stream))
 	{
 		FLAGGG_LOG_ERROR("Material ==> load config failed.");
@@ -322,7 +322,7 @@ bool Material::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 	const LJSONValue& root = file.GetRoot();
 	if (root.IsObject())
 	{
-		auto* cache = context_->GetVariable<ResourceCache>("ResourceCache");
+		auto* cache = GetSubsystem<ResourceCache>();
 		const auto& textureConfig = root["texture"];
 		if (textureConfig.IsObject())
 		{

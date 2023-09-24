@@ -2,6 +2,7 @@
 #include "EventDefine/GameEvent.h"
 
 #include <LuaGameEngine/Init.h>
+#include <Core/EventManager.h>
 #include <Log.h>
 
 GameLogicServer::GameLogicServer(const LJSONValue& commandParam) :
@@ -15,18 +16,18 @@ void GameLogicServer::Start()
 	SetFrameRate(60.0f);
 
 	forwarder_ = new Forwarder<Mutex>();
-	context_->RegisterVariable<Forwarder<Mutex>>(forwarder_, "Forwarder<Mutex>");
+	GetSubsystem<Context>()->RegisterVariable<Forwarder<Mutex>>(forwarder_, "Forwarder<Mutex>");
 
 	CreateNetwork();
 
 	CreateLuaVM();
 
-	context_->RegisterEvent(EVENT_HANDLER(GameEvent::USER_LOGIN, GameLogicServer::HandleUserLogin, this));
-	context_->RegisterEvent(EVENT_HANDLER(GameEvent::START_GAME, GameLogicServer::HandleStartGame, this));
-	context_->RegisterEvent(EVENT_HANDLER(GameEvent::STOP_GAME, GameLogicServer::HandleStopGame, this));
-	context_->RegisterEvent(EVENT_HANDLER(GameEvent::START_MOVE, GameLogicServer::HandleStartMove, this));
-	context_->RegisterEvent(EVENT_HANDLER(GameEvent::STOP_MOVE, GameLogicServer::HandleStopMove, this));
-	context_->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, GameLogicServer::Update, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(GameEvent::USER_LOGIN, GameLogicServer::HandleUserLogin, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(GameEvent::START_GAME, GameLogicServer::HandleStartGame, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(GameEvent::STOP_GAME, GameLogicServer::HandleStopGame, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(GameEvent::START_MOVE, GameLogicServer::HandleStartMove, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(GameEvent::STOP_MOVE, GameLogicServer::HandleStopMove, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, GameLogicServer::Update, this));
 
 	FLAGGG_LOG_INFO("GameLogicServer start.");
 }
@@ -63,8 +64,8 @@ void GameLogicServer::CreateLuaVM()
 
 void GameLogicServer::CreateNetwork()
 {
-	tcpNetwork_ = new TCPNetwork(context_);
-	udpNetwork_ = new UDPNetwork(context_);
+	tcpNetwork_ = new TCPNetwork();
+	udpNetwork_ = new UDPNetwork();
 
 	tcpAcceptor_ = IOFrame::TCP::CreateAcceptor(tcpNetwork_, 1);
 	tcpAcceptor_->Bind("127.0.0.1", 5000);

@@ -2,12 +2,12 @@
 #include "EventDefine/GameEvent.h"
 #include "Proto/Game.pb.h"
 
+#include <Core/EventManager.h>
 #include <Core/Forwarder.h>
 #include <AsyncFrame/Mutex.h>
 #include <Math/Quaternion.h>
 
-UDPNetwork::UDPNetwork(Context* context) :
-	context_(context)
+UDPNetwork::UDPNetwork()
 {
 	buffer = IOFrame::UDP::CreateBuffer();
 }
@@ -30,10 +30,10 @@ void UDPNetwork::ChannelClosed(IOFrame::Context::IOContextPtr context)
 		{
 			channels_.Erase(it);
 
-			auto* forwarder = context_->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
+			auto* forwarder = GetSubsystem<Context>()->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
 			forwarder->Forward([&]
 			{
-				context_->SendEvent<GameEvent::START_GAME_HANDLER>("...");
+				GetSubsystem<EventManager>()->SendEvent<GameEvent::START_GAME_HANDLER>("...");
 			});
 
 			break;
@@ -103,10 +103,10 @@ void UDPNetwork::HandleRequestLogin(IOFrame::Context::IOContextPtr context, cons
 	response.set_result(Proto::Game::LoginResult_Success);
 	Send(userId, Proto::Game::MessageType_ResponseLogin, &response);
 
-	auto* forwarder = context_->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
+	auto* forwarder = GetSubsystem<Context>()->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
 	forwarder->Forward([&, userId]
 	{
-		context_->SendEvent<GameEvent::USER_LOGIN_HANDLER>(userId);
+		GetSubsystem<EventManager>()->SendEvent<GameEvent::USER_LOGIN_HANDLER>(userId);
 	});
 }
 
@@ -116,10 +116,10 @@ void UDPNetwork::HandleRequestStartGame(IOFrame::Context::IOContextPtr context, 
 	request.ParseFromString(messageBody);
 	const std::string& gameName = request.game_name();
 
-	auto* forwarder = context_->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
+	auto* forwarder = GetSubsystem<Context>()->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
 	forwarder->Forward([&, gameName]
 	{
-		context_->SendEvent<GameEvent::START_GAME_HANDLER>(gameName.c_str());
+		GetSubsystem<EventManager>()->SendEvent<GameEvent::START_GAME_HANDLER>(gameName.c_str());
 	});
 }
 
@@ -131,10 +131,10 @@ void UDPNetwork::HandleRequestStartMove(IOFrame::Context::IOContextPtr context, 
 	Int64 userId = request.user_id();
 	Quaternion direction(request.rotation().w(), request.rotation().x(), request.rotation().y(), request.rotation().z());
 
-	auto* forwarder = context_->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
+	auto* forwarder = GetSubsystem<Context>()->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
 	forwarder->Forward([&, userId]
 	{
-		context_->SendEvent<GameEvent::START_MOVE_HANDLER>(userId, direction);
+		GetSubsystem<EventManager>()->SendEvent<GameEvent::START_MOVE_HANDLER>(userId, direction);
 	});
 }
 
@@ -145,9 +145,9 @@ void UDPNetwork::HandleRequestStopMove(IOFrame::Context::IOContextPtr context, c
 
 	Int64 userId = request.user_id();
 
-	auto* forwarder = context_->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
+	auto* forwarder = GetSubsystem<Context>()->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
 	forwarder->Forward([&, userId]
 	{
-		context_->SendEvent<GameEvent::STOP_MOVE_HANDLER>(userId);
+		GetSubsystem<EventManager>()->SendEvent<GameEvent::STOP_MOVE_HANDLER>(userId);
 	});
 }

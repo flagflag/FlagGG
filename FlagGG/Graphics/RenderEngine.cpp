@@ -17,8 +17,7 @@
 namespace FlagGG
 {
 
-RenderEngine::RenderEngine(Context* context) :
-	context_(context)
+RenderEngine::RenderEngine()
 {
 	shaderParameters_ = new ShaderParameters();
 	shaderParameters_->AddParametersDefine<Matrix3x4>(SP_WORLD_MATRIX);
@@ -516,7 +515,7 @@ void RenderEngine::RenderRawBatch(Viewport* viewport)
 
 	if (!vertexShaderCode && !pixelShaderCode)
 	{
-		auto* cache = context_->GetVariable<ResourceCache>("ResourceCache");
+		auto* cache = GetSubsystem<ResourceCache>();
 
 		vertexShaderCode = cache->GetResource<ShaderCode>("Shader/UI.hlsl");
 		vertexShader = vertexShaderCode->GetShader(VS, {});

@@ -7,15 +7,14 @@
 
 #include "Unit/Terrain.h"
 
-Terrain::Terrain(Context* context) :
-	context_(context)
+Terrain::Terrain()
 { }
 
 void Terrain::Create(UInt32 pathSize)
 {
 	RemoveAllChild();
 
-	auto* cache = context_->GetVariable<ResourceCache>("ResourceCache");
+	auto* cache = GetSubsystem<ResourceCache>();
 
 	auto* comp = GetComponent<TerrainComponent>();
 	if (!comp)

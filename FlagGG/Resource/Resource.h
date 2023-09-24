@@ -1,19 +1,20 @@
-#ifndef __RESOURCE__
-#define __RESOURCE__
+#pragma once
 
 #include "Export.h"
 #include "Container/Str.h"
 #include "Container/RefCounted.h"
 #include "IOFrame/Buffer/IOBuffer.h"
 #include "Core/Context.h"
+#include "Core/Object.h"
 
 namespace FlagGG
 {
 
-class FlagGG_API Resource : public RefCounted
+class FlagGG_API Resource : public Object
 {
+	OBJECT_OVERRIDE(Resource, Object);
 public:
-	Resource(Context* context);
+	Resource();
 
 	~Resource() override = default;
 
@@ -43,13 +44,9 @@ protected:
 
 	virtual bool EndSave();
 
-	Context* context_;
-
 	String name_;
 
 	UInt32 memoryUse_{ 0 };
 };
 
 }
-
-#endif

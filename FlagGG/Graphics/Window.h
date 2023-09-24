@@ -54,10 +54,11 @@ public:
 	static PODVector<DefferedMessage> defferedMsgs_;
 };
 
-class FlagGG_API Window : public RefCounted
+class FlagGG_API Window : public Object
 {
+	OBJECT_OVERRIDE(Window, Object);
 public:
-	Window(Context* context, void* parentWindow, const IntRect& rect);
+	Window(void* parentWindow, const IntRect& rect);
 
 	~Window() override;
 
@@ -93,7 +94,6 @@ protected:
 	void UpdateSwapChain(UInt32 width, UInt32 height);
 
 private:
-	Context* context_;
 	Input* input_;
 
 	SharedPtr<Viewport> viewport_;

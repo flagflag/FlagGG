@@ -53,8 +53,9 @@ struct FlagGG_API AnimationTrack
 
 class FlagGG_API Animation : public Resource
 {
+	OBJECT_OVERRIDE(Animation, Resource);
 public:
-	Animation(Context* context);
+	Animation();
 
 	// 动画名字
 	String name_;

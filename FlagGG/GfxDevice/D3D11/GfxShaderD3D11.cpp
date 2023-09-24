@@ -213,7 +213,7 @@ void GfxShaderD3D11::Compile()
 	{
 		if (shaderType_ == VS)
 		{
-			HRESULT hr = GfxDeviceD3D11::Instance()->GetD3D11Device()->CreateVertexShader(
+			HRESULT hr = GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device()->CreateVertexShader(
 				shaderCode_->GetBufferPointer(),
 				shaderCode_->GetBufferSize(),
 				nullptr,
@@ -229,7 +229,7 @@ void GfxShaderD3D11::Compile()
 		}
 		else if (shaderType_ == PS)
 		{
-			HRESULT hr = GfxDeviceD3D11::Instance()->GetD3D11Device()->CreatePixelShader(
+			HRESULT hr = GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device()->CreatePixelShader(
 				shaderCode_->GetBufferPointer(),
 				shaderCode_->GetBufferSize(),
 				nullptr,

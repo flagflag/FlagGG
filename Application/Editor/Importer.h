@@ -10,8 +10,6 @@ using namespace FlagGG;
 namespace Importer
 {
 
-extern void SetContext(Context* context);
-
 extern SharedPtr<Node> ImportScene(const String& path);
 
 extern SharedPtr<Node> ImportModel(const String& path);

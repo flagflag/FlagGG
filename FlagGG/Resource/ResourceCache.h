@@ -4,15 +4,14 @@
 #include "Container/HashMap.h"
 #include "Container/RefCounted.h"
 #include "Resource/Resource.h"
+#include "Core/Subsystem.h"
 
 namespace FlagGG
 {
 
-class FlagGG_API ResourceCache : public RefCounted
+class FlagGG_API ResourceCache : public Subsystem<ResourceCache>
 {
 public:
-	ResourceCache(Context* context);
-
 	template < class T >
 	SharedPtr<T> GetResource(const String& path)
 	{
@@ -28,7 +27,7 @@ public:
 		// 存在资源，但没加载过
 		if (!res)
 		{
-			res = new T(context_);
+			res = new T();
 			res->SetName(path);
 			if (!LoadResource(formatPath, res))
 			{
@@ -51,8 +50,6 @@ protected:
 	bool LoadResource(const String& path, SharedPtr<Resource>& res);
 
 private:
-	Context* context_;
-
 	String resourceDir_;
 
 	HashMap<String, SharedPtr<Resource>> resources_;

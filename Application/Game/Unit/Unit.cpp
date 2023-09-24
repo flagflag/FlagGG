@@ -11,15 +11,14 @@
 
 #include "Unit/Unit.h"
 
-Unit::Unit(Context* context) :
+Unit::Unit() :
 	Node(),
-	context_(context),
 	material_(nullptr)
 { }
 
 bool Unit::Load(const String& path, Node* node)
 {
-	auto* cache = context_->GetVariable<ResourceCache>("ResourceCache");
+	auto* cache = GetSubsystem<ResourceCache>();
 	LJSONFile* jsonFile = cache->GetResource<LJSONFile>(path);
 	if (!jsonFile)
 	{
@@ -98,7 +97,7 @@ void Unit::PlayAnimation(const String& path, bool isLoop, Node* node)
 	{
 		animComp = node->CreateComponent<AnimationComponent>();
 	}
-	auto* cache = context_->GetVariable<ResourceCache>("ResourceCache");
+	auto* cache = GetSubsystem<ResourceCache>();
 	animComp->SetAnimation(cache->GetResource<Animation>(path));
 	animComp->Play(isLoop);
 }
@@ -138,8 +137,8 @@ void Unit::OnUpdate(float timeStep)
 }
 
 
-CEUnit::CEUnit(Context* context) :
-	Unit(context)
+CEUnit::CEUnit() :
+	Unit()
 {}
 
 bool CEUnit::Load(const String& path)

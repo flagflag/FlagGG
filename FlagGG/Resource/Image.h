@@ -50,8 +50,9 @@ struct FlagGG_API CompressedLevel
 
 class FlagGG_API Image : public Resource
 {
+	OBJECT_OVERRIDE(Image, Resource);
 public:
-	explicit Image(Context* context);
+	explicit Image();
 
 	~Image() override;
 

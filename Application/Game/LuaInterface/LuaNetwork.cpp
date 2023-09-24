@@ -1,13 +1,13 @@
+#include <Core/EventManager.h>
 #include <Log.h>
 #include "LuaInterface/LuaNetwork.h"
 
-LuaNetwork::LuaNetwork(Context* context) :
-	context_(context)
+LuaNetwork::LuaNetwork()
 {
 	INIT_ARRAY(initialized, false);
 	INIT_ARRAY(network_, nullptr);
 
-	LuaVM* luaVM = context->GetVariable<LuaVM>("LuaVM");
+	LuaVM* luaVM = GetSubsystem<Context>()->GetVariable<LuaVM>("LuaVM");
 	luaVM->RegisterCPPEvents(
 		"network",
 		this,
@@ -20,10 +20,10 @@ LuaNetwork::LuaNetwork(Context* context) :
 		}
 	);
 
-	context_->RegisterEvent(EVENT_HANDLER(NetworkEvent::OPEND, LuaNetwork::OnOpend, this));
-	context_->RegisterEvent(EVENT_HANDLER(NetworkEvent::CLOSED, LuaNetwork::OnClosed, this));
-	context_->RegisterEvent(EVENT_HANDLER(NetworkEvent::CATCH_ERROR, LuaNetwork::OnError, this));
-	context_->RegisterEvent(EVENT_HANDLER(NetworkEvent::MESSAGE_RECIVED, LuaNetwork::OnMessageRecived, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(NetworkEvent::OPEND, LuaNetwork::OnOpend, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(NetworkEvent::CLOSED, LuaNetwork::OnClosed, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(NetworkEvent::CATCH_ERROR, LuaNetwork::OnError, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(NetworkEvent::MESSAGE_RECIVED, LuaNetwork::OnMessageRecived, this));
 }
 
 int LuaNetwork::Init(LuaVM* luaVM)
@@ -34,7 +34,7 @@ int LuaNetwork::Init(LuaVM* luaVM)
 	closeCall[networkType] = luaVM->Get<LuaFunction>(3);
 	errorCall[networkType] = luaVM->Get<LuaFunction>(4);
 	messageCall[networkType] = luaVM->Get<LuaFunction>(5);
-	network_[networkType] = context_->GetVariable<Network>(NETWORK_TYPE_NAME[networkType]);
+	network_[networkType] = GetSubsystem<Context>()->GetVariable<Network>(NETWORK_TYPE_NAME[networkType]);
 	return 0;
 }
 

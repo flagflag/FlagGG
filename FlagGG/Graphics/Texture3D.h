@@ -9,7 +9,7 @@ namespace FlagGG
 class FlagGG_API Texture3D : public Texture
 {
 public:
-	Texture3D(Context* context);
+	Texture3D();
 
 	bool SetSize(Int32 width, Int32 height, Int32 depth, TextureFormat format, TextureUsage usage = TEXTURE_STATIC);
 

@@ -1,13 +1,13 @@
 #include "Core/DeviceEvent.h"
 #include "Core/Context.h"
+#include "Core/EventManager.h"
 
 #include <windows.h>
 
 namespace FlagGG
 {
 
-Input::Input(Context* context) :
-	context_(context),
+Input::Input() :
 	isMouseShow_(true)
 { }
 
@@ -37,27 +37,27 @@ bool Input::IsMouseShow() const
 
 void Input::OnKeyDown(KeyState* keyState, UInt32 keyCode)
 {
-	context_->SendEvent<InputEvent::KEY_DOWN_HANDLER>(keyState, keyCode);
+	GetSubsystem<EventManager>()->SendEvent<InputEvent::KEY_DOWN_HANDLER>(keyState, keyCode);
 }
 
 void Input::OnKeyUp(KeyState* keyState, UInt32 keyCode)
 {
-	context_->SendEvent<InputEvent::KEY_UP_HANDLER>(keyState, keyCode);
+	GetSubsystem<EventManager>()->SendEvent<InputEvent::KEY_UP_HANDLER>(keyState, keyCode);
 }
 
 void Input::OnMouseDown(KeyState* keyState, MouseKey mouseKey)
 {
-	context_->SendEvent<InputEvent::MOUSE_DOWN_HANDLER>(keyState, mouseKey);
+	GetSubsystem<EventManager>()->SendEvent<InputEvent::MOUSE_DOWN_HANDLER>(keyState, mouseKey);
 }
 
 void Input::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
 {
-	context_->SendEvent<InputEvent::MOUSE_UP_HANDLER>(keyState, mouseKey);
+	GetSubsystem<EventManager>()->SendEvent<InputEvent::MOUSE_UP_HANDLER>(keyState, mouseKey);
 }
 
 void Input::OnMouseMove(KeyState* keyState, const Vector2& delta)
 {
-	context_->SendEvent<InputEvent::MOUSE_MOVE_HANDLER>(keyState, delta);
+	GetSubsystem<EventManager>()->SendEvent<InputEvent::MOUSE_MOVE_HANDLER>(keyState, delta);
 }
 
 }

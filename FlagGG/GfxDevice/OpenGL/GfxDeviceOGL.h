@@ -6,7 +6,7 @@
 
 #include "GfxDevice/GfxDevice.h"
 #include "GfxDevice/OpenGL/OpenGLInterface.h"
-#include "Utility/Singleton.h"
+#include "Core/Subsystem.h"
 #include "AsyncFrame/Mutex.h"
 #include "Container/HashMap.h"
 
@@ -56,7 +56,7 @@ struct GLFrameBufferKey
 	UInt32 idx_[MAX_RENDERTARGET_COUNT + 1];
 };
 
-class GfxDeviceOpenGL : public GfxDevice, public Singleton<GfxDeviceOpenGL, NullMutex>
+class GfxDeviceOpenGL : public GfxDevice, public Subsystem<GfxDeviceOpenGL>
 {
 public:
 	explicit GfxDeviceOpenGL();
