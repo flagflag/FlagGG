@@ -8,9 +8,6 @@
 #undef IN_OUT
 #define IN_OUT
 
-#define ASSERT_MESSAGE
-#define ASSERT
-
 #ifndef SAFE_DELETE
 #define SAFE_DELETE(p){ if(p) delete (p); (p) = NULL; }
 #endif

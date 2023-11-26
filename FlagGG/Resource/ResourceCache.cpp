@@ -50,7 +50,7 @@ bool ResourceCache::LoadResource(const String& path, SharedPtr<Resource>& res)
 	if (!res->LoadFile(resourceDir_ + path))
 	{
 		FLAGGG_LOG_ERROR("Load Resource[{}] failed.", path.CString());
-		CRY_ASSERT_MESSAGE(false, "Failed to load resource.");
+		ASSERT_MESSAGE(false, "Failed to load resource.");
 		return false;
 	}
 

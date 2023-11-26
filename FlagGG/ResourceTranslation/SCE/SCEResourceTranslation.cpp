@@ -193,7 +193,7 @@ bool SCEResourceTranslation::LoadMaterialImpl(const XMLElement& source, GenericM
 			}
 			else
 			{
-				CRY_ASSERT_MESSAGE(false, "Can not load image");
+				ASSERT_MESSAGE(false, "Can not load image");
 				FLAGGG_LOG_STD_ERROR("Can not load image[%s].", name.CString());
 			}
 		}

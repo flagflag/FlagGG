@@ -69,7 +69,7 @@ void luaex_beginclass(lua_State* L, const char* name, const char* base, lua_CFun
 		luaex_pushcontext(L);
 		lua_pushstring(L, base);
 		lua_rawget(L, -2);
-		CRY_ASSERT_MESSAGE(lua_istable(L, -1), "base class is not a table");
+		ASSERT_MESSAGE(lua_istable(L, -1), "base class is not a table");
 
 		lua_getmetatable(L, -1);
 		lua_pushliteral(L, "__index");

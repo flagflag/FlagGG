@@ -45,13 +45,13 @@ void luaex_pushglobaltable(lua_State* L, const char* name, bool keyWeakRef/* = f
 void luaex_pushcontext(lua_State* L)
 {
 	luaex_pushglobaltable(L, "LuaexContext");
-	CRY_ASSERT_MESSAGE(lua_istable(L, -1), "LuaexContext is not a table");
+	ASSERT_MESSAGE(lua_istable(L, -1), "LuaexContext is not a table");
 }
 
 static void luaex_pushusertypetable(lua_State* L)
 {
 	luaex_pushglobaltable(L, "LuaexUserData", false, true);
-	CRY_ASSERT_MESSAGE(lua_istable(L, -1), "LuaexUserData is not a table");
+	ASSERT_MESSAGE(lua_istable(L, -1), "LuaexUserData is not a table");
 }
 
 bool luaex_juedge_inherit(lua_State* L, const String& type, const String& superClass)
@@ -60,7 +60,7 @@ bool luaex_juedge_inherit(lua_State* L, const String& type, const String& superC
 	luaex_pushcontext(L);
 	lua_pushliteral(L, "ClassMap");
 	lua_rawget(L, -2);
-	CRY_ASSERT(lua_istable(L, -1));
+	ASSERT(lua_istable(L, -1));
 
 	String subClass = type;
 	bool findIt = false;
@@ -117,7 +117,7 @@ int luaex_pushusertype(lua_State* L, const char* userType, void* userValue)
 			lua_pushliteral(L, "__cinstance");
 			lua_rawget(L, -2);
 			void* cinstance = lua_touserdata(L, -1);
-			CRY_ASSERT(!cinstance || cinstance == userValue);
+			ASSERT(!cinstance || cinstance == userValue);
 			lua_pop(L, 1);
 #endif
 			// 移除userdata table
@@ -140,7 +140,7 @@ int luaex_pushusertype(lua_State* L, const char* userType, void* userValue)
 	// 获取class表
 	lua_pushstring(L, userType);
 	lua_rawget(L, -3);
-	CRY_ASSERT(lua_istable(L, -1));
+	ASSERT(lua_istable(L, -1));
 
 	lua_getmetatable(L, -1);  // -1 is luaContext[userType]
 	lua_setmetatable(L, -3);  // -3 is @newtable, setmetatable(@newtable, luaContext[userType])

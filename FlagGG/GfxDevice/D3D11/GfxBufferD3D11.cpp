@@ -76,7 +76,7 @@ void GfxBufferD3D11::UpdateBuffer(const void* dataPtr)
 	// 静态buffer不修改数据
 	if (gfxBufferDesc_.usage_ == BUFFER_USAGE_STATIC)
 	{
-		CRY_ASSERT(false);
+		ASSERT(false);
 		return;
 	}
 
@@ -93,7 +93,7 @@ void GfxBufferD3D11::UpdateBufferRange(const void* dataPtr, UInt32 offset, UInt3
 	// 静态buffer不修改数据
 	if (gfxBufferDesc_.usage_ == BUFFER_USAGE_STATIC)
 	{
-		CRY_ASSERT(false);
+		ASSERT(false);
 		return;
 	}
 
@@ -109,13 +109,13 @@ void* GfxBufferD3D11::BeginWrite(UInt32 offset, UInt32 size)
 {
 	if (!d3d11Buffer_)
 	{
-		CRY_ASSERT(false);
+		ASSERT(false);
 		return nullptr;
 	}
 
 	if (offset + size > gfxBufferDesc_.size_)
 	{
-		CRY_ASSERT(false);
+		ASSERT(false);
 		return nullptr;
 	}
 
@@ -142,7 +142,7 @@ void GfxBufferD3D11::EndWrite(UInt32 bytesWritten)
 {
 	if (!d3d11Buffer_)
 	{
-		CRY_ASSERT(false);
+		ASSERT(false);
 		return;
 	}
 

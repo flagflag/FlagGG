@@ -381,7 +381,7 @@ static String concatenate_path(const String& base, const String& name)
 
 void FindFiles(const String& dirPath, const String& pattern, bool recursive, int fileMode, Vector<String>& fileNames)
 {
-	long lHandle, res;
+	PtrInt lHandle, res;
 	struct _finddata_t tagData;
 
 	// pattern can contain a directory name, separate it from mask
@@ -395,7 +395,7 @@ void FindFiles(const String& dirPath, const String& pattern, bool recursive, int
 
 	String full_pattern = concatenate_path(dirPath, pattern);
 
-	lHandle = (long)_findfirst(full_pattern.CString(), &tagData);
+	lHandle = (PtrInt)_findfirst(full_pattern.CString(), &tagData);
 	res = 0;
 	while (lHandle != -1 && res != -1)
 	{
@@ -440,7 +440,7 @@ void FindFiles(const String& dirPath, const String& pattern, bool recursive, int
 		else
 			mask.Append(pattern);
 
-		lHandle = (long)_findfirst(base_dir.CString(), &tagData);
+		lHandle = (PtrInt)_findfirst(base_dir.CString(), &tagData);
 		res = 0;
 		while (lHandle != -1 && res != -1)
 		{

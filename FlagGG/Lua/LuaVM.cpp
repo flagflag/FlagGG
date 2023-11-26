@@ -83,7 +83,7 @@ bool LuaVM::Execute(const String& filePath)
 	if (luaL_dofile(luaState_, filePath.CString()))
 	{
 		FLAGGG_LOG_ERROR("execute lua file failed, error message: {}.", lua_tostring(luaState_, -1));
-		CRY_ASSERT_MESSAGE(false, "execute lua file failed");
+		ASSERT_MESSAGE(false, "execute lua file failed");
 
 		lua_pop(luaState_, 1);
 
@@ -98,7 +98,7 @@ bool LuaVM::ExecuteScript(const String& scriptCode)
 	if (luaL_dostring(luaState_, scriptCode.CString()))
 	{
 		FLAGGG_LOG_ERROR("execute lua code failed, error message: {}.", lua_tostring(luaState_, -1));
-		CRY_ASSERT_MESSAGE(false, "execute lua code failed");
+		ASSERT_MESSAGE(false, "execute lua code failed");
 
 		lua_pop(luaState_, 1);
 

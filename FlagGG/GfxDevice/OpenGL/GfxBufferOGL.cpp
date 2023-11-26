@@ -39,7 +39,7 @@ void GfxBufferOpenGL::UpdateBuffer(const void* dataPtr)
 	// 静态buffer不修改数据
 	if (gfxBufferDesc_.usage_ == BUFFER_USAGE_STATIC)
 	{
-		CRY_ASSERT(false);
+		ASSERT(false);
 		return;
 	}
 
@@ -53,7 +53,7 @@ void GfxBufferOpenGL::UpdateBufferRange(const void* dataPtr, UInt32 offset, UInt
 	// 静态buffer不修改数据
 	if (gfxBufferDesc_.usage_ == BUFFER_USAGE_STATIC)
 	{
-		CRY_ASSERT(false);
+		ASSERT(false);
 		return;
 	}
 
@@ -66,13 +66,13 @@ void* GfxBufferOpenGL::BeginWrite(UInt32 offset, UInt32 size)
 {
 	if (!oglBuffer_)
 	{
-		CRY_ASSERT(false);
+		ASSERT(false);
 		return nullptr;
 	}
 
 	if (offset + size > gfxBufferDesc_.size_)
 	{
-		CRY_ASSERT(false);
+		ASSERT(false);
 		return nullptr;
 	}
 
@@ -86,7 +86,7 @@ void GfxBufferOpenGL::EndWrite(UInt32 bytesWritten)
 {
 	if (!oglBuffer_)
 	{
-		CRY_ASSERT(false);
+		ASSERT(false);
 		return;
 	}
 

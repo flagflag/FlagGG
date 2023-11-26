@@ -470,7 +470,7 @@ void RenderEngine::DrawQuad(Camera* camera)
 void RenderEngine::RenderUpdate(Viewport* viewport)
 {
 	RenderView* renderView = viewport->GetOrCreateRenderView();
-	CRY_ASSERT(renderView);
+	ASSERT(renderView);
 
 	renderView->Define(viewport);
 
@@ -480,7 +480,7 @@ void RenderEngine::RenderUpdate(Viewport* viewport)
 void RenderEngine::Render(Viewport* viewport)
 {
 	RenderView* renderView = viewport->GetOrCreateRenderView();
-	CRY_ASSERT(renderView);
+	ASSERT(renderView);
 
 	renderView->Render();
 }

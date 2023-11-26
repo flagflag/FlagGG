@@ -71,7 +71,7 @@ static bool CompileShader(const char* buffer, Size bufferSize, ShaderType type, 
 		{
 			FLAGGG_LOG_ERROR("Error code: {}", (const char*)errorMsgs->GetBufferPointer());
 
-			CRY_ASSERT_MESSAGE(false, (const char*)errorMsgs->GetBufferPointer());
+			ASSERT_MESSAGE(false, (const char*)errorMsgs->GetBufferPointer());
 
 			D3D11_SAFE_RELEASE(errorMsgs);
 		}

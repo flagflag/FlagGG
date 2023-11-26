@@ -13,9 +13,9 @@ RefCounted::RefCounted() :
 
 RefCounted::~RefCounted()
 {
-	CRY_ASSERT(refCount_);
-	CRY_ASSERT(refCount_->refs_ == 0);
-	CRY_ASSERT(refCount_->weakRefs_ > 0);
+	ASSERT(refCount_);
+	ASSERT(refCount_->refs_ == 0);
+	ASSERT(refCount_->weakRefs_ > 0);
 
 	// Mark object as expired, release the self weak ref and delete the refcount if no other weak refs exist
 	refCount_->refs_ = -1;
@@ -28,13 +28,13 @@ RefCounted::~RefCounted()
 
 void RefCounted::AddRef()
 {
-	CRY_ASSERT(refCount_->refs_ >= 0);
+	ASSERT(refCount_->refs_ >= 0);
 	(refCount_->refs_)++;
 }
 
 void RefCounted::ReleaseRef()
 {
-	CRY_ASSERT(refCount_->refs_ > 0);
+	ASSERT(refCount_->refs_ > 0);
 	(refCount_->refs_)--;
 	if (!refCount_->refs_)
 		delete this;
@@ -60,9 +60,9 @@ ThreadSafeRefCounted::ThreadSafeRefCounted() :
 
 ThreadSafeRefCounted::~ThreadSafeRefCounted()
 {
-	CRY_ASSERT(refCount_);
-	CRY_ASSERT(refCount_->refs_.GetValue() == 0);
-	CRY_ASSERT(refCount_->weakRefs_.GetValue() > 0);
+	ASSERT(refCount_);
+	ASSERT(refCount_->refs_.GetValue() == 0);
+	ASSERT(refCount_->weakRefs_.GetValue() > 0);
 
 	// Mark object as expired, release the self weak ref and delete the refcount if no other weak refs exist
 	refCount_->refs_.Set(-1);
@@ -75,13 +75,13 @@ ThreadSafeRefCounted::~ThreadSafeRefCounted()
 
 void ThreadSafeRefCounted::AddRef()
 {
-	CRY_ASSERT(refCount_->refs_.GetValue() >= 0);
+	ASSERT(refCount_->refs_.GetValue() >= 0);
 	refCount_->refs_.Increment();
 }
 
 void ThreadSafeRefCounted::ReleaseRef()
 {
-	CRY_ASSERT(refCount_->refs_.GetValue() > 0);
+	ASSERT(refCount_->refs_.GetValue() > 0);
 	Int32 refs = refCount_->refs_.Decrement();
 	if (!refs)
 		delete this;

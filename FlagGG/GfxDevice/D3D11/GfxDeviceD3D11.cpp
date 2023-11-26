@@ -172,7 +172,7 @@ void GfxDeviceD3D11::Draw(UInt32 vertexStart, UInt32 vertexCount)
 {
 	if (!vertexShader_ || !pixelShader_)
 	{
-		CRY_ASSERT(false, "vertex shader or pixel shader is null.");
+		ASSERT_MESSAGE(false, "vertex shader or pixel shader is null.");
 		return;
 	}
 
@@ -185,7 +185,7 @@ void GfxDeviceD3D11::DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 ve
 {
 	if (!vertexShader_ || !pixelShader_)
 	{
-		CRY_ASSERT(false, "vertex shader or pixel shader is null.");
+		ASSERT_MESSAGE(false, "vertex shader or pixel shader is null.");
 		return;
 	}
 

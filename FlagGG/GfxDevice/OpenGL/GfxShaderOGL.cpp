@@ -30,7 +30,7 @@ void GfxShaderOpenGL::Compile()
 	GLenum oglShaderType = shaderType_ == CS ? GL_COMPUTE_SHADER : (shaderType_ == VS ? GL_FRAGMENT_SHADER : GL_VERTEX_SHADER);
 
 	oglShader_ = GL::CreateShader(oglShaderType);
-	CRY_ASSERT_MESSAGE(oglShader_ != 0, "CreateShader failed.");
+	ASSERT_MESSAGE(oglShader_ != 0, "CreateShader failed.");
 
 	const GLchar* oglShaderCode = shaderSource_.Get();
 	GLint oglShaderCodeSize = shaderSourceSize_;
@@ -39,7 +39,7 @@ void GfxShaderOpenGL::Compile()
 
 	GLint compiled = 0;
 	GL::GetShaderiv(oglShader_, GL_COMPILE_STATUS, &compiled);
-	CRY_ASSERT_MESSAGE(compiled, "Compile shader failed.");
+	ASSERT_MESSAGE(compiled, "Compile shader failed.");
 }
 
 }

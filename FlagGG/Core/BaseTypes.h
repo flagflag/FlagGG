@@ -1,17 +1,20 @@
 #pragma once
 
-#include <stdint.h>
+#include "Core/GenericPlatform.h"
 
-typedef uint8_t Byte;
-typedef int8_t Int8;
-typedef uint8_t UInt8;
-typedef int16_t Int16;
-typedef uint16_t UInt16;
-typedef int32_t Int32;
-typedef uint32_t UInt32;
-typedef int64_t Int64;
-typedef uint64_t UInt64;
-typedef size_t Size;
+typedef GenericPlatformTypes::uint8 Byte;
+typedef GenericPlatformTypes::int8 Int8;
+typedef GenericPlatformTypes::uint8 UInt8;
+typedef GenericPlatformTypes::int16 Int16;
+typedef GenericPlatformTypes::uint16 UInt16;
+typedef GenericPlatformTypes::int32 Int32;
+typedef GenericPlatformTypes::uint32 UInt32;
+typedef GenericPlatformTypes::int64 Int64;
+typedef GenericPlatformTypes::uint64 UInt64;
+typedef GenericPlatformTypes::usize Size;
+typedef GenericPlatformTypes::ssize SSize;
+typedef GenericPlatformTypes::ptrint PtrInt;
+typedef GenericPlatformTypes::uptrint UPtrInt;
 typedef float Real;
 typedef double RealD;
 
