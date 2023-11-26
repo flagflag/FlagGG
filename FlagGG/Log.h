@@ -1,5 +1,4 @@
-#ifndef __FLAGGG_LOG__
-#define __FLAGGG_LOG__
+#pragma once
 
 #include "Export.h"
 #include "Container/Str.h"
@@ -69,5 +68,3 @@ private:
 #define FLAGGG_LOG_STD_ERROR(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
 
 #define FLAGGG_LOG_STD_CRITICAL(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
-
-#endif

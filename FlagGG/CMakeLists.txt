@@ -43,6 +43,7 @@ message ("boost lib: ${BOOST_LIB}")
 message ("d3d11 lib: ${D3D11_LIB}")
 message ("lua lib: ${LUA_LIB}")
 message ("SLikeNet lib: ${SLikeNet_LIB}")
+message ("PugiXml lib: ${PUGIXML_LIB}")
 
 if (NOT FLAGGG_NO_BOOST)
 	list (APPEND THIRD_LIB ${BOOST_LIB})
@@ -52,6 +53,7 @@ list (APPEND THIRD_LIB ${LUA_LIB})
 list (APPEND THIRD_LIB ${SLikeNet_LIB})
 # list (APPEND THIRD_LIB jemallocso)
 # list (APPEND THIRD_LIB $(BDFX_LIB))
+list (APPEND THIRD_LIB ${PUGIXML_LIB})
 
 target_link_libraries(${TARGET_NAME} ${THIRD_LIB})
 

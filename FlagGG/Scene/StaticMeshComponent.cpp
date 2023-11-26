@@ -51,19 +51,33 @@ void StaticMeshComponent::SetModel(Model* model)
 
 void StaticMeshComponent::SetMaterial(Material* material)
 {
-	material_ = material;
-
-	OnMaterial();
+	for (UInt32 i = 0; i < renderContexts_.Size(); ++i)
+	{
+		renderContexts_[i].material_ = material;
+	}
 }
 
-Model* StaticMeshComponent::GetModel()
+void StaticMeshComponent::SetMaterial(UInt32 partIndex, Material* material)
+{
+	if (partIndex < renderContexts_.Size())
+	{
+		renderContexts_[partIndex].material_ = material;
+	}
+}
+
+Model* StaticMeshComponent::GetModel() const
 {
 	return model_;
 }
 
-Material* StaticMeshComponent::GetMaterial()
+Material* StaticMeshComponent::GetMaterial() const
 {
-	return material_;
+	return renderContexts_.Size() ? renderContexts_[0].material_ : nullptr;
+}
+
+Material* StaticMeshComponent::GetMaterial(UInt32 partIndex) const
+{
+	return partIndex < renderContexts_.Size() ? renderContexts_[partIndex].material_ : nullptr;
 }
 
 void StaticMeshComponent::OnModel()
@@ -80,14 +94,6 @@ void StaticMeshComponent::OnModel()
 	}
 
 	boundingBox_ = model_->GetBoundingBox();
-}
-
-void StaticMeshComponent::OnMaterial()
-{
-	for (UInt32 i = 0; i < renderContexts_.Size(); ++i)
-	{
-		renderContexts_[i].material_ = material_;
-	}
 }
 
 }

@@ -424,8 +424,8 @@ void RenderEngine::DrawCall(UInt32 vertexStart, UInt32 vertexCount)
 
 void RenderEngine::DrawBatch(Camera* camera, const RenderBatch& renderBatch)
 {
-	SetRasterizerState(renderBatch.material_->GetRasterizerState());
-	SetDepthStencilState(renderBatch.material_->GetDepthStencilState());
+	SetRasterizerState(renderBatch.renderPassInfo_->GetRasterizerState());
+	SetDepthStencilState(renderBatch.renderPassInfo_->GetDepthStencilState());
 	SetShaderParameter(camera, renderBatch);
 	if (renderBatch.vertexShader_ && renderBatch.pixelShader_)
 		SetShaders(renderBatch.vertexShader_, renderBatch.pixelShader_);

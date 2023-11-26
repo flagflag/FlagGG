@@ -13,6 +13,12 @@
 		type = "texture2d", //texturecube => 3d
 		path = "Textures/summersky_b.jpg"
 	},
+	pass =
+	[
+		{
+			name = "forward_lit"
+		}
+	],
     shader_parameters = 
 	[
 		{

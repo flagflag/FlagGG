@@ -87,6 +87,22 @@ inline void spdlog::logger::log(level::level_enum lvl, const char *msg)
     SPDLOG_CATCH_AND_HANDLE
 }
 
+template<typename... Args>
+inline void spdlog::logger::log(level::level_enum lvl, const FlagGG::String& msg)
+{
+	if (!should_log(lvl))
+	{
+		return;
+	}
+	try
+	{
+		details::log_msg log_msg(&_name, lvl);
+		log_msg.raw << msg.CString();
+		_sink_it(log_msg);
+	}
+	SPDLOG_CATCH_AND_HANDLE
+}
+
 template<typename T>
 inline void spdlog::logger::log(level::level_enum lvl, const T &msg)
 {

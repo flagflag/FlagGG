@@ -208,6 +208,17 @@ bool HasAccess(const String& path)
 	return true;
 }
 
+bool Copy(const String& source, const String& target)
+{
+#if _WIN32
+	WString sourceW(source);
+	WString targetW(target);
+	return CopyFileW(sourceW.CString(), targetW.CString(), FALSE);
+#else
+	return false;
+#endif
+}
+
 #ifndef _WIN32
 /* Our simplified data entry structure */
 struct _finddata_t

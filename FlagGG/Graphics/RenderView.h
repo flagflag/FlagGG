@@ -54,9 +54,6 @@ protected:
 	// 收集视图可见对象
 	void CollectVisibilityObjects();
 
-	// 渲染shadowmap
-	void RenderShadowMap();
-
 private:
 	GfxDevice* gfxDevice_{};
 

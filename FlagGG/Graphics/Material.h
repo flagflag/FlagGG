@@ -13,10 +13,55 @@ namespace FlagGG
 
 class Texture;
 class Shader;
+class LJSONValue;
 
-struct FlagGG_API RenderPassInfo
+class FlagGG_API RenderPassInfo
 {
+public:
+	RenderPassInfo();
+
 	~RenderPassInfo();
+
+	// 设置填充模式
+	void SetFillMode(FillMode fillMode);
+
+	// 设置裁剪模式
+	void SetCullMode(CullMode cullMode);
+
+	// 设置深度写
+	void SetDepthWrite(bool depthWrite);
+
+	// 设置顶点着色器
+	void SetVertexShader(Shader* shader);
+
+	// 设置像素着色器
+	void SetPixelShader(Shader* shader);
+
+
+	// 获取填充模式
+	FillMode GetFillMode() const;
+
+	// 获取裁剪模式
+	CullMode GetCullMode() const;
+
+	// 获取深度写
+	bool GetDepthWrite() const;
+
+	// 获取光栅化状态
+	const RasterizerState& GetRasterizerState() const { return rasterizerState_; }
+
+	// 获取深度模板状态
+	const DepthStencilState& GetDepthStencilState() const { return depthStencilState_; }
+
+	// 获取顶点着色器
+	Shader* GetVertexShader() const { return vertexShader_; }
+
+	// 获取像素着色器
+	Shader* GetPixelShader() const { return pixelShader_; }
+
+private:
+	RasterizerState rasterizerState_;
+	DepthStencilState depthStencilState_;
 
 	SharedPtr<Shader> vertexShader_;
 	SharedPtr<Shader> pixelShader_;
@@ -45,15 +90,6 @@ public:
 	// 设置render pass
 	void SetRenderPass(RenderPassType type, const RenderPassInfo& renderPass);
 
-	// 设置填充模式
-	void SetFillMode(FillMode fillMode);
-
-	// 设置裁剪模式
-	void SetCullMode(CullMode cullMode);
-
-	// 设置深度写
-	void SetDepthWrite(bool depthWrite);
-
 
 	// 获取纹理
 	SharedPtr<Texture> GetTexture();
@@ -73,21 +109,6 @@ public:
 	// 获取材质参数
 	SharedPtr<ShaderParameters> GetShaderParameters();
 
-	// 获取填充模式
-	FillMode GetFillMode() const;
-
-	// 获取裁剪模式
-	CullMode GetCullMode() const;
-
-	// 获取深度写
-	bool GetDepthWrite() const;
-
-	// 获取光栅化状态
-	const RasterizerState& GetRasterizerState() const { return rasterizerState_; }
-
-	// 获取深度模板状态
-	const DepthStencilState& GetDepthStencilState() const { return depthStencilState_; }
-
 	// 创建材质参数集
 	void CreateShaderParameters();
 
@@ -95,6 +116,10 @@ protected:
 	bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
 	bool EndLoad() override;
+
+	void LoadRasterizerState(const LJSONValue& root, RasterizerState& state);
+
+	void LoadDepthStencilState(const LJSONValue& root, DepthStencilState& state);
 
 protected:
 	SharedPtr<Texture> textures_[MAX_TEXTURE_CLASS];
@@ -106,10 +131,6 @@ protected:
 	SharedPtr<ShaderParameters> shaderParameters_;
 
 	HashMap<UInt32, RenderPassInfo> renderPass_;
-
-	RasterizerState rasterizerState_;
-
-	DepthStencilState depthStencilState_;
 };
 
 }

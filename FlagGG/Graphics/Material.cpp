@@ -173,14 +173,8 @@ static RenderPassType ToRenderPassType(const String& name)
 	return RENDER_PASS_TYPE_SHADOW;
 }
 
-RenderPassInfo::~RenderPassInfo()
-{
 
-}
-
-Material::Material() :
-	Resource(),
-	textures_{}
+RenderPassInfo::RenderPassInfo()
 {
 	rasterizerState_.scissorTest_ = false;
 	rasterizerState_.fillMode_ = FILL_SOLID;
@@ -190,6 +184,58 @@ Material::Material() :
 	depthStencilState_.depthWrite_ = true;
 	depthStencilState_.depthTestMode_ = COMPARISON_LESS_EQUAL;
 	depthStencilState_.stencilTest_ = false;
+}
+
+RenderPassInfo::~RenderPassInfo()
+{
+
+}
+
+void RenderPassInfo::SetFillMode(FillMode fillMode)
+{
+	rasterizerState_.fillMode_ = fillMode;
+}
+
+void RenderPassInfo::SetCullMode(CullMode cullMode)
+{
+	rasterizerState_.cullMode_ = cullMode;
+}
+
+void RenderPassInfo::SetDepthWrite(bool depthWrite)
+{
+	depthStencilState_.depthWrite_ = depthWrite;
+}
+
+void RenderPassInfo::SetVertexShader(Shader* shader)
+{
+	vertexShader_ = shader;
+}
+
+void RenderPassInfo::SetPixelShader(Shader* shader)
+{
+	pixelShader_ = shader;
+}
+
+FillMode RenderPassInfo::GetFillMode() const
+{
+	return rasterizerState_.fillMode_;
+}
+
+CullMode RenderPassInfo::GetCullMode() const
+{
+	return rasterizerState_.cullMode_;
+}
+
+bool RenderPassInfo::GetDepthWrite() const
+{
+	return depthStencilState_.depthWrite_;
+}
+
+
+Material::Material() :
+	Resource(),
+	textures_{}
+{
 }
 
 Material::~Material()
@@ -219,21 +265,6 @@ void Material::SetPixelShader(Shader* pixelShader)
 void Material::SetRenderPass(RenderPassType type, const RenderPassInfo& renderPass)
 {
 	renderPass_[type] = renderPass;
-}
-
-void Material::SetFillMode(FillMode fillMode)
-{
-	rasterizerState_.fillMode_ = fillMode;
-}
-
-void Material::SetCullMode(CullMode cullMode)
-{
-	rasterizerState_.cullMode_ = cullMode;
-}
-
-void Material::SetDepthWrite(bool depthWrite)
-{
-	depthStencilState_.depthWrite_ = depthWrite;
 }
 
 SharedPtr<Texture> Material::GetTexture()
@@ -266,21 +297,6 @@ SharedPtr<ShaderParameters> Material::GetShaderParameters()
 	return shaderParameters_;
 }
 
-FillMode Material::GetFillMode() const
-{
-	return rasterizerState_.fillMode_;
-}
-
-CullMode Material::GetCullMode() const
-{
-	return rasterizerState_.cullMode_;
-}
-
-bool Material::GetDepthWrite() const
-{
-	return depthStencilState_.depthWrite_;
-}
-
 void Material::CreateShaderParameters()
 {
 	shaderParameters_ = new ShaderParameters();
@@ -309,10 +325,61 @@ static SharedPtr<Texture> LoadTexture(ResourceCache* cache, const LJSONValue& te
 	return texture;
 }
 
+void Material::LoadRasterizerState(const LJSONValue& root, RasterizerState& state)
+{
+	if (root.Contains("fillmode"))
+	{
+		state.fillMode_ = *FILL_MODE[root["fillmode"].GetString()];
+	}
+
+	if (root.Contains("cullmode"))
+	{
+		state.cullMode_ = *CULL_MODE[root["cullmode"].GetString()];
+	}
+}
+
+void Material::LoadDepthStencilState(const LJSONValue& root, DepthStencilState& state)
+{
+	if (root.Contains("depthwrite"))
+	{
+		state.depthWrite_ = root["depthwrite"].GetBool();
+	}
+
+	if (root.Contains("depthtestmode"))
+	{
+		state.depthTestMode_ = *COMPARE_MODE[root["depthtestmode"].GetString()];
+	}
+
+	if (root.Contains("stenciltest"))
+	{
+		state.stencilTest_ = root["stenciltest"].GetBool();
+	}
+
+	if (root.Contains("stenciltestmode"))
+	{
+		state.stencilTestMode_ = *COMPARE_MODE[root["stenciltestmode"].GetString()];
+	}
+
+	if (root.Contains("stencilref"))
+	{
+		state.stencilRef_ = root["stencilref"].GetUInt();
+	}
+
+	if (root.Contains("stencilreadmask"))
+	{
+		state.stencilReadMask_ = root["stencilreadmask"].GetUInt();
+	}
+
+	if (root.Contains("stencilwritemask"))
+	{
+		state.stencilWriteMask_ = root["stencilwritemask"].GetUInt();
+	}
+}
+
 bool Material::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 {
 	LJSONFile file;
-	if (!file.LoadFile(stream))
+	if (!file.LoadStream(stream))
 	{
 		FLAGGG_LOG_ERROR("Material ==> load config failed.");
 
@@ -391,6 +458,12 @@ bool Material::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 			}
 		}
 
+		RasterizerState rasterizerState;
+		LoadRasterizerState(root, rasterizerState);
+
+		DepthStencilState depthStencilState;
+		LoadDepthStencilState(root, depthStencilState);
+
 		if (root.Contains("pass"))
 		{
 			const LJSONValue& pass = root["pass"];
@@ -403,65 +476,45 @@ bool Material::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 					if (vsShaderCode)
 					{
 						ParseStringVector(pass[i]["vsshader"]["defines"], defines);
-						renderPass.vertexShader_ = vsShaderCode->GetShader(VS, defines);
+						renderPass.SetVertexShader(vsShaderCode->GetShader(VS, defines));
+					}
+					else
+					{
+						renderPass.SetVertexShader(vsShader_);
 					}
 
 					psShaderCode = cache->GetResource<ShaderCode>(pass[i]["psshader"]["path"].GetString());
 					if (psShaderCode)
 					{
 						ParseStringVector(pass[i]["psshader"]["defines"], defines);
-						renderPass.pixelShader_ = psShaderCode->GetShader(PS, defines);
+						renderPass.SetPixelShader(psShaderCode->GetShader(PS, defines));
 					}
+					else
+					{
+						renderPass.SetPixelShader(psShader_);
+					}
+
+					RasterizerState passRasterizerState = rasterizerState;
+					LoadRasterizerState(pass[i], passRasterizerState);
+
+					DepthStencilState passDepthStencilState = depthStencilState;
+					LoadDepthStencilState(pass[i], passDepthStencilState);
+
+					renderPass.SetCullMode(passRasterizerState.cullMode_);
+					renderPass.SetFillMode(passRasterizerState.fillMode_);
+					// renderPass.SetBlendMode(passRasterizerState.blendMode_);
+					renderPass.SetDepthWrite(depthStencilState.depthWrite_);
+					// renderPass.SetDepthTestMode(depthStencilState.depthTestMode_);
+					// renderPass.SetStencilTest(depthStencilState.stencilTest_);
+					// renderPass.SetStencilTestMode(depthStencilState.stencilTestMode_);
+					// renderPass.SetStencilRef(depthStencilState.stencilRef_);
+					// renderPass.SetStencilReadMask(depthStencilState.stencilReadMask_);
+					// renderPass.SetStencilWriteMask(depthStencilState.stencilWriteMask_);
 
 					const String& name = pass[i]["name"].GetString();
 					renderPass_.Insert(MakePair(static_cast<UInt32>(ToRenderPassType(name)), renderPass));
 				}
 			}
-		}
-
-		if (root.Contains("fillmode"))
-		{
-			rasterizerState_.fillMode_ = *FILL_MODE[root["fillmode"].GetString()];
-		}
-
-		if (root.Contains("cullmode"))
-		{
-			rasterizerState_.cullMode_ = *CULL_MODE[root["cullmode"].GetString()];
-		}
-
-		if (root.Contains("depthwrite"))
-		{
-			depthStencilState_.depthWrite_ = root["depthwrite"].GetBool();
-		}
-
-		if (root.Contains("depthtestmode"))
-		{
-			depthStencilState_.depthTestMode_ = *COMPARE_MODE[root["depthtestmode"].GetString()];
-		}
-
-		if (root.Contains("stenciltest"))
-		{
-			depthStencilState_.stencilTest_ = root["stenciltest"].GetBool();
-		}
-
-		if (root.Contains("stenciltestmode"))
-		{
-			depthStencilState_.stencilTestMode_ = *COMPARE_MODE[root["stenciltestmode"].GetString()];
-		}
-
-		if (root.Contains("stencilref"))
-		{
-			depthStencilState_.stencilRef_ = root["stencilref"].GetUInt();
-		}
-
-		if (root.Contains("stencilreadmask"))
-		{
-			depthStencilState_.stencilReadMask_ = root["stencilreadmask"].GetUInt();
-		}
-
-		if (root.Contains("stencilwritemask"))
-		{
-			depthStencilState_.stencilWriteMask_ = root["stencilwritemask"].GetUInt();
 		}
 	}
 	else

@@ -19,7 +19,12 @@ VertexElement::VertexElement(VertexElementType vertexElementType, VertexElementS
 
 UInt32 RasterizerState::GetHash() const
 {
-	return ((((((scissorTest_ ? 1 : 0) << 1) | (UInt32)fillMode_) << 2) | (UInt32)cullMode_) << 2) | (UInt32)blendMode_;
+	UInt32 hashValue = scissorTest_ ? 1 : 0;
+	hashValue = (hashValue << 1) | (colorWrite_ ? 1 : 0);
+	hashValue = (hashValue << 1) | (UInt32)fillMode_;
+	hashValue = (hashValue << 2) | (UInt32)cullMode_;
+	hashValue = (hashValue << 2) | (UInt32)blendMode_;
+	return hashValue;
 }
 
 UInt32 DepthStencilState::GetHash() const

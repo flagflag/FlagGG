@@ -41,22 +41,23 @@ public:
 	// 设置材质
 	void SetMaterial(Material* material);
 
+	// 设置Part材质
+	void SetMaterial(UInt32 partIndex, Material* material);
+
 	// 获取模型数据
-	Model* GetModel();
+	Model* GetModel() const;
 
 	// 获取材质
-	Material* GetMaterial();
+	Material* GetMaterial() const;
+
+	// 获取Part材质
+	Material* GetMaterial(UInt32 partIndex) const;
 
 protected:
 	// 模型数据发生变化时调用
 	virtual void OnModel();
 
-	// 材质发生变化时调用
-	virtual void OnMaterial();
-
 	SharedPtr<Model> model_;
-
-	SharedPtr<Material> material_;
 
 	BoundingBox boundingBox_;
 };

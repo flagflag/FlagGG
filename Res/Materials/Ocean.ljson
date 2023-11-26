@@ -21,6 +21,12 @@
 			path = "Textures/waterLight.png"
 		}
 	},
+	pass =
+	[
+		{
+			name = "forward_lit"
+		}
+	],
 	shader_parameters = 
 	[
 		{

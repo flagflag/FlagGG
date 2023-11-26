@@ -72,8 +72,9 @@ void ShadowRenderPass::CollectBatch(RenderPassContext* context)
 		{
 			auto& renderBatch = renderBatches.EmplaceBack(renderContext);
 			renderBatch.renderPassType_ = RENDER_PASS_TYPE_SHADOW;
-			renderBatch.vertexShader_ = it->second_.vertexShader_;
-			renderBatch.pixelShader_ = it->second_.pixelShader_;
+			renderBatch.renderPassInfo_ = &(it->second_);
+			renderBatch.vertexShader_ = it->second_.GetVertexShader();
+			renderBatch.pixelShader_ = it->second_.GetPixelShader();
 		}
 	}
 }
@@ -85,14 +86,14 @@ void ShadowRenderPass::SortBatch()
 
 void ShadowRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer)
 {
-	RenderEngine* renderEngine = RenderEngine::InstancePtr();
+	RenderEngine* renderEngine = GetSubsystem<RenderEngine>();
 
 	for (auto& it : shadowRenderContextMap_)
 	{
 		auto& renderBatches = it.second_.renderBatchQueue_.renderBatches_;
 		for (auto& renderBatch : renderBatches)
 		{
-			renderEngine->SetRasterizerState(/*rasterizerState_*/renderBatch.material_->GetRasterizerState());
+			renderEngine->SetRasterizerState(renderBatch.renderPassInfo_->GetRasterizerState());
 			renderEngine->SetDepthStencilState(depthStencilState_);
 			renderEngine->SetShaderParameter(shadowCamera, renderBatch);
 			renderEngine->SetShaders(renderBatch.vertexShader_, renderBatch.pixelShader_);
@@ -140,8 +141,15 @@ void LitRenderPass::CollectBatch(RenderPassContext* context)
 
 	for (const auto& renderContext : context->drawable_->GetRenderContext())
 	{
-		auto& renderBatch = renderBatches.EmplaceBack(renderContext);
-		renderBatch.renderPassType_ = RENDER_PASS_TYPE_FORWARD_LIT;
+		auto it = renderContext.material_->GetRenderPass().Find(RENDER_PASS_TYPE_FORWARD_LIT);
+		if (it != renderContext.material_->GetRenderPass().End())
+		{
+			auto& renderBatch = renderBatches.EmplaceBack(renderContext);
+			renderBatch.renderPassType_ = RENDER_PASS_TYPE_FORWARD_LIT;
+			renderBatch.renderPassInfo_ = &(it->second_);
+			renderBatch.vertexShader_ = it->second_.GetVertexShader();
+			renderBatch.pixelShader_ = it->second_.GetPixelShader();
+		}
 	}
 }
 
@@ -152,7 +160,7 @@ void LitRenderPass::SortBatch()
 
 void LitRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer)
 {
-	RenderEngine* renderEngine = RenderEngine::InstancePtr();
+	RenderEngine* renderEngine = GetSubsystem<RenderEngine>();
 
 	for (auto& it : litRenderContextMap_)
 	{
@@ -241,8 +249,9 @@ void DeferredBaseRenderPass::CollectBatch(RenderPassContext* context)
 		{
 			auto& renderBatch = renderBatches.EmplaceBack(renderContext);
 			renderBatch.renderPassType_ = RENDER_PASS_TYPE_SHADOW;
-			renderBatch.vertexShader_ = it->second_.vertexShader_;
-			renderBatch.pixelShader_ = it->second_.pixelShader_;
+			renderBatch.renderPassInfo_ = &(it->second_);
+			renderBatch.vertexShader_ = it->second_.GetVertexShader();
+			renderBatch.pixelShader_ = it->second_.GetPixelShader();
 		}
 	}
 }
@@ -254,7 +263,7 @@ void DeferredBaseRenderPass::SortBatch()
 
 void DeferredBaseRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer)
 {
-	RenderEngine* renderEngine = RenderEngine::InstancePtr();
+	RenderEngine* renderEngine = GetSubsystem<RenderEngine>();
 
 	auto& renderBatches = renderBatchQueue_.renderBatches_;
 	for (auto& renderBatch : renderBatches)

@@ -232,7 +232,7 @@ bool TextureCube::SetData(CubeMapFace face, Image* image, bool useAlpha/* = fals
 bool TextureCube::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 {
 	LJSONFile imageConfig;
-	if (!imageConfig.LoadFile(stream))
+	if (!imageConfig.LoadStream(stream))
 	{
 		FLAGGG_LOG_ERROR("Failed to load cube texture config.");
 		return false;

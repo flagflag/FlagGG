@@ -1,102 +1,366 @@
 #pragma once
 
-#include "Export.h"
-#include "Define.h"
 #include "Math/Vector3.h"
-#include "Container/Str.h"
 
 namespace FlagGG
 {
 
+// Extended axis enum for more specialized usage
+enum class EAxisType
+{
+	EAXIS_X,
+	EAXIS_Y,
+	EAXIS_Z,
+};
+
+/// 3x3 matrix for rotation and scaling.
 class FlagGG_API Matrix3
 {
 public:
-	Matrix3() NOEXCEPT;
+    /// Construct an identity matrix.
+    Matrix3() noexcept :
+        m00_(1.0f),
+        m01_(0.0f),
+        m02_(0.0f),
+        m10_(0.0f),
+        m11_(1.0f),
+        m12_(0.0f),
+        m20_(0.0f),
+        m21_(0.0f),
+        m22_(1.0f)
+    {
+    }
 
-	Matrix3(const Matrix3& matrix) NOEXCEPT = default;
+    /// Copy-construct from another matrix.
+    Matrix3(const Matrix3& matrix) noexcept = default;
 
-	Matrix3(
-		Real v00, Real v01, Real v02,
-		Real v10, Real v11, Real v12,
-		Real v20, Real v21, Real v22);
+    /// Construct from values.
+    Matrix3(float v00, float v01, float v02,
+            float v10, float v11, float v12,
+            float v20, float v21, float v22) noexcept :
+        m00_(v00),
+        m01_(v01),
+        m02_(v02),
+        m10_(v10),
+        m11_(v11),
+        m12_(v12),
+        m20_(v20),
+        m21_(v21),
+        m22_(v22)
+    {
+    }
 
-	explicit Matrix3(const Real* data) NOEXCEPT;
+    /// Construct from a float array.
+    explicit Matrix3(const float* data) noexcept :
+        m00_(data[0]),
+        m01_(data[1]),
+        m02_(data[2]),
+        m10_(data[3]),
+        m11_(data[4]),
+        m12_(data[5]),
+        m20_(data[6]),
+        m21_(data[7]),
+        m22_(data[8])
+    {
+    }
 
-	Matrix3& operator =(const Matrix3& rhs) NOEXCEPT = default;
+    explicit Matrix3(const Vector3& row0, const Vector3& row1, const Vector3& row2) noexcept :
+        m00_(row0.x_),
+        m01_(row0.y_),
+        m02_(row0.z_),
+        m10_(row1.x_),
+        m11_(row1.y_),
+        m12_(row1.z_),
+        m20_(row2.x_),
+        m21_(row2.y_),
+        m22_(row2.z_)
+    {
+    }
 
-	bool operator ==(const Matrix3& rhs) const;
+    /// Assign from another matrix.
+    Matrix3& operator =(const Matrix3& rhs) noexcept = default;
 
-	bool operator !=(const Matrix3& rhs) const;
+    /// Test for equality with another matrix without epsilon.
+    bool operator ==(const Matrix3& rhs) const
+    {
+        const float* leftData = Data();
+        const float* rightData = rhs.Data();
 
-	Vector3 operator *(const Vector3& rhs) const;
+        for (unsigned i = 0; i < 9; ++i)
+        {
+            if (leftData[i] != rightData[i])
+                return false;
+        }
 
-	Matrix3 operator +(const Matrix3& rhs) const;
+        return true;
+    }
 
-	Matrix3 operator -(const Matrix3& rhs) const;
+    /// Test for inequality with another matrix without epsilon.
+    bool operator !=(const Matrix3& rhs) const { return !(*this == rhs); }
 
-	Matrix3 operator *(Real rhs) const;
+    /// Multiply a Vector3.
+    Vector3 operator *(const Vector3& rhs) const
+    {
+        return Vector3(
+            m00_ * rhs.x_ + m01_ * rhs.y_ + m02_ * rhs.z_,
+            m10_ * rhs.x_ + m11_ * rhs.y_ + m12_ * rhs.z_,
+            m20_ * rhs.x_ + m21_ * rhs.y_ + m22_ * rhs.z_
+        );
+    }
 
-	Matrix3 operator *(const Matrix3& rhs) const;
+    /// Add a matrix.
+    Matrix3 operator +(const Matrix3& rhs) const
+    {
+        return Matrix3(
+            m00_ + rhs.m00_,
+            m01_ + rhs.m01_,
+            m02_ + rhs.m02_,
+            m10_ + rhs.m10_,
+            m11_ + rhs.m11_,
+            m12_ + rhs.m12_,
+            m20_ + rhs.m20_,
+            m21_ + rhs.m21_,
+            m22_ + rhs.m22_
+        );
+    }
 
-	void SetScale(const Vector3& scale);
+    /// Subtract a matrix.
+    Matrix3 operator -(const Matrix3& rhs) const
+    {
+        return Matrix3(
+            m00_ - rhs.m00_,
+            m01_ - rhs.m01_,
+            m02_ - rhs.m02_,
+            m10_ - rhs.m10_,
+            m11_ - rhs.m11_,
+            m12_ - rhs.m12_,
+            m20_ - rhs.m20_,
+            m21_ - rhs.m21_,
+            m22_ - rhs.m22_
+        );
+    }
 
-	void SetScale(Real scale);
+    /// Multiply with a scalar.
+    Matrix3 operator *(float rhs) const
+    {
+        return Matrix3(
+            m00_ * rhs,
+            m01_ * rhs,
+            m02_ * rhs,
+            m10_ * rhs,
+            m11_ * rhs,
+            m12_ * rhs,
+            m20_ * rhs,
+            m21_ * rhs,
+            m22_ * rhs
+        );
+    }
 
-	Vector3 Scale() const;
+    /// Multiply a matrix.
+    Matrix3 operator *(const Matrix3& rhs) const
+    {
+        return Matrix3(
+            m00_ * rhs.m00_ + m01_ * rhs.m10_ + m02_ * rhs.m20_,
+            m00_ * rhs.m01_ + m01_ * rhs.m11_ + m02_ * rhs.m21_,
+            m00_ * rhs.m02_ + m01_ * rhs.m12_ + m02_ * rhs.m22_,
+            m10_ * rhs.m00_ + m11_ * rhs.m10_ + m12_ * rhs.m20_,
+            m10_ * rhs.m01_ + m11_ * rhs.m11_ + m12_ * rhs.m21_,
+            m10_ * rhs.m02_ + m11_ * rhs.m12_ + m12_ * rhs.m22_,
+            m20_ * rhs.m00_ + m21_ * rhs.m10_ + m22_ * rhs.m20_,
+            m20_ * rhs.m01_ + m21_ * rhs.m11_ + m22_ * rhs.m21_,
+            m20_ * rhs.m02_ + m21_ * rhs.m12_ + m22_ * rhs.m22_
+        );
+    }
 
-	Vector3 SignedScale(const Matrix3& rotation) const;
+    /// Set scaling elements.
+    void SetScale(const Vector3& scale)
+    {
+        m00_ = scale.x_;
+        m11_ = scale.y_;
+        m22_ = scale.z_;
+    }
 
-	Matrix3 Transpose() const;
+    /// Set uniform scaling elements.
+    void SetScale(float scale)
+    {
+        m00_ = scale;
+        m11_ = scale;
+        m22_ = scale;
+    }
 
-	Matrix3 Scaled(const Vector3& scale) const;
+    /// Return the scaling part.
+    Vector3 Scale() const
+    {
+        return Vector3(
+            sqrtf(m00_ * m00_ + m10_ * m10_ + m20_ * m20_),
+            sqrtf(m01_ * m01_ + m11_ * m11_ + m21_ * m21_),
+            sqrtf(m02_ * m02_ + m12_ * m12_ + m22_ * m22_)
+        );
+    }
 
-	bool Equals(const Matrix3& rhs) const;
+    /// Return the scaling part with the sign. Reference rotation matrix is required to avoid ambiguity.
+    Vector3 SignedScale(const Matrix3& rotation) const
+    {
+        return Vector3(
+            rotation.m00_ * m00_ + rotation.m10_ * m10_ + rotation.m20_ * m20_,
+            rotation.m01_ * m01_ + rotation.m11_ * m11_ + rotation.m21_ * m21_,
+            rotation.m02_ * m02_ + rotation.m12_ * m12_ + rotation.m22_ * m22_
+        );
+    }
 
-	Matrix3 Inverse() const;
+    /// Return transposed.
+    Matrix3 Transpose() const
+    {
+        return Matrix3(
+            m00_,
+            m10_,
+            m20_,
+            m01_,
+            m11_,
+            m21_,
+            m02_,
+            m12_,
+            m22_
+        );
+    }
 
-	const Real* Data() const { return &m00_; }
+    /// Return scaled by a vector.
+    Matrix3 Scaled(const Vector3& scale) const
+    {
+        return Matrix3(
+            m00_ * scale.x_,
+            m01_ * scale.y_,
+            m02_ * scale.z_,
+            m10_ * scale.x_,
+            m11_ * scale.y_,
+            m12_ * scale.z_,
+            m20_ * scale.x_,
+            m21_ * scale.y_,
+            m22_ * scale.z_
+        );
+    }
 
-	Real Element(unsigned i, unsigned j) const { return Data()[i * 3 + j]; }
+    /// Determinant of matrix
+    float Det() const
+    {
+        return m00_ * m11_ * m22_ + m01_ * m12_ * m20_ + m02_ * m10_ * m21_
+            - m02_ * m11_ * m20_ - m00_ * m21_ * m12_ - m01_ * m10_ * m22_;
+    }
 
-	Vector3 Row(unsigned i) const { return Vector3(Element(i, 0), Element(i, 1), Element(i, 2)); }
+    /**
+    * Sum of the rows - return as a vector
+    */
+    Vector3 RowSum() const
+    {
+        Vector3 ret(m00_ + m10_ + m20_,
+            m01_ + m11_ + m21_,
+            m02_ + m12_ + m22_);
 
-	Vector3 Column(unsigned j) const { return Vector3(Element(0, j), Element(1, j), Element(2, j)); }
+        return ret;
+    }
 
-	String ToString() const;
+    /// Test for equality with another matrix with epsilon.
+    bool Equals(const Matrix3& rhs) const
+    {
+        const float* leftData = Data();
+        const float* rightData = rhs.Data();
 
-	Real m00_;
-	Real m01_;
-	Real m02_;
-	Real m10_;
-	Real m11_;
-	Real m12_;
-	Real m20_;
-	Real m21_;
-	Real m22_;
+        for (unsigned i = 0; i < 9; ++i)
+        {
+            if (!FlagGG::Equals(leftData[i], rightData[i]))
+                return false;
+        }
 
-	static void BulkTranspose(Real* dest, const Real* src, unsigned count)
-	{
-		for (unsigned i = 0; i < count; ++i)
+        return true;
+    }
+
+    /// Return inverse.
+    Matrix3 Inverse() const;
+
+    /// Return float data.
+    const float* Data() const { return &m00_; }
+
+    /// Return matrix element.
+    float Element(unsigned i, unsigned j) const { return Data()[i * 3 + j]; }
+
+    /// Return matrix row.
+    Vector3 Row(unsigned i) const { return Vector3(Element(i, 0), Element(i, 1), Element(i, 2)); }
+
+    /// Return matrix column.
+    Vector3 Column(unsigned j) const { return Vector3(Element(0, j), Element(1, j), Element(2, j)); }
+
+    /// Return as string.
+    String ToString() const;
+
+    float m00_;
+    float m01_;
+    float m02_;
+    float m10_;
+    float m11_;
+    float m12_;
+    float m20_;
+    float m21_;
+    float m22_;
+
+    /// Bulk transpose matrices.
+    static void BulkTranspose(float* dest, const float* src, unsigned count)
+    {
+        for (unsigned i = 0; i < count; ++i)
+        {
+            dest[0] = src[0];
+            dest[1] = src[3];
+            dest[2] = src[6];
+            dest[3] = src[1];
+            dest[4] = src[4];
+            dest[5] = src[7];
+            dest[6] = src[2];
+            dest[7] = src[5];
+            dest[8] = src[8];
+
+            dest += 9;
+            src += 9;
+        }
+    }
+
+    Vector3 GetUEScaledAxis(EAxisType inAxis) const
+    {
+        switch (inAxis)
 		{
-			dest[0] = src[0];
-			dest[1] = src[3];
-			dest[2] = src[6];
-			dest[3] = src[1];
-			dest[4] = src[4];
-			dest[5] = src[7];
-			dest[6] = src[2];
-			dest[7] = src[5];
-			dest[8] = src[8];
+        case EAxisType::EAXIS_X:
+            return Vector3(m00_, m01_, m02_);
+        case EAxisType::EAXIS_Y:
+            return Vector3(m10_, m11_, m12_);
+        case EAxisType::EAXIS_Z:
+            return Vector3(m20_, m21_, m22_);
+        default:
+            return Vector3::ZERO;
+        }
+    }
 
-			dest += 9;
-			src += 9;
-		}
-	}
+    Vector3 GetUEUnitAxis(EAxisType inAxis) const
+    {
+        Vector3 axis =  GetUEScaledAxis(inAxis);
+        axis.Normalize();
+        return axis;
+    }
 
-	static const Matrix3 ZERO;
-	static const Matrix3 IDENTITY;
+    /// Zero matrix.
+    static const Matrix3 ZERO;
+    /// Identity matrix.
+    static const Matrix3 IDENTITY;
 };
 
-inline Matrix3 operator *(Real lhs, const Matrix3& rhs) { return rhs * lhs; }
+/// Multiply a 3x3 matrix with a scalar.
+inline Matrix3 operator *(float lhs, const Matrix3& rhs) { return rhs * lhs; }
+
+//左乘一个向量（的转置）
+inline Vector3 operator*(const Vector3& vecTranspose, const Matrix3& M)
+{
+    Vector3 ret(M.m00_ * vecTranspose.x_ + M.m10_ * vecTranspose.y_ + M.m20_ * vecTranspose.z_,
+        M.m01_ * vecTranspose.x_ + M.m11_ * vecTranspose.y_ + M.m21_ * vecTranspose.z_,
+        M.m02_ * vecTranspose.x_ + M.m12_ * vecTranspose.y_ + M.m22_ * vecTranspose.z_);
+
+    return ret;
+}
 
 }

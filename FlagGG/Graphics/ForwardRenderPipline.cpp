@@ -76,7 +76,7 @@ void ForwardRenderPipline::PrepareRender()
 
 void ForwardRenderPipline::Render()
 {
-	RenderEngine* renderEngine = RenderEngine::InstancePtr();
+	RenderEngine* renderEngine = GetSubsystem<RenderEngine>();
 	GfxDevice* gfxDevice = GfxDevice::GetDevice();
 
 	if (!renderPiplineContext_.camera_->GetUseReflection() && renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP))

@@ -23,10 +23,10 @@ bool Resource::LoadFile(const String& filepath)
 		return false;
 	}
 
-	return LoadFile(&fileStream);
+	return LoadStream(&fileStream);
 }
 
-bool Resource::LoadFile(IOFrame::Buffer::IOBuffer* stream)
+bool Resource::LoadStream(IOFrame::Buffer::IOBuffer* stream)
 {
 	bool result = BeginLoad(stream);
 	if (!result)
@@ -79,22 +79,22 @@ bool Resource::SaveFile(IOFrame::Buffer::IOBuffer* stream)
 
 bool Resource::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 {
-	return false;
+	return true;
 }
 
 bool Resource::EndLoad()
 {
-	return false;
+	return true;
 }
 
 bool Resource::BeginSave(IOFrame::Buffer::IOBuffer* stream)
 {
-	return false;
+	return true;
 }
 
 bool Resource::EndSave()
 {
-	return false;
+	return true;
 }
 
 void Resource::SetMemoryUse(UInt32 memoryUse)

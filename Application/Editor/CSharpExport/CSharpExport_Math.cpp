@@ -46,19 +46,19 @@ static Vector3 SlerpImpl(const Vector3& lhs, const Vector3& rhs, float t)
 	float lhsMag = Magnitude(lhs);
 	float rhsMag = Magnitude(rhs);
 
-	if (lhsMag < EPS || rhsMag < EPS)
+	if (lhsMag < F_EPSILON || rhsMag < F_EPSILON)
 		return lhs.Lerp(rhs, t);
 
 	float lerpedMagnitude = Lerp(lhsMag, rhsMag, t);
 
 	float dot = lhs.DotProduct(rhs) / (lhsMag * rhsMag);
 	// direction is almost the same
-	if (dot > 1.0F - EPS)
+	if (dot > 1.0F - F_EPSILON)
 	{
 		return lhs.Lerp(rhs, t);
 	}
 	// directions are almost opposite
-	else if (dot < -1.0F + EPS)
+	else if (dot < -1.0F + F_EPSILON)
 	{
 		Vector3 lhsNorm = lhs / lhsMag;
 		Vector3 axis = OrthoNormalVectorFast(lhsNorm);
@@ -100,7 +100,7 @@ CSharp_API void MathExport_OrthoNormalize2(Vector3* inU, Vector3* inV)
 {
 	// compute u0
 	float mag = Magnitude(*inU);
-	if (mag > EPS)
+	if (mag > F_EPSILON)
 		*inU /= mag;
 	else
 		*inU = Vector3(1.0F, 0.0F, 0.0F);
@@ -109,7 +109,7 @@ CSharp_API void MathExport_OrthoNormalize2(Vector3* inU, Vector3* inV)
 	float dot0 = (*inU).DotProduct(*inV);
 	*inV -= dot0 * *inU;
 	mag = Magnitude(*inV);
-	if (mag < EPS)
+	if (mag < F_EPSILON)
 		*inV = OrthoNormalVectorFast(*inU);
 	else
 		*inV /= mag;
@@ -118,7 +118,7 @@ CSharp_API void MathExport_OrthoNormalize2(Vector3* inU, Vector3* inV)
 CSharp_API void MathExport_OrthoNormalize3(Vector3* inU, Vector3* inV, Vector3* inW)
 {
 	float mag = Magnitude(*inU);
-	if (mag > EPS)
+	if (mag > F_EPSILON)
 		*inU /= mag;
 	else
 		*inU = Vector3(1.0F, 0.0F, 0.0F);
@@ -127,7 +127,7 @@ CSharp_API void MathExport_OrthoNormalize3(Vector3* inU, Vector3* inV, Vector3* 
 	float dot0 = (*inU).DotProduct(*inV);
 	*inV -= dot0 * *inU;
 	mag = Magnitude(*inV);
-	if (mag > EPS)
+	if (mag > F_EPSILON)
 		*inV /= mag;
 	else
 		*inV = OrthoNormalVectorFast(*inU);
@@ -137,7 +137,7 @@ CSharp_API void MathExport_OrthoNormalize3(Vector3* inU, Vector3* inV, Vector3* 
 	dot0 = (*inU).DotProduct(*inW);
 	*inW -= dot0 * *inU + dot1 * *inV;
 	mag = Magnitude(*inW);
-	if (mag > EPS)
+	if (mag > F_EPSILON)
 		*inW /= mag;
 	else
 		*inW = (*inU).CrossProduct(*inV);
@@ -153,7 +153,7 @@ static Vector3 MoveTowards(const Vector3& lhs, const Vector3& rhs, float clamped
 	if (sqrDelta > sqrClampedDistance)
 	{
 		float deltaMag = Sqrt(sqrDelta);
-		if (deltaMag > EPS)
+		if (deltaMag > F_EPSILON)
 			return lhs + delta / deltaMag * clampedDistance;
 		else
 			return lhs;
@@ -177,19 +177,19 @@ CSharp_API Vector3 MathExport_RotateTowards(const Vector3& lhs, const Vector3& r
 	float rhsMag = Magnitude(rhs);
 
 	// both vectors are non-zero
-	if (lhsMag > EPS && rhsMag > EPS)
+	if (lhsMag > F_EPSILON && rhsMag > F_EPSILON)
 	{
 		Vector3 lhsNorm = lhs / lhsMag;
 		Vector3 rhsNorm = rhs / rhsMag;
 
 		float dot = lhsNorm.DotProduct(rhsNorm);
 		// direction is almost the same
-		if (dot > 1.0F - EPS)
+		if (dot > 1.0F - F_EPSILON)
 		{
 			return MoveTowards(lhs, rhs, magnitudeMove);
 		}
 		// directions are almost opposite
-		else if (dot < -1.0F + EPS)
+		else if (dot < -1.0F + F_EPSILON)
 		{
 			Vector3 axis = OrthoNormalVectorFast(lhsNorm);
 			// Matrix3 m;

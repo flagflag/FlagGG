@@ -12,7 +12,7 @@ namespace FlagGG
 {
 
 const Real PI = asin(1.0f) * 2;
-const Real EPS = 1e-6;
+const Real F_EPSILON = 1e-6;
 const Int32 F_MIN_INT = 0x80000000;
 const Int32 F_MAX_INT = 0x7fffffff;
 const UInt32 F_MIN_UNSIGNED = 0x00000000;
@@ -69,9 +69,44 @@ Real Sqrt(Real number)
 	return sqrt(number);
 }
 
+Real Ln(Real number)
+{
+	return log(number);
+}
+
 Real Fract(Real number)
 {
 	return number - floor(number);
+}
+
+Real Floor(Real number)
+{
+	return floor(number);
+}
+
+Int32 FloorToInt(Real number)
+{
+	return static_cast<Int32>(Floor(number));
+}
+
+Real Round(Real number)
+{
+	return round(number);
+}
+
+Int32 RoundToInt(Real number)
+{
+	return static_cast<Int32>(Round(number));
+}
+
+Real Ceil(Real number)
+{
+	return ceil(number);
+}
+
+Int32 CeilToInt(Real number)
+{
+	return static_cast<Int32>(Ceil(number));
 }
 
 Real Lerp(float from, float to, float t)
@@ -81,13 +116,18 @@ Real Lerp(float from, float to, float t)
 
 int Compare(Real _1, Real _2)
 {
-	if (fabs(_1 - _2) <  EPS) return 0;
+	if (fabs(_1 - _2) < F_EPSILON) return 0;
 	return _1 < _2 ? -1 : 1;
 }
 
 Real Equals(Real _1, Real _2)
 {
 	return Compare(_1, _2) == 0;
+}
+
+Real Equals(Real _1, Real _2, Real tolerance)
+{
+	return fabs(_1 - _2) < tolerance;
 }
 
 Real Clamp(Real target, Real min, Real max)

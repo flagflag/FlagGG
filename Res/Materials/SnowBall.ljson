@@ -12,5 +12,11 @@
 	{
 		type = "texture2d", //texturecube => 3d
 		path = "Textures/Snow.dds"
-	}
+	},
+	pass =
+	[
+		{
+			name = "forward_lit"
+		}
+	]
 }

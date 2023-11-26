@@ -260,6 +260,7 @@ enum BlendMode
 	BLEND_ADD,
 	BLEND_ALPHA,
 	BLEND_ALPHA_ADD,
+	BLEND_UNKNOWN,
 };
 
 enum BufferBind : UInt8
@@ -316,6 +317,7 @@ struct FlagGG_API VertexElement
 struct FlagGG_API RasterizerState
 {
 	bool scissorTest_{ false };
+	bool colorWrite_{ true };
 	FillMode fillMode_{ FILL_SOLID };
 	CullMode cullMode_{ CULL_NONE };
 	BlendMode blendMode_{ BLEND_REPLACE };

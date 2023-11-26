@@ -185,7 +185,7 @@ bool Texture2D::SetData(Image* image, bool useAlpha/* = false*/)
 bool Texture2D::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 {
 	Image image;
-	if (!image.LoadFile(stream))
+	if (!image.LoadStream(stream))
 	{
 		FLAGGG_LOG_ERROR("Failed to load image.");
 		return false;

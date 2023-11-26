@@ -42,7 +42,7 @@ public:
 
 RenderView::RenderView()
 	: gfxDevice_(GfxDevice::GetDevice())
-	, renderEngine_(RenderEngine::InstancePtr())
+	, renderEngine_(GetSubsystem<RenderEngine>())
 {
 	shadowCameraNode_ = new Node();
 	shadowCamera_ = shadowCameraNode_->CreateComponent<Camera>();
@@ -226,11 +226,6 @@ void RenderView::CollectVisibilityObjects()
 				renderPiplineContext_->shadowCasters_.Push(shadowCaster);
 		}
 	}
-}
-
-void RenderView::RenderShadowMap()
-{
-
 }
 
 void RenderView::Render()

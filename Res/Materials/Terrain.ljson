@@ -35,6 +35,9 @@
     pass =
 	[
 		{
+			name = "forward_lit"
+		},
+		{
 			name = "deferred_base",
 			vsshader = 
 			{

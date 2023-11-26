@@ -5,6 +5,8 @@
 #include "Container/Str.h"
 #include "Core/BaseTypes.h"
 
+#include <math.h>
+
 namespace FlagGG
 {
 
@@ -19,7 +21,7 @@ enum Intersection
 };
 
 extern FlagGG_API const Real PI;
-extern FlagGG_API const Real EPS;
+extern FlagGG_API const Real F_EPSILON;
 extern FlagGG_API const Int32 F_MIN_INT;
 extern FlagGG_API const Int32 F_MAX_INT;
 extern FlagGG_API const UInt32 F_MIN_UNSIGNED;
@@ -43,68 +45,90 @@ inline T Min(T value1, T value2)
 	return value1 < value2 ? value1 : value2;
 }
 
-bool FlagGG_API IsNaN(Real number);
+FlagGG_API bool IsNaN(Real number);
 
-Real FlagGG_API Sin(Real angle);
+FlagGG_API Real Sin(Real angle);
 
-Real FlagGG_API Cos(Real angle);
+FlagGG_API Real Cos(Real angle);
 
-Real FlagGG_API Tan(Real angle);
+FlagGG_API Real Tan(Real angle);
 
-Real FlagGG_API Asin(Real angle);
+FlagGG_API Real Asin(Real angle);
 
-Real FlagGG_API Acos(Real angle);
+FlagGG_API Real Acos(Real angle);
 
-Real FlagGG_API Atan(Real angle);
-
-
-Real FlagGG_API Abs(Real number);
-
-Real FlagGG_API Sqrt(Real number);
-
-Real FlagGG_API Fract(Real number);
+FlagGG_API Real Atan(Real angle);
 
 
-Real FlagGG_API Lerp(float from, float to, float t);
+FlagGG_API Real Abs(Real number);
 
-int FlagGG_API Compare(Real _1, Real _2);
+FlagGG_API Real Sqrt(Real number);
 
-Real FlagGG_API Equals(Real _1, Real _2);
+/// Return X in power Y.
+template <class T> inline T Pow(T x, T y) { return pow(x, y); }
 
-Real FlagGG_API Clamp(Real target, Real min, Real max);
+FlagGG_API Real Ln(Real number);
 
-UInt32 FlagGG_API FloatToRawIntBits(Real value);
+/// Return floating-point remainder of X/Y.
+template <class T> inline T Mod(T x, T y) { return fmod(x, y); }
 
-UInt32 FlagGG_API HashString(const char* str);
+FlagGG_API Real Fract(Real number);
 
-UInt32 FlagGG_API SDBM_Hash(UInt32 hashValue, UInt8 charValue);
+FlagGG_API Real Floor(Real number);
+
+FlagGG_API Int32 FloorToInt(Real number);
+
+FlagGG_API Real Round(Real number);
+
+FlagGG_API Int32 RoundToInt(Real number);
+
+FlagGG_API Real Ceil(Real number);
+
+FlagGG_API Int32 CeilToInt(Real number);
+
+
+FlagGG_API Real Lerp(float from, float to, float t);
+
+FlagGG_API int Compare(Real _1, Real _2);
+
+FlagGG_API Real Equals(Real _1, Real _2);
+
+FlagGG_API Real Equals(Real _1, Real _2, Real tolerance);
+
+FlagGG_API Real Clamp(Real target, Real min, Real max);
+
+FlagGG_API UInt32 FloatToRawIntBits(Real value);
+
+FlagGG_API UInt32 HashString(const char* str);
+
+FlagGG_API UInt32 SDBM_Hash(UInt32 hashValue, UInt8 charValue);
 
 FlagGG_API bool IsPowerOfTwo(UInt32 value);
 
 FlagGG_API UInt32 NextPowerOfTwo(UInt32 value);
 
 // 位移矩阵
-Matrix4 FlagGG_API MatrixTranslation(Real dx, Real dy, Real dz);
+FlagGG_API Matrix4 MatrixTranslation(Real dx, Real dy, Real dz);
 
 // X轴顺时针旋转矩阵
 // https://baike.baidu.com/item/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/3265181?fr=aladdin
-Matrix4 FlagGG_API MatrixRotationX(Real angle);
+FlagGG_API Matrix4 MatrixRotationX(Real angle);
 
 // Y轴顺时针旋转矩阵
 // https://baike.baidu.com/item/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/3265181?fr=aladdin
-Matrix4 FlagGG_API MatrixRotationY(Real angle);
+FlagGG_API Matrix4 MatrixRotationY(Real angle);
 
 // Z轴顺时针旋转矩阵
 // https://baike.baidu.com/item/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/3265181?fr=aladdin
-Matrix4 FlagGG_API MatrixRotationZ(Real angle);
+FlagGG_API Matrix4 MatrixRotationZ(Real angle);
 
 // 任意轴顺时针旋转矩阵
 // https://baike.baidu.com/item/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/3265181?fr=aladdin
-Matrix4 FlagGG_API MatrixRotationAxis(const Vector3& axis, Real angle);
+FlagGG_API Matrix4 MatrixRotationAxis(const Vector3& axis, Real angle);
 
-Vector3 FlagGG_API Vector3TransformNormal(const Vector3& target, const Matrix4& T);
+FlagGG_API Vector3 Vector3TransformNormal(const Vector3& target, const Matrix4& T);
 
-Vector3 FlagGG_API Vector3TransformCoord(const Vector3& target, const Matrix4& T);
+FlagGG_API Vector3 Vector3TransformCoord(const Vector3& target, const Matrix4& T);
 
 /**
   * @brief
@@ -112,7 +136,7 @@ Vector3 FlagGG_API Vector3TransformCoord(const Vector3& target, const Matrix4& T
   * @param at  - 观察点的位置
   * @param up  - 摄像机的向上分量
   */
-Matrix4 FlagGG_API MatrixLookAtLH(const Matrix4& eye, const Matrix4& at, const Matrix4& up);
+FlagGG_API Matrix4 MatrixLookAtLH(const Matrix4& eye, const Matrix4& at, const Matrix4& up);
 
 /**
   * @brief 投影矩阵变换
@@ -122,7 +146,7 @@ Matrix4 FlagGG_API MatrixLookAtLH(const Matrix4& eye, const Matrix4& at, const M
   * @param zf     - 表示视截体中远裁剪面距我们摄像机的位置，即人眼到“室外黑色墙壁”之间的距离
   * 注：具体可以参考这里：https://blog.csdn.net/poem_qianmo/article/details/8408723
   */
-Matrix4 FlagGG_API MatrixPerspectiveFovLH(Real fovy, Real aspect, Real zn, Real zf);
+FlagGG_API Matrix4 MatrixPerspectiveFovLH(Real fovy, Real aspect, Real zn, Real zf);
 
 }
 

@@ -24,7 +24,7 @@ public:
 
 	bool LoadFile(const String& filepath);
 
-	bool LoadFile(IOFrame::Buffer::IOBuffer* stream);
+	bool LoadStream(IOFrame::Buffer::IOBuffer* stream);
 
 	bool SaveFile(const String& filepath);
 

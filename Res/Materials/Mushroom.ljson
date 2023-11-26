@@ -12,5 +12,11 @@
 	{
 		type = "texture2d", //texturecube => 3d
 		path = "Textures/Mushroom.dds"
-	}
+	},
+	pass =
+	[
+		{
+			name = "forward_lit"
+		}
+	]
 }

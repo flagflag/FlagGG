@@ -9,6 +9,7 @@ class Shader;
 class Probe;
 class Light;
 class Texture2D;
+class RenderPassInfo;
 
 struct FlagGG_API RenderBatch
 {
@@ -27,6 +28,8 @@ struct FlagGG_API RenderBatch
 	Material* material_{};
 	// Render pass type
 	RenderPassType renderPassType_{};
+	// Render pass info
+	RenderPassInfo* renderPassInfo_{};
 	// Vertex shader
 	Shader* vertexShader_{};
 	// Pixel shader

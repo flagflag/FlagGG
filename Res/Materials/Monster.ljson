@@ -51,6 +51,9 @@
 				path = "Shader/Shadow.hlsl",
 				defines = [ "MODEL_SHADOW" ]
 			}
+		},
+		{
+			name = "forward_lit"
 		}
 	]
 }

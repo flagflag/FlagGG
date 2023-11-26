@@ -11,5 +11,11 @@
     {
         type = "texturecube",
         path = "Textures/SkyBox.ljson"
-    }
+    },
+	pass =
+	[
+		{
+			name = "forward_lit"
+		}
+	]
 }

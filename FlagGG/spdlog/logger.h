@@ -19,6 +19,8 @@
 #include <string>
 #include <vector>
 
+#include "Container/Str.h"
+
 namespace spdlog {
 
 class logger
@@ -40,6 +42,9 @@ public:
 
     template<typename... Args>
     void log(level::level_enum lvl, const char *msg);
+
+	template<typename... Args>
+    void log(level::level_enum lvl, const FlagGG::String& msg);
 
     template<typename Arg1, typename... Args>
     void trace(const char *fmt, const Arg1 &, const Args &... args);

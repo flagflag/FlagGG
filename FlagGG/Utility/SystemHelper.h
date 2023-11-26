@@ -45,6 +45,8 @@ FlagGG_API bool CreateDir(const String& path);
 
 FlagGG_API bool HasAccess(const String& path);
 
+FlagGG_API bool Copy(const String& source, const String& target);
+
 enum FindFilesMode
 {
 	FindFilesMode_Dir = 1,
@@ -59,9 +61,9 @@ FlagGG_API String GetPath(const String& fullPath);
 
 FlagGG_API String GetFileName(const String& fullPath);
 
-FlagGG_API String GetExtension(const String& fullPath, bool lowercaseExtension);
+FlagGG_API String GetExtension(const String& fullPath, bool lowercaseExtension = false);
 
-FlagGG_API String GetFileNameAndExtension(const String& fileName, bool lowercaseExtension);
+FlagGG_API String GetFileNameAndExtension(const String& fileName, bool lowercaseExtension = false);
 
 FlagGG_API String ReplaceExtension(const String& fullPath, const String& newExtension);
 
