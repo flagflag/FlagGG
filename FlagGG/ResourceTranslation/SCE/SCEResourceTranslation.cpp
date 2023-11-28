@@ -120,7 +120,7 @@ bool SCEResourceTranslation::LoadShader(const String& path, GenericPassDescripti
 bool SCEResourceTranslation::LoadMaterial(const String& path, GenericMaterialDescription& desc)
 {
 	IOFrame::Stream::FileStream fileStream;
-	fileStream.Open(path, IOFrame::Stream::FileMode::FILE_READ);
+	fileStream.Open(path, FileMode::FILE_READ);
 	if (!fileStream.IsOpen())
 	{
 		FLAGGG_LOG_STD_ERROR("Failed to open file[%s].", path.CString());
@@ -157,7 +157,8 @@ bool SCEResourceTranslation::LoadMaterialImpl(const XMLElement& source, GenericM
 	XMLElement techniqueElem = source.GetChild("technique");
 	if (techniqueElem)
 	{
-		auto techXmlFile = cache->GetResource<XMLFile>(techniqueElem.GetAttribute("name"));
+		const String techniquePath = techniqueElem.GetAttribute("name");
+		auto techXmlFile = cache->GetResource<XMLFile>(techniquePath);
 		if (techXmlFile)
 		{
 			if (!LoadMaterialImpl_PassStep1(techXmlFile->GetRoot(), desc))

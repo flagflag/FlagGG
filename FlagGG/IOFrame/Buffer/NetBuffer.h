@@ -13,7 +13,7 @@ public:
 	struct SimpleBuffer
 	{
 		char* buffer;
-		Size bufferSize;
+		USize bufferSize;
 	};
 
 	NetBuffer();

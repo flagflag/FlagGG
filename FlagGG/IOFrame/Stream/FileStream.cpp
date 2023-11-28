@@ -60,7 +60,7 @@ void FileStream::Open(const String& filePath, FileMode fileMode)
 	case FileMode::FILE_WRITE:
 		FileAPI_Open(file_, filePathString, ModeText("wb"));
 		break;
-	case FileMode::FILE_READ_WIRTE:
+	case FileMode::FILE_READWRITE:
 		FileAPI_Open(file_, filePathString, ModeText("wb+"));
 		break;
 	}

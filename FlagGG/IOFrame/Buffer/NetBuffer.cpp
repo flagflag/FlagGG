@@ -87,7 +87,7 @@ bool NetBuffer::WriteByte(UInt8 byte)
 #define __READ__(value) \
 { \
 	value = 0; \
-	Size _size = sizeof(value); \
+	USize _size = sizeof(value); \
 	UInt8 byte; \
 	while (_size--) \
 	{ \
@@ -102,7 +102,7 @@ bool NetBuffer::WriteByte(UInt8 byte)
 
 #define __WRITE__(value) \
 { \
-	Size _size = sizeof(value); \
+	USize _size = sizeof(value); \
 	UInt8 byte; \
 	UInt8 offset = (_size - 1) * 8; \
 	while (_size--) \
@@ -240,12 +240,12 @@ UInt32 NetBuffer::WriteStream(const void* data, UInt32 dataSize)
 	if (!data || dataSize == 0) return 0;
 
 	const char* index = (const char*)data;
-	Size leftSize = dataSize;
+	USize leftSize = dataSize;
 	while (leftSize)
 	{
 		CheckBuffer(mode_write);
 
-		Size writeSize = std::min < Size >(leftSize,
+		USize writeSize = std::min<USize>(leftSize,
 			currentBuffer_.bufferSize - count_);
 
 		memcpy(currentBuffer_.buffer, index, writeSize);

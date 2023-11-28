@@ -9,7 +9,7 @@
 namespace FlagGG
 {
 
-static bool CompileShader(const char* buffer, Size bufferSize, ShaderType type, const Vector<String>& defines, ID3DBlob*& outCompileCode, ID3DBlob*& outStrippedCode)
+static bool CompileShader(const char* buffer, USize bufferSize, ShaderType type, const Vector<String>& defines, ID3DBlob*& outCompileCode, ID3DBlob*& outStrippedCode)
 {
 	char* entryPoint = nullptr;
 	char* profile = nullptr;

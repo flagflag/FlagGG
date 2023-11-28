@@ -1096,7 +1096,7 @@ bool Image::Save(IOFrame::Buffer::IOBuffer* stream) const
 bool Image::SavePNG(const String& fileName) const
 {
 	IOFrame::Stream::FileStream outFile;
-	outFile.Open(fileName, IOFrame::Stream::FileMode::FILE_WRITE);
+	outFile.Open(fileName, FileMode::FILE_WRITE);
 	if (!outFile.IsOpen())
 	{
 		return false;
@@ -1154,7 +1154,7 @@ bool Image::SaveJPG(const String& fileName, int quality) const
 bool Image::SaveDDS(const String& fileName) const
 {
 	IOFrame::Stream::FileStream outFile;
-	outFile.Open(fileName, IOFrame::Stream::FileMode::FILE_WRITE);
+	outFile.Open(fileName, FileMode::FILE_WRITE);
 	if (!outFile.IsOpen())
 	{
 		FLAGGG_LOG_ERROR("Access denied to {}.", fileName.CString());

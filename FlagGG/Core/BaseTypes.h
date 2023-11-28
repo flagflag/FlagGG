@@ -11,7 +11,7 @@ typedef GenericPlatformTypes::int32 Int32;
 typedef GenericPlatformTypes::uint32 UInt32;
 typedef GenericPlatformTypes::int64 Int64;
 typedef GenericPlatformTypes::uint64 UInt64;
-typedef GenericPlatformTypes::usize Size;
+typedef GenericPlatformTypes::usize USize;
 typedef GenericPlatformTypes::ssize SSize;
 typedef GenericPlatformTypes::ptrint PtrInt;
 typedef GenericPlatformTypes::uptrint UPtrInt;

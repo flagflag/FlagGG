@@ -23,7 +23,7 @@ enum BatchType
 class FlagGG_API Batch : public RefCounted
 {
 public:
-	Batch(BatchType type, Texture* texture, VertexVector* vertexs, Size vertexSize);
+	Batch(BatchType type, Texture* texture, VertexVector* vertexs, USize vertexSize);
 
 	virtual ~Batch();
 

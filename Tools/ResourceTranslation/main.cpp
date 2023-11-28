@@ -1,4 +1,5 @@
 #include <ResourceTranslation/ResourceTranslation.h>
+#include <Resource/ResourceCache.h>
 #include <Utility/SystemHelper.h>
 
 using namespace FlagGG;
@@ -8,7 +9,9 @@ LJSONValue commandParam;
 void Run()
 {
 	const String sourceResDir = commandParam["src_res_dir"].GetString();
-	const String targetResDir = commandParam["traget_res_dir"].GetString();
+	const String targetResDir = commandParam["target_res_dir"].GetString();
+
+	GetSubsystem<ResourceCache>()->AddResourceDir("");
 
 	ResourceTranslation* translation = CreateResourceTranslation("SCE");
 
@@ -17,7 +20,7 @@ void Run()
 
 	for (const auto& relativePath : fileNames)
 	{
-		const String absolutePath = targetResDir + "/" + relativePath;
+		const String absolutePath = sourceResDir + "/" + relativePath;
 		const String extension = GetExtension(absolutePath, true);
 		if (extension == ".png" || extension == ".tga" || extension == ".jpg" || extension == ".dds")
 		{

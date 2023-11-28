@@ -9,7 +9,7 @@ String ToString(const char* format, ...)
 {
 	va_list va;
 	va_start(va, format);
-	Size len = vsnprintf(nullptr, 0, format, va);
+	USize len = vsnprintf(nullptr, 0, format, va);
 
 	String buffer;
 	buffer.Resize(len);

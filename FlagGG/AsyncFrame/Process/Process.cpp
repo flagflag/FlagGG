@@ -191,7 +191,7 @@ ProcessObjectPtr Builder::CreateProcess(const std::wstring& proc_path, const Par
 {
 	std::wstring _param = L"";
 
-	for (Size i = 0; i < param.list_.size(); ++i)
+	for (USize i = 0; i < param.list_.size(); ++i)
 	{
 		if (i != 0) _param += L" ";
 		_param += param.list_[i];

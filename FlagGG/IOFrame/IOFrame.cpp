@@ -18,7 +18,7 @@ namespace FlagGG { namespace IOFrame {
 namespace TCP
 {
 
-IOThreadPoolPtr CreateThreadPool(Size threadCount)
+IOThreadPoolPtr CreateThreadPool(USize threadCount)
 {
 #ifndef FLAGGG_NO_BOOST
 	return IOThreadPoolPtr(new NetThreadPool(threadCount));
@@ -32,7 +32,7 @@ Buffer::IOBufferPtr CreateBuffer()
 	return Buffer::IOBufferPtr(new Buffer::NetBuffer());
 }
 
-Acceptor::IOAcceptorPtr CreateAcceptor(Handler::EventHandler* handler, Size threadCount)
+Acceptor::IOAcceptorPtr CreateAcceptor(Handler::EventHandler* handler, USize threadCount)
 {
 #ifndef FLAGGG_NO_BOOST
 	return Acceptor::IOAcceptorPtr(new Acceptor::TCPAcceptor(Handler::EventHandlerPtr(handler), threadCount));

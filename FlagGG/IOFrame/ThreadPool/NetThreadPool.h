@@ -13,7 +13,7 @@ namespace FlagGG { namespace IOFrame {
 class NetThreadPool : public IOThreadPool
 {
 public:
-	NetThreadPool(Size threadCount);
+	NetThreadPool(USize threadCount);
 
 	~NetThreadPool() override = default;
 
@@ -31,7 +31,7 @@ private:
 	void WaitForStop(UInt32 wait_time) override { };
 
 private:
-	Size												threadCount_;
+	USize												threadCount_;
 
 	boost::asio::io_service								service_;
 

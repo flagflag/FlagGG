@@ -10,7 +10,7 @@ SharedPtr<IOFrame::Buffer::IOBuffer> ResourceCache::GetFile(const String& path)
 {
 	String formatPath = resourceDir_ + FormatReousrcePath(path);
 	SharedPtr<IOFrame::Stream::FileStream> file(new IOFrame::Stream::FileStream());
-	file->Open(formatPath, IOFrame::Stream::FileMode::FILE_READ);
+	file->Open(formatPath, FileMode::FILE_READ);
 	if (!file->IsOpen())
 	{
 		FLAGGG_LOG_ERROR("Can not open file[{}].", formatPath.CString());

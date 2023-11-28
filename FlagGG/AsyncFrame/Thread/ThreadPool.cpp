@@ -12,7 +12,7 @@ ThreadPool::ThreadPool(UInt32 threadCount)
 {
 	assert(threadCount <= THREAD_POOL_MAX_SIZE);
 
-	for (Size i = 0; i < threadCount; ++i)
+	for (USize i = 0; i < threadCount; ++i)
 	{
 		threads_.Push(SharedThreadPtr(new SharedThread));
 	}
@@ -20,10 +20,10 @@ ThreadPool::ThreadPool(UInt32 threadCount)
 
 void ThreadPool::Add(ThreadTask task_func)
 {
-	Size index = 0;
+	USize index = 0;
 	UInt32 minWaitingTime = INT_MAX;
 
-	for (Size i = 0; i < threads_.Size(); ++i)
+	for (USize i = 0; i < threads_.Size(); ++i)
 	{
 		UInt32 waitingTime = threads_[i]->WaitingTime();
 		if (waitingTime < minWaitingTime)
@@ -41,7 +41,7 @@ void ThreadPool::Add(ThreadTask task_func)
 
 void ThreadPool::Start()
 {
-	for (Size i = 0; i < threads_.Size(); ++i)
+	for (USize i = 0; i < threads_.Size(); ++i)
 	{
 		threads_[i]->Start();
 	}
@@ -49,7 +49,7 @@ void ThreadPool::Start()
 
 void ThreadPool::Stop()
 {
-	for (Size i = 0; i < threads_.Size(); ++i)
+	for (USize i = 0; i < threads_.Size(); ++i)
 	{
 		threads_[i]->Stop();
 	}
@@ -57,7 +57,7 @@ void ThreadPool::Stop()
 
 void ThreadPool::WaitForStop()
 {
-	for (Size i = 0; i < threads_.Size(); ++i)
+	for (USize i = 0; i < threads_.Size(); ++i)
 	{
 		threads_[i]->WaitForStop();
 	}

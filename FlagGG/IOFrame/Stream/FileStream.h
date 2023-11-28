@@ -3,16 +3,9 @@
 #include "Export.h"
 #include "Container/Str.h"
 #include "IOFrame/Buffer/IOBufferAdaptor.h"
+#include "FileSystem/FileHandler.h"
 
 namespace FlagGG { namespace IOFrame { namespace Stream {
-
-enum class FileMode
-{
-	FILE_READ		= 1 << 0,
-	FILE_WRITE		= 1 << 1,
-	FILE_READ_WIRTE = FILE_READ | FILE_WRITE,
-	FILE_DEFAULT	= FILE_READ,
-};
 
 class FlagGG_API FileStream : public Buffer::IOBufferAdaptor
 {

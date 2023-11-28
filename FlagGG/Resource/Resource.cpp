@@ -16,7 +16,7 @@ void Resource::SetName(const String& name)
 bool Resource::LoadFile(const String& filepath)
 {
 	IOFrame::Stream::FileStream fileStream;
-	fileStream.Open(filepath, IOFrame::Stream::FileMode::FILE_READ);
+	fileStream.Open(filepath, FileMode::FILE_READ);
 	if (!fileStream.IsOpen())
 	{
 		FLAGGG_LOG_ERROR("Failed to open file[{}].", filepath.CString());
@@ -48,7 +48,7 @@ bool Resource::LoadStream(IOFrame::Buffer::IOBuffer* stream)
 bool Resource::SaveFile(const String& filepath)
 {
 	IOFrame::Stream::FileStream fileStream;
-	fileStream.Open(filepath, IOFrame::Stream::FileMode::FILE_WRITE);
+	fileStream.Open(filepath, FileMode::FILE_WRITE);
 	if (!fileStream.IsOpen())
 	{
 		FLAGGG_LOG_ERROR("Failed to open file[{}].", filepath.CString());

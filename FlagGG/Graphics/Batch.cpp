@@ -4,7 +4,7 @@
 namespace FlagGG
 {
 
-Batch::Batch(BatchType type, Texture* texture, VertexVector* vertexs, Size vertexSize) :
+Batch::Batch(BatchType type, Texture* texture, VertexVector* vertexs, USize vertexSize) :
 	type_(type),
 	texture_(texture),
 	vertexs_(vertexs),
