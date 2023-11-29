@@ -15,22 +15,22 @@ public:
 
 
 	//~ Begin FCurveEdInterface Interface
-	virtual UInt32		GetNumKeys() const override;
-	virtual UInt32		GetNumSubCurves() const override;
-	virtual float	GetKeyIn(UInt32 keyIndex) override;
-	virtual float	GetKeyOut(UInt32 subIndex, UInt32 keyIndex) override;
-	virtual Color	GetKeyColor(UInt32 subIndex, UInt32 keyIndex, const Color& curveColor) override;
+	virtual Int32		GetNumKeys() const override;
+	virtual Int32		GetNumSubCurves() const override;
+	virtual float	GetKeyIn(Int32 keyIndex) override;
+	virtual float	GetKeyOut(Int32 subIndex, Int32 keyIndex) override;
+	virtual Color	GetKeyColor(Int32 subIndex, Int32 keyIndex, const Color& curveColor) override;
 	virtual void	GetInRange(float& minIn, float& maxIn) const override;
 	virtual void	GetOutRange(float& minOut, float& maxOut) const override;
-	virtual InterpCurveMode	GetKeyInterpMode(UInt32 keyIndex) const override;
-	virtual void	GetTangents(UInt32 subIndex, UInt32 keyIndex, float& arriveTangent, float& leaveTangent) const override;
-	virtual float	EvalSub(UInt32 subIndex, float InVal) override;
-	virtual UInt32		CreateNewKey(float keyIn) override;
-	virtual void	DeleteKey(UInt32 keyIndex) override;
-	virtual UInt32		SetKeyIn(UInt32 keyIndex, float newInVal) override;
-	virtual void	SetKeyOut(UInt32 subIndex, UInt32 keyIndex, float newOutVal) override;
-	virtual void	SetKeyInterpMode(UInt32 keyIndex, InterpCurveMode newMode) override;
-	virtual void	SetTangents(UInt32 subIndex, UInt32 keyIndex, float arriveTangent, float leaveTangent) override;
+	virtual InterpCurveMode	GetKeyInterpMode(Int32 keyIndex) const override;
+	virtual void	GetTangents(Int32 subIndex, Int32 keyIndex, float& arriveTangent, float& leaveTangent) const override;
+	virtual float	EvalSub(Int32 subIndex, float InVal) override;
+	virtual Int32		CreateNewKey(float keyIn) override;
+	virtual void	DeleteKey(Int32 keyIndex) override;
+	virtual Int32		SetKeyIn(Int32 keyIndex, float newInVal) override;
+	virtual void	SetKeyOut(Int32 subIndex, Int32 keyIndex, float newOutVal) override;
+	virtual void	SetKeyInterpMode(Int32 keyIndex, InterpCurveMode newMode) override;
+	virtual void	SetTangents(Int32 subIndex, Int32 keyIndex, float arriveTangent, float leaveTangent) override;
 	//~ End FCurveEdInterface Interface
 
 	/** This float will be returned for all values of time. */

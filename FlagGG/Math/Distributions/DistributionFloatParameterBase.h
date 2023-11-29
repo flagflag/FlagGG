@@ -9,6 +9,8 @@ class FlagGG_API DistributionFloatParameterBase : public DistributionFloatConsta
 {
 	OBJECT_OVERRIDE(DistributionFloatParameterBase, DistributionFloatConstant);
 public:
+	DistributionFloatParameterBase();
+
 	//~ Begin UDistributionFloat Interface
 	virtual float GetValue(float f = 0.f, Object* data = NULL, struct RandomStream* randomStream = NULL) const override;
 	//~ End UDistributionFloat Interface
@@ -38,7 +40,7 @@ public:
 	float maxOutput_;
 
 	/** todo document */
-	EnumAsByte<enum DistributionParamMode> paramMode_;
+	EnumAsByte<DistributionParamMode> paramMode_;
 };
 
 }

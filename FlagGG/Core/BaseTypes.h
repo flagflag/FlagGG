@@ -61,3 +61,9 @@ static const Real Float32_Inverse2PI = Real(0.5 / 3.14159265358979323846);
 #endif
 
 enum { INDEX_NONE = -1 };
+
+enum EForceInit
+{
+	ForceInit,
+	ForceInitToZero
+};

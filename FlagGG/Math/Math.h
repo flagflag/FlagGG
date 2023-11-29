@@ -1,11 +1,12 @@
-#ifndef __MATH__
-#define __MATH__
+#pragma once
 
 #include "Export.h"
 #include "Container/Str.h"
 #include "Core/BaseTypes.h"
+#include "Core/BaseMacro.h"
 
 #include <math.h>
+#include <stdlib.h>
 
 namespace FlagGG
 {
@@ -33,14 +34,18 @@ extern FlagGG_API const Real F_DEGTORAD_2;
 extern FlagGG_API const Real F_RADTODEG;
 extern FlagGG_API const Real F_OVERSQRT2;
 
-template < class T >
-inline T Max(T value1, T value2)
+#define SMALL_NUMBER		(1.e-8f)
+#define KINDA_SMALL_NUMBER	(1.e-4f)
+#define BIG_NUMBER			(3.4e+38f)
+
+template <class T>
+FORCEINLINE T Max(T value1, T value2)
 {
 	return value1 > value2 ? value1 : value2;
 }
 
-template < class T >
-inline T Min(T value1, T value2)
+template <class T>
+FORCEINLINE T Min(T value1, T value2)
 {
 	return value1 < value2 ? value1 : value2;
 }
@@ -65,12 +70,14 @@ FlagGG_API Real Abs(Real number);
 FlagGG_API Real Sqrt(Real number);
 
 /// Return X in power Y.
-template <class T> inline T Pow(T x, T y) { return pow(x, y); }
+template <class T>
+FORCEINLINE T Pow(T x, T y) { return pow(x, y); }
 
 FlagGG_API Real Ln(Real number);
 
 /// Return floating-point remainder of X/Y.
-template <class T> inline T Mod(T x, T y) { return fmod(x, y); }
+template <class T>
+FORCEINLINE T Mod(T x, T y) { return fmod(x, y); }
 
 FlagGG_API Real Fract(Real number);
 
@@ -86,10 +93,6 @@ FlagGG_API Real Ceil(Real number);
 
 FlagGG_API Int32 CeilToInt(Real number);
 
-template <class T> inline T Min(T x, T y) { return x < y ? x : y; }
-
-template <class T> inline T Max(T x, T y) { return x > y ? x : y; }
-
 FlagGG_API Real Lerp(float from, float to, float t);
 
 FlagGG_API int Compare(Real _1, Real _2);
@@ -98,7 +101,8 @@ FlagGG_API Real Equals(Real _1, Real _2);
 
 FlagGG_API Real Equals(Real _1, Real _2, Real tolerance);
 
-FlagGG_API Real Clamp(Real target, Real min, Real max);
+template <class T>
+FORCEINLINE T Clamp(const T x, const T min, const T max) { return (x < min) ? min : (x < max) ? x : max; }
 
 FlagGG_API UInt32 FloatToRawIntBits(Real value);
 
@@ -109,6 +113,14 @@ FlagGG_API UInt32 SDBM_Hash(UInt32 hashValue, UInt8 charValue);
 FlagGG_API bool IsPowerOfTwo(UInt32 value);
 
 FlagGG_API UInt32 NextPowerOfTwo(UInt32 value);
+
+FORCEINLINE Int32 Rand() { return rand(); }
+
+void SRandInit(Int32 Seed);
+
+Int32 GetRandSeed();
+
+float SRand();
 
 // Î»ÒÆ¾ØÕó
 FlagGG_API Matrix4 MatrixTranslation(Real dx, Real dy, Real dz);
@@ -152,5 +164,3 @@ FlagGG_API Matrix4 MatrixLookAtLH(const Matrix4& eye, const Matrix4& at, const M
 FlagGG_API Matrix4 MatrixPerspectiveFovLH(Real fovy, Real aspect, Real zn, Real zf);
 
 }
-
-#endif

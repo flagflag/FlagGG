@@ -457,6 +457,10 @@ public:
 		x_ = x; y_ = y; z_ = z;
 	}
 
+	Real GetMin() { return Min(x_, Min(y_, z_)); }
+
+	Real GetMax() { return Max(x_, Max(y_, z_)); }
+
 	/// X coordinate.
 	Real x_;
 	/// Y coordinate.

@@ -5,6 +5,7 @@
 #include "Core/CryAssert.h"
 #include "Math/Vector4.h"
 #include "Math/Color.h"
+#include "Math/RandomStream.h"
 #include "Container/Vector.h"
 #include "IOFrame/Buffer/IOBuffer.h"
 
@@ -14,7 +15,7 @@
 namespace FlagGG
 {
 
-struct RandomStream;
+class DistributionFloat;
 
 /**
  * Operation to perform when looking up a value.
@@ -600,22 +601,22 @@ public:
 	ComposableFloatDistribution();
 
 	/** Copy constructor. */
-	ComposableFloatDistribution(const ComposableFloatDistribution& Other)
-		: ComposableDistribution(Other)
+	ComposableFloatDistribution(const ComposableFloatDistribution& other)
+		: ComposableDistribution(other)
 	{
 	}
 
 	/** Assignment operator. */
-	const ComposableFloatDistribution& operator=(const ComposableFloatDistribution& Other)
+	const ComposableFloatDistribution& operator=(const ComposableFloatDistribution& other)
 	{
-		ComposableDistribution::operator=(Other);
+		ComposableDistribution::operator=(other);
 		return *this;
 	}
 
 	/**
 	 * Initializes this distribution from that specified.
 	 */
-	void Initialize(const class UDistributionFloat* FloatDistribution);
+	void Initialize(const DistributionFloat* floatDistribution);
 
 	/**
 	 * Initializes this distribution with a constant value.
@@ -625,22 +626,22 @@ public:
 	/**
 	 * Scales each sample in the distribution by a constant.
 	 */
-	void ScaleByConstant(float Scale);
+	void ScaleByConstant(float scale);
 
 	/**
 	 * Scale each sample in the distribution by the corresponding sample in another distribution.
 	 */
-	void ScaleByDistribution(const class UDistributionFloat* FloatDistribution);
+	void ScaleByDistribution(const DistributionFloat* floatDistribution);
 
 	/**
 	 * Adds each sample in the distribution to the corresponding sample in another distribution.
 	 */
-	void AddDistribution(const class UDistributionFloat* FloatDistribution);
+	void AddDistribution(const DistributionFloat* floatDistribution);
 
 	/**
 	 * Normalizes each value to [0,1] and return a scale and bias to reconstruct the original values.
 	 */
-	void Normalize(float* OutScale, float* OutBias);
+	void Normalize(float* outScale, float* outBias);
 
 	/**
 	 * Resamples the distribution to include only information from [minIn,maxIn].
@@ -655,15 +656,15 @@ public:
 	ComposableVectorDistribution();
 
 	/** Copy constructor. */
-	ComposableVectorDistribution(const ComposableVectorDistribution& Other)
-		: ComposableDistribution(Other)
+	ComposableVectorDistribution(const ComposableVectorDistribution& other)
+		: ComposableDistribution(other)
 	{
 	}
 
 	/** Assignment operator. */
-	const ComposableVectorDistribution& operator=(const ComposableVectorDistribution& Other)
+	const ComposableVectorDistribution& operator=(const ComposableVectorDistribution& other)
 	{
-		ComposableDistribution::operator=(Other);
+		ComposableDistribution::operator=(other);
 		return *this;
 	}
 

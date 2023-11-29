@@ -130,16 +130,6 @@ Real Equals(Real _1, Real _2, Real tolerance)
 	return fabs(_1 - _2) < tolerance;
 }
 
-Real Clamp(Real target, Real min, Real max)
-{
-	if (target < min)
-		return min;
-	else if (target > max)
-		return max;
-	else
-		return target;
-}
-
 UInt32 FloatToRawIntBits(Real value)
 {
 	return *((UInt32*)&value);
@@ -180,6 +170,28 @@ UInt32 NextPowerOfTwo(UInt32 value)
 	return ++value;
 }
 
+static Int32 GSRandSeed;
+
+void SRandInit(Int32 Seed)
+{
+	GSRandSeed = Seed;
+}
+
+Int32 GetRandSeed()
+{
+	return GSRandSeed;
+}
+
+float SRand()
+{
+	GSRandSeed = (GSRandSeed * 196314165) + 907633515;
+	union { float f; Int32 i; } Result;
+	union { float f; Int32 i; } Temp;
+	const float SRandTemp = 1.0f;
+	Temp.f = SRandTemp;
+	Result.i = (Temp.i & 0xff800000) | (GSRandSeed & 0x007fffff);
+	return Fract(Result.f);
+}
 
 Matrix4 MatrixTranslation(Real dx, Real dy, Real dz)
 {
