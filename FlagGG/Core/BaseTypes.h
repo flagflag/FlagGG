@@ -59,3 +59,5 @@ static const Real Float32_Inverse2PI = Real(0.5 / 3.14159265358979323846);
 #ifndef MTU
 #define MTU 1500 //ÒÔÌ«Íø±ê×¼MTU
 #endif
+
+enum { INDEX_NONE = -1 };

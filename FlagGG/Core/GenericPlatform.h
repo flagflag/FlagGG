@@ -93,3 +93,6 @@ struct GenericPlatformTypes
 	typedef decltype(nullptr)		type_of_nullptr;
 };
 
+#ifndef RESTRICT
+#define RESTRICT __restrict						/* no alias hint */
+#endif

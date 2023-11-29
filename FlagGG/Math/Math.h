@@ -86,6 +86,9 @@ FlagGG_API Real Ceil(Real number);
 
 FlagGG_API Int32 CeilToInt(Real number);
 
+template <class T> inline T Min(T x, T y) { return x < y ? x : y; }
+
+template <class T> inline T Max(T x, T y) { return x > y ? x : y; }
 
 FlagGG_API Real Lerp(float from, float to, float t);
 
