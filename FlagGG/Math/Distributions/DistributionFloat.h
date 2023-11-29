@@ -109,10 +109,10 @@ public:
 	 * @param Values An array of values to be filled out, guaranteed to be big enough for 4 values
 	 * @return The number of elements (values) set in the array
 	 */
-	virtual uint32 InitializeRawEntry(float time, float* values) const;
+	virtual UInt32 InitializeRawEntry(float time, float* values) const;
 
 	/** @todo document */
-	virtual float GetValue(float F = 0.f, Object* Data = NULL, struct FRandomStream* InRandomStream = NULL) const;
+	virtual float GetValue(float F = 0.f, Object* Data = NULL, struct RandomStream* InRandomStream = NULL) const;
 
 	//~ Begin FCurveEdInterface Interface
 	virtual void GetInRange(float& minIn, float& maxIn) const override;

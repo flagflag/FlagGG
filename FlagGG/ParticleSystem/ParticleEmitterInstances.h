@@ -19,134 +19,134 @@ class ParticleModuleSpawnPerUnit;
 struct FlagGG_API ParticleEmitterBuildInfo
 {
 	/** The required module. */
-	ParticleModuleRequired* RequiredModule;
+	ParticleModuleRequired* requiredModule_;
 	/** The spawn module. */
-	ParticleModuleSpawn* SpawnModule;
+	ParticleModuleSpawn* spawnModule_;
 	/** The spawn-per-unit module. */
-	ParticleModuleSpawnPerUnit* SpawnPerUnitModule;
+	ParticleModuleSpawnPerUnit* spawnPerUnitModule_;
 	/** List of spawn modules that need to be invoked at runtime. */
-	PODVector<ParticleModule*> SpawnModules;
+	PODVector<ParticleModule*> spawnModules_;
 
 	/** The accumulated orbit offset. */
-	ComposableVectorDistribution OrbitOffset;
+	ComposableVectorDistribution orbitOffset_;
 	/** The accumulated orbit initial rotation. */
-	ComposableVectorDistribution OrbitInitialRotation;
+	ComposableVectorDistribution orbitInitialRotation_;
 	/** The accumulated orbit rotation rate. */
-	ComposableVectorDistribution OrbitRotationRate;
+	ComposableVectorDistribution orbitRotationRate_;
 
 	/** The color scale of a particle over time. */
-	ComposableVectorDistribution ColorScale;
+	ComposableVectorDistribution colorScale_;
 	/** The alpha scale of a particle over time. */
-	ComposableFloatDistribution AlphaScale;
+	ComposableFloatDistribution alphaScale_;
 
 	/** An additional color scale for allowing parameters to be used for ColorOverLife modules. */
-	RawDistributionVector DynamicColor;
+	RawDistributionVector dynamicColor_;
 	/** An additional alpha scale for allowing parameters to be used for ColorOverLife modules. */
-	RawDistributionFloat DynamicAlpha;
+	RawDistributionFloat dynamicAlpha_;
 
 	/** An additional color scale for allowing parameters to be used for ColorScaleOverLife modules. */
-	RawDistributionVector DynamicColorScale;
+	RawDistributionVector dynamicColorScale_;
 	/** An additional alpha scale for allowing parameters to be used for ColorScaleOverLife modules. */
-	RawDistributionFloat DynamicAlphaScale;
+	RawDistributionFloat dynamicAlphaScale_;
 	
 	/** How to scale a particle's size over time. */
-	ComposableVectorDistribution SizeScale;
+	ComposableVectorDistribution sizeScale_;
 	/** The maximum size of a particle. */
-	Vector2 MaxSize;
+	Vector2 maxSize_;
 	/** How much to scale a particle's size based on its speed. */
-	Vector2 SizeScaleBySpeed;
+	Vector2 sizeScaleBySpeed_;
 	/** The maximum amount by which to scale a particle based on its speed. */
-	Vector2 MaxSizeScaleBySpeed;
+	Vector2 maxSizeScaleBySpeed_;
 
 	/** The sub-image index over the particle's life time. */
-	ComposableFloatDistribution SubImageIndex;
+	ComposableFloatDistribution subImageIndex_;
 
 	/** Drag coefficient. */
-	ComposableFloatDistribution DragCoefficient;
+	ComposableFloatDistribution dragCoefficient_;
 	/** Drag scale over life. */
-	ComposableFloatDistribution DragScale;
+	ComposableFloatDistribution dragScale_;
 
 	/** Enable collision? */
-	bool bEnableCollision;
+	bool enableCollision_;
 	/** How particles respond to collision. */
-	UInt8 CollisionResponse;
-	UInt8 CollisionMode;
+	UInt8 collisionResponse_;
+	UInt8 collisionMode_;
 	/** Radius scale applied to friction. */
-	float CollisionRadiusScale;
+	float collisionRadiusScale_;
 	/** Bias applied to the collision radius. */
-	float CollisionRadiusBias;
+	float collisionRadiusBias_;
 	/** Factor reflection spreading cone when colliding. */
-	float CollisionRandomSpread;
+	float collisionRandomSpread_;
 	/** Random distribution across the reflection spreading cone when colliding. */
-	float CollisionRandomDistribution;
+	float collisionRandomDistribution_;
 	/** Friction. */
-	float Friction;
+	float friction_;
 	/** Collision damping factor. */
-	ComposableFloatDistribution Resilience;
+	ComposableFloatDistribution resilience_;
 	/** Collision damping factor scale over life. */
-	ComposableFloatDistribution ResilienceScaleOverLife;
+	ComposableFloatDistribution resilienceScaleOverLife_;
 
 	/** Location of a point source attractor. */
-	Vector3 PointAttractorPosition;
+	Vector3 pointAttractorPosition_;
 	/** Radius of the point source attractor. */
-	float PointAttractorRadius;
+	float pointAttractorRadius_;
 	/** Strength of the point attractor. */
-	ComposableFloatDistribution PointAttractorStrength;
+	ComposableFloatDistribution pointAttractorStrength_;
 
 	/** The per-particle vector field scale. */
-	ComposableFloatDistribution VectorFieldScale;
+	ComposableFloatDistribution vectorFieldScale_;
 	/** The per-particle vector field scale-over-life. */
-	ComposableFloatDistribution VectorFieldScaleOverLife;
+	ComposableFloatDistribution vectorFieldScaleOverLife_;
 	/** Global vector field scale. */
-	float GlobalVectorFieldScale;
+	float globalVectorFieldScale_;
 	/** Global vector field tightness. */
-	float GlobalVectorFieldTightness;
+	float globalVectorFieldTightness_;
 
 	/** Local vector field. */
-	class UVectorField* LocalVectorField;
+	class UVectorField* localVectorField_;
 	/** Local vector field transform. */
-	FTransform LocalVectorFieldTransform;
+	FTransform localVectorFieldTransform_;
 	/** Local vector field intensity. */
-	float LocalVectorFieldIntensity;
+	float localVectorFieldIntensity_;
 	/** Tightness tweak for local vector fields. */
-	float LocalVectorFieldTightness;
+	float localVectorFieldTightness_;
 	/** Minimum initial rotation applied to local vector fields. */
-	Vector3 LocalVectorFieldMinInitialRotation;
+	Vector3 localVectorFieldMinInitialRotation_;
 	/** Maximum initial rotation applied to local vector fields. */
-	Vector3 LocalVectorFieldMaxInitialRotation;
+	Vector3 localVectorFieldMaxInitialRotation_;
 	/** Local vector field rotation rate. */
-	Vector3 LocalVectorFieldRotationRate;
+	Vector3 localVectorFieldRotationRate_;
 
 	/** Constant acceleration to apply to particles. */
-	Vector3 ConstantAcceleration;
+	Vector3 constantAcceleration_;
 
 	/** The maximum lifetime of any particle that will spawn. */
-	float MaxLifetime;
+	float maxLifetime_;
 	/** The maximum rotation rate of particles. */
-	float MaxRotationRate;
+	float maxRotationRate_;
 	/** The estimated maximum number of particles for this emitter. */
-	Int32 EstimatedMaxActiveParticleCount;
+	Int32 estimatedMaxActiveParticleCount_;
 
-	Int32 ScreenAlignment;
+	Int32 screenAlignment_;
 
 	/** An offset in UV space for the positioning of a sprites verticies. */
-	Vector2 PivotOffset;
+	Vector2 pivotOffset_;
 
 	/** If true, local vector fields ignore the component transform. */
-	UInt32 bLocalVectorFieldIgnoreComponentTransform : 1;
+	UInt32 localVectorFieldIgnoreComponentTransform_ : 1;
 	/** Tile vector field in x axis? */
-	UInt32 bLocalVectorFieldTileX : 1;
+	UInt32 localVectorFieldTileX_ : 1;
 	/** Tile vector field in y axis? */
-	UInt32 bLocalVectorFieldTileY : 1;
+	UInt32 localVectorFieldTileY_ : 1;
 	/** Tile vector field in z axis? */
-	UInt32 bLocalVectorFieldTileZ : 1;
+	UInt32 localVectorFieldTileZ_ : 1;
 	/** Use fix delta time in the simulation? */
-	UInt32 bLocalVectorFieldUseFixDT : 1;
+	UInt32 localVectorFieldUseFixDT_ : 1;
 	
 	/** Particle alignment overrides */
-	UInt32 bRemoveHMDRoll : 1;
-	float MinFacingCameraBlendDistance;
-	float MaxFacingCameraBlendDistance;
+	UInt32 removeHMDRoll_ : 1;
+	float minFacingCameraBlendDistance_;
+	float maxFacingCameraBlendDistance_;
 	
 	/** Default constructor. */
 	ParticleEmitterBuildInfo();
