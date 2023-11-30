@@ -47,23 +47,6 @@ template< class T > class InterpCurvePoint
 {
 public:
 
-	/** Float input value that corresponds to this key (eg. time). */
-	float InVal;
-
-	/** Output value of templated type when input is equal to InVal. */
-	T OutVal;
-
-	/** Tangent of curve arrive this point. */
-	T ArriveTangent;
-
-	/** Tangent of curve leaving this point. */
-	T LeaveTangent;
-
-	/** Interpolation mode between this point and the next one. @see EInterpCurveMode */
-	EnumAsByte<InterpCurveMode> InterpMode;
-
-public:
-
 	/**
 	 * Default constructor (no initialization).
 	 */
@@ -113,9 +96,9 @@ public:
 	 */
 	//friend FArchive& operator<<(FArchive& Ar, InterpCurvePoint& Point)
 	//{
-	//	Ar << Point.InVal << Point.OutVal;
-	//	Ar << Point.ArriveTangent << Point.LeaveTangent;
-	//	Ar << Point.InterpMode;
+	//	Ar << Point.inVal_ << Point.outVal_;
+	//	Ar << Point.arriveTangent_ << Point.leaveTangent_;
+	//	Ar << Point.interpMode_;
 	//	return Ar;
 	//}
 
@@ -124,11 +107,11 @@ public:
 	 */
 	friend bool operator==(const InterpCurvePoint& Point1, const InterpCurvePoint& Point2)
 	{
-		return (Point1.InVal == Point2.InVal &&
-			Point1.OutVal == Point2.OutVal &&
-			Point1.ArriveTangent == Point2.ArriveTangent &&
-			Point1.LeaveTangent == Point2.LeaveTangent &&
-			Point1.InterpMode == Point2.InterpMode);
+		return (Point1.inVal_ == Point2.inVal_ &&
+			Point1.outVal_ == Point2.outVal_ &&
+			Point1.arriveTangent_ == Point2.arriveTangent_ &&
+			Point1.leaveTangent_ == Point2.leaveTangent_ &&
+			Point1.interpMode_ == Point2.interpMode_);
 	}
 
 	/**
@@ -138,6 +121,22 @@ public:
 	{
 		return !(Point1 == Point2);
 	}
+
+public:
+	/** Float input value that corresponds to this key (eg. time). */
+	float inVal_;
+
+	/** Output value of templated type when input is equal to inVal_. */
+	T outVal_;
+
+	/** Tangent of curve arrive this point. */
+	T arriveTangent_;
+
+	/** Tangent of curve leaving this point. */
+	T leaveTangent_;
+
+	/** Interpolation mode between this point and the next one. @see EInterpCurveMode */
+	EnumAsByte<InterpCurveMode> interpMode_;
 };
 
 
@@ -145,40 +144,40 @@ public:
  *****************************************************************************/
 
 template< class T >
-FORCEINLINE InterpCurvePoint<T>::InterpCurvePoint(const float In, const T& Out)
-	: InVal(In)
-	, OutVal(Out)
+FORCEINLINE InterpCurvePoint<T>::InterpCurvePoint(const float in, const T& out)
+	: inVal_(in)
+	, outVal_(out)
 {
-	memset(&ArriveTangent, 0, sizeof(T));
-	memset(&LeaveTangent, 0, sizeof(T));
+	memset(&arriveTangent_, 0, sizeof(T));
+	memset(&leaveTangent_, 0, sizeof(T));
 
-	InterpMode = CIM_Linear;
+	interpMode_ = CIM_Linear;
 }
 
 
 template< class T >
-FORCEINLINE InterpCurvePoint<T>::InterpCurvePoint(const float In, const T& Out, const T& InArriveTangent, const T& InLeaveTangent, const InterpCurveMode InInterpMode)
-	: InVal(In)
-	, OutVal(Out)
-	, ArriveTangent(InArriveTangent)
-	, LeaveTangent(InLeaveTangent)
-	, InterpMode(InInterpMode)
+FORCEINLINE InterpCurvePoint<T>::InterpCurvePoint(const float in, const T& out, const T& inArriveTangent, const T& inLeaveTangent, const InterpCurveMode inInterpMode)
+	: inVal_(in)
+	, outVal_(out)
+	, arriveTangent_(inArriveTangent)
+	, leaveTangent_(inLeaveTangent)
+	, interpMode_(inInterpMode)
 { }
 
 template< class T >
 FORCEINLINE InterpCurvePoint<T>::InterpCurvePoint(EForceInit)
 {
-	InVal = 0.0f;
-	memset(&OutVal, 0, sizeof(T));
-	memset(&ArriveTangent, 0, sizeof(T));
-	memset(&LeaveTangent, 0, sizeof(T));
-	InterpMode = CIM_Linear;
+	inVal_ = 0.0f;
+	memset(&outVal_, 0, sizeof(T));
+	memset(&arriveTangent_, 0, sizeof(T));
+	memset(&leaveTangent_, 0, sizeof(T));
+	interpMode_ = CIM_Linear;
 }
 
 template< class T >
 FORCEINLINE bool InterpCurvePoint<T>::IsCurveKey() const
 {
-	return ((InterpMode == CIM_CurveAuto) || (InterpMode == CIM_CurveAutoClamped) || (InterpMode == CIM_CurveUser) || (InterpMode == CIM_CurveBreak));
+	return ((interpMode_ == CIM_CurveAuto) || (interpMode_ == CIM_CurveAutoClamped) || (interpMode_ == CIM_CurveUser) || (interpMode_ == CIM_CurveBreak));
 }
 
 typedef InterpCurvePoint<float> InterpCurvePointFloat;
