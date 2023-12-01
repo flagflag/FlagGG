@@ -5,6 +5,7 @@
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 #include "Math/TwoVector3.h"
+#include "Math/Color.h"
 
 namespace FlagGG
 {
@@ -143,7 +144,7 @@ public:
 /* InterpCurvePoint inline functions
  *****************************************************************************/
 
-template< class T >
+template <class T>
 FORCEINLINE InterpCurvePoint<T>::InterpCurvePoint(const float in, const T& out)
 	: inVal_(in)
 	, outVal_(out)
@@ -155,7 +156,7 @@ FORCEINLINE InterpCurvePoint<T>::InterpCurvePoint(const float in, const T& out)
 }
 
 
-template< class T >
+template <class T>
 FORCEINLINE InterpCurvePoint<T>::InterpCurvePoint(const float in, const T& out, const T& inArriveTangent, const T& inLeaveTangent, const InterpCurveMode inInterpMode)
 	: inVal_(in)
 	, outVal_(out)
@@ -164,7 +165,7 @@ FORCEINLINE InterpCurvePoint<T>::InterpCurvePoint(const float in, const T& out, 
 	, interpMode_(inInterpMode)
 { }
 
-template< class T >
+template <class T>
 FORCEINLINE InterpCurvePoint<T>::InterpCurvePoint(EForceInit)
 {
 	inVal_ = 0.0f;
@@ -174,7 +175,7 @@ FORCEINLINE InterpCurvePoint<T>::InterpCurvePoint(EForceInit)
 	interpMode_ = CIM_Linear;
 }
 
-template< class T >
+template <class T>
 FORCEINLINE bool InterpCurvePoint<T>::IsCurveKey() const
 {
 	return ((interpMode_ == CIM_CurveAuto) || (interpMode_ == CIM_CurveAutoClamped) || (interpMode_ == CIM_CurveUser) || (interpMode_ == CIM_CurveBreak));
@@ -185,52 +186,176 @@ typedef InterpCurvePoint<Vector2> InterpCurvePointVector2D;
 typedef InterpCurvePoint<Vector3> InterpCurvePointVector;
 typedef InterpCurvePoint<TwoVectors> InterpCurvePointTwoVectors;
 
-struct InterpCurveFloat
+
+/** Computes Tangent for a curve segment */
+template <class T>
+inline void AutoCalcTangent(const T& prevP, const T& P, const T& nextP, const float tension, T& outTan)
 {
-	/** Holds the collection of interpolation points. */
-	Vector<InterpCurvePointFloat> points_;
+	outTan = (1.f - tension) * ((P - prevP) + (nextP - P));
+}
 
-	/** Specify whether the curve is looped or not */
-	bool isLooped_;
+FlagGG_API float ClampFloatTangent(float PrevPointVal, float prevTime, float CurPointVal, float curTime, float NextPointVal, float nextTime);
 
-	/** Specify the offset from the last point's input key corresponding to the loop point */
-	float loopKeyOffset_;
-};
-
-struct InterpCurveVector2D
+/**
+ * Computes a tangent for the specified control point; supports clamping, but only works
+ * with floats or contiguous arrays of floats.
+ */
+template< class T >
+inline void ComputeClampableFloatVectorCurveTangent(float prevTime, const T& prevPoint,
+	float curTime, const T& curPoint,
+	float nextTime, const T& nextPoint,
+	float tension,
+	bool wantClamping,
+	T& outTangent)
 {
-	/** Holds the collection of interpolation points. */
-	Vector<InterpCurvePointVector2D> points_;
+	// Clamp the tangents if we need to do that
+	if (wantClamping)
+	{
+		// NOTE: We always treat the type as an array of floats
+		float* PrevPointVal = (float*)&prevPoint;
+		float* CurPointVal = (float*)&curPoint;
+		float* NextPointVal = (float*)&nextPoint;
+		float* OutTangentVal = (float*)&outTangent;
+		for (Int32 CurValPos = 0; CurValPos < sizeof(T); CurValPos += sizeof(float))
+		{
+			// Clamp it!
+			const float ClampedTangent =
+				ClampFloatTangent(
+					*PrevPointVal, prevTime,
+					*CurPointVal, curTime,
+					*NextPointVal, nextTime);
 
-	/** Specify whether the curve is looped or not */
-	bool isLooped_;
+			// Apply tension value
+			*OutTangentVal = (1.0f - tension) * ClampedTangent;
 
-	/** Specify the offset from the last point's input key corresponding to the loop point */
-	float loopKeyOffset_;
-};
 
-struct InterpCurveVector
+			// Advance pointers
+			++OutTangentVal;
+			++PrevPointVal;
+			++CurPointVal;
+			++NextPointVal;
+		}
+	}
+	else
+	{
+		// No clamping needed
+		AutoCalcTangent(prevPoint, curPoint, nextPoint, tension, outTangent);
+
+		const float PrevToNextTimeDiff = Max<float>(KINDA_SMALL_NUMBER, nextTime - prevTime);
+
+		outTangent /= PrevToNextTimeDiff;
+	}
+}
+
+/** Computes a tangent for the specified control point.  Special case for float types; supports clamping. */
+inline void ComputeCurveTangent(float prevTime, const float& prevPoint,
+	float curTime, const float& curPoint,
+	float nextTime, const float& nextPoint,
+	float tension,
+	bool wantClamping,
+	float& outTangent)
 {
-	/** Holds the collection of interpolation points. */
-	Vector<InterpCurvePointVector> points_;
+	ComputeClampableFloatVectorCurveTangent(
+		prevTime, prevPoint,
+		curTime, curPoint,
+		nextTime, nextPoint,
+		tension, wantClamping, outTangent);
+}
 
-	/** Specify whether the curve is looped or not */
-	bool isLooped_;
 
-	/** Specify the offset from the last point's input key corresponding to the loop point */
-	float loopKeyOffset_;
-};
-
-struct InterpCurveTwoVectors
+/** Computes a tangent for the specified control point.  Special case for Vector3 types; supports clamping. */
+inline void ComputeCurveTangent(float prevTime, const Vector3& prevPoint,
+	float curTime, const Vector3& curPoint,
+	float nextTime, const Vector3& nextPoint,
+	float tension,
+	bool wantClamping,
+	Vector3& outTangent)
 {
-	/** Holds the collection of interpolation points. */
-	Vector<InterpCurvePointTwoVectors> points_;
+	ComputeClampableFloatVectorCurveTangent(
+		prevTime, prevPoint,
+		curTime, curPoint,
+		nextTime, nextPoint,
+		tension, wantClamping, outTangent);
+}
 
-	/** Specify whether the curve is looped or not */
-	bool isLooped_;
 
-	/** Specify the offset from the last point's input key corresponding to the loop point */
-	float loopKeyOffset_;
-};
+/** Computes a tangent for the specified control point.  Special case for Vector2 types; supports clamping. */
+inline void ComputeCurveTangent(float prevTime, const Vector2& prevPoint,
+	float curTime, const Vector2& curPoint,
+	float nextTime, const Vector2& nextPoint,
+	float tension,
+	bool wantClamping,
+	Vector2& outTangent)
+{
+	ComputeClampableFloatVectorCurveTangent(
+		prevTime, prevPoint,
+		curTime, curPoint,
+		nextTime, nextPoint,
+		tension, wantClamping, outTangent);
+}
+
+
+/** Computes a tangent for the specified control point.  Special case for FTwoVectors types; supports clamping. */
+inline void ComputeCurveTangent(float prevTime, const TwoVectors& prevPoint,
+	float curTime, const TwoVectors& curPoint,
+	float nextTime, const TwoVectors& nextPoint,
+	float tension,
+	bool wantClamping,
+	TwoVectors& outTangent)
+{
+	ComputeClampableFloatVectorCurveTangent(
+		prevTime, prevPoint,
+		curTime, curPoint,
+		nextTime, nextPoint,
+		tension, wantClamping, outTangent);
+}
+
+FlagGG_API void CurveFloatFindIntervalBounds(const InterpCurvePoint<float>& start, const InterpCurvePoint<float>& End, float& currentMin, float& currentMax);
+
+FlagGG_API void CurveVector2DFindIntervalBounds(const InterpCurvePoint<Vector2>& start, const InterpCurvePoint<Vector2>& End, Vector2& currentMin, Vector2& currentMax);
+
+FlagGG_API void CurveVectorFindIntervalBounds(const InterpCurvePoint<Vector3>& start, const InterpCurvePoint<Vector3>& End, Vector3& currentMin, Vector3& currentMax);
+
+FlagGG_API void CurveTwoVectorsFindIntervalBounds(const InterpCurvePoint<TwoVectors>& start, const InterpCurvePoint<TwoVectors>& End, TwoVectors& currentMin, TwoVectors& currentMax);
+
+FlagGG_API void CurveLinearColorFindIntervalBounds(const InterpCurvePoint<Color>& start, const InterpCurvePoint<Color>& End, Color& currentMin, Color& currentMax);
+
+template <class T>
+inline void CurveFindIntervalBounds(const InterpCurvePoint<T>& start, const InterpCurvePoint<T>& End, T& currentMin, T& currentMax, const float dummy)
+{ }
+
+template <>
+inline void CurveFindIntervalBounds(const InterpCurvePoint<float>& start, const InterpCurvePoint<float>& end, float& currentMin, float& currentMax, const float dummy)
+{
+	CurveFloatFindIntervalBounds(start, end, currentMin, currentMax);
+}
+
+
+template <>
+inline void CurveFindIntervalBounds(const InterpCurvePoint<Vector2>& start, const InterpCurvePoint<Vector2>& end, Vector2& currentMin, Vector2& currentMax, const float dummy)
+{
+	CurveVector2DFindIntervalBounds(start, end, currentMin, currentMax);
+}
+
+
+template <>
+inline void CurveFindIntervalBounds(const InterpCurvePoint<Vector3>& start, const InterpCurvePoint<Vector3>& end, Vector3& currentMin, Vector3& currentMax, const float dummy)
+{
+	CurveVectorFindIntervalBounds(start, end, currentMin, currentMax);
+}
+
+
+template <>
+inline void CurveFindIntervalBounds(const InterpCurvePoint<TwoVectors>& start, const InterpCurvePoint<TwoVectors>& end, TwoVectors& currentMin, TwoVectors& currentMax, const float dummy)
+{
+	CurveTwoVectorsFindIntervalBounds(start, end, currentMin, currentMax);
+}
+
+
+template <>
+inline void CurveFindIntervalBounds(const InterpCurvePoint<Color>& start, const InterpCurvePoint<Color>& end, Color& currentMin, Color& currentMax, const float dummy)
+{
+	CurveLinearColorFindIntervalBounds(start, end, currentMin, currentMax);
+}
 
 }

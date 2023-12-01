@@ -4,6 +4,7 @@
 
 #include <type_traits>
 
+#include "Core/BaseMacro.h"
 #include "Core/BaseTypes.h"
 
 namespace FlagGG

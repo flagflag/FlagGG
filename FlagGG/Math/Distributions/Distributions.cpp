@@ -134,7 +134,7 @@ void BuildLookupTable(DistributionLookupTable* OutTable, const DistributionType&
 	OutTable->timeBias_ = MinIn;
 	OutTable->values_.Resize(EntryCount * EntryStride);
 	for (auto& value : OutTable->values_) value = 0.f;
-	OutTable->LockFlag = LockFlag;
+	OutTable->lockFlag_ = LockFlag;
 
 	// Sample the distribution.
 	for (UInt32 SampleIndex = 0; SampleIndex < EntryCount; SampleIndex++)
@@ -1695,14 +1695,14 @@ Int32 DistributionFloatConstantCurve::GetNumSubCurves() const
 float DistributionFloatConstantCurve::GetKeyIn(Int32 KeyIndex)
 {
 	ASSERT(KeyIndex >= 0 && KeyIndex < constantCurve_.points_.Size());
-	return constantCurve_.points_[KeyIndex].InVal;
+	return constantCurve_.points_[KeyIndex].inVal_;
 }
 
 float DistributionFloatConstantCurve::GetKeyOut(Int32 SubIndex, Int32 KeyIndex)
 {
 	ASSERT(SubIndex == 0);
 	ASSERT(KeyIndex >= 0 && KeyIndex < constantCurve_.points_.Size());
-	return constantCurve_.points_[KeyIndex].OutVal;
+	return constantCurve_.points_[KeyIndex].outVal_;
 }
 
 Color DistributionFloatConstantCurve::GetKeyColor(Int32 SubIndex, Int32 KeyIndex, const Color& CurveColor)
@@ -1729,7 +1729,7 @@ void DistributionFloatConstantCurve::GetInRange(float& MinIn, float& MaxIn) cons
 		float Max = -BIG_NUMBER;
 		for (Int32 Index = 0; Index < constantCurve_.points_.Size(); Index++)
 		{
-			float Value = constantCurve_.points_[Index].InVal;
+			float Value = constantCurve_.points_[Index].inVal_;
 			if (Value < Min)
 			{
 				Min = Value;
@@ -1752,15 +1752,15 @@ void DistributionFloatConstantCurve::GetOutRange(float& MinOut, float& MaxOut) c
 InterpCurveMode DistributionFloatConstantCurve::GetKeyInterpMode(Int32 KeyIndex) const
 {
 	ASSERT(KeyIndex >= 0 && KeyIndex < constantCurve_.points_.Size());
-	return constantCurve_.points_[KeyIndex].InterpMode;
+	return constantCurve_.points_[KeyIndex].interpMode_;
 }
 
 void DistributionFloatConstantCurve::GetTangents(Int32 SubIndex, Int32 KeyIndex, float& ArriveTangent, float& LeaveTangent) const
 {
 	ASSERT(SubIndex == 0);
 	ASSERT(KeyIndex >= 0 && KeyIndex < constantCurve_.points_.Size());
-	ArriveTangent = constantCurve_.points_[KeyIndex].ArriveTangent;
-	LeaveTangent = constantCurve_.points_[KeyIndex].LeaveTangent;
+	ArriveTangent = constantCurve_.points_[KeyIndex].arriveTangent_;
+	LeaveTangent = constantCurve_.points_[KeyIndex].leaveTangent_;
 }
 
 float DistributionFloatConstantCurve::EvalSub(Int32 SubIndex, float InVal)
@@ -1804,7 +1804,7 @@ void DistributionFloatConstantCurve::SetKeyOut(Int32 SubIndex, Int32 KeyIndex, f
 {
 	ASSERT(SubIndex == 0);
 	ASSERT(KeyIndex >= 0 && KeyIndex < constantCurve_.points_.Size());
-	constantCurve_.points_[KeyIndex].OutVal = NewOutVal;
+	constantCurve_.points_[KeyIndex].outVal_ = NewOutVal;
 	constantCurve_.AutoSetTangents(0.f);
 
 	isDirty_ = true;
@@ -1813,7 +1813,7 @@ void DistributionFloatConstantCurve::SetKeyOut(Int32 SubIndex, Int32 KeyIndex, f
 void DistributionFloatConstantCurve::SetKeyInterpMode(Int32 KeyIndex, InterpCurveMode NewMode)
 {
 	ASSERT(KeyIndex >= 0 && KeyIndex < constantCurve_.points_.Size());
-	constantCurve_.points_[KeyIndex].InterpMode = NewMode;
+	constantCurve_.points_[KeyIndex].interpMode_ = NewMode;
 	constantCurve_.AutoSetTangents(0.f);
 
 	isDirty_ = true;
@@ -1823,8 +1823,8 @@ void DistributionFloatConstantCurve::SetTangents(Int32 SubIndex, Int32 KeyIndex,
 {
 	ASSERT(SubIndex == 0);
 	ASSERT(KeyIndex >= 0 && KeyIndex < constantCurve_.points_.Size());
-	constantCurve_.points_[KeyIndex].ArriveTangent = ArriveTangent;
-	constantCurve_.points_[KeyIndex].LeaveTangent = LeaveTangent;
+	constantCurve_.points_[KeyIndex].arriveTangent_ = ArriveTangent;
+	constantCurve_.points_[KeyIndex].leaveTangent_ = LeaveTangent;
 
 	isDirty_ = true;
 }
@@ -2014,7 +2014,7 @@ RawDistributionOperation DistributionFloatUniformCurve::GetOperation() const
 	{
 		// Only a single point - so see if Min == Max
 		const InterpCurvePoint<Vector2>& Value = constantCurve_.points_[0];
-		if (Value.OutVal.x_ == Value.OutVal.y_)
+		if (Value.outVal_.x_ == Value.outVal_.y_)
 		{
 			// This may as well be a constant - don't bother doing the SRand scaling on it.
 			return RDO_None;
@@ -2077,7 +2077,7 @@ Color DistributionFloatUniformCurve::GetSubCurveButtonColor(Int32 SubCurveIndex,
 float DistributionFloatUniformCurve::GetKeyIn(Int32 KeyIndex)
 {
 	ASSERT((KeyIndex >= 0) && (KeyIndex < constantCurve_.points_.Size()));
-	return constantCurve_.points_[KeyIndex].InVal;
+	return constantCurve_.points_[KeyIndex].inVal_;
 }
 
 float DistributionFloatUniformCurve::GetKeyOut(Int32 SubIndex, Int32 KeyIndex)
@@ -2087,11 +2087,11 @@ float DistributionFloatUniformCurve::GetKeyOut(Int32 SubIndex, Int32 KeyIndex)
 
 	if (SubIndex == 0)
 	{
-		return constantCurve_.points_[KeyIndex].OutVal.x_;
+		return constantCurve_.points_[KeyIndex].outVal_.x_;
 	}
 	else
 	{
-		return constantCurve_.points_[KeyIndex].OutVal.y_;
+		return constantCurve_.points_[KeyIndex].outVal_.y_;
 	}
 }
 
@@ -2123,7 +2123,7 @@ void DistributionFloatUniformCurve::GetInRange(float& MinIn, float& MaxIn) const
 		float Max = -BIG_NUMBER;
 		for (Int32 Index = 0; Index < constantCurve_.points_.Size(); Index++)
 		{
-			float Value = constantCurve_.points_[Index].InVal;
+			float Value = constantCurve_.points_[Index].inVal_;
 			if (Value < Min)
 			{
 				Min = Value;
@@ -2149,7 +2149,7 @@ void DistributionFloatUniformCurve::GetOutRange(float& MinOut, float& MaxOut) co
 InterpCurveMode DistributionFloatUniformCurve::GetKeyInterpMode(Int32 KeyIndex) const
 {
 	ASSERT((KeyIndex >= 0) && (KeyIndex < constantCurve_.points_.Size()));
-	return constantCurve_.points_[KeyIndex].InterpMode;
+	return constantCurve_.points_[KeyIndex].interpMode_;
 }
 
 void DistributionFloatUniformCurve::GetTangents(Int32 SubIndex, Int32 KeyIndex, float& ArriveTangent, float& LeaveTangent) const
@@ -2159,13 +2159,13 @@ void DistributionFloatUniformCurve::GetTangents(Int32 SubIndex, Int32 KeyIndex, 
 
 	if (SubIndex == 0)
 	{
-		ArriveTangent = constantCurve_.points_[KeyIndex].ArriveTangent.x_;
-		LeaveTangent = constantCurve_.points_[KeyIndex].LeaveTangent.x_;
+		ArriveTangent = constantCurve_.points_[KeyIndex].arriveTangent_.x_;
+		LeaveTangent = constantCurve_.points_[KeyIndex].leaveTangent_.x_;
 	}
 	else
 	{
-		ArriveTangent = constantCurve_.points_[KeyIndex].ArriveTangent.y_;
-		LeaveTangent = constantCurve_.points_[KeyIndex].LeaveTangent.y_;
+		ArriveTangent = constantCurve_.points_[KeyIndex].arriveTangent_.y_;
+		LeaveTangent = constantCurve_.points_[KeyIndex].leaveTangent_.y_;
 	}
 }
 
@@ -2223,11 +2223,11 @@ void DistributionFloatUniformCurve::SetKeyOut(Int32 SubIndex, Int32 KeyIndex, fl
 
 	if (SubIndex == 0)
 	{
-		constantCurve_.points_[KeyIndex].OutVal.x_ = NewOutVal;
+		constantCurve_.points_[KeyIndex].outVal_.x_ = NewOutVal;
 	}
 	else
 	{
-		constantCurve_.points_[KeyIndex].OutVal.y_ = NewOutVal;
+		constantCurve_.points_[KeyIndex].outVal_.y_ = NewOutVal;
 	}
 
 	constantCurve_.AutoSetTangents(0.f);
@@ -2238,7 +2238,7 @@ void DistributionFloatUniformCurve::SetKeyOut(Int32 SubIndex, Int32 KeyIndex, fl
 void DistributionFloatUniformCurve::SetKeyInterpMode(Int32 KeyIndex, InterpCurveMode NewMode)
 {
 	ASSERT((KeyIndex >= 0) && (KeyIndex < constantCurve_.points_.Size()));
-	constantCurve_.points_[KeyIndex].InterpMode = NewMode;
+	constantCurve_.points_[KeyIndex].interpMode_ = NewMode;
 	constantCurve_.AutoSetTangents(0.f);
 
 	isDirty_ = true;
@@ -2251,13 +2251,13 @@ void DistributionFloatUniformCurve::SetTangents(Int32 SubIndex, Int32 KeyIndex, 
 
 	if (SubIndex == 0)
 	{
-		constantCurve_.points_[KeyIndex].ArriveTangent.x_ = ArriveTangent;
-		constantCurve_.points_[KeyIndex].LeaveTangent.x_ = LeaveTangent;
+		constantCurve_.points_[KeyIndex].arriveTangent_.x_ = ArriveTangent;
+		constantCurve_.points_[KeyIndex].leaveTangent_.x_ = LeaveTangent;
 	}
 	else
 	{
-		constantCurve_.points_[KeyIndex].ArriveTangent.y_ = ArriveTangent;
-		constantCurve_.points_[KeyIndex].LeaveTangent.y_ = LeaveTangent;
+		constantCurve_.points_[KeyIndex].arriveTangent_.y_ = ArriveTangent;
+		constantCurve_.points_[KeyIndex].leaveTangent_.y_ = LeaveTangent;
 	}
 
 	isDirty_ = true;
@@ -2569,7 +2569,7 @@ Color DistributionVectorConstantCurve::GetSubCurveButtonColor(Int32 SubCurveInde
 float DistributionVectorConstantCurve::GetKeyIn(Int32 KeyIndex)
 {
 	ASSERT(KeyIndex >= 0 && KeyIndex < constantCurve_.points_.Size());
-	return constantCurve_.points_[KeyIndex].InVal;
+	return constantCurve_.points_[KeyIndex].inVal_;
 }
 
 float DistributionVectorConstantCurve::GetKeyOut(Int32 SubIndex, Int32 KeyIndex)
@@ -2579,31 +2579,31 @@ float DistributionVectorConstantCurve::GetKeyOut(Int32 SubIndex, Int32 KeyIndex)
 
 	if (SubIndex == 0)
 	{
-		return constantCurve_.points_[KeyIndex].OutVal.x_;
+		return constantCurve_.points_[KeyIndex].outVal_.x_;
 	}
 	else
 		if (SubIndex == 1)
 		{
 			if ((lockedAxes_ == EDVLF_XY) || (lockedAxes_ == EDVLF_XYZ))
 			{
-				return constantCurve_.points_[KeyIndex].OutVal.x_;
+				return constantCurve_.points_[KeyIndex].outVal_.x_;
 			}
 
-			return constantCurve_.points_[KeyIndex].OutVal.y_;
+			return constantCurve_.points_[KeyIndex].outVal_.y_;
 		}
 		else
 		{
 			if ((lockedAxes_ == EDVLF_XZ) || (lockedAxes_ == EDVLF_XYZ))
 			{
-				return constantCurve_.points_[KeyIndex].OutVal.x_;
+				return constantCurve_.points_[KeyIndex].outVal_.x_;
 			}
 			else
 				if (lockedAxes_ == EDVLF_YZ)
 				{
-					return constantCurve_.points_[KeyIndex].OutVal.y_;
+					return constantCurve_.points_[KeyIndex].outVal_.y_;
 				}
 
-			return constantCurve_.points_[KeyIndex].OutVal.z_;
+			return constantCurve_.points_[KeyIndex].outVal_.z_;
 		}
 }
 
@@ -2639,7 +2639,7 @@ void DistributionVectorConstantCurve::GetInRange(float& MinIn, float& MaxIn) con
 		float Max = -BIG_NUMBER;
 		for (Int32 Index = 0; Index < constantCurve_.points_.Size(); Index++)
 		{
-			float Value = constantCurve_.points_[Index].InVal;
+			float Value = constantCurve_.points_[Index].inVal_;
 			if (Value < Min)
 			{
 				Min = Value;
@@ -2691,7 +2691,7 @@ void DistributionVectorConstantCurve::GetOutRange(float& MinOut, float& MaxOut) 
 InterpCurveMode DistributionVectorConstantCurve::GetKeyInterpMode(Int32 KeyIndex) const
 {
 	ASSERT(KeyIndex >= 0 && KeyIndex < constantCurve_.points_.Size());
-	return constantCurve_.points_[KeyIndex].InterpMode;
+	return constantCurve_.points_[KeyIndex].interpMode_;
 }
 
 void DistributionVectorConstantCurve::GetTangents(Int32 SubIndex, Int32 KeyIndex, float& ArriveTangent, float& LeaveTangent) const
@@ -2701,18 +2701,18 @@ void DistributionVectorConstantCurve::GetTangents(Int32 SubIndex, Int32 KeyIndex
 
 	if (SubIndex == 0)
 	{
-		ArriveTangent = constantCurve_.points_[KeyIndex].ArriveTangent.x_;
-		LeaveTangent = constantCurve_.points_[KeyIndex].LeaveTangent.x_;
+		ArriveTangent = constantCurve_.points_[KeyIndex].arriveTangent_.x_;
+		LeaveTangent = constantCurve_.points_[KeyIndex].leaveTangent_.x_;
 	}
 	else if (SubIndex == 1)
 	{
-		ArriveTangent = constantCurve_.points_[KeyIndex].ArriveTangent.y_;
-		LeaveTangent = constantCurve_.points_[KeyIndex].LeaveTangent.y_;
+		ArriveTangent = constantCurve_.points_[KeyIndex].arriveTangent_.y_;
+		LeaveTangent = constantCurve_.points_[KeyIndex].leaveTangent_.y_;
 	}
 	else if (SubIndex == 2)
 	{
-		ArriveTangent = constantCurve_.points_[KeyIndex].ArriveTangent.z_;
-		LeaveTangent = constantCurve_.points_[KeyIndex].LeaveTangent.z_;
+		ArriveTangent = constantCurve_.points_[KeyIndex].arriveTangent_.z_;
+		LeaveTangent = constantCurve_.points_[KeyIndex].leaveTangent_.z_;
 	}
 }
 
@@ -2767,11 +2767,11 @@ void DistributionVectorConstantCurve::SetKeyOut(Int32 SubIndex, Int32 KeyIndex, 
 	ASSERT(KeyIndex >= 0 && KeyIndex < constantCurve_.points_.Size());
 
 	if (SubIndex == 0)
-		constantCurve_.points_[KeyIndex].OutVal.x_ = NewOutVal;
+		constantCurve_.points_[KeyIndex].outVal_.x_ = NewOutVal;
 	else if (SubIndex == 1)
-		constantCurve_.points_[KeyIndex].OutVal.y_ = NewOutVal;
+		constantCurve_.points_[KeyIndex].outVal_.y_ = NewOutVal;
 	else
-		constantCurve_.points_[KeyIndex].OutVal.z_ = NewOutVal;
+		constantCurve_.points_[KeyIndex].outVal_.z_ = NewOutVal;
 
 	constantCurve_.AutoSetTangents(0.f);
 
@@ -2782,7 +2782,7 @@ void DistributionVectorConstantCurve::SetKeyInterpMode(Int32 KeyIndex, InterpCur
 {
 	ASSERT(KeyIndex >= 0 && KeyIndex < constantCurve_.points_.Size());
 
-	constantCurve_.points_[KeyIndex].InterpMode = NewMode;
+	constantCurve_.points_[KeyIndex].interpMode_ = NewMode;
 	constantCurve_.AutoSetTangents(0.f);
 
 	isDirty_ = true;
@@ -2795,18 +2795,18 @@ void DistributionVectorConstantCurve::SetTangents(Int32 SubIndex, Int32 KeyIndex
 
 	if (SubIndex == 0)
 	{
-		constantCurve_.points_[KeyIndex].ArriveTangent.x_ = ArriveTangent;
-		constantCurve_.points_[KeyIndex].LeaveTangent.x_ = LeaveTangent;
+		constantCurve_.points_[KeyIndex].arriveTangent_.x_ = ArriveTangent;
+		constantCurve_.points_[KeyIndex].leaveTangent_.x_ = LeaveTangent;
 	}
 	else if (SubIndex == 1)
 	{
-		constantCurve_.points_[KeyIndex].ArriveTangent.y_ = ArriveTangent;
-		constantCurve_.points_[KeyIndex].LeaveTangent.y_ = LeaveTangent;
+		constantCurve_.points_[KeyIndex].arriveTangent_.y_ = ArriveTangent;
+		constantCurve_.points_[KeyIndex].leaveTangent_.y_ = LeaveTangent;
 	}
 	else if (SubIndex == 2)
 	{
-		constantCurve_.points_[KeyIndex].ArriveTangent.z_ = ArriveTangent;
-		constantCurve_.points_[KeyIndex].LeaveTangent.z_ = LeaveTangent;
+		constantCurve_.points_[KeyIndex].arriveTangent_.z_ = ArriveTangent;
+		constantCurve_.points_[KeyIndex].leaveTangent_.z_ = LeaveTangent;
 	}
 
 	isDirty_ = true;
@@ -3471,7 +3471,7 @@ RawDistributionOperation DistributionVectorUniformCurve::GetOperation() const
 	{
 		// Only a single point - so see if Min == Max
 		const InterpCurvePoint<TwoVectors>& Value = constantCurve_.points_[0];
-		if (Value.OutVal.v1_ == Value.OutVal.v2_)
+		if (Value.outVal_.v1_ == Value.outVal_.v2_)
 		{
 			// This may as well be a constant - don't bother doing the SRand scaling on it.
 			return RDO_None;
@@ -3618,7 +3618,7 @@ Color DistributionVectorUniformCurve::GetSubCurveButtonColor(Int32 SubCurveIndex
 float DistributionVectorUniformCurve::GetKeyIn(Int32 KeyIndex)
 {
 	ASSERT(KeyIndex >= 0 && KeyIndex < constantCurve_.points_.Size());
-	return constantCurve_.points_[KeyIndex].InVal;
+	return constantCurve_.points_[KeyIndex].inVal_;
 }
 
 float DistributionVectorUniformCurve::GetKeyOut(Int32 SubIndex, Int32 KeyIndex)
@@ -3630,7 +3630,7 @@ float DistributionVectorUniformCurve::GetKeyOut(Int32 SubIndex, Int32 KeyIndex)
 	// Grab the value
 	InterpCurvePoint<TwoVectors>	Point = constantCurve_.points_[KeyIndex];
 
-	TwoVectors	Val = Point.OutVal;
+	TwoVectors	Val = Point.outVal_;
 	LockAndMirror(Val);
 	if ((SubIndex % 2) == 0)
 	{
@@ -3683,7 +3683,7 @@ void DistributionVectorUniformCurve::GetInRange(float& MinIn, float& MaxIn) cons
 		float Max = -BIG_NUMBER;
 		for (Int32 Index = 0; Index < constantCurve_.points_.Size(); Index++)
 		{
-			float Value = constantCurve_.points_[Index].InVal;
+			float Value = constantCurve_.points_[Index].inVal_;
 			if (Value < Min)
 			{
 				Min = Value;
@@ -3713,7 +3713,7 @@ void DistributionVectorUniformCurve::GetOutRange(float& MinOut, float& MaxOut) c
 InterpCurveMode DistributionVectorUniformCurve::GetKeyInterpMode(Int32 KeyIndex) const
 {
 	ASSERT((KeyIndex >= 0) && (KeyIndex < constantCurve_.points_.Size()));
-	return constantCurve_.points_[KeyIndex].InterpMode;
+	return constantCurve_.points_[KeyIndex].interpMode_;
 }
 
 void DistributionVectorUniformCurve::GetTangents(Int32 SubIndex, Int32 KeyIndex, float& ArriveTangent, float& LeaveTangent) const
@@ -3723,38 +3723,38 @@ void DistributionVectorUniformCurve::GetTangents(Int32 SubIndex, Int32 KeyIndex,
 
 	if (SubIndex == 0)
 	{
-		ArriveTangent = constantCurve_.points_[KeyIndex].ArriveTangent.v1_.x_;
-		LeaveTangent = constantCurve_.points_[KeyIndex].LeaveTangent.v1_.x_;
+		ArriveTangent = constantCurve_.points_[KeyIndex].arriveTangent_.v1_.x_;
+		LeaveTangent = constantCurve_.points_[KeyIndex].leaveTangent_.v1_.x_;
 	}
 	else
 		if (SubIndex == 1)
 		{
-			ArriveTangent = constantCurve_.points_[KeyIndex].ArriveTangent.v2_.x_;
-			LeaveTangent = constantCurve_.points_[KeyIndex].LeaveTangent.v2_.x_;
+			ArriveTangent = constantCurve_.points_[KeyIndex].arriveTangent_.v2_.x_;
+			LeaveTangent = constantCurve_.points_[KeyIndex].leaveTangent_.v2_.x_;
 		}
 		else
 			if (SubIndex == 2)
 			{
-				ArriveTangent = constantCurve_.points_[KeyIndex].ArriveTangent.v1_.y_;
-				LeaveTangent = constantCurve_.points_[KeyIndex].LeaveTangent.v1_.y_;
+				ArriveTangent = constantCurve_.points_[KeyIndex].arriveTangent_.v1_.y_;
+				LeaveTangent = constantCurve_.points_[KeyIndex].leaveTangent_.v1_.y_;
 			}
 			else
 				if (SubIndex == 3)
 				{
-					ArriveTangent = constantCurve_.points_[KeyIndex].ArriveTangent.v2_.y_;
-					LeaveTangent = constantCurve_.points_[KeyIndex].LeaveTangent.v2_.y_;
+					ArriveTangent = constantCurve_.points_[KeyIndex].arriveTangent_.v2_.y_;
+					LeaveTangent = constantCurve_.points_[KeyIndex].leaveTangent_.v2_.y_;
 				}
 				else
 					if (SubIndex == 4)
 					{
-						ArriveTangent = constantCurve_.points_[KeyIndex].ArriveTangent.v1_.z_;
-						LeaveTangent = constantCurve_.points_[KeyIndex].LeaveTangent.v1_.z_;
+						ArriveTangent = constantCurve_.points_[KeyIndex].arriveTangent_.v1_.z_;
+						LeaveTangent = constantCurve_.points_[KeyIndex].leaveTangent_.v1_.z_;
 					}
 					else
 						if (SubIndex == 5)
 						{
-							ArriveTangent = constantCurve_.points_[KeyIndex].ArriveTangent.v2_.z_;
-							LeaveTangent = constantCurve_.points_[KeyIndex].LeaveTangent.v2_.z_;
+							ArriveTangent = constantCurve_.points_[KeyIndex].arriveTangent_.v2_.z_;
+							LeaveTangent = constantCurve_.points_[KeyIndex].leaveTangent_.v2_.z_;
 						}
 }
 
@@ -3789,7 +3789,7 @@ Int32 DistributionVectorUniformCurve::CreateNewKey(float KeyIn)
 void DistributionVectorUniformCurve::DeleteKey(Int32 KeyIndex)
 {
 	ASSERT((KeyIndex >= 0) && (KeyIndex < constantCurve_.points_.Size()));
-	constantCurve_.points_.RemoveAt(KeyIndex);
+	constantCurve_.points_.Erase(KeyIndex);
 	constantCurve_.AutoSetTangents(0.f);
 
 	isDirty_ = true;
@@ -3818,38 +3818,38 @@ void DistributionVectorUniformCurve::SetKeyOut(Int32 SubIndex, Int32 KeyIndex, f
 
 	if (SubIndex == 0)
 	{
-		Value = Max<float>(NewOutVal, Point->OutVal.v2_.x_);
-		Point->OutVal.v1_.x_ = Value;
+		Value = Max<float>(NewOutVal, Point->outVal_.v2_.x_);
+		Point->outVal_.v1_.x_ = Value;
 	}
 	else
 		if (SubIndex == 1)
 		{
-			Value = Min<float>(NewOutVal, Point->OutVal.v1_.x_);
-			Point->OutVal.v2_.x_ = Value;
+			Value = Min<float>(NewOutVal, Point->outVal_.v1_.x_);
+			Point->outVal_.v2_.x_ = Value;
 		}
 		else
 			if (SubIndex == 2)
 			{
-				Value = Max<float>(NewOutVal, Point->OutVal.v2_.y_);
-				Point->OutVal.v1_.y_ = Value;
+				Value = Max<float>(NewOutVal, Point->outVal_.v2_.y_);
+				Point->outVal_.v1_.y_ = Value;
 			}
 			else
 				if (SubIndex == 3)
 				{
-					Value = Min<float>(NewOutVal, Point->OutVal.v1_.y_);
-					Point->OutVal.v2_.y_ = Value;
+					Value = Min<float>(NewOutVal, Point->outVal_.v1_.y_);
+					Point->outVal_.v2_.y_ = Value;
 				}
 				else
 					if (SubIndex == 4)
 					{
-						Value = Max<float>(NewOutVal, Point->OutVal.v2_.z_);
-						Point->OutVal.v1_.z_ = Value;
+						Value = Max<float>(NewOutVal, Point->outVal_.v2_.z_);
+						Point->outVal_.v1_.z_ = Value;
 					}
 					else
 						if (SubIndex == 5)
 						{
-							Value = Min<float>(NewOutVal, Point->OutVal.v1_.z_);
-							Point->OutVal.v2_.z_ = Value;
+							Value = Min<float>(NewOutVal, Point->outVal_.v1_.z_);
+							Point->outVal_.v2_.z_ = Value;
 						}
 
 	constantCurve_.AutoSetTangents(0.f);
@@ -3861,7 +3861,7 @@ void DistributionVectorUniformCurve::SetKeyInterpMode(Int32 KeyIndex, InterpCurv
 {
 	ASSERT((KeyIndex >= 0) && (KeyIndex < constantCurve_.points_.Size()));
 
-	constantCurve_.points_[KeyIndex].InterpMode = NewMode;
+	constantCurve_.points_[KeyIndex].interpMode_ = NewMode;
 	constantCurve_.AutoSetTangents(0.f);
 
 	isDirty_ = true;
@@ -3874,38 +3874,38 @@ void DistributionVectorUniformCurve::SetTangents(Int32 SubIndex, Int32 KeyIndex,
 
 	if (SubIndex == 0)
 	{
-		constantCurve_.points_[KeyIndex].ArriveTangent.v1_.x_ = ArriveTangent;
-		constantCurve_.points_[KeyIndex].LeaveTangent.v1_.x_ = LeaveTangent;
+		constantCurve_.points_[KeyIndex].arriveTangent_.v1_.x_ = ArriveTangent;
+		constantCurve_.points_[KeyIndex].leaveTangent_.v1_.x_ = LeaveTangent;
 	}
 	else
 		if (SubIndex == 1)
 		{
-			constantCurve_.points_[KeyIndex].ArriveTangent.v2_.x_ = ArriveTangent;
-			constantCurve_.points_[KeyIndex].LeaveTangent.v2_.x_ = LeaveTangent;
+			constantCurve_.points_[KeyIndex].arriveTangent_.v2_.x_ = ArriveTangent;
+			constantCurve_.points_[KeyIndex].leaveTangent_.v2_.x_ = LeaveTangent;
 		}
 		else
 			if (SubIndex == 2)
 			{
-				constantCurve_.points_[KeyIndex].ArriveTangent.v1_.y_ = ArriveTangent;
-				constantCurve_.points_[KeyIndex].LeaveTangent.v1_.y_ = LeaveTangent;
+				constantCurve_.points_[KeyIndex].arriveTangent_.v1_.y_ = ArriveTangent;
+				constantCurve_.points_[KeyIndex].leaveTangent_.v1_.y_ = LeaveTangent;
 			}
 			else
 				if (SubIndex == 3)
 				{
-					constantCurve_.points_[KeyIndex].ArriveTangent.v2_.y_ = ArriveTangent;
-					constantCurve_.points_[KeyIndex].LeaveTangent.v2_.y_ = LeaveTangent;
+					constantCurve_.points_[KeyIndex].arriveTangent_.v2_.y_ = ArriveTangent;
+					constantCurve_.points_[KeyIndex].leaveTangent_.v2_.y_ = LeaveTangent;
 				}
 				else
 					if (SubIndex == 4)
 					{
-						constantCurve_.points_[KeyIndex].ArriveTangent.v1_.z_ = ArriveTangent;
-						constantCurve_.points_[KeyIndex].LeaveTangent.v1_.z_ = LeaveTangent;
+						constantCurve_.points_[KeyIndex].arriveTangent_.v1_.z_ = ArriveTangent;
+						constantCurve_.points_[KeyIndex].leaveTangent_.v1_.z_ = LeaveTangent;
 					}
 					else
 						if (SubIndex == 5)
 						{
-							constantCurve_.points_[KeyIndex].ArriveTangent.v2_.z_ = ArriveTangent;
-							constantCurve_.points_[KeyIndex].LeaveTangent.v2_.z_ = LeaveTangent;
+							constantCurve_.points_[KeyIndex].arriveTangent_.v2_.z_ = ArriveTangent;
+							constantCurve_.points_[KeyIndex].leaveTangent_.v2_.z_ = LeaveTangent;
 						}
 
 	isDirty_ = true;

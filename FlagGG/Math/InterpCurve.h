@@ -179,9 +179,8 @@ public:
 template< class T > 
 Int32 InterpCurve<T>::AddPoint(const float inVal, const T& outVal)
 {
-	Int32 i = 0; for (i = 0; i < points_.Size() && points_[i].inVal < inVal; i++);
-	points_.InsertUninitialized(i);
-	points_[i] = InterpCurvePoint<T>(inVal, outVal);
+	Int32 i = 0; for (i = 0; i < points_.Size() && points_[i].inVal_ < inVal; i++);
+	points_.Insert(i, InterpCurvePoint<T>(inVal, outVal));
 	return i;
 }
 
@@ -192,17 +191,17 @@ Int32 InterpCurve<T>::MovePoint(Int32 pointIndex, float newInVal)
 	if (pointIndex < 0 || pointIndex >= points_.Size())
 		return pointIndex;
 
-	const T outVal = points_[pointIndex].outVal;
-	const InterpCurveMode Mode = points_[pointIndex].InterpMode;
-	const T ArriveTan = points_[pointIndex].ArriveTangent;
-	const T LeaveTan = points_[pointIndex].LeaveTangent;
+	const T outVal = points_[pointIndex].outVal_;
+	const InterpCurveMode Mode = points_[pointIndex].interpMode_;
+	const T ArriveTan = points_[pointIndex].arriveTangent_;
+	const T LeaveTan = points_[pointIndex].leaveTangent_;
 
 	points_.Erase(pointIndex);
 
 	const Int32 NewPointIndex = AddPoint(newInVal, outVal);
-	points_[NewPointIndex].InterpMode = Mode;
-	points_[NewPointIndex].ArriveTangent = ArriveTan;
-	points_[NewPointIndex].LeaveTangent = LeaveTan;
+	points_[NewPointIndex].interpMode_ = Mode;
+	points_[NewPointIndex].arriveTangent_ = ArriveTan;
+	points_[NewPointIndex].leaveTangent_ = LeaveTan;
 
 	return NewPointIndex;
 }
@@ -225,7 +224,7 @@ void InterpCurve<T>::SetLoopKey(float inLoopKey)
 		return;
 	}
 
-	const float LastInKey = points_.Back().inVal;
+	const float LastInKey = points_.Back().inVal_;
 	if (inLoopKey > LastInKey)
 	{
 		// Calculate loop key offset from the input key of the final point
@@ -255,12 +254,12 @@ Int32 InterpCurve<T>::GetPointIndexForInputValue(const float inValue) const
 
 	ASSERT(NumPoints > 0);
 
-	if (inValue < points_[0].inVal)
+	if (inValue < points_[0].inVal_)
 	{
 		return -1;
 	}
 
-	if (inValue >= points_[LastPoint].inVal)
+	if (inValue >= points_[LastPoint].inVal_)
 	{
 		return LastPoint;
 	}
@@ -272,7 +271,7 @@ Int32 InterpCurve<T>::GetPointIndexForInputValue(const float inValue) const
 	{
 		Int32 MidIndex = (MinIndex + MaxIndex) / 2;
 
-		if (points_[MidIndex].inVal <= inValue)
+		if (points_[MidIndex].inVal_ <= inValue)
 		{
 			MinIndex = MidIndex;
 		}
@@ -304,7 +303,7 @@ T InterpCurve<T>::Eval(const float inVal, const T& default) const
 	// If before the first point, return its value
 	if (Index == -1)
 	{
-		return points_[0].outVal;
+		return points_[0].outVal_;
 	}
 
 	// If on or beyond the last point, return its value.
@@ -312,12 +311,12 @@ T InterpCurve<T>::Eval(const float inVal, const T& default) const
 	{
 		if (!isLooped_)
 		{
-			return points_[LastPoint].outVal;
+			return points_[LastPoint].outVal_;
 		}
-		else if (inVal >= points_[LastPoint].inVal + loopKeyOffset_)
+		else if (inVal >= points_[LastPoint].inVal_ + loopKeyOffset_)
 		{
 			// Looped spline: last point is the same as the first point
-			return points_[0].outVal;
+			return points_[0].outVal_;
 		}
 	}
 
@@ -329,25 +328,25 @@ T InterpCurve<T>::Eval(const float inVal, const T& default) const
 	const auto& PrevPoint = points_[Index];
 	const auto& NextPoint = points_[NextIndex];
 
-	const float Diff = bLoopSegment ? loopKeyOffset_ : (NextPoint.inVal - PrevPoint.inVal);
+	const float Diff = bLoopSegment ? loopKeyOffset_ : (NextPoint.inVal_ - PrevPoint.inVal_);
 
-	if (Diff > 0.0f && PrevPoint.InterpMode != CIM_Constant)
+	if (Diff > 0.0f && PrevPoint.interpMode_ != CIM_Constant)
 	{
-		const float Alpha = (inVal - PrevPoint.inVal) / Diff;
+		const float Alpha = (inVal - PrevPoint.inVal_) / Diff;
 		ASSERT(Alpha >= 0.0f && Alpha <= 1.0f);
 
-		if (PrevPoint.InterpMode == CIM_Linear)
+		if (PrevPoint.interpMode_ == CIM_Linear)
 		{
-			return FMath::Lerp(PrevPoint.outVal, NextPoint.outVal, Alpha);
+			return Lerp(PrevPoint.outVal_, NextPoint.outVal_, Alpha);
 		}
 		else
 		{
-			return FMath::CubicInterp(PrevPoint.outVal, PrevPoint.LeaveTangent * Diff, NextPoint.outVal, NextPoint.ArriveTangent * Diff, Alpha);
+			return CubicInterp(PrevPoint.outVal_, PrevPoint.leaveTangent_ * Diff, NextPoint.outVal_, NextPoint.arriveTangent_ * Diff, Alpha);
 		}
 	}
 	else
 	{
-		return points_[Index].outVal;
+		return points_[Index].outVal_;
 	}
 }
 
@@ -370,7 +369,7 @@ T InterpCurve<T>::EvalDerivative(const float inVal, const T& default) const
 	// If before the first point, return its tangent value
 	if (Index == -1)
 	{
-		return points_[0].LeaveTangent;
+		return points_[0].leaveTangent_;
 	}
 
 	// If on or beyond the last point, return its tangent value.
@@ -378,12 +377,12 @@ T InterpCurve<T>::EvalDerivative(const float inVal, const T& default) const
 	{
 		if (!isLooped_)
 		{
-			return points_[LastPoint].ArriveTangent;
+			return points_[LastPoint].arriveTangent_;
 		}
-		else if (inVal >= points_[LastPoint].inVal + loopKeyOffset_)
+		else if (inVal >= points_[LastPoint].inVal_ + loopKeyOffset_)
 		{
 			// Looped spline: last point is the same as the first point
-			return points_[0].ArriveTangent;
+			return points_[0].arriveTangent_;
 		}
 	}
 
@@ -395,20 +394,20 @@ T InterpCurve<T>::EvalDerivative(const float inVal, const T& default) const
 	const auto& PrevPoint = points_[Index];
 	const auto& NextPoint = points_[NextIndex];
 
-	const float Diff = bLoopSegment ? loopKeyOffset_ : (NextPoint.inVal - PrevPoint.inVal);
+	const float Diff = bLoopSegment ? loopKeyOffset_ : (NextPoint.inVal_ - PrevPoint.inVal_);
 
-	if (Diff > 0.0f && PrevPoint.InterpMode != CIM_Constant)
+	if (Diff > 0.0f && PrevPoint.interpMode_ != CIM_Constant)
 	{
-		if (PrevPoint.InterpMode == CIM_Linear)
+		if (PrevPoint.interpMode_ == CIM_Linear)
 		{
-			return (NextPoint.outVal - PrevPoint.outVal) / Diff;
+			return (NextPoint.outVal_ - PrevPoint.outVal_) / Diff;
 		}
 		else
 		{
-			const float Alpha = (inVal - PrevPoint.inVal) / Diff;
+			const float Alpha = (inVal - PrevPoint.inVal_) / Diff;
 			ASSERT(Alpha >= 0.0f && Alpha <= 1.0f);
 
-			return FMath::CubicInterpDerivative(PrevPoint.outVal, PrevPoint.LeaveTangent * Diff, NextPoint.outVal, NextPoint.ArriveTangent * Diff, Alpha) / Diff;
+			return CubicInterpDerivative(PrevPoint.outVal_, PrevPoint.leaveTangent_ * Diff, NextPoint.outVal_, NextPoint.arriveTangent_ * Diff, Alpha) / Diff;
 		}
 	}
 	else
@@ -443,7 +442,7 @@ T InterpCurve<T>::EvalSecondDerivative(const float inVal, const T& default) cons
 	// If on or beyond the last point, return 0
 	if (Index == LastPoint)
 	{
-		if (!isLooped_ || (inVal >= points_[LastPoint].inVal + loopKeyOffset_))
+		if (!isLooped_ || (inVal >= points_[LastPoint].inVal_ + loopKeyOffset_))
 		{
 			return T(ForceInit);
 		}
@@ -457,21 +456,21 @@ T InterpCurve<T>::EvalSecondDerivative(const float inVal, const T& default) cons
 	const auto& PrevPoint = points_[Index];
 	const auto& NextPoint = points_[NextIndex];
 
-	const float Diff = bLoopSegment ? loopKeyOffset_ : (NextPoint.inVal - PrevPoint.inVal);
+	const float Diff = bLoopSegment ? loopKeyOffset_ : (NextPoint.inVal_ - PrevPoint.inVal_);
 
-	if (Diff > 0.0f && PrevPoint.InterpMode != CIM_Constant)
+	if (Diff > 0.0f && PrevPoint.interpMode_ != CIM_Constant)
 	{
-		if (PrevPoint.InterpMode == CIM_Linear)
+		if (PrevPoint.interpMode_ == CIM_Linear)
 		{
 			// No change in tangent, return 0.
 			return T(ForceInit);
 		}
 		else
 		{
-			const float Alpha = (inVal - PrevPoint.inVal) / Diff;
+			const float Alpha = (inVal - PrevPoint.inVal_) / Diff;
 			ASSERT(Alpha >= 0.0f && Alpha <= 1.0f);
 
-			return FMath::CubicInterpSecondDerivative(PrevPoint.outVal, PrevPoint.LeaveTangent * Diff, NextPoint.outVal, NextPoint.ArriveTangent * Diff, Alpha) / (Diff * Diff);
+			return CubicInterpSecondDerivative(PrevPoint.outVal_, PrevPoint.leaveTangent_ * Diff, NextPoint.outVal_, NextPoint.arriveTangent_ * Diff, Alpha) / (Diff * Diff);
 		}
 	}
 	else
@@ -518,9 +517,9 @@ float InterpCurve<T>::InaccurateFindNearest(const T &pointInSpace, float& outDis
 
 	if (NumPoints == 1)
 	{
-		outDistanceSq = static_cast<float>((pointInSpace - points_[0].outVal).SizeSquared());
+		outDistanceSq = static_cast<float>((pointInSpace - points_[0].outVal_).LengthSquared());
 		outSegment = 0;
-		return points_[0].inVal;
+		return points_[0].inVal_;
 	}
 
 	return 0.0f;
@@ -535,30 +534,30 @@ float InterpCurve<T>::InaccurateFindNearestOnSegment(const T& pointInSpace, Int3
 	const Int32 NextPtIdx = (isLooped_ && ptIdx == LastPoint) ? 0 : (ptIdx + 1);
 	ASSERT(ptIdx >= 0 && ((isLooped_ && ptIdx < NumPoints) || (!isLooped_ && ptIdx < LastPoint)));
 
-	const float NextInVal = (isLooped_ && ptIdx == LastPoint) ? (points_[LastPoint].inVal + loopKeyOffset_) : points_[NextPtIdx].inVal;
+	const float NextInVal = (isLooped_ && ptIdx == LastPoint) ? (points_[LastPoint].inVal_ + loopKeyOffset_) : points_[NextPtIdx].inVal_;
 
-	if (CIM_Constant == points_[ptIdx].InterpMode)
+	if (CIM_Constant == points_[ptIdx].interpMode_)
 	{
-		const float Distance1 = static_cast<float>((points_[ptIdx].outVal - pointInSpace).SizeSquared());
-		const float Distance2 = static_cast<float>((points_[NextPtIdx].outVal - pointInSpace).SizeSquared());
+		const float Distance1 = static_cast<float>((points_[ptIdx].outVal_ - pointInSpace).LengthSquared());
+		const float Distance2 = static_cast<float>((points_[NextPtIdx].outVal_ - pointInSpace).LengthSquared());
 		if (Distance1 < Distance2)
 		{
 			outSquaredDistance = Distance1;
-			return points_[ptIdx].inVal;
+			return points_[ptIdx].inVal_;
 		}
 		outSquaredDistance = Distance2;
 		return NextInVal;
 	}
 
-	const float Diff = NextInVal - points_[ptIdx].inVal;
-	if (CIM_Linear == points_[ptIdx].InterpMode)
+	const float Diff = NextInVal - points_[ptIdx].inVal_;
+	if (CIM_Linear == points_[ptIdx].interpMode_)
 	{
-		// like in function: FMath::ClosestPointOnLine
-		const float A = static_cast<float>((points_[ptIdx].outVal - pointInSpace) | (points_[NextPtIdx].outVal - points_[ptIdx].outVal));
-		const float B = static_cast<float>((points_[NextPtIdx].outVal - points_[ptIdx].outVal).SizeSquared());
-		const float V = FMath::Clamp(-A / B, 0.f, 1.f);
-		outSquaredDistance = static_cast<float>((FMath::Lerp(points_[ptIdx].outVal, points_[NextPtIdx].outVal, V) - pointInSpace).SizeSquared());
-		return V * Diff + points_[ptIdx].inVal;
+		// like in function: ClosestPointOnLine
+		const float A = static_cast<float>((points_[ptIdx].outVal_ - pointInSpace) | (points_[NextPtIdx].outVal_ - points_[ptIdx].outVal_));
+		const float B = static_cast<float>((points_[NextPtIdx].outVal_ - points_[ptIdx].outVal_).LengthSquared());
+		const float V = Clamp(-A / B, 0.f, 1.f);
+		outSquaredDistance = static_cast<float>((Lerp(points_[ptIdx].outVal_, points_[NextPtIdx].outVal_, V) - pointInSpace).LengthSquared());
+		return V * Diff + points_[ptIdx].inVal_;
 	}
 
 	{
@@ -573,9 +572,9 @@ float InterpCurve<T>::InaccurateFindNearestOnSegment(const T& pointInSpace, Int3
 		ValuesT[2] = 1.0f;
 
 		T InitialPoints[PointsChecked];
-		InitialPoints[0] = points_[ptIdx].outVal;
-		InitialPoints[1] = FMath::CubicInterp(points_[ptIdx].outVal, points_[ptIdx].LeaveTangent * Diff, points_[NextPtIdx].outVal, points_[NextPtIdx].ArriveTangent * Diff, ValuesT[1]);
-		InitialPoints[2] = points_[NextPtIdx].outVal;
+		InitialPoints[0] = points_[ptIdx].outVal_;
+		InitialPoints[1] = CubicInterp(points_[ptIdx].outVal_, points_[ptIdx].leaveTangent_ * Diff, points_[NextPtIdx].outVal_, points_[NextPtIdx].arriveTangent_ * Diff, ValuesT[1]);
+		InitialPoints[2] = points_[NextPtIdx].outVal_;
 
 		float DistancesSq[PointsChecked];
 
@@ -586,17 +585,17 @@ float InterpCurve<T>::InaccurateFindNearestOnSegment(const T& pointInSpace, Int3
 			float LastMove = 1.0f;
 			for (Int32 iter = 0; iter < IterationNum; ++iter)
 			{
-				const T LastBestTangent = FMath::CubicInterpDerivative(points_[ptIdx].outVal, points_[ptIdx].LeaveTangent * Diff, points_[NextPtIdx].outVal, points_[NextPtIdx].ArriveTangent * Diff, ValuesT[point]);
+				const T LastBestTangent = CubicInterpDerivative(points_[ptIdx].outVal_, points_[ptIdx].leaveTangent_ * Diff, points_[NextPtIdx].outVal_, points_[NextPtIdx].arriveTangent_ * Diff, ValuesT[point]);
 				const T Delta = (pointInSpace - FoundPoint);
-				float Move = static_cast<float>((LastBestTangent | Delta) / LastBestTangent.SizeSquared());
-				Move = FMath::Clamp(Move, -LastMove*Scale, LastMove*Scale);
+				float Move = static_cast<float>((LastBestTangent | Delta) / LastBestTangent.LengthSquared());
+				Move = Clamp(Move, -LastMove*Scale, LastMove*Scale);
 				ValuesT[point] += Move;
-				ValuesT[point] = FMath::Clamp(ValuesT[point], 0.0f, 1.0f);
-				LastMove = FMath::Abs(Move);
-				FoundPoint = FMath::CubicInterp(points_[ptIdx].outVal, points_[ptIdx].LeaveTangent * Diff, points_[NextPtIdx].outVal, points_[NextPtIdx].ArriveTangent * Diff, ValuesT[point]);
+				ValuesT[point] = Clamp(ValuesT[point], 0.0f, 1.0f);
+				LastMove = Abs(Move);
+				FoundPoint = CubicInterp(points_[ptIdx].outVal_, points_[ptIdx].leaveTangent_ * Diff, points_[NextPtIdx].outVal_, points_[NextPtIdx].arriveTangent_ * Diff, ValuesT[point]);
 			}
-			DistancesSq[point] = static_cast<float>((FoundPoint - pointInSpace).SizeSquared());
-			ValuesT[point] = ValuesT[point] * Diff + points_[ptIdx].inVal;
+			DistancesSq[point] = static_cast<float>((FoundPoint - pointInSpace).LengthSquared());
+			ValuesT[point] = ValuesT[point] * Diff + points_[ptIdx].inVal_;
 		}
 
 		if (DistancesSq[0] <= DistancesSq[1] && DistancesSq[0] <= DistancesSq[2])
@@ -631,53 +630,53 @@ void InterpCurve<T>::AutoSetTangents(float tension, bool stationaryEndpoints)
 		const auto& PrevPoint = points_[PrevIndex];
 		const auto& NextPoint = points_[NextIndex];
 
-		if (ThisPoint.InterpMode == CIM_CurveAuto || ThisPoint.InterpMode == CIM_CurveAutoClamped)
+		if (ThisPoint.interpMode_ == CIM_CurveAuto || ThisPoint.interpMode_ == CIM_CurveAutoClamped)
 		{
 			if (stationaryEndpoints && (pointIndex == 0 || (pointIndex == LastPoint && !isLooped_)))
 			{
 				// Start and end points get zero tangents if stationaryEndpoints is true
-				ThisPoint.ArriveTangent = T(ForceInit);
-				ThisPoint.LeaveTangent = T(ForceInit);
+				ThisPoint.arriveTangent_ = T();
+				ThisPoint.leaveTangent_ = T();
 			}
 			else if (PrevPoint.IsCurveKey())
 			{
-				const bool bWantClamping = (ThisPoint.InterpMode == CIM_CurveAutoClamped);
+				const bool bWantClamping = (ThisPoint.interpMode_ == CIM_CurveAutoClamped);
 				T Tangent;
 
-				const float PrevTime = (isLooped_ && pointIndex == 0) ? (ThisPoint.inVal - loopKeyOffset_) : PrevPoint.inVal;
-				const float NextTime = (isLooped_ && pointIndex == LastPoint) ? (ThisPoint.inVal + loopKeyOffset_) : NextPoint.inVal;
+				const float PrevTime = (isLooped_ && pointIndex == 0) ? (ThisPoint.inVal_ - loopKeyOffset_) : PrevPoint.inVal_;
+				const float NextTime = (isLooped_ && pointIndex == LastPoint) ? (ThisPoint.inVal_ + loopKeyOffset_) : NextPoint.inVal_;
 
 				ComputeCurveTangent(
 					PrevTime,			// Previous time
-					PrevPoint.outVal,	// Previous point
-					ThisPoint.inVal,	// Current time
-					ThisPoint.outVal,	// Current point
+					PrevPoint.outVal_,	// Previous point
+					ThisPoint.inVal_,	// Current time
+					ThisPoint.outVal_,	// Current point
 					NextTime,			// Next time
-					NextPoint.outVal,	// Next point
+					NextPoint.outVal_,	// Next point
 					tension,			// tension
 					bWantClamping,		// Want clamping?
 					Tangent);			// Out
 
-				ThisPoint.ArriveTangent = Tangent;
-				ThisPoint.LeaveTangent = Tangent;
+				ThisPoint.arriveTangent_ = Tangent;
+				ThisPoint.leaveTangent_ = Tangent;
 			}
 			else
 			{
 				// Following on from a line or constant; set curve tangent equal to that so there are no discontinuities
-				ThisPoint.ArriveTangent = PrevPoint.ArriveTangent;
-				ThisPoint.LeaveTangent = PrevPoint.LeaveTangent;
+				ThisPoint.arriveTangent_ = PrevPoint.arriveTangent_;
+				ThisPoint.leaveTangent_ = PrevPoint.leaveTangent_;
 			}
 		}
-		else if (ThisPoint.InterpMode == CIM_Linear)
+		else if (ThisPoint.interpMode_ == CIM_Linear)
 		{
-			T Tangent = NextPoint.outVal - ThisPoint.outVal;
-			ThisPoint.ArriveTangent = Tangent;
-			ThisPoint.LeaveTangent = Tangent;
+			T Tangent = NextPoint.outVal_ - ThisPoint.outVal_;
+			ThisPoint.arriveTangent_ = Tangent;
+			ThisPoint.leaveTangent_ = Tangent;
 		}
-		else if (ThisPoint.InterpMode == CIM_Constant)
+		else if (ThisPoint.interpMode_ == CIM_Constant)
 		{
-			ThisPoint.ArriveTangent = T(ForceInit);
-			ThisPoint.LeaveTangent = T(ForceInit);
+			ThisPoint.arriveTangent_ = T();
+			ThisPoint.leaveTangent_ = T();
 		}
 	}
 }
@@ -695,13 +694,13 @@ void InterpCurve<T>::CalcBounds(T& outMin, T& outMax, const T& default) const
 	}
 	else if (NumPoints == 1)
 	{
-		outMin = points_[0].outVal;
-		outMax = points_[0].outVal;
+		outMin = points_[0].outVal_;
+		outMax = points_[0].outVal_;
 	}
 	else
 	{
-		outMin = points_[0].outVal;
-		outMax = points_[0].outVal;
+		outMin = points_[0].outVal_;
+		outMax = points_[0].outVal_;
 
 		const Int32 NumSegments = isLooped_ ? NumPoints : (NumPoints - 1);
 
@@ -712,8 +711,6 @@ void InterpCurve<T>::CalcBounds(T& outMin, T& outMax, const T& default) const
 		}
 	}
 }
-
-
 
 /* Common type definitions
  *****************************************************************************/
@@ -740,7 +737,7 @@ DEFINE_INTERPCURVE_WRAPPER_STRUCT(InterpCurveFloat,       float)
 DEFINE_INTERPCURVE_WRAPPER_STRUCT(InterpCurveVector2D,    Vector2)
 DEFINE_INTERPCURVE_WRAPPER_STRUCT(InterpCurveVector,      Vector3)
 DEFINE_INTERPCURVE_WRAPPER_STRUCT(InterpCurveQuat,        Quaternion)
-DEFINE_INTERPCURVE_WRAPPER_STRUCT(InterpCurveTwoVectors,  TwoVector3)
+DEFINE_INTERPCURVE_WRAPPER_STRUCT(InterpCurveTwoVectors,  TwoVectors)
 DEFINE_INTERPCURVE_WRAPPER_STRUCT(InterpCurveLinearColor, Color)
 
 }

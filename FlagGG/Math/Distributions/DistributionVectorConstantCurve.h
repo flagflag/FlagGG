@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Math/Distributions/DistributionVector.h"
+#include "Math/InterpCurve.h"
 
 namespace FlagGG
 {

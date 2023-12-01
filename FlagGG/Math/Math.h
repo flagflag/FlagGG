@@ -93,13 +93,50 @@ FlagGG_API Real Ceil(Real number);
 
 FlagGG_API Int32 CeilToInt(Real number);
 
-FlagGG_API Real Lerp(float from, float to, float t);
+template <class T>
+FORCEINLINE T Lerp(const T& from, const T& to, const float t)
+{
+	return to * t + from * (1.0f - t);
+}
+
+template <class T>
+FORCEINLINE T CubicInterp(const T& P0, const T& T0, const T& P1, const T& T1, const float A)
+{
+	const float A2 = A * A;
+	const float A3 = A2 * A;
+
+	return T((((2 * A3) - (3 * A2) + 1) * P0) + ((A3 - (2 * A2) + A) * T0) + ((A3 - A2) * T1) + (((-2 * A3) + (3 * A2)) * P1));
+}
+
+template <class T>
+FORCEINLINE T CubicInterpDerivative(const T& P0, const T& T0, const T& P1, const T& T1, const float A)
+{
+	T a = 6.f * P0 + 3.f * T0 + 3.f * T1 - 6.f * P1;
+	T b = -6.f * P0 - 4.f * T0 - 2.f * T1 + 6.f * P1;
+	T c = T0;
+
+	const float A2 = A * A;
+
+	return T((a * A2) + (b * A) + c);
+}
 
 FlagGG_API int Compare(Real _1, Real _2);
 
 FlagGG_API Real Equals(Real _1, Real _2);
 
 FlagGG_API Real Equals(Real _1, Real _2, Real tolerance);
+
+template <class T>
+FORCEINLINE bool IsNearlyZero(const T& value)
+{
+	return value.IsNearlyZero();
+}
+
+template <>
+FORCEINLINE bool IsNearlyZero(const float& value)
+{
+	return Abs(value) < F_EPSILON;
+}
 
 template <class T>
 FORCEINLINE T Clamp(const T x, const T min, const T max) { return (x < min) ? min : (x < max) ? x : max; }

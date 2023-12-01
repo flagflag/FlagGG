@@ -109,11 +109,6 @@ Int32 CeilToInt(Real number)
 	return static_cast<Int32>(Ceil(number));
 }
 
-Real Lerp(float from, float to, float t)
-{
-	return to * t + from * (1.0F - t);
-}
-
 int Compare(Real _1, Real _2)
 {
 	if (fabs(_1 - _2) < F_EPSILON) return 0;

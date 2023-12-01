@@ -39,12 +39,12 @@ public:
 	/**
 		* Get the value at the specified F
 		*/
-	float GetValue(float F = 0.0f, Object* Data = NULL, struct RandomStream* InRandomStream = NULL);
+	float GetValue(float f = 0.0f, Object* data = NULL, struct RandomStream* randomStream = NULL);
 
 	/**
 		* Get the min and max values
 		*/
-	void GetOutRange(float& MinOut, float& MaxOut);
+	void GetOutRange(float& minOut, float& maxOut);
 
 	/**
 		* Is this distribution a uniform type? (ie, does it have two values per entry?)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Math/Distributions/DistributionFloat.h"
+#include "Math/InterpCurve.h"
 
 namespace FlagGG
 {
