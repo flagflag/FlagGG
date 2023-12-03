@@ -6,7 +6,6 @@
 #include "Container/Str.h"
 #include "Math/Color.h"
 #include "ParticleSystem/ParticleHelper.h"
-#include "ParticleSystem/ParticleEmitterInstances.h"
 
 namespace FlagGG
 {
@@ -127,12 +126,13 @@ class ParticleModule : public Object
 {
 	OBJECT_OVERRIDE(ParticleModule, Object);
 public:
+	ParticleModule();
 
 	/**
 	 * Called once to compile the effects of this module on runtime simulation.
 	 * @param EmitterInfo - Information needed for runtime simulation.
 	 */
-	virtual void CompileModule(struct ParticleEmitterBuildInfo& EmitterInfo);
+	virtual void CompileModule(struct ParticleEmitterBuildInfo& emitterInfo);
 
 	/**
 	 *	Called on a particle that is freshly spawned by the emitter.
@@ -141,7 +141,7 @@ public:
 	 *	@param	Offset		The modules offset into the data payload of the particle.
 	 *	@param	SpawnTime	The time of the spawn.
 	 */
-	virtual void	Spawn(ParticleEmitterInstance* Owner, Int32 Offset, float SpawnTime, BaseParticle* ParticleBase);
+	virtual void	Spawn(ParticleEmitterInstance* owner, Int32 offset, float spawnTime, BaseParticle* particleBase);
 	/**
 	 *	Called on a particle that is being updated by its emitter.
 	 *
@@ -149,7 +149,7 @@ public:
 	 *	@param	Offset		The modules offset into the data payload of the particle.
 	 *	@param	DeltaTime	The time since the last update.
 	 */
-	virtual void	Update(ParticleEmitterInstance* Owner, Int32 Offset, float DeltaTime);
+	virtual void	Update(ParticleEmitterInstance* owner, Int32 offset, float deltaTime);
 	/**
 	 *	Called on an emitter when all other update operations have taken place
 	 *	INCLUDING bounding box cacluations!
@@ -158,7 +158,7 @@ public:
 	 *	@param	Offset		The modules offset into the data payload of the particle.
 	 *	@param	DeltaTime	The time since the last update.
 	 */
-	virtual void	FinalUpdate(ParticleEmitterInstance* Owner, Int32 Offset, float DeltaTime);
+	virtual void	FinalUpdate(ParticleEmitterInstance* owner, Int32 offset, float deltaTime);
 
 	/**
 	 *	Returns the number of bytes that the module requires in the particle payload block.
@@ -167,7 +167,7 @@ public:
 	 *
 	 *	@return	UInt32		The number of bytes the module needs per particle.
 	 */
-	virtual UInt32	RequiredBytes(ParticleModuleTypeDataBase* TypeData);
+	virtual UInt32	RequiredBytes(ParticleModuleTypeDataBase* typeData);
 	/**
 	 *	Returns the number of bytes the module requires in the emitters 'per-instance' data block.
 	 *
@@ -181,7 +181,7 @@ public:
 	 *	@param	Owner		The ParticleEmitterInstance that 'owns' the particle.
 	 *	@param	InstData	Pointer to the data block for this module.
 	 */
-	virtual UInt32	PrepPerInstanceBlock(ParticleEmitterInstance* Owner, void* InstData);
+	virtual UInt32	PrepPerInstanceBlock(ParticleEmitterInstance* owner, void* instData);
 
 	// For Cascade
 	/**
@@ -190,14 +190,14 @@ public:
 	 *
 	 *	@param	Owner			The ParticleEmitter that the module is being added to.
 	 */
-	virtual void SetToSensibleDefaults(ParticleEmitter* Owner);
+	virtual void SetToSensibleDefaults(ParticleEmitter* owner);
 
 	/**
 	 *	Fill an array with each Object property that fulfills the FCurveEdInterface interface.
 	 *
 	 *	@param	OutCurve	The array that should be filled in.
 	 */
-	virtual void	GetCurveObjects(Vector<ParticleCurvePair>& OutCurves);
+	virtual void	GetCurveObjects(Vector<ParticleCurvePair>& outCurves);
 	/**
 	 * Add all curve-editable Objects within this module to the curve editor.
 	 *
@@ -206,13 +206,13 @@ public:
 	 *
 	 * @return	true, if new curves were added to the graph, otherwise they were already present
 	 */
-	virtual	bool	AddModuleCurvesToEditor(InterpCurveEdSetup* EdSetup, PODVector<const CurveEdEntry*>& OutCurveEntries);
+	virtual	bool	AddModuleCurvesToEditor(InterpCurveEdSetup* edSetup, PODVector<const CurveEdEntry*>& outCurveEntries);
 	/**
 	 *	Remove all curve-editable Objects within this module from the curve editor.
 	 *
 	 *	@param	EdSetup		The CurveEd setup to remove the curve from.
 	 */
-	void	RemoveModuleCurvesFromEditor(InterpCurveEdSetup* EdSetup);
+	void	RemoveModuleCurvesFromEditor(InterpCurveEdSetup* edSetup);
 	/**
 	 *	Does the module contain curves?
 	 *
@@ -226,14 +226,14 @@ public:
 	 *
 	 *	@return	bool		true if they are, false if not.
 	 */
-	bool	IsDisplayedInCurveEd(InterpCurveEdSetup* EdSetup);
+	bool	IsDisplayedInCurveEd(InterpCurveEdSetup* edSetup);
 	/**
 	 *	Helper function for updating the curve editor when the module editor color changes.
 	 *
 	 *	@param	Color		The new color the module is using.
 	 *	@param	EdSetup		The CurveEd setup for the module.
 	 */
-	void		ChangeEditorColor(Color& Color, InterpCurveEdSetup* EdSetup);
+	void		ChangeEditorColor(Color& color, InterpCurveEdSetup* edSetup);
 
 	/**
 	 *	Render the modules 3D visualization helper primitive.
@@ -257,7 +257,7 @@ public:
 	 *
 	 *	@param	PSysComp		The particle system component to be populated.
 	 */
-	virtual void	AutoPopulateInstanceProperties(ParticleSystemComponent* PSysComp);
+	virtual void	AutoPopulateInstanceProperties(ParticleSystemComponent* pSysComp);
 
 	/**
 	 *	Helper function used by the editor to auto-generate LOD values from a source module
@@ -270,7 +270,7 @@ public:
 	 *	@return	true	if successful
 	 *			false	if failed
 	 */
-	virtual bool	GenerateLODModuleValues(ParticleModule* SourceModule, float Percentage, ParticleLODLevel* LODLevel);
+	virtual bool	GenerateLODModuleValues(ParticleModule* sourceModule, float percentage, ParticleLODLevel* LODLevel);
 
 	/**
 	 *	Store the given percentage of the SourceFloat distribution in the FloatDist
@@ -281,7 +281,7 @@ public:
 	 *
 	 *	@return	bool				true if successful, false if not.
 	 */
-	virtual bool	ConvertFloatDistribution(DistributionFloat* FloatDist, DistributionFloat* SourceFloatDist, float Percentage);
+	virtual bool	ConvertFloatDistribution(DistributionFloat* floatDist, DistributionFloat* sourceFloatDist, float percentage);
 	/**
 	 *	Store the given percentage of the SourceVector distribution in the VectorDist
 	 *
@@ -291,7 +291,7 @@ public:
 	 *
 	 *	@return	bool				true if successful, false if not.
 	 */
-	virtual bool	ConvertVectorDistribution(DistributionVector* VectorDist, DistributionVector* SourceVectorDist, float Percentage);
+	virtual bool	ConvertVectorDistribution(DistributionVector* vectorDist, DistributionVector* sourceVectorDist, float percentage);
 	/**
 	 *	Returns whether the module is SizeMultipleLife or not.
 	 *
@@ -325,7 +325,7 @@ public:
 	 *
 	 *	@param	Owner					The emitter instance that owns this module
 	 */
-	virtual void EmitterLoopingNotify(ParticleEmitterInstance* Owner)
+	virtual void EmitterLoopingNotify(ParticleEmitterInstance* owner)
 	{
 	}
 
@@ -339,8 +339,8 @@ public:
 	 *
 	 *	@return	ParticleModule*	The generated module, or this if percentage == 100.
 	 */
-	virtual ParticleModule* GenerateLODModule(ParticleLODLevel* SourceLODLevel, ParticleLODLevel* DestLODLevel, float Percentage,
-		bool bGenerateModuleData, bool bForceModuleConstruction = false);
+	virtual ParticleModule* GenerateLODModule(ParticleLODLevel* sourceLODLevel, ParticleLODLevel* destLODLevel, float percentage,
+		bool generateModuleData, bool forceModuleConstruction = false);
 
 	/**
 	 *	Returns true if the results of LOD generation for the given percentage will result in a
@@ -353,12 +353,12 @@ public:
 	 *	@return	bool				true if the generated module will be a duplicate.
 	 *								false if not.
 	 */
-	virtual bool WillGeneratedModuleBeIdentical(ParticleLODLevel* SourceLODLevel, ParticleLODLevel* DestLODLevel, float Percentage)
+	virtual bool WillGeneratedModuleBeIdentical(ParticleLODLevel* sourceLODLevel, ParticleLODLevel* destLODLevel, float percentage)
 	{
 		// The assumption is that at 100%, ANY module will be identical...
 		// (Although this is virtual to allow over-riding that assumption on a case-by-case basis!)
 
-		if (Percentage != 100.0f)
+		if (percentage != 100.0f)
 		{
 			return LODDuplicate_;
 		}
@@ -373,26 +373,26 @@ public:
 	 *
 	 *	@return	bool				true if the generated module is used, false if not.
 	 */
-	virtual bool IsUsedInLODLevel(Int32 SourceLODIndex) const;
+	virtual bool IsUsedInLODLevel(Int32 sourceLODIndex) const;
 
 	/**
 	 *	Retrieve the ParticleSysParams associated with this module.
 	 *
 	 *	@param	ParticleSysParamList	The list of FParticleSysParams to add to
 	 */
-	virtual void GetParticleSysParamsUtilized(Vector<String>& ParticleSysParamList);
+	virtual void GetParticleSysParamsUtilized(Vector<String>& particleSysParamList);
 
 	/**
 	 *	Retrieve the distributions that use ParticleParameters in this module.
 	 *
 	 *	@param	ParticleParameterList	The list of ParticleParameter distributions to add to
 	 */
-	virtual void GetParticleParametersUtilized(Vector<String>& ParticleParameterList);
+	virtual void GetParticleParametersUtilized(Vector<String>& particleParameterList);
 
 	/**
 	 *	Refresh the module...
 	 */
-	virtual void RefreshModule(InterpCurveEdSetup* EdSetup, ParticleEmitter* InEmitter, Int32 InLODLevel) {}
+	virtual void RefreshModule(InterpCurveEdSetup* edSetup, ParticleEmitter* inEmitter, Int32 inLODLevel) {}
 
 	/**
 	 *	Return true if this module impacts rotation of Mesh emitters
@@ -409,7 +409,7 @@ public:
 	 *
 	 *	@return	UInt32					0xffffffff is failed
 	 */
-	virtual UInt32	PrepRandomSeedInstancePayload(ParticleEmitterInstance* Owner, ParticleRandomSeedInstancePayload* InRandSeedPayload, const ParticleRandomSeedInfo& InRandSeedInfo);
+	virtual UInt32	PrepRandomSeedInstancePayload(ParticleEmitterInstance* owner, ParticleRandomSeedInstancePayload* randSeedPayload, const ParticleRandomSeedInfo& randSeedInfo);
 
 	/**
 	 *	Retrieve the random seed info for this module.
@@ -429,7 +429,7 @@ public:
 	 *
 	 *	@return	bool			true if successful; false if not (not found, etc.)
 	 */
-	virtual bool SetRandomSeedEntry(Int32 InIndex, Int32 InRandomSeed);
+	virtual bool SetRandomSeedEntry(Int32 inIndex, Int32 inRandomSeed);
 
 	/** Return false if this emitter requires a game thread tick **/
 	virtual bool CanTickInAnyThread()
@@ -447,10 +447,10 @@ public:
 	 *
 	 * @return FRandomStream&	The random stream to use for the provided instance.
 	 */
-	RandomStream& GetRandomStream(ParticleEmitterInstance* Owner);
+	RandomStream& GetRandomStream(ParticleEmitterInstance* owner);
 
 #if WITH_EDITOR
-	virtual void PostLoadSubobjects(FObjectInstancingGraph* OuterInstanceGraph) override;
+	virtual void PostLoadSubobjects(FObjectInstancingGraph* outerInstanceGraph) override;
 
 	/**
 	 *	Custom Cascade module menu entries support
@@ -470,7 +470,7 @@ public:
 	 *
 	 *	@return	bool				true if successful, false if not
 	 */
-	virtual bool GetCustomMenuEntryDisplayString(Int32 InEntryIndex, String& OutDisplayString) const { return false; }
+	virtual bool GetCustomMenuEntryDisplayString(Int32 inEntryIndex, String& outDisplayString) const { return false; }
 
 	/**
 	 *	Perform the custom menu entry option.
@@ -479,10 +479,10 @@ public:
 	 *
 	 *	@return	bool				true if successful, false if not
 	 */
-	virtual bool PerformCustomMenuEntry(Int32 InEntryIndex) { return false; }
+	virtual bool PerformCustomMenuEntry(Int32 inEntryIndex) { return false; }
 
 	/** Returns true if the module is valid for the provided LOD level. */
-	virtual bool IsValidForLODLevel(ParticleLODLevel* LODLevel, String& OutErrorString)
+	virtual bool IsValidForLODLevel(ParticleLODLevel* LODLevel, String& outErrorString)
 	{
 		return true;
 	}
@@ -490,7 +490,7 @@ public:
 	/**
 	 *	Gets a list of the names of distributions not allowed on GPU emitters.
 	 */
-	static  void GetDistributionsRestrictedOnGPU(Vector<String>& OutRestrictedDistributions);
+	static  void GetDistributionsRestrictedOnGPU(Vector<String>& outRestrictedDistributions);
 
 	/**
 	 *	Checks if a distribution is allowed on the GPU.
@@ -498,7 +498,7 @@ public:
 	 *	@param	Distribution		The Distribution to test.
 	 *	@return	bool				true if allowed on the GPU, false if not.
 	 */
-	static bool IsDistributionAllowedOnGPU(const UDistribution* Distribution);
+	static bool IsDistributionAllowedOnGPU(const Distribution* distribution);
 
 	/**
 	 *	Generates the FText to display to the user informing them that a module is using a distribution that is not allowed on GPU emitters.
@@ -507,7 +507,7 @@ public:
 	 *	@param	PropertyName	The name of the distribution's property.
 	 *	@return	FText			The generated FText.
 	 */
-	static FText GetDistributionNotAllowedOnGPUText(const String& ModuleName, const String& PropertyName);
+	static FText GetDistributionNotAllowedOnGPUText(const String& moduleName, const String& propertyName);
 
 	/**
 	 *	Set the transaction flag on the module and any members which require it

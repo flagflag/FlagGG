@@ -44,6 +44,18 @@ public:
 	template<typename T> const T* DynamicCast() const { return IsInstanceOf<T>() ? static_cast<const T*>(this) : nullptr; }
 };
 
+template <class T, class U>
+inline T* Cast(U& object)
+{
+	return object ? object->DynamicCast<T>() : nullptr;
+}
+
+template <class T, class U>
+inline T* Cast(U* object)
+{
+	return object ? object->DynamicCast<T>() : nullptr;
+}
+
 }
 
 #define OBJECT_OVERRIDE(typeName, baseTypeName) \

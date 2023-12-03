@@ -64,3 +64,4 @@
 #define FORCEINLINE FORCE_INLINE
 #endif
 
+#define PURE_VIRTUAL(func,...) { ASSERT_MESSAGE(false, "Pure virtual not implemented (" #func ")"); __VA_ARGS__ }
