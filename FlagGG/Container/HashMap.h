@@ -560,6 +560,11 @@ public:
 			return false;
 	}
 
+	U* TryGetValue(const T& key) const
+	{
+		return (*this)[key];
+	}
+
 	/// Return all the keys.
 	Vector<T> Keys() const
 	{

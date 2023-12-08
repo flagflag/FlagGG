@@ -45,6 +45,8 @@ class Light;
 
 class Material;
 
+struct ParticleEventInstancePayload;
+
 struct LODBurstFired
 {
 	PODVector<bool> fired_;
@@ -313,7 +315,7 @@ public:
 	 * @param InitialVelocity	The initial velocity of spawned particles.
 	 * @param EventPayload		Event generator payload if events should be triggered.
 	 */
-	void SpawnParticles(Int32 count, float startTime, float increment, const Vector3& initialLocation, const Vector3& initialVelocity, struct ParticleEventInstancePayload* eventPayload);
+	void SpawnParticles(Int32 count, float startTime, float increment, const Vector3& initialLocation, const Vector3& initialVelocity, ParticleEventInstancePayload* eventPayload);
 
 	/**
 	 *	Spawn/burst the given particles...

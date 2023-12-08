@@ -96,3 +96,6 @@ struct GenericPlatformTypes
 #ifndef RESTRICT
 #define RESTRICT __restrict						/* no alias hint */
 #endif
+
+// Prefetch
+#define PLATFORM_CACHE_LINE_SIZE	64

@@ -461,6 +461,10 @@ public:
 
 	Real GetMax() { return Max(x_, Max(y_, z_)); }
 
+	Real GetAbsMin() { return Min(FlagGG::Abs(x_), Min(FlagGG::Abs(y_), FlagGG::Abs(z_))); }
+
+	Real GetAbsMax() { return Max(FlagGG::Abs(x_), Max(FlagGG::Abs(y_), FlagGG::Abs(z_))); }
+
 	/// X coordinate.
 	Real x_;
 	/// Y coordinate.

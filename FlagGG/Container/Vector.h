@@ -459,6 +459,11 @@ public:
 		return Find(value) - Begin();
 	}
 
+	bool IsValidIndex(unsigned index)
+	{
+		return index < size_;
+	}
+
 	/// Return whether contains a specific value.
 	bool Contains(const T& value) const { return Find(value) != End(); }
 

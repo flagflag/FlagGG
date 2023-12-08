@@ -64,4 +64,39 @@
 #define FORCEINLINE FORCE_INLINE
 #endif
 
+#define FORCENOINLINE __declspec(noinline)							/* Force code to NOT be inline */
+
 #define PURE_VIRTUAL(func,...) { ASSERT_MESSAGE(false, "Pure virtual not implemented (" #func ")"); __VA_ARGS__ }
+
+#if defined(USE_CRY_ASSERT) && defined(WIN32) && defined(_DEBUG)
+// MSVC (v19.00.24215.1 at time of writing) ignores no-inline attributes on
+// lambdas. This can be worked around by calling the lambda from inside this
+// templated (and correctly non-inlined) function.
+template <typename RetType = void, class InnerType, typename... ArgTypes>
+RetType FORCENOINLINE DispatchCheckVerify(InnerType&& Inner, ArgTypes const&... Args)
+{
+    return Inner(Args...);
+}
+
+#define ENSURE_IMPL(Capture, Always, Condition, ParentheseMessage)       \
+    (!!(Condition) || (DispatchCheckVerify<bool>([Capture]()             \
+    {                                                                    \
+        static bool executed = false;					                 \
+        if (!executed || Always)				                         \
+        {														         \
+            CryAssertTrace ParentheseMessage;					         \
+            if (!CryAssert(#Condition, __FILE__, __LINE__, &executed))   \
+            {									                         \
+                return false;								             \
+            }												             \
+            return true;                                                 \
+        }                                                                \
+        return false;                                                    \
+    }) && ([] () { DEBUG_BREAK; } (), false)))
+
+#define CRY_ENSURE(Condition) ENSURE_IMPL( , false, Condition, (NULL))
+#define CRY_ENSURE_MESSAGE(Condition, ParentheseMessage) ENSURE_IMPL(&, false, Condition, (ParentheseMessage))
+#else
+#define CRY_ENSURE(Condition, ...) (Condition)
+#define CRY_ENSURE_MESSAGE(Condition, ...) (Condition)
+#endif

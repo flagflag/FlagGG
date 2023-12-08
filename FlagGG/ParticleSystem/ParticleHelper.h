@@ -7,10 +7,28 @@
 namespace FlagGG
 {
 
+namespace FXConsoleVariables
+{
+	static Int32 MaxCPUParticlesPerEmitter = 1000;
+}
+
 // Special module indices...
 #define INDEX_TYPEDATAMODULE	(INDEX_NONE - 1)
 #define INDEX_REQUIREDMODULE	(INDEX_NONE - 2)
 #define INDEX_SPAWNMODULE		(INDEX_NONE - 3)
+
+#define MAX_PARTICLE_RESIZE 100
+#define MAX_PARTICLE_RESIZE_WARN 80
+
+#define DECLARE_PARTICLE(Name,Address)		\
+	BaseParticle& Name = *((BaseParticle*) (Address));
+
+#define PARTICLE_ELEMENT(Type,Name)																						\
+	Type& Name = *((Type*)((UInt8*)particleBase + currentOffset));																\
+	currentOffset += sizeof(Type);
+
+#define DECLARE_PARTICLE_PTR(Name,Address)		\
+	BaseParticle* Name = (BaseParticle*) (Address);
 
 /*-----------------------------------------------------------------------------
 	FBaseParticle
@@ -25,7 +43,7 @@ struct BaseParticle
 
 	// 16 bytes
 	Vector3			baseVelocity_;			// Velocity = BaseVelocity at the start of each frame.
-	float			rotation;				// Rotation of particle (in Radians)
+	float			rotation_;				// Rotation of particle (in Radians)
 
 	// 16 bytes
 	Vector3			velocity_;				// Current velocity, gets reset to BaseVelocity each frame to allow 
@@ -52,6 +70,27 @@ struct BaseParticle
 	float			placeholder1_;
 };
 
+/** Mesh rotation data payload										*/
+struct MeshRotationPayloadData
+{
+	Vector3	 initialOrientation_;		// from mesh data module
+	Vector3  initRotation_;				// from init rotation module
+	Vector3  rotation_;
+	Vector3	 curContinuousRotation_;
+	Vector3  rotationRate_;
+	Vector3  rotationRateBase_;
+};
+
+struct MeshMotionBlurPayloadData
+{
+	Vector3 baseParticlePrevVelocity_;
+	Vector3 baseParticlePrevSize_;
+	Vector3 payloadPrevRotation_;
+	Vector3 payloadPrevOrbitOffset_;
+	float   baseParticlePrevRotation_;
+	float   payloadPrevCameraOffset_;
+};
+
 /**
  *	Chain-able Orbit module instance payload
  */
@@ -69,6 +108,15 @@ struct OrbitChainModuleInstancePayload
 	Vector3	rotationRate_;
 	/** The offset of the particle from the last frame				*/
 	Vector3	previousOffset_;
+};
+
+/** Camera offset particle payload */
+struct CameraOffsetParticlePayload
+{
+	/** The base amount to offset the particle towards the camera */
+	float	baseOffset_;
+	/** The amount to offset the particle towards the camera */
+	float	offset_;
 };
 
 /** Random-seed instance payload */
@@ -91,5 +139,62 @@ enum class ParticleSignificanceLevel : UInt8
 
 	Num,
 };
+
+enum class ParticleSystemInsignificanceReaction : UInt8
+{
+	/** Looping systems will DisableTick. Non-looping systems will Complete.*/
+	Auto,
+	/** The system will be considered complete and will auto destroy if desired etc.*/
+	Complete,
+	/** The system will simply stop ticking. Tick will be re-enabled when any emitters become significant again. This is useful for persistent fx such as environmental fx.  */
+	DisableTick,
+	/** As DisableTick but will also kill all particles. */
+	DisableTickAndKill, //Hidden for now until I make it useful i.e. Killing particles saves memory.
+
+	Num,
+};
+
+/*-----------------------------------------------------------------------------
+	Particle State Flags
+-----------------------------------------------------------------------------*/
+enum ParticleStates
+{
+	/** Ignore updates to the particle						*/
+	STATE_Particle_JustSpawned = 0x02000000,
+	/** Ignore updates to the particle						*/
+	STATE_Particle_Freeze = 0x04000000,
+	/** Ignore collision updates to the particle			*/
+	STATE_Particle_IgnoreCollisions = 0x08000000,
+	/**	Stop translations of the particle					*/
+	STATE_Particle_FreezeTranslation = 0x10000000,
+	/**	Stop rotations of the particle						*/
+	STATE_Particle_FreezeRotation = 0x20000000,
+	/** Combination for a single check of 'ignore' flags	*/
+	STATE_Particle_CollisionIgnoreCheck = STATE_Particle_Freeze | STATE_Particle_IgnoreCollisions | STATE_Particle_FreezeTranslation | STATE_Particle_FreezeRotation,
+	/** Delay collision updates to the particle				*/
+	STATE_Particle_DelayCollisions = 0x40000000,
+	/** Flag indicating the particle has had at least one collision	*/
+	STATE_Particle_CollisionHasOccurred = 0x80000000,
+	/** State mask. */
+	STATE_Mask = 0xFE000000,
+	/** Counter mask. */
+	STATE_CounterMask = (~STATE_Mask)
+};
+
+//
+//	SubUV-related payloads
+//
+struct FullSubUVPayload
+{
+	// The integer portion indicates the sub-image index.
+	// The fractional portion indicates the lerp factor.
+	float imageIndex_;
+	float randomImageTime_;
+};
+
+FORCEINLINE Vector3 GetParticleBaseSize(const BaseParticle& Particle, bool bKeepFlipScale = false)
+{
+	return bKeepFlipScale ? Particle.baseSize_ : Vector3(Abs(Particle.baseSize_.x_), Abs(Particle.baseSize_.y_),Abs(Particle.baseSize_.z_));
+}
 
 }
