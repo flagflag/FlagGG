@@ -121,4 +121,13 @@ void UniqueThread::WaitForStop(UInt32 wait_time)
 #endif
 }
 
+UInt64 UniqueThread::GetCurrentThreadId()
+{
+#if _WIN32
+	return ::GetCurrentThreadId();
+#else
+	return 0;
+#endif
+}
+
 }

@@ -1,4 +1,5 @@
 #include "Core/Context.h"
+#include "AsyncFrame/Thread/UniqueThread.h"
 
 namespace FlagGG
 {
@@ -44,5 +45,25 @@ template <> void Context::RegisterVariable<UInt64>(UInt64* variable, const Strin
 
 }
 #endif
+
+void Context::MarkCurrentThreadAsGameThread()
+{
+    gameThreadId_ = UniqueThread::GetCurrentThreadId();
+}
+
+void Context::MarkCurrentThreadAsAsyncLoadingThread()
+{
+    asyncLoadingThreadId_ = UniqueThread::GetCurrentThreadId();
+}
+
+bool Context::IsInGameThread() const
+{
+    return UniqueThread::GetCurrentThreadId() == gameThreadId_;
+}
+
+bool Context::IsInAsyncLoadingThread() const
+{
+    return UniqueThread::GetCurrentThreadId() == asyncLoadingThreadId_;
+}
 
 }

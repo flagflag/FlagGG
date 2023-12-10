@@ -6,6 +6,7 @@
 #include "Container/Vector.h"
 #include "Container/HashMap.h"
 #include "ParticleSystem/ParticleModule.h"
+#include "ParticleSystem/SubUVAnimation.h"
 #include "ParticleSystem/Module/ParticleModuleOrientation.h"
 
 namespace FlagGG
@@ -85,6 +86,132 @@ class ParticleEmitter : public Object
 {
 	OBJECT_OVERRIDE(ParticleEmitter, Object);
 public:
+	ParticleEmitter();
+
+	// @todo document
+	virtual ParticleEmitterInstance* CreateInstance(ParticleSystemComponent* inComponent);
+
+	// Sets up this emitter with sensible defaults so we can see some particles as soon as its created.
+	virtual void SetToSensibleDefaults() {}
+
+	// @todo document
+	virtual void UpdateModuleLists();
+
+	// @todo document
+	FlagGG_API void SetEmitterName(const String& name);
+
+	// @todo document
+	FlagGG_API const String& GetEmitterName();
+
+	// @todo document
+	virtual	void						SetLODCount(Int32 LODCount);
+
+	// For Cascade
+	// @todo document
+	void	AddEmitterCurvesToEditor(InterpCurveEdSetup* edSetup);
+
+	// @todo document
+	FlagGG_API void	RemoveEmitterCurvesFromEditor(InterpCurveEdSetup* edSetup);
+
+	// @todo document
+	FlagGG_API void	ChangeEditorColor(Color& color, InterpCurveEdSetup* edSetup);
+
+	// @todo document
+	FlagGG_API void	AutoPopulateInstanceProperties(ParticleSystemComponent* pSysComp);
+
+	/** CreateLODLevel
+	 *	Creates the given LOD level.
+	 *	Intended for editor-time usage.
+	 *	Assumes that the given LODLevel will be in the [0..100] range.
+	 *	
+	 *	@return The index of the created LOD level
+	 */
+	FlagGG_API Int32		CreateLODLevel(Int32 LODLevel, bool generateModuleData = true);
+
+	/** IsLODLevelValid
+	 *	Returns true if the given LODLevel is one of the array entries.
+	 *	Intended for editor-time usage.
+	 *	Assumes that the given LODLevel will be in the [0..(NumLODLevels - 1)] range.
+	 *	
+	 *	@return false if the requested LODLevel is not valid.
+	 *			true if the requested LODLevel is valid.
+	 */
+	FlagGG_API bool	IsLODLevelValid(Int32 LODLevel);
+
+	/** GetCurrentLODLevel
+	*	Returns the currently set LODLevel. Intended for game-time usage.
+	*	Assumes that the given LODLevel will be in the [0..# LOD levels] range.
+	*	
+	*	@return NULL if the requested LODLevel is not valid.
+	*			The pointer to the requested UParticleLODLevel if valid.
+	*/
+	ParticleLODLevel* GetCurrentLODLevel(ParticleEmitterInstance* instance);
+
+
+	/**
+	 * This will update the LOD of the particle in the editor.
+	 *
+	 * @see GetCurrentLODLevel(FParticleEmitterInstance* instance)
+	 */
+	FlagGG_API void EditorUpdateCurrentLOD(ParticleEmitterInstance* instance);
+
+	/** GetLODLevel
+	 *	Returns the given LODLevel. Intended for game-time usage.
+	 *	Assumes that the given LODLevel will be in the [0..# LOD levels] range.
+	 *	
+	 *	@param	LODLevel - the requested LOD level in the range [0..# LOD levels].
+	 *
+	 *	@return NULL if the requested LODLevel is not valid.
+	 *			The pointer to the requested UParticleLODLevel if valid.
+	 */
+	FlagGG_API ParticleLODLevel*	GetLODLevel(Int32 LODLevel);
+	
+	/**
+	 *	Autogenerate the lowest LOD level...
+	 *
+	 *	@param	bDuplicateHighest	If true, make the level an exact copy of the highest
+	 *
+	 *	@return	bool				true if successful, false if not.
+	 */
+	virtual bool		AutogenerateLowestLODLevel(bool duplicateHighest = false);
+	
+	/**
+	 *	CalculateMaxActiveParticleCount
+	 *	Determine the maximum active particles that could occur with this emitter.
+	 *	This is to avoid reallocation during the life of the emitter.
+	 *
+	 *	@return	true	if the number was determined
+	 *			false	if the number could not be determined
+	 */
+	virtual bool		CalculateMaxActiveParticleCount();
+
+	/**
+	 *	Retrieve the parameters associated with this particle system.
+	 *
+	 *	@param	ParticleSysParamList	The list of FParticleSysParams used in the system
+	 *	@param	ParticleParameterList	The list of ParticleParameter distributions used in the system
+	 */
+	void GetParametersUtilized(Vector<String>& particleSysParamList, Vector<String>& particleParameterList);
+
+	/**
+	 * Builds data needed for simulation by the emitter from all modules.
+	 */
+	void Build();
+
+	/** Pre-calculate data size/offset and other info from modules in this Emitter */
+	void CacheEmitterModuleInfo();
+
+	/**
+	 *   Calculate spawn rate multiplier based on global effects quality level and emitter's quality scale
+ 	 */
+	float GetQualityLevelSpawnRateMult();
+
+	/** Returns true if the is emitter has any enabled LODs, false otherwise. */
+	bool HasAnyEnabledLODs()const;
+
+	/** Returns if this emitter is considered significant for the passed requirement. */
+	FlagGG_API bool IsSignificant(ParticleSignificanceLevel requiredSignificance);
+
 
 	//~=============================================================================
 	//	General variables
@@ -123,8 +250,8 @@ public:
 	/** If true, then show only this emitter in the editor */
 	UInt8 isSoloing_ : 1;
 
-	/** 
-	 *	If true, then this emitter was 'cooked out' by the cooker. 
+	/**
+	 *	If true, then this emitter was 'cooked out' by the cooker.
 	 *	This means it was completely disabled, but to preserve any
 	 *	indexing schemes, it is left in place.
 	 */
@@ -132,7 +259,7 @@ public:
 
 	/** When true, if the current LOD is disabled the emitter will be kept alive. Otherwise, the emitter will be considered complete if the current LOD is disabled. */
 	UInt8 disabledLODsKeepEmitterAlive_ : 1;
-	
+
 	/** When true, emitters deemed insignificant will have their tick and render disabled Instantly. When false they will simple stop spawning new particles. */
 	UInt8 disableWhenInsignficant_ : 1;
 
@@ -162,7 +289,7 @@ public:
 	//~=============================================================================
 	//	Performance/LOD Data
 	//~=============================================================================
-	
+
 	/**
 	 *	Initial allocation count - overrides calculated peak count if > 0
 	 */
@@ -185,7 +312,7 @@ public:
 
 	/** Map module pointers to their offset into the instance data.		*/
 	HashMap<ParticleModule*, UInt32> moduleRandomSeedInstanceOffsetMap_;
-	
+
 	/** Materials collected from any MeshMaterial modules */
 	PODVector<Material*> meshMaterials_;
 
@@ -209,153 +336,7 @@ public:
 	PODVector<ParticleModule*> modulesNeedingRandomSeedInstanceData_;
 
 	/** SubUV animation asset to use for cutout geometry. */
-	class SubUVAnimation* RESTRICT subUVAnimation_;
-
-	//////////////////////////////////////////////////////////////////////////
-
-	// @todo document
-	virtual ParticleEmitterInstance* CreateInstance(ParticleSystemComponent* InComponent);
-
-	// Sets up this emitter with sensible defaults so we can see some particles as soon as its created.
-	virtual void SetToSensibleDefaults() {}
-
-	// @todo document
-	virtual void UpdateModuleLists();
-
-	// @todo document
-	FlagGG_API void SetEmitterName(const String& Name);
-
-	// @todo document
-	FlagGG_API const String& GetEmitterName();
-
-	// @todo document
-	virtual	void						SetLODCount(Int32 LODCount);
-
-	// For Cascade
-	// @todo document
-	void	AddEmitterCurvesToEditor(InterpCurveEdSetup* EdSetup);
-
-	// @todo document
-	FlagGG_API void	RemoveEmitterCurvesFromEditor(InterpCurveEdSetup* EdSetup);
-
-	// @todo document
-	FlagGG_API void	ChangeEditorColor(Color& Color, InterpCurveEdSetup* EdSetup);
-
-	// @todo document
-	FlagGG_API void	AutoPopulateInstanceProperties(ParticleSystemComponent* PSysComp);
-
-	/** CreateLODLevel
-	 *	Creates the given LOD level.
-	 *	Intended for editor-time usage.
-	 *	Assumes that the given LODLevel will be in the [0..100] range.
-	 *	
-	 *	@return The index of the created LOD level
-	 */
-	FlagGG_API Int32		CreateLODLevel(Int32 LODLevel, bool bGenerateModuleData = true);
-
-	/** IsLODLevelValid
-	 *	Returns true if the given LODLevel is one of the array entries.
-	 *	Intended for editor-time usage.
-	 *	Assumes that the given LODLevel will be in the [0..(NumLODLevels - 1)] range.
-	 *	
-	 *	@return false if the requested LODLevel is not valid.
-	 *			true if the requested LODLevel is valid.
-	 */
-	FlagGG_API bool	IsLODLevelValid(Int32 LODLevel);
-
-	/** GetCurrentLODLevel
-	*	Returns the currently set LODLevel. Intended for game-time usage.
-	*	Assumes that the given LODLevel will be in the [0..# LOD levels] range.
-	*	
-	*	@return NULL if the requested LODLevel is not valid.
-	*			The pointer to the requested UParticleLODLevel if valid.
-	*/
-	FORCEINLINE ParticleLODLevel* GetCurrentLODLevel(ParticleEmitterInstance* Instance)
-	{
-		//if (!FPlatformProperties::HasEditorOnlyData())
-		//{
-		//	return Instance->CurrentLODLevel;
-		//}
-		//else
-		//{
-		//	// for the game (where we care about perf) we don't branch
-		//	if (Instance->GetWorld()->IsGameWorld() )
-		//	{
-		//		return Instance->CurrentLODLevel;
-		//	}
-		//	else
-		//	{
-		//		EditorUpdateCurrentLOD( Instance );
-		//		return Instance->CurrentLODLevel;
-		//	}
-		//}
-		return Instance->currentLODLevel_;
-	}
-
-
-	/**
-	 * This will update the LOD of the particle in the editor.
-	 *
-	 * @see GetCurrentLODLevel(FParticleEmitterInstance* Instance)
-	 */
-	FlagGG_API void EditorUpdateCurrentLOD(ParticleEmitterInstance* Instance);
-
-	/** GetLODLevel
-	 *	Returns the given LODLevel. Intended for game-time usage.
-	 *	Assumes that the given LODLevel will be in the [0..# LOD levels] range.
-	 *	
-	 *	@param	LODLevel - the requested LOD level in the range [0..# LOD levels].
-	 *
-	 *	@return NULL if the requested LODLevel is not valid.
-	 *			The pointer to the requested UParticleLODLevel if valid.
-	 */
-	FlagGG_API ParticleLODLevel*	GetLODLevel(Int32 LODLevel);
-	
-	/**
-	 *	Autogenerate the lowest LOD level...
-	 *
-	 *	@param	bDuplicateHighest	If true, make the level an exact copy of the highest
-	 *
-	 *	@return	bool				true if successful, false if not.
-	 */
-	virtual bool		AutogenerateLowestLODLevel(bool bDuplicateHighest = false);
-	
-	/**
-	 *	CalculateMaxActiveParticleCount
-	 *	Determine the maximum active particles that could occur with this emitter.
-	 *	This is to avoid reallocation during the life of the emitter.
-	 *
-	 *	@return	true	if the number was determined
-	 *			false	if the number could not be determined
-	 */
-	virtual bool		CalculateMaxActiveParticleCount();
-
-	/**
-	 *	Retrieve the parameters associated with this particle system.
-	 *
-	 *	@param	ParticleSysParamList	The list of FParticleSysParams used in the system
-	 *	@param	ParticleParameterList	The list of ParticleParameter distributions used in the system
-	 */
-	void GetParametersUtilized(Vector<String>& ParticleSysParamList, Vector<String>& ParticleParameterList);
-
-	/**
-	 * Builds data needed for simulation by the emitter from all modules.
-	 */
-	void Build();
-
-	/** Pre-calculate data size/offset and other info from modules in this Emitter */
-	void CacheEmitterModuleInfo();
-
-	/**
-	 *   Calculate spawn rate multiplier based on global effects quality level and emitter's quality scale
- 	 */
-	float GetQualityLevelSpawnRateMult();
-
-	/** Returns true if the is emitter has any enabled LODs, false otherwise. */
-	bool HasAnyEnabledLODs()const;
-
-	/** Returns if this emitter is considered significant for the passed requirement. */
-	FlagGG_API bool IsSignificant(ParticleSignificanceLevel RequiredSignificance);
+	SubUVAnimation* RESTRICT subUVAnimation_;
 };
 
 

@@ -104,25 +104,25 @@ void ParticleLODLevel::UpdateModuleLists()
 		modules_.Erase(typeDataModuleIndex);
 	}
 
-	if (typeDataModule_ /**&& (Level == 0)**/)
-	{
-		ParticleModuleTypeDataMesh* MeshTD = Cast<ParticleModuleTypeDataMesh>(typeDataModule_);
-		if (MeshTD
-			&& MeshTD->Mesh
-			&& MeshTD->Mesh->HasValidRenderData(false))
-		{
-			ParticleSpriteEmitter* SpriteEmitter = Cast<ParticleSpriteEmitter>(GetOuter());
-			if (SpriteEmitter && (MeshTD->bOverrideMaterial == false))
-			{
-				FStaticMeshSection& Section = MeshTD->Mesh->GetRenderData()->LODResources[0].Sections[0];
-				Material* Material = MeshTD->Mesh->GetMaterial(Section.MaterialIndex);
-				if (Material)
-				{
-					requiredModule_->Material = Material;
-				}
-			}
-		}
-	}
+	//if (typeDataModule_ /**&& (Level == 0)**/)
+	//{
+	//	ParticleModuleTypeDataMesh* meshTD = Cast<ParticleModuleTypeDataMesh>(typeDataModule_);
+	//	if (meshTD
+	//		&& meshTD->mesh_
+	//		&& meshTD->mesh_->HasValidRenderData(false))
+	//	{
+	//		ParticleSpriteEmitter* SpriteEmitter = Cast<ParticleSpriteEmitter>(GetOuter());
+	//		if (SpriteEmitter && (meshTD->overrideMaterial_ == false))
+	//		{
+	//			StaticMeshSection& Section = meshTD->mesh_->GetRenderData()->LODResources[0].Sections[0];
+	//			Material* Material = meshTD->mesh_->GetMaterial(Section.MaterialIndex);
+	//			if (Material)
+	//			{
+	//				requiredModule_->material_ = Material;
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 

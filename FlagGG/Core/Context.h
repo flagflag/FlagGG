@@ -64,8 +64,19 @@ public:
 		return nullptr;
 	}
 
+	void MarkCurrentThreadAsGameThread();
+
+	void MarkCurrentThreadAsAsyncLoadingThread();
+
+	bool IsInGameThread() const;
+
+	bool IsInAsyncLoadingThread() const;
+
 private:
-	HashMap<String, SharedPtr<VariableWrapper>> wrappers_;	
+	HashMap<String, SharedPtr<VariableWrapper>> wrappers_;
+
+	UInt64 gameThreadId_{};
+	UInt64 asyncLoadingThreadId_{};
 };
 
 }

@@ -29,6 +29,8 @@ public:
 
 	void WaitForStop(UInt32 wait_time) override;
 
+	static UInt64 GetCurrentThreadId();
+
 #ifndef _WIN32
 	pthread_mutex_t mutex_;
 	pthread_cond_t cond_;

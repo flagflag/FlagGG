@@ -118,7 +118,7 @@ struct ParticleRequiredModule
 };
 
 
-class ParticleModuleRequired : public ParticleModule
+class FlagGG_API ParticleModuleRequired : public ParticleModule
 {
 	OBJECT_OVERRIDE(ParticleModuleRequired, ParticleModule);
 public:
@@ -194,7 +194,8 @@ public:
 
 	Vector3 emitterOrigin_;
 
-	FRotator emitterRotation_;
+	// Å·À­½Ç
+	Vector3 emitterRotation_;
 
 	/**
 	 *	The screen alignment to utilize for the emitter at this LOD level.
@@ -436,10 +437,10 @@ private:
 	SubUVDerivedData derivedData_;
 
 	/** Tracks progress of BoundingGeometryBuffer release during destruction. */
-	RenderCommandFence releaseFence_;
+	// RenderCommandFence releaseFence_;
 
 	/** Used on platforms that support instancing, the bounding geometry is fetched from a vertex shader instead of on the CPU. */
-	SubUVBoundingGeometryBuffer* boundingGeometryBuffer_;
+	// SubUVBoundingGeometryBuffer* boundingGeometryBuffer_;
 };
 
 

@@ -7,7 +7,7 @@
 namespace FlagGG
 {
 
-class ParticleModuleSpawnBase : public ParticleModule
+class FlagGG_API ParticleModuleSpawnBase : public ParticleModule
 {
 	OBJECT_OVERRIDE(ParticleModuleSpawnBase, ParticleModule);
 public:
@@ -99,7 +99,7 @@ public:
 	UInt32 processBurstList_ : 1;
 };
 
-class ParticleModuleSpawn : public ParticleModuleSpawnBase
+class FlagGG_API ParticleModuleSpawn : public ParticleModuleSpawnBase
 {
 	OBJECT_OVERRIDE(ParticleModuleSpawn, ParticleModuleSpawnBase);
 public:

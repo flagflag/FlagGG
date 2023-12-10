@@ -12,6 +12,15 @@ namespace FXConsoleVariables
 	static Int32 MaxCPUParticlesPerEmitter = 1000;
 }
 
+enum ParticleDetailMode
+{
+	PDM_Low,
+	PDM_Medium,
+	PDM_High,
+	PDM_MAX,
+};
+const UInt32 PDM_DefaultValue = 0xFFFF;
+
 // Special module indices...
 #define INDEX_TYPEDATAMODULE	(INDEX_NONE - 1)
 #define INDEX_REQUIREDMODULE	(INDEX_NONE - 2)
@@ -29,6 +38,39 @@ namespace FXConsoleVariables
 
 #define DECLARE_PARTICLE_PTR(Name,Address)		\
 	BaseParticle* Name = (BaseParticle*) (Address);
+
+#define BEGIN_UPDATE_LOOP																								\
+	{																													\
+		ASSERT((owner != NULL) && (owner->component_ != NULL));															\
+		Int32&			activeParticles = owner->activeParticles_;														\
+		UInt32			currentOffset	= offset;																		\
+		const UInt8*	particleData	= owner->particleData_;															\
+		const UInt32	particleStride	= owner->particleStride_;														\
+		UInt16*			particleIndices	= owner->particleIndices_;														\
+		for(Int32 i=activeParticles-1; i>=0; i--)																			\
+		{																												\
+			const Int32	currentIndex	= particleIndices[i];															\
+			const UInt8* particleBase	= particleData + currentIndex * particleStride;									\
+			BaseParticle& particle		= *((BaseParticle*)particleBase);												\
+			if ((particle.flags_ & STATE_Particle_Freeze) == 0)															\
+			{																											\
+
+#define END_UPDATE_LOOP																									\
+			}																											\
+			currentOffset				= offset;																		\
+		}																												\
+	}
+
+#define CONTINUE_UPDATE_LOOP																							\
+		CurrentOffset = Offset;																							\
+		continue;
+
+#define SPAWN_INIT																										\
+	ASSERT((owner != NULL) && (owner->component_ != NULL));																\
+	const Int32		activeParticles	= owner->activeParticles_;															\
+	const UInt32	particleStride	= owner->particleStride_;														    \
+	UInt32			currentOffset	= offset;																			\
+	BaseParticle&	particle		= *(particleBase);
 
 /*-----------------------------------------------------------------------------
 	FBaseParticle

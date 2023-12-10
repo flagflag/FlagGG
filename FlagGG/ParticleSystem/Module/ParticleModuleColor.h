@@ -1,0 +1,51 @@
+#pragma once
+
+#include "ParticleSystem/ParticleModule.h"
+#include "Math/Distributions/DistributionFloat.h"
+#include "Math/Distributions/DistributionVector.h"
+
+namespace FlagGG
+{
+
+class InterpCurveEdSetup;
+class ParticleEmitter;
+struct CurveEdEntry;
+struct ParticleEmitterInstance;
+
+class FlagGG_API ParticleModuleColorBase : public ParticleModule
+{
+	OBJECT_OVERRIDE(ParticleModuleColorBase, ParticleModule);
+public:
+	ParticleModuleColorBase();
+};
+
+class ParticleModuleColorOverLife : public ParticleModuleColorBase
+{
+	OBJECT_OVERRIDE(ParticleModuleColorOverLife, ParticleModuleColorBase);
+public:
+	ParticleModuleColorOverLife();
+
+	/** Initializes the default values for this property */
+	void InitializeDefaults();
+
+
+	//Begin UParticleModule Interface
+	virtual	bool AddModuleCurvesToEditor(InterpCurveEdSetup* edSetup, PODVector<const CurveEdEntry*>& outCurveEntries) override;
+	virtual void Spawn(ParticleEmitterInstance* owner, Int32 offset, float spawnTime, BaseParticle* particleBase) override;
+	virtual void Update(ParticleEmitterInstance* owner, Int32 offset, float deltaTime) override;
+	virtual void CompileModule(struct ParticleEmitterBuildInfo& EmitterInfo) override;
+	virtual void SetToSensibleDefaults(ParticleEmitter* Owner) override;
+	//End UParticleModule Interface
+
+
+	/** The color to apply to the particle, as a function of the particle RelativeTime. */
+	RawDistributionVector colorOverLife_;
+
+	/** The alpha to apply to the particle, as a function of the particle RelativeTime. */
+	RawDistributionFloat alphaOverLife_;
+
+	/** If true, the alpha value will be clamped to the [0..1] range. */
+	UInt32 clampAlpha_ : 1;
+};
+
+}

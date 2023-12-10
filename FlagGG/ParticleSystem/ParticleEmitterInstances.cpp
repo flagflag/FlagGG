@@ -348,10 +348,11 @@ void ParticleEmitterInstance::UpdateTransforms()
 
 	ParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
 	Matrix3x4 componentToWorld = component_ != NULL ?
-		component_->GetNode()->GetWorldTransform().ToMatrixNoScale() : Matrix3x4::IDENTITY;
-	Matrix3x4 emitterToComponent = RotationTranslationMatrix(
+		component_->GetNode()->GetWorldTransform() : Matrix3x4::IDENTITY;
+	Matrix3x4 emitterToComponent = Matrix3x4(
 		LODLevel->requiredModule_->emitterRotation_,
-		LODLevel->requiredModule_->emitterOrigin_
+		LODLevel->requiredModule_->emitterOrigin_,
+		Vector3::ONE
 	);
 
 	if (LODLevel->requiredModule_->useLocalSpace_)
@@ -1670,7 +1671,7 @@ float ParticleEmitterInstance::Spawn(float deltaTime)
 
 		if (processSpawn == true)
 		{
-			const Vector3 initialLocation = emitterToSimulation_.GetOrigin();
+			const Vector3 initialLocation = emitterToSimulation_.Translation();
 
 			// Spawn particles.
 			SpawnParticles(number, startTime, increment, initialLocation, Vector3::ZERO, nullptr);

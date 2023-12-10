@@ -23,6 +23,7 @@ class ParticleSpriteEmitter : public ParticleEmitter
 {
 	OBJECT_OVERRIDE(ParticleSpriteEmitter, ParticleEmitter);
 public:
+	ParticleSpriteEmitter();
 
 	//~ Begin ParticleEmitter Interface
 	virtual ParticleEmitterInstance* CreateInstance(ParticleSystemComponent* InComponent) override;

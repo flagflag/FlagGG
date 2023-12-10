@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ParticleSystem/ParticleModule.h"
+#include "Math/Distributions/DistributionVector.h"
 
 namespace FlagGG
 {
@@ -9,7 +10,7 @@ class ParticleLODLevel;
 class ParticleModuleTypeDataBase;
 struct ParticleEmitterInstance;
 
-class ParticleModuleOrbitBase : public ParticleModule
+class FlagGG_API ParticleModuleOrbitBase : public ParticleModule
 {
 	OBJECT_OVERRIDE(ParticleModuleOrbitBase, ParticleModule);
 public:
@@ -61,7 +62,7 @@ struct OrbitOptions
 	UInt32 useEmitterTime_ : 1;
 };
 
-class ParticleModuleOrbit : public ParticleModuleOrbitBase
+class FlagGG_API ParticleModuleOrbit : public ParticleModuleOrbitBase
 {
 	OBJECT_OVERRIDE(ParticleModuleOrbit, ParticleModuleOrbitBase);
 public:
@@ -118,7 +119,7 @@ public:
 	OrbitOptions rotationRateOptions_;
 
 protected:
-	friend class FParticleModuleOrbitDetails;
+	friend class ParticleModuleOrbitDetails;
 };
 
 }

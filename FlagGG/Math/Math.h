@@ -52,6 +52,8 @@ FORCEINLINE T Min(T value1, T value2)
 
 FlagGG_API bool IsNaN(Real number);
 
+FlagGG_API bool IsFinite(Real number);
+
 FlagGG_API Real Sin(Real angle);
 
 FlagGG_API Real Cos(Real angle);

@@ -20,6 +20,8 @@ void GameEngine::CreateCoreObject()
 
 void GameEngine::Start()
 {
+	GetSubsystem<Context>()->MarkCurrentThreadAsGameThread();
+
 	CreateCoreObject();
 
 #ifdef _WIN32

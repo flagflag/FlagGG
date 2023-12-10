@@ -5,6 +5,7 @@
 #include "Container/EnumAsByte.h"
 #include "Graphics/Material.h"
 #include "Resource/Resource.h"
+#include "Math/BoundingBox.h"
 
 namespace FlagGG
 {

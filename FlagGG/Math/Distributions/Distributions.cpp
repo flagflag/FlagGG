@@ -14,13 +14,10 @@
 #include "Math/Distributions/DistributionVectorParticleParameter.h"
 #include "Math/Distributions/DistributionVectorUniform.h"
 #include "Math/Distributions/DistributionVectorUniformCurve.h"
+#include "Core/Context.h"
 
 namespace FlagGG
 {
-
-static bool IsInGameThread() { return true; }
-
-static bool IsInAsyncLoadingThread() { return false; }
 
 // Moving UDistributions to PostInitProps to not be default sub-objects:
 // Small enough value to be rounded to 0.0 in the editor 
@@ -57,7 +54,7 @@ static_assert((LOOKUP_TABLE_MAX_SAMPLES& (LOOKUP_TABLE_MAX_SAMPLES - 1)) == 0, "
  */
 static void BuildConstantLookupTable(DistributionLookupTable* OutTable, Int32 ValuesPerEntry, const float* Values)
 {
-	ASSERT(IsInGameThread() || IsInAsyncLoadingThread());
+	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
 	ASSERT(OutTable != NULL);
 	ASSERT(Values != NULL);
 
@@ -96,7 +93,7 @@ static void BuildZeroLookupTable(DistributionLookupTable* OutTable, Int32 Values
 template <typename DistributionType>
 void BuildLookupTable(DistributionLookupTable* OutTable, const DistributionType& Distribution)
 {
-	ASSERT(IsInGameThread() || IsInAsyncLoadingThread());
+	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
 	ASSERT(Distribution);
 
 	// Always clear the table.
@@ -156,7 +153,7 @@ void BuildLookupTable(DistributionLookupTable* OutTable, const DistributionType&
  */
 static void AppendLookupTable(DistributionLookupTable* Table, const DistributionLookupTable& OtherTable)
 {
-	ASSERT(IsInGameThread() || IsInAsyncLoadingThread());
+	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
 	ASSERT(Table != NULL);
 	ASSERT(Table->GetValuesPerEntry() >= 1 && Table->GetValuesPerEntry() <= 3);
 	ASSERT(OtherTable.GetValuesPerEntry() == 1);
@@ -235,7 +232,7 @@ static void AppendLookupTable(DistributionLookupTable* Table, const Distribution
  */
 static void SliceLookupTable(DistributionLookupTable* Table, Int32 ChannelsToKeep)
 {
-	ASSERT(IsInGameThread() || IsInAsyncLoadingThread());
+	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
 	ASSERT(Table != NULL);
 	ASSERT(Table->GetValuesPerEntry() >= ChannelsToKeep);
 
@@ -288,7 +285,7 @@ static void SliceLookupTable(DistributionLookupTable* Table, Int32 ChannelsToKee
  */
 static void ScaleLookupTableByConstant(DistributionLookupTable* Table, float Scale)
 {
-	ASSERT(IsInGameThread() || IsInAsyncLoadingThread());
+	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
 	ASSERT(Table != NULL);
 
 	for (Int32 ValueIndex = 0; ValueIndex < Table->values_.Size(); ++ValueIndex)
@@ -305,7 +302,7 @@ static void ScaleLookupTableByConstant(DistributionLookupTable* Table, float Sca
  */
 static void ScaleLookupTableByConstants(DistributionLookupTable* Table, const float* Scale, Int32 ValueCount)
 {
-	ASSERT(IsInGameThread() || IsInAsyncLoadingThread());
+	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
 	ASSERT(Table != NULL);
 	ASSERT(ValueCount == Table->GetValuesPerEntry());
 
@@ -338,7 +335,7 @@ static void ScaleLookupTableByConstants(DistributionLookupTable* Table, const fl
  */
 static void AddConstantToLookupTable(DistributionLookupTable* Table, const float* Addend, Int32 ValueCount)
 {
-	ASSERT(IsInGameThread() || IsInAsyncLoadingThread());
+	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
 	ASSERT(Table != NULL);
 	ASSERT(ValueCount == Table->GetValuesPerEntry());
 
@@ -370,7 +367,7 @@ static void AddConstantToLookupTable(DistributionLookupTable* Table, const float
  */
 static void ScaleLookupTableByLookupTable(DistributionLookupTable* Table, const DistributionLookupTable& OtherTable)
 {
-	ASSERT(IsInGameThread() || IsInAsyncLoadingThread());
+	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
 	ASSERT(Table != NULL);
 	ASSERT(OtherTable.GetValuesPerEntry() == 1 || OtherTable.GetValuesPerEntry() == Table->GetValuesPerEntry());
 
@@ -445,7 +442,7 @@ static void ScaleLookupTableByLookupTable(DistributionLookupTable* Table, const 
  */
 static void AddLookupTableToLookupTable(DistributionLookupTable* Table, const DistributionLookupTable& OtherTable)
 {
-	ASSERT(IsInGameThread() || IsInAsyncLoadingThread());
+	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
 	ASSERT(Table != NULL);
 	ASSERT(OtherTable.GetValuesPerEntry() == 1 || OtherTable.GetValuesPerEntry() == Table->GetValuesPerEntry());
 
@@ -600,7 +597,7 @@ static float ComputeLookupTableError(const DistributionLookupTable& InTable1, co
  */
 static void ResampleLookupTable(DistributionLookupTable* OutTable, const DistributionLookupTable& InTable, float MinIn, float MaxIn, Int32 SampleCount)
 {
-	ASSERT(IsInGameThread() || IsInAsyncLoadingThread());
+	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
 	const Int32 Stride = InTable.entryStride_;
 	const float OneOverTimeScale = (InTable.timeScale_ == 0.0f) ? 0.0f : 1.0f / InTable.timeScale_;
 	const float timeScale_ = (SampleCount > 1) ? ((MaxIn - MinIn) / (float)(SampleCount - 1)) : 0.0f;
@@ -638,7 +635,7 @@ static void ResampleLookupTable(DistributionLookupTable* OutTable, const Distrib
  */
 static void OptimizeLookupTable(DistributionLookupTable* Table, float ErrorThreshold)
 {
-	ASSERT(IsInGameThread() || IsInAsyncLoadingThread());
+	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
 	ASSERT(Table != NULL);
 	ASSERT((Table->entryCount_ & (Table->entryCount_ - 1)) == 0);
 
@@ -860,11 +857,11 @@ void RawDistributionFloat::Initialize()
 	{
 		return;
 	}
-	if (!GIsEditor && !IsInGameThread() && !IsInAsyncLoadingThread())
+	if (!GIsEditor && !GetSubsystem<Context>()->IsInGameThread() && !GetSubsystem<Context>()->IsInAsyncLoadingThread())
 	{
 		return;
 	}
-	ASSERT(IsInGameThread() || IsInAsyncLoadingThread());
+	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
 
 	// always empty out the lookup table
 	lookupTable_.Empty();
@@ -1083,7 +1080,7 @@ void RawDistributionFloat::Initialize()
 	{
 		return;
 	}
-	ASSERT(IsInGameThread() || IsInAsyncLoadingThread());
+	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
 
 	// always empty out the lookup table
 	lookupTable_.Empty();

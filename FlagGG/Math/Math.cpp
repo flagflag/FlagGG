@@ -26,7 +26,12 @@ const Real F_OVERSQRT2 = float(0.7071067811865475244008443621048490);
 
 bool IsNaN(Real number)
 {
-	return isnan(number);
+	return _isnan(number);
+}
+
+bool IsFinite(Real number)
+{
+	return _finite(number);
 }
 
 Real Sin(Real angle)

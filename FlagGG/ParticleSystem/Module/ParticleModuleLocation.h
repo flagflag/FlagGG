@@ -17,6 +17,7 @@ class FlagGG_API ParticleModulePivotOffset : public ParticleModuleLocationBase
 {
 	OBJECT_OVERRIDE(ParticleModulePivotOffset, ParticleModuleLocationBase);
 public:
+	ParticleModulePivotOffset();
 
 	/** Offset applied in UV space to the particle vertex positions. Defaults to (0.5,0.5) putting the pivot in the centre of the partilce. */
 	Vector2 pivotOffset_;

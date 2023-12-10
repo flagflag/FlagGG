@@ -72,7 +72,7 @@ struct ParticleCurvePair
 	ParticleCurvePair() = default;
 };
 
-struct ParticleRandomSeedInfo
+struct FlagGG_API ParticleRandomSeedInfo
 {
 	ParticleRandomSeedInfo()
 		: getSeedFromInstance_(false)
@@ -122,7 +122,7 @@ struct ParticleRandomSeedInfo
 	Vector<Int32> randomSeeds_;
 };
 
-class ParticleModule : public Object
+class FlagGG_API ParticleModule : public Object
 {
 	OBJECT_OVERRIDE(ParticleModule, Object);
 public:
@@ -450,7 +450,7 @@ public:
 	RandomStream& GetRandomStream(ParticleEmitterInstance* owner);
 
 #if WITH_EDITOR
-	virtual void PostLoadSubobjects(FObjectInstancingGraph* outerInstanceGraph) override;
+	virtual void PostLoadSubobjects(ObjectInstancingGraph* outerInstanceGraph) override;
 
 	/**
 	 *	Custom Cascade module menu entries support

@@ -1,4 +1,7 @@
 #include "ParticleModule.h"
+#include "ParticleSystem/ParticleLODLevel.h"
+#include "ParticleSystem/ParticleEmitterInstances.h"
+#include "ParticleSystem/ParticleSystemComponent.h"
 #include "Math/Distributions/DistributionFloat.h"
 #include "Math/Distributions/DistributionFloatConstant.h"
 #include "Math/Distributions/DistributionFloatConstantCurve.h"
@@ -434,142 +437,78 @@ ParticleModule* ParticleModule::GenerateLODModule(ParticleLODLevel* sourceLODLev
 {
 	if (WillGeneratedModuleBeIdentical(sourceLODLevel, destLODLevel, percentage) && !forceModuleConstruction)
 	{
-		LODValidity_ |= (1 << destLODLevel->Level);
+		LODValidity_ |= (1 << destLODLevel->level_);
 		return this;
 	}
 
 	// Otherwise, construct a new object and set the values appropriately... if required.
-	ParticleModule* NewModule = NULL;
-
-	Object* DupObject = StaticDuplicateObject(this, GetOuter());
-	if (DupObject)
+	ParticleModule* newModule = NULL;
+	
+	newModule = new ParticleModule();
+	newModule->LODValidity_ = (1 << destLODLevel->level_);
+	if (generateModuleData)
 	{
-		NewModule = CastChecked<ParticleModule>(DupObject);
-		NewModule->LODValidity = (1 << destLODLevel->Level);
-		if (generateModuleData)
+		if (newModule->GenerateLODModuleValues(this, percentage, destLODLevel) == false)
 		{
-			if (NewModule->GenerateLODModuleValues(this, percentage, destLODLevel) == false)
-			{
-				FString NameDump;
-				GetName(NameDump);
-				UE_LOG(LogParticles, Log, TEXT("ERROR - GenerateFromLODLevel - Failed to generate LOD module values for %s!"), *NameDump);
-				NewModule = NULL;
-			}
+			FLAGGG_LOG_ERROR("GenerateFromLODLevel - Failed to generate LOD module values.");
+			delete newModule;
+			newModule = NULL;
 		}
 	}
 	
-	return NewModule;
+	return newModule;
 }
 
 
-bool ParticleModule::IsUsedInLODLevel(Int32 SourceLODIndex) const
+bool ParticleModule::IsUsedInLODLevel(Int32 sourceLODIndex) const
 {
-	if ((SourceLODIndex >= 0) && (SourceLODIndex <= 7))
+	if ((sourceLODIndex >= 0) && (sourceLODIndex <= 7))
 	{
-		return ((LODValidity & (1 << SourceLODIndex)) != 0);
+		return ((LODValidity_ & (1 << sourceLODIndex)) != 0);
 	}
 	return false;
 }
 
 
-void ParticleModule::GetParticleSysParamsUtilized(Vector<FString>& ParticleSysParamList)
+void ParticleModule::GetParticleSysParamsUtilized(Vector<String>& particleSysParamList)
 {
 }
 						   
 
-void ParticleModule::GetParticleParametersUtilized(Vector<FString>& ParticleParameterList)
+void ParticleModule::GetParticleParametersUtilized(Vector<String>& particleParameterList)
 {
-	for (TFieldIterator<FStructProperty> It(GetClass()); It; ++It)
-	{
-		// attempt to get a distribution from a random struct property
-		Object* Distribution = FRawDistribution::TryGetDistributionObjectFromRawDistributionProperty(*It, (UInt8*)this);
-		if (Distribution)
-		{
-			DistributionFloatParticleParameter* FloatPP = Cast<DistributionFloatParticleParameter>(Distribution);
-			DistributionVectorParticleParameter* VectorPP = Cast<DistributionVectorParticleParameter>(Distribution);
 
-			// only handle particle param types
-			if (FloatPP)
-			{
-				ParticleParameterList.Add(
-					FString::Printf(
-						TEXT("float : %32s - MinIn %10.5f, MaxIn %10.5f, MinOut %10.5f, MaxOut %10.5f, Mode %10s, Constant %10.5f\n"),
-						*(FloatPP->ParameterName.ToString()),
-						FloatPP->MinInput,
-						FloatPP->MaxInput,
-						FloatPP->minOutput_,
-						FloatPP->maxOutput_,
-						(FloatPP->ParamMode == DPM_Normal) ? TEXT("Normal") :
-							(FloatPP->ParamMode == DPM_Abs) ? TEXT("Absolute") :
-								(FloatPP->ParamMode == DPM_Direct) ? TEXT("Direct") :
-									TEXT("????"),
-						FloatPP->constant_)
-						);
-			}
-			else 
-			if (VectorPP)
-			{
-				FString ParamString;
-
-				ParamString = FString::Printf(TEXT("VECTOR: %32s - "), *(VectorPP->ParameterName.ToString()));
-				ParamString += FString::Printf(TEXT("MinIn %10.5f,%10.5f,%10.5f, "), 
-					VectorPP->MinInput.x_, VectorPP->MinInput.y_, VectorPP->MinInput.z_);
-				ParamString += FString::Printf(TEXT("MaxIn %10.5f,%10.5f,%10.5f, "),
-					VectorPP->MaxInput.x_, VectorPP->MaxInput.y_, VectorPP->MaxInput.z_);
-				ParamString += FString::Printf(TEXT("MinOut %10.5f,%10.5f,%10.5f, "),
-						VectorPP->minOutput_.x_, VectorPP->minOutput_.y_, VectorPP->minOutput_.z_);
-				ParamString += FString::Printf(TEXT("MaxOut %10.5f,%10.5f,%10.5f, "),
-						VectorPP->maxOutput_.x_, VectorPP->maxOutput_.y_, VectorPP->maxOutput_.z_);
-				ParamString += FString::Printf(TEXT("Mode %10s,%10s,%10s, "),
-						(VectorPP->ParamModes[0] == DPM_Normal) ? TEXT("Normal") :
-							(VectorPP->ParamModes[0] == DPM_Abs) ? TEXT("Absolute") :
-								(VectorPP->ParamModes[0] == DPM_Direct) ? TEXT("Direct") :
-									TEXT("????"),
-						(VectorPP->ParamModes[1] == DPM_Normal) ? TEXT("Normal") :
-							(VectorPP->ParamModes[1] == DPM_Abs) ? TEXT("Absolute") :
-								(VectorPP->ParamModes[1] == DPM_Direct) ? TEXT("Direct") :
-									TEXT("????"),
-						(VectorPP->ParamModes[2] == DPM_Normal) ? TEXT("Normal") :
-							(VectorPP->ParamModes[2] == DPM_Abs) ? TEXT("Absolute") :
-								(VectorPP->ParamModes[2] == DPM_Direct) ? TEXT("Direct") :
-									TEXT("????"));
-				ParamString += FString::Printf(TEXT("Constant %10.5f,%10.5f,%10.5f\n"),
-						VectorPP->constant_.x_, VectorPP->constant_.y_, VectorPP->constant_.z_);
-				ParticleParameterList.Add(ParamString);
-			}
-		}
-	}
 }
 
 
-UInt32 ParticleModule::PrepRandomSeedInstancePayload(ParticleEmitterInstance* owner, ParticleRandomSeedInstancePayload* InRandSeedPayload, const ParticleRandomSeedInfo& InRandSeedInfo)
+UInt32 ParticleModule::PrepRandomSeedInstancePayload(ParticleEmitterInstance* owner, ParticleRandomSeedInstancePayload* inRandSeedPayload, const ParticleRandomSeedInfo& inRandSeedInfo)
 {
     // These should never be null
-	if (!ensure( owner != nullptr && owner->Component != nullptr ))
+	if (!CRY_ENSURE( owner != nullptr && owner->component_ != nullptr ))
 	{
 		return 0xffffffff;
 	}
 
-	if (InRandSeedPayload != nullptr)
+	if (inRandSeedPayload != nullptr)
 	{
-		new(InRandSeedPayload) ParticleRandomSeedInstancePayload();
+		new(inRandSeedPayload) ParticleRandomSeedInstancePayload();
 
 		// See if the parameter is set on the instance...
-		if (InRandSeedInfo.bGetSeedFromInstance == true)
+		if (inRandSeedInfo.getSeedFromInstance_ == true)
 		{
-			float SeedValue;
-			if (owner->Component->GetFloatParameter(InRandSeedInfo.ParameterName, SeedValue) == true)
+			float seedValue;
+			if (owner->component_->GetFloatParameter(inRandSeedInfo.parameterName_, seedValue) == true)
 			{
-				if (InRandSeedInfo.bInstanceSeedIsIndex == false)
+				if (inRandSeedInfo.instanceSeedIsIndex_ == false)
 				{
-					InRandSeedPayload->RandomStream.Initialize(FMath::RoundToInt(SeedValue));
+					inRandSeedPayload->randomStream_.Initialize(RoundToInt(seedValue));
 				}
 				else
 				{
-					if (InRandSeedInfo.RandomSeeds.Size() > 0)
+					if (inRandSeedInfo.randomSeeds_.Size() > 0)
 					{
-						Int32 Index = FMath::Min<Int32>((InRandSeedInfo.RandomSeeds.Size() - 1), FMath::TruncToInt(SeedValue));
-						InRandSeedPayload->RandomStream.Initialize(InRandSeedInfo.RandomSeeds[Index]);
+						Int32 Index = Min<Int32>((inRandSeedInfo.randomSeeds_.Size() - 1), FloorToInt(seedValue));
+						inRandSeedPayload->randomStream_.Initialize(inRandSeedInfo.randomSeeds_[Index]);
 						return 0;
 					}
 					else
@@ -582,21 +521,16 @@ UInt32 ParticleModule::PrepRandomSeedInstancePayload(ParticleEmitterInstance* ow
 		}
 
 		// Pick a seed to use and initialize it!!!!
-		if (InRandSeedInfo.RandomSeeds.Size() > 0)
+		if (inRandSeedInfo.randomSeeds_.Size() > 0)
 		{
 			Int32 Index = 0;
 
-			if (InRandSeedInfo.bRandomlySelectSeedArray)
+			if (inRandSeedInfo.randomlySelectSeedArray_)
 			{
-				Index = owner->Component->RandomStream.RandHelper(InRandSeedInfo.RandomSeeds.Size());
+				Index = owner->component_->randomStream_.RandHelper(inRandSeedInfo.randomSeeds_.Size());
 			}
 
-			InRandSeedPayload->RandomStream.Initialize(InRandSeedInfo.RandomSeeds[Index]);
-			return 0;
-		}
-		else if (FApp::bUseFixedSeed)
-		{
-			InRandSeedPayload->RandomStream.Initialize(GetFName());
+			inRandSeedPayload->randomStream_.Initialize(inRandSeedInfo.randomSeeds_[Index]);
 			return 0;
 		}
 	}
@@ -604,84 +538,32 @@ UInt32 ParticleModule::PrepRandomSeedInstancePayload(ParticleEmitterInstance* ow
 }
 
 
-bool ParticleModule::SetRandomSeedEntry(Int32 InIndex, Int32 InRandomSeed)
+bool ParticleModule::SetRandomSeedEntry(Int32 inIndex, Int32 inRandomSeed)
 {
 	ParticleRandomSeedInfo* SeedInfo = GetRandomSeedInfo();
 	if (SeedInfo != NULL)
 	{
-		if (SeedInfo->RandomSeeds.Size() <= InIndex)
+		if (SeedInfo->randomSeeds_.Size() <= inIndex)
 		{
-			SeedInfo->RandomSeeds.AddZeroed(InIndex - SeedInfo->RandomSeeds.Size() + 1);
+			SeedInfo->randomSeeds_.Resize(inIndex + 1);
 		}
 
-		SeedInfo->RandomSeeds[InIndex] = InRandomSeed;
+		SeedInfo->randomSeeds_[inIndex] = inRandomSeed;
 		return true;
 	}
 	return false;
 }
 
-bool ParticleModule::IsUsedInGPUEmitter()const
+bool ParticleModule::IsUsedInGPUEmitter() const
 {
-	ParticleSystem* Sys = Cast<ParticleSystem>(GetOuter());
-
-	if( Sys )
-	{
-		for( Int32 EmitterIdx=0 ; EmitterIdx < Sys->Emitters.Size() ; ++EmitterIdx )
-		{
-			ParticleEmitter* Emitter = Sys->Emitters[EmitterIdx];
-			if( Emitter && Emitter->LODLevels.Size() )
-			{
-				//Have to make sure this module is used in this emitter before checking it's type data.
-				bool bUsedInThisEmitter = false;
-				for( Int32 LodIdx=0 ; LodIdx < Emitter->LODLevels.Size() && !bUsedInThisEmitter ; ++LodIdx )
-				{
-					ParticleLODLevel* LODLevel = Emitter->LODLevels[LodIdx];
-					if( LODLevel )
-					{
-						if( LODLevel->RequiredModule == this )
-						{
-							bUsedInThisEmitter = true;
-						}
-						else
-						{
-							for( Int32 ModuleIdx=0 ; ModuleIdx < LODLevel->Modules.Size() && !bUsedInThisEmitter ; ++ModuleIdx )
-							{
-								ParticleModule* Module = LODLevel->Modules[ModuleIdx];
-								if( Module == this )
-								{
-									bUsedInThisEmitter = true;
-								}
-							}
-						}
-					}
-				}
-
-				//If this module is used in this emitter then ASSERT it's type data and return whether it's GPU or not
-				if( bUsedInThisEmitter )
-				{
-					//Can just ASSERT the highest lod.
-					ParticleLODLevel* LODLevel = Emitter->LODLevels[0];
-					if( LODLevel )
-					{
-						ParticleModule* TypeDataModule = LODLevel->TypeDataModule;
-						if( TypeDataModule && TypeDataModule->IsA(UParticleModuleTypeDataGpu::StaticClass()) )
-						{
-							return true;//Module is used in a GPU emitter.
-						}
-					}
-				}
-			}
-		}
-	}
-
 	return false;
 }
 
 RandomStream& ParticleModule::GetRandomStream(ParticleEmitterInstance* owner)
 {
-	ParticleRandomSeedInstancePayload* Payload = owner->GetModuleRandomSeedInstanceData(this);
-	RandomStream& RandomStream = (Payload != nullptr) ? Payload->RandomStream : owner->Component->RandomStream;
-	return RandomStream;
+	ParticleRandomSeedInstancePayload* payload = owner->GetModuleRandomSeedInstanceData(this);
+	RandomStream& randomStream = (payload != nullptr) ? payload->randomStream_ : owner->component_->randomStream_;
+	return randomStream;
 }
 
 }

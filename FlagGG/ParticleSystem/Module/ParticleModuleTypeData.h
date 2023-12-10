@@ -90,7 +90,7 @@ enum MeshCameraFacingOptions
 	EMeshCameraFacingOptions_MAX,
 };
 
-class ParticleModuleTypeDataMesh : public ParticleModuleTypeDataBase
+class FlagGG_API ParticleModuleTypeDataMesh : public ParticleModuleTypeDataBase
 {
 	OBJECT_OVERRIDE(ParticleModuleTypeDataMesh, ParticleModuleTypeDataBase);
 public:
