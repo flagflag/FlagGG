@@ -4,12 +4,13 @@
 #include "ParticleSystem/Module/ParticleModuleSpawn.h"
 #include "ParticleSystem/Module/ParticleModuleTypeData.h"
 #include "ParticleSystem/Module/ParticleModuleLifetime.h"
+#include "Math/InterpCurveEdSetup.h"
 #include "Log.h"
 
 namespace FlagGG
 {
 
-	/*-----------------------------------------------------------------------------
+/*-----------------------------------------------------------------------------
 	ParticleLODLevel implementation.
 -----------------------------------------------------------------------------*/
 ParticleLODLevel::ParticleLODLevel()

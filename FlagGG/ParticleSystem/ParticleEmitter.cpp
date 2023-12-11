@@ -9,6 +9,7 @@
 #include "ParticleSystem/Module/ParticleModuleSubUV.h"
 #include "ParticleSystem/Module/ParticleModuleMaterial.h"
 #include "Math/Distributions/DistributionFloatConstant.h"
+#include "Math/InterpCurveEdSetup.h"
 #include "Log.h"
 
 namespace FlagGG

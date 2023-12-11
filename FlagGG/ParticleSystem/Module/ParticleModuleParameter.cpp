@@ -1,6 +1,7 @@
 #include "ParticleModuleParameter.h"
 #include "ParticleSystem/ParticleEmitterInstances.h"
 #include "ParticleSystem/ParticleSystemComponent.h"
+#include "Math/InterpCurveEdSetup.h"
 
 namespace FlagGG
 {

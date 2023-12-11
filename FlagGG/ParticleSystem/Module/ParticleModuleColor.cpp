@@ -4,6 +4,7 @@
 #include "Math/Distributions/DistributionVectorConstantCurve.h"
 #include "Math/Distributions/DistributionFloatParticleParameter.h"
 #include "Math/Distributions/DistributionVectorParticleParameter.h"
+#include "Math/InterpCurveEdSetup.h"
 #include "ParticleSystem/ParticleEmitterInstances.h"
 #include "ParticleSystem/ParticleSystemComponent.h"
 #include "ParticleSystem/ParticleLODLevel.h"

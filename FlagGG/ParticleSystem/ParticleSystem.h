@@ -81,12 +81,9 @@ class ParticleSystem : public Resource
 {
 	OBJECT_OVERRIDE(ParticleSystem, Resource);
 public:
+	ParticleSystem();
 
-	ParticleSystem()
-		: occlusionBoundsMethod_(EPSOBM_ParticleBounds)
-	{
-
-	}
+	~ParticleSystem() override;
 
 	/** UpdateTime_FPS	- the frame per second to update at in FixedTime mode		*/
 	float updateTime_FPS_;
