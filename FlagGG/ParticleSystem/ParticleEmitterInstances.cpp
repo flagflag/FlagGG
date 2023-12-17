@@ -2329,6 +2329,41 @@ void ParticleEmitterInstance::GetScreenAlignmentAndScale(Int32& outScreenAlign, 
 
 
 /*-----------------------------------------------------------------------------
+	ParticleSpriteEmitterInstance
+-----------------------------------------------------------------------------*/
+/**
+ *	ParticleSpriteEmitterInstance
+ *	The structure for a standard sprite emitter instance.
+ */
+ /** Constructor	*/
+ParticleSpriteEmitterInstance::ParticleSpriteEmitterInstance()
+{
+}
+
+/** Destructor	*/
+ParticleSpriteEmitterInstance::~ParticleSpriteEmitterInstance()
+{
+}
+
+/**
+ *	Retrieve the allocated size of this instance.
+ *
+ *	@param	OutNum			The size of this instance
+ *	@param	OutMax			The maximum size of this instance
+ */
+void ParticleSpriteEmitterInstance::GetAllocatedSize(Int32& outNum, Int32& outMax)
+{
+	Int32 size = sizeof(ParticleSpriteEmitterInstance);
+	Int32 activeParticleDataSize = (particleData_ != NULL) ? (activeParticles_ * particleStride_) : 0;
+	Int32 maxActiveParticleDataSize = (particleData_ != NULL) ? (maxActiveParticles_ * particleStride_) : 0;
+	Int32 activeParticleIndexSize = (particleIndices_ != NULL) ? (activeParticles_ * sizeof(UInt16)) : 0;
+	Int32 maxActiveParticleIndexSize = (particleIndices_ != NULL) ? (maxActiveParticles_ * sizeof(UInt16)) : 0;
+
+	outNum = activeParticleDataSize + activeParticleIndexSize + size;
+	outMax = maxActiveParticleDataSize + maxActiveParticleIndexSize + size;
+}
+
+/*-----------------------------------------------------------------------------
 	ParticleMeshEmitterInstance
 -----------------------------------------------------------------------------*/
 /**

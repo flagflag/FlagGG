@@ -62,7 +62,7 @@ struct ParticleSystemLOD
 
 struct LODSoloTrack
 {
-	PODVector<UInt8> SoloEnableSetting;
+	PODVector<UInt8> soloEnableSetting_;
 };
 
 struct NamedEmitterMaterial
@@ -84,6 +84,8 @@ public:
 	ParticleSystem();
 
 	~ParticleSystem() override;
+
+	UInt32 maxPoolSize_;
 
 	/** UpdateTime_FPS	- the frame per second to update at in FixedTime mode		*/
 	float updateTime_FPS_;

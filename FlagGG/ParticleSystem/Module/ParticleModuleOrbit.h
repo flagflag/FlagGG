@@ -66,14 +66,16 @@ class FlagGG_API ParticleModuleOrbit : public ParticleModuleOrbitBase
 {
 	OBJECT_OVERRIDE(ParticleModuleOrbit, ParticleModuleOrbitBase);
 public:
+	ParticleModuleOrbit();
+
 	/** Initializes the default values for this property */
 	void InitializeDefaults();
 
 	//Begin UParticleModule Interface
-	virtual void	CompileModule(ParticleEmitterBuildInfo& EmitterInfo) override;
-	virtual void	Spawn(ParticleEmitterInstance* Owner, Int32 Offset, float SpawnTime, BaseParticle* ParticleBase) override;
-	virtual void	Update(ParticleEmitterInstance* Owner, Int32 Offset, float DeltaTime) override;
-	virtual UInt32	RequiredBytes(ParticleModuleTypeDataBase* TypeData) override;
+	virtual void	CompileModule(ParticleEmitterBuildInfo& emitterInfo) override;
+	virtual void	Spawn(ParticleEmitterInstance* owner, Int32 offset, float spawnTime, BaseParticle* particleBase) override;
+	virtual void	Update(ParticleEmitterInstance* owner, Int32 offset, float deltaTime) override;
+	virtual UInt32	RequiredBytes(ParticleModuleTypeDataBase* typeData) override;
 	virtual UInt32	RequiredBytesPerInstance() override;
 #if WITH_EDITOR
 	virtual bool IsValidForLODLevel(UParticleLODLevel* LODLevel, FString& OutErrorString) override;

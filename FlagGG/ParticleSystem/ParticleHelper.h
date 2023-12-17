@@ -77,7 +77,7 @@ const UInt32 PDM_DefaultValue = 0xFFFF;
 	}
 
 #define CONTINUE_UPDATE_LOOP																							\
-		CurrentOffset = Offset;																							\
+		currentOffset = offset;																							\
 		continue;
 
 #define SPAWN_INIT																										\

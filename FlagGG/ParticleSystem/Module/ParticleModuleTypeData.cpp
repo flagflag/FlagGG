@@ -7,6 +7,20 @@ namespace FlagGG
 {
 
 /*-----------------------------------------------------------------------------
+	UParticleModuleTypeDataBase implementation.
+-----------------------------------------------------------------------------*/
+ParticleModuleTypeDataBase::ParticleModuleTypeDataBase()
+{
+	spawnModule_ = false;
+	updateModule_ = false;
+}
+
+ParticleEmitterInstance* ParticleModuleTypeDataBase::CreateInstance(ParticleEmitter* inEmitterParent, ParticleSystemComponent* inComponent)
+{
+	return NULL;
+}
+
+/*-----------------------------------------------------------------------------
 	ParticleModuleTypeDataMesh implementation.
 -----------------------------------------------------------------------------*/
 

@@ -61,12 +61,11 @@ inline T* RTTICast(U* object)
 #define OBJECT_OVERRIDE(typeName, baseTypeName) \
 	public: \
         using ClassName = typeName; \
-        using BaseClassName = baseTypeName; \
-		using SuperClassName = baseTypeName; \
+		using Super = baseTypeName; \
         virtual FlagGG::StringHash GetType() const override { return GetTypeInfoStatic()->GetType(); } \
         virtual const FlagGG::String& GetTypeName() const override { return GetTypeInfoStatic()->GetTypeName(); } \
         virtual const FlagGG::TypeInfo* GetTypeInfo() const override { return GetTypeInfoStatic(); } \
         static FlagGG::StringHash GetTypeStatic() { return GetTypeInfoStatic()->GetType(); } \
         static const FlagGG::String& GetTypeNameStatic() { return GetTypeInfoStatic()->GetTypeName(); } \
-        static const FlagGG::TypeInfo* GetTypeInfoStatic() { static const FlagGG::TypeInfo typeInfoStatic(#typeName, BaseClassName::GetTypeInfoStatic()); return &typeInfoStatic; } \
+        static const FlagGG::TypeInfo* GetTypeInfoStatic() { static const FlagGG::TypeInfo typeInfoStatic(#typeName, Super::GetTypeInfoStatic()); return &typeInfoStatic; } \
 

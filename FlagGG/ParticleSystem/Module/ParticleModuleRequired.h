@@ -122,6 +122,8 @@ class FlagGG_API ParticleModuleRequired : public ParticleModule
 {
 	OBJECT_OVERRIDE(ParticleModuleRequired, ParticleModule);
 public:
+	ParticleModuleRequired();
+
 	/** Initializes the default values for this property */
 	void InitializeDefaults();
 
@@ -364,7 +366,7 @@ public:
 	/**
 	 * Controls UV Flipping for this emitter.
 	 */
-	ParticleUVFlipMode UVFlippingMode;
+	ParticleUVFlipMode UVFlippingMode_;
 
 	/**
 	 * More bounding vertices results in reduced overdraw, but adds more triangle overhead.

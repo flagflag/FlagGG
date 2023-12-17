@@ -58,7 +58,7 @@ void ParticleModuleSize::SpawnEx(ParticleEmitterInstance* owner, Int32 offset, f
 	Vector3 size  = startSize_.GetValue(owner->emitterTime_, owner->component_, 0, inRandomStream);
 	particle.size_ += size;
 
-	AdjustParticleBaseSizeForUVFlipping(size, owner->currentLODLevel_->requiredModule_->UVFlippingMode, *inRandomStream);
+	AdjustParticleBaseSizeForUVFlipping(size, owner->currentLODLevel_->requiredModule_->UVFlippingMode_, *inRandomStream);
 	particle.baseSize_ += size;
 }
 

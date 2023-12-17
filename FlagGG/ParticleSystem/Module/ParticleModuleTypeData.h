@@ -17,6 +17,7 @@ class ParticleModuleTypeDataBase : public ParticleModule
 {
 	OBJECT_OVERRIDE(ParticleModuleTypeDataBase, ParticleModule);
 public:
+	ParticleModuleTypeDataBase();
 
 	//~ Begin UParticleModule Interface
 	virtual ModuleType	GetModuleType() const override { return EPMT_TypeData; }
