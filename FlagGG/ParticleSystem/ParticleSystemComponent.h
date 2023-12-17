@@ -124,6 +124,8 @@ class FlagGG_API ParticleSystemComponent : public DrawableComponent
 {
 	OBJECT_OVERRIDE(ParticleSystemComponent, DrawableComponent);
 public:
+	ParticleSystemComponent();
+
 	/**
 	  * Decide which detail mode should be applied to this particle system. If we have an editor
 	  * override specified, use that. Otherwise use the global cached value

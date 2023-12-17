@@ -7,6 +7,8 @@
 #include "Math/Color.h"
 #include "Container/Ptr.h"
 #include "Core/Context.h"
+// 依赖太复杂了，前向声明导致构建错误，以后再查暂时include头文件
+#include "Graphics/Shader.h"
 
 namespace FlagGG
 {
@@ -92,16 +94,16 @@ public:
 
 
 	// 获取纹理
-	SharedPtr<Texture> GetTexture();
+	Texture* GetTexture();
 
 	// 获取通道的纹理
-	SharedPtr<Texture> GetTexture(UInt32 index);
+	Texture* GetTexture(UInt32 index);
 
 	// 获取顶点shader
-	SharedPtr<Shader> GetVertexShader();
+	Shader* GetVertexShader();
 
 	// 获取像素shader
-	SharedPtr<Shader> GetPixelShader();
+	Shader* GetPixelShader();
 
 	// 获取所有render pass
 	HashMap<UInt32, RenderPassInfo>& GetRenderPass();

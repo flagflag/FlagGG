@@ -27,8 +27,8 @@ void GfxProgramOpenGL::Link(GfxShader* vertexShader, GfxShader* pixelShader)
 		return;
 	}
 
-	GfxShaderOpenGL* oglVS = vertexShader->DynamicCast<GfxShaderOpenGL>();
-	GfxShaderOpenGL* oglPS = pixelShader->DynamicCast<GfxShaderOpenGL>();
+	GfxShaderOpenGL* oglVS = vertexShader->Cast<GfxShaderOpenGL>();
+	GfxShaderOpenGL* oglPS = pixelShader->Cast<GfxShaderOpenGL>();
 
 	if (!oglVS || !oglPS)
 	{
@@ -63,7 +63,7 @@ void GfxProgramOpenGL::LinkComputeShader(GfxShader* computeShader)
 		return;
 	}
 
-	GfxShaderOpenGL* oglCS = computeShader->DynamicCast<GfxShaderOpenGL>();
+	GfxShaderOpenGL* oglCS = computeShader->Cast<GfxShaderOpenGL>();
 
 	if (!oglCS)
 	{

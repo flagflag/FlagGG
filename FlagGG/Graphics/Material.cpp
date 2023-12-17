@@ -267,22 +267,22 @@ void Material::SetRenderPass(RenderPassType type, const RenderPassInfo& renderPa
 	renderPass_[type] = renderPass;
 }
 
-SharedPtr<Texture> Material::GetTexture()
+Texture* Material::GetTexture()
 {
 	return textures_[TEXTURE_CLASS_UNIVERSAL];
 }
 
-SharedPtr<Texture> Material::GetTexture(UInt32 index)
+Texture* Material::GetTexture(UInt32 index)
 {
 	return index < MAX_TEXTURE_CLASS ? textures_[index] : nullptr;
 }
 
-SharedPtr<Shader> Material::GetVertexShader()
+Shader* Material::GetVertexShader()
 {
 	return vsShader_;
 }
 
-SharedPtr<Shader> Material::GetPixelShader()
+Shader* Material::GetPixelShader()
 {
 	return psShader_;
 }

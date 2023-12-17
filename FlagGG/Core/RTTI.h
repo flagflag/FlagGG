@@ -40,20 +40,20 @@ public:
 	bool IsInstanceOf(StringHash type) const;
 	bool IsInstanceOf(const TypeInfo* typeInfo) const;
 	template<typename T> bool IsInstanceOf() const { return IsInstanceOf(T::GetTypeInfoStatic()); }
-	template<typename T> T* DynamicCast() { return IsInstanceOf<T>() ? static_cast<T*>(this) : nullptr; }
-	template<typename T> const T* DynamicCast() const { return IsInstanceOf<T>() ? static_cast<const T*>(this) : nullptr; }
+	template<typename T> T* Cast() { return IsInstanceOf<T>() ? static_cast<T*>(this) : nullptr; }
+	template<typename T> const T* Cast() const { return IsInstanceOf<T>() ? static_cast<const T*>(this) : nullptr; }
 };
 
-template <class T, class U>
-inline T* Cast(U& object)
+template <typename T, typename U>
+inline T* RTTICast(U& object)
 {
-	return object ? object->DynamicCast<T>() : nullptr;
+	return object ? object->Cast<T>() : nullptr;
 }
 
-template <class T, class U>
-inline T* Cast(U* object)
+template <typename T, typename U>
+inline T* RTTICast(U* object)
 {
-	return object ? object->DynamicCast<T>() : nullptr;
+	return object ? object->Cast<T>() : nullptr;
 }
 
 }

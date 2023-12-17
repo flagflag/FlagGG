@@ -146,15 +146,15 @@ void ParticleModuleColorOverLife::Update(ParticleEmitterInstance* owner, Int32 o
 	}
 	const RawDistribution* fastColorOverLife = colorOverLife_.GetFastRawDistribution();
 	const RawDistribution* fastAlphaOverLife = alphaOverLife_.GetFastRawDistribution();
-	PlatformMisc::Prefetch(owner->particleData_, (owner->particleIndices_[0] * owner->particleStride_));
-	PlatformMisc::Prefetch(owner->particleData_, (owner->particleIndices_[0] * owner->particleStride_) + PLATFORM_CACHE_LINE_SIZE);
+	// PlatformMisc::Prefetch(owner->particleData_, (owner->particleIndices_[0] * owner->particleStride_));
+	// PlatformMisc::Prefetch(owner->particleData_, (owner->particleIndices_[0] * owner->particleStride_) + PLATFORM_CACHE_LINE_SIZE);
 	if (fastColorOverLife && fastAlphaOverLife)
 	{
 		// fast path
 		BEGIN_UPDATE_LOOP;
 		{
-			PlatformMisc::Prefetch(particleData, (particleIndices[i + 1] * particleStride));
-			PlatformMisc::Prefetch(particleData, (particleIndices[i + 1] * particleStride) + PLATFORM_CACHE_LINE_SIZE);
+			// PlatformMisc::Prefetch(particleData, (particleIndices[i + 1] * particleStride));
+			// PlatformMisc::Prefetch(particleData, (particleIndices[i + 1] * particleStride) + PLATFORM_CACHE_LINE_SIZE);
 			fastColorOverLife->GetValue3None(particle.relativeTime_, &particle.color_.r_);
 			fastAlphaOverLife->GetValue1None(particle.relativeTime_, &particle.color_.a_);
 		}
@@ -168,8 +168,8 @@ void ParticleModuleColorOverLife::Update(ParticleEmitterInstance* owner, Int32 o
 		{
 			ColorVec = colorOverLife_.GetValue(particle.relativeTime_, owner->component_);
 			fAlpha = alphaOverLife_.GetValue(particle.relativeTime_, owner->component_);
-			PlatformMisc::Prefetch(particleData, (particleIndices[i+1] * particleStride));
-			PlatformMisc::Prefetch(particleData, (particleIndices[i+1] * particleStride) + PLATFORM_CACHE_LINE_SIZE);
+			// PlatformMisc::Prefetch(particleData, (particleIndices[i+1] * particleStride));
+			// PlatformMisc::Prefetch(particleData, (particleIndices[i+1] * particleStride) + PLATFORM_CACHE_LINE_SIZE);
 			particle.color_.r_ = ColorVec.x_;
 			particle.color_.g_ = ColorVec.y_;
 			particle.color_.b_ = ColorVec.z_;
@@ -182,7 +182,7 @@ void ParticleModuleColorOverLife::Update(ParticleEmitterInstance* owner, Int32 o
 void ParticleModuleColorOverLife::SetToSensibleDefaults(ParticleEmitter* owner)
 {
 	colorOverLife_.distribution_ = MakeShared<DistributionVectorConstantCurve>();
-	DistributionVectorConstantCurve* ColorOverLifeDist = Cast<DistributionVectorConstantCurve>(colorOverLife_.distribution_);
+	DistributionVectorConstantCurve* ColorOverLifeDist = RTTICast<DistributionVectorConstantCurve>(colorOverLife_.distribution_);
 	if (ColorOverLifeDist)
 	{
 		// Add two points, one at time 0.0f and one at 1.0f
@@ -205,7 +205,7 @@ void ParticleModuleColorOverLife::SetToSensibleDefaults(ParticleEmitter* owner)
 	}
 
 	alphaOverLife_.distribution_ = MakeShared<DistributionFloatConstantCurve>();
-	DistributionFloatConstantCurve* alphaOverLifeDist = Cast<DistributionFloatConstantCurve>(alphaOverLife_.distribution_);
+	DistributionFloatConstantCurve* alphaOverLifeDist = RTTICast<DistributionFloatConstantCurve>(alphaOverLife_.distribution_);
 	if (alphaOverLifeDist)
 	{
 		// Add two points, one at time 0.0f and one at 1.0f

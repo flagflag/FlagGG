@@ -12,23 +12,23 @@ InterpCurveEdSetup::InterpCurveEdSetup()
 
 CurveEdInterface* InterpCurveEdSetup::GetCurveEdInterfacePointer(const CurveEdEntry& entry)
 {
-	DistributionFloat* FloatDist = Cast<DistributionFloat>(entry.curveObject_);
-	if(FloatDist)
+	DistributionFloat* floatDist = RTTICast<DistributionFloat>(entry.curveObject_);
+	if(floatDist)
 	{
-		return FloatDist;
+		return floatDist;
 	}
 
-	DistributionVector* VectorDist = Cast<DistributionVector>(entry.curveObject_);
-	if(VectorDist)
+	DistributionVector* vectorDist = RTTICast<DistributionVector>(entry.curveObject_);
+	if(vectorDist)
 	{
-		return VectorDist;
+		return vectorDist;
 	}
 
 	// TODO
-	//InterpTrack* InterpTrack = Cast<InterpTrack>(Entry.curveObject_);
-	//if(InterpTrack)
+	//InterpTrack* interpTrack = Cast<InterpTrack>(Entry.curveObject_);
+	//if(interpTrack)
 	//{
-	//	return InterpTrack;
+	//	return interpTrack;
 	//}
 
 	return NULL;

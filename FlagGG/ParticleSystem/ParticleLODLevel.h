@@ -14,7 +14,7 @@ namespace FlagGG
 
 class InterpCurveEdSetup;
 class ParticleModule;
-class MaterialInterface;
+class Material;
 struct ParticleEmitterBuildInfo;
 
 class ParticleLODLevel : public Object
@@ -22,6 +22,8 @@ class ParticleLODLevel : public Object
 	OBJECT_OVERRIDE(ParticleLODLevel, Object);
 public:
 	ParticleLODLevel();
+
+	~ParticleLODLevel() override;
 
 	// @todo document
 	virtual void	UpdateModuleLists();
@@ -81,7 +83,7 @@ public:
 	 * @param Slots - the material slot names
 	 * @param EmitterMaterials - the material slot materials.
 	 */
-	void GetUsedMaterials(PODVector<MaterialInterface*>& outMaterials, const Vector<NamedEmitterMaterial>& namedMaterialSlots, const PODVector<MaterialInterface*>& emitterMaterials) const;
+	void GetUsedMaterials(PODVector<Material*>& outMaterials, const Vector<NamedEmitterMaterial>& namedMaterialSlots, const PODVector<Material*>& emitterMaterials) const;
 
 
 	/** The index value of the LOD level												*/

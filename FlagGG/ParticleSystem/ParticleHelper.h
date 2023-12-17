@@ -21,6 +21,21 @@ enum ParticleDetailMode
 };
 const UInt32 PDM_DefaultValue = 0xFFFF;
 
+/*-----------------------------------------------------------------------------
+	Helper macros.
+-----------------------------------------------------------------------------*/
+//	Macro fun.
+// #define _PARTICLES_USE_PREFETCH_
+#if defined(_PARTICLES_USE_PREFETCH_)
+#define	PARTICLE_PREFETCH(Index)					PlatformMisc::Prefetch( particleData, particleStride * particleIndices[Index] )
+#define PARTICLE_INSTANCE_PREFETCH(Instance, Index)	PlatformMisc::Prefetch( Instance->particleData_, Instance->particleStride_ * Instance->particleIndices_[Index] )
+#define	PARTICLE_OWNER_PREFETCH(Index)				PlatformMisc::Prefetch( owner->particleData_, owner->particleStride_ * owner->particleIndices_[Index] )
+#else	//#if defined(_PARTICLES_USE_PREFETCH_)
+#define	PARTICLE_PREFETCH(Index)					
+#define	PARTICLE_INSTANCE_PREFETCH(Instance, Index)	
+#define	PARTICLE_OWNER_PREFETCH(Index)				
+#endif	//#if defined(_PARTICLES_USE_PREFETCH_)
+
 // Special module indices...
 #define INDEX_TYPEDATAMODULE	(INDEX_NONE - 1)
 #define INDEX_REQUIREDMODULE	(INDEX_NONE - 2)

@@ -60,7 +60,7 @@ bool ParticleModuleSpawn::GetSpawnAmount(ParticleEmitterInstance* Owner,
 bool ParticleModuleSpawn::GenerateLODModuleValues(ParticleModule* sourceModule, float percentage, ParticleLODLevel* LODLevel)
 {
 	// Convert the module values
-	ParticleModuleSpawn* spawnSource = Cast<ParticleModuleSpawn>(sourceModule);
+	ParticleModuleSpawn* spawnSource = RTTICast<ParticleModuleSpawn>(sourceModule);
 	if (!spawnSource)
 	{
 		return false;
@@ -118,7 +118,7 @@ float ParticleModuleSpawn::GetEstimatedSpawnRate()
 	rate_.GetOutRange(minSpawn, maxSpawn);
 	rateScale_.GetOutRange(minScale, maxScale);
 
-	DistributionFloatConstantCurve* rateScaleCurve = Cast<DistributionFloatConstantCurve>(rateScale_.distribution_);
+	DistributionFloatConstantCurve* rateScaleCurve = RTTICast<DistributionFloatConstantCurve>(rateScale_.distribution_);
 	if (rateScaleCurve != NULL)
 	{
 		// We need to walk the curve and determine the average
@@ -148,7 +148,7 @@ float ParticleModuleSpawn::GetEstimatedSpawnRate()
 	}
 
 	// We need to estimate the value for curves to prevent short spikes from inflating the value... 
-	DistributionFloatConstantCurve* rateCurve = Cast<DistributionFloatConstantCurve>(rate_.distribution_);
+	DistributionFloatConstantCurve* rateCurve = RTTICast<DistributionFloatConstantCurve>(rate_.distribution_);
 	if (rateCurve != NULL)
 	{
 		// We need to walk the curve and determine the average

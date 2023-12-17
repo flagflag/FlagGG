@@ -18,40 +18,40 @@ template <class T> class SharedPtr
 {
 public:
 	/// Construct a null shared pointer.
-	SharedPtr() NOEXCEPT :
+	SharedPtr() noexcept :
 		ptr_(nullptr)
 	{
-		}
+	}
 
 	/// Construct a null shared pointer.
-	SharedPtr(std::nullptr_t) NOEXCEPT :     // NOLINT(google-explicit-constructor)
-	ptr_(nullptr)
+	SharedPtr(std::nullptr_t) noexcept :     // NOLINT(google-explicit-constructor)
+		ptr_(nullptr)
 	{
 	}
 
 	/// Copy-construct from another shared pointer.
-	SharedPtr(const SharedPtr<T>& rhs) NOEXCEPT :
-	ptr_(rhs.ptr_)
+	SharedPtr(const SharedPtr<T>& rhs) noexcept :
+		ptr_(rhs.ptr_)
 	{
 		AddRef();
 	}
 
 	/// Copy-construct from another shared pointer allowing implicit upcasting.
-	template <class U> SharedPtr(const SharedPtr<U>& rhs) NOEXCEPT :    // NOLINT(google-explicit-constructor)
-	ptr_(rhs.ptr_)
+	template <class U> SharedPtr(const SharedPtr<U>& rhs) noexcept :    // NOLINT(google-explicit-constructor)
+		ptr_(rhs.ptr_)
 	{
 		AddRef();
 	}
 
 	/// Construct from a raw pointer.
-	explicit SharedPtr(T* ptr) NOEXCEPT :
-	ptr_(ptr)
+	explicit SharedPtr(T* ptr) noexcept :
+		ptr_(ptr)
 	{
 		AddRef();
 	}
 
 	/// Destruct. Release the object reference.
-	~SharedPtr() NOEXCEPT
+	~SharedPtr() noexcept
 	{
 		ReleaseRef();
 	}
@@ -225,53 +225,53 @@ template <class T> class WeakPtr
 {
 public:
 	/// Construct a null weak pointer.
-	WeakPtr() NOEXCEPT :
+	WeakPtr() noexcept :
 		ptr_(nullptr),
 		refCount_(nullptr)
 	{
 	}
 
 	/// Construct a null weak pointer.
-	WeakPtr(std::nullptr_t) NOEXCEPT :   // NOLINT(google-explicit-constructor)
-	ptr_(nullptr),
+	WeakPtr(std::nullptr_t) noexcept :   // NOLINT(google-explicit-constructor)
+		ptr_(nullptr),
 		refCount_(nullptr)
 	{
 	}
 
 	/// Copy-construct from another weak pointer.
-	WeakPtr(const WeakPtr<T>& rhs) NOEXCEPT :
-	ptr_(rhs.ptr_),
+	WeakPtr(const WeakPtr<T>& rhs) noexcept :
+		ptr_(rhs.ptr_),
 		refCount_(rhs.refCount_)
 	{
 		AddRef();
 	}
 
 	/// Copy-construct from another weak pointer allowing implicit upcasting.
-	template <class U> WeakPtr(const WeakPtr<U>& rhs) NOEXCEPT :   // NOLINT(google-explicit-constructor)
-	ptr_(rhs.ptr_),
+	template <class U> WeakPtr(const WeakPtr<U>& rhs) noexcept :   // NOLINT(google-explicit-constructor)
+		ptr_(rhs.ptr_),
 		refCount_(rhs.refCount_)
 	{
 		AddRef();
 	}
 
 	/// Construct from a shared pointer.
-	WeakPtr(const SharedPtr<T>& rhs) NOEXCEPT : // NOLINT(google-explicit-constructor)
-	ptr_(rhs.Get()),
+	WeakPtr(const SharedPtr<T>& rhs) noexcept : // NOLINT(google-explicit-constructor)
+		ptr_(rhs.Get()),
 		refCount_(rhs.RefCountPtr())
 	{
 		AddRef();
 	}
 
 	/// Construct from a raw pointer.
-	explicit WeakPtr(T* ptr) NOEXCEPT :
-	ptr_(ptr),
+	explicit WeakPtr(T* ptr) noexcept :
+		ptr_(ptr),
 		refCount_(ptr ? ptr->RefCountPtr() : nullptr)
 	{
 		AddRef();
 	}
 
 	/// Destruct. Release the weak reference to the object.
-	~WeakPtr() NOEXCEPT
+	~WeakPtr() noexcept
 	{
 		ReleaseRef();
 	}
@@ -533,11 +533,11 @@ public:
 	UniquePtr(std::nullptr_t) { }   // NOLINT(google-explicit-constructor)
 
 	/// Move-construct from UniquePtr.
-	UniquePtr(UniquePtr&& up) NOEXCEPT :
+	UniquePtr(UniquePtr&& up) noexcept :
 	ptr_(up.Detach()) {}
 
 	/// Move-assign from UniquePtr.
-	UniquePtr& operator =(UniquePtr&& up) NOEXCEPT
+	UniquePtr& operator =(UniquePtr&& up) noexcept
 	{
 		Reset(up.Detach());
 		return *this;

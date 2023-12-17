@@ -38,7 +38,7 @@ void Node::Update(const NodeUpdateContext& updateContext)
 
 		if (!IsTranspent())
 		{
-			if (auto* drawableComponent = compoment->DynamicCast<DrawableComponent>())
+			if (auto* drawableComponent = compoment->Cast<DrawableComponent>())
 			{
 				if (drawableComponent->IsRenderable())
 					updateContext.octree_->InsertElement(drawableComponent);
@@ -51,7 +51,7 @@ void Node::Render(PODVector<const RenderContext*>& renderContexts)
 {
 	for (const auto& compoment : components_)
 	{
-		if (auto* drawableComponent = compoment->DynamicCast<DrawableComponent>())
+		if (auto* drawableComponent = compoment->Cast<DrawableComponent>())
 		{
 			if (drawableComponent->IsRenderable())
 			{

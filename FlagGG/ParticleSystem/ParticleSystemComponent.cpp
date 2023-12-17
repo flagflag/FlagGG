@@ -3,6 +3,16 @@
 namespace FlagGG
 {
 
+ParticleSystemComponent::ParticleSystemComponent()
+{
+
+}
+
+Int32 ParticleSystemComponent::GetCurrentDetailMode() const
+{
+	return -1;
+}
+
 bool ParticleSystemComponent::GetFloatParameter(const String& inName,float& outFloat)
 {
 	// Always fail if we pass in no name.

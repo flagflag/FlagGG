@@ -10,6 +10,7 @@
 #include "ParticleSystem/Module/ParticleModuleMaterial.h"
 #include "Math/Distributions/DistributionFloatConstant.h"
 #include "Math/InterpCurveEdSetup.h"
+#include "Graphics/Material.h"
 #include "Log.h"
 
 namespace FlagGG
@@ -157,8 +158,7 @@ void ParticleEmitter::AutoPopulateInstanceProperties(ParticleSystemComponent* pS
 
 Int32 ParticleEmitter::CreateLODLevel(Int32 LODLevel, bool generateModuleData)
 {
-	Int32				levelIndex		= -1;
-	ParticleLODLevel*	createdLODLevel	= NULL;
+	Int32 levelIndex = -1;
 
 	if (LODLevels_.Size() == 0)
 	{
@@ -206,7 +206,7 @@ Int32 ParticleEmitter::CreateLODLevel(Int32 LODLevel, bool generateModuleData)
 	// offset the LOD validity flags for the modules...
 	if (nextLowestLODLevel)
 	{
-		nextLowestLODLevel->ConditionalPostLoad();
+		// nextLowestLODLevel->ConditionalPostLoad();
 		for (Int32 lowIndex = LODLevels_.Size() - 1; lowIndex >= nextLowIndex; lowIndex--)
 		{
 			ParticleLODLevel* lowRemapLevel = LODLevels_[lowIndex];
@@ -240,7 +240,7 @@ Int32 ParticleEmitter::CreateLODLevel(Int32 LODLevel, bool generateModuleData)
 
 	if (nextHighestLODLevel)
 	{
-		nextHighestLODLevel->ConditionalPostLoad();
+		// nextHighestLODLevel->ConditionalPostLoad();
 
 		// Generate from the higher LOD level
 		if (createdLODLevel->GenerateFromLODLevel(nextHighestLODLevel, 100.0, generateModuleData) == false)
@@ -281,7 +281,7 @@ Int32 ParticleEmitter::CreateLODLevel(Int32 LODLevel, bool generateModuleData)
 		ASSERT(spawnModule);
 		createdLODLevel->spawnModule_ = spawnModule;
 		spawnModule->LODValidity_ = (1 << LODLevel);
-		DistributionFloatConstant* constantSpawn	= Cast<DistributionFloatConstant>(spawnModule->rate_.distribution_);
+		DistributionFloatConstant* constantSpawn	= RTTICast<DistributionFloatConstant>(spawnModule->rate_.distribution_);
 		constantSpawn->constant_				= 10;
 		constantSpawn->isDirty_					= true;
 		spawnModule->burstList_.Empty();
@@ -381,13 +381,13 @@ bool ParticleEmitter::AutogenerateLowestLODLevel(bool bDuplicateHighest)
 		float percentage = 10.0f;
 		if (sourceLODLevel->typeDataModule_)
 		{
-			ParticleModuleTypeDataBeam2* beam2TD = Cast<ParticleModuleTypeDataBeam2>(sourceLODLevel->typeDataModule_);
+			//ParticleModuleTypeDataBeam2* beam2TD = Cast<ParticleModuleTypeDataBeam2>(sourceLODLevel->typeDataModule_);
 
-			if (beam2TD)
-			{
-				// For now, don't support LOD on beams and trails
-				percentage	= 100.0f;
-			}
+			//if (beam2TD)
+			//{
+			//	// For now, don't support LOD on beams and trails
+			//	percentage	= 100.0f;
+			//}
 		}
 
 		if (bDuplicateHighest == true)
@@ -424,12 +424,12 @@ bool ParticleEmitter::CalculateMaxActiveParticleCount()
 			// Check for beams or trails
 			if ((LODLevel->level_ == 0) && (LODLevel->typeDataModule_ != NULL))
 			{
-				ParticleModuleTypeDataBeam2* beamTD = Cast<ParticleModuleTypeDataBeam2>(LODLevel->typeDataModule_);
-				if (beamTD)
-				{
-					forceMaxCount = true;
-					maxCount = beamTD->maxBeamCount_ + 2;
-				}
+				//ParticleModuleTypeDataBeam2* beamTD = Cast<ParticleModuleTypeDataBeam2>(LODLevel->typeDataModule_);
+				//if (beamTD)
+				//{
+				//	forceMaxCount = true;
+				//	maxCount = beamTD->maxBeamCount_ + 2;
+				//}
 			}
 
 			Int32 LODMaxAPC = LODLevel->CalculateMaxActiveParticleCount();
@@ -633,7 +633,7 @@ void ParticleEmitter::CacheEmitterModuleInfo()
 				}
 				if (particleModule->IsInstanceOf(ParticleModuleLight::GetTypeStatic()) && (lightDataOffset_ == 0))
 				{
-					ParticleModuleLight* particleModuleLight = Cast<ParticleModuleLight>(particleModule);
+					ParticleModuleLight* particleModuleLight = RTTICast<ParticleModuleLight>(particleModule);
 					lightVolumetricScatteringIntensity_ = particleModuleLight->volumetricScatteringIntensity_;
 					lightDataOffset_ = particleSize_;
 				}
@@ -684,17 +684,17 @@ void ParticleEmitter::CacheEmitterModuleInfo()
 
 		if (particleModule->IsInstanceOf(ParticleModuleOrientationAxisLock::GetTypeStatic()))
 		{
-			ParticleModuleOrientationAxisLock* module_AxisLock = Cast<ParticleModuleOrientationAxisLock>(particleModule);
+			ParticleModuleOrientationAxisLock* module_AxisLock = RTTICast<ParticleModuleOrientationAxisLock>(particleModule);
 			axisLockEnabled_ = module_AxisLock->enabled_;
 			lockAxisFlags_ = module_AxisLock->lockAxisFlags_;
 		}
 		else if (particleModule->IsInstanceOf(ParticleModulePivotOffset::GetTypeStatic()))
 		{
-			pivotOffset_ += Cast<ParticleModulePivotOffset>(particleModule)->pivotOffset_;
+			pivotOffset_ += RTTICast<ParticleModulePivotOffset>(particleModule)->pivotOffset_;
 		}
 		else if (particleModule->IsInstanceOf(ParticleModuleMeshMaterial::GetTypeStatic()))
 		{
-			ParticleModuleMeshMaterial* meshMaterialModule = Cast<ParticleModuleMeshMaterial>(particleModule);
+			ParticleModuleMeshMaterial* meshMaterialModule = RTTICast<ParticleModuleMeshMaterial>(particleModule);
 			if (meshMaterialModule->enabled_)
 			{
 				meshMaterials_.Reserve(meshMaterialModule->meshMaterials_.Size());
@@ -706,7 +706,7 @@ void ParticleEmitter::CacheEmitterModuleInfo()
 		}
 		else if (particleModule->IsInstanceOf(ParticleModuleSubUV::GetTypeStatic()))
 		{
-			SubUVAnimation* moduleSubUVAnimation = Cast<ParticleModuleSubUV>(particleModule)->animation_;
+			SubUVAnimation* moduleSubUVAnimation = RTTICast<ParticleModuleSubUV>(particleModule)->animation_;
 			subUVAnimation_ = moduleSubUVAnimation && moduleSubUVAnimation->subUVTexture_ && moduleSubUVAnimation->IsBoundingGeometryValid()
 				? moduleSubUVAnimation
 				: NULL;
@@ -749,9 +749,10 @@ bool ParticleEmitter::HasAnyEnabledLODs()const
 
 bool ParticleEmitter::IsSignificant(ParticleSignificanceLevel requiredSignificance)
 {
-	ParticleSystem* pSysOuter = Cast<ParticleSystem>(GetOuter());
-	ParticleSignificanceLevel Significance = Min(pSysOuter->maxSignificanceLevel_, significanceLevel_);
-	return Significance >= requiredSignificance;
+	//ParticleSystem* pSysOuter = Cast<ParticleSystem>(GetOuter());
+	//ParticleSignificanceLevel significance = Min(pSysOuter->maxSignificanceLevel_, significanceLevel_);
+	//return significance >= requiredSignificance;
+	return true;
 }
 
 ParticleLODLevel* ParticleEmitter::GetCurrentLODLevel(ParticleEmitterInstance* instance)

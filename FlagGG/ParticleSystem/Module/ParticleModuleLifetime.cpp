@@ -69,7 +69,7 @@ void ParticleModuleLifetime::SpawnEx(ParticleEmitterInstance* owner, Int32 offse
 
 void ParticleModuleLifetime::SetToSensibleDefaults(ParticleEmitter* owner)
 {
-	DistributionFloatUniform* lifetimeDist = Cast<DistributionFloatUniform>(lifetime_.distribution_);
+	DistributionFloatUniform* lifetimeDist = RTTICast<DistributionFloatUniform>(lifetime_.distribution_);
 	if (lifetimeDist)
 	{
 		lifetimeDist->min_ = 1.0f;

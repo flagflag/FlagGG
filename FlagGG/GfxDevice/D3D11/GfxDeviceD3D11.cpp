@@ -136,7 +136,7 @@ void GfxDeviceD3D11::Clear(ClearTargetFlags flags, const Color& color/* = Color:
 	{
 		for (UInt32 slotID = 0; slotID < MAX_RENDERTARGET_COUNT; ++slotID)
 		{
-			auto renderTargetD3D11 = DynamicCast<GfxRenderSurfaceD3D11>(renderTargets_[slotID]);
+			auto renderTargetD3D11 = RTTICast<GfxRenderSurfaceD3D11>(renderTargets_[slotID]);
 			if (renderTargetD3D11)
 			{
 				auto* renderTargetView = renderTargetD3D11->GetRenderTargetView();
@@ -156,7 +156,7 @@ void GfxDeviceD3D11::Clear(ClearTargetFlags flags, const Color& color/* = Color:
 
 	if (clearDepthStencilFlags)
 	{
-		auto depthStencilD3D11 = DynamicCast<GfxRenderSurfaceD3D11>(depthStencil_);
+		auto depthStencilD3D11 = RTTICast<GfxRenderSurfaceD3D11>(depthStencil_);
 		if (depthStencilD3D11)
 		{
 			auto* depthStencilView = depthStencilD3D11->GetDepthStencilView();
@@ -207,8 +207,8 @@ void GfxDeviceD3D11::PrepareDraw()
 
 	PrepareDepthStencilState();
 
-	auto vertexShaderD3D11 = DynamicCast<GfxShaderD3D11>(vertexShader_);
-	auto pixelShaderD3D11 = DynamicCast<GfxShaderD3D11>(pixelShader_);
+	auto vertexShaderD3D11 = RTTICast<GfxShaderD3D11>(vertexShader_);
+	auto pixelShaderD3D11 = RTTICast<GfxShaderD3D11>(pixelShader_);
 
 	switch (primitiveType_)
 	{
@@ -233,7 +233,7 @@ void GfxDeviceD3D11::PrepareDraw()
 		for (UInt32 i = 0; i < d3dVertexBufferCount; ++i)
 		{
 			const SharedPtr<GfxBuffer>& vertexBuffer = vertexBuffers_[i];
-			vertexBuffers[i] = DynamicCast<GfxBufferD3D11>(vertexBuffer);
+			vertexBuffers[i] = RTTICast<GfxBufferD3D11>(vertexBuffer);
 			d3dVertexBuffers[i] = vertexBuffers[i]->GetD3D11Buffer();
 			d3dVertexSize[i] = vertexBuffer->GetDesc().stride_;
 			d3dVertexOffset[i] = 0;
@@ -246,7 +246,7 @@ void GfxDeviceD3D11::PrepareDraw()
 
 	if (indexBufferDirty_)
 	{
-		deviceContext_->IASetIndexBuffer(DynamicCast<GfxBufferD3D11>(indexBuffer_)->GetD3D11Buffer(),
+		deviceContext_->IASetIndexBuffer(RTTICast<GfxBufferD3D11>(indexBuffer_)->GetD3D11Buffer(),
 			indexBuffer_->GetDesc().stride_ == sizeof(UInt16) ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
 
 		indexBufferDirty_ = false;
@@ -292,13 +292,13 @@ void GfxDeviceD3D11::PrepareDraw()
 		UInt32 renderTargetCount = 0u;
 		for (UInt32 slotID = 0; slotID < MAX_RENDERTARGET_COUNT; ++slotID)
 		{
-			auto renderTargetD3D11 = DynamicCast<GfxRenderSurfaceD3D11>(renderTargets_[slotID]);
+			auto renderTargetD3D11 = RTTICast<GfxRenderSurfaceD3D11>(renderTargets_[slotID]);
 			d3dRenderTargetViews[slotID] = renderTargetD3D11 ? renderTargetD3D11->GetRenderTargetView() : nullptr;
 			if (d3dRenderTargetViews[slotID])
 				renderTargetCount = slotID + 1;
 		}
 
-		auto depthStencilD3D11 = DynamicCast<GfxRenderSurfaceD3D11>(depthStencil_);
+		auto depthStencilD3D11 = RTTICast<GfxRenderSurfaceD3D11>(depthStencil_);
 		auto* d3dDepthStencilView = depthStencilD3D11 ? depthStencilD3D11->GetDepthStencilView() : nullptr;
 
 		if (depthStencilState_.depthWrite_)
@@ -323,7 +323,7 @@ void GfxDeviceD3D11::PrepareDraw()
 
 		for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
 		{
-			auto currentTexture = DynamicCast<GfxTextureD3D11>(textures_[i]);
+			auto currentTexture = RTTICast<GfxTextureD3D11>(textures_[i]);
 			if (currentTexture)
 			{
 				if (vertexShaderD3D11->GetTextureDesc().Contains(i))

@@ -20,6 +20,10 @@ ParticleLODLevel::ParticleLODLevel()
 	peakActiveParticles_ = 0;
 }
 
+ParticleLODLevel::~ParticleLODLevel()
+{
+
+}
 
 void ParticleLODLevel::CompileModules(ParticleEmitterBuildInfo& emitterBuildInfo)
 {
@@ -81,7 +85,7 @@ void ParticleLODLevel::UpdateModuleLists()
 
 		if (module->IsInstanceOf(ParticleModuleTypeDataBase::GetTypeStatic()))
 		{
-			typeDataModule_ = Cast<ParticleModuleTypeDataBase>(module);
+			typeDataModule_ = RTTICast<ParticleModuleTypeDataBase>(module);
 			if (!module->spawnModule_ && !module->updateModule_)
 			{
 				// For now, remove it from the list and set it as the TypeDataModule
@@ -90,12 +94,12 @@ void ParticleLODLevel::UpdateModuleLists()
 		}
 		else if (module->IsInstanceOf(ParticleModuleSpawnBase::GetTypeStatic()))
 		{
-			ParticleModuleSpawnBase* spawnBase = Cast<ParticleModuleSpawnBase>(module);
+			ParticleModuleSpawnBase* spawnBase = RTTICast<ParticleModuleSpawnBase>(module);
 			spawningModules_.Push(SharedPtr<ParticleModuleSpawnBase>(spawnBase));
 		}
 		else if (module->IsInstanceOf(ParticleModuleOrbit::GetTypeStatic()))
 		{
-			ParticleModuleOrbit* orbit = Cast<ParticleModuleOrbit>(module);
+			ParticleModuleOrbit* orbit = RTTICast<ParticleModuleOrbit>(module);
 			orbitModules_.Push(SharedPtr<ParticleModuleOrbit>(orbit));
 		}
 	}
@@ -146,18 +150,18 @@ bool ParticleLODLevel::GenerateFromLODLevel(ParticleLODLevel* sourceLODLevel, fl
 	// SetFlags(RF_Transactional);
 
 	// Required module...
-	requiredModule_ = Cast<ParticleModuleRequired>(
+	requiredModule_ = RTTICast<ParticleModuleRequired>(
 		sourceLODLevel->requiredModule_->GenerateLODModule(sourceLODLevel, this, percentage, generateModuleData));
 
 	// Spawn module...
-	spawnModule_ = Cast<ParticleModuleSpawn>(
+	spawnModule_ = RTTICast<ParticleModuleSpawn>(
 		sourceLODLevel->spawnModule_->GenerateLODModule(sourceLODLevel, this, percentage, generateModuleData));
 
 	// TypeData module, if present...
 	if (sourceLODLevel->typeDataModule_)
 	{
 		typeDataModule_ = 
-			Cast<ParticleModuleTypeDataBase>(
+			RTTICast<ParticleModuleTypeDataBase>(
 			sourceLODLevel->typeDataModule_->GenerateLODModule(sourceLODLevel, this, percentage, generateModuleData));
 		ASSERT(typeDataModule_ == sourceLODLevel->typeDataModule_); // Code expects typedata to be the same across LODs
 	}
@@ -189,13 +193,13 @@ Int32 ParticleLODLevel::CalculateMaxActiveParticleCount()
 	Int32 maxBurstCount = spawnModule_->GetMaximumBurstCount();
 	for (Int32 moduleIndex = 0; moduleIndex < modules_.Size(); moduleIndex++)
 	{
-		ParticleModuleLifetimeBase* lifetimeMod = Cast<ParticleModuleLifetimeBase>(modules_[moduleIndex]);
+		ParticleModuleLifetimeBase* lifetimeMod = RTTICast<ParticleModuleLifetimeBase>(modules_[moduleIndex]);
 		if (lifetimeMod != NULL)
 		{
 			particleLifetime += lifetimeMod->GetMaxLifetime();
 		}
 
-		ParticleModuleSpawnBase* spawnMod = Cast<ParticleModuleSpawnBase>(modules_[moduleIndex]);
+		ParticleModuleSpawnBase* spawnMod = RTTICast<ParticleModuleSpawnBase>(modules_[moduleIndex]);
 		if (spawnMod != NULL)
 		{
 			maxSpawnRate += spawnMod->GetEstimatedSpawnRate();

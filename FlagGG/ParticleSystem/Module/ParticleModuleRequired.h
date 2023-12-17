@@ -161,16 +161,16 @@ public:
 		return boundingMode_ == BVC_FourVertices ? 2 : 6;
 	}
 
-	inline const Vector2* GetFrameData(Int32 FrameIndex) const
+	inline const Vector2* GetFrameData(Int32 frameIndex) const
 	{
-		return &derivedData_.BoundingGeometry[FrameIndex * GetNumBoundingVertices()];
+		return &derivedData_.boundingGeometry_[frameIndex * GetNumBoundingVertices()];
 	}
 
 	ParticleRequiredModule *CreateRendererResource()
 	{
 		ParticleRequiredModule *FReqMod = new ParticleRequiredModule();
 		FReqMod->numFrames_ = GetNumFrames();
-		FReqMod->frameData_ = derivedData_.BoundingGeometry;
+		FReqMod->frameData_ = derivedData_.boundingGeometry_;
 		FReqMod->numBoundingVertices_ = GetNumBoundingVertices();
 		FReqMod->numBoundingTriangles_ = GetNumBoundingTriangles();
 		ASSERT(FReqMod->numBoundingTriangles_ == 2 || FReqMod->numBoundingTriangles_ == 6);

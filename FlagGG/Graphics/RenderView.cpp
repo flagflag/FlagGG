@@ -105,11 +105,11 @@ void RenderView::CollectVisibilityObjects()
 
 	for (auto* drawableComponent : tempQueryResults_)
 	{
-		if (auto* light = drawableComponent->DynamicCast<Light>())
+		if (auto* light = drawableComponent->Cast<Light>())
 		{
 			renderPiplineContext_->lights_.Push(light);
 		}
-		//else if (auto* probe = drawableComponent->DynamicCast<Probe>())
+		//else if (auto* probe = drawableComponent->Cast<Probe>())
 		//{
 		//	renderPiplineContext_->probes_.Push(probe);
 		//}

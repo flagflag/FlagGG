@@ -65,7 +65,7 @@ void ParticleSpriteEmitter::SetToSensibleDefaults()
 
 	// Spawn rate
 	LODLevel->spawnModule_->LODValidity_ = 1;
-	DistributionFloatConstant* spawnRateDist = Cast<DistributionFloatConstant>(LODLevel->spawnModule_->rate_.distribution_);
+	DistributionFloatConstant* spawnRateDist = RTTICast<DistributionFloatConstant>(LODLevel->spawnModule_->rate_.distribution_);
 	if (spawnRateDist)
 	{
 		spawnRateDist->constant_ = 20.f;
@@ -75,7 +75,7 @@ void ParticleSpriteEmitter::SetToSensibleDefaults()
 
 	// Lifetime module
 	SharedPtr<ParticleModuleLifetime> lifetimeModule = MakeShared<ParticleModuleLifetime>();
-	DistributionFloatUniform* lifetimeDist = Cast<DistributionFloatUniform>(lifetimeModule->lifetime_.distribution_);
+	DistributionFloatUniform* lifetimeDist = RTTICast<DistributionFloatUniform>(lifetimeModule->lifetime_.distribution_);
 	if (lifetimeDist)
 	{
 		lifetimeDist->min_ = 1.0f;
@@ -87,7 +87,7 @@ void ParticleSpriteEmitter::SetToSensibleDefaults()
 
 	// Size module
 	SharedPtr<ParticleModuleSize> sizeModule = MakeShared<ParticleModuleSize>();
-	DistributionVectorUniform* SizeDist = Cast<DistributionVectorUniform>(sizeModule->startSize_.distribution_);
+	DistributionVectorUniform* SizeDist = RTTICast<DistributionVectorUniform>(sizeModule->startSize_.distribution_);
 	if (SizeDist)
 	{
 		SizeDist->min_ = Vector3(25.f, 25.f, 25.f);
@@ -99,7 +99,7 @@ void ParticleSpriteEmitter::SetToSensibleDefaults()
 
 	// Initial velocity module
 	SharedPtr<ParticleModuleVelocity> velModule = MakeShared<ParticleModuleVelocity>();
-	DistributionVectorUniform* VelDist = Cast<DistributionVectorUniform>(velModule->startVelocity_.distribution_);
+	DistributionVectorUniform* VelDist = RTTICast<DistributionVectorUniform>(velModule->startVelocity_.distribution_);
 	if (VelDist)
 	{
 		VelDist->min_ = Vector3(-10.f, -10.f, 50.f);
@@ -111,7 +111,7 @@ void ParticleSpriteEmitter::SetToSensibleDefaults()
 
 	// Color over life module
 	SharedPtr<ParticleModuleColorOverLife> colorModule = MakeShared<ParticleModuleColorOverLife>();
-	DistributionVectorConstantCurve* colorCurveDist = Cast<DistributionVectorConstantCurve>(colorModule->colorOverLife_.distribution_);
+	DistributionVectorConstantCurve* colorCurveDist = RTTICast<DistributionVectorConstantCurve>(colorModule->colorOverLife_.distribution_);
 	if (colorCurveDist)
 	{
 		// Add two points, one at time 0.0f and one at 1.0f
@@ -125,8 +125,8 @@ void ParticleSpriteEmitter::SetToSensibleDefaults()
 		}
 		colorCurveDist->isDirty_ = true;
 	}
-	colorModule->alphaOverLife_.distribution_ = MakeShared<DistributionFloatConstantCurve>(colorModule);
-	DistributionFloatConstantCurve* alphaCurveDist = Cast<DistributionFloatConstantCurve>(colorModule->alphaOverLife_.distribution_);
+	colorModule->alphaOverLife_.distribution_ = MakeShared<DistributionFloatConstantCurve>();
+	DistributionFloatConstantCurve* alphaCurveDist = RTTICast<DistributionFloatConstantCurve>(colorModule->alphaOverLife_.distribution_);
 	if (alphaCurveDist)
 	{
 		// Add two points, one at time 0.0f and one at 1.0f

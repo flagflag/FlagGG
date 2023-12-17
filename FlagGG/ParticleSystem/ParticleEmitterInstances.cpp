@@ -917,7 +917,7 @@ void ParticleEmitterInstance::UpdateBoundingBox(float deltaTime)
 			UInt32 numModules = highestLODLevel->modules_.Size();
 			for (UInt32 i = 0; i < numModules; ++i)
 			{
-				ParticleModulePivotOffset* module = Cast<ParticleModulePivotOffset>(highestLODLevel->modules_[i]);
+				ParticleModulePivotOffset* module = RTTICast<ParticleModulePivotOffset>(highestLODLevel->modules_[i]);
 				if (module)
 				{
 					Vector2 pivotOff = module->pivotOffset_;
@@ -1687,20 +1687,33 @@ float ParticleEmitterInstance::Spawn(float deltaTime)
 	return spawnFraction_;
 }
 
+static Int32 FindAndSetFirstZeroIndex(PODVector<UInt8>& usedIndices)
+{
+	for (Int32 i = 0; i < usedIndices.Size(); ++i)
+	{
+		if (!usedIndices[i])
+		{
+			usedIndices[i] = 1;
+			return i;
+		}
+	}
+	return INDEX_NONE;
+}
+
 /**
 * Fixup particle indices to only have valid entries.
 */
 void ParticleEmitterInstance::FixupParticleIndices()
 {
 	// Something is wrong and particle data are be invalid. Try to fix-up things.
-	TBitArray<> usedIndices(false, maxActiveParticles_);
+	PODVector<UInt8> usedIndices(maxActiveParticles_, 0);
 
 	for (Int32 i = 0; i < activeParticles_; ++i)
 	{
-		const UInt16 UsedIndex = particleIndices_[i];
-		if (UsedIndex < maxActiveParticles_ && usedIndices[UsedIndex] == 0)
+		const UInt16 usedIndex = particleIndices_[i];
+		if (usedIndex < maxActiveParticles_ && usedIndices[usedIndex] == 0)
 		{
-			usedIndices[UsedIndex] = 1;
+			usedIndices[usedIndex] = 1;
 		}
 		else
 		{
@@ -1717,12 +1730,21 @@ void ParticleEmitterInstance::FixupParticleIndices()
 		}
 	}
 
+	for (Int32 i = usedIndices.Size() - 1; i >= 0; --i)
+	{
+		if (usedIndices[i])
+		{
+			usedIndices.Resize(i + 1);
+			break;
+		}
+	}
+
 	for (Int32 i = activeParticles_; i < maxActiveParticles_; ++i)
 	{
-		const Int32 FreeIndex = usedIndices.FindAndSetFirstZeroBit();
-		if (CRY_ENSURE(FreeIndex != INDEX_NONE))
+		const Int32 freeIndex = FindAndSetFirstZeroIndex(usedIndices);
+		if (CRY_ENSURE(freeIndex != INDEX_NONE))
 		{
-			particleIndices_[i] = (UInt16)FreeIndex;
+			particleIndices_[i] = (UInt16)freeIndex;
 		}
 		else // Can't really handle that.
 		{
@@ -2331,7 +2353,7 @@ void ParticleMeshEmitterInstance::InitParameters(ParticleEmitter* InTemplate, Pa
 	// Get the type data module
 	ParticleLODLevel* LODLevel = InTemplate->GetLODLevel(0);
 	ASSERT(LODLevel);
-	meshTypeData_ = Cast<ParticleModuleTypeDataMesh>(LODLevel->typeDataModule_);
+	meshTypeData_ = RTTICast<ParticleModuleTypeDataMesh>(LODLevel->typeDataModule_);
 	ASSERT(meshTypeData_);
 
 	// Grab cached mesh rotation flag from ParticleEmitter template
@@ -2561,30 +2583,30 @@ void ParticleMeshEmitterInstance::UpdateBoundingBox(float deltaTime)
 	// Currently, just 'forcing' the mesh size to be taken into account.
 	if ((component_ != NULL) && (activeParticles_ > 0))
 	{
-		bool bUpdateBox = ((component_->warmingUp_ == false) &&
+		bool updateBox = ((component_->warmingUp_ == false) &&
 			(component_->template_ != NULL) && (component_->template_->useFixedRelativeBoundingBox_ == false));
 
 		// Take scale into account
 		Vector3 scale = component_->GetNode()->GetWorldScale();
 
 		// Get the static mesh bounds
-		BoxSphereBounds meshBound;
+		BoundingBox meshBound;
 		if (component_->warmingUp_ == false)
 		{
 			if (meshTypeData_->mesh_)
 			{
-				meshBound = meshTypeData_->mesh_->GetBounds();
+				meshBound = meshTypeData_->mesh_->GetBoundingBox();
 			}
 			else
 			{
 				//UE_LOG(LogParticles, Log, TEXT("MeshEmitter with no mesh set?? - %s"), component_->template_ ? *(component_->template_->GetPathName()) : TEXT("??????"));
-				meshBound = BoxSphereBounds(Vector3(0, 0, 0), Vector3(0, 0, 0), 0);
+				meshBound = BoundingBox(Vector3::ZERO, Vector3::ZERO);
 			}
 		}
 		else
 		{
 			// This isn't used anywhere if the bWarmingUp flag is false, but GCC doesn't like it not touched.
-			memset(&meshBound, 0, sizeof(BoxSphereBounds));
+			meshBound = BoundingBox(Vector3::ZERO, Vector3::ZERO);
 		}
 
 		ParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
@@ -2597,24 +2619,24 @@ void ParticleMeshEmitterInstance::UpdateBoundingBox(float deltaTime)
 
 		Vector3	newLocation;
 		float newRotation;
-		if (bUpdateBox)
+		if (updateBox)
 		{
 			particleBoundingBox_.Clear();
 		}
 
 		// For each particle, offset the box appropriately 
-		Vector3 MinVal(F_INFINITY * 0.5, F_INFINITY * 0.5, F_INFINITY * 0.5);
-		Vector3 MaxVal(-F_INFINITY * 0.5, -F_INFINITY * 0.5, -F_INFINITY * 0.5);
+		Vector3 minVal(F_INFINITY * 0.5, F_INFINITY * 0.5, F_INFINITY * 0.5);
+		Vector3 maxVal(-F_INFINITY * 0.5, -F_INFINITY * 0.5, -F_INFINITY * 0.5);
 
-		PlatformMisc::Prefetch(particleData_, particleStride_ * particleIndices_[0]);
-		PlatformMisc::Prefetch(particleData_, (particleIndices_[0] * particleStride_) + PLATFORM_CACHE_LINE_SIZE);
+		// PlatformMisc::Prefetch(particleData_, particleStride_ * particleIndices_[0]);
+		// PlatformMisc::Prefetch(particleData_, (particleIndices_[0] * particleStride_) + PLATFORM_CACHE_LINE_SIZE);
 
 		bool skipDoubleSpawnUpdate = !spriteTemplate_->useLegacySpawningBehavior_;
 		for (Int32 i = 0; i < activeParticles_; i++)
 		{
 			DECLARE_PARTICLE(particle, particleData_ + particleStride_ * particleIndices_[i]);
-			PlatformMisc::Prefetch(particleData_, particleStride_ * particleIndices_[i + 1]);
-			PlatformMisc::Prefetch(particleData_, (particleIndices_[i + 1] * particleStride_) + PLATFORM_CACHE_LINE_SIZE);
+			// PlatformMisc::Prefetch(particleData_, particleStride_ * particleIndices_[i + 1]);
+			// PlatformMisc::Prefetch(particleData_, (particleIndices_[i + 1] * particleStride_) + PLATFORM_CACHE_LINE_SIZE);
 
 			// Do linear integrator and update bounding box
 			particle.oldLocation_ = particle.location_;
@@ -2651,7 +2673,7 @@ void ParticleMeshEmitterInstance::UpdateBoundingBox(float deltaTime)
 				newRotation = particle.rotation_;
 			}
 
-			Vector3 LocalExtent = meshBound.GetBox().GetExtent() * (Vector3)particle.size_ * scale;
+			Vector3 localExtent = meshBound.Size() * (Vector3)particle.size_ * scale;
 
 			newLocation += positionOffsetThisTick_;
 			particle.oldLocation_ += positionOffsetThisTick_;
@@ -2660,28 +2682,28 @@ void ParticleMeshEmitterInstance::UpdateBoundingBox(float deltaTime)
 			particle.rotation_ = Mod(newRotation, 2.f * (float)PI);
 			particle.location_ = newLocation;
 
-			if (bUpdateBox)
+			if (updateBox)
 			{
-				Vector3 PositionForBounds = newLocation;
+				Vector3 positionForBounds = newLocation;
 
 				if (useLocalSpace)
 				{
 					// Note: building the bounding box in world space as that gives tighter bounds than transforming a local space AABB into world space
-					PositionForBounds = componentToWorld * newLocation;
+					positionForBounds = componentToWorld * newLocation;
 				}
 
-				MinVal[0] = Min(MinVal[0], PositionForBounds.x_ - LocalExtent.x_);
-				MaxVal[0] = Max(MaxVal[0], PositionForBounds.x_ + LocalExtent.x_);
-				MinVal[1] = Min(MinVal[1], PositionForBounds.y_ - LocalExtent.y_);
-				MaxVal[1] = Max(MaxVal[1], PositionForBounds.y_ + LocalExtent.y_);
-				MinVal[2] = Min(MinVal[2], PositionForBounds.z_ - LocalExtent.z_);
-				MaxVal[2] = Max(MaxVal[2], PositionForBounds.z_ + LocalExtent.z_);
+				minVal[0] = Min(minVal[0], positionForBounds.x_ - localExtent.x_);
+				maxVal[0] = Max(maxVal[0], positionForBounds.x_ + localExtent.x_);
+				minVal[1] = Min(minVal[1], positionForBounds.y_ - localExtent.y_);
+				maxVal[1] = Max(maxVal[1], positionForBounds.y_ + localExtent.y_);
+				minVal[2] = Min(minVal[2], positionForBounds.z_ - localExtent.z_);
+				maxVal[2] = Max(maxVal[2], positionForBounds.z_ + localExtent.z_);
 			}
 		}
 
-		if (bUpdateBox)
+		if (updateBox)
 		{
-			particleBoundingBox_ = BoundingBox(MinVal, MaxVal);
+			particleBoundingBox_ = BoundingBox(minVal, maxVal);
 		}
 	}
 }

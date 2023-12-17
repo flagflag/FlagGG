@@ -209,8 +209,8 @@ void ParticleModule::AutoPopulateInstanceProperties(ParticleSystemComponent* pSy
 	//		FName ParamName;
 
 	//		// only handle particle param types
-	//		DistributionFloatParticleParameter* DistFloatParam = DynamicCast<DistributionFloatParticleParameter>(Distribution);
-	//		DistributionVectorParticleParameter* DistVectorParam = DynamicCast<DistributionVectorParticleParameter>(Distribution);
+	//		DistributionFloatParticleParameter* DistFloatParam = Cast<DistributionFloatParticleParameter>(Distribution);
+	//		DistributionVectorParticleParameter* DistVectorParam = Cast<DistributionVectorParticleParameter>(Distribution);
 	//		if (DistFloatParam != NULL)
 	//		{
 	//			ParamType = PSPT_Scalar;
@@ -297,11 +297,11 @@ bool ParticleModule::ConvertFloatDistribution(DistributionFloat* floatDist, Dist
 {
 	float multiplier = percentage / 100.0f;
 
-	DistributionFloatConstant*				distConstant		= Cast<DistributionFloatConstant>(floatDist);
-	DistributionFloatConstantCurve*		    distConstantCurve	= Cast<DistributionFloatConstantCurve>(floatDist);
-	DistributionFloatUniform*				distUniform			= Cast<DistributionFloatUniform>(floatDist);
-	DistributionFloatUniformCurve*			distUniformCurve	= Cast<DistributionFloatUniformCurve>(floatDist);
-	DistributionFloatParticleParameter*	    distParticleParam	= Cast<DistributionFloatParticleParameter>(floatDist);
+	DistributionFloatConstant*				distConstant		= RTTICast<DistributionFloatConstant>(floatDist);
+	DistributionFloatConstantCurve*		    distConstantCurve	= RTTICast<DistributionFloatConstantCurve>(floatDist);
+	DistributionFloatUniform*				distUniform			= RTTICast<DistributionFloatUniform>(floatDist);
+	DistributionFloatUniformCurve*			distUniformCurve	= RTTICast<DistributionFloatUniformCurve>(floatDist);
+	DistributionFloatParticleParameter*	    distParticleParam	= RTTICast<DistributionFloatParticleParameter>(floatDist);
 
 	if (distParticleParam)
 	{
@@ -323,14 +323,14 @@ bool ParticleModule::ConvertFloatDistribution(DistributionFloat* floatDist, Dist
 	else
 	if (distConstant)
 	{
-		DistributionFloatConstant*	SourceConstant	= Cast<DistributionFloatConstant>(sourceFloatDist);
+		DistributionFloatConstant*	SourceConstant	= RTTICast<DistributionFloatConstant>(sourceFloatDist);
 		ASSERT(SourceConstant);
 		distConstant->SetKeyOut(0, 0, SourceConstant->constant_ * multiplier);
 	}
 	else
 	if (distConstantCurve)
 	{
-		DistributionFloatConstantCurve* sourceConstantCurve	= Cast<DistributionFloatConstantCurve>(sourceFloatDist);
+		DistributionFloatConstantCurve* sourceConstantCurve	= RTTICast<DistributionFloatConstantCurve>(sourceFloatDist);
 		ASSERT(sourceConstantCurve);
 
 		for (Int32 keyIndex = 0; keyIndex < sourceConstantCurve->GetNumKeys(); keyIndex++)
@@ -365,11 +365,11 @@ bool ParticleModule::ConvertVectorDistribution(DistributionVector* vectorDist, D
 {
 	float multiplier = percentage / 100.0f;
 
-	DistributionVectorConstant*				distConstant		= Cast<DistributionVectorConstant>(vectorDist);
-	DistributionVectorConstantCurve*		distConstantCurve	= Cast<DistributionVectorConstantCurve>(vectorDist);
-	DistributionVectorUniform*				distUniform			= Cast<DistributionVectorUniform>(vectorDist);
-	DistributionVectorUniformCurve*			distUniformCurve	= Cast<DistributionVectorUniformCurve>(vectorDist);
-	DistributionVectorParticleParameter*	distParticleParam	= Cast<DistributionVectorParticleParameter>(vectorDist);
+	DistributionVectorConstant*				distConstant		= RTTICast<DistributionVectorConstant>(vectorDist);
+	DistributionVectorConstantCurve*		distConstantCurve	= RTTICast<DistributionVectorConstantCurve>(vectorDist);
+	DistributionVectorUniform*				distUniform			= RTTICast<DistributionVectorUniform>(vectorDist);
+	DistributionVectorUniformCurve*			distUniformCurve	= RTTICast<DistributionVectorUniformCurve>(vectorDist);
+	DistributionVectorParticleParameter*	distParticleParam	= RTTICast<DistributionVectorParticleParameter>(vectorDist);
 
 	if (distParticleParam)
 	{

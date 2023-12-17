@@ -24,10 +24,10 @@ void GfxDeviceOpenGL::SetFrameBuffer()
 	GLFrameBufferKey key;
 	for (UInt32 i = 0u; i < MAX_RENDERTARGET_COUNT; ++i)
 	{
-		SharedPtr<GfxRenderSurfaceOpenGL> renderTargetGL = DynamicCast<GfxRenderSurfaceOpenGL>(renderTargets_[i]);
+		SharedPtr<GfxRenderSurfaceOpenGL> renderTargetGL(RTTICast<GfxRenderSurfaceOpenGL>(renderTargets_[i]));
 		key[i] = renderTargetGL ? renderTargetGL->GetOGLRenderBuffer() : 0u;
 	}
-	SharedPtr<GfxRenderSurfaceOpenGL> depthStencilGL = DynamicCast<GfxRenderSurfaceOpenGL>(depthStencil_);
+	SharedPtr<GfxRenderSurfaceOpenGL> depthStencilGL(RTTICast<GfxRenderSurfaceOpenGL>(depthStencil_));
 	key[MAX_RENDERTARGET_COUNT] = depthStencilGL ? depthStencilGL->GetOGLRenderBuffer() : 0u;
 	key.CalculateHash();
 	
