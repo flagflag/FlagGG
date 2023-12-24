@@ -47,4 +47,50 @@ public:
 	RawDistributionVector startSize_;
 };
 
+class ParticleModuleSizeMultiplyLife : public ParticleModuleSizeBase
+{
+	OBJECT_OVERRIDE(ParticleModuleSizeMultiplyLife, ParticleModuleSizeBase);
+public:
+	ParticleModuleSizeMultiplyLife();
+
+	/** Initializes the default values for this property */
+	void InitializeDefaults();
+
+	//~ Begin UParticleModule Interface
+	virtual void CompileModule(ParticleEmitterBuildInfo& emitterInfo) override;
+	virtual void Spawn(ParticleEmitterInstance* owner, Int32 offset, float spawnTime, BaseParticle* particleBase) override;
+	virtual void Update(ParticleEmitterInstance* owner, Int32 offset, float deltaTime) override;
+	virtual void SetToSensibleDefaults(ParticleEmitter* owner) override;
+	virtual bool IsSizeMultiplyLife() override { return true; }
+
+	//~ End UParticleModule Interface
+
+	/**
+	 *	The scale factor for the size that should be used for a particle.
+	 *	The value is retrieved using the RelativeTime of the particle during its update.
+	 */
+	RawDistributionVector lifeMultiplier_;
+
+	/**
+	 *	If true, the X-component of the scale factor will be applied to the particle size X-component.
+	 *	If false, the X-component is left unaltered.
+	 */
+	UInt32 multiplyX_ : 1;
+
+	/**
+	 *	If true, the Y-component of the scale factor will be applied to the particle size Y-component.
+	 *	If false, the Y-component is left unaltered.
+	 */
+	UInt32 multiplyY_ : 1;
+
+	/**
+	 *	If true, the Z-component of the scale factor will be applied to the particle size Z-component.
+	 *	If false, the Z-component is left unaltered.
+	 */
+	UInt32 multiplyZ_ : 1;
+
+protected:
+	friend class ParticleModuleSizeMultiplyLifeDetails;
+};
+
 }

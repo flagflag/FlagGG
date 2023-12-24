@@ -1,0 +1,2394 @@
+<?xml version="1.0"?>
+<ParticleSystem>
+	<ParticleEmitter name="glow">
+		<module type="ParticleModuleRequired">
+			<material value="engineres/particle/common/materials/defaultsprite.material">
+				<texture unit="0" value="particle/tex_fx_glow_001.png" uvloop="true" />
+				<dissolve type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</dissolve>
+				<parameter name="softParticleFadeScale" value="0.01" type="Float" />
+				<parameter name="uvDiffParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvMaskParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvDissolveParams" value="1 1 0 0" type="Vector4" />
+				<materialTag name="depthTest" type="Int" value="4" />
+				<materialTag name="blend" type="Int" value="3" />
+				<materialTag name="UseMask" type="Bool" value="false" />
+				<materialTag name="UseDissolve" type="Bool" value="false" />
+				<materialTag name="VertexColor" type="Bool" value="false" />
+				<materialTag name="UseFresnel" type="Bool" value="false" />
+				<materialTag name="UsePlaneSoftParticle" type="Bool" value="false" />
+				<materialTag name="SoftFadeHeight" type="Float" value="10" />
+				<materialTag name="CullBack" type="Bool" value="false" />
+				<materialTag name="DepthBias" constant="-2.5e-07" slopescaled="0" />
+			</material>
+			<light>
+				<lightRate value="0" />
+				<lightColor type="constantCurve">
+					<point inVal="0" outVal="1.000 1.000 1.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+					<point inVal="1" outVal="0.000 0.000 0.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</lightColor>
+				<lightRadius type="constantCurve">
+					<maxOutVal value="15" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</lightRadius>
+				<lightBrightness type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</lightBrightness>
+			</light>
+			<useLocalSpace value="false" />
+			<screenAlignment value="0" />
+			<emitterDuration value="3" />
+			<emitterLoops value="1" />
+			<emitterDelay value="0.13" />
+			<preWarm value="false" />
+			<interpolationMethod value="0" />
+			<subImagesHorizontal value="4" />
+			<subImagesVertical value="4" />
+			<randomImageChanges value="0" />
+			<randomImageTime value="0" />
+			<killOnDeactivate value="false" />
+			<stretched value="false" />
+			<texRotate value="0.000 0.000 0.000" />
+			<maxAABBCenter value="0.000 0.000 0.000" />
+			<maxAABBHalfSize value="233.469" />
+			<useEnvLight value="false" />
+		</module>
+		<module type="ParticleModuleSpawn">
+			<rate type="constant">
+				<constant value="0" />
+			</rate>
+			<burstList>
+				<point time="0" count="1" />
+			</burstList>
+		</module>
+		<module type="ParticleModuleOrientationAxisLock">
+			<lockAxisFlags value="3" />
+		</module>
+		<module type="ParticleModuleLifetime">
+			<lifetime type="uniform">
+				<min value="2" />
+				<max value="2" />
+			</lifetime>
+		</module>
+		<module type="ParticleModuleSize">
+			<startSize type="uniform">
+				<min value="300.000 300.000 300.000" />
+				<max value="300.000 300.000 300.000" />
+				<singleRandom value="false" />
+			</startSize>
+		</module>
+		<module type="ParticleModuleSizeMultiplyLife">
+			<lifeMultiplier type="multipleCurve">
+				<xCurve>
+					<point inVal="0" outVal="0.476316" arriveTangent="0" leaveTangent="10" interpMode="3" />
+					<point inVal="0.1" outVal="0.909091" arriveTangent="0.347252" leaveTangent="0.347252" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="0" outVal="0.476316" arriveTangent="0" leaveTangent="10" interpMode="3" />
+					<point inVal="0.1" outVal="0.909091" arriveTangent="0.347252" leaveTangent="0.347252" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="0" outVal="0.476316" arriveTangent="0" leaveTangent="10" interpMode="3" />
+					<point inVal="0.1" outVal="0.909091" arriveTangent="0.347252" leaveTangent="0.347252" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="1.100 1.100 1.100" />
+				<singleCurve value="true" />
+			</lifeMultiplier>
+			<multiplyX value="true" />
+			<multiplyY value="true" />
+			<multiplyZ value="true" />
+		</module>
+		<module type="ParticleModuleColorOverLife">
+			<colorOverLife type="colorsCurve">
+				<color type="constantCurve">
+					<point inVal="0" outVal="0.043 0.531 0.925" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</color>
+				<alpha type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="0" arriveTangent="0" leaveTangent="7.14286" interpMode="3" />
+					<point inVal="0.14" outVal="1" arriveTangent="7.14286" leaveTangent="0" interpMode="3" />
+					<point inVal="0.77" outVal="1" arriveTangent="0" leaveTangent="-4.34783" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-4.34783" leaveTangent="0" interpMode="3" />
+				</alpha>
+			</colorOverLife>
+		</module>
+		<module type="ParticleModuleColorScaleOverLife">
+			<colorScaleOverLife type="multipleCurve">
+				<xCurve>
+					<point inVal="0" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="0" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="0" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="1.000 1.000 1.000" />
+				<singleCurve value="true" />
+			</colorScaleOverLife>
+			<alphaScaleOverLife type="constant">
+				<constant value="1" />
+			</alphaScaleOverLife>
+			<bEmitterTime value="false" />
+		</module>
+		<module type="ParticleModuleRotation">
+			<startRotation type="uniform">
+				<min value="0" />
+				<max value="0" />
+			</startRotation>
+		</module>
+		<module type="ParticleModuleRotationRate">
+			<startRotationRate type="uniform">
+				<min value="0" />
+				<max value="0" />
+			</startRotationRate>
+		</module>
+		<module type="ParticleModuleRotation">
+			<subImageIndexStart value="7" />
+			<subImageIndexEnd value="8" />
+		</module>
+		<module type="ParticleModuleLocation">
+			<startLocation type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</startLocation>
+		</module>
+		<module type="ParticleModuleOrbit">
+			<chainMode value="2" />
+			<offsetAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</offsetAmount>
+			<offsetOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</offsetOptions>
+			<rotationAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationAmount>
+			<rotationOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationOptions>
+			<rotationRateAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationRateAmount>
+			<rotationRateOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationRateOptions>
+		</module>
+	</ParticleEmitter>
+	<ParticleEmitter name="glow">
+		<module type="ParticleModuleRequired">
+			<material value="engineres/particle/common/materials/defaultsprite.material">
+				<texture unit="0" value="particle/tex_fx_ring_008.png" uvloop="true" />
+				<dissolve type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</dissolve>
+				<parameter name="softParticleFadeScale" value="0.01" type="Float" />
+				<parameter name="uvDiffParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvMaskParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvDissolveParams" value="1 1 0 0" type="Vector4" />
+				<materialTag name="depthTest" type="Int" value="4" />
+				<materialTag name="blend" type="Int" value="3" />
+				<materialTag name="UseMask" type="Bool" value="false" />
+				<materialTag name="UseDissolve" type="Bool" value="false" />
+				<materialTag name="VertexColor" type="Bool" value="false" />
+				<materialTag name="UseFresnel" type="Bool" value="false" />
+				<materialTag name="UsePlaneSoftParticle" type="Bool" value="false" />
+				<materialTag name="SoftFadeHeight" type="Float" value="10" />
+				<materialTag name="CullBack" type="Bool" value="false" />
+				<materialTag name="DepthBias" constant="-2.5e-07" slopescaled="0" />
+			</material>
+			<light>
+				<lightRate value="0" />
+				<lightColor type="constantCurve">
+					<point inVal="0" outVal="1.000 1.000 1.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+					<point inVal="1" outVal="0.000 0.000 0.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</lightColor>
+				<lightRadius type="constantCurve">
+					<maxOutVal value="15" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</lightRadius>
+				<lightBrightness type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</lightBrightness>
+			</light>
+			<useLocalSpace value="false" />
+			<screenAlignment value="0" />
+			<emitterDuration value="3" />
+			<emitterLoops value="1" />
+			<emitterDelay value="0.13" />
+			<preWarm value="false" />
+			<interpolationMethod value="0" />
+			<subImagesHorizontal value="4" />
+			<subImagesVertical value="4" />
+			<randomImageChanges value="0" />
+			<randomImageTime value="0" />
+			<killOnDeactivate value="false" />
+			<stretched value="false" />
+			<texRotate value="0.000 0.000 0.000" />
+			<maxAABBCenter value="0.000 0.000 0.000" />
+			<maxAABBHalfSize value="101.115" />
+			<useEnvLight value="false" />
+		</module>
+		<module type="ParticleModuleSpawn">
+			<rate type="constant">
+				<constant value="0" />
+			</rate>
+			<burstList>
+				<point time="0" count="1" />
+			</burstList>
+		</module>
+		<module type="ParticleModuleOrientationAxisLock">
+			<lockAxisFlags value="3" />
+		</module>
+		<module type="ParticleModuleLifetime">
+			<lifetime type="uniform">
+				<min value="2" />
+				<max value="2" />
+			</lifetime>
+		</module>
+		<module type="ParticleModuleSize">
+			<startSize type="uniform">
+				<min value="130.000 300.000 300.000" />
+				<max value="130.000 300.000 300.000" />
+				<singleRandom value="false" />
+			</startSize>
+		</module>
+		<module type="ParticleModuleSizeMultiplyLife">
+			<lifeMultiplier type="multipleCurve">
+				<xCurve>
+					<point inVal="0" outVal="0.515789" arriveTangent="0" leaveTangent="10" interpMode="3" />
+					<point inVal="0.043299" outVal="0.909091" arriveTangent="0.221299" leaveTangent="0.221299" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="0" outVal="0.515789" arriveTangent="0" leaveTangent="10" interpMode="3" />
+					<point inVal="0.043299" outVal="0.909091" arriveTangent="0.221299" leaveTangent="0.221299" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="0" outVal="0.515789" arriveTangent="0" leaveTangent="10" interpMode="3" />
+					<point inVal="0.043299" outVal="0.909091" arriveTangent="0.221299" leaveTangent="0.221299" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="1.100 1.100 1.100" />
+				<singleCurve value="true" />
+			</lifeMultiplier>
+			<multiplyX value="true" />
+			<multiplyY value="true" />
+			<multiplyZ value="true" />
+		</module>
+		<module type="ParticleModuleColorOverLife">
+			<colorOverLife type="colorsCurve">
+				<color type="constantCurve">
+					<point inVal="0" outVal="0.090 0.440 0.900" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</color>
+				<alpha type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="0.35" outVal="1" arriveTangent="0" leaveTangent="-1.53846" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1.53846" leaveTangent="0" interpMode="3" />
+				</alpha>
+			</colorOverLife>
+		</module>
+		<module type="ParticleModuleColorScaleOverLife">
+			<colorScaleOverLife type="multipleCurve">
+				<xCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="8.000 8.000 8.000" />
+				<singleCurve value="true" />
+			</colorScaleOverLife>
+			<alphaScaleOverLife type="constant">
+				<constant value="1" />
+			</alphaScaleOverLife>
+			<bEmitterTime value="false" />
+		</module>
+		<module type="ParticleModuleRotation">
+			<startRotation type="uniform">
+				<min value="0" />
+				<max value="0" />
+			</startRotation>
+		</module>
+		<module type="ParticleModuleRotationRate">
+			<startRotationRate type="uniform">
+				<min value="0" />
+				<max value="0" />
+			</startRotationRate>
+		</module>
+		<module type="ParticleModuleRotation">
+			<subImageIndexStart value="7" />
+			<subImageIndexEnd value="8" />
+		</module>
+		<module type="ParticleModuleLocation">
+			<startLocation type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</startLocation>
+		</module>
+		<module type="ParticleModuleOrbit">
+			<chainMode value="2" />
+			<offsetAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</offsetAmount>
+			<offsetOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</offsetOptions>
+			<rotationAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationAmount>
+			<rotationOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationOptions>
+			<rotationRateAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationRateAmount>
+			<rotationRateOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationRateOptions>
+		</module>
+	</ParticleEmitter>
+	<ParticleEmitter name="glow">
+		<module type="ParticleModuleRequired">
+			<material value="engineres/particle/common/materials/defaultsprite.material">
+				<texture unit="0" value="particle/tex_fx_ring_008_dj.png" uvloop="true" />
+				<dissolve type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</dissolve>
+				<parameter name="softParticleFadeScale" value="0.01" type="Float" />
+				<parameter name="uvDiffParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvMaskParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvDissolveParams" value="1 1 0 0" type="Vector4" />
+				<materialTag name="depthTest" type="Int" value="4" />
+				<materialTag name="blend" type="Int" value="3" />
+				<materialTag name="UseMask" type="Bool" value="false" />
+				<materialTag name="UseDissolve" type="Bool" value="false" />
+				<materialTag name="VertexColor" type="Bool" value="false" />
+				<materialTag name="UseFresnel" type="Bool" value="false" />
+				<materialTag name="UsePlaneSoftParticle" type="Bool" value="false" />
+				<materialTag name="SoftFadeHeight" type="Float" value="10" />
+				<materialTag name="CullBack" type="Bool" value="false" />
+				<materialTag name="DepthBias" constant="-2.5e-07" slopescaled="0" />
+			</material>
+			<light>
+				<lightRate value="0" />
+				<lightColor type="constantCurve">
+					<point inVal="0" outVal="1.000 1.000 1.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+					<point inVal="1" outVal="0.000 0.000 0.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</lightColor>
+				<lightRadius type="constantCurve">
+					<maxOutVal value="15" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</lightRadius>
+				<lightBrightness type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</lightBrightness>
+			</light>
+			<useLocalSpace value="false" />
+			<screenAlignment value="0" />
+			<emitterDuration value="3" />
+			<emitterLoops value="1" />
+			<emitterDelay value="0.13" />
+			<preWarm value="false" />
+			<interpolationMethod value="0" />
+			<subImagesHorizontal value="4" />
+			<subImagesVertical value="4" />
+			<randomImageChanges value="0" />
+			<randomImageTime value="0" />
+			<killOnDeactivate value="false" />
+			<stretched value="false" />
+			<texRotate value="0.000 0.000 0.000" />
+			<maxAABBCenter value="0.000 0.000 0.000" />
+			<maxAABBHalfSize value="86.3364" />
+			<useEnvLight value="false" />
+		</module>
+		<module type="ParticleModuleSpawn">
+			<rate type="constant">
+				<constant value="0" />
+			</rate>
+			<burstList>
+				<point time="0" count="1" />
+			</burstList>
+		</module>
+		<module type="ParticleModuleOrientationAxisLock">
+			<lockAxisFlags value="3" />
+		</module>
+		<module type="ParticleModuleLifetime">
+			<lifetime type="uniform">
+				<min value="2" />
+				<max value="2" />
+			</lifetime>
+		</module>
+		<module type="ParticleModuleSize">
+			<startSize type="uniform">
+				<min value="111.000 300.000 300.000" />
+				<max value="111.000 300.000 300.000" />
+				<singleRandom value="false" />
+			</startSize>
+		</module>
+		<module type="ParticleModuleSizeMultiplyLife">
+			<lifeMultiplier type="multipleCurve">
+				<xCurve>
+					<point inVal="0" outVal="0.515789" arriveTangent="0" leaveTangent="10" interpMode="3" />
+					<point inVal="0.043299" outVal="0.909091" arriveTangent="0.221299" leaveTangent="0.221299" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="0" outVal="0.515789" arriveTangent="0" leaveTangent="10" interpMode="3" />
+					<point inVal="0.043299" outVal="0.909091" arriveTangent="0.221299" leaveTangent="0.221299" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="0" outVal="0.515789" arriveTangent="0" leaveTangent="10" interpMode="3" />
+					<point inVal="0.043299" outVal="0.909091" arriveTangent="0.221299" leaveTangent="0.221299" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="1.100 1.100 1.100" />
+				<singleCurve value="true" />
+			</lifeMultiplier>
+			<multiplyX value="true" />
+			<multiplyY value="true" />
+			<multiplyZ value="true" />
+		</module>
+		<module type="ParticleModuleColorOverLife">
+			<colorOverLife type="colorsCurve">
+				<color type="constantCurve">
+					<point inVal="0" outVal="0.090 0.440 0.900" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</color>
+				<alpha type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="0.35" outVal="1" arriveTangent="0" leaveTangent="-1.53846" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1.53846" leaveTangent="0" interpMode="3" />
+				</alpha>
+			</colorOverLife>
+		</module>
+		<module type="ParticleModuleColorScaleOverLife">
+			<colorScaleOverLife type="multipleCurve">
+				<xCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="8.000 8.000 8.000" />
+				<singleCurve value="true" />
+			</colorScaleOverLife>
+			<alphaScaleOverLife type="constant">
+				<constant value="1" />
+			</alphaScaleOverLife>
+			<bEmitterTime value="false" />
+		</module>
+		<module type="ParticleModuleRotation">
+			<startRotation type="uniform">
+				<min value="0" />
+				<max value="0" />
+			</startRotation>
+		</module>
+		<module type="ParticleModuleRotationRate">
+			<startRotationRate type="uniform">
+				<min value="0.05" />
+				<max value="0.05" />
+			</startRotationRate>
+		</module>
+		<module type="ParticleModuleRotation">
+			<subImageIndexStart value="7" />
+			<subImageIndexEnd value="8" />
+		</module>
+		<module type="ParticleModuleLocation">
+			<startLocation type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</startLocation>
+		</module>
+		<module type="ParticleModuleOrbit">
+			<chainMode value="2" />
+			<offsetAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</offsetAmount>
+			<offsetOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</offsetOptions>
+			<rotationAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationAmount>
+			<rotationOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationOptions>
+			<rotationRateAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationRateAmount>
+			<rotationRateOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationRateOptions>
+		</module>
+	</ParticleEmitter>
+	<ParticleEmitter name="glow">
+		<module type="ParticleModuleRequired">
+			<material value="engineres/particle/common/materials/defaultsprite.material">
+				<texture unit="0" value="particle/tex_fx_ring_009.png" uvloop="true" />
+				<dissolve type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</dissolve>
+				<parameter name="softParticleFadeScale" value="0.01" type="Float" />
+				<parameter name="uvDiffParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvMaskParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvDissolveParams" value="1 1 0 0" type="Vector4" />
+				<materialTag name="depthTest" type="Int" value="4" />
+				<materialTag name="blend" type="Int" value="3" />
+				<materialTag name="UseMask" type="Bool" value="false" />
+				<materialTag name="UseDissolve" type="Bool" value="false" />
+				<materialTag name="VertexColor" type="Bool" value="false" />
+				<materialTag name="UseFresnel" type="Bool" value="false" />
+				<materialTag name="UsePlaneSoftParticle" type="Bool" value="false" />
+				<materialTag name="SoftFadeHeight" type="Float" value="10" />
+				<materialTag name="CullBack" type="Bool" value="false" />
+				<materialTag name="DepthBias" constant="-2.5e-07" slopescaled="0" />
+			</material>
+			<light>
+				<lightRate value="0" />
+				<lightColor type="constantCurve">
+					<point inVal="0" outVal="1.000 1.000 1.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+					<point inVal="1" outVal="0.000 0.000 0.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</lightColor>
+				<lightRadius type="constantCurve">
+					<maxOutVal value="15" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</lightRadius>
+				<lightBrightness type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</lightBrightness>
+			</light>
+			<useLocalSpace value="false" />
+			<screenAlignment value="0" />
+			<emitterDuration value="3" />
+			<emitterLoops value="1" />
+			<emitterDelay value="0.13" />
+			<preWarm value="false" />
+			<interpolationMethod value="0" />
+			<subImagesHorizontal value="4" />
+			<subImagesVertical value="4" />
+			<randomImageChanges value="0" />
+			<randomImageTime value="0" />
+			<killOnDeactivate value="false" />
+			<stretched value="false" />
+			<texRotate value="0.000 0.000 0.000" />
+			<maxAABBCenter value="0.000 0.000 0.000" />
+			<maxAABBHalfSize value="120.559" />
+			<useEnvLight value="false" />
+		</module>
+		<module type="ParticleModuleSpawn">
+			<rate type="constant">
+				<constant value="0" />
+			</rate>
+			<burstList>
+				<point time="0" count="1" />
+			</burstList>
+		</module>
+		<module type="ParticleModuleOrientationAxisLock">
+			<lockAxisFlags value="3" />
+		</module>
+		<module type="ParticleModuleLifetime">
+			<lifetime type="uniform">
+				<min value="1.8" />
+				<max value="1.8" />
+			</lifetime>
+		</module>
+		<module type="ParticleModuleSize">
+			<startSize type="uniform">
+				<min value="155.000 300.000 300.000" />
+				<max value="155.000 300.000 300.000" />
+				<singleRandom value="false" />
+			</startSize>
+		</module>
+		<module type="ParticleModuleSizeMultiplyLife">
+			<lifeMultiplier type="multipleCurve">
+				<xCurve>
+					<point inVal="0" outVal="0.515789" arriveTangent="0" leaveTangent="10" interpMode="3" />
+					<point inVal="0.043299" outVal="0.909091" arriveTangent="0.221299" leaveTangent="0.221299" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="0" outVal="0.515789" arriveTangent="0" leaveTangent="10" interpMode="3" />
+					<point inVal="0.043299" outVal="0.909091" arriveTangent="0.221299" leaveTangent="0.221299" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="0" outVal="0.515789" arriveTangent="0" leaveTangent="10" interpMode="3" />
+					<point inVal="0.043299" outVal="0.909091" arriveTangent="0.221299" leaveTangent="0.221299" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="1.100 1.100 1.100" />
+				<singleCurve value="true" />
+			</lifeMultiplier>
+			<multiplyX value="true" />
+			<multiplyY value="true" />
+			<multiplyZ value="true" />
+		</module>
+		<module type="ParticleModuleColorOverLife">
+			<colorOverLife type="colorsCurve">
+				<color type="constantCurve">
+					<point inVal="0" outVal="0.090 0.440 0.900" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</color>
+				<alpha type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="0.35" outVal="1" arriveTangent="0" leaveTangent="-1.53846" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1.53846" leaveTangent="0" interpMode="3" />
+				</alpha>
+			</colorOverLife>
+		</module>
+		<module type="ParticleModuleColorScaleOverLife">
+			<colorScaleOverLife type="multipleCurve">
+				<xCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="8.000 8.000 8.000" />
+				<singleCurve value="true" />
+			</colorScaleOverLife>
+			<alphaScaleOverLife type="constant">
+				<constant value="1" />
+			</alphaScaleOverLife>
+			<bEmitterTime value="false" />
+		</module>
+		<module type="ParticleModuleRotation">
+			<startRotation type="uniform">
+				<min value="0" />
+				<max value="0" />
+			</startRotation>
+		</module>
+		<module type="ParticleModuleRotationRate">
+			<startRotationRate type="uniform">
+				<min value="-0.2" />
+				<max value="-0.2" />
+			</startRotationRate>
+		</module>
+		<module type="ParticleModuleRotation">
+			<subImageIndexStart value="7" />
+			<subImageIndexEnd value="8" />
+		</module>
+		<module type="ParticleModuleLocation">
+			<startLocation type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</startLocation>
+		</module>
+		<module type="ParticleModuleOrbit">
+			<chainMode value="2" />
+			<offsetAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</offsetAmount>
+			<offsetOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</offsetOptions>
+			<rotationAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationAmount>
+			<rotationOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationOptions>
+			<rotationRateAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationRateAmount>
+			<rotationRateOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationRateOptions>
+		</module>
+	</ParticleEmitter>
+	<ParticleEmitter name="glow">
+		<module type="ParticleModuleRequired">
+			<material value="engineres/particle/common/materials/defaultsprite.material">
+				<texture unit="0" value="particle/tex_fx_ring_007.png" uvloop="true" />
+				<dissolve type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</dissolve>
+				<parameter name="softParticleFadeScale" value="0.01" type="Float" />
+				<parameter name="uvDiffParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvMaskParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvDissolveParams" value="1 1 0 0" type="Vector4" />
+				<materialTag name="depthTest" type="Int" value="4" />
+				<materialTag name="blend" type="Int" value="3" />
+				<materialTag name="UseMask" type="Bool" value="false" />
+				<materialTag name="UseDissolve" type="Bool" value="false" />
+				<materialTag name="VertexColor" type="Bool" value="false" />
+				<materialTag name="UseFresnel" type="Bool" value="false" />
+				<materialTag name="UsePlaneSoftParticle" type="Bool" value="false" />
+				<materialTag name="SoftFadeHeight" type="Float" value="10" />
+				<materialTag name="CullBack" type="Bool" value="false" />
+				<materialTag name="DepthBias" constant="-2.5e-07" slopescaled="0" />
+			</material>
+			<light>
+				<lightRate value="0" />
+				<lightColor type="constantCurve">
+					<point inVal="0" outVal="1.000 1.000 1.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+					<point inVal="1" outVal="0.000 0.000 0.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</lightColor>
+				<lightRadius type="constantCurve">
+					<maxOutVal value="15" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</lightRadius>
+				<lightBrightness type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</lightBrightness>
+			</light>
+			<useLocalSpace value="false" />
+			<screenAlignment value="0" />
+			<emitterDuration value="3" />
+			<emitterLoops value="1" />
+			<emitterDelay value="0.13" />
+			<preWarm value="false" />
+			<interpolationMethod value="0" />
+			<subImagesHorizontal value="4" />
+			<subImagesVertical value="4" />
+			<randomImageChanges value="0" />
+			<randomImageTime value="0" />
+			<killOnDeactivate value="false" />
+			<stretched value="false" />
+			<texRotate value="0.000 0.000 0.000" />
+			<maxAABBCenter value="0.000 0.000 0.000" />
+			<maxAABBHalfSize value="181.228" />
+			<useEnvLight value="false" />
+		</module>
+		<module type="ParticleModuleSpawn">
+			<rate type="constant">
+				<constant value="0" />
+			</rate>
+			<burstList>
+				<point time="0" count="1" />
+			</burstList>
+		</module>
+		<module type="ParticleModuleOrientationAxisLock">
+			<lockAxisFlags value="3" />
+		</module>
+		<module type="ParticleModuleLifetime">
+			<lifetime type="uniform">
+				<min value="1.8" />
+				<max value="1.8" />
+			</lifetime>
+		</module>
+		<module type="ParticleModuleSize">
+			<startSize type="uniform">
+				<min value="233.000 300.000 300.000" />
+				<max value="233.000 300.000 300.000" />
+				<singleRandom value="false" />
+			</startSize>
+		</module>
+		<module type="ParticleModuleSizeMultiplyLife">
+			<lifeMultiplier type="multipleCurve">
+				<xCurve>
+					<point inVal="0" outVal="0.515789" arriveTangent="0" leaveTangent="10" interpMode="3" />
+					<point inVal="0.043299" outVal="0.909091" arriveTangent="0.221299" leaveTangent="0.221299" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="0" outVal="0.515789" arriveTangent="0" leaveTangent="10" interpMode="3" />
+					<point inVal="0.043299" outVal="0.909091" arriveTangent="0.221299" leaveTangent="0.221299" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="0" outVal="0.515789" arriveTangent="0" leaveTangent="10" interpMode="3" />
+					<point inVal="0.043299" outVal="0.909091" arriveTangent="0.221299" leaveTangent="0.221299" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="1.100 1.100 1.100" />
+				<singleCurve value="true" />
+			</lifeMultiplier>
+			<multiplyX value="true" />
+			<multiplyY value="true" />
+			<multiplyZ value="true" />
+		</module>
+		<module type="ParticleModuleColorOverLife">
+			<colorOverLife type="colorsCurve">
+				<color type="constantCurve">
+					<point inVal="0" outVal="0.090 0.440 0.900" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</color>
+				<alpha type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="0.35" outVal="1" arriveTangent="0" leaveTangent="-1.53846" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1.53846" leaveTangent="0" interpMode="3" />
+				</alpha>
+			</colorOverLife>
+		</module>
+		<module type="ParticleModuleColorScaleOverLife">
+			<colorScaleOverLife type="constant">
+				<constant value="5.000 5.000 5.000" />
+			</colorScaleOverLife>
+			<alphaScaleOverLife type="constant">
+				<constant value="1" />
+			</alphaScaleOverLife>
+			<bEmitterTime value="false" />
+		</module>
+		<module type="ParticleModuleRotation">
+			<startRotation type="uniform">
+				<min value="0" />
+				<max value="0" />
+			</startRotation>
+		</module>
+		<module type="ParticleModuleRotationRate">
+			<startRotationRate type="uniform">
+				<min value="0.2" />
+				<max value="0.2" />
+			</startRotationRate>
+		</module>
+		<module type="ParticleModuleRotation">
+			<subImageIndexStart value="7" />
+			<subImageIndexEnd value="8" />
+		</module>
+		<module type="ParticleModuleLocation">
+			<startLocation type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</startLocation>
+		</module>
+		<module type="ParticleModuleOrbit">
+			<chainMode value="2" />
+			<offsetAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</offsetAmount>
+			<offsetOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</offsetOptions>
+			<rotationAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationAmount>
+			<rotationOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationOptions>
+			<rotationRateAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationRateAmount>
+			<rotationRateOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationRateOptions>
+		</module>
+	</ParticleEmitter>
+	<ParticleEmitter name="普通发射器3">
+		<module type="ParticleModuleRequired">
+			<material value="engineres/particle/common/materials/defaultsprite.material">
+				<texture unit="0" value="particle/fx_light.png" uvloop="true" />
+				<dissolve type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</dissolve>
+				<parameter name="softParticleFadeScale" value="0.01" type="Float" />
+				<parameter name="uvDiffParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvMaskParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvDissolveParams" value="1 1 0 0" type="Vector4" />
+				<materialTag name="depthTest" type="Int" value="4" />
+				<materialTag name="blend" type="Int" value="4" />
+				<materialTag name="UseMask" type="Bool" value="false" />
+				<materialTag name="UseDissolve" type="Bool" value="false" />
+				<materialTag name="VertexColor" type="Bool" value="false" />
+				<materialTag name="UseFresnel" type="Bool" value="false" />
+				<materialTag name="UsePlaneSoftParticle" type="Bool" value="true" />
+				<materialTag name="SoftFadeHeight" type="Float" value="10" />
+				<materialTag name="CullBack" type="Bool" value="false" />
+				<materialTag name="DepthBias" constant="0" slopescaled="0" />
+			</material>
+			<light>
+				<lightRate value="0" />
+				<lightColor type="constantCurve">
+					<point inVal="0" outVal="1.000 1.000 1.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+					<point inVal="1" outVal="0.000 0.000 0.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</lightColor>
+				<lightRadius type="constantCurve">
+					<maxOutVal value="15" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</lightRadius>
+				<lightBrightness type="constantCurve">
+					<maxOutVal value="8" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</lightBrightness>
+			</light>
+			<useLocalSpace value="true" />
+			<screenAlignment value="2" />
+			<emitterDuration value="1" />
+			<emitterLoops value="1" />
+			<emitterDelay value="0.13" />
+			<preWarm value="false" />
+			<interpolationMethod value="0" />
+			<subImagesHorizontal value="3" />
+			<subImagesVertical value="3" />
+			<randomImageChanges value="0" />
+			<randomImageTime value="0" />
+			<killOnDeactivate value="false" />
+			<stretched value="false" />
+			<texRotate value="0.000 0.000 0.000" />
+			<maxAABBCenter value="-2.912 0.701 141.144" />
+			<maxAABBHalfSize value="141.144" />
+			<useEnvLight value="false" />
+		</module>
+		<module type="ParticleModuleSpawn">
+			<rate type="constant">
+				<constant value="3" />
+			</rate>
+			<burstList>
+				<point time="0" count="3" />
+			</burstList>
+		</module>
+		<module type="ParticleModuleOrientationAxisLock">
+			<lockAxisFlags value="0" />
+		</module>
+		<module type="ParticleModuleRotation">
+			<subImageIndex type="constantCurve">
+				<maxOutVal value="1" />
+				<point inVal="0" outVal="0" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				<point inVal="1" outVal="0" arriveTangent="0" leaveTangent="0" interpMode="3" />
+			</subImageIndex>
+		</module>
+		<module type="ParticleModuleLifetime">
+			<lifetime type="uniform">
+				<min value="0.5" />
+				<max value="1" />
+			</lifetime>
+		</module>
+		<module type="ParticleModuleVelocity">
+			<module type="ParticleModuleVelocityBase">
+				<bInWorldSpace value="false" />
+				<bApplyOwnerScale value="false" />
+			</module>
+			<startVelocity type="uniform">
+				<min value="0.000 0.000 10.000" />
+				<max value="0.000 0.000 40.000" />
+				<singleRandom value="false" />
+			</startVelocity>
+		</module>
+		<module type="ParticleModuleVelocityOverLifetime">
+			<module type="ParticleModuleVelocityBase">
+				<bInWorldSpace value="false" />
+				<bApplyOwnerScale value="false" />
+			</module>
+			<velOverLife type="multipleCurve">
+				<xCurve>
+					<point inVal="0" outVal="0" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="0" outVal="0" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="0" outVal="1" arriveTangent="-4.08421" leaveTangent="-4.08421" interpMode="3" />
+					<point inVal="0.221649" outVal="0.366035" arriveTangent="-0.62369" leaveTangent="-0.62369" interpMode="3" />
+					<point inVal="1" outVal="0.105263" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="1.000 1.000 30.000" />
+				<singleCurve value="false" />
+			</velOverLife>
+			<absolute value="false" />
+			<orbitOverLife type="constant">
+				<constant value="0.000 0.000 0.000" />
+			</orbitOverLife>
+			<offsetOverLife type="constant">
+				<constant value="0.000 0.000 0.000" />
+			</offsetOverLife>
+			<radialOverLife type="constant">
+				<constant value="0" />
+			</radialOverLife>
+		</module>
+		<module type="ParticleModuleOrbit">
+			<chainMode value="2" />
+			<offsetAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</offsetAmount>
+			<offsetOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</offsetOptions>
+			<rotationAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationAmount>
+			<rotationOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationOptions>
+			<rotationRateAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationRateAmount>
+			<rotationRateOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationRateOptions>
+		</module>
+		<module type="ParticleModuleSize">
+			<startSize type="uniform">
+				<min value="5.500 15.000 3.000" />
+				<max value="5.500 15.000 3.000" />
+				<singleRandom value="false" />
+			</startSize>
+		</module>
+		<module type="ParticleModuleRotation">
+			<startRotation type="uniform">
+				<min value="0" />
+				<max value="0" />
+			</startRotation>
+		</module>
+		<module type="ParticleModuleRotationRate">
+			<startRotationRate type="uniform">
+				<min value="0" />
+				<max value="0" />
+			</startRotationRate>
+		</module>
+		<module type="ParticleModuleAcceleration">
+			<bAlwaysInWorldSpace value="true" />
+			<bApplyOwnerScale value="false" />
+			<accleration type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</accleration>
+		</module>
+		<module type="ParticleModuleColorOverLife">
+			<colorOverLife type="colorsCurve">
+				<color type="constantCurve">
+					<point inVal="0" outVal="0.950 0.450 0.080" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</color>
+				<alpha type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="0" arriveTangent="0" leaveTangent="2.5641" interpMode="3" />
+					<point inVal="0.39" outVal="1" arriveTangent="2.5641" leaveTangent="-1.63934" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1.63934" leaveTangent="0" interpMode="3" />
+				</alpha>
+			</colorOverLife>
+		</module>
+		<module type="ParticleModuleColorScaleOverLife">
+			<colorScaleOverLife type="constant">
+				<constant value="10.000 10.000 10.000" />
+			</colorScaleOverLife>
+			<alphaScaleOverLife type="constant">
+				<constant value="1" />
+			</alphaScaleOverLife>
+			<bEmitterTime value="false" />
+		</module>
+		<module type="ParticleModuleSizeMultiplyLife">
+			<lifeMultiplier type="multipleCurve">
+				<xCurve>
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="3.000 3.000 3.000" />
+				<singleCurve value="true" />
+			</lifeMultiplier>
+			<multiplyX value="true" />
+			<multiplyY value="true" />
+			<multiplyZ value="true" />
+		</module>
+		<module type="ParticleModuleLocationPrimitiveCylinder">
+			<module type="ParticleModuleLocationPrimitiveBase">
+				<flag value="63" />
+				<velocityScale type="uniform">
+					<min value="1" />
+					<max value="1" />
+				</velocityScale>
+				<startLocation type="constant">
+					<constant value="0.000 0.000 20.000" />
+				</startLocation>
+			</module>
+			<radialVelocity value="true" />
+			<bAdjustForWorldSpace value="true" />
+			<heightAxis value="2" />
+			<startRadius type="constant">
+				<constant value="99" />
+			</startRadius>
+			<startHeight type="constant">
+				<constant value="20" />
+			</startHeight>
+		</module>
+	</ParticleEmitter>
+	<ParticleEmitter name="普通发射器3">
+		<module type="ParticleModuleRequired">
+			<material value="engineres/particle/common/materials/defaultsprite.material">
+				<texture unit="0" value="particle/fangkuai1.png" uvloop="true" />
+				<dissolve type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</dissolve>
+				<parameter name="softParticleFadeScale" value="0.01" type="Float" />
+				<parameter name="uvDiffParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvMaskParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvDissolveParams" value="1 1 0 0" type="Vector4" />
+				<materialTag name="depthTest" type="Int" value="4" />
+				<materialTag name="blend" type="Int" value="4" />
+				<materialTag name="UseMask" type="Bool" value="false" />
+				<materialTag name="UseDissolve" type="Bool" value="false" />
+				<materialTag name="VertexColor" type="Bool" value="false" />
+				<materialTag name="UseFresnel" type="Bool" value="false" />
+				<materialTag name="UsePlaneSoftParticle" type="Bool" value="true" />
+				<materialTag name="SoftFadeHeight" type="Float" value="10" />
+				<materialTag name="CullBack" type="Bool" value="false" />
+				<materialTag name="DepthBias" constant="0" slopescaled="0" />
+			</material>
+			<light>
+				<lightRate value="0" />
+				<lightColor type="constantCurve">
+					<point inVal="0" outVal="1.000 1.000 1.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+					<point inVal="1" outVal="0.000 0.000 0.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</lightColor>
+				<lightRadius type="constantCurve">
+					<maxOutVal value="15" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</lightRadius>
+				<lightBrightness type="constantCurve">
+					<maxOutVal value="8" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</lightBrightness>
+			</light>
+			<useLocalSpace value="true" />
+			<screenAlignment value="2" />
+			<emitterDuration value="1" />
+			<emitterLoops value="1" />
+			<emitterDelay value="0.13" />
+			<preWarm value="false" />
+			<interpolationMethod value="0" />
+			<subImagesHorizontal value="3" />
+			<subImagesVertical value="3" />
+			<randomImageChanges value="0" />
+			<randomImageTime value="0" />
+			<killOnDeactivate value="false" />
+			<stretched value="false" />
+			<texRotate value="0.000 0.000 0.000" />
+			<maxAABBCenter value="9.384 -10.111 110.014" />
+			<maxAABBHalfSize value="110.014" />
+			<useEnvLight value="false" />
+		</module>
+		<module type="ParticleModuleSpawn">
+			<rate type="constant">
+				<constant value="3" />
+			</rate>
+			<burstList>
+				<point time="0" count="3" />
+			</burstList>
+		</module>
+		<module type="ParticleModuleOrientationAxisLock">
+			<lockAxisFlags value="0" />
+		</module>
+		<module type="ParticleModuleRotation">
+			<subImageIndex type="constantCurve">
+				<maxOutVal value="1" />
+				<point inVal="0" outVal="0" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				<point inVal="1" outVal="0" arriveTangent="0" leaveTangent="0" interpMode="3" />
+			</subImageIndex>
+		</module>
+		<module type="ParticleModuleLifetime">
+			<lifetime type="uniform">
+				<min value="0.5" />
+				<max value="1" />
+			</lifetime>
+		</module>
+		<module type="ParticleModuleVelocity">
+			<module type="ParticleModuleVelocityBase">
+				<bInWorldSpace value="false" />
+				<bApplyOwnerScale value="false" />
+			</module>
+			<startVelocity type="uniform">
+				<min value="0.000 0.000 15.000" />
+				<max value="0.000 0.000 40.000" />
+				<singleRandom value="false" />
+			</startVelocity>
+		</module>
+		<module type="ParticleModuleVelocityOverLifetime">
+			<module type="ParticleModuleVelocityBase">
+				<bInWorldSpace value="false" />
+				<bApplyOwnerScale value="false" />
+			</module>
+			<velOverLife type="multipleCurve">
+				<xCurve>
+					<point inVal="0" outVal="0" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="0" outVal="0" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="0" outVal="1" arriveTangent="-2" leaveTangent="-2" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="1.000 1.000 30.000" />
+				<singleCurve value="false" />
+			</velOverLife>
+			<absolute value="false" />
+			<orbitOverLife type="constant">
+				<constant value="0.000 0.000 0.000" />
+			</orbitOverLife>
+			<offsetOverLife type="constant">
+				<constant value="0.000 0.000 0.000" />
+			</offsetOverLife>
+			<radialOverLife type="constant">
+				<constant value="0" />
+			</radialOverLife>
+		</module>
+		<module type="ParticleModuleOrbit">
+			<chainMode value="2" />
+			<offsetAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</offsetAmount>
+			<offsetOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</offsetOptions>
+			<rotationAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationAmount>
+			<rotationOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationOptions>
+			<rotationRateAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationRateAmount>
+			<rotationRateOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationRateOptions>
+		</module>
+		<module type="ParticleModuleSize">
+			<startSize type="uniform">
+				<min value="5.000 20.000 3.000" />
+				<max value="5.000 25.000 3.000" />
+				<singleRandom value="false" />
+			</startSize>
+		</module>
+		<module type="ParticleModuleRotation">
+			<startRotation type="uniform">
+				<min value="0" />
+				<max value="0" />
+			</startRotation>
+		</module>
+		<module type="ParticleModuleRotationRate">
+			<startRotationRate type="uniform">
+				<min value="0" />
+				<max value="0" />
+			</startRotationRate>
+		</module>
+		<module type="ParticleModuleAcceleration">
+			<bAlwaysInWorldSpace value="true" />
+			<bApplyOwnerScale value="false" />
+			<accleration type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</accleration>
+		</module>
+		<module type="ParticleModuleColorOverLife">
+			<colorOverLife type="colorsCurve">
+				<color type="constantCurve">
+					<point inVal="0" outVal="0.080 0.521 0.950" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</color>
+				<alpha type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="0" arriveTangent="0" leaveTangent="2.94118" interpMode="3" />
+					<point inVal="0.34" outVal="1" arriveTangent="2.94118" leaveTangent="-1.51515" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1.51515" leaveTangent="0" interpMode="3" />
+				</alpha>
+			</colorOverLife>
+		</module>
+		<module type="ParticleModuleColorScaleOverLife">
+			<colorScaleOverLife type="constant">
+				<constant value="5.000 5.000 5.000" />
+			</colorScaleOverLife>
+			<alphaScaleOverLife type="constant">
+				<constant value="1" />
+			</alphaScaleOverLife>
+			<bEmitterTime value="false" />
+		</module>
+		<module type="ParticleModuleSizeMultiplyLife">
+			<lifeMultiplier type="multipleCurve">
+				<xCurve>
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="3.000 3.000 3.000" />
+				<singleCurve value="true" />
+			</lifeMultiplier>
+			<multiplyX value="true" />
+			<multiplyY value="true" />
+			<multiplyZ value="true" />
+		</module>
+		<module type="ParticleModuleLocationPrimitiveCylinder">
+			<module type="ParticleModuleLocationPrimitiveBase">
+				<flag value="63" />
+				<velocityScale type="uniform">
+					<min value="1" />
+					<max value="1" />
+				</velocityScale>
+				<startLocation type="constant">
+					<constant value="0.000 0.000 20.000" />
+				</startLocation>
+			</module>
+			<radialVelocity value="true" />
+			<bAdjustForWorldSpace value="true" />
+			<heightAxis value="2" />
+			<startRadius type="constant">
+				<constant value="99" />
+			</startRadius>
+			<startHeight type="constant">
+				<constant value="20" />
+			</startHeight>
+		</module>
+	</ParticleEmitter>
+	<ParticleEmitter name="普通发射器">
+		<module type="ParticleModuleRequired">
+			<material value="engineres/particle/common/materials/defaultsprite.material">
+				<texture unit="0" value="particle/t_fx_light_011.png" uvloop="true" />
+				<dissolve type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</dissolve>
+				<parameter name="softParticleFadeScale" value="0.01" type="Float" />
+				<parameter name="uvDiffParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvMaskParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvDissolveParams" value="1 1 0 0" type="Vector4" />
+				<materialTag name="depthTest" type="Int" value="0" />
+				<materialTag name="blend" type="Int" value="4" />
+				<materialTag name="UseMask" type="Bool" value="false" />
+				<materialTag name="UseDissolve" type="Bool" value="false" />
+				<materialTag name="VertexColor" type="Bool" value="false" />
+				<materialTag name="UseFresnel" type="Bool" value="false" />
+				<materialTag name="UsePlaneSoftParticle" type="Bool" value="false" />
+				<materialTag name="SoftFadeHeight" type="Float" value="10" />
+				<materialTag name="CullBack" type="Bool" value="true" />
+				<materialTag name="DepthBias" constant="0" slopescaled="0" />
+			</material>
+			<light>
+				<lightRate value="0" />
+				<lightColor type="constantCurve">
+					<point inVal="0" outVal="1.000 1.000 1.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+					<point inVal="1" outVal="0.000 0.000 0.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</lightColor>
+				<lightRadius type="constantCurve">
+					<maxOutVal value="15" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</lightRadius>
+				<lightBrightness type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</lightBrightness>
+			</light>
+			<useLocalSpace value="true" />
+			<screenAlignment value="0" />
+			<emitterDuration value="1.5" />
+			<emitterLoops value="1" />
+			<emitterDelay value="0.13" />
+			<preWarm value="false" />
+			<interpolationMethod value="1" />
+			<subImagesHorizontal value="4" />
+			<subImagesVertical value="2" />
+			<randomImageChanges value="0" />
+			<randomImageTime value="0" />
+			<killOnDeactivate value="false" />
+			<stretched value="false" />
+			<texRotate value="0.000 0.000 0.000" />
+			<maxAABBCenter value="4.815 20.229 83.179" />
+			<maxAABBHalfSize value="125.322" />
+			<useEnvLight value="false" />
+		</module>
+		<module type="ParticleModuleSpawn">
+			<rate type="constant">
+				<constant value="6" />
+			</rate>
+			<burstList>
+				<point time="0" count="3" />
+			</burstList>
+		</module>
+		<module type="ParticleModuleOrientationAxisLock">
+			<lockAxisFlags value="0" />
+		</module>
+		<module type="ParticleModuleRotation">
+			<subImageIndexStart value="0" />
+			<subImageIndexEnd value="8" />
+		</module>
+		<module type="ParticleModuleLifetime">
+			<lifetime type="uniform">
+				<min value="0.2" />
+				<max value="0.5" />
+			</lifetime>
+		</module>
+		<module type="ParticleModuleVelocity">
+			<module type="ParticleModuleVelocityBase">
+				<bInWorldSpace value="false" />
+				<bApplyOwnerScale value="false" />
+			</module>
+			<startVelocity type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</startVelocity>
+		</module>
+		<module type="ParticleModuleVelocityOverLifetime">
+			<module type="ParticleModuleVelocityBase">
+				<bInWorldSpace value="false" />
+				<bApplyOwnerScale value="false" />
+			</module>
+			<velOverLife type="multipleCurve">
+				<xCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="1.000 1.000 1.000" />
+				<singleCurve value="true" />
+			</velOverLife>
+			<absolute value="false" />
+			<orbitOverLife type="constant">
+				<constant value="0.000 0.000 0.000" />
+			</orbitOverLife>
+			<offsetOverLife type="constant">
+				<constant value="0.000 0.000 0.000" />
+			</offsetOverLife>
+			<radialOverLife type="constant">
+				<constant value="0" />
+			</radialOverLife>
+		</module>
+		<module type="ParticleModuleOrbit">
+			<chainMode value="2" />
+			<offsetAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</offsetAmount>
+			<offsetOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</offsetOptions>
+			<rotationAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="1.000 1.000 1.000" />
+				<singleRandom value="false" />
+			</rotationAmount>
+			<rotationOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationOptions>
+			<rotationRateAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="1.000 1.000 1.000" />
+				<singleRandom value="false" />
+			</rotationRateAmount>
+			<rotationRateOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationRateOptions>
+		</module>
+		<module type="ParticleModuleSize">
+			<startSize type="uniform">
+				<min value="70.000 70.000 70.000" />
+				<max value="33.000 33.000 33.000" />
+				<singleRandom value="false" />
+			</startSize>
+		</module>
+		<module type="ParticleModuleRotation">
+			<startRotation type="uniform">
+				<min value="1" />
+				<max value="-1" />
+			</startRotation>
+		</module>
+		<module type="ParticleModuleRotationRate">
+			<startRotationRate type="uniform">
+				<min value="0" />
+				<max value="0" />
+			</startRotationRate>
+		</module>
+		<module type="ParticleModuleAcceleration">
+			<bAlwaysInWorldSpace value="true" />
+			<bApplyOwnerScale value="false" />
+			<accleration type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</accleration>
+		</module>
+		<module type="ParticleModuleColorOverLife">
+			<colorOverLife type="colorsCurve">
+				<color type="constantCurve">
+					<point inVal="1" outVal="0.968 0.455 0.093" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</color>
+				<alpha type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</alpha>
+			</colorOverLife>
+		</module>
+		<module type="ParticleModuleColorScaleOverLife">
+			<colorScaleOverLife type="constant">
+				<constant value="5.000 5.000 5.000" />
+			</colorScaleOverLife>
+			<alphaScaleOverLife type="constant">
+				<constant value="1" />
+			</alphaScaleOverLife>
+			<bEmitterTime value="false" />
+		</module>
+		<module type="ParticleModuleSizeMultiplyLife">
+			<lifeMultiplier type="multipleCurve">
+				<xCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="1.000 1.000 1.000" />
+				<singleCurve value="true" />
+			</lifeMultiplier>
+			<multiplyX value="true" />
+			<multiplyY value="true" />
+			<multiplyZ value="true" />
+		</module>
+		<module type="ParticleModuleLocationPrimitiveSphere">
+			<module type="ParticleModuleLocationPrimitiveBase">
+				<flag value="63" />
+				<velocityScale type="uniform">
+					<min value="1" />
+					<max value="1" />
+				</velocityScale>
+				<startLocation type="constant">
+					<constant value="0.000 0.000 66.000" />
+				</startLocation>
+			</module>
+			<startRadius type="constant">
+				<constant value="100" />
+			</startRadius>
+		</module>
+	</ParticleEmitter>
+	<ParticleEmitter name="3">
+		<module type="ParticleModuleRequired">
+			<material value="engineres/particle/common/materials/defaultsprite.material">
+				<texture unit="0" value="particle/uv_once_tex_fx_ring_001.png" uvloop="true" />
+				<texture unit="3" value="particle/uv_once_t_fx_noise_005.tga" uvloop="true" />
+				<dissolve type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="-1" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="-1" interpMode="3" />
+				</dissolve>
+				<parameter name="softParticleFadeScale" value="0.01" type="Float" />
+				<parameter name="uvDiffParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvMaskParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvDissolveParams" value="2 1 0 0" type="Vector4" />
+				<parameter name="TexMultiply" value="0.5" type="Float" />
+				<parameter name="Smooth" value="0.5" type="Float" />
+				<materialTag name="depthTest" type="Int" value="4" />
+				<materialTag name="blend" type="Int" value="3" />
+				<materialTag name="UseMask" type="Bool" value="false" />
+				<materialTag name="UseDissolve" type="Bool" value="true" />
+				<materialTag name="VertexColor" type="Bool" value="false" />
+				<materialTag name="UseFresnel" type="Bool" value="false" />
+				<materialTag name="UsePlaneSoftParticle" type="Bool" value="false" />
+				<materialTag name="SoftFadeHeight" type="Float" value="10" />
+				<materialTag name="CullBack" type="Bool" value="false" />
+				<materialTag name="DepthBias" constant="-2.5e-07" slopescaled="0" />
+			</material>
+			<light>
+				<lightRate value="0" />
+				<lightColor type="constantCurve">
+					<point inVal="0" outVal="1.000 1.000 1.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+					<point inVal="1" outVal="0.000 0.000 0.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</lightColor>
+				<lightRadius type="constantCurve">
+					<maxOutVal value="15" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</lightRadius>
+				<lightBrightness type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</lightBrightness>
+			</light>
+			<useLocalSpace value="true" />
+			<screenAlignment value="0" />
+			<emitterDuration value="1" />
+			<emitterLoops value="1" />
+			<emitterDelay value="0.13" />
+			<preWarm value="false" />
+			<interpolationMethod value="0" />
+			<subImagesHorizontal value="1" />
+			<subImagesVertical value="1" />
+			<randomImageChanges value="0" />
+			<randomImageTime value="0" />
+			<killOnDeactivate value="false" />
+			<stretched value="false" />
+			<texRotate value="0.000 0.000 0.000" />
+			<maxAABBCenter value="0.000 0.000 5.000" />
+			<maxAABBHalfSize value="186.153" />
+			<useEnvLight value="false" />
+		</module>
+		<module type="ParticleModuleSpawn">
+			<rate type="constant">
+				<constant value="0" />
+			</rate>
+			<burstList>
+				<point time="0" count="1" />
+			</burstList>
+		</module>
+		<module type="ParticleModuleOrientationAxisLock">
+			<lockAxisFlags value="3" />
+		</module>
+		<module type="ParticleModuleLocation">
+			<startLocation type="uniform">
+				<min value="0.000 0.000 5.000" />
+				<max value="0.000 0.000 5.000" />
+				<singleRandom value="false" />
+			</startLocation>
+		</module>
+		<module type="ParticleModuleRotation">
+			<subImageIndex type="constantCurve">
+				<maxOutVal value="1" />
+				<point inVal="0" outVal="0" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				<point inVal="1" outVal="0" arriveTangent="0" leaveTangent="0" interpMode="3" />
+			</subImageIndex>
+		</module>
+		<module type="ParticleModuleLifetime">
+			<lifetime type="uniform">
+				<min value="0.43" />
+				<max value="0.43" />
+			</lifetime>
+		</module>
+		<module type="ParticleModuleVelocity">
+			<module type="ParticleModuleVelocityBase">
+				<bInWorldSpace value="false" />
+				<bApplyOwnerScale value="false" />
+			</module>
+			<startVelocity type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</startVelocity>
+		</module>
+		<module type="ParticleModuleVelocityOverLifetime">
+			<module type="ParticleModuleVelocityBase">
+				<bInWorldSpace value="false" />
+				<bApplyOwnerScale value="false" />
+			</module>
+			<velOverLife type="multipleCurve">
+				<xCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="0.3" outVal="1" arriveTangent="0" leaveTangent="-1.42857" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="0.3" outVal="1" arriveTangent="0" leaveTangent="-1.42857" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="0.3" outVal="1" arriveTangent="0" leaveTangent="-1.42857" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="1.000 1.000 1.000" />
+				<singleCurve value="true" />
+			</velOverLife>
+			<absolute value="false" />
+			<orbitOverLife type="constant">
+				<constant value="0.000 0.000 0.000" />
+			</orbitOverLife>
+			<offsetOverLife type="constant">
+				<constant value="0.000 0.000 0.000" />
+			</offsetOverLife>
+			<radialOverLife type="constant">
+				<constant value="0" />
+			</radialOverLife>
+		</module>
+		<module type="ParticleModuleOrbit">
+			<chainMode value="2" />
+			<offsetAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</offsetAmount>
+			<offsetOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</offsetOptions>
+			<rotationAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationAmount>
+			<rotationOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationOptions>
+			<rotationRateAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationRateAmount>
+			<rotationRateOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationRateOptions>
+		</module>
+		<module type="ParticleModuleSize">
+			<startSize type="uniform">
+				<min value="266.000 266.000 266.000" />
+				<max value="266.000 266.000 266.000" />
+				<singleRandom value="true" />
+			</startSize>
+		</module>
+		<module type="ParticleModuleRotation">
+			<startRotation type="uniform">
+				<min value="1" />
+				<max value="-1" />
+			</startRotation>
+		</module>
+		<module type="ParticleModuleRotationRate">
+			<startRotationRate type="uniform">
+				<min value="0" />
+				<max value="0" />
+			</startRotationRate>
+		</module>
+		<module type="ParticleModuleAcceleration">
+			<bAlwaysInWorldSpace value="true" />
+			<bApplyOwnerScale value="false" />
+			<accleration type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</accleration>
+		</module>
+		<module type="ParticleModuleColorOverLife">
+			<colorOverLife type="colorsCurve">
+				<color type="constantCurve">
+					<point inVal="0" outVal="0.072 0.359 0.951" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+					<point inVal="1" outVal="0.022 0.123 0.448" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</color>
+				<alpha type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0.25" outVal="1" arriveTangent="0" leaveTangent="-1.33333" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1.33333" leaveTangent="0" interpMode="3" />
+				</alpha>
+			</colorOverLife>
+		</module>
+		<module type="ParticleModuleColorScaleOverLife">
+			<colorScaleOverLife type="constant">
+				<constant value="8.300 8.300 8.300" />
+			</colorScaleOverLife>
+			<alphaScaleOverLife type="constant">
+				<constant value="1" />
+			</alphaScaleOverLife>
+			<bEmitterTime value="false" />
+		</module>
+		<module type="ParticleModuleSizeMultiplyLife">
+			<lifeMultiplier type="multipleCurve">
+				<xCurve>
+					<point inVal="0" outVal="0" arriveTangent="3.06316" leaveTangent="3.06316" interpMode="3" />
+					<point inVal="0.402062" outVal="0.812183" arriveTangent="0.625241" leaveTangent="0.625241" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="0" outVal="0" arriveTangent="3.06316" leaveTangent="3.06316" interpMode="3" />
+					<point inVal="0.402062" outVal="0.812183" arriveTangent="0.625241" leaveTangent="0.625241" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="0" outVal="0" arriveTangent="3.06316" leaveTangent="3.06316" interpMode="3" />
+					<point inVal="0.402062" outVal="0.812183" arriveTangent="0.625241" leaveTangent="0.625241" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="1.000 1.000 1.000" />
+				<singleCurve value="true" />
+			</lifeMultiplier>
+			<multiplyX value="true" />
+			<multiplyY value="true" />
+			<multiplyZ value="true" />
+		</module>
+	</ParticleEmitter>
+	<ParticleEmitter name="新建发射器_2">
+		<module type="ParticleModuleRequired">
+			<material value="engineres/particle/common/materials/defaultsprite.material">
+				<texture unit="0" value="particle/temptexture7.png" uvloop="true" />
+				<dissolve type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</dissolve>
+				<parameter name="softParticleFadeScale" value="1" type="Float" />
+				<parameter name="uvDiffParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvMaskParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvDissolveParams" value="1 1 0 0" type="Vector4" />
+				<materialTag name="depthTest" type="Int" value="4" />
+				<materialTag name="blend" type="Int" value="4" />
+				<materialTag name="UseMask" type="Bool" value="false" />
+				<materialTag name="UseDissolve" type="Bool" value="false" />
+				<materialTag name="VertexColor" type="Bool" value="false" />
+				<materialTag name="UseFresnel" type="Bool" value="false" />
+				<materialTag name="UsePlaneSoftParticle" type="Bool" value="false" />
+				<materialTag name="SoftFadeHeight" type="Float" value="10" />
+				<materialTag name="CullBack" type="Bool" value="false" />
+				<materialTag name="DepthBias" constant="0" slopescaled="0" />
+			</material>
+			<light>
+				<lightRate value="0" />
+				<lightColor type="constantCurve">
+					<point inVal="0" outVal="1.000 1.000 1.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+					<point inVal="1" outVal="0.000 0.000 0.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</lightColor>
+				<lightRadius type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</lightRadius>
+				<lightBrightness type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</lightBrightness>
+			</light>
+			<useLocalSpace value="false" />
+			<screenAlignment value="0" />
+			<emitterDuration value="0.5" />
+			<emitterLoops value="1" />
+			<emitterDelay value="0" />
+			<preWarm value="false" />
+			<interpolationMethod value="0" />
+			<subImagesHorizontal value="1" />
+			<subImagesVertical value="1" />
+			<randomImageChanges value="0" />
+			<randomImageTime value="0" />
+			<killOnDeactivate value="true" />
+			<stretched value="false" />
+			<texRotate value="0.000 0.000 0.000" />
+			<maxAABBCenter value="0.000 0.000 66.000" />
+			<maxAABBHalfSize value="714.178" />
+			<useEnvLight value="false" />
+		</module>
+		<module type="ParticleModuleSpawn">
+			<rate type="constant">
+				<constant value="0" />
+			</rate>
+			<burstList>
+				<point time="0" count="1" />
+			</burstList>
+		</module>
+		<module type="ParticleModuleOrientationAxisLock">
+			<lockAxisFlags value="0" />
+		</module>
+		<module type="ParticleModuleLifetime">
+			<lifetime type="uniform">
+				<min value="0.22" />
+				<max value="0.22" />
+			</lifetime>
+		</module>
+		<module type="ParticleModuleSize">
+			<startSize type="uniform">
+				<min value="550.000 550.000 550.000" />
+				<max value="550.000 550.000 550.000" />
+				<singleRandom value="false" />
+			</startSize>
+		</module>
+		<module type="ParticleModuleSizeMultiplyLife">
+			<lifeMultiplier type="multipleCurve">
+				<xCurve>
+					<point inVal="0" outVal="0.25" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.04" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.09" outVal="0.3" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.13" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.18" outVal="0.4" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.23" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.28" outVal="0.3" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.35" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.41" outVal="0.25" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.46" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.5" outVal="0.3" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.56" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.61" outVal="0.4" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.66" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.73" outVal="0.45" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.79" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.84" outVal="0.25" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.89" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.94" outVal="0.3" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="1" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="0" />
+				</xCurve>
+				<yCurve>
+					<point inVal="0" outVal="0.25" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.04" outVal="0.51" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.09" outVal="0.3" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.13" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.18" outVal="0.4" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.23" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.28" outVal="0.3" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.35" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.41" outVal="0.25" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.46" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.5" outVal="0.3" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.56" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.61" outVal="0.4" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.66" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.73" outVal="0.45" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.79" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.84" outVal="0.25" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.89" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.94" outVal="0.3" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="1" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="0" />
+				</yCurve>
+				<zCurve>
+					<point inVal="0" outVal="0.25" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.04" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.09" outVal="0.3" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.13" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.18" outVal="0.4" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.23" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.28" outVal="0.3" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.35" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.41" outVal="0.25" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.46" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.5" outVal="0.3" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.56" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.61" outVal="0.4" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.66" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.73" outVal="0.45" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.79" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.84" outVal="0.25" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.89" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="0.94" outVal="0.3" arriveTangent="0" leaveTangent="0" interpMode="0" />
+					<point inVal="1" outVal="0.5" arriveTangent="0" leaveTangent="0" interpMode="0" />
+				</zCurve>
+				<xyzMaxY value="2.000 2.000 2.000" />
+				<singleCurve value="false" />
+			</lifeMultiplier>
+			<multiplyX value="true" />
+			<multiplyY value="true" />
+			<multiplyZ value="true" />
+		</module>
+		<module type="ParticleModuleColorOverLife">
+			<colorOverLife type="colorsCurve">
+				<color type="constantCurve">
+					<point inVal="0" outVal="1.000 1.000 1.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+					<point inVal="0.54" outVal="0.060 0.431 0.880" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</color>
+				<alpha type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="0" arriveTangent="0" leaveTangent="4" interpMode="3" />
+					<point inVal="0.25" outVal="1" arriveTangent="4" leaveTangent="-1.33333" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1.33333" leaveTangent="0" interpMode="3" />
+				</alpha>
+			</colorOverLife>
+		</module>
+		<module type="ParticleModuleColorScaleOverLife">
+			<colorScaleOverLife type="constant">
+				<constant value="5.000 5.000 5.000" />
+			</colorScaleOverLife>
+			<alphaScaleOverLife type="constant">
+				<constant value="1" />
+			</alphaScaleOverLife>
+			<bEmitterTime value="false" />
+		</module>
+		<module type="ParticleModuleLocation">
+			<startLocation type="uniform">
+				<min value="0.000 0.000 66.000" />
+				<max value="0.000 0.000 66.000" />
+				<singleRandom value="false" />
+			</startLocation>
+		</module>
+		<module type="ParticleModuleOrbit">
+			<chainMode value="2" />
+			<offsetAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</offsetAmount>
+			<offsetOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</offsetOptions>
+			<rotationAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationAmount>
+			<rotationOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationOptions>
+			<rotationRateAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationRateAmount>
+			<rotationRateOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationRateOptions>
+		</module>
+		<module type="ParticleModuleRotation">
+			<startRotation type="uniform">
+				<min value="0" />
+				<max value="0" />
+			</startRotation>
+		</module>
+		<module type="ParticleModuleRotationRate">
+			<startRotationRate type="uniform">
+				<min value="0" />
+				<max value="0" />
+			</startRotationRate>
+		</module>
+	</ParticleEmitter>
+	<ParticleEmitter name="普通发射器2">
+		<module type="ParticleModuleRequired">
+			<material value="engineres/particle/common/materials/defaultsprite.material">
+				<texture unit="0" value="particle/t_kuosan.png" uvloop="true" />
+				<dissolve type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</dissolve>
+				<parameter name="softParticleFadeScale" value="0.01" type="Float" />
+				<parameter name="uvDiffParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvMaskParams" value="1 1 0 0" type="Vector4" />
+				<parameter name="uvDissolveParams" value="1 1 0 0" type="Vector4" />
+				<materialTag name="depthTest" type="Int" value="0" />
+				<materialTag name="blend" type="Int" value="3" />
+				<materialTag name="UseMask" type="Bool" value="false" />
+				<materialTag name="UseDissolve" type="Bool" value="false" />
+				<materialTag name="VertexColor" type="Bool" value="false" />
+				<materialTag name="UseFresnel" type="Bool" value="false" />
+				<materialTag name="UsePlaneSoftParticle" type="Bool" value="false" />
+				<materialTag name="SoftFadeHeight" type="Float" value="10" />
+				<materialTag name="CullBack" type="Bool" value="false" />
+				<materialTag name="DepthBias" constant="0" slopescaled="0" />
+			</material>
+			<light>
+				<lightRate value="0" />
+				<lightColor type="constantCurve">
+					<point inVal="0" outVal="1.000 1.000 1.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+					<point inVal="1" outVal="0.000 0.000 0.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</lightColor>
+				<lightRadius type="constantCurve">
+					<maxOutVal value="15" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</lightRadius>
+				<lightBrightness type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="-1" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-1" leaveTangent="0" interpMode="3" />
+				</lightBrightness>
+			</light>
+			<useLocalSpace value="true" />
+			<screenAlignment value="1" />
+			<emitterDuration value="1" />
+			<emitterLoops value="1" />
+			<emitterDelay value="0.025" />
+			<preWarm value="false" />
+			<interpolationMethod value="3" />
+			<subImagesHorizontal value="2" />
+			<subImagesVertical value="2" />
+			<randomImageChanges value="0" />
+			<randomImageTime value="0" />
+			<killOnDeactivate value="false" />
+			<stretched value="false" />
+			<texRotate value="0.000 0.000 0.000" />
+			<maxAABBCenter value="0.000 0.000 0.000" />
+			<maxAABBHalfSize value="316.103" />
+			<useEnvLight value="false" />
+		</module>
+		<module type="ParticleModuleSpawn">
+			<rate type="constant">
+				<constant value="0" />
+			</rate>
+			<burstList>
+				<point time="0" count="1" />
+			</burstList>
+		</module>
+		<module type="ParticleModuleOrientationAxisLock">
+			<lockAxisFlags value="0" />
+		</module>
+		<module type="ParticleModuleLifetime">
+			<lifetime type="uniform">
+				<min value="0.1" />
+				<max value="0.15" />
+			</lifetime>
+		</module>
+		<module type="ParticleModuleSize">
+			<startSize type="uniform">
+				<min value="300.000 300.000 300.000" />
+				<max value="300.000 300.000 300.000" />
+				<singleRandom value="true" />
+			</startSize>
+		</module>
+		<module type="ParticleModuleSizeMultiplyLife">
+			<lifeMultiplier type="multipleCurve">
+				<xCurve>
+					<point inVal="0" outVal="0.333333" arriveTangent="3.27976" leaveTangent="3.27976" interpMode="3" />
+					<point inVal="0.203608" outVal="0.921053" arriveTangent="0.388972" leaveTangent="0.388972" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0.0696172" leaveTangent="0.0696172" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="0" outVal="0.333333" arriveTangent="3.27976" leaveTangent="3.27976" interpMode="3" />
+					<point inVal="0.203608" outVal="0.921053" arriveTangent="0.388972" leaveTangent="0.388972" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0.0696172" leaveTangent="0.0696172" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="0" outVal="0.333333" arriveTangent="3.27976" leaveTangent="3.27976" interpMode="3" />
+					<point inVal="0.203608" outVal="0.921053" arriveTangent="0.388972" leaveTangent="0.388972" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0.0696172" leaveTangent="0.0696172" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="1.500 1.500 1.500" />
+				<singleCurve value="true" />
+			</lifeMultiplier>
+			<multiplyX value="true" />
+			<multiplyY value="true" />
+			<multiplyZ value="true" />
+		</module>
+		<module type="ParticleModuleColorOverLife">
+			<colorOverLife type="colorsCurve">
+				<color type="constantCurve">
+					<point inVal="0" outVal="0.124 0.542 1.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+					<point inVal="1" outVal="0.108 0.515 1.000" arriveTangent="0.000 0.000 0.000" leaveTangent="0.000 0.000 0.000" interpMode="0" />
+				</color>
+				<alpha type="constantCurve">
+					<maxOutVal value="1" />
+					<point inVal="0" outVal="0" arriveTangent="0" leaveTangent="2" interpMode="3" />
+					<point inVal="0.5" outVal="1" arriveTangent="2" leaveTangent="-2" interpMode="3" />
+					<point inVal="1" outVal="0" arriveTangent="-2" leaveTangent="0" interpMode="3" />
+				</alpha>
+			</colorOverLife>
+		</module>
+		<module type="ParticleModuleColorScaleOverLife">
+			<colorScaleOverLife type="multipleCurve">
+				<xCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</xCurve>
+				<yCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</yCurve>
+				<zCurve>
+					<point inVal="0" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+					<point inVal="1" outVal="1" arriveTangent="0" leaveTangent="0" interpMode="3" />
+				</zCurve>
+				<xyzMaxY value="30.000 30.000 30.000" />
+				<singleCurve value="true" />
+			</colorScaleOverLife>
+			<alphaScaleOverLife type="constant">
+				<constant value="1" />
+			</alphaScaleOverLife>
+			<bEmitterTime value="false" />
+		</module>
+		<module type="ParticleModuleRotation">
+			<subImageIndexStart value="4" />
+			<subImageIndexEnd value="5" />
+		</module>
+		<module type="ParticleModuleLocation">
+			<startLocation type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</startLocation>
+		</module>
+		<module type="ParticleModuleRotation">
+			<startRotation type="uniform">
+				<min value="0" />
+				<max value="0" />
+			</startRotation>
+		</module>
+		<module type="ParticleModuleRotationRate">
+			<startRotationRate type="uniform">
+				<min value="0" />
+				<max value="0" />
+			</startRotationRate>
+		</module>
+		<module type="ParticleModuleOrbit">
+			<chainMode value="2" />
+			<offsetAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</offsetAmount>
+			<offsetOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</offsetOptions>
+			<rotationAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationAmount>
+			<rotationOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationOptions>
+			<rotationRateAmount type="uniform">
+				<min value="0.000 0.000 0.000" />
+				<max value="0.000 0.000 0.000" />
+				<singleRandom value="false" />
+			</rotationRateAmount>
+			<rotationRateOptions>
+				<bProcessDuringSpawn value="true" />
+				<bProcessDuringUpdate value="false" />
+				<bUseEmitterTime value="false" />
+			</rotationRateOptions>
+		</module>
+	</ParticleEmitter>
+</ParticleSystem>

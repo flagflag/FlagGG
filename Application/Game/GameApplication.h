@@ -12,6 +12,7 @@
 #include "CameraOperation.h"
 #include "Unit/Unit.h"
 #include "Unit/Terrain.h"
+#include "Unit/ParticleActor.h"
 #endif
 #include "Network/NetworkAdaptor.h"
 #include "Network//GameProtoDistributor.h"
@@ -72,6 +73,7 @@ private:
 	SharedPtr<Unit> water_;
 	SharedPtr<Unit> waterDown_;
 	SharedPtr<Unit> skybox_;
+	SharedPtr<ParticleActor> simpleParticle_;
 #endif
 
 	SharedPtr<LuaVM> luaVM_;

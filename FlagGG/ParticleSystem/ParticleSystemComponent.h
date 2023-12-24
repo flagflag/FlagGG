@@ -10,6 +10,8 @@
 namespace FlagGG
 {
 
+struct ParticleEmitterInstance;
+
 enum ParticleSysParamType
 {
 	PSPT_None,
@@ -126,6 +128,20 @@ class FlagGG_API ParticleSystemComponent : public DrawableComponent
 public:
 	ParticleSystemComponent();
 
+	~ParticleSystemComponent() override;
+
+	// Init system.
+	void InitializeSystem();
+
+	// If particles have not already been initialised (ie. emitterInstances_ created) do it now.
+	void InitParticles();
+
+	// Reset particles.
+	void ResetParticles(bool clearInstances = false);
+
+	// Reset burst particles.
+	void ResetBurstLists();
+
 	/**
 	  * Decide which detail mode should be applied to this particle system. If we have an editor
 	  * override specified, use that. Otherwise use the global cached value
@@ -198,15 +214,38 @@ public:
 	 */
 	virtual bool GetMaterialParameter(const String& inName, Material*& outMaterial);
 
+	// 是否可渲染
+	bool IsRenderable() override { return true; }
+
+	// 获取DrawableFlags
+	UInt32 GetDrawableFlags() const override { return DRAWABLE_GEOMETRY; }
+
+	// 更新包围盒
+	void OnUpdateWorldBoundingBox() override;
+
 
 	SharedPtr<ParticleSystem> template_;
 
 	Vector<SharedPtr<Material>> emitterMaterials_;
 
+	UInt8 wasCompleted_ : 1;
+
 	/** Indicates that the component has not been ticked since being registered. */
 	UInt8 justRegistered_ : 1;
 
 	UInt8 warmingUp_ : 1;
+
+	/**
+	 * WarmupTime - the time to warm-up the particle system when first rendered
+	 * Warning: WarmupTime is implemented by simulating the particle system for the time requested upon activation.
+	 * This is extremely prone to cause hitches, especially with large particle counts - use with caution.
+	 */
+	float warmupTime_;
+
+	/**	WarmupTickRate - the time step for each tick during warm up.
+		Increasing this improves performance. Decreasing, improves accuracy.
+		Set to 0 to use the default tick time.										*/
+	float warmupTickRate_;
 
 	/** This is created at start up and then added to each emitter */
 	float emitterDelay_;
@@ -215,7 +254,11 @@ public:
 	RandomStream randomStream_;
 
 private:
+	Int32 LODLevel_;
+
 	Vector<ParticleSysParam> instanceParameters_;
+
+	PODVector<ParticleEmitterInstance*> emitterInstances_;
 };
 
 }

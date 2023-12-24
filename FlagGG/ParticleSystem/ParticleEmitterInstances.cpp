@@ -191,21 +191,21 @@ void ParticleEmitterInstance::Init()
 
 		memset(instanceData_, 0, instancePayloadSize_);
 
-		for (ParticleModule* ParticleModule : spriteTemplate_->modulesNeedingInstanceData_)
+		for (ParticleModule* particleModule : spriteTemplate_->modulesNeedingInstanceData_)
 		{
-			ASSERT(ParticleModule);
-			UInt8* PrepInstData = GetModuleInstanceData(ParticleModule);
-			ASSERT(PrepInstData != nullptr); // Shouldn't be in the list if it doesn't have data
-			ParticleModule->PrepPerInstanceBlock(this, (void*)PrepInstData);
+			ASSERT(particleModule);
+			UInt8* prepInstData = GetModuleInstanceData(particleModule);
+			ASSERT(prepInstData != nullptr); // Shouldn't be in the list if it doesn't have data
+			particleModule->PrepPerInstanceBlock(this, (void*)prepInstData);
 		}
 
-		for (ParticleModule* ParticleModule : spriteTemplate_->modulesNeedingRandomSeedInstanceData_)
+		for (ParticleModule* particleModule : spriteTemplate_->modulesNeedingRandomSeedInstanceData_)
 		{
-			ASSERT(ParticleModule);
-			ParticleRandomSeedInstancePayload* SeedInstancePayload = GetModuleRandomSeedInstanceData(ParticleModule);
-			ASSERT(SeedInstancePayload != nullptr); // Shouldn't be in the list if it doesn't have data
-			ParticleRandomSeedInfo* RandomSeedInfo = ParticleModule->GetRandomSeedInfo();
-			ParticleModule->PrepRandomSeedInstancePayload(this, SeedInstancePayload, RandomSeedInfo ? *RandomSeedInfo : ParticleRandomSeedInfo());
+			ASSERT(particleModule);
+			ParticleRandomSeedInstancePayload* seedInstancePayload = GetModuleRandomSeedInstanceData(particleModule);
+			ASSERT(seedInstancePayload != nullptr); // Shouldn't be in the list if it doesn't have data
+			ParticleRandomSeedInfo* randomSeedInfo = particleModule->GetRandomSeedInfo();
+			particleModule->PrepRandomSeedInstancePayload(this, seedInstancePayload, randomSeedInfo ? *randomSeedInfo : ParticleRandomSeedInfo());
 		}
 
 		// Offset into emitter specific payload (e.g. TrailComponent requires extra bytes).
@@ -314,7 +314,7 @@ void ParticleEmitterInstance::Init()
 	//Check for SubUV module to see if it has SubUVAnimation to move data to required module
 	for (auto currModule : highLODLevel->modules_)
 	{
-		if (currModule->IsInstance(ParticleModuleSubUV::GetTypeStatic()))
+		if (currModule->IsInstanceOf(ParticleModuleSubUV::GetTypeStatic()))
 		{
 			ParticleModuleSubUV* subUVModule = (ParticleModuleSubUV*)currModule;
 
@@ -1229,8 +1229,6 @@ UInt32 ParticleEmitterInstance::CalculateParticleStride(UInt32 inparticleSize)
  */
 void ParticleEmitterInstance::ResetBurstList()
 {
-	//QUICK_SCOPE_CYCLE_COUNTER(STAT_ResetBurstLists);
-
 	for (Int32 BurstIndex = 0; BurstIndex < burstFired_.Size(); BurstIndex++)
 	{
 		LODBurstFired& currBurstFired = burstFired_[BurstIndex];

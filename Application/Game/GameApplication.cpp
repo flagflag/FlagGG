@@ -200,6 +200,10 @@ void GameApplication::CreateScene()
 	terrain_->SetName("Terrain");
 	scene_->AddChild(terrain_);
 
+	simpleParticle_ = new ParticleActor();
+	simpleParticle_->LoadFile("Unit/ParticleActor.ljson");
+	scene_->AddChild(simpleParticle_);
+
 #if 0
 	auto* lightNode = new Unit();
 	lightNode->Load("Unit/MainHero.ljson");

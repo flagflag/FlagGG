@@ -1,10 +1,32 @@
 #include "ParticleSystem.h"
 #include "Math/InterpCurveEdSetup.h"
+#include "Math/Distributions/DistributionFloatConstant.h"
+#include "Math/Distributions/DistributionFloatUniform.h"
+#include "Math/Distributions/DistributionVectorUniform.h"
 #include "ParticleSystem/ParticleSystemComponent.h"
 #include "ParticleSystem/ParticleEmitter.h"
 #include "ParticleSystem/ParticleLODLevel.h"
-#include "ParticleSystem/Module/ParticleModuleTypeData.h"
+#include "ParticleSystem/Module/ParticleModuleAcceleration.h"
+#include "ParticleSystem/Module/ParticleModuleCamera.h"
+#include "ParticleSystem/Module/ParticleModuleCollision.h"
 #include "ParticleSystem/Module/ParticleModuleColor.h"
+#include "ParticleSystem/Module/ParticleModuleLight.h"
+#include "ParticleSystem/Module/ParticleModuleLifetime.h"
+#include "ParticleSystem/Module/ParticleModuleLocation.h"
+#include "ParticleSystem/Module/ParticleModuleMaterial.h"
+#include "ParticleSystem/Module/ParticleModuleOrbit.h"
+#include "ParticleSystem/Module/ParticleModuleOrientation.h"
+#include "ParticleSystem/Module/ParticleModuleParameter.h"
+#include "ParticleSystem/Module/ParticleModuleRotation.h"
+#include "ParticleSystem/Module/ParticleModuleRotationRate.h"
+#include "ParticleSystem/Module/ParticleModuleSize.h"
+#include "ParticleSystem/Module/ParticleModuleSubUV.h"
+#include "ParticleSystem/Module/ParticleModuleTrail.h"
+#include "ParticleSystem/Module/ParticleModuleTypeData.h"
+#include "ParticleSystem/Module/ParticleModuleVectorField.h"
+#include "ParticleSystem/Module/ParticleModuleVelocity.h"
+#include "Resource/XMLFile.h"
+#include "Resource/ResourceCache.h"
 
 namespace FlagGG
 {
@@ -41,7 +63,7 @@ ParticleSystem::ParticleSystem()
 	regenerateLODDuplicate_ = false;
 	thumbnailImageOutOfDate_ = true;
 #if WITH_EDITORONLY_DATA
-	floorMesh_ = TEXT("/Engine/EditorMeshes/AnimTreeEd_PreviewFloor.AnimTreeEd_PreviewFloor");
+	floorMesh_ = "/Engine/EditorMeshes/AnimTreeEd_PreviewFloor.AnimTreeEd_PreviewFloor";
 	floorPosition_ = Vector3(0.0f, 0.0f, 0.0f);
 	floorRotation_ = Rotator(0.0f, 0.0f, 0.0f);
 	floorScale_ = 1.0f;
@@ -452,6 +474,253 @@ bool ParticleSystem::HasGPUEmitter() const
 	//		}
 	//	}
 	//}
+	return false;
+}
+
+bool ParticleSystem::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
+{
+	XMLFile xmlFile;
+	if (!xmlFile.LoadStream(stream))
+	{
+		FLAGGG_LOG_ERROR("Failed to load particle system asset[%s].", GetName().CString());
+		return false;
+	}
+
+	auto* cache = GetSubsystem<ResourceCache>();
+
+	XMLElement root = xmlFile.GetRoot();
+	if (root)
+	{
+		for (XMLElement particleEmitterNode = root.GetChild("ParticleEmitter"); particleEmitterNode; particleEmitterNode = particleEmitterNode.GetNext())
+		{
+			auto emitter = MakeShared<ParticleSpriteEmitter>();
+			emitters_.Push(emitter);
+
+			emitter->CreateLODLevel(0);
+			auto* LODLevel = emitter->GetLODLevel(0);
+
+			for (XMLElement particleModuleNode = particleEmitterNode.GetChild("module"); particleModuleNode; particleModuleNode = particleModuleNode.GetNext())
+			{
+				const String moduleType = particleModuleNode.GetAttribute("type");
+				if (moduleType == "ParticleModuleRequired")
+				{
+					LODLevel->requiredModule_ = MakeShared<ParticleModuleRequired>();
+
+					if (XMLElement materialNode = particleModuleNode.GetChild("material"))
+					{
+						auto material = new Material();
+						material->CreateShaderParameters();
+
+						if (XMLElement textureNode = materialNode.GetChild("texture"))
+						{
+							const UInt32 unit = textureNode.GetUInt("unit");
+							const String texPath = textureNode.GetAttribute("value");
+							auto tex = cache->GetResource<Texture2D>(texPath);
+							material->SetTexture((TextureClass)0, tex);
+						}
+
+						for (XMLElement shaderParamNode = materialNode.GetChild("parameter"); shaderParamNode; shaderParamNode = shaderParamNode.GetNext())
+						{
+							const String name = shaderParamNode.GetAttribute("name");
+							const String type = shaderParamNode.GetAttribute("type");
+							if (type == "Float")
+							{
+								const float value = shaderParamNode.GetFloat("value");
+								material->GetShaderParameters()->AddParametersDefine<float>(name);
+								material->GetShaderParameters()->SetValue<float>(name, value);
+							}
+							else if (type == "Vector4")
+							{
+								const Vector4 value = shaderParamNode.GetVector4("value");
+								material->GetShaderParameters()->AddParametersDefine<Vector4>(name);
+								material->GetShaderParameters()->SetValue<Vector4>(name, value);
+							}
+						}
+
+						auto& renderPass = material->GetRenderPass()[RENDER_PASS_TYPE_FORWARD_ALPHA];
+						renderPass.SetDepthWrite(false);
+					}
+
+					if (XMLElement useLocalSpaceNode = particleModuleNode.GetChild("useLocalSpace"))
+					{
+						LODLevel->requiredModule_->useLocalSpace_ = useLocalSpaceNode.GetBool("value");
+					}
+
+					if (XMLElement screenAlignmentNode = particleModuleNode.GetChild("screenAlignment"))
+					{
+						LODLevel->requiredModule_->screenAlignment_= ParticleScreenAlignment(screenAlignmentNode.GetBool("value") + 1);
+					}
+
+					if (XMLElement emitterDurationNode = particleModuleNode.GetChild("emitterDuration"))
+					{
+						LODLevel->requiredModule_->emitterDuration_ = emitterDurationNode.GetFloat("value");
+					}
+
+					if (XMLElement emitterLoopsNode = particleModuleNode.GetChild("emitterLoops"))
+					{
+						LODLevel->requiredModule_->emitterLoops_ = emitterLoopsNode.GetFloat("value");
+					}
+
+					if (XMLElement emitterDelayNode = particleModuleNode.GetChild("emitterDelay"))
+					{
+						LODLevel->requiredModule_->emitterDelay_ = emitterDelayNode.GetFloat("value");
+					}
+
+					if (XMLElement preWarmNode = particleModuleNode.GetChild("preWarm"))
+					{
+						
+					}
+
+					if (XMLElement interpolationMethodNode = particleModuleNode.GetChild("interpolationMethod"))
+					{
+						LODLevel->requiredModule_->interpolationMethod_ = ParticleSubUVInterpMethod(interpolationMethodNode.GetUInt("value"));
+					}
+
+					if (XMLElement subImagesHorizontalNode = particleModuleNode.GetChild("subImagesHorizontal"))
+					{
+						LODLevel->requiredModule_->subImages_Horizontal_ = subImagesHorizontalNode.GetUInt("value");
+					}
+
+					if (XMLElement subImagesVerticalNode = particleModuleNode.GetChild("subImagesVertical"))
+					{
+						LODLevel->requiredModule_->subImages_Vertical_ = subImagesVerticalNode.GetUInt("value");
+					}
+
+					if (XMLElement randomImageChangesNode = particleModuleNode.GetChild("randomImageChanges"))
+					{
+						LODLevel->requiredModule_->randomImageChanges_ = randomImageChangesNode.GetUInt("value");
+					}
+
+					if (XMLElement randomImageTimeNode = particleModuleNode.GetChild("randomImageTime"))
+					{
+						LODLevel->requiredModule_->randomImageTime_ = randomImageTimeNode.GetFloat("value");
+					}
+
+					if (XMLElement killOnDeactivateNode = particleModuleNode.GetChild("killOnDeactivate"))
+					{
+						LODLevel->requiredModule_->killOnDeactivate_ = killOnDeactivateNode.GetBool("value");
+					}
+				}
+				else if (moduleType == "ParticleModuleSpawn")
+				{
+					LODLevel->spawnModule_ = MakeShared<ParticleModuleSpawn>();
+
+					if (XMLElement rateNode = particleModuleNode.GetChild("rate"))
+					{
+						const String curveType = rateNode.GetAttribute("type");
+						if (curveType == "constant")
+						{
+							auto constantCurve = MakeShared<DistributionFloatConstant>();
+							constantCurve->SetKeyOut(0, 0, rateNode.GetChild("constant").GetFloat("value"));
+							LODLevel->spawnModule_->rate_.distribution_ = constantCurve;
+						}
+					}
+
+					if (XMLElement burstListNode = particleModuleNode.GetChild("burstList"))
+					{
+						for (XMLElement pointNode = burstListNode.GetChild("point"); pointNode; pointNode = pointNode.GetNext())
+						{
+							auto& burst = LODLevel->spawnModule_->burstList_.EmplaceBack();
+							burst.time_ = pointNode.GetFloat("time");
+							burst.count_ = pointNode.GetInt("count");
+						}
+					}
+				}
+				else if (moduleType == "ParticleModuleLifetime")
+				{
+					auto lifetimeModule = MakeShared<ParticleModuleLifetime>();
+					LODLevel->modules_.Push(lifetimeModule);
+					if (XMLElement lifetimeNode = particleModuleNode.GetChild("lifetime"))
+					{
+						const String curveType = lifetimeNode.GetAttribute("type");
+						if (curveType == "uniform")
+						{
+							auto uniformCurve = MakeShared<DistributionFloatUniform>();
+							uniformCurve->min_ = lifetimeNode.GetChild("min").GetFloat("value");
+							uniformCurve->max_ = lifetimeNode.GetChild("max").GetFloat("value");
+							lifetimeModule->lifetime_.distribution_ = uniformCurve;
+						}
+					}
+				}
+				else if (moduleType == "ParticleModuleSize")
+				{
+					auto sizeModule = MakeShared<ParticleModuleSize>();
+					LODLevel->modules_.Push(sizeModule);
+					if (XMLElement startSizeNode = particleModuleNode.GetChild("startSize"))
+					{
+						const String curveType = startSizeNode.GetAttribute("type");
+						if (curveType == "uniform")
+						{
+							auto uniformCurve = MakeShared<DistributionVectorUniform>();
+							uniformCurve->min_ = startSizeNode.GetChild("min").GetVector3("value");
+							uniformCurve->max_ = startSizeNode.GetChild("max").GetVector3("value");
+							sizeModule->startSize_.distribution_ = uniformCurve;
+						}
+					}
+				}
+				else if (moduleType == "ParticleModuleSizeMultiplyLife")
+				{
+					auto sizeModule = MakeShared<ParticleModuleSizeMultiplyLife>();
+					LODLevel->modules_.Push(sizeModule);
+					if (XMLElement startSizeNode = particleModuleNode.GetChild("startSize"))
+					{
+						const String curveType = startSizeNode.GetAttribute("type");
+						// TODO
+					}
+				}
+				else if (moduleType == "ParticleModuleColorOverLife")
+				{
+
+				}
+				else if (moduleType == "ParticleModuleColorScaleOverLife")
+				{
+
+				}
+				else if (moduleType == "ParticleModuleRotation")
+				{
+
+				}
+				else if (moduleType == "ParticleModuleRotationRate")
+				{
+
+				}
+				else if (moduleType == "ParticleModuleLocation")
+				{
+
+				}
+				else if (moduleType == "ParticleModuleOrbit")
+				{
+
+				}
+				else if (moduleType == "ParticleModuleOrientationAxisLock")
+				{
+
+				}
+				else if (moduleType == "")
+				{
+
+				}
+			}
+		}
+	}
+
+	return true;
+}
+
+bool ParticleSystem::EndLoad()
+{
+	return true;
+}
+
+bool ParticleSystem::BeginSave(IOFrame::Buffer::IOBuffer* stream)
+{
+	// TODO
+	return false;
+}
+
+bool ParticleSystem::EndSave()
+{
+	// TODO
 	return false;
 }
 

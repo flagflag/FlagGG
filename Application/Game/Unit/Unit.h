@@ -10,6 +10,7 @@ using namespace FlagGG;
 
 class Unit : public Node
 {
+	OBJECT_OVERRIDE(Unit, Node);
 public:
 	Unit();
 

@@ -23,7 +23,7 @@ ParticleSpriteEmitter::ParticleSpriteEmitter()
 }
 
 
-ParticleEmitterInstance* ParticleSpriteEmitter::CreateInstance(ParticleSystemComponent* InComponent)
+ParticleEmitterInstance* ParticleSpriteEmitter::CreateInstance(ParticleSystemComponent* inComponent)
 {
 	// If this emitter was cooked out or has no valid LOD levels don't create an instance for it.
 	if ((cookedOut_ == true) || (LODLevels_.Size() == 0))
@@ -39,14 +39,14 @@ ParticleEmitterInstance* ParticleSpriteEmitter::CreateInstance(ParticleSystemCom
 	if (LODLevel->typeDataModule_)
 	{
 		//@todo. This will NOT work for trails/beams!
-		instance = LODLevel->typeDataModule_->CreateInstance(this, InComponent);
+		instance = LODLevel->typeDataModule_->CreateInstance(this, inComponent);
 	}
 	else
 	{
-		ASSERT(InComponent);
+		ASSERT(inComponent);
 		instance = new ParticleSpriteEmitterInstance();
 		ASSERT(instance);
-		instance->InitParameters(this, InComponent);
+		instance->InitParameters(this, inComponent);
 	}
 
 	if (instance)

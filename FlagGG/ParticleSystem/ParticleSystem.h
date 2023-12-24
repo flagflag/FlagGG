@@ -81,9 +81,9 @@ class ParticleSystem : public Resource
 {
 	OBJECT_OVERRIDE(ParticleSystem, Resource);
 public:
-	ParticleSystem();
+	FlagGG_API ParticleSystem();
 
-	~ParticleSystem() override;
+	FlagGG_API ~ParticleSystem() override;
 
 	UInt32 maxPoolSize_;
 
@@ -293,7 +293,7 @@ public:
 
 	void PrecachePSOs();
 
-	bool CanBePooled()const;
+	bool CanBePooled() const;
 
 	// @todo document
 	void UpdateColorModuleClampAlpha(class ParticleModuleColorBase* colorModule);
@@ -365,7 +365,7 @@ public:
 	FlagGG_API void UpdateAllModuleLists();
 #endif
 	/** Return the currently set LOD method											*/
-	virtual enum ParticleSystemLODMethod GetCurrentLODMethod();
+	virtual ParticleSystemLODMethod GetCurrentLODMethod();
 
 	/**
 	 *	Return the number of LOD levels for this particle system
@@ -448,6 +448,16 @@ public:
 	bool ShouldManageSignificance()const { return shouldManageSignificance_; }
 
 	FORCEINLINE bool AllowManagedTicking()const { return allowManagedTicking_; }
+
+protected:
+	bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
+
+	bool EndLoad() override;
+
+	bool BeginSave(IOFrame::Buffer::IOBuffer* stream) override;
+
+	bool EndSave() override;
+
 private:
 
 	/** The highest significance of any emitter. Clamped by MaxSignificanceLevel.*/

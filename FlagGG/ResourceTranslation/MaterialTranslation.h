@@ -3,6 +3,7 @@
 #include "Container/Str.h"
 #include "Container/Ptr.h"
 #include "Container/Vector.h"
+#include "Container/HashMap.h"
 #include "Graphics/GraphicsDef.h"
 #include "ResourceTranslation/TextureTranslation.h"
 #include "Resource/Image.h"
