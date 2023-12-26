@@ -48,4 +48,32 @@ public:
 	UInt32 clampAlpha_ : 1;
 };
 
+class ParticleModuleColorScaleOverLife : public ParticleModuleColorBase
+{
+	OBJECT_OVERRIDE(ParticleModuleColorScaleOverLife, ParticleModuleColorBase);
+public:
+	ParticleModuleColorScaleOverLife();
+
+	/** Initializes the default values for this property */
+	void InitializeDefaults();
+
+	//Begin UParticleModule Interface
+	virtual void CompileModule(struct ParticleEmitterBuildInfo& emitterInfo) override;
+	virtual void Spawn(ParticleEmitterInstance* owner, Int32 offset, float spawnTime, BaseParticle* particleBase) override;
+	virtual void Update(ParticleEmitterInstance* owner, Int32 offset, float deltaTime) override;
+	virtual void SetToSensibleDefaults(ParticleEmitter* owner) override;
+	//End UParticleModule Interface
+
+
+	/** The scale factor for the color.													*/
+	RawDistributionVector colorScaleOverLife_;
+
+	/** The scale factor for the alpha.													*/
+	RawDistributionFloat alphaScaleOverLife_;
+
+	/** Whether it is EmitterTime or ParticleTime related.								*/
+	UInt32 emitterTime_ : 1;
+};
+
+
 }

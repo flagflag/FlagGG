@@ -225,4 +225,174 @@ void ParticleModuleColorOverLife::SetToSensibleDefaults(ParticleEmitter* owner)
 	}
 }
 
+/*-----------------------------------------------------------------------------
+	ParticleModuleColorScaleOverLife implementation.
+-----------------------------------------------------------------------------*/
+ParticleModuleColorScaleOverLife::ParticleModuleColorScaleOverLife()
+{
+	spawnModule_ = true;
+	updateModule_ = true;
+	curvesAsColor_ = true;
+}
+
+void ParticleModuleColorScaleOverLife::InitializeDefaults()
+{
+	if (!colorScaleOverLife_.IsCreated())
+	{
+		colorScaleOverLife_.distribution_ = MakeShared<DistributionVectorConstantCurve>();
+	}
+
+	if (!alphaScaleOverLife_.IsCreated())
+	{
+		auto distributionAlphaScaleOverLife = MakeShared<DistributionFloatConstant>();
+		distributionAlphaScaleOverLife->constant_ = 1.0f;
+		alphaScaleOverLife_.distribution_ = distributionAlphaScaleOverLife;
+	}
+}
+
+void ParticleModuleColorScaleOverLife::CompileModule(ParticleEmitterBuildInfo& emitterInfo)
+{
+	bool ScaleColor = true;
+	bool ScaleAlpha = true;
+
+	if (IsUsedInGPUEmitter())
+	{
+		if (colorScaleOverLife_.distribution_->IsInstanceOf(DistributionVectorParticleParameter::GetTypeStatic()))
+		{
+			emitterInfo.dynamicColorScale_ = colorScaleOverLife_;
+#if WITH_EDITOR
+			emitterInfo.dynamicColorScale_.distribution_->isDirty_ = true;
+			emitterInfo.dynamicColorScale_.Initialize();
+#endif
+			ScaleColor = false;
+		}
+
+		if (alphaScaleOverLife_.distribution_->IsInstanceOf(DistributionFloatParticleParameter::GetTypeStatic()))
+		{
+			emitterInfo.dynamicAlphaScale_ = alphaScaleOverLife_;
+#if WITH_EDITOR
+			emitterInfo.dynamicAlphaScale_.distribution_->isDirty_ = true;
+			emitterInfo.dynamicAlphaScale_.Initialize();
+#endif
+			ScaleAlpha = false;
+		}
+	}
+
+	if (ScaleColor)
+	{
+		emitterInfo.colorScale_.ScaleByVectorDistribution(colorScaleOverLife_.distribution_);
+	}
+
+	if (ScaleAlpha)
+	{
+		emitterInfo.alphaScale_.ScaleByDistribution(alphaScaleOverLife_.distribution_);
+	}
+}
+
+void ParticleModuleColorScaleOverLife::Spawn(ParticleEmitterInstance* owner, Int32 offset, float spawnTime, BaseParticle* particleBase)
+{
+	SPAWN_INIT;
+	Vector3 colorVec;
+	float	fAlpha;
+
+	if (emitterTime_)
+	{
+		colorVec = colorScaleOverLife_.GetValue(owner->emitterTime_, owner->component_);
+		fAlpha = alphaScaleOverLife_.GetValue(owner->emitterTime_, owner->component_);
+	}
+	else
+	{
+		colorVec = colorScaleOverLife_.GetValue(particle.relativeTime_, owner->component_);
+		fAlpha = alphaScaleOverLife_.GetValue(particle.relativeTime_, owner->component_);
+	}
+
+	particle.color_.r_ *= colorVec.x_;
+	particle.color_.g_ *= colorVec.y_;
+	particle.color_.b_ *= colorVec.z_;
+	particle.color_.a_ *= fAlpha;
+}
+
+void ParticleModuleColorScaleOverLife::Update(ParticleEmitterInstance* owner, Int32 offset, float deltaTime)
+{
+	const RawDistribution* fastColorScaleOverLife = colorScaleOverLife_.GetFastRawDistribution();
+	const RawDistribution* fastAlphaScaleOverLife = alphaScaleOverLife_.GetFastRawDistribution();
+	Vector3 colorVec;	// LWC_TODO: WRONG? Force colorVec to floats for serialization. particle.Color is Vector3. Update to Vector3 also?
+	float	fAlpha;
+	if (fastColorScaleOverLife && fastAlphaScaleOverLife)
+	{
+		// fast path
+		if (emitterTime_)
+		{
+			BEGIN_UPDATE_LOOP;
+			{
+				fastColorScaleOverLife->GetValue3None(owner->emitterTime_, &colorVec.x_);
+				fastAlphaScaleOverLife->GetValue1None(owner->emitterTime_, &fAlpha);
+				particle.color_.r_ *= colorVec.x_;
+				particle.color_.g_ *= colorVec.y_;
+				particle.color_.b_ *= colorVec.z_;
+				particle.color_.a_ *= fAlpha;
+			}
+			END_UPDATE_LOOP;
+		}
+		else
+		{
+			BEGIN_UPDATE_LOOP;
+			{
+				fastColorScaleOverLife->GetValue3None(particle.relativeTime_, &colorVec.x_);
+				fastAlphaScaleOverLife->GetValue1None(particle.relativeTime_, &fAlpha);
+				particle.color_.r_ *= colorVec.x_;
+				particle.color_.g_ *= colorVec.y_;
+				particle.color_.b_ *= colorVec.z_;
+				particle.color_.a_ *= fAlpha;
+			}
+			END_UPDATE_LOOP;
+		}
+	}
+	else
+	{
+		if (emitterTime_)
+		{
+			BEGIN_UPDATE_LOOP;
+			colorVec = Vector3(colorScaleOverLife_.GetValue(owner->emitterTime_, owner->component_));
+			fAlpha = alphaScaleOverLife_.GetValue(owner->emitterTime_, owner->component_);
+			particle.color_.r_ *= colorVec.x_;
+			particle.color_.g_ *= colorVec.y_;
+			particle.color_.b_ *= colorVec.z_;
+			particle.color_.a_ *= fAlpha;
+			END_UPDATE_LOOP;
+		}
+		else
+		{
+			BEGIN_UPDATE_LOOP;
+			colorVec = Vector3(colorScaleOverLife_.GetValue(particle.relativeTime_, owner->component_));
+			fAlpha = alphaScaleOverLife_.GetValue(particle.relativeTime_, owner->component_);
+			particle.color_.r_ *= colorVec.x_;
+			particle.color_.g_ *= colorVec.y_;
+			particle.color_.b_ *= colorVec.z_;
+			particle.color_.a_ *= fAlpha;
+			END_UPDATE_LOOP;
+		}
+	}
+}
+
+void ParticleModuleColorScaleOverLife::SetToSensibleDefaults(ParticleEmitter* owner)
+{
+	
+	auto colorScaleOverLifeDist = MakeShared<DistributionVectorConstantCurve>();
+	colorScaleOverLife_.distribution_ = colorScaleOverLifeDist;
+	if (colorScaleOverLifeDist)
+	{
+		// Add two points, one at time 0.0f and one at 1.0f
+		for (Int32 key = 0; key < 2; key++)
+		{
+			Int32 keyIndex = colorScaleOverLifeDist->CreateNewKey(key * 1.0f);
+			for (Int32 subIndex = 0; subIndex < 3; subIndex++)
+			{
+				colorScaleOverLifeDist->SetKeyOut(subIndex, keyIndex, 1.0f);
+			}
+		}
+		colorScaleOverLifeDist->isDirty_ = true;
+	}
+}
+
 }
