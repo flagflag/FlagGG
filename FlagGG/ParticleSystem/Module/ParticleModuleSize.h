@@ -24,10 +24,10 @@ public:
 	/** Initializes the default values for this property */
 	void InitializeDefaults();
 
-	//~ Begin UParticleModule Interface
+	//~ Begin ParticleModule Interface
 	virtual void CompileModule(struct ParticleEmitterBuildInfo& emitterInfo) override;
 	virtual void Spawn(ParticleEmitterInstance* owner, Int32 offset, float spawnTime, BaseParticle* particleBase) override;
-	//~ End UParticleModule Interface
+	//~ End ParticleModule Interface
 
 	/**
 	 *	Extended version of spawn, allows for using a random stream for distribution value retrieval
@@ -38,6 +38,12 @@ public:
 	 *	@param	InRandomStream		The random stream to use for retrieving random values
 	 */
 	void SpawnEx(ParticleEmitterInstance* owner, Int32 offset, float spawnTime, struct RandomStream* inRandomStream, BaseParticle* particleBase);
+
+	// 从XML加载
+	bool LoadXML(const XMLElement& root) override;
+
+	// 保存到XML中
+	bool SaveXML(XMLElement& root) override;
 
 	/**
 	 *	The initial size that should be used for a particle.
@@ -56,14 +62,19 @@ public:
 	/** Initializes the default values for this property */
 	void InitializeDefaults();
 
-	//~ Begin UParticleModule Interface
+	//~ Begin ParticleModule Interface
 	virtual void CompileModule(ParticleEmitterBuildInfo& emitterInfo) override;
 	virtual void Spawn(ParticleEmitterInstance* owner, Int32 offset, float spawnTime, BaseParticle* particleBase) override;
 	virtual void Update(ParticleEmitterInstance* owner, Int32 offset, float deltaTime) override;
 	virtual void SetToSensibleDefaults(ParticleEmitter* owner) override;
 	virtual bool IsSizeMultiplyLife() override { return true; }
+	//~ End ParticleModule Interface
 
-	//~ End UParticleModule Interface
+	// 从XML加载
+	bool LoadXML(const XMLElement& root) override;
+
+	// 保存到XML中
+	bool SaveXML(XMLElement& root) override;
 
 	/**
 	 *	The scale factor for the size that should be used for a particle.

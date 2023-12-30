@@ -6,9 +6,12 @@
 #include "ParticleSystem/Module/ParticleModuleTypeData.h"
 #include "Math/Distributions/DistributionFloatConstant.h"
 #include "Math/Distributions/DistributionFloatConstantCurve.h"
+#include "Core/ObjectFactory.h"
 
 namespace FlagGG
 {
+
+REGISTER_TYPE_FACTORY(ParticleModuleSubUV);
 
 /*-----------------------------------------------------------------------------
 	ParticleModuleSubUV implementation.
@@ -188,6 +191,19 @@ void ParticleModuleSubUV::SetToSensibleDefaults(ParticleEmitter* owner)
 		}
 		subImageIndexDist->isDirty_ = true;
 	}
+}
+
+bool ParticleModuleSubUV::LoadXML(const XMLElement& root)
+{
+
+
+	return true;
+}
+
+bool ParticleModuleSubUV::SaveXML(XMLElement& root)
+{
+	// TODO
+	return false;
 }
 
 }

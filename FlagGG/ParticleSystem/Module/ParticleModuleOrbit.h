@@ -71,16 +71,20 @@ public:
 	/** Initializes the default values for this property */
 	void InitializeDefaults();
 
-	//Begin UParticleModule Interface
+	//Begin ParticleModule Interface
 	virtual void	CompileModule(ParticleEmitterBuildInfo& emitterInfo) override;
 	virtual void	Spawn(ParticleEmitterInstance* owner, Int32 offset, float spawnTime, BaseParticle* particleBase) override;
 	virtual void	Update(ParticleEmitterInstance* owner, Int32 offset, float deltaTime) override;
 	virtual UInt32	RequiredBytes(ParticleModuleTypeDataBase* typeData) override;
 	virtual UInt32	RequiredBytesPerInstance() override;
-#if WITH_EDITOR
-	virtual bool IsValidForLODLevel(UParticleLODLevel* LODLevel, FString& OutErrorString) override;
-#endif
-	//End UParticleModule Interface
+	//End ParticleModule Interface
+
+	// 从XML加载
+	bool LoadXML(const XMLElement& root) override;
+
+	// 保存到XML中
+	bool SaveXML(XMLElement& root) override;
+
 
 	/**
 	 *	Orbit modules will chain together in the order they appear in the module stack.

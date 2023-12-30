@@ -173,9 +173,9 @@
 				<singleRandom value="false" />
 			</offsetAmount>
 			<offsetOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</offsetOptions>
 			<rotationAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -183,9 +183,9 @@
 				<singleRandom value="false" />
 			</rotationAmount>
 			<rotationOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationOptions>
 			<rotationRateAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -193,9 +193,9 @@
 				<singleRandom value="false" />
 			</rotationRateAmount>
 			<rotationRateOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationRateOptions>
 		</module>
 	</ParticleEmitter>
@@ -371,9 +371,9 @@
 				<singleRandom value="false" />
 			</offsetAmount>
 			<offsetOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</offsetOptions>
 			<rotationAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -381,9 +381,9 @@
 				<singleRandom value="false" />
 			</rotationAmount>
 			<rotationOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationOptions>
 			<rotationRateAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -391,9 +391,9 @@
 				<singleRandom value="false" />
 			</rotationRateAmount>
 			<rotationRateOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationRateOptions>
 		</module>
 	</ParticleEmitter>
@@ -569,9 +569,9 @@
 				<singleRandom value="false" />
 			</offsetAmount>
 			<offsetOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</offsetOptions>
 			<rotationAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -579,9 +579,9 @@
 				<singleRandom value="false" />
 			</rotationAmount>
 			<rotationOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationOptions>
 			<rotationRateAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -589,9 +589,9 @@
 				<singleRandom value="false" />
 			</rotationRateAmount>
 			<rotationRateOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationRateOptions>
 		</module>
 	</ParticleEmitter>
@@ -767,9 +767,9 @@
 				<singleRandom value="false" />
 			</offsetAmount>
 			<offsetOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</offsetOptions>
 			<rotationAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -777,9 +777,9 @@
 				<singleRandom value="false" />
 			</rotationAmount>
 			<rotationOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationOptions>
 			<rotationRateAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -787,9 +787,9 @@
 				<singleRandom value="false" />
 			</rotationRateAmount>
 			<rotationRateOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationRateOptions>
 		</module>
 	</ParticleEmitter>
@@ -952,9 +952,9 @@
 				<singleRandom value="false" />
 			</offsetAmount>
 			<offsetOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</offsetOptions>
 			<rotationAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -962,9 +962,9 @@
 				<singleRandom value="false" />
 			</rotationAmount>
 			<rotationOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationOptions>
 			<rotationRateAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -972,9 +972,9 @@
 				<singleRandom value="false" />
 			</rotationRateAmount>
 			<rotationRateOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationRateOptions>
 		</module>
 	</ParticleEmitter>
@@ -1062,8 +1062,8 @@
 		</module>
 		<module type="ParticleModuleVelocity">
 			<module type="ParticleModuleVelocityBase">
-				<bInWorldSpace value="false" />
-				<bApplyOwnerScale value="false" />
+				<inWorldSpace value="false" />
+				<applyOwnerScale value="false" />
 			</module>
 			<startVelocity type="uniform">
 				<min value="0.000 0.000 10.000" />
@@ -1073,8 +1073,8 @@
 		</module>
 		<module type="ParticleModuleVelocityOverLifetime">
 			<module type="ParticleModuleVelocityBase">
-				<bInWorldSpace value="false" />
-				<bApplyOwnerScale value="false" />
+				<inWorldSpace value="false" />
+				<applyOwnerScale value="false" />
 			</module>
 			<velOverLife type="multipleCurve">
 				<xCurve>
@@ -1112,9 +1112,9 @@
 				<singleRandom value="false" />
 			</offsetAmount>
 			<offsetOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</offsetOptions>
 			<rotationAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -1122,9 +1122,9 @@
 				<singleRandom value="false" />
 			</rotationAmount>
 			<rotationOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationOptions>
 			<rotationRateAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -1132,9 +1132,9 @@
 				<singleRandom value="false" />
 			</rotationRateAmount>
 			<rotationRateOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationRateOptions>
 		</module>
 		<module type="ParticleModuleSize">
@@ -1157,8 +1157,8 @@
 			</startRotationRate>
 		</module>
 		<module type="ParticleModuleAcceleration">
-			<bAlwaysInWorldSpace value="true" />
-			<bApplyOwnerScale value="false" />
+			<alwaysInWorldSpace value="true" />
+			<applyOwnerScale value="false" />
 			<accleration type="uniform">
 				<min value="0.000 0.000 0.000" />
 				<max value="0.000 0.000 0.000" />
@@ -1311,8 +1311,8 @@
 		</module>
 		<module type="ParticleModuleVelocity">
 			<module type="ParticleModuleVelocityBase">
-				<bInWorldSpace value="false" />
-				<bApplyOwnerScale value="false" />
+				<inWorldSpace value="false" />
+				<applyOwnerScale value="false" />
 			</module>
 			<startVelocity type="uniform">
 				<min value="0.000 0.000 15.000" />
@@ -1322,8 +1322,8 @@
 		</module>
 		<module type="ParticleModuleVelocityOverLifetime">
 			<module type="ParticleModuleVelocityBase">
-				<bInWorldSpace value="false" />
-				<bApplyOwnerScale value="false" />
+				<inWorldSpace value="false" />
+				<applyOwnerScale value="false" />
 			</module>
 			<velOverLife type="multipleCurve">
 				<xCurve>
@@ -1360,9 +1360,9 @@
 				<singleRandom value="false" />
 			</offsetAmount>
 			<offsetOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</offsetOptions>
 			<rotationAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -1370,9 +1370,9 @@
 				<singleRandom value="false" />
 			</rotationAmount>
 			<rotationOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationOptions>
 			<rotationRateAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -1380,9 +1380,9 @@
 				<singleRandom value="false" />
 			</rotationRateAmount>
 			<rotationRateOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationRateOptions>
 		</module>
 		<module type="ParticleModuleSize">
@@ -1405,8 +1405,8 @@
 			</startRotationRate>
 		</module>
 		<module type="ParticleModuleAcceleration">
-			<bAlwaysInWorldSpace value="true" />
-			<bApplyOwnerScale value="false" />
+			<alwaysInWorldSpace value="true" />
+			<applyOwnerScale value="false" />
 			<accleration type="uniform">
 				<min value="0.000 0.000 0.000" />
 				<max value="0.000 0.000 0.000" />
@@ -1556,8 +1556,8 @@
 		</module>
 		<module type="ParticleModuleVelocity">
 			<module type="ParticleModuleVelocityBase">
-				<bInWorldSpace value="false" />
-				<bApplyOwnerScale value="false" />
+				<inWorldSpace value="false" />
+				<applyOwnerScale value="false" />
 			</module>
 			<startVelocity type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -1567,8 +1567,8 @@
 		</module>
 		<module type="ParticleModuleVelocityOverLifetime">
 			<module type="ParticleModuleVelocityBase">
-				<bInWorldSpace value="false" />
-				<bApplyOwnerScale value="false" />
+				<inWorldSpace value="false" />
+				<applyOwnerScale value="false" />
 			</module>
 			<velOverLife type="multipleCurve">
 				<xCurve>
@@ -1605,9 +1605,9 @@
 				<singleRandom value="false" />
 			</offsetAmount>
 			<offsetOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</offsetOptions>
 			<rotationAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -1615,9 +1615,9 @@
 				<singleRandom value="false" />
 			</rotationAmount>
 			<rotationOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationOptions>
 			<rotationRateAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -1625,9 +1625,9 @@
 				<singleRandom value="false" />
 			</rotationRateAmount>
 			<rotationRateOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationRateOptions>
 		</module>
 		<module type="ParticleModuleSize">
@@ -1650,8 +1650,8 @@
 			</startRotationRate>
 		</module>
 		<module type="ParticleModuleAcceleration">
-			<bAlwaysInWorldSpace value="true" />
-			<bApplyOwnerScale value="false" />
+			<alwaysInWorldSpace value="true" />
+			<applyOwnerScale value="false" />
 			<accleration type="uniform">
 				<min value="0.000 0.000 0.000" />
 				<max value="0.000 0.000 0.000" />
@@ -1810,8 +1810,8 @@
 		</module>
 		<module type="ParticleModuleVelocity">
 			<module type="ParticleModuleVelocityBase">
-				<bInWorldSpace value="false" />
-				<bApplyOwnerScale value="false" />
+				<inWorldSpace value="false" />
+				<applyOwnerScale value="false" />
 			</module>
 			<startVelocity type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -1821,8 +1821,8 @@
 		</module>
 		<module type="ParticleModuleVelocityOverLifetime">
 			<module type="ParticleModuleVelocityBase">
-				<bInWorldSpace value="false" />
-				<bApplyOwnerScale value="false" />
+				<inWorldSpace value="false" />
+				<applyOwnerScale value="false" />
 			</module>
 			<velOverLife type="multipleCurve">
 				<xCurve>
@@ -1859,9 +1859,9 @@
 				<singleRandom value="false" />
 			</offsetAmount>
 			<offsetOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</offsetOptions>
 			<rotationAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -1869,9 +1869,9 @@
 				<singleRandom value="false" />
 			</rotationAmount>
 			<rotationOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationOptions>
 			<rotationRateAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -1879,9 +1879,9 @@
 				<singleRandom value="false" />
 			</rotationRateAmount>
 			<rotationRateOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationRateOptions>
 		</module>
 		<module type="ParticleModuleSize">
@@ -1904,8 +1904,8 @@
 			</startRotationRate>
 		</module>
 		<module type="ParticleModuleAcceleration">
-			<bAlwaysInWorldSpace value="true" />
-			<bApplyOwnerScale value="false" />
+			<alwaysInWorldSpace value="true" />
+			<applyOwnerScale value="false" />
 			<accleration type="uniform">
 				<min value="0.000 0.000 0.000" />
 				<max value="0.000 0.000 0.000" />
@@ -2154,9 +2154,9 @@
 				<singleRandom value="false" />
 			</offsetAmount>
 			<offsetOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</offsetOptions>
 			<rotationAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -2164,9 +2164,9 @@
 				<singleRandom value="false" />
 			</rotationAmount>
 			<rotationOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationOptions>
 			<rotationRateAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -2174,9 +2174,9 @@
 				<singleRandom value="false" />
 			</rotationRateAmount>
 			<rotationRateOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationRateOptions>
 		</module>
 		<module type="ParticleModuleRotation">
@@ -2365,9 +2365,9 @@
 				<singleRandom value="false" />
 			</offsetAmount>
 			<offsetOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</offsetOptions>
 			<rotationAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -2375,9 +2375,9 @@
 				<singleRandom value="false" />
 			</rotationAmount>
 			<rotationOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationOptions>
 			<rotationRateAmount type="uniform">
 				<min value="0.000 0.000 0.000" />
@@ -2385,9 +2385,9 @@
 				<singleRandom value="false" />
 			</rotationRateAmount>
 			<rotationRateOptions>
-				<bProcessDuringSpawn value="true" />
-				<bProcessDuringUpdate value="false" />
-				<bUseEmitterTime value="false" />
+				<processDuringSpawn value="true" />
+				<processDuringUpdate value="false" />
+				<useEmitterTime value="false" />
 			</rotationRateOptions>
 		</module>
 	</ParticleEmitter>

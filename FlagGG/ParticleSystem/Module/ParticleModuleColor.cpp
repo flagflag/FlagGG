@@ -9,9 +9,13 @@
 #include "ParticleSystem/ParticleSystemComponent.h"
 #include "ParticleSystem/ParticleLODLevel.h"
 #include "ParticleSystem/ParticleEmitter.h"
+#include "Core/ObjectFactory.h"
 
 namespace FlagGG
 {
+
+REGISTER_TYPE_FACTORY(ParticleModuleColorOverLife);
+REGISTER_TYPE_FACTORY(ParticleModuleColorScaleOverLife);
 
 /*-----------------------------------------------------------------------------
 	Abstract base modules used for categorization.
@@ -225,6 +229,56 @@ void ParticleModuleColorOverLife::SetToSensibleDefaults(ParticleEmitter* owner)
 	}
 }
 
+bool ParticleModuleColorOverLife::LoadXML(const XMLElement& root)
+{
+	if (XMLElement colorOverLifeNode = root.GetChild("colorOverLife"))
+	{
+		const String curveType = colorOverLifeNode.GetAttribute("type");
+		if (curveType == "colorsCurve")
+		{
+			if (XMLElement colorNode = colorOverLifeNode.GetChild("color"))
+			{
+				auto colorCurve = MakeShared<DistributionVectorConstantCurve>();
+				colorOverLife_.distribution_ = colorCurve;
+				for (XMLElement pointNode = colorNode.GetChild("point"); pointNode; pointNode = pointNode.GetNext())
+				{
+					InterpCurvePoint<Vector3> curvePoint;
+					curvePoint.inVal_ = pointNode.GetFloat("inVal");
+					curvePoint.outVal_ = pointNode.GetVector3("outVal");
+					curvePoint.arriveTangent_ = pointNode.GetVector3("arriveTangent");
+					curvePoint.leaveTangent_ = pointNode.GetVector3("leaveTangent");
+					curvePoint.interpMode_ = InterpCurveMode(pointNode.GetUInt("interpMode"));
+					colorCurve->constantCurve_.points_.Push(curvePoint);
+				}
+			}
+
+			if (XMLElement alphaNode = colorOverLifeNode.GetChild("alpha"))
+			{
+				auto alphCurve = MakeShared<DistributionFloatConstantCurve>();
+				for (XMLElement pointNode = alphaNode.GetChild("point"); pointNode; pointNode = pointNode.GetNext())
+				{
+					InterpCurvePoint<float> curvePoint;
+					curvePoint.inVal_ = pointNode.GetFloat("inVal");
+					curvePoint.outVal_ = pointNode.GetFloat("outVal");
+					curvePoint.arriveTangent_ = pointNode.GetFloat("arriveTangent");
+					curvePoint.leaveTangent_ = pointNode.GetFloat("leaveTangent");
+					curvePoint.interpMode_ = InterpCurveMode(pointNode.GetUInt("interpMode"));
+					alphCurve->constantCurve_.points_.Push(curvePoint);
+				}
+				alphaOverLife_.distribution_ = alphCurve;
+			}
+		}
+	}
+
+	return true;
+}
+
+bool ParticleModuleColorOverLife::SaveXML(XMLElement& root)
+{
+	// TODO
+	return false;
+}
+
 /*-----------------------------------------------------------------------------
 	ParticleModuleColorScaleOverLife implementation.
 -----------------------------------------------------------------------------*/
@@ -393,6 +447,37 @@ void ParticleModuleColorScaleOverLife::SetToSensibleDefaults(ParticleEmitter* ow
 		}
 		colorScaleOverLifeDist->isDirty_ = true;
 	}
+}
+
+bool ParticleModuleColorScaleOverLife::LoadXML(const XMLElement& root)
+{
+	if (XMLElement colorScaleOverLifeNode = root.GetChild("colorScaleOverLife"))
+	{
+		const String curveType = colorScaleOverLifeNode.GetAttribute("type");
+		if (curveType == "multipleCurve")
+		{
+			// TODO
+		}
+	}
+
+	if (XMLElement alphaScaleOverLife = root.GetChild("alphaScaleOverLife"))
+	{
+		const String curveType = alphaScaleOverLife.GetAttribute("type");
+		if (curveType == "constant")
+		{
+			auto curve = MakeShared<DistributionFloatConstant>();
+			alphaScaleOverLife_.distribution_ = curve;
+			curve->constant_ = alphaScaleOverLife.GetChild("constant").GetFloat("value");
+		}
+	}
+
+	return true;
+}
+
+bool ParticleModuleColorScaleOverLife::SaveXML(XMLElement& root)
+{
+	// TODO
+	return false;
 }
 
 }

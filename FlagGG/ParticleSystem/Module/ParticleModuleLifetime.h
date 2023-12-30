@@ -65,6 +65,12 @@ public:
 	 */
 	void SpawnEx(ParticleEmitterInstance* owner, Int32 offset, float spawnTime, struct RandomStream* inRandomStream, BaseParticle* particleBase);
 
+	// 从XML加载
+	bool LoadXML(const XMLElement& root) override;
+
+	// 保存到XML中
+	bool SaveXML(XMLElement& root) override;
+
 
 	/** The lifetime of the particle, in seconds. Retrieved using the EmitterTime at the spawn of the particle. */
 	RawDistributionFloat lifetime_;

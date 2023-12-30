@@ -29,6 +29,7 @@
 #include "ParticleSystem/Module/ParticleModuleVelocity.h"
 #include "Resource/XMLFile.h"
 #include "Resource/ResourceCache.h"
+#include "Core/ObjectFactory.h"
 
 namespace FlagGG
 {
@@ -504,261 +505,34 @@ bool ParticleSystem::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 			for (XMLElement particleModuleNode = particleEmitterNode.GetChild("module"); particleModuleNode; particleModuleNode = particleModuleNode.GetNext())
 			{
 				const String moduleType = particleModuleNode.GetAttribute("type");
+
 				if (moduleType == "ParticleModuleRequired")
 				{
-					LODLevel->requiredModule_ = MakeShared<ParticleModuleRequired>();
-
-					if (XMLElement materialNode = particleModuleNode.GetChild("material"))
-					{
-						auto material = new Material();
-						material->CreateShaderParameters();
-
-						if (XMLElement textureNode = materialNode.GetChild("texture"))
-						{
-							const UInt32 unit = textureNode.GetUInt("unit");
-							const String texPath = textureNode.GetAttribute("value");
-							auto tex = cache->GetResource<Texture2D>(texPath);
-							material->SetTexture((TextureClass)0, tex);
-						}
-
-						for (XMLElement shaderParamNode = materialNode.GetChild("parameter"); shaderParamNode; shaderParamNode = shaderParamNode.GetNext())
-						{
-							const String name = shaderParamNode.GetAttribute("name");
-							const String type = shaderParamNode.GetAttribute("type");
-							if (type == "Float")
-							{
-								const float value = shaderParamNode.GetFloat("value");
-								material->GetShaderParameters()->AddParametersDefine<float>(name);
-								material->GetShaderParameters()->SetValue<float>(name, value);
-							}
-							else if (type == "Vector4")
-							{
-								const Vector4 value = shaderParamNode.GetVector4("value");
-								material->GetShaderParameters()->AddParametersDefine<Vector4>(name);
-								material->GetShaderParameters()->SetValue<Vector4>(name, value);
-							}
-						}
-
-						auto& renderPass = material->GetRenderPass()[RENDER_PASS_TYPE_FORWARD_ALPHA];
-						renderPass.SetDepthWrite(false);
-					}
-
-					if (XMLElement useLocalSpaceNode = particleModuleNode.GetChild("useLocalSpace"))
-					{
-						LODLevel->requiredModule_->useLocalSpace_ = useLocalSpaceNode.GetBool("value");
-					}
-
-					if (XMLElement screenAlignmentNode = particleModuleNode.GetChild("screenAlignment"))
-					{
-						LODLevel->requiredModule_->screenAlignment_= ParticleScreenAlignment(screenAlignmentNode.GetBool("value") + 1);
-					}
-
-					if (XMLElement emitterDurationNode = particleModuleNode.GetChild("emitterDuration"))
-					{
-						LODLevel->requiredModule_->emitterDuration_ = emitterDurationNode.GetFloat("value");
-					}
-
-					if (XMLElement emitterLoopsNode = particleModuleNode.GetChild("emitterLoops"))
-					{
-						LODLevel->requiredModule_->emitterLoops_ = emitterLoopsNode.GetFloat("value");
-					}
-
-					if (XMLElement emitterDelayNode = particleModuleNode.GetChild("emitterDelay"))
-					{
-						LODLevel->requiredModule_->emitterDelay_ = emitterDelayNode.GetFloat("value");
-					}
-
-					if (XMLElement preWarmNode = particleModuleNode.GetChild("preWarm"))
-					{
-						
-					}
-
-					if (XMLElement interpolationMethodNode = particleModuleNode.GetChild("interpolationMethod"))
-					{
-						LODLevel->requiredModule_->interpolationMethod_ = ParticleSubUVInterpMethod(interpolationMethodNode.GetUInt("value"));
-					}
-
-					if (XMLElement subImagesHorizontalNode = particleModuleNode.GetChild("subImagesHorizontal"))
-					{
-						LODLevel->requiredModule_->subImages_Horizontal_ = subImagesHorizontalNode.GetUInt("value");
-					}
-
-					if (XMLElement subImagesVerticalNode = particleModuleNode.GetChild("subImagesVertical"))
-					{
-						LODLevel->requiredModule_->subImages_Vertical_ = subImagesVerticalNode.GetUInt("value");
-					}
-
-					if (XMLElement randomImageChangesNode = particleModuleNode.GetChild("randomImageChanges"))
-					{
-						LODLevel->requiredModule_->randomImageChanges_ = randomImageChangesNode.GetUInt("value");
-					}
-
-					if (XMLElement randomImageTimeNode = particleModuleNode.GetChild("randomImageTime"))
-					{
-						LODLevel->requiredModule_->randomImageTime_ = randomImageTimeNode.GetFloat("value");
-					}
-
-					if (XMLElement killOnDeactivateNode = particleModuleNode.GetChild("killOnDeactivate"))
-					{
-						LODLevel->requiredModule_->killOnDeactivate_ = killOnDeactivateNode.GetBool("value");
-					}
+					LODLevel->requiredModule_->LoadXML(particleModuleNode);
 				}
 				else if (moduleType == "ParticleModuleSpawn")
 				{
-					LODLevel->spawnModule_ = MakeShared<ParticleModuleSpawn>();
-
-					if (XMLElement rateNode = particleModuleNode.GetChild("rate"))
+					LODLevel->spawnModule_->LoadXML(particleModuleNode);
+				}
+				else
+				{
+					SharedPtr<Object> objectPtr(GetSubsystem<ObjectFactory>()->Create(moduleType));
+					if (auto particleModule = RTTICast<ParticleModule>(objectPtr))
 					{
-						const String curveType = rateNode.GetAttribute("type");
-						if (curveType == "constant")
+						if (particleModule->LoadXML(particleModuleNode))
 						{
-							auto constantCurve = MakeShared<DistributionFloatConstant>();
-							constantCurve->SetKeyOut(0, 0, rateNode.GetChild("constant").GetFloat("value"));
-							LODLevel->spawnModule_->rate_.distribution_ = constantCurve;
+							LODLevel->modules_.Push(SharedPtr<ParticleModule>(particleModule));
+						}
+						else
+						{
+							FLAGGG_LOG_WARN("Failed to load particle module[%s].", moduleType.CString());
 						}
 					}
-
-					if (XMLElement burstListNode = particleModuleNode.GetChild("burstList"))
+					else
 					{
-						for (XMLElement pointNode = burstListNode.GetChild("point"); pointNode; pointNode = pointNode.GetNext())
-						{
-							auto& burst = LODLevel->spawnModule_->burstList_.EmplaceBack();
-							burst.time_ = pointNode.GetFloat("time");
-							burst.count_ = pointNode.GetInt("count");
-						}
+						FLAGGG_LOG_ERROR("Invalid particle module[%s].", moduleType.CString());
+						return false;
 					}
-				}
-				else if (moduleType == "ParticleModuleLifetime")
-				{
-					auto lifetimeModule = MakeShared<ParticleModuleLifetime>();
-					LODLevel->modules_.Push(lifetimeModule);
-					if (XMLElement lifetimeNode = particleModuleNode.GetChild("lifetime"))
-					{
-						const String curveType = lifetimeNode.GetAttribute("type");
-						if (curveType == "uniform")
-						{
-							auto uniformCurve = MakeShared<DistributionFloatUniform>();
-							uniformCurve->min_ = lifetimeNode.GetChild("min").GetFloat("value");
-							uniformCurve->max_ = lifetimeNode.GetChild("max").GetFloat("value");
-							lifetimeModule->lifetime_.distribution_ = uniformCurve;
-						}
-					}
-				}
-				else if (moduleType == "ParticleModuleSize")
-				{
-					auto sizeModule = MakeShared<ParticleModuleSize>();
-					LODLevel->modules_.Push(sizeModule);
-					if (XMLElement startSizeNode = particleModuleNode.GetChild("startSize"))
-					{
-						const String curveType = startSizeNode.GetAttribute("type");
-						if (curveType == "uniform")
-						{
-							auto uniformCurve = MakeShared<DistributionVectorUniform>();
-							uniformCurve->min_ = startSizeNode.GetChild("min").GetVector3("value");
-							uniformCurve->max_ = startSizeNode.GetChild("max").GetVector3("value");
-							sizeModule->startSize_.distribution_ = uniformCurve;
-						}
-					}
-				}
-				else if (moduleType == "ParticleModuleSizeMultiplyLife")
-				{
-					auto sizeModule = MakeShared<ParticleModuleSizeMultiplyLife>();
-					LODLevel->modules_.Push(sizeModule);
-					if (XMLElement startSizeNode = particleModuleNode.GetChild("startSize"))
-					{
-						const String curveType = startSizeNode.GetAttribute("type");
-						// TODO
-					}
-				}
-				else if (moduleType == "ParticleModuleColorOverLife")
-				{
-					auto colorModule = MakeShared<ParticleModuleColorOverLife>();
-					LODLevel->modules_.Push(colorModule);
-					if (XMLElement colorOverLifeNode = particleModuleNode.GetChild("colorOverLife"))
-					{
-						const String curveType = colorOverLifeNode.GetAttribute("type");
-						if (curveType == "colorsCurve")
-						{
-							if (XMLElement colorNode = colorOverLifeNode.GetChild("color"))
-							{
-								auto colorCurve = MakeShared<DistributionVectorConstantCurve>();
-								colorModule->colorOverLife_.distribution_ = colorCurve;
-								for (XMLElement pointNode = colorNode.GetChild("point"); pointNode; pointNode = pointNode.GetNext())
-								{
-									InterpCurvePoint<Vector3> curvePoint;
-									curvePoint.inVal_ = pointNode.GetFloat("inVal");
-									curvePoint.outVal_ = pointNode.GetVector3("outVal");
-									curvePoint.arriveTangent_ = pointNode.GetVector3("arriveTangent");
-									curvePoint.leaveTangent_ = pointNode.GetVector3("leaveTangent");
-									curvePoint.interpMode_ = InterpCurveMode(pointNode.GetUInt("interpMode"));
-									colorCurve->constantCurve_.points_.Push(curvePoint);
-								}
-							}
-
-							if (XMLElement alphaNode = colorOverLifeNode.GetChild("alpha"))
-							{
-								auto alphCurve = MakeShared<DistributionFloatConstantCurve>();
-								for (XMLElement pointNode = alphaNode.GetChild("point"); pointNode; pointNode = pointNode.GetNext())
-								{
-									InterpCurvePoint<float> curvePoint;
-									curvePoint.inVal_ = pointNode.GetFloat("inVal");
-									curvePoint.outVal_ = pointNode.GetFloat("outVal");
-									curvePoint.arriveTangent_ = pointNode.GetFloat("arriveTangent");
-									curvePoint.leaveTangent_ = pointNode.GetFloat("leaveTangent");
-									curvePoint.interpMode_ = InterpCurveMode(pointNode.GetUInt("interpMode"));
-									alphCurve->constantCurve_.points_.Push(curvePoint);
-								}
-							}
-						}
-					}
-				}
-				else if (moduleType == "ParticleModuleColorScaleOverLife")
-				{
-					auto colorModule = MakeShared<ParticleModuleColorScaleOverLife>();
-					LODLevel->modules_.Push(colorModule);
-					if (XMLElement colorScaleOverLifeNode = particleModuleNode.GetChild("colorScaleOverLife"))
-					{
-						const String curveType = colorScaleOverLifeNode.GetAttribute("type");
-						if (curveType == "multipleCurve")
-						{
-							// TODO
-						}
-					}
-					
-					if (XMLElement alphaScaleOverLife = particleModuleNode.GetChild("alphaScaleOverLife"))
-					{
-						const String curveType = alphaScaleOverLife.GetAttribute("type");
-						if (curveType == "constant")
-						{
-							auto curve = MakeShared<DistributionFloatConstant>();
-							colorModule->alphaScaleOverLife_.distribution_ = curve;
-							curve->constant_ = alphaScaleOverLife.GetChild("constant").GetFloat("value");
-						}
-					}
-				}
-				else if (moduleType == "ParticleModuleRotation")
-				{
-
-				}
-				else if (moduleType == "ParticleModuleRotationRate")
-				{
-
-				}
-				else if (moduleType == "ParticleModuleLocation")
-				{
-
-				}
-				else if (moduleType == "ParticleModuleOrbit")
-				{
-
-				}
-				else if (moduleType == "ParticleModuleOrientationAxisLock")
-				{
-
-				}
-				else if (moduleType == "")
-				{
-
 				}
 			}
 		}

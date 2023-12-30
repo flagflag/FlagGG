@@ -68,6 +68,9 @@
 
 #define PURE_VIRTUAL(func,...) { ASSERT_MESSAGE(false, "Pure virtual not implemented (" #func ")"); __VA_ARGS__ }
 
+#define HELPER_NAME_CAT_IMPL(A, B) A ## B
+#define HELPER_NAME_CAT(A, B) HELPER_NAME_CAT_IMPL(A, B)
+
 #if defined(USE_CRY_ASSERT) && defined(WIN32) && defined(_DEBUG)
 // MSVC (v19.00.24215.1 at time of writing) ignores no-inline attributes on
 // lambdas. This can be worked around by calling the lambda from inside this

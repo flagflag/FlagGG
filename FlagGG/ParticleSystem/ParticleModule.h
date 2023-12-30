@@ -5,6 +5,7 @@
 #include "Container/Ptr.h"
 #include "Container/Str.h"
 #include "Math/Color.h"
+#include "Resource/StreamObject.h"
 #include "ParticleSystem/ParticleHelper.h"
 
 namespace FlagGG
@@ -122,7 +123,7 @@ struct FlagGG_API ParticleRandomSeedInfo
 	Vector<Int32> randomSeeds_;
 };
 
-class FlagGG_API ParticleModule : public Object
+class FlagGG_API ParticleModule : public Object, public StreamObjectXML
 {
 	OBJECT_OVERRIDE(ParticleModule, Object);
 public:

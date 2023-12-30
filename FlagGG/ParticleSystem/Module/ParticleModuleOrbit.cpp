@@ -2,9 +2,12 @@
 #include "Math/Distributions/DistributionVectorUniform.h"
 #include "ParticleSystem/ParticleEmitterInstances.h"
 #include "ParticleSystem/ParticleSystemComponent.h"
+#include "Core/ObjectFactory.h"
 
 namespace FlagGG
 {
+
+REGISTER_TYPE_FACTORY(ParticleModuleOrbit);
 
 /*-----------------------------------------------------------------------------
 	ParticleModuleOrbit implementation.
@@ -20,26 +23,26 @@ void ParticleModuleOrbit::InitializeDefaults()
 {
 	if (!offsetAmount_.IsCreated())
 	{
-		SharedPtr<DistributionVectorUniform> DistributionOffsetAmount = MakeShared<DistributionVectorUniform>();
-		DistributionOffsetAmount->min_ = Vector3(0.0f, 0.0f, 0.0f);
-		DistributionOffsetAmount->max_ = Vector3(0.0f, 50.0f, 0.0f);
-		offsetAmount_.distribution_ = DistributionOffsetAmount;
+		SharedPtr<DistributionVectorUniform> distributionOffsetAmount = MakeShared<DistributionVectorUniform>();
+		distributionOffsetAmount->min_ = Vector3(0.0f, 0.0f, 0.0f);
+		distributionOffsetAmount->max_ = Vector3(0.0f, 50.0f, 0.0f);
+		offsetAmount_.distribution_ = distributionOffsetAmount;
 	}
 
 	if (!rotationAmount_.IsCreated())
 	{
-		SharedPtr<DistributionVectorUniform> DistributionRotationAmount = MakeShared<DistributionVectorUniform>();
-		DistributionRotationAmount->min_ = Vector3(0.0f, 0.0f, 0.0f);
-		DistributionRotationAmount->max_ = Vector3(1.0f, 1.0f, 1.0f);
-		rotationAmount_.distribution_ = DistributionRotationAmount;
+		SharedPtr<DistributionVectorUniform> distributionRotationAmount = MakeShared<DistributionVectorUniform>();
+		distributionRotationAmount->min_ = Vector3(0.0f, 0.0f, 0.0f);
+		distributionRotationAmount->max_ = Vector3(1.0f, 1.0f, 1.0f);
+		rotationAmount_.distribution_ = distributionRotationAmount;
 	}
 
 	if (!rotationRateAmount_.IsCreated())
 	{
-		SharedPtr<DistributionVectorUniform> DistributionRotationRateAmount = MakeShared<DistributionVectorUniform>();
-		DistributionRotationRateAmount->min_ = Vector3(0.0f, 0.0f, 0.0f);
-		DistributionRotationRateAmount->max_ = Vector3(1.0f, 1.0f, 1.0f);
-		rotationRateAmount_.distribution_ = DistributionRotationRateAmount;
+		SharedPtr<DistributionVectorUniform> distributionRotationRateAmount = MakeShared<DistributionVectorUniform>();
+		distributionRotationRateAmount->min_ = Vector3(0.0f, 0.0f, 0.0f);
+		distributionRotationRateAmount->max_ = Vector3(1.0f, 1.0f, 1.0f);
+		rotationRateAmount_.distribution_ = distributionRotationRateAmount;
 	}
 }
 
@@ -198,6 +201,79 @@ UInt32 ParticleModuleOrbit::RequiredBytes(ParticleModuleTypeDataBase* typeData)
 UInt32 ParticleModuleOrbit::RequiredBytesPerInstance()
 {
 	return 0;
+}
+
+bool ParticleModuleOrbit::LoadXML(const XMLElement& root)
+{
+	if (XMLElement chainModeNode = root.GetChild("chainMode"))
+	{
+		chainMode_ = OrbitChainMode(chainModeNode.GetUInt("value"));
+	}
+
+	if (XMLElement offsetAmountNode = root.GetChild("offsetAmount"))
+	{
+		const String curveType = offsetAmountNode.GetAttribute("type");
+		if (curveType == "uniform")
+		{
+			auto uniformCurve = MakeShared<DistributionVectorUniform>();
+			uniformCurve->min_ = offsetAmountNode.GetChild("min").GetVector3("value");
+			uniformCurve->max_ = offsetAmountNode.GetChild("max").GetVector3("value");
+			offsetAmount_.distribution_ = uniformCurve;
+		}
+	}
+
+	if (XMLElement offsetOptionsNode = root.GetChild("offsetOptions"))
+	{
+		offsetOptions_.processDuringSpawn_ = offsetOptionsNode.GetChild("processDuringSpawn").GetBool("value");
+		offsetOptions_.processDuringUpdate_ = offsetOptionsNode.GetChild("processDuringUpdate").GetBool("value");
+		offsetOptions_.useEmitterTime_ = offsetOptionsNode.GetChild("useEmitterTime").GetBool("value");
+	}
+
+	if (XMLElement rotationAmountNode = root.GetChild("rotationAmount"))
+	{
+		const String curveType = rotationAmountNode.GetAttribute("type");
+		if (curveType == "uniform")
+		{
+			auto uniformCurve = MakeShared<DistributionVectorUniform>();
+			uniformCurve->min_ = rotationAmountNode.GetChild("min").GetVector3("value");
+			uniformCurve->max_ = rotationAmountNode.GetChild("max").GetVector3("value");
+			rotationAmount_.distribution_ = uniformCurve;
+		}
+	}
+
+	if (XMLElement rotationOptionsNode = root.GetChild("rotationOptions"))
+	{
+		rotationOptions_.processDuringSpawn_ = rotationOptionsNode.GetChild("processDuringSpawn").GetBool("value");
+		rotationOptions_.processDuringUpdate_ = rotationOptionsNode.GetChild("processDuringUpdate").GetBool("value");
+		rotationOptions_.useEmitterTime_ = rotationOptionsNode.GetChild("useEmitterTime").GetBool("value");
+	}
+
+	if (XMLElement rotationRateAmountNode = root.GetChild("rotationRateAmount"))
+	{
+		const String curveType = rotationRateAmountNode.GetAttribute("type");
+		if (curveType == "uniform")
+		{
+			auto uniformCurve = MakeShared<DistributionVectorUniform>();
+			uniformCurve->min_ = rotationRateAmountNode.GetChild("min").GetVector3("value");
+			uniformCurve->max_ = rotationRateAmountNode.GetChild("max").GetVector3("value");
+			rotationRateAmount_.distribution_ = uniformCurve;
+		}
+	}
+
+	if (XMLElement rotationRateOptionsNode = root.GetChild("rotationRateOptions"))
+	{
+		rotationRateOptions_.processDuringSpawn_ = rotationRateOptionsNode.GetChild("processDuringSpawn").GetBool("value");
+		rotationRateOptions_.processDuringUpdate_ = rotationRateOptionsNode.GetChild("processDuringUpdate").GetBool("value");
+		rotationRateOptions_.useEmitterTime_ = rotationRateOptionsNode.GetChild("useEmitterTime").GetBool("value");
+	}
+
+	return true;
+}
+
+bool ParticleModuleOrbit::SaveXML(XMLElement& root)
+{
+	// TODO
+	return false;
 }
 
 }

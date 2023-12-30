@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IOFrame/Buffer/IOBuffer.h"
+#include "Resource/XMLElement.h"
 
 namespace FlagGG
 {
@@ -27,6 +28,18 @@ protected:
 	virtual bool BeginSave(IOFrame::Buffer::IOBuffer* stream);
 
 	virtual bool EndSave();
+};
+
+class FlagGG_API StreamObjectXML
+{
+public:
+	virtual ~StreamObjectXML() {}
+
+	// 从XML加载
+	virtual bool LoadXML(const XMLElement& root);
+
+	// 保存到XML中
+	virtual bool SaveXML(XMLElement& root);
 };
 
 }

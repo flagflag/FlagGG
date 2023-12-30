@@ -5,9 +5,13 @@
 #include "ParticleSystem/ParticleEmitterInstances.h"
 #include "ParticleSystem/ParticleSystemComponent.h"
 #include "ParticleSystem/ParticleLODLevel.h"
+#include "Core/ObjectFactory.h"
 
 namespace FlagGG
 {
+
+REGISTER_TYPE_FACTORY(ParticleModuleSize);
+REGISTER_TYPE_FACTORY(ParticleModuleSizeMultiplyLife);
 
 /*-----------------------------------------------------------------------------
 	Abstract base modules used for categorization.
@@ -62,6 +66,30 @@ void ParticleModuleSize::SpawnEx(ParticleEmitterInstance* owner, Int32 offset, f
 
 	AdjustParticleBaseSizeForUVFlipping(size, owner->currentLODLevel_->requiredModule_->UVFlippingMode_, *inRandomStream);
 	particle.baseSize_ += size;
+}
+
+bool ParticleModuleSize::LoadXML(const XMLElement& root)
+{
+	if (XMLElement startSizeNode = root.GetChild("startSize"))
+	{
+		const String curveType = startSizeNode.GetAttribute("type");
+		if (curveType == "uniform")
+		{
+			auto uniformCurve = MakeShared<DistributionVectorUniform>();
+			uniformCurve->min_ = startSizeNode.GetChild("min").GetVector3("value");
+			uniformCurve->max_ = startSizeNode.GetChild("max").GetVector3("value");
+			startSize_.distribution_ = uniformCurve;
+		}
+	}
+
+	return true;
+}
+
+// 保存到XML中
+bool ParticleModuleSize::SaveXML(XMLElement& root)
+{
+	// TODO
+	return false;
 }
 
 /*-----------------------------------------------------------------------------
@@ -218,6 +246,24 @@ void ParticleModuleSizeMultiplyLife::SetToSensibleDefaults(ParticleEmitter* owne
 		}
 		lifeMultiplierDist->isDirty_ = true;
 	}
+}
+
+bool ParticleModuleSizeMultiplyLife::LoadXML(const XMLElement& root)
+{
+	if (XMLElement startSizeNode = root.GetChild("startSize"))
+	{
+		const String curveType = startSizeNode.GetAttribute("type");
+		// TODO
+	}
+
+	return true;
+}
+
+// 保存到XML中
+bool ParticleModuleSizeMultiplyLife::SaveXML(XMLElement& root)
+{
+	// TODO
+	return false;
 }
 
 }

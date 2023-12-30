@@ -37,6 +37,12 @@ public:
 	virtual void SetToSensibleDefaults(ParticleEmitter* Owner) override;
 	//End UParticleModule Interface
 
+	// 从XML加载
+	bool LoadXML(const XMLElement& root) override;
+
+	// 保存到XML中
+	bool SaveXML(XMLElement& root) override;
+
 
 	/** The color to apply to the particle, as a function of the particle RelativeTime. */
 	RawDistributionVector colorOverLife_;
@@ -63,6 +69,12 @@ public:
 	virtual void Update(ParticleEmitterInstance* owner, Int32 offset, float deltaTime) override;
 	virtual void SetToSensibleDefaults(ParticleEmitter* owner) override;
 	//End UParticleModule Interface
+
+	// 从XML加载
+	bool LoadXML(const XMLElement& root) override;
+
+	// 保存到XML中
+	bool SaveXML(XMLElement& root) override;
 
 
 	/** The scale factor for the color.													*/

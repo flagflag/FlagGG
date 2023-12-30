@@ -43,13 +43,20 @@ class ParticleModuleOrientationAxisLock : public ParticleModuleOrientationBase
 public:
 	ParticleModuleOrientationAxisLock();
 
-	//~ Begin UParticleModule Interface
+	//~ Begin ParticleModule Interface
 	virtual void	Spawn(ParticleEmitterInstance* owner, Int32 offset, float spawnTime, BaseParticle* particleBase) override;
 	virtual void	Update(ParticleEmitterInstance* owner, Int32 offset, float deltaTime) override;
-	//~ End UParticleModule Interface
+	//~ End ParticleModule Interface
 
 	//@todo document
 	virtual void	SetLockAxis(ParticleAxisLock eLockFlags);
+
+	// 从XML加载
+	bool LoadXML(const XMLElement& root) override;
+
+	// 保存到XML中
+	bool SaveXML(XMLElement& root) override;
+
 
 	/**
 	 *	The lock axis flag setting.

@@ -2,9 +2,12 @@
 #include "Math/Distributions/DistributionFloatUniform.h"
 #include "ParticleSystem/ParticleEmitterInstances.h"
 #include "ParticleSystem/ParticleSystemComponent.h"
+#include "Core/ObjectFactory.h"
 
 namespace FlagGG
 {
+
+REGISTER_TYPE_FACTORY(ParticleModuleLifetime);
 
 /*-----------------------------------------------------------------------------
 	ParticleModuleLifetimeBase implementation.
@@ -89,6 +92,29 @@ float ParticleModuleLifetime::GetMaxLifetime()
 float ParticleModuleLifetime::GetLifetimeValue(ParticleEmitterInstance* owner, float inTime, Object* data)
 {
 	return lifetime_.GetValue(inTime, data);
+}
+
+bool ParticleModuleLifetime::LoadXML(const XMLElement& root)
+{
+	if (XMLElement lifetimeNode = root.GetChild("lifetime"))
+	{
+		const String curveType = lifetimeNode.GetAttribute("type");
+		if (curveType == "uniform")
+		{
+			auto uniformCurve = MakeShared<DistributionFloatUniform>();
+			uniformCurve->min_ = lifetimeNode.GetChild("min").GetFloat("value");
+			uniformCurve->max_ = lifetimeNode.GetChild("max").GetFloat("value");
+			lifetime_.distribution_ = uniformCurve;
+		}
+	}
+
+	return true;
+}
+
+bool ParticleModuleLifetime::SaveXML(XMLElement& root)
+{
+	// TODO
+	return false;
 }
 
 }

@@ -89,4 +89,15 @@ bool StreamObject::EndSave()
 	return true;
 }
 
+
+bool StreamObjectXML::LoadXML(const XMLElement& root)
+{
+	return false;
+}
+
+bool StreamObjectXML::SaveXML(XMLElement& root)
+{
+	return false;
+}
+
 }

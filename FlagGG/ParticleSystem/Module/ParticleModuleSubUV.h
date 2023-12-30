@@ -53,9 +53,12 @@ public:
 	virtual float DetermineImageIndex(ParticleEmitterInstance* owner, Int32 offset, BaseParticle* particle,
 		ParticleSubUVInterpMethod interpMethod, FullSubUVPayload& subUVPayload, float deltaTime);
 
-#if WITH_EDITOR
-	virtual bool IsValidForLODLevel(ParticleLODLevel* LODLevel, String& outErrorString) override;
-#endif
+	// 从XML加载
+	bool LoadXML(const XMLElement& root) override;
+
+	// 保存到XML中
+	bool SaveXML(XMLElement& root) override;
+
 
 	/**
 	 * SubUV animation asset to use.

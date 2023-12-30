@@ -25,14 +25,10 @@ class FlagGG_API ParticleModuleMeshMaterial : public ParticleModuleMaterialBase
 public:
 	ParticleModuleMeshMaterial();
 
-	//Begin UParticleModule Interface
+	//Begin ParticleModule Interface
 	virtual void	Spawn(ParticleEmitterInstance* owner, Int32 offset, float spawnTime, BaseParticle* particleBase) override;
 	virtual UInt32	RequiredBytesPerInstance() override;
-
-#if WITH_EDITOR
-	virtual bool	IsValidForLODLevel(ParticleLODLevel* LODLevel, String& outErrorString) override;
-#endif
-	//End UParticleModule Interface
+	//End ParticleModule Interface
 
 	/** The array of materials to apply to the mesh particles. */
 	Vector<SharedPtr<Material>> meshMaterials_;

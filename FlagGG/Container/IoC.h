@@ -19,7 +19,7 @@ public:
 	template < class TargetType, class ... ExtraArgs >
 	void RegisterType(StringHash typeHash, ExtraArgs ... extraArgs)
 	{
-		Constructor constructor = [Args&& ... args] { return new TargetType(std::forward<Args>(args)..., extraArgs...); };
+		Constructor constructor = [&](Args&& ... args) { return new TargetType(std::forward<Args>(args)..., extraArgs...); };
 		constructors_.Insert(MakePair(typeHash, constructor));
 	}
 

@@ -120,7 +120,14 @@ public:
 	virtual Int32 GetMaximumBurstCount() override;
 	//~ End UParticleModuleSpawnBase Interface
 
-	float GetGlobalRateScale()const;
+	float GetGlobalRateScale() const;
+
+	// 从XML加载
+	bool LoadXML(const XMLElement& root) override;
+
+	// 保存到XML中
+	bool SaveXML(XMLElement& root) override;
+
 
 	/** The rate at which to spawn particles. */
 	RawDistributionFloat rate_;

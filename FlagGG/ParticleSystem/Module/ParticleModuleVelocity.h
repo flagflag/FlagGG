@@ -15,6 +15,12 @@ class FlagGG_API ParticleModuleVelocityBase : public ParticleModule
 public:
 	ParticleModuleVelocityBase();
 
+	// 从XML加载
+	bool LoadXML(const XMLElement& root) override;
+
+	// 保存到XML中
+	bool SaveXML(XMLElement& root) override;
+
 	/**
 	 *	If true, then treat the velocity as world-space defined.
 	 *	NOTE: LocalSpace emitters that are moving will see strange results...
@@ -49,6 +55,12 @@ public:
 	 */
 	void SpawnEx(ParticleEmitterInstance* owner, Int32 offset, float spawnTime, RandomStream* inRandomStream, BaseParticle* particleBase);
 
+	// 从XML加载
+	bool LoadXML(const XMLElement& root) override;
+
+	// 保存到XML中
+	bool SaveXML(XMLElement& root) override;
+
 
 	/**
 	 *	The velocity to apply to a particle when it is spawned.
@@ -62,6 +74,40 @@ public:
 	 *	Value is retrieved using the EmitterTime of the emitter.
 	 */
 	RawDistributionFloat startVelocityRadial_;
+};
+
+class ParticleModuleVelocityOverLifetime : public ParticleModuleVelocityBase
+{
+	OBJECT_OVERRIDE(ParticleModuleVelocityOverLifetime, ParticleModuleVelocityBase);
+public:
+	ParticleModuleVelocityOverLifetime();
+
+	/** Initializes the default values for this property */
+	void InitializeDefaults();
+
+	//~ Begin ParticleModule Interface
+	virtual void Spawn(ParticleEmitterInstance* owner, Int32 offset, float spawnTime, BaseParticle* particleBase) override;
+	virtual void Update(ParticleEmitterInstance* owner, Int32 offset, float deltaTime) override;
+	//~ Begin ParticleModule Interface
+
+	// 从XML加载
+	bool LoadXML(const XMLElement& root) override;
+
+	// 保存到XML中
+	bool SaveXML(XMLElement& root) override;
+
+
+	/**
+	 *	The scaling  value applied to the velocity.
+	 *	Value is retrieved using the RelativeTime of the particle.
+	 */
+	RawDistributionVector velOverLife_;
+
+	/**
+	 *	If true, the velocity will be SET to the value from the above dist.
+	 *	If false, the velocity will be scaled by the above dist.
+	 */
+	UInt32 absolute_ : 1;
 };
 
 }

@@ -465,6 +465,13 @@ public:
 
 	Real GetAbsMax() { return Max(FlagGG::Abs(x_), Max(FlagGG::Abs(y_), FlagGG::Abs(z_))); }
 
+	bool ContainsNaN() const
+	{
+		return (!FlagGG::IsFinite(x_) ||
+			!FlagGG::IsFinite(y_) ||
+			!FlagGG::IsFinite(z_));
+	}
+
 	/// X coordinate.
 	Real x_;
 	/// Y coordinate.

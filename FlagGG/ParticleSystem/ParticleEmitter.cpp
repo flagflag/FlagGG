@@ -281,7 +281,9 @@ Int32 ParticleEmitter::CreateLODLevel(Int32 LODLevel, bool generateModuleData)
 		ASSERT(spawnModule);
 		createdLODLevel->spawnModule_ = spawnModule;
 		spawnModule->LODValidity_ = (1 << LODLevel);
-		DistributionFloatConstant* constantSpawn	= RTTICast<DistributionFloatConstant>(spawnModule->rate_.distribution_);
+		// DistributionFloatConstant* constantSpawn	= RTTICast<DistributionFloatConstant>(spawnModule->rate_.distribution_);
+		auto constantSpawn = MakeShared<DistributionFloatConstant>();
+		spawnModule->rate_.distribution_ = constantSpawn;
 		constantSpawn->constant_				= 10;
 		constantSpawn->isDirty_					= true;
 		spawnModule->burstList_.Empty();

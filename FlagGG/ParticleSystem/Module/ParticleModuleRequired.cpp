@@ -1,9 +1,13 @@
 #include "ParticleSystem/Module/ParticleModuleRequired.h"
 #include "Math/InterpCurveEdSetup.h"
 #include "Math/Distributions/DistributionFloatConstant.h"
+#include "Resource/ResourceCache.h"
+#include "Core/ObjectFactory.h"
 
 namespace FlagGG
 {
+
+REGISTER_TYPE_FACTORY(ParticleModuleRequired);
 
 /*-----------------------------------------------------------------------------
 	ParticleModuleRequired implementation.
@@ -142,6 +146,114 @@ void ParticleModuleRequired::GetDefaultCutout()
 		}
 	}
 #endif
+}
+
+bool ParticleModuleRequired::LoadXML(const XMLElement& root)
+{
+	if (XMLElement materialNode = root.GetChild("material"))
+	{
+		auto* cache = GetSubsystem<ResourceCache>();
+
+		auto material = new Material();
+		material->CreateShaderParameters();
+
+		if (XMLElement textureNode = materialNode.GetChild("texture"))
+		{
+			const UInt32 unit = textureNode.GetUInt("unit");
+			const String texPath = textureNode.GetAttribute("value");
+			auto tex = cache->GetResource<Texture2D>(texPath);
+			material->SetTexture((TextureClass)unit, tex);
+		}
+
+		for (XMLElement shaderParamNode = materialNode.GetChild("parameter"); shaderParamNode; shaderParamNode = shaderParamNode.GetNext())
+		{
+			const String name = shaderParamNode.GetAttribute("name");
+			const String type = shaderParamNode.GetAttribute("type");
+			if (type == "Float")
+			{
+				const float value = shaderParamNode.GetFloat("value");
+				material->GetShaderParameters()->AddParametersDefine<float>(name);
+				material->GetShaderParameters()->SetValue<float>(name, value);
+			}
+			else if (type == "Vector4")
+			{
+				const Vector4 value = shaderParamNode.GetVector4("value");
+				material->GetShaderParameters()->AddParametersDefine<Vector4>(name);
+				material->GetShaderParameters()->SetValue<Vector4>(name, value);
+			}
+		}
+
+		auto& renderPass = material->GetRenderPass()[RENDER_PASS_TYPE_FORWARD_ALPHA];
+		renderPass.SetDepthWrite(false);
+	}
+
+	if (XMLElement useLocalSpaceNode = root.GetChild("useLocalSpace"))
+	{
+		useLocalSpace_ = useLocalSpaceNode.GetBool("value");
+	}
+
+	if (XMLElement screenAlignmentNode = root.GetChild("screenAlignment"))
+	{
+		screenAlignment_ = ParticleScreenAlignment(screenAlignmentNode.GetBool("value") + 1);
+	}
+
+	if (XMLElement emitterDurationNode = root.GetChild("emitterDuration"))
+	{
+		emitterDuration_ = emitterDurationNode.GetFloat("value");
+	}
+
+	if (XMLElement emitterLoopsNode = root.GetChild("emitterLoops"))
+	{
+		emitterLoops_ = emitterLoopsNode.GetFloat("value");
+	}
+
+	if (XMLElement emitterDelayNode = root.GetChild("emitterDelay"))
+	{
+		emitterDelay_ = emitterDelayNode.GetFloat("value");
+	}
+
+	if (XMLElement preWarmNode = root.GetChild("preWarm"))
+	{
+
+	}
+
+	if (XMLElement interpolationMethodNode = root.GetChild("interpolationMethod"))
+	{
+		interpolationMethod_ = ParticleSubUVInterpMethod(interpolationMethodNode.GetUInt("value"));
+	}
+
+	if (XMLElement subImagesHorizontalNode = root.GetChild("subImagesHorizontal"))
+	{
+		subImages_Horizontal_ = subImagesHorizontalNode.GetUInt("value");
+	}
+
+	if (XMLElement subImagesVerticalNode = root.GetChild("subImagesVertical"))
+	{
+		subImages_Vertical_ = subImagesVerticalNode.GetUInt("value");
+	}
+
+	if (XMLElement randomImageChangesNode = root.GetChild("randomImageChanges"))
+	{
+		randomImageChanges_ = randomImageChangesNode.GetUInt("value");
+	}
+
+	if (XMLElement randomImageTimeNode = root.GetChild("randomImageTime"))
+	{
+		randomImageTime_ = randomImageTimeNode.GetFloat("value");
+	}
+
+	if (XMLElement killOnDeactivateNode = root.GetChild("killOnDeactivate"))
+	{
+		killOnDeactivate_ = killOnDeactivateNode.GetBool("value");
+	}
+
+	return true;
+}
+
+bool ParticleModuleRequired::SaveXML(XMLElement& root)
+{
+	// TODO
+	return false;
 }
 
 }

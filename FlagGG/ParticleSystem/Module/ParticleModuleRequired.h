@@ -181,6 +181,12 @@ public:
 		return FReqMod;
 	}
 
+	// 从XML加载
+	bool LoadXML(const XMLElement& root) override;
+
+	// 保存到XML中
+	bool SaveXML(XMLElement& root) override;
+
 	//
 	// General.
 	// 
@@ -196,7 +202,7 @@ public:
 
 	Vector3 emitterOrigin_;
 
-	// ŷ����
+	// 欧拉角
 	Vector3 emitterRotation_;
 
 	/**

@@ -1,9 +1,12 @@
 #include "ParticleModuleSpawn.h"
 #include "Math/Distributions/DistributionFloatConstant.h"
 #include "Math/Distributions/DistributionFloatConstantCurve.h"
+#include "Core/ObjectFactory.h"
 
 namespace FlagGG
 {
+
+REGISTER_TYPE_FACTORY(ParticleModuleSpawn);
 
 ParticleModuleSpawnBase::ParticleModuleSpawnBase()
 	: processSpawnRate_(true)
@@ -197,6 +200,38 @@ float ParticleModuleSpawn::GetGlobalRateScale() const
 	/*static const auto EmitterRateScaleCVar = IConsoleManager::Get().FindTConsoleVariableDataFloat(TEXT("r.EmitterSpawnRateScale"));
 	return (bApplyGlobalSpawnRateScale && EmitterRateScaleCVar) ? EmitterRateScaleCVar->GetValueOnAnyThread() : 1.0f;*/
 	return 1.0f;
+}
+
+bool ParticleModuleSpawn::LoadXML(const XMLElement& root)
+{
+	if (XMLElement rateNode = root.GetChild("rate"))
+	{
+		const String curveType = rateNode.GetAttribute("type");
+		if (curveType == "constant")
+		{
+			auto constantCurve = MakeShared<DistributionFloatConstant>();
+			constantCurve->SetKeyOut(0, 0, rateNode.GetChild("constant").GetFloat("value"));
+			rate_.distribution_ = constantCurve;
+		}
+	}
+
+	if (XMLElement burstListNode = root.GetChild("burstList"))
+	{
+		for (XMLElement pointNode = burstListNode.GetChild("point"); pointNode; pointNode = pointNode.GetNext())
+		{
+			auto& burst = burstList_.EmplaceBack();
+			burst.time_ = pointNode.GetFloat("time");
+			burst.count_ = pointNode.GetInt("count");
+		}
+	}
+
+	return true;
+}
+
+bool ParticleModuleSpawn::SaveXML(XMLElement& root)
+{
+	// TODO
+	return false;
 }
 
 }
