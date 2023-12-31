@@ -215,6 +215,13 @@ bool ParticleModuleSpawn::LoadXML(const XMLElement& root)
 		}
 	}
 
+	// if (XMLElement rateScaleNode = root.GetChild("rateScale"))
+	{
+		DistributionFloatConstant* requiredDistributionSpawnRateScale = new DistributionFloatConstant();
+		requiredDistributionSpawnRateScale->constant_ = 1.0f;
+		rateScale_.distribution_ = requiredDistributionSpawnRateScale;
+	}
+
 	if (XMLElement burstListNode = root.GetChild("burstList"))
 	{
 		for (XMLElement pointNode = burstListNode.GetChild("point"); pointNode; pointNode = pointNode.GetNext())

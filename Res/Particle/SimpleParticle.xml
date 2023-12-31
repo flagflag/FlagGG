@@ -1217,7 +1217,7 @@
 				</startLocation>
 			</module>
 			<radialVelocity value="true" />
-			<bAdjustForWorldSpace value="true" />
+			<adjustForWorldSpace value="true" />
 			<heightAxis value="2" />
 			<startRadius type="constant">
 				<constant value="99" />
@@ -1465,7 +1465,7 @@
 				</startLocation>
 			</module>
 			<radialVelocity value="true" />
-			<bAdjustForWorldSpace value="true" />
+			<adjustForWorldSpace value="true" />
 			<heightAxis value="2" />
 			<startRadius type="constant">
 				<constant value="99" />

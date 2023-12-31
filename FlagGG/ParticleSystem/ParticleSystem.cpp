@@ -83,8 +83,11 @@ ParticleSystem::ParticleSystem()
 	maxSignificanceLevel_ = ParticleSignificanceLevel::Critical;
 	maxPoolSize_ = 32;
 
-
 	allowManagedTicking_ = true;
+
+	useDelayRange_ = false;
+	delay_ = 0.f;
+	delayLow_ = 0.f;
 }
 
 ParticleSystem::~ParticleSystem() = default;
@@ -535,8 +538,12 @@ bool ParticleSystem::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 					}
 				}
 			}
+
+			LODLevel->UpdateModuleLists();
 		}
 	}
+
+	BuildEmitters();
 
 	return true;
 }

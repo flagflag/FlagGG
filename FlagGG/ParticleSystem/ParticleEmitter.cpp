@@ -22,6 +22,7 @@ namespace FlagGG
 ParticleEmitter::ParticleEmitter()
 	: significanceLevel_(ParticleSignificanceLevel::Critical)
 	, useLegacySpawningBehavior_(false)
+	, cookedOut_(false)
 	, disabledLODsKeepEmitterAlive_(false)
 	, disableWhenInsignficant_(0)
 	, qualityLevelSpawnRateScale_(1.0f)

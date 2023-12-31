@@ -120,7 +120,7 @@ ParticleEmitterInstance::ParticleEmitterInstance()
 	, eventCount_(0)
 	, maxEventCount_(0)
 #endif	//#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
-	, positionOffsetThisTick_(0)
+	, positionOffsetThisTick_(Vector3::ZERO)
 	, pivotOffset_(-0.5f, -0.5f)
 {
 }

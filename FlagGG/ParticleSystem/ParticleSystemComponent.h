@@ -223,6 +223,9 @@ public:
 	// 更新包围盒
 	void OnUpdateWorldBoundingBox() override;
 
+	// 帧更新
+	void Update(Real timeStep) override;
+
 
 	SharedPtr<ParticleSystem> template_;
 
@@ -258,7 +261,7 @@ private:
 
 	Vector<ParticleSysParam> instanceParameters_;
 
-	PODVector<ParticleEmitterInstance*> emitterInstances_;
+	Vector<ParticleEmitterInstance*> emitterInstances_;
 };
 
 }

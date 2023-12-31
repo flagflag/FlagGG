@@ -17,12 +17,16 @@ ParticleSystemComponent::ParticleSystemComponent()
 	//oldPositionValid_ = false;
 	//oldPosition_ = Vector::ZERO;
 
+	justRegistered_ = false;
+	warmingUp_ = false;
+
 	randomStream_.Initialize(String::EMPTY);
 
 	//partSysVelocity_ = Vector::ZERO;
 
 	warmupTime_ = 0.0f;
 	warmupTickRate_ = 1.f;
+	emitterDelay_ = 0.f;
 	//secondsBeforeInactive_ = 1.0f;
 	//isTransformDirty_ = false;
 	//skipUpdateDynamicDataDuringTick_ = false;
@@ -125,7 +129,7 @@ void ParticleSystemComponent::InitParticles()
 		{
 			ParticleEmitterInstance* instance = numInstances == 0 ? NULL : emitterInstances_[idx];
 			ASSERT(globalDetailMode < NUM_DETAILMODE_FLAGS);
-			const bool detailModeAllowsRendering = /*detailMode_ <= globalDetailMode &&*/ (emitter->detailModeBitmask_ & (1 << globalDetailMode));
+			const bool detailModeAllowsRendering = /*detailMode_ <= globalDetailMode &&*/ /*(emitter->detailModeBitmask_ & (1 << globalDetailMode))*/ true;
 			const bool shouldCreateAndOrInit = detailModeAllowsRendering && emitter->HasAnyEnabledLODs() && canEverRender;
 
 			if (shouldCreateAndOrInit)
@@ -430,6 +434,17 @@ bool ParticleSystemComponent::GetMaterialParameter(const String& inName, Materia
 void ParticleSystemComponent::OnUpdateWorldBoundingBox()
 {
 
+}
+
+void ParticleSystemComponent::Update(Real timeStep)
+{
+	for (auto* emitterInst : emitterInstances_)
+	{
+		if (emitterInst)
+		{
+			emitterInst->Tick(timeStep, false);
+		}
+	}
 }
 
 }
