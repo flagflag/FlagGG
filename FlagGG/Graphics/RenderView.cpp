@@ -7,6 +7,7 @@
 #include "Scene/Camera.h"
 #include "Scene/Octree.h"
 #include "Scene/Light.h"
+#include "ParticleSystem/ParticleSystemRenderer.h"
 #include "Math/Polyhedron.h"
 #include "GfxDevice/GfxDevice.h"
 #include "GfxDevice/GfxRenderSurface.h"
@@ -90,6 +91,11 @@ void RenderView::RenderUpdate()
 	renderPiplineContext_->renderTarget_ = renderTarget_;
 	renderPiplineContext_->depthStencil_ = depthStencil_;
 	renderPiplineContext_->camera_ = camera_;
+
+	if (auto* particleSystemRenderer = scene_->GetComponent<ParticleSystemRenderer>())
+	{
+		particleSystemRenderer->RenderUpdate(renderPiplineContext_);
+	}
 
 	CollectVisibilityObjects();
 

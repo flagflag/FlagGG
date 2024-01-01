@@ -47,6 +47,9 @@ const UInt32 PDM_DefaultValue = 0xFFFF;
 #define DECLARE_PARTICLE(Name,Address)		\
 	BaseParticle& Name = *((BaseParticle*) (Address));
 
+#define DECLARE_PARTICLE_CONST(Name,Address)		\
+	const BaseParticle& Name = *((const BaseParticle*) (Address));
+
 #define PARTICLE_ELEMENT(Type,Name)																						\
 	Type& Name = *((Type*)((UInt8*)particleBase + currentOffset));																\
 	currentOffset += sizeof(Type);

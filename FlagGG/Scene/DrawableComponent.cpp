@@ -18,6 +18,16 @@ void DrawableComponent::UpdateTreeDirty()
 	worldBoundingBoxDirty_ = true;
 }
 
+void DrawableComponent::OnAddToScene(Scene* scene)
+{
+	ownerScene_ = scene;
+}
+
+void DrawableComponent::OnRemoveFromScene(Scene* scene)
+{
+	ownerScene_ = nullptr;
+}
+
 const BoundingBox& DrawableComponent::GetWorldBoundingBox()
 {
 	if (worldBoundingBoxDirty_)

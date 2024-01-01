@@ -47,6 +47,10 @@ class Material;
 
 struct ParticleEventInstancePayload;
 
+class ParticleMeshDataBuilder;
+class Geometry;
+struct RenderPiplineContext;
+
 struct LODBurstFired
 {
 	PODVector<bool> fired_;
@@ -580,6 +584,9 @@ public:
 	*/
 	void GetScreenAlignmentAndScale(Int32& outScreenAlign, Vector3& outScale);
 
+	// 渲染更新
+	virtual void RenderUpdate(const RenderPiplineContext* renderPiplineContext, ParticleMeshDataBuilder* particleMeshDataBuilder) {}
+
 
 	/** The maximum deltaTime allowed for updating PeakActiveParticle tracking.
 	 *	Any delta time > this value will not impact active particle tracking.
@@ -716,6 +723,9 @@ public:
 
 	PODVector<Light*> highQualityLights_;
 
+	// 粒子网格图形数据
+	SharedPtr<Geometry> geometry_;
+
 protected:
 
 	/**
@@ -799,6 +809,8 @@ protected:
 	 */
 	// virtual bool FillReplayData(DynamicEmitterReplayDataBase& OutData) override;
 
+	// 渲染更新
+	void RenderUpdate(const RenderPiplineContext* renderPiplineContext, ParticleMeshDataBuilder* particleMeshDataBuilder) override;
 };
 
 /*-----------------------------------------------------------------------------

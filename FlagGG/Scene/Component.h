@@ -14,6 +14,7 @@ namespace FlagGG
 {
 
 class Node;
+class Scene;
 
 class FlagGG_API Component : public Object
 {
@@ -32,6 +33,12 @@ public:
 
 	// 从node删除时调用
 	virtual void OnRemoveFromNode(Node* node) {}
+
+	// 插入场景时调用
+	virtual void OnAddToScene(Scene* scene) {}
+
+	// 从场景删除是调用
+	virtual void OnRemoveFromScene(Scene* scene) {}
 
 	// 设置场景节点
 	void SetNode(Node* node);

@@ -16,7 +16,7 @@ namespace FlagGG
 {
 
 /*-----------------------------------------------------------------------------
-	UParticleSpriteEmitter implementation.
+	ParticleSpriteEmitter implementation.
 -----------------------------------------------------------------------------*/
 ParticleSpriteEmitter::ParticleSpriteEmitter()
 {

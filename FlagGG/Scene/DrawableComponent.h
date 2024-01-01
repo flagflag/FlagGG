@@ -19,7 +19,14 @@ class FlagGG_API DrawableComponent : public Component
 public:
 	~DrawableComponent() override;
 
+	// 控件树发生dirty
 	void UpdateTreeDirty() override;
+
+	// 插入场景时调用
+	void OnAddToScene(Scene* scene) override;
+
+	// 从场景删除是调用
+	void OnRemoveFromScene(Scene* scene) override;
 
 	// 是否可渲染
 	virtual bool IsRenderable() { return false; }
@@ -38,6 +45,9 @@ public:
 
 	// 获取octree node
 	OctreeNode* GetOcNode() { return ocnode_; }
+
+	// 获取所属的场景
+	Scene* GetOwnerScene() const { return ownerScene_; }
 
 	// 获取世界空间下的包围盒
 	const BoundingBox& GetWorldBoundingBox();
@@ -61,6 +71,8 @@ protected:
 	bool worldBoundingBoxDirty_{ true };
 
 	OctreeNode* ocnode_{};
+
+	Scene* ownerScene_{};
 
 	bool castShadow_{};
 

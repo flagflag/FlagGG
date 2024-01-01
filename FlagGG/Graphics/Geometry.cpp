@@ -21,12 +21,13 @@ void Geometry::SetIndexBuffer(IndexBuffer* indexBuffer)
 	indexBuffer_ = indexBuffer;
 }
 
-void Geometry::SetDataRange(UInt32 indexStart, UInt32 indexCount)
+void Geometry::SetDataRange(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 vertexCount, UInt32 vertexBaseOffset)
 {
 	indexStart_ = indexStart;
 	indexCount_ = indexCount;
-	vertexStart_ = 0;
-	vertexCount_ = 0;
+	vertexStart_ = vertexStart;
+	vertexCount_ = vertexCount;
+	vertexBaseOffset_ = vertexBaseOffset;
 }
 
 void Geometry::SetLodDistance(float distance)

@@ -6,7 +6,10 @@
 #include "ParticleSystem/Emitter/ParticleSpriteEmitter.h"
 #include "ParticleSystem/ParticleLODLevel.h"
 #include "ParticleSystem/ParticleSystemComponent.h"
+#include "ParticleSystem/ParticleSystemRenderer.h"
 #include "Scene/Node.h"
+#include "Scene/Camera.h"
+#include "Graphics/RenderPipline.h"
 
 namespace FlagGG
 {
@@ -2359,6 +2362,84 @@ void ParticleSpriteEmitterInstance::GetAllocatedSize(Int32& outNum, Int32& outMa
 
 	outNum = activeParticleDataSize + activeParticleIndexSize + size;
 	outMax = maxActiveParticleDataSize + maxActiveParticleIndexSize + size;
+}
+
+void ParticleSpriteEmitterInstance::RenderUpdate(const RenderPiplineContext* renderPiplineContext, ParticleMeshDataBuilder* particleMeshDataBuilder)
+{
+	if (!spriteTemplate_)
+		return;
+
+	auto* currentLODLevel = spriteTemplate_->GetCurrentLODLevel(this);
+
+	if (!currentLODLevel)
+		return;
+
+	const Matrix3x4& localToWorld = component_->GetNode()->GetWorldTransform();
+
+	// Put the camera origin in the appropriate coordinate space.
+	Vector3 cameraPosition = renderPiplineContext->camera_->GetNode()->GetWorldPosition();
+	if (currentLODLevel->requiredModule_->useLocalSpace_)
+	{
+		Matrix3x4 invSelf = localToWorld.Inverse();
+		cameraPosition = invSelf * cameraPosition;
+	}
+
+	Vector4 dynamicParameterValue(Vector4::ONE);
+	Vector3 particlePosition;
+	Vector3 particleOldPosition;
+	float subImageIndex = 0.0f;
+
+	// TODO:
+	UInt32 instanceFactor = 1;
+
+	PODVector<VertexElement> vertexElements;
+	VertexDescription* vertexDesc = GetSubsystem<VertexDescFactory>()->Create(vertexElements);
+	ParticleMeshData* particleMeshData = particleMeshDataBuilder->Alloc(vertexDesc);
+	particleMeshData->geometry_ = geometry_;
+
+	PODVector<UInt8>& vertexData = particleMeshData->vertexData_;
+	PODVector<UInt32>& indexData = particleMeshData->indexData_;
+
+	vertexData.Resize(activeParticles_ * vertexDesc->GetStrideSize());
+
+	for (UInt32 i = 0; i < activeParticles_; ++i)	
+	{
+		DECLARE_PARTICLE_CONST(particle, particleData_ + particleStride_ * particleIndices_[i]);
+		if (i + 1 < activeParticles_)
+		{
+			DECLARE_PARTICLE_CONST(nextParticle, particleData_ + particleStride_ * particleIndices_[i + 1]);
+			// PlatformMisc::Prefetch(&nextParticle);
+		}
+
+		Vector3 size = ParticleMeshDataBuilder::GetParticleSize(particle, currentLODLevel->requiredModule_);
+
+		particlePosition = particle.location_;
+		particleOldPosition = particle.oldLocation_;
+		ParticleMeshDataBuilder::ApplyOrbitToPosition(orbitModuleOffset_, particle, currentLODLevel->requiredModule_, localToWorld, particlePosition, particleOldPosition);
+
+		if (cameraPayloadOffset_ != 0)
+		{
+			Vector3 cameraOffset = ParticleMeshDataBuilder::GetCameraOffsetFromPayload(cameraPayloadOffset_, particle, particlePosition, cameraPosition);
+			particlePosition += cameraOffset;
+			particleOldPosition += cameraOffset;
+		}
+
+		if (subUVDataOffset_ > 0)
+		{
+			FullSubUVPayload* subUVPayload = (FullSubUVPayload*)(((UInt8*)&particle) + subUVDataOffset_);
+			subImageIndex = subUVPayload->imageIndex_;
+		}
+
+		if (dynamicParameterDataOffset_ > 0)
+		{
+			ParticleMeshDataBuilder::GetDynamicValueFromPayload(dynamicParameterDataOffset_, particle, dynamicParameterValue);
+		}
+
+		for (UInt32 factor = 0; factor < instanceFactor; factor++)
+		{
+
+		}
+	}
 }
 
 /*-----------------------------------------------------------------------------

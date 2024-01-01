@@ -154,15 +154,15 @@ bool ParticleModuleRequired::LoadXML(const XMLElement& root)
 	{
 		auto* cache = GetSubsystem<ResourceCache>();
 
-		auto material = new Material();
-		material->CreateShaderParameters();
+		material_ = new Material();
+		material_->CreateShaderParameters();
 
 		if (XMLElement textureNode = materialNode.GetChild("texture"))
 		{
 			const UInt32 unit = textureNode.GetUInt("unit");
 			const String texPath = textureNode.GetAttribute("value");
 			auto tex = cache->GetResource<Texture2D>(texPath);
-			material->SetTexture((TextureClass)unit, tex);
+			material_->SetTexture((TextureClass)unit, tex);
 		}
 
 		for (XMLElement shaderParamNode = materialNode.GetChild("parameter"); shaderParamNode; shaderParamNode = shaderParamNode.GetNext())
@@ -172,18 +172,18 @@ bool ParticleModuleRequired::LoadXML(const XMLElement& root)
 			if (type == "Float")
 			{
 				const float value = shaderParamNode.GetFloat("value");
-				material->GetShaderParameters()->AddParametersDefine<float>(name);
-				material->GetShaderParameters()->SetValue<float>(name, value);
+				material_->GetShaderParameters()->AddParametersDefine<float>(name);
+				material_->GetShaderParameters()->SetValue<float>(name, value);
 			}
 			else if (type == "Vector4")
 			{
 				const Vector4 value = shaderParamNode.GetVector4("value");
-				material->GetShaderParameters()->AddParametersDefine<Vector4>(name);
-				material->GetShaderParameters()->SetValue<Vector4>(name, value);
+				material_->GetShaderParameters()->AddParametersDefine<Vector4>(name);
+				material_->GetShaderParameters()->SetValue<Vector4>(name, value);
 			}
 		}
 
-		auto& renderPass = material->GetRenderPass()[RENDER_PASS_TYPE_FORWARD_ALPHA];
+		auto& renderPass = material_->GetRenderPass()[RENDER_PASS_TYPE_FORWARD_ALPHA];
 		renderPass.SetDepthWrite(false);
 	}
 

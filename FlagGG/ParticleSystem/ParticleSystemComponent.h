@@ -11,6 +11,8 @@ namespace FlagGG
 {
 
 struct ParticleEmitterInstance;
+class ParticleMeshDataBuilder;
+struct RenderPiplineContext;
 
 enum ParticleSysParamType
 {
@@ -225,6 +227,9 @@ public:
 
 	// 帧更新
 	void Update(Real timeStep) override;
+
+	// 渲染更新
+	void RenderUpdate(const RenderPiplineContext* renderPiplineContext, ParticleMeshDataBuilder* particleMeshDataBuilder);
 
 
 	SharedPtr<ParticleSystem> template_;

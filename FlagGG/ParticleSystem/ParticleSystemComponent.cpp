@@ -1,6 +1,9 @@
 #include "ParticleSystemComponent.h"
 #include "ParticleSystem/ParticleEmitter.h"
 #include "ParticleSystem/ParticleEmitterInstances.h"
+#include "ParticleSystem/ParticleSystemRenderer.h"
+#include "ParticleSystem/ParticleLODLevel.h"
+#include "Scene/Scene.h"
 
 namespace FlagGG
 {
@@ -443,6 +446,43 @@ void ParticleSystemComponent::Update(Real timeStep)
 		if (emitterInst)
 		{
 			emitterInst->Tick(timeStep, false);
+		}
+	}
+
+	auto* particleSystemRenderer = ownerScene_->GetComponent<ParticleSystemRenderer>();
+	if (!particleSystemRenderer)
+	{
+		particleSystemRenderer = ownerScene_->CreateComponent<ParticleSystemRenderer>();
+	}
+
+	particleSystemRenderer->PostToRenderUpdateQueue(this);
+}
+
+void ParticleSystemComponent::RenderUpdate(const RenderPiplineContext* renderPiplineContext, ParticleMeshDataBuilder* particleMeshDataBuilder)
+{
+	for (auto* emitterInst : emitterInstances_)
+	{
+		if (emitterInst && emitterInst->spriteTemplate_)
+		{
+			auto currentLODLevel = emitterInst->spriteTemplate_->GetCurrentLODLevel(emitterInst);
+
+			if (currentLODLevel)
+			{
+				if (!emitterInst->geometry_)
+				{
+					emitterInst->geometry_ = new Geometry();
+
+					auto& renderContext = renderContexts_.EmplaceBack();
+					renderContext.geometryType_ = GEOMETRY_BILLBOARD;
+					renderContext.geometry_ = emitterInst->geometry_;
+					renderContext.material_ = currentLODLevel->requiredModule_->material_;
+					renderContext.numWorldTransform_ = 1;
+					renderContext.worldTransform_ = &(node_->GetWorldTransform());
+					renderContext.viewMask_ = GetViewMask();
+				}
+
+				emitterInst->RenderUpdate(renderPiplineContext, particleMeshDataBuilder);
+			}
 		}
 	}
 }

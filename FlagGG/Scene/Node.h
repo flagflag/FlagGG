@@ -133,6 +133,7 @@ public:
 	// Called by Scene
 	void SetOwnerScene(Scene* scene);
 
+	// 获取所属的场景
 	Scene* GetOwnerScene() const { return ownerScene_; }
 
 	// 更新节点属性结构dirty状态

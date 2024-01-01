@@ -26,7 +26,7 @@ public:
 	void SetIndexBuffer(IndexBuffer* indexBuffer);
 
 	// 设置buffer的范围
-	void SetDataRange(UInt32 indexStart, UInt32 indexCount);
+	void SetDataRange(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart = 0u, UInt32 vertexCount = 0u, UInt32 vertexBaseOffset = 0u);
 
 	// 设置lod距离
 	void SetLodDistance(float distance);
@@ -69,6 +69,7 @@ private:
 	UInt32 indexCount_;
 	UInt32 vertexStart_;
 	UInt32 vertexCount_;
+	UInt32 vertexBaseOffset_;
 			
 	float lodDistance_;
 };

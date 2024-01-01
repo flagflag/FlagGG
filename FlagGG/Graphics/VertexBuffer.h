@@ -22,9 +22,17 @@ public:
 	 * 设置vb的大小
 	 * vertexCount     - vb顶点元素的个数
 	 * vertexElements  - vb顶点描述
-	 * dynamic         - 是否是动态bufer
+	 * dynamic         - 是否是动态buffer
 	 */
 	bool SetSize(UInt32 vertexCount, const PODVector<VertexElement>& vertexElements, bool dynamic = false);
+
+	/**
+	 * 设置vb的大小
+	 * vertexCount     - vb顶点元素的个数
+	 * vertexDesc      - vb顶点描述
+	 * dynamic         - 是否是动态buffer
+	 */
+	bool SetSize(UInt32 vertexCount, VertexDescription* vertexDesc, bool dynamic = false);
 
 	// 设置vb的数据
 	void SetData(const void* data);
@@ -40,12 +48,6 @@ public:
 
 	// 获取顶点描述
 	const PODVector<VertexElement>& GetElements() const;
-
-	// 通过Mask构建顶点描述
-	static PODVector<VertexElement> GetElements(UInt32 elementMask);
-
-	// 通过顶点描述计算顶点单个元素的大小
-	static UInt32 GetVertexSize(const PODVector<VertexElement>& elements);
 
 private:
 	// 顶点描述（图形层）

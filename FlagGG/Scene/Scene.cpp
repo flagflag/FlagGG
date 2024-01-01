@@ -133,6 +133,8 @@ void Scene::OnAddToScene(Node* node, Component* component)
 				addToOctreeSet_.Insert(static_cast<DrawableComponent*>(component));
 			}
 		}
+
+		component->OnAddToScene(this);
 	}
 }
 
@@ -156,6 +158,8 @@ void Scene::OnRemoveFromScene(Node* node, Component* component)
 				addToOctreeSet_.Erase(static_cast<DrawableComponent*>(component));
 			}
 		}
+
+		component->OnRemoveFromScene(this);
 	}
 }
 

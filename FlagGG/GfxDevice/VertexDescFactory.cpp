@@ -5,6 +5,20 @@
 namespace FlagGG
 {
 
+VertexDescription::VertexDescription(UInt32 uuid, const PODVector<VertexElement>& elements)
+	: uuid_(uuid)
+	, elements_(elements)
+{
+	strideSize_ = VertexDescFactory::GetVertexSize(elements_);
+}
+
+VertexDescription::VertexDescription(UInt32 uuid, PODVector<VertexElement>&& elements)
+	: uuid_(uuid)
+{
+	elements_.Swap(elements);
+	strideSize_ = VertexDescFactory::GetVertexSize(elements_);
+}
+
 VertexDescFactory::~VertexDescFactory()
 {
 
@@ -61,6 +75,29 @@ UInt32 VertexDescFactory::HashVertexElement(const PODVector<VertexElement>& elem
 		hashValue = SDBM_Hash(hashValue, el.index_);
 	}
 	return hashValue;
+}
+
+PODVector<VertexElement> VertexDescFactory::GetElements(UInt32 elementMask)
+{
+	PODVector<VertexElement> vertexElements;
+	for (UInt32 i = 0; i < MAX_DEFAULT_VERTEX_ELEMENT; ++i)
+	{
+		if (elementMask & (1u << i))
+		{
+			vertexElements.Push(DEFAULT_VERTEX_ELEMENT[i]);
+		}
+	}
+	return vertexElements;
+}
+
+UInt32 VertexDescFactory::GetVertexSize(const PODVector<VertexElement>& elements)
+{
+	UInt32 vertexSize = 0u;
+	for (const auto& element : elements)
+	{
+		vertexSize += VERTEX_ELEMENT_TYPE_SIZE[element.vertexElementType_];
+	}
+	return vertexSize;
 }
 
 }

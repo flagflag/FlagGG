@@ -136,7 +136,7 @@ bool Model::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		{
 			UInt32 elementMask;
 			stream->ReadUInt32(elementMask);
-			vertexElements = VertexBuffer::GetElements(elementMask);
+			vertexElements = VertexDescFactory::GetElements(elementMask);
 		}
 		else
 		{
@@ -157,7 +157,7 @@ bool Model::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		stream->ReadUInt32(ignore);
 
 		SharedPtr<VertexBuffer> buffer(new VertexBuffer());
-		UInt32 vertexSize = VertexBuffer::GetVertexSize(vertexElements);
+		UInt32 vertexSize = VertexDescFactory::GetVertexSize(vertexElements);
 		buffer->SetSize(vertexCount, vertexElements);
 		void* data = buffer->Lock(0, vertexCount);
 		stream->ReadStream(data, vertexCount * vertexSize);
