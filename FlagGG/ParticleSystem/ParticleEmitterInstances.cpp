@@ -2389,18 +2389,26 @@ void ParticleSpriteEmitterInstance::RenderUpdate(const RenderPiplineContext* ren
 	Vector3 particleOldPosition;
 	float subImageIndex = 0.0f;
 
-	// TODO:
-	UInt32 instanceFactor = 1;
-
 	PODVector<VertexElement> vertexElements;
+	vertexElements.Push(VertexElement(VE_VECTOR3, SEM_POSITION, 0));
+	vertexElements.Push(VertexElement(VE_FLOAT, SEM_TEXCOORD, 0));
+	vertexElements.Push(VertexElement(VE_VECTOR3, SEM_POSITION, 1));
+	vertexElements.Push(VertexElement(VE_FLOAT, SEM_TEXCOORD, 1));
+	vertexElements.Push(VertexElement(VE_VECTOR2, SEM_TEXCOORD, 2));
+	vertexElements.Push(VertexElement(VE_FLOAT, SEM_TEXCOORD, 3));
+	vertexElements.Push(VertexElement(VE_FLOAT, SEM_TEXCOORD, 4));
+	vertexElements.Push(VertexElement(VE_VECTOR4, SEM_COLOR));
 	VertexDescription* vertexDesc = GetSubsystem<VertexDescFactory>()->Create(vertexElements);
-	ParticleMeshData* particleMeshData = particleMeshDataBuilder->Alloc(vertexDesc);
-	particleMeshData->geometry_ = geometry_;
+	ParticleMeshDataBuilder::ParticleMeshData particleMeshData = particleMeshDataBuilder->Allocate(vertexDesc->GetStrideSize() * activeParticles_ * 4, activeParticles_ * 6);
+	GlobalDynamicVertexBuffer::Allocation& vertexAllocation = particleMeshData.vertexAllocation_;
+	GlobalDynamicIndexBuffer::Allocation& indexAllocation = particleMeshData.indexAllocation_;
 
-	PODVector<UInt8>& vertexData = particleMeshData->vertexData_;
-	PODVector<UInt32>& indexData = particleMeshData->indexData_;
+	geometry_->SetVertexBuffer(0, vertexAllocation.vertexBuffer_);
+	geometry_->SetIndexBuffer(indexAllocation.indexBuffer_);
+	geometry_->SetDataRange(indexAllocation.offsetInCount_, indexAllocation.sizeInCount_, 0, vertexAllocation.sizeInBytes_, vertexAllocation.offsetInBytes_);
 
-	vertexData.Resize(activeParticles_ * vertexDesc->GetStrideSize());
+	ASSERT_MESSAGE(sizeof(ParticleSpriteVertex) == vertexDesc->GetStrideSize(), "Particle stride error.");
+	ParticleSpriteVertex* fillVertex = (ParticleSpriteVertex*)vertexAllocation.vertexData_;
 
 	for (UInt32 i = 0; i < activeParticles_; ++i)	
 	{
@@ -2411,7 +2419,7 @@ void ParticleSpriteEmitterInstance::RenderUpdate(const RenderPiplineContext* ren
 			// PlatformMisc::Prefetch(&nextParticle);
 		}
 
-		Vector3 size = ParticleMeshDataBuilder::GetParticleSize(particle, currentLODLevel->requiredModule_);
+		const Vector2 size = ParticleMeshDataBuilder::GetParticleSize(particle, currentLODLevel->requiredModule_);
 
 		particlePosition = particle.location_;
 		particleOldPosition = particle.oldLocation_;
@@ -2435,10 +2443,16 @@ void ParticleSpriteEmitterInstance::RenderUpdate(const RenderPiplineContext* ren
 			ParticleMeshDataBuilder::GetDynamicValueFromPayload(dynamicParameterDataOffset_, particle, dynamicParameterValue);
 		}
 
-		for (UInt32 factor = 0; factor < instanceFactor; factor++)
-		{
-
-		}
+		fillVertex->position_		= particlePosition;
+		fillVertex->relativeTime_	= particle.relativeTime_;
+		fillVertex->oldPosition_	= particleOldPosition;
+		fillVertex->particleId_		= (particle.flags_ & STATE_CounterMask) / 10000.0f;
+		fillVertex->size_			= GetParticleSizeWithUVFlipInSign(particle, size);
+		fillVertex->rotation_		= particle.rotation_;
+		fillVertex->subImageIndex_	= subImageIndex;
+		fillVertex->color_			= particle.color_;
+		
+		++fillVertex;
 	}
 }
 

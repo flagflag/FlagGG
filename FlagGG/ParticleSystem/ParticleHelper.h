@@ -241,6 +241,29 @@ enum ParticleStates
 	STATE_CounterMask = (~STATE_Mask)
 };
 
+/**
+ * Per-particle data sent to the GPU.
+ */
+struct ParticleSpriteVertex
+{
+	/** The position of the particle. */
+	Vector3 position_;
+	/** The relative time of the particle. */
+	float relativeTime_;
+	/** The previous position of the particle. */
+	Vector3	oldPosition_;
+	/** Value that remains constant over the lifetime of a particle. */
+	float particleId_;
+	/** The size of the particle. */
+	Vector2 size_;
+	/** The rotation of the particle. */
+	float rotation_;
+	/** The sub-image index for the particle. */
+	float subImageIndex_;
+	/** The color of the particle. */
+	Color color_;
+};
+
 //
 //	SubUV-related payloads
 //
@@ -254,7 +277,14 @@ struct FullSubUVPayload
 
 FORCEINLINE Vector3 GetParticleBaseSize(const BaseParticle& Particle, bool bKeepFlipScale = false)
 {
-	return bKeepFlipScale ? Particle.baseSize_ : Vector3(Abs(Particle.baseSize_.x_), Abs(Particle.baseSize_.y_),Abs(Particle.baseSize_.z_));
+	return bKeepFlipScale ? Particle.baseSize_ : Vector3(Abs(Particle.baseSize_.x_), Abs(Particle.baseSize_.y_), Abs(Particle.baseSize_.z_));
+}
+
+FORCEINLINE Vector2 GetParticleSizeWithUVFlipInSign(const BaseParticle& particle, const Vector2& scaledSize)
+{
+	return Vector2(
+		particle.baseSize_.x_ >= 0.0f ? scaledSize.x_ : -scaledSize.x_,
+		particle.baseSize_.y_ >= 0.0f ? scaledSize.y_ : -scaledSize.y_);
 }
 
 }

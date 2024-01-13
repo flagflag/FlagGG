@@ -6,7 +6,8 @@
 
 #include "Core/Object.h"
 #include "AsyncFrame/Mutex.h"
-#include "Graphics/VertexBuffer.h"
+#include "Graphics/GlobalVertexBuffer.h"
+#include "Graphics/GlobalIndexBuffer.h"
 #include "Graphics/IndexBuffer.h"
 #include "Scene/Component.h"
 #include "Container/Ptr.h"
@@ -24,18 +25,15 @@ class VertexDescription;
 class Geometry;
 struct RenderPiplineContext;
 
-struct ParticleMeshData
-{
-	VertexDescription* vertexDesc_;
-	PODVector<UInt8> vertexData_;
-	UInt32 vertexCount_;
-	PODVector<UInt32> indexData_;
-	Geometry* geometry_;
-};
-
 class ParticleMeshDataBuilder
 {
 public:
+	struct ParticleMeshData
+	{
+		GlobalDynamicVertexBuffer::Allocation vertexAllocation_;
+		GlobalDynamicIndexBuffer::Allocation indexAllocation_;
+	};
+
 	~ParticleMeshDataBuilder();
 
 	// 开始收集粒子网格数据
@@ -45,11 +43,11 @@ public:
 	void EndDataCollection();
 
 	// 分配一个粒子网格数据
-	ParticleMeshData* Alloc(VertexDescription* vertexDesc);
+	ParticleMeshData Allocate(UInt32 vertexSizeInByte, UInt32 indexCount);
 
 
 	// 获取粒子真实的大小
-	static Vector3 GetParticleSize(const BaseParticle& particle, ParticleModuleRequired* requireModule);
+	static Vector2 GetParticleSize(const BaseParticle& particle, ParticleModuleRequired* requireModule);
 
 	//
 	static void ApplyOrbitToPosition(Int32 orbitModuleOffset, const BaseParticle& particle, bool useLocalSpace, const Matrix3x4& localToWorld, Vector3& particlePosition, Vector3& particleOldPosition);
@@ -64,17 +62,9 @@ public:
 	static void GetDynamicValueFromPayload(Int32 dynamicPayloadOffset, const BaseParticle& particle, Vector4& outDynamicData);
 
 private:
-	Mutex mutex_;
+	GlobalDynamicVertexBuffer vertexBuffer_;
 
-	PODVector<ParticleMeshData*> particleMeshDataSet_;
-
-	PODVector<ParticleMeshData*> particleMeshDataPool_;
-
-	// 所有粒子的顶点将被合并在一个GpuBuffer中（在移动端可以比较好的改善同步GPU数据产生的耗时）
-	SharedPtr<VertexBuffer> vertexBuffer_;
-
-	// 所有粒子的索引数据合并在一个GpuBuffer中（在移动端可以比较好的改善同步GPU数据产生的耗时）
-	SharedPtr<IndexBuffer> indexBuffer_;
+	GlobalDynamicIndexBuffer indexBuffer_;
 };
 
 class FlagGG_API ParticleSystemRenderer : public Component

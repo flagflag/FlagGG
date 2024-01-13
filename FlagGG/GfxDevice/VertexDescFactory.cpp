@@ -71,8 +71,12 @@ UInt32 VertexDescFactory::HashVertexElement(const PODVector<VertexElement>& elem
 	UInt32 hashValue = 0;
 	for (const auto& el : elements)
 	{
-		hashValue = SDBM_Hash(hashValue, ((((el.perInstance_ ? 1 : 0) << 3) | el.vertexElementType_) << 4) | el.vertexElementSemantic_);
+		hashValue = SDBM_Hash(hashValue, ((((el.perInstance_ ? 1 : 0) << 3) | (el.vertexElementType_ + 1)) << 4) | (el.vertexElementSemantic_ + 1));
 		hashValue = SDBM_Hash(hashValue, el.index_);
+		hashValue = SDBM_Hash(hashValue, (el.offset_ >>  0) & 0xFF);
+		hashValue = SDBM_Hash(hashValue, (el.offset_ >>  8) & 0xFF);
+		hashValue = SDBM_Hash(hashValue, (el.offset_ >> 16) & 0xFF);
+		hashValue = SDBM_Hash(hashValue, (el.offset_ >> 24) & 0xFF);
 	}
 	return hashValue;
 }

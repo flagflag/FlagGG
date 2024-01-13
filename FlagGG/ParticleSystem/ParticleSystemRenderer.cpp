@@ -12,100 +12,30 @@ namespace FlagGG
 
 ParticleMeshDataBuilder::~ParticleMeshDataBuilder()
 {
-	for (auto& particleDataMesh : particleMeshDataSet_)
-	{
-		delete particleDataMesh;
-		particleDataMesh = nullptr;
-	}
-	particleMeshDataSet_.Clear();
 
-	for (auto& particleDataMesh : particleMeshDataPool_)
-	{
-		delete particleDataMesh;
-		particleDataMesh = nullptr;
-	}
-	particleMeshDataPool_.Clear();
 }
 
 void ParticleMeshDataBuilder::BeginDataCollection()
 {
-	for (auto* particleMeshData : particleMeshDataSet_)
-	{
-		particleMeshDataPool_.Push(particleMeshData);
-	}
-
-	particleMeshDataSet_.Clear();
+	vertexBuffer_.Clear();
 }
 
 void ParticleMeshDataBuilder::EndDataCollection()
 {
-	if (particleMeshDataSet_.Empty())
-		return;
-
-// 按照顶点描述排序
-	Sort(particleMeshDataSet_.Begin(), particleMeshDataSet_.End(), [](ParticleMeshData* _1, ParticleMeshData* _2)
-	{
-		return _1->vertexDesc_ < _2->vertexDesc_;
-	});
-
-// Pass1 - 计算出所有顶点需要使用的字节数
-	UInt32 vertexBaseOffset = 0u;
-	for (auto* particleMeshData : particleMeshDataSet_)
-	{
-		particleMeshData->geometry_->SetVertexBuffer(0, vertexBuffer_);
-		particleMeshData->geometry_->SetIndexBuffer(indexBuffer_);
-		particleMeshData->geometry_->SetDataRange(0, 0, 0, particleMeshData->vertexCount_, vertexBaseOffset);
-		vertexBaseOffset += particleMeshData->vertexCount_ * particleMeshData->vertexDesc_->GetStrideSize();
-	}
-
-	if (vertexBaseOffset == 0)
-		return;
-
-// Pass2 - 分配顶点内存、同步顶点数据到GpuBuffer
-	if (!vertexBuffer_)
-		vertexBuffer_ = new VertexBuffer();
-	if (!indexBuffer_)
-		indexBuffer_ = new IndexBuffer();
-
-	PODVector<VertexElement> elements;
-	elements.Push(VertexElement(VE_INT, SEM_POSITION));
-	UInt32 vertexCount = (vertexBaseOffset + 5) / 4;
-	vertexBuffer_->SetSize(vertexCount, elements);
-
-	char* data = (char*)vertexBuffer_->Lock(0, vertexCount);
-
-	for (auto* particleMeshData : particleMeshDataSet_)
-	{
-		memcpy(data, particleMeshData->vertexData_.Buffer(), particleMeshData->vertexData_.Size());
-		data += particleMeshData->vertexData_.Size();
-	}
-
-	vertexBuffer_->Unlock();
+	vertexBuffer_.CommitToGPU();
 }
 
-ParticleMeshData* ParticleMeshDataBuilder::Alloc(VertexDescription* vertexDesc)
+ParticleMeshDataBuilder::ParticleMeshData ParticleMeshDataBuilder::Allocate(UInt32 vertexSizeInByte, UInt32 indexCount)
 {
-	if (particleMeshDataPool_.Size())
-	{
-		ParticleMeshData* particleMeshData = particleMeshDataPool_.Back();
-		particleMeshDataPool_.Pop();
-		particleMeshDataSet_.Push(particleMeshData);
-
-		particleMeshData->vertexDesc_ = vertexDesc;
-		particleMeshData->vertexData_.Clear();
-		particleMeshData->indexData_.Clear();
-		return particleMeshData;
-	}
-
-	ParticleMeshData* particleMeshData = new ParticleMeshData();
-	particleMeshData->vertexDesc_ = vertexDesc;
-	particleMeshDataSet_.Push(particleMeshData);
-	return particleMeshData;
+	ParticleMeshData meshData;
+	meshData.vertexAllocation_ = vertexBuffer_.Allocate(vertexSizeInByte);
+	meshData.indexAllocation_ = indexBuffer_.Allocate(indexCount);
+	return meshData;
 }
 
-Vector3 ParticleMeshDataBuilder::GetParticleSize(const BaseParticle& particle, ParticleModuleRequired* requireModule)
+Vector2 ParticleMeshDataBuilder::GetParticleSize(const BaseParticle& particle, ParticleModuleRequired* requireModule)
 {
-	Vector3 size(Abs(particle.size_.x_), Abs(particle.size_.y_), Abs(particle.size_.z_));
+	Vector2 size(Abs(particle.size_.x_), Abs(particle.size_.y_));
 	if (requireModule->screenAlignment_ == PSA_Square ||
 		requireModule->screenAlignment_ == PSA_FacingCameraPosition ||
 		requireModule->screenAlignment_ == PSA_FacingCameraDistanceBlend)

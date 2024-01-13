@@ -211,7 +211,7 @@ enum MaterialQuality : UInt32
 enum VertexElementType
 {
 	VE_INT = 0,
-	VE_FLAOT,
+	VE_FLOAT,
 	VE_VECTOR2,
 	VE_VECTOR3,
 	VE_VECTOR4,
