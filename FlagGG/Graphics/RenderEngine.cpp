@@ -433,6 +433,8 @@ void RenderEngine::DrawBatch(Camera* camera, const RenderBatch& renderBatch)
 		SetShaders(renderBatch.material_->GetVertexShader(), renderBatch.material_->GetPixelShader());
 	SetMaterialTextures(renderBatch.material_);
 	SetVertexBuffers(renderBatch.geometry_->GetVertexBuffers());
+	if (renderBatch.vertexDesc_)
+		gfxDevice_->SetVertexDescription(renderBatch.vertexDesc_);
 	SetIndexBuffer(renderBatch.geometry_->GetIndexBuffer());
 	SetPrimitiveType(renderBatch.geometry_->GetPrimitiveType());
 	DrawCallIndexed(renderBatch.geometry_->GetIndexStart(), renderBatch.geometry_->GetIndexCount());

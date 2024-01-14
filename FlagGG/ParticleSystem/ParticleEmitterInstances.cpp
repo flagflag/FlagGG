@@ -125,6 +125,7 @@ ParticleEmitterInstance::ParticleEmitterInstance()
 #endif	//#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 	, positionOffsetThisTick_(Vector3::ZERO)
 	, pivotOffset_(-0.5f, -0.5f)
+	, renderContext_(nullptr)
 {
 }
 
@@ -1864,6 +1865,18 @@ ParticleLODLevel* ParticleEmitterInstance::GetCurrentLODLevelChecked()
 	return LODLevel;
 }
 
+Material* ParticleEmitterInstance::GetCurrentMaterial()
+{
+	Material* renderMaterial = currentMaterial_;
+	if (renderMaterial == NULL)
+	{
+		// TODO: get default material
+		// renderMaterial = Material::GetDefaultMaterial();
+	}
+	currentMaterial_ = renderMaterial;
+	return renderMaterial;
+}
+
 /**
  *	Spawn/burst the given particles...
  *
@@ -2389,17 +2402,25 @@ void ParticleSpriteEmitterInstance::RenderUpdate(const RenderPiplineContext* ren
 	Vector3 particleOldPosition;
 	float subImageIndex = 0.0f;
 
-	PODVector<VertexElement> vertexElements;
-	vertexElements.Push(VertexElement(VE_VECTOR3, SEM_POSITION, 0));
-	vertexElements.Push(VertexElement(VE_FLOAT, SEM_TEXCOORD, 0));
-	vertexElements.Push(VertexElement(VE_VECTOR3, SEM_POSITION, 1));
-	vertexElements.Push(VertexElement(VE_FLOAT, SEM_TEXCOORD, 1));
-	vertexElements.Push(VertexElement(VE_VECTOR2, SEM_TEXCOORD, 2));
-	vertexElements.Push(VertexElement(VE_FLOAT, SEM_TEXCOORD, 3));
-	vertexElements.Push(VertexElement(VE_FLOAT, SEM_TEXCOORD, 4));
-	vertexElements.Push(VertexElement(VE_VECTOR4, SEM_COLOR));
-	VertexDescription* vertexDesc = GetSubsystem<VertexDescFactory>()->Create(vertexElements);
-	ParticleMeshDataBuilder::ParticleMeshData particleMeshData = particleMeshDataBuilder->Allocate(vertexDesc->GetStrideSize() * activeParticles_ * 4, activeParticles_ * 6);
+	ASSERT(renderContext_);
+	if (!renderContext_->vertexDesc_)
+	{
+		geometry_ = new Geometry();
+
+		renderContext_->geometryType_ = GEOMETRY_BILLBOARD;
+		renderContext_->geometry_ = geometry_;
+		renderContext_->material_ = GetCurrentMaterial();
+
+		PODVector<VertexElement> vertexElements;
+		vertexElements.Push(VertexElement(VE_VECTOR4, SEM_POSITION, 0));
+		vertexElements.Push(VertexElement(VE_VECTOR4, SEM_TEXCOORD, 0));
+		vertexElements.Push(VertexElement(VE_VECTOR4, SEM_TEXCOORD, 1));
+		vertexElements.Push(VertexElement(VE_VECTOR4, SEM_COLOR));
+		renderContext_->vertexDesc_ = GetSubsystem<VertexDescFactory>()->Create(vertexElements);
+	}
+
+	VertexDescription* vertexDesc = renderContext_->vertexDesc_;
+	ParticleMeshDataBuilder::ParticleMeshData particleMeshData = particleMeshDataBuilder->Allocate(vertexDesc->GetStrideSize() * activeParticles_, activeParticles_ * 6);
 	GlobalDynamicVertexBuffer::Allocation& vertexAllocation = particleMeshData.vertexAllocation_;
 	GlobalDynamicIndexBuffer::Allocation& indexAllocation = particleMeshData.indexAllocation_;
 
@@ -2409,6 +2430,8 @@ void ParticleSpriteEmitterInstance::RenderUpdate(const RenderPiplineContext* ren
 
 	ASSERT_MESSAGE(sizeof(ParticleSpriteVertex) == vertexDesc->GetStrideSize(), "Particle stride error.");
 	ParticleSpriteVertex* fillVertex = (ParticleSpriteVertex*)vertexAllocation.vertexData_;
+	UInt32* fillIndex = indexAllocation.indexData_;
+	UInt32 idx = 0;
 
 	for (UInt32 i = 0; i < activeParticles_; ++i)	
 	{
@@ -2453,6 +2476,19 @@ void ParticleSpriteEmitterInstance::RenderUpdate(const RenderPiplineContext* ren
 		fillVertex->color_			= particle.color_;
 		
 		++fillVertex;
+
+		(*fillIndex) = idx++;
+		++fillIndex;
+		(*fillIndex) = idx++;
+		++fillIndex;
+		(*fillIndex) = idx++;
+		++fillIndex;
+		(*fillIndex) = idx++;
+		++fillIndex;
+		(*fillIndex) = idx++;
+		++fillIndex;
+		(*fillIndex) = idx++;
+		++fillIndex;
 	}
 }
 

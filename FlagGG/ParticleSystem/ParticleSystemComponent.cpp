@@ -172,7 +172,7 @@ void ParticleSystemComponent::InitParticles()
 
 	if (clearDynamicData)
 	{
-		// ClearDynamicData();
+		ClearRenderContext();
 	}
 
 	if (setLodLevels)
@@ -202,6 +202,8 @@ void ParticleSystemComponent::InitParticles()
 			}
 		}
 	}
+
+	UpdateRenderContext();
 }
 
 void ParticleSystemComponent::ResetParticles(bool clearInstances)
@@ -222,7 +224,7 @@ void ParticleSystemComponent::ResetParticles(bool clearInstances)
 			}
 		}
 		emitterInstances_.Clear();
-		// ClearDynamicData();
+		ClearRenderContext();
 	}
 	else
 	{
@@ -464,26 +466,30 @@ void ParticleSystemComponent::RenderUpdate(const RenderPiplineContext* renderPip
 	{
 		if (emitterInst && emitterInst->spriteTemplate_)
 		{
-			auto currentLODLevel = emitterInst->spriteTemplate_->GetCurrentLODLevel(emitterInst);
-
-			if (currentLODLevel)
-			{
-				if (!emitterInst->geometry_)
-				{
-					emitterInst->geometry_ = new Geometry();
-
-					auto& renderContext = renderContexts_.EmplaceBack();
-					renderContext.geometryType_ = GEOMETRY_BILLBOARD;
-					renderContext.geometry_ = emitterInst->geometry_;
-					renderContext.material_ = currentLODLevel->requiredModule_->material_;
-					renderContext.numWorldTransform_ = 1;
-					renderContext.worldTransform_ = &(node_->GetWorldTransform());
-					renderContext.viewMask_ = GetViewMask();
-				}
-
-				emitterInst->RenderUpdate(renderPiplineContext, particleMeshDataBuilder);
-			}
+			emitterInst->RenderUpdate(renderPiplineContext, particleMeshDataBuilder);
 		}
+	}
+}
+
+void ParticleSystemComponent::ClearRenderContext()
+{
+	renderContexts_.Clear();
+}
+
+void ParticleSystemComponent::UpdateRenderContext()
+{
+	renderContexts_.Resize(emitterInstances_.Size());
+
+	for (UInt32 i = 0; i < emitterInstances_.Size(); ++i)
+	{
+		auto* emitterInst = emitterInstances_[i];
+		auto& renderContext = renderContexts_[i];
+
+		emitterInst->renderContext_ = &renderContext;
+
+		renderContext.numWorldTransform_ = 1;
+		renderContext.worldTransform_ = &(node_->GetWorldTransform());
+		renderContext.viewMask_ = GetViewMask();
 	}
 }
 

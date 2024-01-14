@@ -27,7 +27,10 @@ GlobalDynamicIndexBuffer::Allocation GlobalDynamicIndexBuffer::Allocate(UInt32 c
 
 void GlobalDynamicIndexBuffer::CommitToGPU()
 {
-	// buffer不够大，或者小于buffer的一半，重新重新分配顶点buffer
+	if (indexCount_ == 0)
+		return;
+
+	// buffer涓嶅澶э紝鎴栬�呭皬浜巄uffer鐨勪竴鍗婏紝閲嶆柊閲嶆柊鍒嗛厤椤剁偣buffer
 	if (indexCount_ > indexBuffer_->GetIndexCount() || indexCount_ * 2 < indexBuffer_->GetIndexCount())
 	{
 		indexBuffer_->SetSize(sizeof(UInt32), indexCount_, true);

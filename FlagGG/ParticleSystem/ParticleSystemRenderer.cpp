@@ -18,11 +18,13 @@ ParticleMeshDataBuilder::~ParticleMeshDataBuilder()
 void ParticleMeshDataBuilder::BeginDataCollection()
 {
 	vertexBuffer_.Clear();
+	indexBuffer_.Clear();
 }
 
 void ParticleMeshDataBuilder::EndDataCollection()
 {
 	vertexBuffer_.CommitToGPU();
+	indexBuffer_.CommitToGPU();
 }
 
 ParticleMeshDataBuilder::ParticleMeshData ParticleMeshDataBuilder::Allocate(UInt32 vertexSizeInByte, UInt32 indexCount)

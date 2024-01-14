@@ -261,6 +261,11 @@ public:
 	/** Stream of random values to use with this component */
 	RandomStream randomStream_;
 
+protected:
+	void ClearRenderContext();
+
+	void UpdateRenderContext();
+
 private:
 	Int32 LODLevel_;
 

@@ -302,6 +302,26 @@ void Material::CreateShaderParameters()
 	shaderParameters_ = new ShaderParameters();
 }
 
+SharedPtr<Material> Material::Clone()
+{
+	SharedPtr<Material> cloneMaterial = MakeShared<Material>();
+
+	for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
+	{
+		cloneMaterial->textures_[i] = textures_[i];
+	}
+
+	cloneMaterial->vsShader_ = vsShader_;
+	cloneMaterial->psShader_ = psShader_;
+	if (shaderParameters_)
+	{
+		CreateShaderParameters();
+	}
+	cloneMaterial->renderPass_ = renderPass_;
+
+	return cloneMaterial;
+}
+
 static SharedPtr<Texture> LoadTexture(ResourceCache* cache, const LJSONValue& textureConfig)
 {
 	SharedPtr<Texture> texture;

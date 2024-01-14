@@ -17,6 +17,7 @@ namespace FlagGG
 class Geometry;
 class Material;
 class Matrix3x4;
+class VertexDescription;
 
 // 渲染批次最小单元
 struct FlagGG_API RenderContext
@@ -25,6 +26,8 @@ struct FlagGG_API RenderContext
 	GeometryType geometryType_{};
 	// 图形数据
 	Geometry* geometry_{};
+	// 顶点描述
+	VertexDescription* vertexDesc_{};
 	// 世界Transform
 	const Matrix3x4* worldTransform_{};
 	UInt32 numWorldTransform_{};

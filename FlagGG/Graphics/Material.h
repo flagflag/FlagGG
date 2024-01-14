@@ -114,6 +114,9 @@ public:
 	// 创建材质参数集
 	void CreateShaderParameters();
 
+	// 拷贝一份材质
+	SharedPtr<Material> Clone();
+
 protected:
 	bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 

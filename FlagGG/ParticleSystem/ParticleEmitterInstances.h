@@ -50,6 +50,7 @@ struct ParticleEventInstancePayload;
 class ParticleMeshDataBuilder;
 class Geometry;
 struct RenderPiplineContext;
+struct RenderContext;
 
 struct LODBurstFired
 {
@@ -725,6 +726,8 @@ public:
 
 	// 粒子网格图形数据
 	SharedPtr<Geometry> geometry_;
+
+	RenderContext* renderContext_;
 
 protected:
 

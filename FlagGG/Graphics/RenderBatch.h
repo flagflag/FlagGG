@@ -21,6 +21,8 @@ struct FlagGG_API RenderBatch
 	GeometryType geometryType_{};
 	// 图形数据
 	Geometry* geometry_{};
+	// 顶点描述
+	VertexDescription* vertexDesc_{};
 	// 世界Transform
 	const Matrix3x4* worldTransform_{};
 	UInt32 numWorldTransform_{};
