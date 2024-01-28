@@ -1,6 +1,8 @@
 #include "Shader/Define.hlsl"
 #include "Shader/Common.hlsl"
 #include "Shader/Sampler.hlsl"
+#include "Shader/Lighting.hlsl"
+#include "Shader/PBR/PBR.hlsl"
 
 #ifdef VERTEX
     struct VertexInput
@@ -26,11 +28,9 @@
     // 材质参数
     cbuffer MaterialParam : register(b1)
     {
-        float4 ambientColor;
-        float4 diffuseColor;
-        float4 specularColor;
-        float emissivePower;
-        float dissolveTime;
+        float metallic;
+        float roughness;
+        float4 baseColor;
     }
 #endif
 
@@ -79,43 +79,20 @@ struct PixelInput
 #else
     float4 PS(PixelInput input) : SV_TARGET
     {
-        float lightIntensity = saturate(dot(input.nor, lightDir));
-        float3 diffColor = saturate(diffuseColor.rgb * lightIntensity);
-    #ifndef COLOR
-        float3 textureColor = colorMap.Sample(colorSampler, input.tex).rgb;
-    #else
-        float3 textureColor = input.color.rgb * input.color.a;
-    #endif
-        diffColor = diffColor * textureColor;
-
-        float3 reflectDir = (input.nor * lightDir * 2.0) * input.nor - lightDir;
-        float3 eyeDir = cameraPos - input.worldPos;
-        float3 specColor = specularColor.rgb * pow(saturate(dot(eyeDir, reflectDir)), emissivePower);
-
-        float3 ambiColor = ambientColor.rgb * textureColor;
-
     #ifdef SHADOW
         float shadow = GetShadow(input.shadowPos);
     #else
         float shadow = 1.0;
     #endif
 
-        // float ambiPower = ambientColor.a / 255.0;
-        // float diffPower = diffuseColor.a / 255.0;
-        // float specPower = specularColor.a / 255.0;
-        // float4 color = float4(ambientColor.rgb * ambiPower + diffColor * diffPower + specColor * specPower, 1.0);
-        float4 color = float4(ambiColor + (diffColor + specColor) * shadow, 1.0);
-
-    // 溶解特效
-    #ifdef DISSOLVE
-        float dissolveNoise = noiseMap.Sample(noiseSampler, input.tex).r;
-        float temp = dissolveNoise + dissolveTime;
-        if (temp > 1)
-            discard;
-        if (temp > 0.9)
-            color += float4(0.94, 0.9, 0.54, 0);
+    #ifndef COLOR
+        float3 diffuseColor = baseColor.rgb * colorMap.Sample(colorSampler, input.tex).rgb;
+    #else
+        float3 diffuseColor = baseColor.rgb * input.color.rgb * input.color.a;
     #endif
+        float3 viewDirection = cameraPos - input.worldPos;
+        float3 color = PBR_BRDF(diffuseColor, metallic, roughness, input.worldPos, input.nor, viewDirection, shadow, 1.0);
 
-        return LinearToGammaSpace(color);
+        return float4(LinearToGammaSpace(color), 1.0);
     }
 #endif

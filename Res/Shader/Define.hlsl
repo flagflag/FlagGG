@@ -35,3 +35,7 @@
     }
     #define Sample2D(name, tex) name##Map.Sample(name##Sampler, tex)
 #endif
+
+#define M_PI 3.14159265358979323846
+#define M_INV_PI 0.31830988618
+#define M_EPSILON 0.0001

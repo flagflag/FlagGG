@@ -179,10 +179,10 @@ struct PixelInput
     {
         float4 color = float4(1, 1, 1, 1);
 
-        float lightIntensity = saturate(dot(input.nor, -lightDir));
+        float lightIntensity = saturate(dot(input.nor, lightDir));
         float3 diffColor = saturate(float3(0.88, 0.88, 0.88) * lightIntensity) * waterColor;
 
-        float3 reflectDir = (input.nor * -lightDir * 2.0) * input.nor - (-lightDir);
+        float3 reflectDir = (input.nor * lightDir * 2.0) * input.nor - lightDir;
         float3 eyeDir = input.eyeVec.xyz / input.eyeVec.w;
         float3 specColor = float3(0.02, 0.02, 0.02) * pow(saturate(dot(eyeDir, reflectDir)), 1);
 

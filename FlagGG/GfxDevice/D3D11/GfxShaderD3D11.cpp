@@ -67,6 +67,9 @@ static bool CompileShader(const char* buffer, USize bufferSize, ShaderType type,
 	{
 		FLAGGG_LOG_ERROR("D3DCompile failed.");
 
+		String temp(buffer, bufferSize);
+		FLAGGG_LOG_ERROR(temp);
+
 		if (errorMsgs)
 		{
 			FLAGGG_LOG_ERROR("Error code: {}", (const char*)errorMsgs->GetBufferPointer());

@@ -1,13 +1,13 @@
 {
 	vsshader = 
 	{
-		path = "Shader/Model.hlsl",
+		path = "Shader/ModelPBR.hlsl",
 		defines =  [ "SKINNED", "SHADOW" ]
 	},
 	psshader = 
 	{
-		path = "Shader/Model.hlsl",
-		defines = [ "SHADOW" ]
+		path = "Shader/ModelPBR.hlsl",
+		defines = [ "SHADOW", "DIRLIGHT" ]
 	},
 	texture =
 	{
@@ -17,24 +17,19 @@
 	shader_parameters = 
 	[
 		{
-			name = "ambientColor",
-			type = "vector4",
-			value = [ 0.1, 0.1, 0.1, 16 ]
-		},
-		{
-			name = "diffuseColor",
-			type = "vector4",
-			value = [ 0.88, 0.88, 0.88, 255 ]
-		},
-		{
-			name = "specularColor",
-			type = "vector4",
-			value = [ 0.02, 0.02, 0.02, 16 ]
-		},
-		{
-			name = "emissivePower",
+			name = "metallic",
 			type = "float",
-			value = 2
+			value = 0
+		},
+		{
+			name = "roughness",
+			type = "float",
+			value = 0.5
+		},
+		{
+			name = "baseColor",
+			type = "vector4",
+			value = [ 1, 1, 1, 1 ]
 		}
 	],
 	pass =
