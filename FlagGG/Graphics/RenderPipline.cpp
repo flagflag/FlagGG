@@ -109,7 +109,14 @@ void CommonRenderPipline::CollectLitBatch()
 
 void CommonRenderPipline::CollectUnlitBatch()
 {
+	RenderPassContext context{};
 
+	for (auto& drawable : renderPiplineContext_.drawables_)
+	{
+		context.light_ = nullptr;
+		context.drawable_ = drawable;
+		alphaRenderPass_->CollectBatch(&context);
+	}
 }
 
 /*********************************************************/

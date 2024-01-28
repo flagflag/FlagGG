@@ -119,6 +119,9 @@ public:
 
 	// 渲染
 	void RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer) override;
+
+private:
+	RenderBatchQueue renderBatchQueue_;
 };
 
 // 延迟base pass

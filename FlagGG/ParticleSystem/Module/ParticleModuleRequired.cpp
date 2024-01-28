@@ -185,6 +185,10 @@ bool ParticleModuleRequired::LoadXML(const XMLElement& root)
 
 		auto& renderPass = material_->GetRenderPass()[RENDER_PASS_TYPE_FORWARD_ALPHA];
 		renderPass.SetDepthWrite(false);
+		
+		auto shaderCode = cache->GetResource<ShaderCode>("Shader/Particle.hlsl");
+		renderPass.SetVertexShader(shaderCode->GetShader(VS, {}));
+		renderPass.SetPixelShader(shaderCode->GetShader(PS, {}));
 	}
 
 	if (XMLElement useLocalSpaceNode = root.GetChild("useLocalSpace"))

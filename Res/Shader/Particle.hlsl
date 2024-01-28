@@ -44,7 +44,6 @@ struct PixelInput
 #else
     float4 PS(PixelInput input) : SV_TARGET
     {
-
-        return LinearToGammaSpace(color);
+        return LinearToGammaSpace(input.color);
     }
 #endif

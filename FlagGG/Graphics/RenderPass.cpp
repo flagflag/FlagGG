@@ -201,12 +201,25 @@ AlphaRenderPass::~AlphaRenderPass()
 
 void AlphaRenderPass::Clear()
 {
-
+	renderBatchQueue_.renderBatches_.Clear();
+	renderBatchQueue_.renderBatchGroups_.Clear();
 }
 
 void AlphaRenderPass::CollectBatch(RenderPassContext* context)
 {
-
+	auto& renderBatches = renderBatchQueue_.renderBatches_;
+	for (const auto& renderContext : context->drawable_->GetRenderContext())
+	{
+		auto it = renderContext.material_->GetRenderPass().Find(RENDER_PASS_TYPE_FORWARD_ALPHA);
+		if (it != renderContext.material_->GetRenderPass().End())
+		{
+			auto& renderBatch = renderBatches.EmplaceBack(renderContext);
+			renderBatch.renderPassType_ = RENDER_PASS_TYPE_FORWARD_ALPHA;
+			renderBatch.renderPassInfo_ = &(it->second_);
+			renderBatch.vertexShader_ = it->second_.GetVertexShader();
+			renderBatch.pixelShader_ = it->second_.GetPixelShader();
+		}
+	}
 }
 
 void AlphaRenderPass::SortBatch()
@@ -216,7 +229,13 @@ void AlphaRenderPass::SortBatch()
 
 void AlphaRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer)
 {
+	RenderEngine* renderEngine = GetSubsystem<RenderEngine>();
 
+	auto& renderBatches = renderBatchQueue_.renderBatches_;
+	for (auto& renderBatch : renderBatches)
+	{
+		renderEngine->DrawBatch(camera, renderBatch);
+	}
 }
 
 /*********************************************************/
@@ -248,7 +267,7 @@ void DeferredBaseRenderPass::CollectBatch(RenderPassContext* context)
 		if (it != renderContext.material_->GetRenderPass().End())
 		{
 			auto& renderBatch = renderBatches.EmplaceBack(renderContext);
-			renderBatch.renderPassType_ = RENDER_PASS_TYPE_SHADOW;
+			renderBatch.renderPassType_ = RENDER_PASS_TYPE_DEFERRED_BASE;
 			renderBatch.renderPassInfo_ = &(it->second_);
 			renderBatch.vertexShader_ = it->second_.GetVertexShader();
 			renderBatch.pixelShader_ = it->second_.GetPixelShader();
