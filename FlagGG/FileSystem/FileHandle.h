@@ -29,10 +29,10 @@ enum class SeekFrom
 };
 
 /// 抽线文件句柄基类
-class FlagGG_API IFileHandler
+class FlagGG_API IFileHandle
 {
 public:
-	virtual ~IFileHandler() {}
+	virtual ~IFileHandle() {}
 
 	/// 打开文件，成功返回true
 	virtual bool Open(const String& fileName, FileMode mode) = 0;

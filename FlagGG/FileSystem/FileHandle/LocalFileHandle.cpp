@@ -1,4 +1,4 @@
-#include "LocalFileHandler.h"
+#include "LocalFileHandle.h"
 #include "Log.h"
 
 #include <cstdio>
@@ -102,7 +102,7 @@ struct TFileInterface<8> : public FileInterfaceBase
 
 typedef TFileInterface<sizeof(void*)> std_file;
 
-LocalFileHandler::LocalFileHandler()
+LocalFileHandle::LocalFileHandle()
 	: handle_{}
 	, size_(0u)
 	, sizeDirty_(false)
@@ -110,12 +110,12 @@ LocalFileHandler::LocalFileHandler()
 
 }
 
-LocalFileHandler::~LocalFileHandler()
+LocalFileHandle::~LocalFileHandle()
 {
 	Close();
 }
 
-bool LocalFileHandler::Open(const String& fileName, FileMode mode)
+bool LocalFileHandle::Open(const String& fileName, FileMode mode)
 {
 	sizeDirty_ = true;
 
@@ -139,27 +139,27 @@ bool LocalFileHandler::Open(const String& fileName, FileMode mode)
 	return !!handle_;
 }
 
-bool LocalFileHandler::IsOpen() const
+bool LocalFileHandle::IsOpen() const
 {
 	return !!handle_;
 }
 
-bool LocalFileHandler::Read(void* buffer, USize size)
+bool LocalFileHandle::Read(void* buffer, USize size)
 {
 	return handle_ ? std_file::fread(buffer, size, 1, (FILE*)handle_) == 1 : false;
 }
 
-bool LocalFileHandler::Write(const void* buffer, USize size)
+bool LocalFileHandle::Write(const void* buffer, USize size)
 {
 	return handle_ ? std_file::fwrite(buffer, size, 1, (FILE*)handle_) == 1 : false;
 }
 
-bool LocalFileHandler::Seek(SSize offset, SeekFrom origin)
+bool LocalFileHandle::Seek(SSize offset, SeekFrom origin)
 {
 	return handle_ ? fseek((FILE*)handle_, offset, FSEEK_ORIGIN[Int32(origin)]) == 0 : false;
 }
 
-void LocalFileHandler::Close()
+void LocalFileHandle::Close()
 {
 	if (handle_)
 	{
@@ -169,18 +169,18 @@ void LocalFileHandler::Close()
 	}
 }
 
-void LocalFileHandler::Flush()
+void LocalFileHandle::Flush()
 {
 	if (handle_)
 		std_file::fflush((FILE*)handle_);
 }
 
-USize LocalFileHandler::Position() const
+USize LocalFileHandle::Position() const
 {
 	return handle_ ? std_file::ftell((FILE*)handle_) : 0u;
 }
 
-USize LocalFileHandler::Size() const
+USize LocalFileHandle::Size() const
 {
 	if (sizeDirty_)
 	{

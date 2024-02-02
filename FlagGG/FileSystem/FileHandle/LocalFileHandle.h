@@ -1,51 +1,51 @@
 //
-// ±¾µØÎÄ¼ş¾ä±ú£¬ÄÚ²¿ÊµÏÖÎªC±ê×¼¿â
+// æœ¬åœ°æ–‡ä»¶å¥æŸ„ï¼Œå†…éƒ¨å®ç°ä¸ºCæ ‡å‡†åº“
 //
 
 #pragma once
 
-#include "FileSystem/FileHandler.h"
+#include "FileSystem/FileHandle.h"
 
 namespace FlagGG
 {
 
-/// ±¾µØÎÄ¼ş¾ä±ú
+/// æœ¬åœ°æ–‡ä»¶å¥æŸ„
 /// Using C standard IO functions.
-class FlagGG_API LocalFileHandler : public IFileHandler
+class FlagGG_API LocalFileHandle : public IFileHandle
 {
 public:
-	LocalFileHandler();
+	LocalFileHandle();
 
-	~LocalFileHandler() override;
+	~LocalFileHandle() override;
 
-	/// ´ò¿ªÎÄ¼ş£¬³É¹¦·µ»Øtrue
+	/// æ‰“å¼€æ–‡ä»¶ï¼ŒæˆåŠŸè¿”å›true
 	bool Open(const String& fileName, FileMode mode) override;
 
-	/// ·µ»ØÎÄ¼şÊÇ·ñ±»´ò¿ª
+	/// è¿”å›æ–‡ä»¶æ˜¯å¦è¢«æ‰“å¼€
 	bool IsOpen() const override;
 
-	/// ´ÓÎÄ¼ş¶ÁÈ¡×Ö½ÚÁ÷£¬·µ»ØÊµ¼Ê¶ÁÈ¡µÄ×Ö½Ú´óĞ¡
+	/// ä»æ–‡ä»¶è¯»å–å­—èŠ‚æµï¼Œè¿”å›å®é™…è¯»å–çš„å­—èŠ‚å¤§å°
 	bool Read(void* buffer, USize size) override;
 
-	/// Ğ´×Ö½ÚÁ÷µ½ÎÄ¼ş£¬·µ»ØÊµ¼ÊĞ´µÄ×Ö½Ú´óĞ¡
+	/// å†™å­—èŠ‚æµåˆ°æ–‡ä»¶ï¼Œè¿”å›å®é™…å†™çš„å­—èŠ‚å¤§å°
 	bool Write(const void* buffer, USize size) override;
 
-	/// ÉèÖÃÎÄ¼şÖ¸ÕëÎ»ÖÃ
+	/// è®¾ç½®æ–‡ä»¶æŒ‡é’ˆä½ç½®
 	bool Seek(SSize offset, SeekFrom origin) override;
 
-	/// ¹Ø±ÕÎÄ¼ş
+	/// å…³é—­æ–‡ä»¶
 	void Close() override;
 
-	/// Ë¢ĞÂÎÄ¼ş»º³åÇø
+	/// åˆ·æ–°æ–‡ä»¶ç¼“å†²åŒº
 	void Flush() override;
 
-	/// ·µ»ØÎÄ¼şÖ¸ÕëÎ»ÖÃ
+	/// è¿”å›æ–‡ä»¶æŒ‡é’ˆä½ç½®
 	USize Position() const override;
 
-	/// ·µ»ØÎÄ¼ş´óĞ¡
+	/// è¿”å›æ–‡ä»¶å¤§å°
 	USize Size() const override;
 
-	/// ·µ»ØÎÄ¼şµÄÔ­Éú¾ä±ú
+	/// è¿”å›æ–‡ä»¶çš„åŸç”Ÿå¥æŸ„
 	void* NativePtr() const override { return handle_; }
 
 private:
