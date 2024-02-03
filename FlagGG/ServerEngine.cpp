@@ -1,5 +1,7 @@
 #include "ServerEngine.h"
 #include "Core/EventManager.h"
+#include "FileSystem/FileManager.h"
+#include "FileSystem/FileSystemArchive/DefaultFileSystemArchive.h"
 
 namespace FlagGG
 {
@@ -11,7 +13,7 @@ void ServerEngine::SetFrameRate(Real rate)
 
 void ServerEngine::CreateCoreObject()
 {
-	GetSubsystem<ResourceCache>()->AddResourceDir("../../../Res");
+	GetSubsystem<AssetFileManager>()->AddArchive(new DefaultFileSystemArchive(GetLocalFileSystem(), GetProgramDir() + "Res"));
 }
 
 void ServerEngine::Start()

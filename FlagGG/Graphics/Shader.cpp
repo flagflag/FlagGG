@@ -5,6 +5,7 @@
 #include "Container/Sort.h"
 #include "IOFrame/Stream/FileStream.h"
 #include "Resource/ResourceCache.h"
+#include "FileSystem/FileManager.h"
 #include "Core/Context.h"
 #include "Core/CryAssert.h"
 #include "Log.h"
@@ -98,7 +99,7 @@ bool ShaderCode::PreCompileShaderCode(const char* head, const char* tail, String
 					return false;
 				}
 
-				auto file = GetSubsystem<ResourceCache>()->GetFile(relativePath);
+				auto file = GetSubsystem<AssetFileManager>()->OpenFileReader(relativePath);
 				if (!file)
 				{
 					FLAGGG_LOG_ERROR("Pre compile shader error: can not open file[{}].", relativePath.CString());

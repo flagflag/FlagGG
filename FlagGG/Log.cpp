@@ -2,6 +2,7 @@
 #include "Define.h"
 #include "Allocator/SmartMemory.hpp"
 #include "Utility/SystemHelper.h"
+#include "FileSystem/PlatformFileInterface.h"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -16,8 +17,8 @@ Logger::Logger()
 	try
 	{
 		String logDir = GetProgramDir() + "logs";
-		if (!DirExists(logDir))
-			CreateDir(logDir);
+		if (!PlatformFileInterface::DirectoryExists(logDir))
+			PlatformFileInterface::CreateDirectory(logDir);
 		String logPath = logDir + "/FlagGGLog-" + GetTimeStamp() + ".log";
 		auto FlagGGLog = spdlog::basic_logger_mt(FLAGGG_LOG, logPath.CString());
 		FlagGGLog->flush_on(spdlog::level::debug);

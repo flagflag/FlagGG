@@ -38,10 +38,6 @@ public:
 		return StaticCast<T>(res);
 	}
 
-	SharedPtr<IOFrame::Buffer::IOBuffer> GetFile(const String& path);
-
-	void AddResourceDir(const String& path);
-
 	static String FormatReousrcePath(const String& path);
 
 protected:
@@ -50,8 +46,6 @@ protected:
 	bool LoadResource(const String& path, SharedPtr<Resource>& res);
 
 private:
-	String resourceDir_;
-
 	HashMap<String, SharedPtr<Resource>> resources_;
 };
 

@@ -4,6 +4,8 @@
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Window.h"
 #endif
+#include "FileSystem/FileManager.h"
+#include "FileSystem/FileSystemArchive/DefaultFileSystemArchive.h"
 
 namespace FlagGG
 {
@@ -15,7 +17,7 @@ void GameEngine::SetFrameRate(Real rate)
 
 void GameEngine::CreateCoreObject()
 {
-	GetSubsystem<ResourceCache>()->AddResourceDir(GetProgramDir() + "Res");
+	GetSubsystem<AssetFileManager>()->AddArchive(new DefaultFileSystemArchive(GetLocalFileSystem(), GetProgramDir() + "Res"));
 }
 
 void GameEngine::Start()

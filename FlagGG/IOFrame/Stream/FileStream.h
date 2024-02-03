@@ -3,7 +3,7 @@
 #include "Export.h"
 #include "Container/Str.h"
 #include "IOFrame/Buffer/IOBufferAdaptor.h"
-#include "FileSystem/FileHandler.h"
+#include "FileSystem/FileHandle.h"
 
 namespace FlagGG { namespace IOFrame { namespace Stream {
 

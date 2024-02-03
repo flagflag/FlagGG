@@ -37,23 +37,7 @@ FlagGG_API String GetTimeStamp(const String& fmt);
 
 FlagGG_API bool ParseCommand(const char** argv, UInt32 argc, LJSONValue& result);
 
-FlagGG_API bool DirExists(const String& path);
-
-FlagGG_API bool FileExists(const String& path);
-
-FlagGG_API bool CreateDir(const String& path);
-
 FlagGG_API bool HasAccess(const String& path);
-
-FlagGG_API bool Copy(const String& source, const String& target);
-
-enum FindFilesMode
-{
-	FindFilesMode_Dir = 1,
-	FindFilesMode_File = 2,
-};
-
-FlagGG_API void FindFiles(const String& dirPath, const String& pattern, bool recursive, int fileMode, Vector<String>& fileNames);
 
 FlagGG_API IntRect GetDesktopRect();
 

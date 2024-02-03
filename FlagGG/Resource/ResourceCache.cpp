@@ -1,28 +1,11 @@
 #include "Resource/ResourceCache.h"
 #include "Utility/SystemHelper.h"
 #include "IOFrame/Stream/FileStream.h"
+#include "FileSystem/FileManager.h"
 #include "Log.h"
 
 namespace FlagGG
 {
-
-SharedPtr<IOFrame::Buffer::IOBuffer> ResourceCache::GetFile(const String& path)
-{
-	String formatPath = resourceDir_ + FormatReousrcePath(path);
-	SharedPtr<IOFrame::Stream::FileStream> file(new IOFrame::Stream::FileStream());
-	file->Open(formatPath, FileMode::FILE_READ);
-	if (!file->IsOpen())
-	{
-		FLAGGG_LOG_ERROR("Can not open file[{}].", formatPath.CString());
-		return nullptr;
-	}
-	return file;
-}
-
-void ResourceCache::AddResourceDir(const String& path)
-{
-	resourceDir_ = FormatPath(path).ToLower() + PATH_SEPARATOR;
-}
 
 String ResourceCache::FormatReousrcePath(const String& path)
 {
@@ -32,7 +15,7 @@ String ResourceCache::FormatReousrcePath(const String& path)
 
 bool ResourceCache::CheckResource(const String& path, SharedPtr<Resource>& res)
 {
-	if (!FileExists(resourceDir_ + path))
+	if (!GetSubsystem<AssetFileManager>()->FileExists(path))
 	{
 		FLAGGG_LOG_ERROR("file({}) not exists.", path.CString());
 
@@ -47,7 +30,15 @@ bool ResourceCache::CheckResource(const String& path, SharedPtr<Resource>& res)
 
 bool ResourceCache::LoadResource(const String& path, SharedPtr<Resource>& res)
 {
-	if (!res->LoadFile(resourceDir_ + path))
+	auto buffer = GetSubsystem<AssetFileManager>()->OpenFileReader(path);
+
+	if (!buffer)
+	{
+		FLAGGG_LOG_ERROR("Can not open file stream [{}].", path.CString());
+		return false;
+	}
+
+	if (!res->LoadStream(buffer))
 	{
 		FLAGGG_LOG_ERROR("Load Resource[{}] failed.", path.CString());
 		ASSERT_MESSAGE(false, "Failed to load resource.");
