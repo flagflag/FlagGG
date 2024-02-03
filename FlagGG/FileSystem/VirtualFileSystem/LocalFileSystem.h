@@ -53,9 +53,6 @@ public:
 
 	// 从目录下搜索文件
 	void FindFiles(Vector<String>& foundFiles, const String& directoryPath, const String& fileExtension, bool recursive, FindFileModeFlags fileMode) override;
-
-private:
-
 };
 
 }
