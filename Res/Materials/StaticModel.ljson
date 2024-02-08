@@ -1,45 +1,67 @@
 {
 	vsshader = 
 	{
-		path = "Shader/Model.hlsl",
-		defines =  [ "STATIC" ]
+		path = "Shader/ModelPBR.hlsl",
+		defines =  [ "STATIC", "SHADOW" ]
 	},
 	psshader = 
 	{
-		path = "Shader/Model.hlsl"
+		path = "Shader/ModelPBR.hlsl",
+		defines = [ "SHADOW", "DIRLIGHT" ]
 	},
 	texture =
 	{
 		type = "texture2d", //texturecube => 3d
 		path = "Textures/Plane.dds"
 	},
-	pass =
-	[
-		{
-			name = "forward_lit"
-		}
-	],
 	shader_parameters = 
 	[
 		{
-			name = "ambientColor",
-			type = "vector4",
-			value = [ 0.0, 0.0, 0.0, 16 ]
-		},
-		{
-			name = "diffuseColor",
-			type = "vector4",
-			value = [ 1.0, 1.0, 1.0, 255 ]
-		},
-		{
-			name = "specularColor",
-			type = "vector4",
-			value = [ 0.1, 0.1, 0.1, 16 ]
-		},
-		{
-			name = "emissivePower",
+			name = "metallic",
 			type = "float",
-			value = 2
+			value = 0
+		},
+		{
+			name = "roughness",
+			type = "float",
+			value = 0.5
+		},
+		{
+			name = "baseColor",
+			type = "vector4",
+			value = [ 1, 1, 1, 1 ]
+		}
+	],
+	pass =
+	[
+		{
+			name = "shadow",
+			vsshader = 
+			{
+				path = "Shader/Shadow.hlsl",
+				defines = [ "STATIC" ]
+			},
+			psshader =
+			{
+				path = "Shader/Shadow.hlsl",
+				defines = [ "MODEL_SHADOW" ]
+			}
+		},
+		{
+			name = "forward_lit"
+		},
+		{
+			name = "deferred_base",
+			vsshader = 
+			{
+				path = "Shader/Deferred/ModelMRT.hlsl",
+                defines = [ "STATIC", "VERTEX_POSITION", "VERTEX_NORMAL", "VERTEX_TEXCOORD" ]
+			},
+			psshader =
+			{
+				path = "Shader/Deferred/ModelMRT.hlsl",
+                defines = [ "VERTEX_POSITION", "VERTEX_NORMAL", "VERTEX_TEXCOORD" ]
+			}
 		}
 	]
 }

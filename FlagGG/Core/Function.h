@@ -1,5 +1,4 @@
-#ifndef __CUSTOM_FUNCTION__
-#define __CUSTOM_FUNCTION__
+#pragma once
 
 #include <functional>
 
@@ -89,5 +88,3 @@ private:
 };
 
 }
-
-#endif

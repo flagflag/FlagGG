@@ -8,6 +8,8 @@
 #include <Graphics/Window.h>
 #include <Graphics/Texture2D.h>
 #include <Scene/Scene.h>
+#include <Core/Forwarder.h>
+#include <AsyncFrame/Mutex.h>
 
 #include "CameraOperation.h"
 #include "Unit/Unit.h"
@@ -28,10 +30,16 @@
 
 using namespace FlagGG;
 
+typedef void(*SetupFinish)(void* windowHandle);
+
 class GameApplication : public GameEngine
 {
 public:
-	GameApplication(LJSONValue commandParam);
+	GameApplication(LJSONValue commandParam, SetupFinish setupFinish);
+
+	void ShowPrefab(const String& prefabPath);
+
+	Forwarder<Mutex>& GetForwarder() { return forwarder_; }
 
 protected:
 	void Start() override;
@@ -56,6 +64,8 @@ protected:
 private:
 	LJSONValue commandParam_;
 
+	SetupFinish setupFinish_;
+
 #ifdef _WIN32
 	SharedPtr<Window> window_;
 	SharedPtr<Camera> camera_;
@@ -74,6 +84,7 @@ private:
 	SharedPtr<Unit> waterDown_;
 	SharedPtr<Unit> skybox_;
 	SharedPtr<ParticleActor> simpleParticle_;
+	SharedPtr<Node> previewPrefab_;
 #endif
 
 	SharedPtr<LuaVM> luaVM_;
@@ -89,4 +100,6 @@ private:
 	SharedPtr<Lobby> lobby_;
 	SharedPtr<GamePlayBase> gameplay_;
 	SharedPtr<Perspective> perspective_;
+
+	Forwarder<Mutex> forwarder_;
 };

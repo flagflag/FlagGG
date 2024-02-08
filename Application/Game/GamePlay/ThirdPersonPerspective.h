@@ -14,7 +14,7 @@ class ThirdPersonPerspective : public Perspective
 {
 	OBJECT_OVERRIDE(ThirdPersonPerspective, Perspective);
 public:
-	explicit ThirdPersonPerspective();
+	explicit ThirdPersonPerspective(bool moveCameraWhenMouseDown);
 
 	// 设置相机
 	void SetCamera(Camera* camera) override;
@@ -42,6 +42,8 @@ public:
 	void Unlock() override;
 
 protected:
+	void OnMouseDown(KeyState* keyState, MouseKey mouseKey);
+	void OnMouseUp(KeyState* keyState, MouseKey mouseKey);
 	void OnMouseMove(KeyState* keyState, const Vector2& delta);
 	void HandleUpdate(float timeStep);
 
@@ -57,6 +59,10 @@ private:
 
 	// 镜头锁标记
 	bool isLocked_;
+
+	// 当鼠标按下时才移动镜头
+	bool moveCameraWhenMouseDown_;
+	bool mouseDown_;
 
 	WeakPtr<Network> network_;
 

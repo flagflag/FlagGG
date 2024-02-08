@@ -18,3 +18,7 @@ bin
 *.pb.cc
 emsdk
 ScriptModule/obj
+Application/EditableGameEntryPoint/obj
+Application/EditableGameEntryPoint/Properties/Resources.Designer.cs
+Application/EditableGameEntryPoint/Properties/Resources.resx
+Application/EditableGameEntryPoint/Properties/launchSettings.json

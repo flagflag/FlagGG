@@ -5,8 +5,6 @@
 #include "Core/BaseTypes.h"
 #include "Core/AddEvent.h"
 
-#include <functional>
-
 #define DEFINE_EVENT(eventId, eventNative) \
 	static const UInt32 eventId = FlagGG::AddEvent(__FILE__, #eventId); \
 	struct eventId##_HANDLER \

@@ -8,8 +8,11 @@
 #include <Scene/StaticMeshComponent.h>
 #include <Scene/OceanComponent.h>
 #endif
+#include <Scene/PrefabLoader.h>
 #include <Log.h>
 #include <IOFrame/Buffer/StringBuffer.h>
+#include <FileSystem/FileManager.h>
+#include <FileSystem/FileSystemArchive/DefaultFileSystemArchive.h>
 
 #include "GameApplication.h"
 #include "GamePlay/ThirdPersonPerspective.h"
@@ -28,14 +31,18 @@ static int End(lua_State* L)
 	return 0;
 }
 
-GameApplication::GameApplication(LJSONValue commandParam) :
+GameApplication::GameApplication(LJSONValue commandParam, SetupFinish setupFinish) :
 	commandParam_(commandParam),
+	setupFinish_(setupFinish),
 	luaVM_(new LuaVM())
 { }
 
 void GameApplication::Start()
 {
 	GameEngine::Start();
+
+	// for test:
+	GetSubsystem<AssetFileManager>()->AddArchive(new DefaultFileSystemArchive(GetLocalFileSystem(), GetProgramDir() + "ResForSCE"));
 
 	CreateScene();
 	SetupWindow();
@@ -48,7 +55,7 @@ void GameApplication::Start()
 	GetSubsystem<Context>()->RegisterVariable<Network>(udpNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_UDP]);
 	GetSubsystem<Context>()->RegisterVariable<Network>(webNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_WEB]);
 
-	perspective_ = new ThirdPersonPerspective();
+	perspective_ = new ThirdPersonPerspective(true);
 	perspective_->SetSyncMode(/*SyncMode_State*/SyncMode_Local);
 	perspective_->SetCamera(camera_);
 	perspective_->SetWindow(window_);
@@ -101,6 +108,11 @@ void GameApplication::Start()
 		FLAGGG_LOG_ERROR("Failed to execute local_game.lua.");
 	}
 #endif
+
+	if (setupFinish_)
+	{
+		setupFinish_(window_->GetHandle());
+	}
 }
 
 void GameApplication::Stop()
@@ -114,6 +126,23 @@ void GameApplication::Stop()
 	FLAGGG_LOG_INFO("end application.");
 }
 
+void GameApplication::ShowPrefab(const String& prefabPath)
+{
+	if (previewPrefab_)
+	{
+		scene_->RemoveChild(previewPrefab_);
+		previewPrefab_.Reset();
+	}
+
+	previewPrefab_ = LoadPrefab(prefabPath);
+	ASSERT(previewPrefab_);
+	if (previewPrefab_)
+	{
+		previewPrefab_->SetScale(Vector3(0.01, 0.01, 0.01));
+		scene_->AddChild(previewPrefab_);
+	}
+}
+
 void GameApplication::Update(float timeStep)
 {
 	// luaVM_->CallEvent("update", timeStep);
@@ -123,6 +152,8 @@ void GameApplication::Update(float timeStep)
 
 	if (dissolveTime > 1.0f)
 		dissolveTime = 0.0f;
+
+	forwarder_.Execute();
 
 	if (dissolveHero_)
 	{
@@ -201,7 +232,8 @@ void GameApplication::CreateScene()
 	scene_->AddChild(terrain_);
 
 	simpleParticle_ = new ParticleActor();
-	simpleParticle_->LoadFile("Unit/ParticleActor.ljson");
+	// simpleParticle_->LoadFile("E:/GitProject/FlagGG/Res/Unit/ParticleActor.ljson");
+	simpleParticle_->SetPosition(Vector3(0, 0, 10));
 	scene_->AddChild(simpleParticle_);
 
 #if 0
@@ -329,8 +361,6 @@ void GameApplication::SetupWindow()
 	// window_->GetViewport()->SetRenderPipline(new DeferredRenderPipline());
 
 	WindowDevice::RegisterWinMessage(window_);
-
-	GetSubsystem<Input>()->HideMouse();
 #endif
 }
 

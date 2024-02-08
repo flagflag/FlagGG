@@ -5,10 +5,12 @@
 
 #include <Core/EventManager.h>
 
-ThirdPersonPerspective::ThirdPersonPerspective() :
+ThirdPersonPerspective::ThirdPersonPerspective(bool moveCameraWhenMouseDown) :
 	controlCamera_(new Camera()),
 	lookupNode_(new Node()),
 	isLocked_(false),
+	moveCameraWhenMouseDown_(moveCameraWhenMouseDown),
+	mouseDown_(false),
 	syncMode_(SyncMode_Local),
 	dir_{ 0 },
 	stop_(0.0f, 0.0f, 0.0f, 0.0f),
@@ -18,6 +20,8 @@ ThirdPersonPerspective::ThirdPersonPerspective() :
 
 	lookupCamera_ = lookupNode_->CreateComponent<Camera>();
 
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_DOWN, ThirdPersonPerspective::OnMouseDown, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_UP, ThirdPersonPerspective::OnMouseUp, this));
 	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_MOVE, ThirdPersonPerspective::OnMouseMove, this));
 	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, ThirdPersonPerspective::HandleUpdate, this));
 
@@ -115,11 +119,28 @@ void ThirdPersonPerspective::Unlock()
 	isLocked_ = false;
 }
 
+void ThirdPersonPerspective::OnMouseDown(KeyState* keyState, MouseKey mouseKey)
+{
+	if (mouseKey == MOUSE_LEFT)
+		mouseDown_ = true;
+	GetSubsystem<Input>()->HideMouse();
+}
+
+void ThirdPersonPerspective::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
+{
+	if (mouseKey == MOUSE_LEFT)
+		mouseDown_ = false;
+	GetSubsystem<Input>()->ShowMouse();
+}
+
 void ThirdPersonPerspective::OnMouseMove(KeyState* keyState, const Vector2& delta)
 {
 	static const float rate_{ 0.00005f };
 
 	if (isLocked_)
+		return;
+
+	if (moveCameraWhenMouseDown_ && !mouseDown_)
 		return;
 
 	if (controlCamera_)

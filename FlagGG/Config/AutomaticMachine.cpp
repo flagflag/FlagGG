@@ -10,7 +10,7 @@ namespace FlagGG
 #define AM_SET_ALPHA "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 #define AM_SET_DIGIT "0123456789"
 #define AM_SET_ILLEGAL "~!@#$%^&*?|\\/()<>[]{},;=\'\""
-#define AM_MID "="
+#define AM_MID "=:"
 
 StateNode::StateNode()
 {

@@ -5,7 +5,7 @@
 namespace FlagGG
 {
 
-class PlatformFileInterface
+class FlagGG_API PlatformFileInterface
 {
 public:
 	// 检测目录是否存在

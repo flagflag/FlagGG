@@ -37,6 +37,8 @@ FlagGG_API String GetTimeStamp(const String& fmt);
 
 FlagGG_API bool ParseCommand(const char** argv, UInt32 argc, LJSONValue& result);
 
+FlagGG_API bool ParseCommand(const String& commandLine, LJSONValue& result);
+
 FlagGG_API bool HasAccess(const String& path);
 
 FlagGG_API IntRect GetDesktopRect();

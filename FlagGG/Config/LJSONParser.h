@@ -51,6 +51,8 @@ protected:
 
 	bool AcceptValidChar(char& c);
 
+	bool IsMidSign(char ch);
+
 	void Back();
 
 	bool ToValue(const LJSONValue& parent, const String& type, const String& content, LJSONValue& value);

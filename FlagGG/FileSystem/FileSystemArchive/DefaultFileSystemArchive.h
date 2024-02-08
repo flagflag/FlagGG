@@ -5,7 +5,7 @@
 namespace FlagGG
 {
 
-class DefaultFileSystemArchive : public FileSystemArchive
+class FlagGG_API DefaultFileSystemArchive : public FileSystemArchive
 {
 public:
 	DefaultFileSystemArchive(IFileSystem* fileSystem, const String& directoryPath);

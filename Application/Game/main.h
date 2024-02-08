@@ -14,4 +14,6 @@
 #  endif
 #endif
 
+#define CSharp_API extern "C" __declspec(dllexport)
+
 Game_API int EntryPoint(int argc, const char* argv[]);

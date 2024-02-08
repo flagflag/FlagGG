@@ -164,6 +164,31 @@ bool ParseCommand(const char** argv, UInt32 argc,  LJSONValue& result)
 	return true;
 }
 
+bool ParseCommand(const String& commandLine, LJSONValue& result)
+{
+	Vector<String> argv = commandLine.Split(' ');
+
+	for (auto& command : argv)
+	{
+		if (command.Length() > 0 && command[0] == '-')
+		{
+			UInt32 pos = command.Find('=');
+			if (pos != String::NPOS)
+			{
+				const String key = command.Substring(1, pos - 1);
+				const String value = command.Substring(pos + 1);
+				result[key] = value;
+			}
+			else
+			{
+				result[command.Substring(1)] = true;
+			}
+		}
+	}
+
+	return true;
+}
+
 bool HasAccess(const String& path)
 {
 	return true;

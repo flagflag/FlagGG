@@ -10,7 +10,7 @@
 namespace FlagGG
 {
 
-class AssetFileManager : public Subsystem<AssetFileManager>, public FileSystemArchive
+class FlagGG_API AssetFileManager : public Subsystem<AssetFileManager>, public FileSystemArchive
 {
 public:
 	AssetFileManager();

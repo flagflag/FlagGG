@@ -41,7 +41,8 @@ static SharedPtr<Node> LoadPrefab_StaticMeshArchetype(const LJSONValue& source)
 		for (UInt32 i = 0; i < jsonMaterials.Size(); ++i)
 		{
 			const String materialPath = jsonMaterials[i].GetString();
-			auto material = cache->GetResource<Material>(materialPath);
+			// auto material = cache->GetResource<Material>(materialPath);
+			auto material = cache->GetResource<Material>("Materials/StaticModel.ljson");
 			meshComponent->SetMaterial(i, material);
 		}
 	}
@@ -66,16 +67,30 @@ static SharedPtr<Node> LoadPrefab_LightArchetype(const LJSONValue& source)
 	return instance;
 }
 
+static bool LoadPrefab(const String& path, Node* prefabInstance);
+
+static SharedPtr<Node> LoadPrefab_PrefabArchetype(const LJSONValue& source)
+{
+	SharedPtr<Node> instance = LoadPrefab_Transform(source);
+	const String prefabPath = source["prefabPath"].GetString();
+	LoadPrefab(prefabPath, instance);
+	return instance;
+}
+
 static HashMap<String, std::function<SharedPtr<Node>(const LJSONValue&)>> ArchetypeLoaderMap =
 {
-	{ "staticMesh", LoadPrefab_StaticMeshArchetype },
+	{ "staticMesh",   LoadPrefab_StaticMeshArchetype },
 	{ "skeletalMesh", LoadPrefab_SkeletonMeshArchetype },
-	{ "lightMesh", LoadPrefab_LightArchetype },
+	{ "lightMesh",    LoadPrefab_LightArchetype },
+	{ "prefabMesh",   LoadPrefab_PrefabArchetype },
 };
 
-static SharedPtr<Node> LoadPrefab(const LJSONValue& source)
+static bool LoadPrefab(const String& path, Node* prefabInstance)
 {
-	SharedPtr<Node> prefabInstance = MakeShared<Node>();
+	LJSONFile jsonFile;
+	if (!jsonFile.LoadFile(path))
+		return false;
+	const auto& source = jsonFile.GetRoot();
 	for (unsigned i = 0; i < source.Size(); ++i)
 	{
 		const LJSONValue& item = source[i];
@@ -87,15 +102,15 @@ static SharedPtr<Node> LoadPrefab(const LJSONValue& source)
 			prefabInstance->AddChild(archetypeInstance);
 		}
 	}
-	return prefabInstance;
+	return true;
 }
 
 SharedPtr<Node> LoadPrefab(const String& path)
 {
-	LJSONFile jsonFile;
-	if (!jsonFile.LoadFile(path))
-		return nullptr;
-	return LoadPrefab(jsonFile.GetRoot());
+	SharedPtr<Node> prefabInstance = MakeShared<Node>();
+	if (LoadPrefab(path, prefabInstance))
+		return prefabInstance;
+	return nullptr;
 }
 
 }

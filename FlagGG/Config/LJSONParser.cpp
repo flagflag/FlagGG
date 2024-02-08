@@ -123,7 +123,7 @@ bool LJSONParser::StartAccept(const LJSONValue& parent, LJSONValue& node, const 
 
 			READ_COMMENT();
 
-			if (!AcceptValidChar(ch) || ch != AM_MID_SIGN)
+			if (!AcceptValidChar(ch) || !IsMidSign(ch))
 			{
 				ERROR_STREAM("lack middle sign.");
 
@@ -245,6 +245,11 @@ bool LJSONParser::AcceptValidChar(char& c)
 		c = (*index_++);
 	}
 	return result;
+}
+
+bool LJSONParser::IsMidSign(char ch)
+{
+	return ch == '=' || ch == ':';
 }
 
 void LJSONParser::Back()
