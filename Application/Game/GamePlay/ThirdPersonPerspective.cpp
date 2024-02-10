@@ -104,7 +104,7 @@ void ThirdPersonPerspective::Reset()
 	if (camera_)
 	{
 		auto cameraNode = camera_->GetNode();
-		cameraNode->SetPosition(Vector3(0, 2, -6.0f));
+		cameraNode->SetPosition(Vector3(-6.0f, 0, 2));
 		lookupNode_->AddChild(cameraNode);
 	}
 }

@@ -114,6 +114,8 @@ public:
 
 	void SetReflectionPlane(const Plane& plane);
 
+	void SetZUp(bool isZUp);
+
 protected:
 	void Correct(Vector3& right, Vector3& up, Vector3& look);
 
@@ -144,6 +146,8 @@ private:
 	bool useReflection_{ false };
 	Plane reflectionPlane_{ Plane::UP };
 	Matrix3x4 reflectionMatrix_{ Matrix3x4::IDENTITY };
+
+	bool isZUp_{ false };
 
 	LinkedListNode<ITransformListener> listenerNode_;
 };

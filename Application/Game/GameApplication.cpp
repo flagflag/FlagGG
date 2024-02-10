@@ -138,7 +138,9 @@ void GameApplication::ShowPrefab(const String& prefabPath)
 	ASSERT(previewPrefab_);
 	if (previewPrefab_)
 	{
+		// previewPrefab_->SetRotation(Quaternion(90, Vector3(0.0f, -1.0f, 0.0f)));
 		previewPrefab_->SetScale(Vector3(0.01, 0.01, 0.01));
+		previewPrefab_->SetPosition(Vector3(10, 0, 0));
 		scene_->AddChild(previewPrefab_);
 	}
 }
@@ -196,8 +198,10 @@ void GameApplication::CreateScene()
 	scene_->CreateComponent<Octree>();
 
 	auto* cameraNode = new Node();
+	cameraNode->SetName("MainCamera");
 	scene_->AddChild(cameraNode);
 	camera_ = cameraNode->CreateComponent<Camera>();
+	camera_->SetZUp(true);
 	camera_->SetNearClip(0.1f);
 	camera_->SetFarClip(1e5f);
 
@@ -212,22 +216,22 @@ void GameApplication::CreateScene()
 	mainHero_ = new CEUnit();
 	mainHero_->Load("Unit/MainHero.ljson");
 	mainHero_->PlayAnimation("Animation/Warrior_Attack.ani", true);
-	mainHero_->SetPosition(Vector3(0, -4, 10));
+	mainHero_->SetPosition(Vector3(4, 0, 0));
 	mainHero_->SetName("MainHero");
 	scene_->AddChild(mainHero_);
 
 	dissolveHero_ = new Unit();
 	dissolveHero_->Load("Unit/DissolveHero.ljson");
-	dissolveHero_->SetPosition(Vector3(0, 0, 10));
-	dissolveHero_->SetRotation(Quaternion(180, Vector3(0.0f, 1.0f, 0.0f)));
+	dissolveHero_->SetPosition(Vector3(10, 0, 5));
+	dissolveHero_->SetRotation(Quaternion(90, Vector3(1.0f, 0.0f, 0.0f)));
 	dissolveHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
 	dissolveHero_->SetName("DissolveHero");
 	scene_->AddChild(dissolveHero_);
 
 	terrain_ = new Terrain();
 	terrain_->Create(64);
-	terrain_->SetScale(Vector3(1, 0.4, 1));
-	terrain_->SetPosition(Vector3(-80, -5, 0));
+	terrain_->SetScale(Vector3(1, 1, 0.4));
+	terrain_->SetPosition(Vector3(0, -80, 0));
 	terrain_->SetName("Terrain");
 	scene_->AddChild(terrain_);
 

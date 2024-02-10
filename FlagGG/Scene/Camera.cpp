@@ -59,7 +59,7 @@ void Camera::Strafe(Real units)
 	if (cameraType_ == LAND_OBJECT)
 	{
 		Vector3 right = GetRight();
-		master->SetWorldPosition(master->GetWorldPosition() + Vector3(right.x_, 0.0f, right.z_) * units);
+		master->SetWorldPosition(master->GetWorldPosition() + Vector3(right.x_, right.y_, 0.0f) * units);
 	}
 
 	if (cameraType_ == AIRCRAFT)
@@ -81,7 +81,7 @@ void Camera::Fly(Real units)
 
 	if (cameraType_ == LAND_OBJECT)
 	{			
-		master->SetWorldPosition(master->GetWorldPosition() + Vector3(0.0f, units, 0.0f));
+		master->SetWorldPosition(master->GetWorldPosition() + Vector3(0.0f, 0.0f, units));
 	}
 
 	if (cameraType_ == AIRCRAFT)
@@ -104,7 +104,7 @@ void Camera::Walk(Real units)
 	if (cameraType_ == LAND_OBJECT)
 	{			
 		Vector3 look = GetLook();
-		master->SetWorldPosition(master->GetWorldPosition() + Vector3(look.x_, 0.0f, look.z_) * units);
+		master->SetWorldPosition(master->GetWorldPosition() + Vector3(look.x_, look.y_, 0.0f) * units);
 	}
 
 	if (cameraType_ == AIRCRAFT)
@@ -137,9 +137,9 @@ void Camera::Pitch(Real angle)
 
 	auto matrix = master->GetRotation().RotationMatrix();
 
-	Vector3 right(matrix.m00_, matrix.m10_, matrix.m20_);
-	Vector3 up(matrix.m01_, matrix.m11_, matrix.m21_);
-	Vector3 look(matrix.m02_, matrix.m12_, matrix.m22_);
+	Vector3 look(matrix.m00_, matrix.m10_, matrix.m20_);
+	Vector3 right(matrix.m01_, matrix.m11_, matrix.m21_);
+	Vector3 up(matrix.m02_, matrix.m12_, matrix.m22_);
 
 	Matrix4 T = MatrixRotationAxis(right, angle);
 	up = Vector3TransformCoord(up, T);
@@ -148,9 +148,9 @@ void Camera::Pitch(Real angle)
 	Correct(right, up, look);
 			
 	master->SetRotation(Quaternion(Matrix3(
-		right.x_, up.x_, look.x_,
-		right.y_, up.y_, look.y_,
-		right.z_, up.z_, look.z_
+		look.x_, right.x_, up.x_,
+		look.y_, right.y_, up.y_,
+		look.z_, right.z_, up.z_
 		)));
 
 	projectionDirty_ = true;
@@ -166,15 +166,15 @@ void Camera::Yaw(Real angle)
 
 	auto matrix = master->GetRotation().RotationMatrix();
 
-	Vector3 right(matrix.m00_, matrix.m10_, matrix.m20_);
-	Vector3 up(matrix.m01_, matrix.m11_, matrix.m21_);
-	Vector3 look(matrix.m02_, matrix.m12_, matrix.m22_);
+	Vector3 look(matrix.m00_, matrix.m10_, matrix.m20_);
+	Vector3 right(matrix.m01_, matrix.m11_, matrix.m21_);
+	Vector3 up(matrix.m02_, matrix.m12_, matrix.m22_);
 
 	Matrix4 T;
 
 	if (cameraType_ == LAND_OBJECT)
 	{
-		T = MatrixRotationY(angle);
+		T = MatrixRotationZ(angle);
 	}
 
 	if (cameraType_ == AIRCRAFT)
@@ -188,9 +188,9 @@ void Camera::Yaw(Real angle)
 	Correct(right, up, look);
 
 	master->SetRotation(Quaternion(Matrix3(
-		right.x_, up.x_, look.x_,
-		right.y_, up.y_, look.y_,
-		right.z_, up.z_, look.z_
+		look.x_, right.x_, up.x_,
+		look.y_, right.y_, up.y_,
+		look.z_, right.z_, up.z_
 		)));
 
 	projectionDirty_ = true;
@@ -208,9 +208,9 @@ void Camera::Roll(Real angle)
 
 		auto matrix = master->GetRotation().RotationMatrix();
 
-		Vector3 right(matrix.m00_, matrix.m10_, matrix.m20_);
-		Vector3 up(matrix.m01_, matrix.m11_, matrix.m21_);
-		Vector3 look(matrix.m02_, matrix.m12_, matrix.m22_);
+		Vector3 look(matrix.m00_, matrix.m10_, matrix.m20_);
+		Vector3 right(matrix.m01_, matrix.m11_, matrix.m21_);
+		Vector3 up(matrix.m02_, matrix.m12_, matrix.m22_);
 
 		Matrix4 T = MatrixRotationAxis(look, angle);
 		right = Vector3TransformCoord(right, T);
@@ -219,9 +219,9 @@ void Camera::Roll(Real angle)
 		Correct(right, up, look);
 
 		master->SetRotation(Quaternion(Matrix3(
-			right.x_, up.x_, look.x_,
-			right.y_, up.y_, look.y_,
-			right.z_, up.z_, look.z_
+			look.x_, right.x_, up.x_,
+			look.y_, right.y_, up.y_,
+			look.z_, right.z_, up.z_
 			)));
 
 		projectionDirty_ = true;
@@ -232,7 +232,8 @@ void Camera::Roll(Real angle)
 
 Matrix3x4 Camera::GetEffectiveWorldTransform() const
 {
-	Matrix3x4 transform = node_ ? Matrix3x4(node_->GetWorldPosition(), node_->GetWorldRotation(), 1.0f) : Matrix3x4::IDENTITY;
+	static Quaternion zUpQua = Quaternion(Vector3(0.f, 0.f, 1.f), Vector3(1.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f)).Inverse();
+	Matrix3x4 transform = node_ ? Matrix3x4(node_->GetWorldPosition(), isZUp_ ? node_->GetWorldRotation() * zUpQua : node_->GetWorldRotation(), 1.0f) : Matrix3x4::IDENTITY;
 	return useReflection_ ? reflectionMatrix_ * transform : transform;
 }
 
@@ -540,6 +541,11 @@ void Camera::SetReflectionPlane(const Plane& plane)
 {
 	reflectionPlane_ = plane;
 	reflectionMatrix_ = reflectionPlane_.ReflectionMatrix();
+}
+
+void Camera::SetZUp(bool isZUp)
+{
+	isZUp_ = isZUp;
 }
 
 }

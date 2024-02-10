@@ -143,26 +143,16 @@ CEUnit::CEUnit() :
 
 bool CEUnit::Load(const String& path)
 {
-	SharedPtr<Node> rotNode1(new Node());
-	rotNode1->SetRotation(Quaternion(90, Vector3(0.0f, -1.0f, 0.0f)));
-	rotNode1->SetScale(Vector3(0.01, 0.01, 0.01));
-	rotNode1->SetName("CE_ROTATION");
-	AddChild(rotNode1);
-
-	SharedPtr<Node> rotNode2(new Node());
-	rotNode2->SetRotation(Quaternion(90, Vector3(-1.0f, 0.0f, 0.0f)));
-	rotNode2->SetName("CE_ROTATION");
-	rotNode1->AddChild(rotNode2);
-
-	return Unit::Load(path, rotNode2);
+	SharedPtr<Node> root(new Node());
+	root->SetScale(Vector3(0.01, 0.01, 0.01));
+	root->SetName("SKELETON");
+	AddChild(root);
+	return Unit::Load(path, root);
 }
 
 void CEUnit::PlayAnimation(const String& path, bool isLoop)
 {
-	Node* node = GetChild(String("CE_ROTATION"));
-	if (!node)
-		return;
-	node = node->GetChild(String("CE_ROTATION"));
+	Node* node = GetChild(String("SKELETON"));
 	if (!node)
 		return;
 	Unit::PlayAnimation(path, isLoop, node);
