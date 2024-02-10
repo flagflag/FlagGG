@@ -251,8 +251,8 @@ void GameApplication::CreateScene()
 	light->SetNearClip(0.1f);
 	light->SetFarClip(1000000000.0f);
 	light->SetOrthographic(true);
-	lightNode->SetPosition(Vector3(0, 2, -1));
-	lightNode->SetRotation(Quaternion(45.0f, Vector3(1.0f, 0.0f, 0.0f))); // 绕着x轴旋转45度，朝下
+	lightNode->SetPosition(Vector3(-1, 0, 2));
+	lightNode->SetRotation(Quaternion(0.0, 45.f, 0.0));
 	scene_->AddChild(lightNode);
 #endif
 

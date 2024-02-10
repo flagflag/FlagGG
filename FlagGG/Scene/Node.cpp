@@ -355,7 +355,7 @@ Quaternion Node::GetWorldRotation() const
 {
 	if (dirty_)
 		UpdateWorldTransform();
-	return worldTransform_.Rotation();
+	return worldRotation_;
 }
 
 void Node::SetWorldRotation(const Quaternion& rotation)
@@ -377,7 +377,9 @@ void Node::SetWorldScale(const Vector3& scale)
 
 Vector3 Node::GetWorldDirection() const
 {
-	return GetWorldPosition() * Vector3::FORWARD;
+	if (dirty_)
+		UpdateWorldTransform();
+	return worldRotation_ * Vector3::FORWARD;
 }
 
 void Node::UpdateWorldTransform() const
@@ -387,10 +389,12 @@ void Node::UpdateWorldTransform() const
 	if (!parent_)
 	{
 		worldTransform_ = transform;
+		worldRotation_ = rotation_;
 	}
 	else
 	{
 		worldTransform_ = parent_->GetWorldTransform() * transform;
+		worldRotation_ = parent_->GetWorldRotation() * rotation_;
 	}
 
 	dirty_ = false;

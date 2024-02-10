@@ -160,7 +160,8 @@ protected:
 
 	// 相对父节点的坐标变换
 	mutable Matrix3x4		worldTransform_;
-	mutable bool				dirty_;
+	mutable Quaternion      worldRotation_;
+	mutable bool			dirty_;
 
 private:
 	Vector<SharedPtr<Component>> components_;

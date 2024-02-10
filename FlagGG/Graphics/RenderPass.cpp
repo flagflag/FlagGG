@@ -164,11 +164,11 @@ void LitRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 lay
 
 	for (auto& it : litRenderContextMap_)
 	{
-		Node* lightCameraNode = shadowCamera->GetNode();
+		Node* lightCameraNode = it.first_->GetNode();
 
 		auto& engineShaderParameters = renderEngine->GetShaderParameters();
 		engineShaderParameters.SetValue(SP_LIGHT_POS, lightCameraNode->GetWorldPosition());
-		engineShaderParameters.SetValue(SP_LIGHT_DIR, -(lightCameraNode->GetWorldRotation() * Vector3::FORWARD));
+		engineShaderParameters.SetValue(SP_LIGHT_DIR, -lightCameraNode->GetWorldDirection());
 		engineShaderParameters.SetValue(SP_LIGHT_VIEW_MATRIX, shadowCamera->GetViewMatrix());
 		engineShaderParameters.SetValue(SP_LIGHT_PROJVIEW_MATRIX, shadowCamera->GetProjectionMatrix() * shadowCamera->GetViewMatrix());
 		auto shadowMap = renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP);

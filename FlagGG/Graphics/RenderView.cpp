@@ -145,8 +145,8 @@ void RenderView::CollectVisibilityObjects()
 		Node* lightNode = dirLight->GetNode();
 		const float extrusionDistance = 100.f;
 		
-		Vector3 pos = camera_->GetNode()->GetWorldPosition() - extrusionDistance * lightNode->GetWorldDirection();
-		shadowCameraNode_->SetTransform(pos, lightNode->GetWorldRotation(), Vector3::ONE);
+		const Vector3 pos = camera_->GetNode()->GetWorldPosition() - extrusionDistance * lightNode->GetWorldDirection();
+		shadowCameraNode_->SetTransform(pos, lightNode->GetWorldRotation() * Quaternion(-90, Vector3::RIGHT), Vector3::ONE);
 
 		Frustum splitFrustum = camera_->GetFrustum();
 		Polyhedron frustumVolume;
