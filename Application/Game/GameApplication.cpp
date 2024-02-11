@@ -223,7 +223,7 @@ void GameApplication::CreateScene()
 
 	dissolveHero_ = new Unit();
 	dissolveHero_->Load("Unit/DissolveHero.ljson");
-	dissolveHero_->SetPosition(Vector3(10, 0, 5));
+	dissolveHero_->SetPosition(Vector3(20, 0, 0));
 	dissolveHero_->SetRotation(Quaternion(90, Vector3(1.0f, 0.0f, 0.0f)));
 	dissolveHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
 	dissolveHero_->SetName("DissolveHero");
@@ -254,7 +254,7 @@ void GameApplication::CreateScene()
 	light->SetOrthographic(true);
 	light->SetBrightness(3.f);
 	lightNode->SetPosition(Vector3(-1, 0, 2));
-	lightNode->SetRotation(Quaternion(0.0, 45.f, 0.0));
+	lightNode->SetRotation(Quaternion(0.0, 45.f, 45.0));
 	scene_->AddChild(lightNode);
 #endif
 

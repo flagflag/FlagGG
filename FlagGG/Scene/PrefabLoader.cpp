@@ -35,6 +35,7 @@ static SharedPtr<Node> LoadPrefab_StaticMeshArchetype(const LJSONValue& source)
 	auto* cache = GetSubsystem<ResourceCache>();
 	SharedPtr<Node> instance = LoadPrefab_Transform(source);
 	auto* meshComponent = instance->CreateComponent<StaticMeshComponent>();
+	meshComponent->SetCastShadow(true);
 	{
 		const String meshPath = source["staticMesh"].GetString();
 		auto meshResource = cache->GetResource<Model>(meshPath);
