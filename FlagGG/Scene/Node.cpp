@@ -35,15 +35,6 @@ void Node::Update(const NodeUpdateContext& updateContext)
 	for (const auto& compoment : components_)
 	{
 		compoment->Update(updateContext.timeStep_);
-
-		if (!IsTranspent())
-		{
-			if (auto* drawableComponent = compoment->Cast<DrawableComponent>())
-			{
-				if (drawableComponent->IsRenderable())
-					updateContext.octree_->InsertElement(drawableComponent);
-			}
-		}
 	}
 }
 
