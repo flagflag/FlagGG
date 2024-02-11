@@ -60,6 +60,8 @@ static SharedPtr<Node> LoadPrefab_StaticMeshArchetype(const LJSONValue& source)
 						param->AddParametersDefine<float>("metallicFactor");
 						param->AddParametersDefine<float>("roughnessFactor");
 						param->AddParametersDefine<float>("metalMul0or1");
+						param->AddParametersDefine<float>("emissiveMul");
+						param->AddParametersDefine<Color>("emissiveColor");
 						for (auto& it : materialDesc.shaderParameters_)
 						{
 							if (it.first_ == "ColorFactor")
@@ -77,6 +79,14 @@ static SharedPtr<Node> LoadPrefab_StaticMeshArchetype(const LJSONValue& source)
 							else if (it.first_ == "MetalMul0or1")
 							{
 								param->SetValue<float>("metalMul0or1", ToFloat(it.second_));
+							}
+							else if (it.first_ == "Emissive_Mul")
+							{
+								param->SetValue<float>("emissiveMul", ToFloat(it.second_));
+							}
+							else if (it.first_ == "Color_Emissive")
+							{
+								param->SetValue<Color>("emissiveColor", ToColor(it.second_));
 							}
 						}
 					}

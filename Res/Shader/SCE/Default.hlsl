@@ -32,6 +32,8 @@
         float metallicFactor;
         float4 roughnessFactor;
         float metalMul0or1;
+        float emissiveMul;
+        float4 emissiveColor;
     }
 #endif
 
@@ -131,9 +133,9 @@ struct PixelInput
 
     #ifdef EMISSIVECOLOR
         #ifdef ALPHAMASK
-            color = color + baseColor.rgb * 2.5 + saturate(texDiff.a - 0.6);
+            color = color + baseColor.rgb * 2.5 + saturate(texDiff.a - 0.6) * emissiveMul * emissiveColor;
         #else
-            color = color + baseColor.rgb * texDiff.a;
+            color = color + baseColor.rgb * texDiff.a * emissiveMul * emissiveColor;
         #endif
     #endif
 
