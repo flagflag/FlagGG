@@ -23,6 +23,7 @@ enum CompressedFormat
 	CF_PVRTC_RGBA_2BPP,
 	CF_PVRTC_RGB_4BPP,
 	CF_PVRTC_RGBA_4BPP,
+	CF_RGBA16F,
 };
 
 struct FlagGG_API CompressedLevel

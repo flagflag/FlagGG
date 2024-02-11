@@ -7,6 +7,7 @@
 #include "Core/Object.h"
 #include "Core/BaseTypes.h"
 #include "Graphics/RenderBatch.h"
+#include "Math/SphericalHarmonicsL2.h"
 
 namespace FlagGG
 {
@@ -14,6 +15,7 @@ namespace FlagGG
 class Camera;
 class Light;
 class DrawableComponent;
+class TextureCube;
 
 struct FlagGG_API RenderPassContext
 {
@@ -97,6 +99,9 @@ public:
 
 private:
 	HashMap<Light*, LitRenderContext> litRenderContextMap_;
+
+	Vector4 shaderConstants_[SphericalHarmonicsL2::kVec4Count];
+	SharedPtr<TextureCube> iblCube_;
 };
 
 // 无光pass

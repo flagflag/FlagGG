@@ -2,7 +2,7 @@ set (TARGET_NAME GameLogicServer)
 set (EXECUTABLE_OUTPUT_PATH  ${CMAKE_CURRENT_SOURCE_DIR}/../../bin)
 set (FLAGGG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../FlagGG)
 set (APP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../)
-list (APPEND TARGET_PROPERTIES FOLDER "Application")
+list (APPEND TARGET_PROPERTIES FOLDER "Application/GameServer")
 
 setup_lint ()
 

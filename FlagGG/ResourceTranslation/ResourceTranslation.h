@@ -17,7 +17,11 @@ public:
 
 	virtual bool LoadShader(const String& path, GenericPassDescription& desc) = 0;
 
+	virtual bool LoadShader(IOFrame::Buffer::IOBuffer* stream, GenericPassDescription& desc) = 0;
+
 	virtual bool LoadMaterial(const String& path, GenericMaterialDescription& desc) = 0;
+
+	virtual bool LoadMaterial(IOFrame::Buffer::IOBuffer* stream, GenericMaterialDescription& desc) = 0;
 };
 
 FlagGG_API ResourceTranslation* CreateResourceTranslation(const String& targetEngine);

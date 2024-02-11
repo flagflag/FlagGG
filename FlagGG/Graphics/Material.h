@@ -39,6 +39,12 @@ public:
 	// 设置像素着色器
 	void SetPixelShader(Shader* shader);
 
+	// 设置光栅化状态
+	void SetRasterizerState(const RasterizerState& rasterizerState);
+
+	// 设置深度模板状态
+	void SetDepthStencilState(const DepthStencilState& depthStencilState);
+
 
 	// 获取填充模式
 	FillMode GetFillMode() const;
@@ -91,6 +97,9 @@ public:
 
 	// 设置render pass
 	void SetRenderPass(RenderPassType type, const RenderPassInfo& renderPass);
+
+	// 创建render pass
+	RenderPassInfo& CreateOrGetRenderPass(RenderPassType type);
 
 
 	// 获取纹理

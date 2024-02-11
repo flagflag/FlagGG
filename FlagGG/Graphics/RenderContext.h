@@ -32,7 +32,7 @@ struct FlagGG_API RenderContext
 	const Matrix3x4* worldTransform_{};
 	UInt32 numWorldTransform_{};
 	// 材质
-	Material* material_{};
+	SharedPtr<Material> material_;
 	// 视图可见性Mask
 	UInt32 viewMask_{};
 };

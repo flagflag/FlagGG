@@ -24,10 +24,19 @@ struct GenericPassDescription
 	DepthStencilState depthStencilState_;
 };
 
+struct GenericTextureDescription
+{
+	SharedPtr<Image> image_;
+	bool srgb_{};
+	TextureFilterMode filterMode_{ TEXTURE_FILTER_DEFAULT };
+	TextureAddressMode addresMode_[MAX_TEXTURE_COORDINATE]{};
+};
+
 struct GenericMaterialDescription
 {
 	Vector<GenericPassDescription> passDescs_;
-	HashMap<UInt32, SharedPtr<Image>> textureDescs_;
+	HashMap<UInt32, GenericTextureDescription> textureDescs_;
+	HashMap<String, String> shaderParameters_;
 };
 
 }

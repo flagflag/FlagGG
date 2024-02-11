@@ -21,6 +21,8 @@
 #define FOURCC_DXT5 (MAKEFOURCC('D','X','T','5'))
 #define FOURCC_DX10 (MAKEFOURCC('D','X','1','0'))
 
+#define DDS_A16B16G16R16F  113
+
 static const unsigned DDSCAPS_COMPLEX = 0x00000008U;
 static const unsigned DDSCAPS_TEXTURE = 0x00001000U;
 static const unsigned DDSCAPS_MIPMAP = 0x00400000U;
@@ -294,6 +296,11 @@ bool Image::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 			components_ = 4;
 			break;
 
+		case DDS_A16B16G16R16F:
+			compressedFormat_ = CF_RGBA16F;
+			components_ = 4;
+			break;
+
 		case 0:
 			if (ddsd.ddpfPixelFormat_.dwRGBBitCount_ != 32 && ddsd.ddpfPixelFormat_.dwRGBBitCount_ != 24 &&
 				ddsd.ddpfPixelFormat_.dwRGBBitCount_ != 16)
@@ -323,7 +330,7 @@ bool Image::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 
 		// Calculate the size of the data
 		unsigned dataSize = 0;
-		if (compressedFormat_ != CF_RGBA)
+		if (compressedFormat_ != CF_RGBA && compressedFormat_ != CF_RGBA16F)
 		{
 			const unsigned blockSize = compressedFormat_ == CF_DXT1 ? 8 : 16; //DXT1/BC1 is 8 bytes, DXT3/BC2 and DXT5/BC3 are 16 bytes
 			// Add 3 to ensure valid block: ie 2x2 fits uses a whole 4x4 block
@@ -424,6 +431,8 @@ while (((mask) << (l)) < 0x80) \
 
 				switch (sourcePixelByteSize)
 				{
+				break;
+
 				case 4:
 				{
 					auto* src = (unsigned*)currentImage->data_.Get();
@@ -1712,6 +1721,44 @@ CompressedLevel Image::GetCompressedLevel(unsigned index) const
 	if (compressedFormat_ == CF_RGBA)
 	{
 		level.blockSize_ = 4;
+		unsigned i = 0;
+		unsigned offset = 0;
+
+		for (;;)
+		{
+			if (!level.width_)
+				level.width_ = 1;
+			if (!level.height_)
+				level.height_ = 1;
+			if (!level.depth_)
+				level.depth_ = 1;
+
+			level.rowSize_ = level.width_ * level.blockSize_;
+			level.rows_ = (unsigned)level.height_;
+			level.data_ = data_.Get() + offset;
+			level.dataSize_ = level.depth_ * level.rows_ * level.rowSize_;
+
+			if (offset + level.dataSize_ > GetMemoryUse())
+			{
+				FLAGGG_LOG_ERROR("Compressed level is outside image data. Offset: {} Size: {} Datasize: {}.",
+					offset, level.dataSize_, GetMemoryUse());
+				level.data_ = nullptr;
+				return level;
+			}
+
+			if (i == index)
+				return level;
+
+			offset += level.dataSize_;
+			level.width_ /= 2;
+			level.height_ /= 2;
+			level.depth_ /= 2;
+			++i;
+		}
+	}
+	else if (compressedFormat_ == CF_RGBA16F)
+	{
+		level.blockSize_ = 8;
 		unsigned i = 0;
 		unsigned offset = 0;
 

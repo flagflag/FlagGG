@@ -22,7 +22,7 @@ void GfxTexture::SetFormat(TextureFormat format)
 
 void GfxTexture::SetNumLevels(UInt32 levels)
 {
-	textureDesc_.levels_ = levels;
+	textureDesc_.requestedLevels_ = levels;
 }
 
 void GfxTexture::SetWidth(UInt32 width)

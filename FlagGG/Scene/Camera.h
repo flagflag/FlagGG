@@ -31,6 +31,8 @@ class FlagGG_API Camera : public DrawableComponent, public ITransformListener
 public:
 	Camera();
 
+	~Camera() override;
+
 	// 插入node时调用
 	void OnAddToNode(Node* node) override;
 

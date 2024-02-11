@@ -12,6 +12,11 @@ Camera::Camera()
 	reflectionMatrix_ = reflectionPlane_.ReflectionMatrix();
 }
 
+Camera::~Camera()
+{
+	listenerNode_.RemoveFromList();
+}
+
 void Camera::OnAddToNode(Node* node)
 {
 	node->AddTransformListener(listenerNode_);

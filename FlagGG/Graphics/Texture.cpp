@@ -41,6 +41,11 @@ void Texture::SetAddressMode(TextureCoordinate coord, TextureAddressMode address
 	gfxSampler_->SetAddressMode(coord, addressMode);
 }
 
+void Texture::SetSRGB(bool srgb)
+{
+	gfxTexture_->SetSRGB(srgb);
+}
+
 void Texture::SetComparisonFunc(ComparisonFunc comparisonFunc)
 {
 	gfxSampler_->SetComparisonFunc(comparisonFunc);

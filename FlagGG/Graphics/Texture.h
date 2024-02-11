@@ -37,6 +37,9 @@ public:
 	// 设置寻址方式
 	void SetAddressMode(TextureCoordinate coord, TextureAddressMode addressMode);
 
+	// 设置SRGB
+	void SetSRGB(bool srgb);
+
 	// 设置比较方式
 	void SetComparisonFunc(ComparisonFunc comparisonFunc);
 

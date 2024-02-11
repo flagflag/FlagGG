@@ -31,6 +31,7 @@ enum TextureClass : UInt32
 	TEXTURE_CLASS_EMISSIVE,
 	TEXTURE_CLASS_ENVIRONMENT,
 	TEXTURE_CLASS_SHADOWMAP,
+	TEXTURE_CLASS_IBL,
 	MAX_TEXTURE_CLASS
 };
 
@@ -361,10 +362,22 @@ extern FlagGG_API const FlagGG::StringHash SP_DELTA_TIME;
 extern FlagGG_API const FlagGG::StringHash SP_ELAPSED_TIME;
 extern FlagGG_API const FlagGG::StringHash SP_CAMERA_POS;
 extern FlagGG_API const FlagGG::StringHash SP_LIGHT_POS;
+extern FlagGG_API const FlagGG::StringHash SP_LIGHT_COLOR;
 extern FlagGG_API const FlagGG::StringHash SP_LIGHT_DIR;
 extern FlagGG_API const FlagGG::StringHash SP_LIGHT_VIEW_MATRIX;
 extern FlagGG_API const FlagGG::StringHash SP_LIGHT_PROJVIEW_MATRIX;
 extern FlagGG_API const FlagGG::StringHash SP_SHADOWMAP_PIXEL_TEXELS;
+extern FlagGG_API const FlagGG::StringHash SP_ENV_CUBE_ANGLE;
+extern FlagGG_API const FlagGG::StringHash SP_SH_INTENSITY;
+extern FlagGG_API const FlagGG::StringHash SP_IBL_INTENSITY;
+extern FlagGG_API const FlagGG::StringHash SP_AMBIENT_OCCLUSION_INTENSITY;
+extern FlagGG_API const FlagGG::StringHash SP_SHAR;
+extern FlagGG_API const FlagGG::StringHash SP_SHAG;
+extern FlagGG_API const FlagGG::StringHash SP_SHAB;
+extern FlagGG_API const FlagGG::StringHash SP_SHBR;
+extern FlagGG_API const FlagGG::StringHash SP_SHBG;
+extern FlagGG_API const FlagGG::StringHash SP_SHBB;
+extern FlagGG_API const FlagGG::StringHash SP_SHC;
 
 extern FlagGG_API const UInt32 DRAWABLE_UNDEFINED;
 extern FlagGG_API const UInt32 DRAWABLE_GEOMETRY;

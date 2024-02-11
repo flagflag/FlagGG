@@ -32,7 +32,8 @@ static const char* TEXTURE_CLASS[MAX_TEXTURE_CLASS] =
 	"specular",
 	"emissive",
 	"environment",
-	"shadowmap"
+	"shadowmap",
+	"ibl",
 };
 
 static const char* RENDER_PASS_TYPE[MAX_RENDER_PASS_TYPE] =
@@ -217,6 +218,16 @@ void RenderPassInfo::SetPixelShader(Shader* shader)
 	pixelShader_ = shader;
 }
 
+void RenderPassInfo::SetRasterizerState(const RasterizerState& rasterizerState)
+{
+	rasterizerState_ = rasterizerState;
+}
+
+void RenderPassInfo::SetDepthStencilState(const DepthStencilState& depthStencilState)
+{
+	depthStencilState_ = depthStencilState;
+}
+
 FillMode RenderPassInfo::GetFillMode() const
 {
 	return rasterizerState_.fillMode_;
@@ -266,6 +277,11 @@ void Material::SetPixelShader(Shader* pixelShader)
 void Material::SetRenderPass(RenderPassType type, const RenderPassInfo& renderPass)
 {
 	renderPass_[type] = renderPass;
+}
+
+RenderPassInfo& Material::CreateOrGetRenderPass(RenderPassType type)
+{
+	return renderPass_[type];
 }
 
 Texture* Material::GetTexture()

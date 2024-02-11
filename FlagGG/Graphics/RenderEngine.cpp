@@ -28,9 +28,21 @@ RenderEngine::RenderEngine()
 	shaderParameters_->AddParametersDefine<Vector3>(SP_CAMERA_POS);
 	shaderParameters_->AddParametersDefine<Vector3>(SP_LIGHT_POS);
 	shaderParameters_->AddParametersDefine<Vector3>(SP_LIGHT_DIR);
+	shaderParameters_->AddParametersDefine<Color>(SP_LIGHT_COLOR);
 	shaderParameters_->AddParametersDefine<Matrix3x4>(SP_LIGHT_VIEW_MATRIX);
 	shaderParameters_->AddParametersDefine<Matrix4>(SP_LIGHT_PROJVIEW_MATRIX);
 	shaderParameters_->AddParametersDefine<Vector2>(SP_SHADOWMAP_PIXEL_TEXELS);
+	shaderParameters_->AddParametersDefine<Vector4>(SP_ENV_CUBE_ANGLE);
+	shaderParameters_->AddParametersDefine<float>(SP_SH_INTENSITY);
+	shaderParameters_->AddParametersDefine<float>(SP_IBL_INTENSITY);
+	shaderParameters_->AddParametersDefine<float>(SP_AMBIENT_OCCLUSION_INTENSITY);
+	shaderParameters_->AddParametersDefine<Vector4>(SP_SHAR);
+	shaderParameters_->AddParametersDefine<Vector4>(SP_SHAG);
+	shaderParameters_->AddParametersDefine<Vector4>(SP_SHAB);
+	shaderParameters_->AddParametersDefine<Vector4>(SP_SHBR);
+	shaderParameters_->AddParametersDefine<Vector4>(SP_SHBG);
+	shaderParameters_->AddParametersDefine<Vector4>(SP_SHBB);
+	shaderParameters_->AddParametersDefine<Vector4>(SP_SHC);
 	shaderParameters_->AddParametersDefineImpl(SP_SKIN_MATRICES, sizeof(Matrix3x4) * GetMaxBonesNum());
 }
 
@@ -123,6 +135,9 @@ TextureFormat RenderEngine::GetFormat(CompressedFormat format)
 
 	case CF_DXT5:
 		return TEXTURE_FORMAT_BC3;
+
+	case CF_RGBA16F:
+		return TEXTURE_FORMAT_RGBA16F;
 
 	default:
 		return TEXTURE_FORMAT_UNKNOWN;

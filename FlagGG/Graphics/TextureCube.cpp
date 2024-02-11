@@ -48,7 +48,6 @@ bool TextureCube::SetSize(UInt32 size, TextureFormat format,
 	gfxTexture_->SetCube(true);
 	gfxTexture_->SetMultiSample(multiSample);
 	gfxTexture_->SetAutoResolve(false);
-	gfxTexture_->SetSRGB(false);
 	gfxTexture_->SetUsage(usage);
 	gfxTexture_->Apply(nullptr);
 
@@ -229,7 +228,27 @@ bool TextureCube::SetData(CubeMapFace face, Image* image, bool useAlpha/* = fals
 	return true;
 }
 
-bool TextureCube::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
+bool TextureCube::LoadDDS(IOFrame::Buffer::IOBuffer* stream)
+{
+	SharedPtr<Image> image = MakeShared<Image>();
+	if (!image->LoadStream(stream))
+	{
+		FLAGGG_LOG_ERROR("Failed to load cube texture image.");
+		return false;
+	}
+
+	Image* currentImage = image;
+
+	for (unsigned face = FACE_POSITIVE_X; face < MAX_CUBEMAP_FACES; ++face)
+	{
+		SetData((CubeMapFace)face, currentImage);
+		currentImage = currentImage->GetNextSibling();
+	}
+
+	return true;
+}
+
+bool TextureCube::LoadMulti2DFace(IOFrame::Buffer::IOBuffer* stream)
 {
 	LJSONFile imageConfig;
 	if (!imageConfig.LoadStream(stream))
@@ -259,8 +278,24 @@ bool TextureCube::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 			return false;
 		}
 	}
-			
+
 	return true;
+}
+
+bool TextureCube::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
+{
+	String fileID;
+	fileID.Resize(4);
+	if (stream->ReadStream(&fileID[0], 4) == 4)
+	{
+		stream->Seek(stream->GetIndex() - 4);
+
+		if (fileID == "DDS ")
+		{
+			return LoadDDS(stream);
+		}
+	}
+	return LoadMulti2DFace(stream);
 }
 
 bool TextureCube::EndLoad()

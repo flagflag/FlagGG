@@ -19,6 +19,14 @@ enum LightType
 	LIGHT_TYPE_AREA,
 };
 
+/// Light units.
+enum LightUnits
+{
+	LU_UNITLESS = 0,
+	LU_CANDELAS,
+	LU_LUMENS,
+};
+
 class FlagGG_API Light : public Camera
 {
 	OBJECT_OVERRIDE(Light, Camera);
@@ -33,6 +41,12 @@ public:
 
 	// 获取灯光类型
 	LightType GetLightType() const { return lightType_; }
+
+	// 设置光照强度单位
+	void SetLightUnit(LightUnits lightUnits) { lightUnits_ = lightUnits; }
+
+	// 获取光照强度单位
+	LightUnits GetLightUnits() const { return lightUnits_; }
 
 	// 设置灯光颜色
 	void SetColor(const Color& color) { color_ = color; }
@@ -52,14 +66,28 @@ public:
 	// 获取灯光范围
 	float GetRange() const { return range_; }
 
+	// 获取实际的光照强度颜色
+	Color GetEffectiveColor() const;
+
+protected:
+	Color Light::GetColorFromTemperature() const;
+
 private:
 	LightType lightType_;
+
+	LightUnits lightUnits_;
 
 	Color color_;
 
 	float brightness_;
 
 	float range_;
+
+	// 色温
+	float temperature_;
+
+	// 是否使用色温
+	bool useTemperature_;
 };
 
 }

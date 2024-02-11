@@ -18,6 +18,7 @@
         float3 cameraPos;
         float3 lightPos;
         float3 lightDir;
+        float4 lightColor;
         float4x3 lightViewMatrix;
         float4x4 lightProjviewMatrix;
     }
@@ -29,9 +30,22 @@
         float3 cameraPos;
         float3 lightPos;
         float3 lightDir;
+        float4 lightColor;
         float4x3 lightViewMatrix;
         float4x4 lightProjviewMatrix;
         float2 shadowMapPixelTexels;
+        float4 envCubeAngle;
+        float shIntensity;
+        float iblIntensity;
+        float ambientOcclusionIntensity;
+        // SH
+        float4 SHAr;
+        float4 SHAg;
+        float4 SHAb;
+        float4 SHBr;
+        float4 SHBg;
+        float4 SHBb;
+        float4 SHC;
     }
     #define Sample2D(name, tex) name##Map.Sample(name##Sampler, tex)
 #endif

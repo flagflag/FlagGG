@@ -247,7 +247,7 @@ void GfxTextureD3D11::CreateTexture2D()
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC resourceViewDesc;
 		memset(&resourceViewDesc, 0, sizeof resourceViewDesc);
-		resourceViewDesc.Format = d3d11TextureFormatInfo[textureDesc_.format_].srvFormat_;
+		resourceViewDesc.Format = textureDesc_.sRGB_ ? d3d11TextureFormatInfo[textureDesc_.format_].srgbFormat_ : d3d11TextureFormatInfo[textureDesc_.format_].srvFormat_;
 		resourceViewDesc.ViewDimension = (textureDesc_.multiSample_ > 1 && !textureDesc_.autoResolve_) ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
 		resourceViewDesc.Texture2D.MipLevels = textureDesc_.usage_ != TEXTURE_DYNAMIC ? (UINT)textureDesc_.levels_ : 1;
 

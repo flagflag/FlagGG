@@ -38,7 +38,6 @@ bool Texture3D::SetSize(Int32 width, Int32 height, Int32 depth, TextureFormat fo
 	gfxTexture_->SetCube(false);
 	gfxTexture_->SetMultiSample(1u);
 	gfxTexture_->SetAutoResolve(false);
-	gfxTexture_->SetSRGB(false);
 	gfxTexture_->SetUsage(usage);
 	gfxTexture_->Apply(nullptr);
 

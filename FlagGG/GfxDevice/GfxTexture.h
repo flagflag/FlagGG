@@ -13,18 +13,18 @@ namespace FlagGG
 
 struct TextureDesc
 {
-	TextureFormat format_;
-	UInt32 levels_;
-	UInt32 requestedLevels_;
-	UInt32 width_;
-	UInt32 height_;
-	UInt32 depth_;
-	UInt32 layers_;
-	bool isCube_;
-	UInt32 multiSample_;
-	bool autoResolve_;
-	bool sRGB_;
-	TextureUsage usage_;
+	TextureFormat format_{};
+	UInt32 levels_{};
+	UInt32 requestedLevels_{};
+	UInt32 width_{};
+	UInt32 height_{};
+	UInt32 depth_{};
+	UInt32 layers_{};
+	bool isCube_{};
+	UInt32 multiSample_{};
+	bool autoResolve_{};
+	bool sRGB_{};
+	TextureUsage usage_{};
 };
 
 class GfxRenderSurface;

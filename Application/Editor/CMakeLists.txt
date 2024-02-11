@@ -1,7 +1,7 @@
 set (TARGET_NAME Editor)
 set (LIBRARY_OUTPUT_PATH  ${CMAKE_CURRENT_SOURCE_DIR}/../../bin)
 set (FLAGGG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../FlagGG)
-list (APPEND TARGET_PROPERTIES FOLDER "Application")
+list (APPEND TARGET_PROPERTIES FOLDER "Application/Editor")
 
 setup_lint ()
 

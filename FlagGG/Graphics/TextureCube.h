@@ -49,6 +49,10 @@ public:
 	SharedPtr<Image> GetImage(CubeMapFace face);
 
 protected:
+	bool LoadDDS(IOFrame::Buffer::IOBuffer* stream);
+
+	bool LoadMulti2DFace(IOFrame::Buffer::IOBuffer* stream);
+
 	bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
 	bool EndLoad() override;

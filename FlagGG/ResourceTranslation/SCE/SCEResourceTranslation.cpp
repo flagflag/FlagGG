@@ -3,6 +3,7 @@
 #include "Resource/ResourceCache.h"
 #include "Resource/Image.h"
 #include "IOFrame/Stream/FileStream.h"
+#include "Utility/SystemHelper.h"
 #include "Utility/Format.h"
 #include "Log.h"
 
@@ -31,6 +32,23 @@ static const HashMap<StringHash, CullMode> SCE_CULL_MODE =
 	{ "none", CULL_NONE },
 	{ "ccw",  CULL_FRONT },
 	{ "cw",   CULL_BACK },
+};
+
+static const HashMap<StringHash, TextureAddressMode> SCE_TEXTURE_ADDRESS_MODE =
+{
+	{ "wrap",   TEXTURE_ADDRESS_WRAP },
+	{ "mirror", TEXTURE_ADDRESS_MIRROR },
+	{ "clamp",  TEXTURE_ADDRESS_CLAMP },
+	{ "border", TEXTURE_ADDRESS_BORDER },
+};
+
+static const HashMap<StringHash, TextureFilterMode> SCE_TEXTURE_FILTER_MODE =
+{
+	{ "nearest",            TEXTURE_FILTER_NEAREST },
+	{ "bilinear",           TEXTURE_FILTER_BILINEAR },
+	{ "trilinear",          TEXTURE_FILTER_TRILINEAR },
+	{ "anisotropic",        TEXTURE_FILTER_ANISOTROPIC },
+	{ "nearestanisotropic", TEXTURE_FILTER_NEAREST_ANISOTROPIC },
 };
 
 static const HashMap<StringHash, ComparisonFunc> SCE_COMPARISON_FUNC =
@@ -117,6 +135,11 @@ bool SCEResourceTranslation::LoadShader(const String& path, GenericPassDescripti
 	return false;
 }
 
+bool SCEResourceTranslation::LoadShader(IOFrame::Buffer::IOBuffer* stream, GenericPassDescription& desc)
+{
+	return false;
+}
+
 bool SCEResourceTranslation::LoadMaterial(const String& path, GenericMaterialDescription& desc)
 {
 	IOFrame::Stream::FileStream fileStream;
@@ -127,14 +150,53 @@ bool SCEResourceTranslation::LoadMaterial(const String& path, GenericMaterialDes
 		return false;
 	}
 
+	return LoadMaterial(&fileStream, desc);
+}
+
+bool SCEResourceTranslation::LoadMaterial(IOFrame::Buffer::IOBuffer* stream, GenericMaterialDescription& desc)
+{
 	XMLFile xmlFile;
-	if (!xmlFile.LoadStream(&fileStream))
+	if (!xmlFile.LoadStream(stream))
 	{
-		FLAGGG_LOG_STD_ERROR("Failed to load xml file[%s].", path.CString());
+		FLAGGG_LOG_STD_ERROR("Failed to load xml file.");
 		return false;
 	}
 
 	return LoadMaterialImpl(xmlFile.GetRoot(), desc);
+}
+
+bool SCEResourceTranslation::LoadTextureDesc(const XMLElement& source, GenericTextureDescription& desc)
+{
+	if (XMLElement srgbParam = source.GetChild("srgb"))
+	{
+		desc.srgb_ = srgbParam.GetBool("enable");
+	}
+
+	for (XMLElement addressParam = source.GetChild("address"); addressParam; addressParam = addressParam.GetNext("address"))
+	{
+		const String coord = addressParam.GetAttribute("coord");
+		const String mode = addressParam.GetAttribute("mode");
+		if (coord == "u")
+		{
+			desc.addresMode_[TEXTURE_COORDINATE_U] = *SCE_TEXTURE_ADDRESS_MODE[mode];
+		}
+		else if (coord == "v")
+		{
+			desc.addresMode_[TEXTURE_COORDINATE_V] = *SCE_TEXTURE_ADDRESS_MODE[mode];
+		}
+		else if (coord == "w")
+		{
+			desc.addresMode_[TEXTURE_COORDINATE_W] = *SCE_TEXTURE_ADDRESS_MODE[mode];
+		}
+	}
+
+	if (XMLElement filterParam = source.GetChild("filter"))
+	{
+		const String mode = filterParam.GetAttribute("mode");
+		desc.filterMode_ = *SCE_TEXTURE_FILTER_MODE[mode];
+	}
+
+	return true;
 }
 
 bool SCEResourceTranslation::LoadMaterialImpl(const XMLElement& source, GenericMaterialDescription& desc)
@@ -190,7 +252,12 @@ bool SCEResourceTranslation::LoadMaterialImpl(const XMLElement& source, GenericM
 			auto image = cache->GetResource<Image>(name);
 			if (image)
 			{
-				desc.textureDescs_.Insert(MakePair(unit, image));
+				auto& textureDesc = desc.textureDescs_[unit];
+				textureDesc.image_ = image;
+				if (auto textureXml = cache->GetResource<XMLFile>(ReplaceExtension(name, ".xml")))
+				{
+					LoadTextureDesc(textureXml->GetRoot(), textureDesc);
+				}
 			}
 			else
 			{
@@ -199,6 +266,15 @@ bool SCEResourceTranslation::LoadMaterialImpl(const XMLElement& source, GenericM
 			}
 		}
 		textureElem = textureElem.GetNext("texture");
+	}
+
+	XMLElement param = source.GetChild("parameter");
+	while (param)
+	{
+		const String name = param.GetAttribute("name");
+		const String value = param.GetAttribute("value");
+		desc.shaderParameters_.Insert(MakePair(name, value));
+		param = param.GetNext("parameter");
 	}
 
 	return true;
@@ -262,13 +338,25 @@ bool SCEResourceTranslation::LoadMaterialImpl_PassStep1(const XMLElement& source
 		if (passElem.HasAttribute("blend"))
 		{
 			const String blend = passElem.GetAttributeLower("blend");
-			passDesc.rasterizerState_.blendMode_ = *SCE_BLEND_MODE[blend];
+			if (auto* blendMode = SCE_BLEND_MODE[blend])
+				passDesc.rasterizerState_.blendMode_ = *blendMode;
+			else
+				passDesc.rasterizerState_.blendMode_ = BLEND_REPLACE;
 		}
+		else
+			passDesc.rasterizerState_.blendMode_ = BLEND_REPLACE;
 
 		if (passElem.HasAttribute("cull"))
 		{
 			const String cull = passElem.GetAttributeLower("cull");
-			passDesc.rasterizerState_.cullMode_ = *SCE_CULL_MODE[cull];
+			if (auto* cullMode = SCE_CULL_MODE[cull])
+				passDesc.rasterizerState_.cullMode_ = *cullMode;
+			else
+				passDesc.rasterizerState_.cullMode_ = CULL_BACK;
+		}
+		else
+		{
+			passDesc.rasterizerState_.cullMode_ = CULL_BACK;
 		}
 
 		if (passElem.HasAttribute("depthtest"))
@@ -276,8 +364,14 @@ bool SCEResourceTranslation::LoadMaterialImpl_PassStep1(const XMLElement& source
 			const String depthTest = passElem.GetAttributeLower("depthtest");
 			if (depthTest == "false")
 				passDesc.depthStencilState_.depthTestMode_ = COMPARISON_ALWAYS;
+			else if (auto* compFunc = SCE_COMPARISON_FUNC[depthTest])
+				passDesc.depthStencilState_.depthTestMode_ = *compFunc;
 			else
-				passDesc.depthStencilState_.depthTestMode_ = *SCE_COMPARISON_FUNC[depthTest];
+				passDesc.depthStencilState_.depthTestMode_ = COMPARISON_LESS;
+		}
+		else
+		{
+			passDesc.depthStencilState_.depthTestMode_ = COMPARISON_LESS;
 		}
 
 		if (passElem.HasAttribute("colorwrite"))
@@ -303,7 +397,7 @@ bool SCEResourceTranslation::LoadMaterialImpl_PassStep2(const XMLElement& source
 	String vsDefines = source.GetAttribute("vsdefines");
 	String psDefines = source.GetAttribute("psdefines");
 
-	GenericPassDescription& passDesc = GetOrCreatePassDesc(desc, source.GetAttribute("name"));
+	GenericPassDescription& passDesc = GetOrCreatePassDesc(desc, source.GetAttribute("pass"));
 
 	passDesc.vertexDefines_ = passDesc.vertexDefines_ + " " + vsDefines;
 	passDesc.pixelDefines_ = passDesc.pixelDefines_ + " " + psDefines;

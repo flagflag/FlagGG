@@ -41,7 +41,6 @@ void GameApplication::Start()
 {
 	GameEngine::Start();
 
-	// for test:
 	GetSubsystem<AssetFileManager>()->AddArchive(new DefaultFileSystemArchive(GetLocalFileSystem(), GetProgramDir() + "ResForSCE"));
 
 	CreateScene();
@@ -214,10 +213,12 @@ void GameApplication::CreateScene()
 	reflectionCamera_->SetUseReflection(true);
 
 	mainHero_ = new CEUnit();
+#if 0
 	mainHero_->Load("Unit/MainHero.ljson");
 	mainHero_->PlayAnimation("Animation/Warrior_Attack.ani", true);
 	mainHero_->SetPosition(Vector3(4, 0, 0));
 	mainHero_->SetName("MainHero");
+#endif
 	scene_->AddChild(mainHero_);
 
 	dissolveHero_ = new Unit();
@@ -251,6 +252,7 @@ void GameApplication::CreateScene()
 	light->SetNearClip(0.1f);
 	light->SetFarClip(1000000000.0f);
 	light->SetOrthographic(true);
+	light->SetBrightness(3.f);
 	lightNode->SetPosition(Vector3(-1, 0, 2));
 	lightNode->SetRotation(Quaternion(0.0, 45.f, 0.0));
 	scene_->AddChild(lightNode);
