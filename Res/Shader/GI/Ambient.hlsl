@@ -1,5 +1,5 @@
 #ifdef PIXEL
-#define UNITY_SAMPLE_FULL_SH_PER_PIXEL 1
+#define SAMPLE_FULL_SH_PER_PIXEL 1
 
 // normal should be normalized, w=1.0
 float3 SHEvalLinearL0L1 (float4 normal)
@@ -36,7 +36,7 @@ float3 ShadeSHPerPixel(float3 normal, float3 ambient, float shIntensity)
     float3 ambientContrib = float3(0.0, 0.0, 0.0);
 
     // 只有high及以上渲染质量才开全sh
-    #if UNITY_SAMPLE_FULL_SH_PER_PIXEL
+    #if SAMPLE_FULL_SH_PER_PIXEL
         // Completely per-pixel
         ambientContrib = SHEvalLinearL0L1(float4(normal, 1.0));
         ambientContrib += SHEvalLinearL2(float4(normal, 1.0));
@@ -63,7 +63,7 @@ void GI_Indirect(float3 normalDirection, float3 viewDirection, float perceptualR
     out float3 indirectDiffuse, out float3 indirectSpecular)
 {
     perceptualRoughness = perceptualRoughness * (1.7 - 0.7*perceptualRoughness);
-    float mip = perceptualRoughness * 6.0; //  perceptualRoughness * UNITY_SPECCUBE_LOD_STEPS
+    float mip = perceptualRoughness * 6.0; //  perceptualRoughness * SPECCUBE_LOD_STEPS
 
     float NdotV = clamp(dot(normalDirection, viewDirection), 0.0, 1.0);
     float3 viewReflection = 2.0 * NdotV * normalDirection - viewDirection; // Same as: -reflect(viewDirection, normalDirection);
