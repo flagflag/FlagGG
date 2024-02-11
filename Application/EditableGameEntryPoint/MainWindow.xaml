@@ -14,19 +14,35 @@
     IsResizable="False"
     IsTitleBarVisible="False">
 
-    <StackPanel>
-        <Button Click="OnRefreshResourceTree">
-            刷新资源树
-        </Button>
-        <TreeView Name="ResourceTree"
-          CanDrag="False"
-          CanDragItems="False"
-          CanReorderItems="False"
-          ScrollViewer.VerticalScrollBarVisibility="Visible"
-          ScrollViewer.VerticalScrollMode="Enabled"
-          ContextRequested="OnTreeViewItem_ContextRequested"
-          SelectionChanged="OnTreeViewItem_Click">
-        </TreeView>
-    </StackPanel>
-    
+    <Border BorderBrush="Gray"
+        BorderThickness="1"
+        CornerRadius="4"
+        Height="1200">
+        <StackPanel>
+            <StackPanel Height="100">
+                <Button Click="OnRefreshResourceTree">
+                    刷新资源树
+                </Button>
+            </StackPanel>
+            <Border BorderBrush="Gray"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Height="1100">
+                <ScrollViewer
+                              HorizontalScrollBarVisibility="Auto" 
+                              VerticalScrollBarVisibility="Auto">
+                    <TreeView Name="ResourceTree"
+                          CanDrag="False"
+                          CanDragItems="False"
+                          CanReorderItems="False"
+                          ScrollViewer.VerticalScrollBarVisibility="Visible"
+                          ScrollViewer.VerticalScrollMode="Enabled"
+                          ContextRequested="OnTreeViewItem_ContextRequested"
+                          SelectionChanged="OnTreeViewItem_Click">
+                    </TreeView>
+                </ScrollViewer>
+            </Border>
+        </StackPanel>
+    </Border>
+
 </winex:WindowEx>

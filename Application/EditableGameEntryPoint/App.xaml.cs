@@ -68,7 +68,7 @@ public partial class App : Application
         {
             CSharpEntryPoint((nint gameWindowHandle) =>
             {
-                AttachTo(mainWindow_.GetWindowHandle(), gameWindowHandle, 0, 0, 400, 1600);
+                AttachTo(mainWindow_.GetWindowHandle(), gameWindowHandle, 0, 0, 400, 1200);
             });
             Environment.Exit(0);
         });
