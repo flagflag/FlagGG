@@ -185,10 +185,10 @@ static HashMap<String, std::function<SharedPtr<Node>(const LJSONValue&)>> Archet
 
 static bool LoadPrefab(const String& path, Node* prefabInstance)
 {
-	LJSONFile jsonFile;
-	if (!jsonFile.LoadFile(path))
+	SharedPtr<LJSONFile> jsonFile = GetSubsystem<ResourceCache>()->GetResource<LJSONFile>(path);
+	if (!jsonFile)
 		return false;
-	const auto& source = jsonFile.GetRoot();
+	const auto& source = jsonFile->GetRoot();
 	for (unsigned i = 0; i < source.Size(); ++i)
 	{
 		const LJSONValue& item = source[i];

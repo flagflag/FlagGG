@@ -112,6 +112,8 @@ void GameApplication::Start()
 	{
 		setupFinish_(window_->GetHandle());
 	}
+
+	ShowPrefab("deco\\Chinoiserie\\SM_CH_stone_lantern_A\\model.prefab");
 }
 
 void GameApplication::Stop()

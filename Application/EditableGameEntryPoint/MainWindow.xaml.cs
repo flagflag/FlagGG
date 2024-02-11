@@ -93,7 +93,10 @@ public sealed partial class MainWindow : WindowEx
                             break;
                         prefabPath = fileNode.Content.As<string>() + "\\" + prefabPath;
                     }
-                    ShowPrefab(prefabPath + "\\model.prefab");
+                    prefabPath = prefabPath + "\\model.prefab";
+                    int directoryLength = Path.GetFileName(resourceDir_).Length;
+                    prefabPath = prefabPath.Substring(resourceDir_.Length - directoryLength);
+                    ShowPrefab(prefabPath);
                 }
             }
         }
