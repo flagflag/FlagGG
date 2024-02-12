@@ -14,6 +14,7 @@ namespace FlagGG
 
 class FlagGG_API Texture2D : public Texture
 {
+	OBJECT_OVERRIDE(Texture2D, Texture);
 public:
 	Texture2D();
 

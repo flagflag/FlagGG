@@ -1,6 +1,7 @@
 #include "Container/ArrayPtr.h"
 #include "Core/Context.h"
 #include "Core/Profiler.h"
+#include "Core/ObjectFactory.h"
 #include "Log.h"
 #include "IOFrame/Buffer/StringBuffer.h"
 //#include "../IO/VectorBuffer.h"
@@ -11,6 +12,8 @@
 
 namespace FlagGG
 {
+
+REGISTER_TYPE_FACTORY(XMLFile);
 
 /// XML writer for pugixml.
 class XMLWriter : public pugi::xml_writer

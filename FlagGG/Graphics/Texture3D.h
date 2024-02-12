@@ -8,6 +8,7 @@ namespace FlagGG
 
 class FlagGG_API Texture3D : public Texture
 {
+	OBJECT_OVERRIDE(Texture3D, Texture);
 public:
 	Texture3D();
 

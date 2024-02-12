@@ -1,4 +1,5 @@
 #include "Resource/ResourceCache.h"
+#include "Core/ObjectFactory.h"
 #include "Utility/SystemHelper.h"
 #include "IOFrame/Stream/FileStream.h"
 #include "FileSystem/FileManager.h"
@@ -13,41 +14,60 @@ String ResourceCache::FormatReousrcePath(const String& path)
 	return formatPath.ToLower();
 }
 
-bool ResourceCache::CheckResource(const String& path, SharedPtr<Resource>& res)
+void ResourceCache::AddManualResource(Resource* resource)
 {
-	if (!GetSubsystem<AssetFileManager>()->FileExists(path))
+	if (resource)
 	{
-		FLAGGG_LOG_ERROR("file({}) not exists.", path.CString());
-
-		return false;
+		typeToResourceMapping_[resource->GetType()][resource->GetName()] = resource;
 	}
-
-	auto it = resources_.Find(path);
-	res = it != resources_.End() ? it->second_ : nullptr;
-
-	return true;
 }
 
-bool ResourceCache::LoadResource(const String& path, SharedPtr<Resource>& res)
+Resource* ResourceCache::GetResource(StringHash type, const String& path)
 {
-	auto buffer = GetSubsystem<AssetFileManager>()->OpenFileReader(path);
+	const String formatPath = FormatReousrcePath(path);
 
+	if (!GetSubsystem<AssetFileManager>()->FileExists(formatPath))
+	{
+		FLAGGG_LOG_ERROR("file({}) not exists.", path.CString());
+		return nullptr;
+	}
+
+	Resource* existingResource = GetExistingResource(type, formatPath);
+	if (existingResource)
+		return existingResource;
+
+	SharedPtr<Resource> resource(RTTICast<Resource>(GetSubsystem<ObjectFactory>()->Create(type)));
+	resource->SetName(formatPath);
+
+	auto buffer = GetSubsystem<AssetFileManager>()->OpenFileReader(formatPath);
 	if (!buffer)
 	{
 		FLAGGG_LOG_ERROR("Can not open file stream [{}].", path.CString());
 		return false;
 	}
 
-	if (!res->LoadStream(buffer))
+	if (!resource->LoadStream(buffer))
 	{
 		FLAGGG_LOG_ERROR("Load Resource[{}] failed.", path.CString());
 		ASSERT_MESSAGE(false, "Failed to load resource.");
 		return false;
 	}
 
-	resources_.Insert(MakePair(path, res));
+	typeToResourceMapping_[type].Insert(MakePair(formatPath, resource));
 
-	return true;
+	return resource;
+}
+
+Resource* ResourceCache::GetExistingResource(StringHash type, const String& path)
+{
+	const String formatPath = FormatReousrcePath(path);
+	auto it = typeToResourceMapping_.Find(type);
+	if (it != typeToResourceMapping_.End())
+	{
+		auto it2 = it->second_.Find(formatPath);
+		return it2 != it->second_.End() ? it2->second_ : nullptr;
+	}
+	return nullptr;
 }
 
 }

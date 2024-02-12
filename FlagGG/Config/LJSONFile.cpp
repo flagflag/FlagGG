@@ -1,6 +1,7 @@
 #include "Config/LJSONFile.h"
 #include "Config/LJSONParser.h"
 #include "Container/ArrayPtr.h"
+#include "Core/ObjectFactory.h"
 #include "Log.h"
 
 #include <fstream>
@@ -8,6 +9,8 @@
 
 namespace FlagGG
 {
+
+REGISTER_TYPE_FACTORY(LJSONFile);
 
 LJSONFile::LJSONFile() :
 	Resource()

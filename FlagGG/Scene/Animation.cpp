@@ -1,10 +1,13 @@
 #include "Scene/Animation.h"
 #include "IOFrame/Buffer/IOBufferAux.h"
 #include "Resource/ResourceCache.h"
+#include "Core/ObjectFactory.h"
 #include "Log.h"
 
 namespace FlagGG
 {
+
+REGISTER_TYPE_FACTORY(Animation);
 
 Vector3 AnimationKeyFrameInterval::GetPosition(Real time)
 {

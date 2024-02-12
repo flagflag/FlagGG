@@ -97,14 +97,23 @@ static SharedPtr<Node> LoadPrefab_StaticMeshArchetype(const LJSONValue& source)
 						if (it.first_ < MAX_TEXTURE_CLASS)
 						{
 							auto& textureDesc = it.second_;
-							SharedPtr<Texture2D> texture = MakeShared<Texture2D>();
-							texture->SetSRGB(textureDesc.srgb_);
-							texture->SetAddressMode(TEXTURE_COORDINATE_U, textureDesc.addresMode_[TEXTURE_COORDINATE_U]);
-							texture->SetAddressMode(TEXTURE_COORDINATE_V, textureDesc.addresMode_[TEXTURE_COORDINATE_V]);
-							texture->SetAddressMode(TEXTURE_COORDINATE_W, textureDesc.addresMode_[TEXTURE_COORDINATE_W]);
-							texture->SetFilterMode(textureDesc.filterMode_);
-							texture->SetData(textureDesc.image_);
-							material->SetTexture((TextureClass)it.first_, texture);
+							if (auto* existingTexture = cache->GetExistingResource<Texture2D>(textureDesc.image_->GetName()))
+							{
+								material->SetTexture((TextureClass)it.first_, existingTexture);
+							}
+							else
+							{
+								SharedPtr<Texture2D> texture = MakeShared<Texture2D>();
+								texture->SetSRGB(textureDesc.srgb_);
+								texture->SetAddressMode(TEXTURE_COORDINATE_U, textureDesc.addresMode_[TEXTURE_COORDINATE_U]);
+								texture->SetAddressMode(TEXTURE_COORDINATE_V, textureDesc.addresMode_[TEXTURE_COORDINATE_V]);
+								texture->SetAddressMode(TEXTURE_COORDINATE_W, textureDesc.addresMode_[TEXTURE_COORDINATE_W]);
+								texture->SetFilterMode(textureDesc.filterMode_);
+								texture->SetData(textureDesc.image_);
+								texture->SetName(textureDesc.image_->GetName());
+								cache->AddManualResource(texture);
+								material->SetTexture((TextureClass)it.first_, texture);
+							}
 						}
 					}
 					// Create pass
@@ -185,7 +194,7 @@ static HashMap<String, std::function<SharedPtr<Node>(const LJSONValue&)>> Archet
 
 static bool LoadPrefab(const String& path, Node* prefabInstance)
 {
-	SharedPtr<LJSONFile> jsonFile = GetSubsystem<ResourceCache>()->GetResource<LJSONFile>(path);
+	LJSONFile* jsonFile = GetSubsystem<ResourceCache>()->GetResource<LJSONFile>(path);
 	if (!jsonFile)
 		return false;
 	const auto& source = jsonFile->GetRoot();

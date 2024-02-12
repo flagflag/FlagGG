@@ -7,6 +7,7 @@
 #include "Graphics/TextureCube.h"
 #include "Config/LJSONFile.h"
 #include "Config/LJSONAux.h"
+#include "Core/ObjectFactory.h"
 #include "Resource/ResourceCache.h"
 #include "Utility/Format.h"
 
@@ -23,6 +24,8 @@
 
 namespace FlagGG
 {
+
+REGISTER_TYPE_FACTORY(Material);
 
 static const char* TEXTURE_CLASS[MAX_TEXTURE_CLASS] =
 {

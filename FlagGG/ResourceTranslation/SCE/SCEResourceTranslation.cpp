@@ -127,7 +127,7 @@ SCEResourceTranslation::~SCEResourceTranslation()
 
 SharedPtr<Image> SCEResourceTranslation::LoadTexture(const String& path)
 {
-	return GetSubsystem<ResourceCache>()->GetResource<Image>(path);
+	return SharedPtr<Image>(GetSubsystem<ResourceCache>()->GetResource<Image>(path));
 }
 
 bool SCEResourceTranslation::LoadShader(const String& path, GenericPassDescription& desc)

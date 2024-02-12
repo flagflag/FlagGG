@@ -2,10 +2,13 @@
 #include "Container/Str.h"
 #include "Container/ArrayPtr.h"
 #include "IOFrame/Buffer/IOBufferAux.h"
+#include "Core/ObjectFactory.h"
 #include "Log.h"
 
 namespace FlagGG
 {
+
+REGISTER_TYPE_FACTORY(Model);
 
 Model::Model() :
 	Resource()

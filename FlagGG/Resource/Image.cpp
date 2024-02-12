@@ -1,5 +1,6 @@
 #include "Resource/Image.h"
 #include "Resource/Decompress.h"
+#include "Core/ObjectFactory.h"
 #include "Math/Math.h"
 #include "Utility/SystemHelper.h"
 #include "IOFrame/Stream/FileStream.h"
@@ -55,6 +56,8 @@ static const unsigned DDS_DXGI_FORMAT_BC3_UNORM_SRGB = 78;
 
 namespace FlagGG
 {
+
+REGISTER_TYPE_FACTORY(Image);
 
 /// DirectDraw color key definition.
 struct DDColorKey

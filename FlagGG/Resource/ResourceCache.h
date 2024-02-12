@@ -12,41 +12,28 @@ namespace FlagGG
 class FlagGG_API ResourceCache : public Subsystem<ResourceCache>
 {
 public:
-	template < class T >
-	SharedPtr<T> GetResource(const String& path)
+	template <class T>
+	T* GetResource(const String& path)
 	{
-		String formatPath = FormatReousrcePath(path);
-
-		SharedPtr<Resource> res;
-
-		if (!CheckResource(formatPath, res))
-		{
-			return nullptr;
-		}
-
-		// 存在资源，但没加载过
-		if (!res)
-		{
-			res = new T();
-			res->SetName(path);
-			if (!LoadResource(formatPath, res))
-			{
-				return nullptr;
-			}
-		}
-
-		return StaticCast<T>(res);
+		return RTTICast<T>(GetResource(T::GetTypeStatic(), path));
 	}
+
+	template <class T>
+	T* GetExistingResource(const String& path)
+	{
+		return RTTICast<T>(GetExistingResource(T::GetTypeStatic(), path));
+	}
+
+	Resource* GetResource(StringHash type, const String& path);
+
+	Resource* GetExistingResource(StringHash type, const String& path);
+
+	void AddManualResource(Resource* resource);
 
 	static String FormatReousrcePath(const String& path);
 
-protected:
-	bool CheckResource(const String& path, SharedPtr<Resource>& res);
-
-	bool LoadResource(const String& path, SharedPtr<Resource>& res);
-
 private:
-	HashMap<String, SharedPtr<Resource>> resources_;
+	HashMap<StringHash, HashMap<String, SharedPtr<Resource>>> typeToResourceMapping_;
 };
 
 }

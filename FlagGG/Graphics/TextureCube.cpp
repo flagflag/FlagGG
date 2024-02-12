@@ -4,6 +4,7 @@
 #include "GfxDevice/GfxTexture.h"
 #include "Config/LJSONFile.h"
 #include "Resource/ResourceCache.h"
+#include "Core/ObjectFactory.h"
 #include "Math/Math.h"
 #include "Log.h"
 
@@ -11,6 +12,8 @@
 
 namespace FlagGG
 {
+
+REGISTER_TYPE_FACTORY(TextureCube);
 
 TextureCube::TextureCube() :
 	Texture()
@@ -267,7 +270,7 @@ bool TextureCube::LoadMulti2DFace(IOFrame::Buffer::IOBuffer* stream)
 	for (UInt32 i = 0; i < value.Size() && i < MAX_CUBEMAP_FACES; ++i)
 	{
 		auto* cache = GetSubsystem<ResourceCache>();
-		SharedPtr<Image> image = cache->GetResource<Image>(value[i].GetString());
+		Image* image = cache->GetResource<Image>(value[i].GetString());
 		if (!image)
 		{
 			return false;

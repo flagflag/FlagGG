@@ -15,6 +15,7 @@ namespace FlagGG
 
 class FlagGG_API TextureCube : public Texture
 {
+	OBJECT_OVERRIDE(TextureCube, Texture);
 public:
 	TextureCube();
 

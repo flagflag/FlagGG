@@ -2,6 +2,7 @@
 #include "Graphics/RenderEngine.h"
 #include "Graphics/GraphicsDef.h"
 #include "GfxDevice/GfxTexture.h"
+#include "Core/ObjectFactory.h"
 #include "Math/Math.h"
 #include "Log.h"
 
@@ -9,6 +10,8 @@
 
 namespace FlagGG
 {
+
+REGISTER_TYPE_FACTORY(Texture2D);
 
 Texture2D::Texture2D() :
 	Texture()

@@ -8,6 +8,7 @@
 #include "FileSystem/FileManager.h"
 #include "Core/Context.h"
 #include "Core/CryAssert.h"
+#include "Core/ObjectFactory.h"
 #include "Log.h"
 #include "GfxDevice/GfxDevice.h"
 
@@ -15,6 +16,8 @@
 
 namespace FlagGG
 {
+
+REGISTER_TYPE_FACTORY(ShaderCode);
 
 static String HashVectorString(Vector<String> vecStr)
 {
