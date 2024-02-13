@@ -35,6 +35,19 @@
     pass =
 	[
 		{
+			name = "shadow",
+			vsshader = 
+			{
+				path = "Shader/Shadow.hlsl",
+				defines = [ "STATIC" ]
+			},
+			psshader =
+			{
+				path = "Shader/Shadow.hlsl",
+				defines = [ "MODEL_SHADOW" ]
+			}
+		},
+		{
 			name = "forward_lit"
 		},
 		{

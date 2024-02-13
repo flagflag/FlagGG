@@ -242,7 +242,7 @@ Matrix3x4 Camera::GetEffectiveWorldTransform() const
 	return useReflection_ ? reflectionMatrix_ * transform : transform;
 }
 
-Matrix3x4 Camera::GetViewMatrix()
+const Matrix3x4& Camera::GetViewMatrix()
 {
 	if (viewDirty_)
 	{
@@ -290,7 +290,7 @@ void Camera::UpdateProjection() const
 	projectionDirty_ = false;
 }
 
-Matrix4 Camera::GetProjectionMatrix()
+const Matrix4& Camera::GetProjectionMatrix()
 {
 	if (projectionDirty_)
 		UpdateProjection();

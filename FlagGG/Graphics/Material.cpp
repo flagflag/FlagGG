@@ -211,6 +211,11 @@ void RenderPassInfo::SetDepthWrite(bool depthWrite)
 	depthStencilState_.depthWrite_ = depthWrite;
 }
 
+void RenderPassInfo::SetSlopeScaledDepthBias(float slopeScaledDepthBias)
+{
+	rasterizerState_.slopeScaledDepthBias_ = slopeScaledDepthBias;
+}
+
 void RenderPassInfo::SetVertexShader(Shader* shader)
 {
 	vertexShader_ = shader;

@@ -59,8 +59,8 @@ public:
 	void Yaw(Real angle);
 	void Roll(Real angle);
 
-	Matrix3x4 GetViewMatrix();
-	Matrix4 GetProjectionMatrix();
+	const Matrix3x4& GetViewMatrix();
+	const Matrix4& GetProjectionMatrix();
 
 	// 获取视椎体
 	const Frustum& GetFrustum() const;

@@ -24,6 +24,23 @@ UInt32 RasterizerState::GetHash() const
 	hashValue = (hashValue << 1) | (UInt32)fillMode_;
 	hashValue = (hashValue << 2) | (UInt32)cullMode_;
 	hashValue = (hashValue << 2) | (UInt32)blendMode_;
+	if (depthBias_ || slopeScaledDepthBias_)
+	{
+		{
+			const unsigned char* temp = (const unsigned char*)(&depthBias_);
+			hashValue = FlagGG::SDBM_Hash(hashValue, temp[0]);
+			hashValue = FlagGG::SDBM_Hash(hashValue, temp[1]);
+			hashValue = FlagGG::SDBM_Hash(hashValue, temp[2]);
+			hashValue = FlagGG::SDBM_Hash(hashValue, temp[3]);
+		}
+		{
+			const unsigned char* temp = (const unsigned char*)(&slopeScaledDepthBias_);
+			hashValue = FlagGG::SDBM_Hash(hashValue, temp[0]);
+			hashValue = FlagGG::SDBM_Hash(hashValue, temp[1]);
+			hashValue = FlagGG::SDBM_Hash(hashValue, temp[2]);
+			hashValue = FlagGG::SDBM_Hash(hashValue, temp[3]);
+		}
+	}
 	return hashValue;
 }
 

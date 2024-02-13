@@ -33,6 +33,9 @@ public:
 	// 设置深度写
 	void SetDepthWrite(bool depthWrite);
 
+	// 设置深度偏移
+	void SetSlopeScaledDepthBias(float slopeScaledDepthBias);
+
 	// 设置顶点着色器
 	void SetVertexShader(Shader* shader);
 

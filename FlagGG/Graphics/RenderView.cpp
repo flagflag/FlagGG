@@ -138,6 +138,9 @@ void RenderView::CollectVisibilityObjects()
 			}
 		}
 
+		if (!dirLight)
+			return;
+
 // 设置平行光阴影相机参数
 		const bool nonUniform = true;
 		const float quantize = 0.5f;
@@ -145,8 +148,12 @@ void RenderView::CollectVisibilityObjects()
 		Node* lightNode = dirLight->GetNode();
 		const float extrusionDistance = 100.f;
 		
-		const Vector3 pos = camera_->GetNode()->GetWorldPosition() - extrusionDistance * lightNode->GetWorldDirection();
-		shadowCameraNode_->SetTransform(pos, lightNode->GetWorldRotation() * Quaternion(-90, Vector3::RIGHT), Vector3::ONE);
+		const Quaternion lightRotation = lightNode->GetWorldRotation() * Quaternion(-90, Vector3::RIGHT);
+		// 阴影深度是在Y轴朝上的坐标系下计算的
+		// Look-Z, Right-X, Up-Z
+		const Vector3 lookDirection(0.0f, 0.0f, 1.0f);
+		const Vector3 pos = camera_->GetNode()->GetWorldPosition() - extrusionDistance * (lightRotation * lookDirection);
+		shadowCameraNode_->SetTransform(pos, lightRotation, Vector3::ONE);
 
 		Frustum splitFrustum = camera_->GetFrustum();
 		Polyhedron frustumVolume;
@@ -183,8 +190,7 @@ void RenderView::CollectVisibilityObjects()
 		shadowCamera_->SetOrthographic(true);
 		shadowCamera_->SetAspect(1.f);
 		shadowCamera_->SetNearClip(0.f);
-		// 算出来的包围盒有问题，先用1e4测是
-		shadowCamera_->SetFarClip(/*shadowBox.max_.z_*/1e4f);
+		shadowCamera_->SetFarClip(shadowBox.max_.z_);
 
 		const float minX = shadowBox.min_.x_;
 		const float minY = shadowBox.min_.y_;
@@ -217,13 +223,11 @@ void RenderView::CollectVisibilityObjects()
 
 // 找到被平行光视锥体裁剪的物件
 		const Frustum& shadowCameraFrustum = shadowCamera_->GetFrustum();
+		tempQueryResults_.Clear();
+		ShadowCasterOctreeQuery query(tempQueryResults_, shadowCameraFrustum, DRAWABLE_GEOMETRY, camera_->GetViewMask());
+		octree_->GetElements(query);
 
-		// 算出来的视锥体有问题，先注释这个判断测是
-		//tempQueryResults_.Clear();
-		//ShadowCasterOctreeQuery query(tempQueryResults_, shadowCameraFrustum, DRAWABLE_GEOMETRY, camera_->GetViewMask());
-		//octree_->GetElements(query);
-
-// 收集阴影投射者
+// 收集投射阴影的物件
 		renderPiplineContext_->shadowCamera_ = shadowCamera_;
 		renderPiplineContext_->shadowLight_ = dirLight;
 		for (auto* shadowCaster : tempQueryResults_)

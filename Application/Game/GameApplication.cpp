@@ -113,7 +113,8 @@ void GameApplication::Start()
 		setupFinish_(window_->GetHandle());
 	}
 
-	ShowPrefab("deco\\Chinoiserie\\SM_CH_stone_lantern_A\\model.prefab");
+	// ShowPrefab("deco\\Chinoiserie\\SM_CH_stone_lantern_A\\model.prefab");
+	ShowPrefab("deco\\Building\\Arch_01\\model.prefab");
 }
 
 void GameApplication::Stop()
@@ -139,7 +140,6 @@ void GameApplication::ShowPrefab(const String& prefabPath)
 	ASSERT(previewPrefab_);
 	if (previewPrefab_)
 	{
-		// previewPrefab_->SetRotation(Quaternion(90, Vector3(0.0f, -1.0f, 0.0f)));
 		previewPrefab_->SetScale(Vector3(0.01, 0.01, 0.01));
 		previewPrefab_->SetPosition(Vector3(10, 0, 0));
 		scene_->AddChild(previewPrefab_);
@@ -255,7 +255,7 @@ void GameApplication::CreateScene()
 	light->SetFarClip(1000000000.0f);
 	light->SetOrthographic(true);
 	light->SetBrightness(3.f);
-	lightNode->SetPosition(Vector3(-1, 0, 2));
+	lightNode->SetPosition(Vector3(-10, 10, 20));
 	lightNode->SetRotation(Quaternion(0.0, 45.f, 45.0));
 	scene_->AddChild(lightNode);
 #endif

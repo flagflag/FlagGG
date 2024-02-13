@@ -4,12 +4,7 @@
 #ifdef VERTEX
     struct VertexInput
     {
-        float4 pos : POSITION;
-        float2 tex : TEXCOORD;
-        float3 nor : NORMAL;
-    #ifdef COLOR
-        float4 color : COLOR;
-    #endif
+        float4 position : POSITION;
     #ifdef SKINNED
         float4 blendWeights : BLEND_WEIGHTS;
         int4 blendIndices : BLEND_INDICES;
@@ -19,7 +14,7 @@
 
 struct PixelInput
 {
-	float4 pos : SV_POSITION;
+	float4 position : SV_POSITION;
 };
 
 #ifdef VERTEX
@@ -30,12 +25,12 @@ struct PixelInput
     #else
         float4x3 iWorldMatrix = GetSkinMatrix(input.blendWeights, input.blendIndices);
     #endif
-        input.pos.w = 1.0;
-        float3 worldPos = mul(input.pos, iWorldMatrix);
-        float4 clipPos = mul(float4(worldPos, 1.0), projviewMatrix);
+        input.position.w = 1.0;
+        float3 worldPosition = mul(input.position, iWorldMatrix);
+        float4 clipPosition  = mul(float4(worldPosition, 1.0), projviewMatrix);
         
         PixelInput output;
-        output.pos = clipPos;
+        output.position = clipPosition;
 
         return output;
     }

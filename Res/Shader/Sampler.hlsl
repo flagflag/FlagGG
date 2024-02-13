@@ -6,7 +6,7 @@ float4 GetShadowPos(float3 worldPos)
     return float4(
 		shadowClipPos.x * 0.5 + shadowClipPos.w * 0.5,
 		-shadowClipPos.y * 0.5 + shadowClipPos.w * 0.5,
-		0.0,
+		shadowClipPos.z,
         shadowClipPos.w
 	);
 }
@@ -32,7 +32,7 @@ float4 GetShadowPos(float3 worldPos)
                     shadowMap.SampleCmpLevelZero(shadowSampler, shadowPos3.xy, shadowPos3.z).r,
                     shadowMap.SampleCmpLevelZero(shadowSampler, shadowPos4.xy, shadowPos4.z).r
                 );
-                return saturate(dot(inLight, 0.25)  + 0.25);
+                return saturate(dot(inLight, 0.25) + 0.25);
             #else           
                 float4 inLight = float4(
                     shadowMap.Sample(shadowSampler, shadowPos.xy).r,

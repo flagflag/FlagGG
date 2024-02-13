@@ -390,19 +390,21 @@ void GfxDeviceD3D11::PrepareRasterizerState()
 		UInt32 stateHash = rasterizerState_.GetHash();
 		if (!rasterizerStates_.Contains(stateHash))
 		{
+			int scaledDepthBias = (int)(rasterizerState_.depthBias_ * (1 << 24));
+
 			D3D11_RASTERIZER_DESC stateDesc;
 			memset(&stateDesc, 0, sizeof(stateDesc));
 			stateDesc.FillMode = d3d11FillMode[rasterizerState_.fillMode_];
 			stateDesc.CullMode = d3d11CullMode[rasterizerState_.cullMode_];
-			stateDesc.FrontCounterClockwise = false;
-			stateDesc.DepthBias = 0;
-			stateDesc.DepthBiasClamp = 0.0f;
+			stateDesc.FrontCounterClockwise = FALSE;
+			stateDesc.DepthBias = scaledDepthBias;
+			stateDesc.DepthBiasClamp = F_INFINITY;
 
-			stateDesc.SlopeScaledDepthBias = 0;
-			stateDesc.DepthClipEnable = false;
-			stateDesc.ScissorEnable = rasterizerState_.scissorTest_ ? true : false;
-			stateDesc.MultisampleEnable = false;
-			stateDesc.AntialiasedLineEnable = false;
+			stateDesc.SlopeScaledDepthBias = rasterizerState_.slopeScaledDepthBias_;
+			stateDesc.DepthClipEnable = TRUE;
+			stateDesc.ScissorEnable = rasterizerState_.scissorTest_ ? TRUE : FALSE;
+			stateDesc.MultisampleEnable = FALSE;
+			stateDesc.AntialiasedLineEnable = FALSE;
 
 			ID3D11RasterizerState* newRasterizerState = nullptr;
 

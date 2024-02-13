@@ -7,9 +7,9 @@
 #ifdef VERTEX
     struct VertexInput
     {
-        float4 pos : POSITION;
-        float2 tex : TEXCOORD;
-        float3 nor : NORMAL;
+        float4 position : POSITION;
+        float2 texcoord : TEXCOORD;
+        float3 normal   : NORMAL;
     };
 #else
     Texture2D weightMap : register(t0);
@@ -25,10 +25,10 @@
 
 struct PixelInput
 {
-	float4 pos : SV_POSITION;
+	float4 position  : SV_POSITION;
 	float2 weightTex : TEXCOORD;
     float2 detailTex : TEXCOORD1;
-	float3 nor : NORMAL;
+	float3 normal : NORMAL;
 #ifdef SHADOW
     float4 shadowPos : POSITION;
 #endif
@@ -37,19 +37,19 @@ struct PixelInput
 #ifdef VERTEX
     PixelInput VS(VertexInput input)
     {
-        input.pos.w = 1.0;
-        float3 worldPos = mul(input.pos, worldMatrix);
-        float3 worldNor = normalize(mul(input.nor, (float3x3)worldMatrix));
-        float4 clipPos = mul(float4(worldPos, 1.0), projviewMatrix);
+        input.position.w = 1.0;
+        float3 worldPosition = mul(input.position, worldMatrix);
+        float3 worldNormal   = normalize(mul(input.normal, (float3x3)worldMatrix));
+        float4 clipPosition  = mul(float4(worldPosition, 1.0), projviewMatrix);
         
         PixelInput output;
-        output.pos = clipPos;
-        output.weightTex = input.tex;
+        output.position  = clipPosition;
+        output.weightTex = input.texcoord;
         output.detailTex = float2(32.0, 32.0) * output.weightTex;
-        output.nor = worldNor;
+        output.normal    = worldNormal;
 
     #ifdef SHADOW
-        output.shadowPos = GetShadowPos(worldPos);
+        output.shadowPos = GetShadowPos(worldPosition);
     #endif
 
         return output;

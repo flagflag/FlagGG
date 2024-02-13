@@ -167,6 +167,21 @@ void GfxDevice::SetFillMode(FillMode fillMode)
 	}
 }
 
+void GfxDevice::SetDepthBias(float depthBias, float slopeScaledDepthBias)
+{
+	if (!Equals(depthBias, rasterizerState_.depthBias_))
+	{
+		rasterizerState_.depthBias_ = depthBias;
+		rasterizerStateDirty_ = true;
+	}
+
+	if (!Equals(slopeScaledDepthBias, rasterizerState_.slopeScaledDepthBias_))
+	{
+		rasterizerState_.slopeScaledDepthBias_ = slopeScaledDepthBias;
+		rasterizerStateDirty_ = true;
+	}
+}
+
 void GfxDevice::SetDepthTestMode(ComparisonFunc depthTestMode)
 {
 	if (depthTestMode != depthStencilState_.depthTestMode_)

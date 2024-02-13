@@ -408,6 +408,7 @@ void RenderEngine::SetRasterizerState(const RasterizerState& rasterizerState)
 	gfxDevice_->SetBlendMode(rasterizerState.blendMode_);
 	gfxDevice_->SetCullMode(rasterizerState.cullMode_);
 	gfxDevice_->SetFillMode(rasterizerState.fillMode_);
+	gfxDevice_->SetDepthBias(0.0f, 0.0f);
 }
 
 void RenderEngine::SetDepthStencilState(const DepthStencilState& depthStencilState)

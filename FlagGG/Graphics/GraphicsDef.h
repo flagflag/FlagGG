@@ -323,6 +323,8 @@ struct FlagGG_API RasterizerState
 	FillMode fillMode_{ FILL_SOLID };
 	CullMode cullMode_{ CULL_NONE };
 	BlendMode blendMode_{ BLEND_REPLACE };
+	float depthBias_{};
+	float slopeScaledDepthBias_{};
 
 	UInt32 GetHash() const;
 };

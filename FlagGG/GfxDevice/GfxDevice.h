@@ -109,6 +109,9 @@ public:
 	// 设置填充模式
 	virtual void SetFillMode(FillMode fillMode);
 
+	// 设置深度偏移
+	virtual void SetDepthBias(float depthBias, float slopeScaledDepthBias);
+
 	// 设置深度模式
 	virtual void SetDepthTestMode(ComparisonFunc depthTestMode);
 
