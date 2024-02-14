@@ -7,31 +7,39 @@
 	psshader = 
 	{
 		path = "Shader/Terrain.hlsl",
-        defines = [ "SHADOW" ]
+        defines = [ "SHADOW", "PACKEDNORMAL", "DIRLIGHT", "AMBIENT" ]
 	},
 	textures =
 	{
-        "0" =
+		"0" =
         {
-            type = "texture2d", //texturecube => 3d
-            path = "Textures/TerrainWeights.dds"
+            type = "texture2darray",
+            path = "tiles/Textures/Mix/BaseColor_Terrain.png"
         },
-        "1" =
+		"1" =
         {
-            type = "texture2d",
-            path = "Textures/TerrainDetail1.dds"
+            type = "texture2darray",
+            path = "tiles/Textures/Mix/MixColor_Terrain.png"
         },
         "2" =
         {
-            type = "texture2d",
-            path = "Textures/TerrainDetail2.dds"
+            type = "texture2d", // texture2d => 2d
+            path = "Editor/TextureStyleGroup/noise01.tga"
         },
-        "3" =
-        {
-            type = "texture2d",
-            path = "Textures/TerrainDetail3.dds"
-        }
+		"3" = 
+		{
+            type = "texture2d", // texture2d => 2d
+            path = "Editor/TextureStyleGroup/noise02.tga"
+		}
 	},
+	shader_parameters = 
+	[
+		{
+			name = "blendTexIndex",
+			type = "vector3",
+			value = [ 2, 3, 7 ]
+		}
+	],
     pass =
 	[
 		{

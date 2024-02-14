@@ -7,7 +7,7 @@
 	psshader = 
 	{
 		path = "Shader/ModelPBR.hlsl",
-		defines = [ "SHADOW", "DIRLIGHT" ]
+		defines = [ "SHADOW", "DIRLIGHT", "AMBIENT" ]
 	},
 	texture =
 	{

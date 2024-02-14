@@ -5,6 +5,7 @@
 #include "Container/Str.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
+#include "Math/Vector4.h"
 #include "Math/Quaternion.h"
 #include "Math/Matrix3x4.h"
 #include "Math/Matrix4.h"
@@ -32,6 +33,8 @@ FlagGG_API void WriteString(IOBuffer* stream, const String& str);
 FlagGG_API void WriteVector2(IOBuffer* stream, const Vector2& vec2);
 
 FlagGG_API void WriteVector3(IOBuffer* stream, const Vector3& vec3);
+
+FlagGG_API void WriteVector4(IOBuffer* stream, const Vector4& vec4);
 
 FlagGG_API void WriteQuaternion(IOBuffer* stream, const Quaternion& quat);
 

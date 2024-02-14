@@ -65,6 +65,11 @@ void WriteVector3(IOBuffer* stream, const Vector3& vec3)
 	stream->WriteStream(&vec3.x_, sizeof(Vector3));
 }
 
+void WriteVector4(IOBuffer* stream, const Vector4& vec4)
+{
+	stream->WriteStream(&vec4.x_, sizeof(Vector4));
+}
+
 void WriteQuaternion(IOBuffer* stream, const Quaternion& quat)
 {
 	stream->WriteStream(&quat.w_, sizeof(Quaternion));

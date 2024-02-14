@@ -89,7 +89,7 @@ bool TextureCube::SetData(CubeMapFace face, Image* image, bool useAlpha/* = fals
 			components = image->GetComponents();
 		}
 
-		uint8_t* levelData = image->GetData();
+		UInt8* levelData = image->GetData();
 		Int32 levelWidth = image->GetWidth();
 		Int32 levelHeight = image->GetHeight();
 		TextureFormat format = TEXTURE_FORMAT_UNKNOWN;
@@ -213,7 +213,7 @@ bool TextureCube::SetData(CubeMapFace face, Image* image, bool useAlpha/* = fals
 			}
 			else
 			{
-				uint8_t* rgbaData = new uint8_t[level.width_ * level.height_ * 4];
+				UInt8* rgbaData = new UInt8[level.width_ * level.height_ * 4];
 				level.Decompress(rgbaData);
 				SetData(face, i, 0, 0, level.width_, level.height_, rgbaData);
 				memoryUse += level.width_ * level.height_ * 4;
@@ -233,14 +233,14 @@ bool TextureCube::SetData(CubeMapFace face, Image* image, bool useAlpha/* = fals
 
 bool TextureCube::LoadDDS(IOFrame::Buffer::IOBuffer* stream)
 {
-	SharedPtr<Image> image = MakeShared<Image>();
-	if (!image->LoadStream(stream))
+	Image image;
+	if (!image.LoadStream(stream))
 	{
 		FLAGGG_LOG_ERROR("Failed to load cube texture image.");
 		return false;
 	}
 
-	Image* currentImage = image;
+	Image* currentImage = &image;
 
 	for (unsigned face = FACE_POSITIVE_X; face < MAX_CUBEMAP_FACES; ++face)
 	{

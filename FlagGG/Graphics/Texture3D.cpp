@@ -79,7 +79,7 @@ bool Texture3D::SetData(Image* image, bool useAlpha/* = false*/)
 			components = image->GetComponents();
 		}
 
-		uint8_t* levelData = image->GetData();
+		UInt8* levelData = image->GetData();
 		Int32 levelWidth = image->GetWidth();
 		Int32 levelHeight = image->GetHeight();
 		Int32 levelDepth = image->GetDepth();
@@ -171,7 +171,7 @@ bool Texture3D::SetData(Image* image, bool useAlpha/* = false*/)
 			}
 			else
 			{
-				uint8_t* rgbaData = new uint8_t[level.width_ * level.height_ * level.depth_ * 4];
+				UInt8* rgbaData = new UInt8[level.width_ * level.height_ * level.depth_ * 4];
 				level.Decompress(rgbaData);
 				SetData(i, 0, 0, 0, level.width_, level.height_, level.depth_, rgbaData);
 				memoryUse += level.width_ * level.height_  * level.depth_ * 4;

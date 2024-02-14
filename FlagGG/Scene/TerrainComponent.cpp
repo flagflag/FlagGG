@@ -71,6 +71,7 @@ void TerrainComponent::CreateGeometry()
 	{
 		VertexElement(VE_VECTOR3, SEM_POSITION, 0),
 		VertexElement(VE_VECTOR3, SEM_NORMAL, 0),
+		VertexElement(VE_VECTOR4, SEM_TANGENT, 0),
 		VertexElement(VE_VECTOR2, SEM_TEXCOORD, 0)
 	};
 
@@ -92,7 +93,8 @@ void TerrainComponent::CreateGeometry()
 			Real height = src[imgRow * (verticesNum_.x_ - 1 - x) + y];
 			Vector3 position(y, x, height);
 			IOFrame::Buffer::WriteVector3(buffer1, position);
-			IOFrame::Buffer::WriteVector3(buffer1, Vector3(1, 1, 1));
+			IOFrame::Buffer::WriteVector3(buffer1, Vector3(0, 0, 1));
+			IOFrame::Buffer::WriteVector4(buffer1, Vector4(0, 1, 0, 1));
 			IOFrame::Buffer::WriteVector2(buffer1, Vector2(1.0f * x / verticesNum_.x_, 1.0f * y / verticesNum_.y_));
 
 			meshBoundingBox_.Merge(position);

@@ -590,6 +590,11 @@ while (((mask) << (l)) < 0x80) \
 			components_ = 4;
 			break;
 
+		case 0x8058:
+			compressedFormat_ = CF_RGBA;
+			components_ = 4;
+			break;
+
 		default:
 			compressedFormat_ = CF_NONE;
 			break;
@@ -608,6 +613,8 @@ while (((mask) << (l)) < 0x80) \
 		width_ = width;
 		height_ = height;
 		numCompressedLevels_ = mipmaps;
+		cubemap_ = false;
+		array_ = true;
 
 		unsigned dataOffset = 0;
 		for (unsigned i = 0; i < mipmaps; ++i)
@@ -620,7 +627,43 @@ while (((mask) << (l)) < 0x80) \
 				return false;
 			}
 
-			stream->ReadStream(&data_[dataOffset], levelSize);
+			const UInt32 dataSizePerLayer = dataSize / arrayElements;
+
+			// Do not use a shared ptr here, in case nothing is refcounting the image outside this function.
+			// A raw pointer is fine as the image chain (if needed) uses shared ptr's properly
+			Image* currentImage = this;
+
+			for (unsigned layerIndex = 0; layerIndex < arrayElements; ++layerIndex)
+			{
+				currentImage->data_ = new unsigned char[dataSizePerLayer];
+				currentImage->cubemap_ = cubemap_;
+				currentImage->array_ = array_;
+				currentImage->components_ = components_;
+				currentImage->compressedFormat_ = compressedFormat_;
+				currentImage->width_ = width;
+				currentImage->height_ = height;
+				currentImage->depth_ = depth;
+
+				currentImage->numCompressedLevels_ = 0;
+				if (!currentImage->numCompressedLevels_)
+					currentImage->numCompressedLevels_ = 1;
+
+				// Memory use needs to be exact per image as it's used for verifying the data size in GetCompressedLevel()
+				// even though it would be more proper for the first image to report the size of all siblings combined
+				currentImage->SetMemoryUse(dataSizePerLayer);
+
+				stream->ReadStream(currentImage->data_.Get(), dataSizePerLayer);
+
+				if (layerIndex < arrayElements - 1)
+				{
+					// Build the image chain
+					SharedPtr<Image> nextImage(new Image());
+					currentImage->nextSibling_ = nextImage;
+					currentImage = nextImage;
+				}
+			}
+
+			// stream->ReadStream(&data_[dataOffset], levelSize);
 			dataOffset += levelSize;
 			if (stream->GetIndex() & 3)
 				stream->Seek((stream->GetIndex() + 3) & 0xfffffffc);

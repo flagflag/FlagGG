@@ -5,6 +5,7 @@
 #include "Graphics/Texture.h"
 #include "Graphics/Texture2D.h"
 #include "Graphics/TextureCube.h"
+#include "Graphics/Texture2DArray.h"
 #include "Config/LJSONFile.h"
 #include "Config/LJSONAux.h"
 #include "Core/ObjectFactory.h"
@@ -362,6 +363,14 @@ static SharedPtr<Texture> LoadTexture(ResourceCache* cache, const LJSONValue& te
 	else if (type == "texturecube")
 	{
 		texture = cache->GetResource<TextureCube>(textureConfig["path"].GetString());
+		if (!texture)
+		{
+			FLAGGG_LOG_ERROR("Material ==> load textureCube failed.");
+		}
+	}
+	else if (type == "texture2darray")
+	{
+		texture = cache->GetResource<Texture2DArray>(textureConfig["path"].GetString());
 		if (!texture)
 		{
 			FLAGGG_LOG_ERROR("Material ==> load textureCube failed.");

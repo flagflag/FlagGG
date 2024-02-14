@@ -195,7 +195,7 @@ void GfxTextureD3D11::CreateTexture2D()
 	textureDesc.Width = (UINT)textureDesc_.width_;
 	textureDesc.Height = (UINT)textureDesc_.height_;
 	textureDesc.MipLevels = (textureDesc_.multiSample_ == 1 && textureDesc_.usage_ != TEXTURE_DYNAMIC) ? textureDesc_.levels_ : 1;
-	textureDesc.ArraySize = 1;
+	textureDesc.ArraySize = textureDesc_.layers_ ? textureDesc_.layers_ : 1;
 	textureDesc.SampleDesc.Count = (UINT)textureDesc_.multiSample_;
 	textureDesc.SampleDesc.Quality = gfxDevice->GetMultiSampleQuality(textureDesc.Format, textureDesc_.multiSample_);
 	textureDesc.Usage = textureDesc_.usage_ == TEXTURE_DYNAMIC ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;

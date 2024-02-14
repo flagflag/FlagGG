@@ -233,7 +233,7 @@ void GameApplication::CreateScene()
 
 	terrain_ = new Terrain();
 	terrain_->Create(64);
-	terrain_->SetScale(Vector3(1, 1, 0.4));
+	terrain_->SetScale(Vector3(1, 1, 0.2));
 	terrain_->SetPosition(Vector3(0, -80, 0));
 	terrain_->SetName("Terrain");
 	scene_->AddChild(terrain_);

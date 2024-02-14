@@ -40,19 +40,11 @@ float3 ShadeSHPerPixel(float3 normal, float3 ambient, float shIntensity)
         // Completely per-pixel
         ambientContrib = SHEvalLinearL0L1(float4(normal, 1.0));
         ambientContrib += SHEvalLinearL2(float4(normal, 1.0));
-        // 混合球谐（移动端平片地表使用顶点球谐，而悬崖使用像素球谐，边界处存在硬边，所以使用混合球谐让它过度柔和）
-        #if VERTEX_PIXEL_SH_BLEND
-            ambientContrib = mix(ambientContrib, vAmbientColor.rgb, vAmbientColor.a);
-        #endif
         ambient += max(float3(0.0, 0.0, 0.0), ambientContrib * shIntensity);
     #else
         // L2 per-vertex, L0..L1 & gamma-correction per-pixel
         // Ambient in this case is expected to be always Linear, see ShadeSHPerVertex()
         ambientContrib = SHEvalLinearL0L1(float4(normal, 1.0));
-        // 混合球谐（移动端平片地表使用顶点球谐，而悬崖使用像素球谐，边界处存在硬边，所以使用混合球谐让它过度柔和）
-        #if VERTEX_PIXEL_SH_BLEND
-            ambientContrib = mix(ambientContrib, vAmbientColor.rgb, vAmbientColor.a);
-        #endif
         ambient = max(float3(0.0, 0.0, 0.0), ambient + ambientContrib * shIntensity);     // include L2 contribution in vertex shader before clamp.
     #endif
 
