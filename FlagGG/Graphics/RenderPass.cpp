@@ -124,6 +124,10 @@ LitRenderPass::LitRenderPass()
 	shaderConstants_[6] = Vector4(0.104437, 0.112997, 0.0955683, 1);
 
 	iblCube_ = GetSubsystem<ResourceCache>()->GetResource<TextureCube>("Textures/daySpecularHDR.dds");
+	iblCube_->SetAddressMode(TEXTURE_COORDINATE_U, TEXTURE_ADDRESS_CLAMP);
+	iblCube_->SetAddressMode(TEXTURE_COORDINATE_V, TEXTURE_ADDRESS_CLAMP);
+	iblCube_->SetAddressMode(TEXTURE_COORDINATE_W, TEXTURE_ADDRESS_CLAMP);
+	iblCube_->SetFilterMode(TEXTURE_FILTER_TRILINEAR);
 }
 
 LitRenderPass::~LitRenderPass()
