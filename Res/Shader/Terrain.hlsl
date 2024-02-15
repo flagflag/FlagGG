@@ -156,6 +156,9 @@ struct PixelInput
         texDiff1.a = texNormal1.a;
         texDiff2.a = texNormal2.a;
         texDiff3.a = texNormal3.a;
+        texDiff1 = GammaToLinearSpace(texDiff1);
+        texDiff2 = GammaToLinearSpace(texDiff2);
+        texDiff3 = GammaToLinearSpace(texDiff3);
 
         // decode normal => xyz - normal, w - roughness
         texNormal1 = float4(DecodeNormal(texNormal1.xyyy), texNormal1.b);
