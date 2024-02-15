@@ -265,6 +265,7 @@ void GameApplication::CreateScene()
 	skybox_->SetScale(Vector3(100000, 100000, 100000));
 	skybox_->SetName("Skybox");
 	skybox_->SetTranspent(true);
+	skybox_->SetRotation(Quaternion(Vector3(0.f, 0.f, 1.f), Vector3(1.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f)).Inverse());
 	scene_->AddChild(skybox_);
 
 	waterDown_ = new Unit();
