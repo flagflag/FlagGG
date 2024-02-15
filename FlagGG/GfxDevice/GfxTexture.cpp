@@ -90,6 +90,11 @@ void GfxTexture::UpdateTextureSubRegion(const void* dataPtr, UInt32 index, UInt3
 
 }
 
+void GfxTexture::UpdateTexture(GfxTexture* gfxTexture)
+{
+
+}
+
 GfxRenderSurface* GfxTexture::GetRenderSurface() const
 {
 	return nullptr;

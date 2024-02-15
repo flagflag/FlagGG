@@ -11,6 +11,7 @@ namespace FlagGG
 
 class Window;
 class GfxRenderSurface;
+class GfxTexture;
 
 class GfxSwapChain : public GfxObject
 {
@@ -20,6 +21,9 @@ public:
 
 	// Resize
 	virtual void Resize(UInt32 width, UInt32 height);
+
+	// 拷贝数据到backbuffer
+	virtual void CopyData(GfxTexture* gfxTexture);
 
 	// 获取RT
 	virtual GfxRenderSurface* GetRenderTarget();

@@ -35,6 +35,9 @@ public:
 	// 更新3D纹理区域
 	void UpdateTextureSubRegion(const void* dataPtr, UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 z, UInt32 width, UInt32 height, UInt32 depth) override;
 
+	// 更新纹理数据
+	void UpdateTexture(GfxTexture* gfxTexture) override;
+
 
 	// 获取texute2d的render surface
 	GfxRenderSurface* GetRenderSurface() const override;
@@ -46,6 +49,9 @@ public:
 
 	// 获取ID3D11ShaderResourceView*
 	ID3D11ShaderResourceView* GetD3D11ShaderResourceView() const { return shaderResourceView_; }
+
+	// 获取ID3D11Resource
+	ID3D11Resource* GetD3D11Resource() const;
 
 protected:
 	void CreateTexture2D();

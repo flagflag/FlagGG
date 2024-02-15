@@ -1,6 +1,7 @@
 #include "GfxSwapChainD3D11.h"
 #include "GfxD3D11Defines.h"
 #include "GfxDeviceD3D11.h"
+#include "GfxTextureD3D11.h"
 #include "Graphics/Window.h"
 
 namespace FlagGG
@@ -75,7 +76,7 @@ void GfxSwapChainD3D11::Resize(UInt32 width, UInt32 height)
 		return;
 	}
 
-	renderTarget_ = new GfxRenderSurfaceD3D11();
+	renderTarget_ = new GfxRenderSurfaceD3D11(this);
 	renderTarget_->SetRenderTargetView(renderTargetView);
 
 	D3D11_TEXTURE2D_DESC depthDesc;
@@ -109,13 +110,31 @@ void GfxSwapChainD3D11::Resize(UInt32 width, UInt32 height)
 		return;
 	}
 
-	depthStencil_ = new GfxRenderSurfaceD3D11();
+	depthStencil_ = new GfxRenderSurfaceD3D11(this);
 	depthStencil_->SetDepthStencilView(depthStencilView);
+}
+
+void GfxSwapChainD3D11::CopyData(GfxTexture* gfxTexture)
+{
+	auto* gfxTextureD3D11 = RTTICast<GfxTextureD3D11>(gfxTexture);
+	if (gfxTextureD3D11)
+	{
+		ID3D11Texture2D* backBuffer;
+		HRESULT hr = swapChain_->GetBuffer(0, IID_ID3D11Texture2D, (void**)&backBuffer);
+		if (FAILED(hr))
+		{
+			D3D11_SAFE_RELEASE(backBuffer);
+			FLAGGG_LOG_ERROR("Faild to get backbuffer from SwapChain.");
+			return;
+		}
+
+		GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext()->CopyResource(backBuffer, gfxTextureD3D11->GetD3D11Resource());
+	}
 }
 
 void GfxSwapChainD3D11::Present()
 {
-	swapChain_->Present(0, 0);
+	swapChain_->Present(1, 0);
 }
 
 }

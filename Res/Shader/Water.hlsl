@@ -1,70 +1,76 @@
 #include "Shader/Define.hlsl"
 #include "Shader/Common.hlsl"
+#include "Shader/Sampler.hlsl"
+#include "Shader/Lighting.hlsl"
+#include "Shader/GI/Ambient.hlsl"
+#include "Shader/PBR/PBR.hlsl"
 
 #ifdef VERTEX
     struct VertexInput
     {
-        float4 pos : POSITION;
-        float2 tex : TEXCOORD;
-        float3 nor : NORMAL;
+        float4 position : POSITION;
+        float2 texcoord : TEXCOORD;
     };
     cbuffer MaterialParam : register(b3)
     {
-        float noiseTiling;
-        float2 noiseSpeed;
+        float2 waterSpeed;
+        float2 waveScaler;
+        float waveDensity;
     }
 #else
-    Texture2D noiseMap : register(t0);
-    SamplerState noiseSampler : register(s0);
+    Texture2D waterNormalMap : register(t0);
+    SamplerState waterNormalSampler : register(s0);
 
-    Texture2D diffMap : register(t1);
-    SamplerState diffSampler : register(s1);
+    Texture2D refractionMap : register(t1);
+    SamplerState refractionSampler : register(s1);
 
-    Texture2D colorMap : register(t2);
-    SamplerState colorSampler : register(s2);
-
-    Texture2D envMap : register(t5);
-    SamplerState envSampler : register(s5);
+    TextureCube reflectionCube : register(t2);
+    SamplerState reflectionSampler : register(s2);
 
     // 材质参数
     cbuffer MaterialParam : register(b1)
     {
         float noiseStrength;
-        float3 waterColor;
-        float fresnelPower;
+        float4 waterColor0;
+        float4 waterColor1;
+        float specularGloss;
+        float specularFactor;
+        float fresnelFactor;
+        float reflection;
+        float waterReflectionIntensity;
     }
 #endif
 
 struct PixelInput
 {
-	float4 pos : SV_POSITION;
-	float2 tex : TEXCOORD;
-	float3 nor : NORMAL;
-	float4 screenPos : SCREENPOS;
-	float2 reflectTex : TEXCOORD1;
-	float4 eyeVec : EYEVEC;
+	float4 position   : SV_POSITION;
+	float2 uv1        : TEXCOORD1;
+    float2 uv2        : TEXCOORD2;
+	float4 screenPos  : SCREENPOS;
+	float2 reflectTex : TEXCOORD;
+	float4 eyeVec     : EYEVEC;
+    float3 worldPosition : WORLD_POS;
 #ifdef RAIN_DOT
-    float2 uv : TEXCOORD2;
+    float2 uv : TEXCOORD3;
 #endif
 };
 
 #ifdef VERTEX
     PixelInput VS(VertexInput input)
     {
-        input.pos.w = 1.0;
-        float3 worldPos = mul(input.pos, worldMatrix);
-        float3 worldNor = normalize(mul(input.nor, (float3x3)worldMatrix));
-        float4 clipPos = mul(float4(worldPos, 1.0), projviewMatrix);
+        input.position.w = 1.0;
+        float3 worldPosition = mul(input.position, worldMatrix);
+        float4 clipPosition  = mul(float4(worldPosition, 1.0), projviewMatrix);
         
         PixelInput output;
-        output.pos = clipPos;
-        output.tex = input.tex * noiseTiling * noiseSpeed * elapsedTime;
-        output.nor = worldNor;
-        output.screenPos = GetScreenPos(clipPos);
-        output.reflectTex = GetQuadTexCoord(clipPos) * clipPos.w;
-        output.eyeVec = float4(cameraPos - worldPos, GetDepth(clipPos));
+        output.position = clipPosition;
+        output.uv1 = waveDensity * (worldPosition.yx / waveScaler.x * waterSpeed * elapsedTime);
+        output.uv2 = waveDensity * (worldPosition.yx / waveScaler.y * waterSpeed * elapsedTime);
+        output.screenPos = GetScreenPos(clipPosition);
+        output.reflectTex = GetQuadTexCoord(clipPosition) * clipPosition.w;
+        output.eyeVec = float4(cameraPos - worldPosition, GetDepth(clipPosition));
 #ifdef RAIN_DOT
-        output.uv = input.tex;
+        output.uv = input.texcoord;
 #endif
 
         return output;
@@ -72,42 +78,38 @@ struct PixelInput
 #else
     float4 PS(PixelInput input) : SV_TARGET
     {
-        float4 color = float4(1, 1, 1, 1);
+        float3 eyeVec = normalize(input.eyeVec.xyz);
+        float3 texNormal = DecodeNormal(waterNormalMap.Sample(waterNormalSampler, input.uv1)) + DecodeNormal(waterNormalMap.Sample(waterNormalSampler, input.uv2));
+        float3 worldNormal = normalize(texNormal);
 
-        float2 refractTex = input.screenPos.xy / input.screenPos.w;
-        float2 reflectTex = input.reflectTex.xy / input.screenPos.w;
+        float NdotV = clamp(dot(worldNormal, eyeVec), 0.0, 1.0);
+        float fresnel = pow(1.0 - NdotV, fresnelFactor);
 
-        float2 noise = (noiseMap.Sample(noiseSampler, input.tex).rg - 0.5) * noiseStrength;
+        #if defined(BAKE_REFRACTION)
+            float2 refractUV = input.worldPosition.xy / 2.56;
+        #else
+            float2 refractUV = input.screenPos.xy / input.screenPos.w;
+        #endif
+        float2 noise = worldNormal.xy * noiseStrength; // worldNormal.xy作为distortion系数
+        refractUV += noise;
+        float3 waterBottomColor = GammaToLinearSpace(refractionMap.Sample(refractionSampler, refractUV).rgb);
 
-#ifdef RAIN_DOT
-        float2 vec = input.uv - float2(0.5, 0.5);
-        float dist = sqrt(vec.x * vec.x + vec.y * vec.y);
+        float3 refrCol = waterBottomColor;
 
-        float maxDist = 0.001 * elapsedTime;
-        float range = 0.0003 * elapsedTime;
-        float decreaseFactor = 5.0;
-        float t = step(maxDist, dist) * step(dist, maxDist + range);
+        // 高光
+        float3 worldNormalNoise = lerp(float3(0.0, 0.0, 1.0), worldNormal, noiseStrength);
+        NdotV = clamp(dot(worldNormalNoise, eyeVec), 0.0, 1.0);
+        float3 viewReflection = 2.0 * NdotV * worldNormalNoise - eyeVec; // Same as: -reflect(viewDirection, worldNormalNoise);
+        float3 cubeR = viewReflection.xzy;
+        float3 reflCol = reflectionCube.SampleLevel(reflectionSampler, cubeR, 0.0).rgb;
+        reflCol = GammaToLinearSpace(reflCol);
+        // 与环境高光关联
+        reflCol = reflCol * waterReflectionIntensity * M_PI;
 
-        float sinx = (dist - maxDist) / range * 3.14 * 4;
-        float height = 1.0 / pow(elapsedTime, decreaseFactor);
+        float reflIntensity = clamp(reflection * fresnel, 0.0, 1.0);
 
-        float temp = abs(sin(sinx)) * height;
-        noise.xy += t * temp * normalize(vec);
-#endif
+        float3 color = lerp(refrCol, reflCol, reflIntensity);
 
-        refractTex += noise;
-        if (noise.y < 0.0)
-            noise.y = 0.0;
-        reflectTex += noise;
-
-        float3 waterTexColor = colorMap.Sample(colorSampler, input.tex).rgb;
-        float3 refractColor = envMap.Sample(envSampler, refractTex).rgb * waterColor;
-        float3 reflectColor = diffMap.Sample(diffSampler, reflectTex).rgb * waterTexColor;
-
-        float fresnel = pow(1.0 - saturate(dot(normalize(input.eyeVec.xyz), input.nor)), fresnelPower);
-
-        color = float4(lerp(refractColor, reflectColor, fresnel), 1.0);
-
-        return color;
+	    return float4(LinearToGammaSpace(ToAcesFilmic(color)), 1.0);
     }
 #endif

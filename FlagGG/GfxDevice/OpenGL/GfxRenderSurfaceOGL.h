@@ -15,7 +15,7 @@ class GfxRenderSurfaceOpenGL : public GfxRenderSurface
 {
 	OBJECT_OVERRIDE(GfxRenderSurfaceOpenGL, GfxRenderSurface);
 public:
-	explicit GfxRenderSurfaceOpenGL(GLenum textureFormat, GLsizei width, GLsizei height);
+	explicit GfxRenderSurfaceOpenGL(GfxTexture* ownerTexture, GLenum textureFormat, GLsizei width, GLsizei height);
 
 	~GfxRenderSurfaceOpenGL() override;
 

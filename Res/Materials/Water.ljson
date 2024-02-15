@@ -2,44 +2,48 @@
 	vsshader = 
 	{
 		path = "Shader/Water.hlsl",
-		defines = [ "RAIN_DOT" ]
+		defines = [ ]
 	},
 	psshader = 
 	{
 		path = "Shader/Water.hlsl",
-		defines = [ "RAIN_DOT" ]
+		defines = [ ]
 	},
 	textures =
 	{
 		"0" =
 		{
-			type = "texture2d", //texturecube => 3d
-			path = "Textures/WaterNoise.dds"
-			// path = "Textures/Liquid_norma.TGA"
+			type = "texture2d",
+			path = "Textures/WaterNormal.png"
 		},
 		"2" =
 		{
-			type = "texture2d",
-			path = "Textures/waterLight.png"
+			type = "texturecube",
+			path = "Textures/WaterReflection.dds"
 		}
 	},
 	pass =
 	[
 		{
-			name = "forward_lit"
+			name = "forward_water"
 		}
 	],
 	shader_parameters = 
 	[
 		{
-			name = "noiseTiling",
-			type = "float",
-			value = 50.0
+			name = "waterSpeed",
+			type = "vector2",
+			value = [ 0.5, 0.25 ]
 		},
 		{
-			name = "noiseSpeed",
+			name = "waveScaler",
 			type = "vector2",
-			value = [ 0.002, 0.002 ]
+			value = [ 1.28, 2.56 ]
+		},
+		{
+			name = "waveDensity",
+			type = "float",
+			value = 0.1
 		},
 		{
 			name = "noiseStrength",
@@ -47,14 +51,39 @@
 			value = 0.02
 		},
 		{
-			name = "waterColor",
-			type = "vector3",
+			name = "waterColor0",
+			type = "vector4",
 			value = [ 0.8, 0.8, 1.0 ]
 		},
 		{
-			name = "fresnelPower",
+			name = "waterColor1",
+			type = "vector4",
+			value = [ 0.8, 0.8, 1.0 ]
+		},
+		{
+			name = "specularGloss",
 			type = "float",
-			value = 4.0
+			value = 0.78
+		},
+		{
+			name = "specularFactor",
+			type = "float",
+			value = 1.46
+		},
+		{
+			name = "fresnelFactor",
+			type = "float",
+			value = 0.2
+		},
+		{
+			name = "reflection",
+			type = "float",
+			value = 0.39
+		},
+		{
+			name = "waterReflectionIntensity",
+			type = "float",
+			value = 0.3
 		}
 	]
 }

@@ -99,3 +99,16 @@ float4 LinearToGammaSpace(float4 linRGB)
 {
     return float4(LinearToGammaSpace(linRGB.rgb), linRGB.a);
 }
+
+float3 ToAcesFilmic(float3 _rgb)
+{
+	// Reference(s):
+	// - ACES Filmic Tone Mapping Curve
+	//   https://web.archive.org/web/20191027010704/https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/
+	float aa = 2.51f;
+	float bb = 0.03f;
+	float cc = 2.43f;
+	float dd = 0.59f;
+	float ee = 0.14f;
+	return saturate( (_rgb*(aa*_rgb + bb) )/(_rgb*(cc*_rgb + dd) + ee) );
+}

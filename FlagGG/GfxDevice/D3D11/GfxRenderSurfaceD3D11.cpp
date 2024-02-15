@@ -4,8 +4,14 @@
 namespace FlagGG
 {
 
-GfxRenderSurfaceD3D11::GfxRenderSurfaceD3D11()
-	: GfxRenderSurface()
+GfxRenderSurfaceD3D11::GfxRenderSurfaceD3D11(GfxTexture* ownerTexture)
+	: GfxRenderSurface(ownerTexture)
+{
+
+}
+
+GfxRenderSurfaceD3D11::GfxRenderSurfaceD3D11(GfxSwapChain* ownerSwapChain)
+	: GfxRenderSurface(ownerSwapChain)
 {
 
 }

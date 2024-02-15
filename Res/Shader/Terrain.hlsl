@@ -176,6 +176,6 @@ struct PixelInput
         float3 viewDirection = normalize(cameraPos - input.worldPosition);
         float3 color = PBR_BRDF(baseColorMetallic.rgb, baseColorMetallic.a, normalRoughness.w, input.worldPosition, normalRoughness.xyz, viewDirection, shadow, 1.0);
 
-        return float4(LinearToGammaSpace(color), 1.0);
+        return float4(LinearToGammaSpace(ToAcesFilmic(color)), 1.0);
     }
 #endif

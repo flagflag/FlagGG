@@ -213,6 +213,7 @@ void GameApplication::CreateScene()
 	reflectionCamera_->SetFarClip(1e5f);
 	reflectionCamera_->SetViewMask(0xff00);
 	reflectionCamera_->SetUseReflection(true);
+	reflectionCamera_->SetZUp(true);
 
 	mainHero_ = new CEUnit();
 #if 0
@@ -280,9 +281,10 @@ void GameApplication::CreateScene()
 	scene_->AddChild(waterDown_);
 
 	water_ = new Unit();
-	// water_->Load("Unit/Ocean.ljson");
-	water_->SetPosition(Vector3(0, -4, 10));
-	water_->SetScale(Vector3(0.1, 0.1, 0.1));
+	water_->Load("Unit/Water.ljson");
+	water_->SetPosition(Vector3(500, 0, 1));
+	water_->SetRotation(Quaternion(Vector3(0.f, 0.f, 1.f), Vector3(1.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f)).Inverse());
+	water_->SetScale(Vector3(1000, 1000, 1000));
 	water_->SetName("Water");
 	scene_->AddChild(water_);
 
@@ -332,28 +334,28 @@ void GameApplication::SetupWindow()
 	rttViewport->SetDepthStencil(rttTexture_[1]->GetRenderSurface());
 	// viewports_.Push(rttViewport);
 
-	auto* waterComp = water_->GetComponent<StaticMeshComponent>();
-	if (waterComp)
-	{
-		waterComp->SetViewMask(0xff);
-		auto* waterMaterial = waterComp->GetMaterial();
-		if (waterMaterial)
-		{
-			waterMaterial->SetTexture(TEXTURE_CLASS_DIFFUSE, rttTexture_[0]);
-			waterComp->SetMaterial(waterMaterial);
-		}
-	}
-	auto* dynamicWaterComp = water_->GetComponent<OceanComponent>();
-	if (dynamicWaterComp)
-	{
-		dynamicWaterComp->SetViewMask(0xff);
-		auto* waterMaterial = waterComp->GetMaterial();
-		if (waterMaterial)
-		{
-			waterMaterial->SetTexture(TEXTURE_CLASS_DIFFUSE, rttTexture_[0]);
-			dynamicWaterComp->SetMaterial(waterMaterial);
-		}
-	}
+	//auto* waterComp = water_->GetComponent<StaticMeshComponent>();
+	//if (waterComp)
+	//{
+	//	waterComp->SetViewMask(0xff);
+	//	auto* waterMaterial = waterComp->GetMaterial();
+	//	if (waterMaterial)
+	//	{
+	//		waterMaterial->SetTexture(TEXTURE_CLASS_DIFFUSE, rttTexture_[0]);
+	//		waterComp->SetMaterial(waterMaterial);
+	//	}
+	//}
+	//auto* dynamicWaterComp = water_->GetComponent<OceanComponent>();
+	//if (dynamicWaterComp)
+	//{
+	//	dynamicWaterComp->SetViewMask(0xff);
+	//	auto* waterMaterial = waterComp->GetMaterial();
+	//	if (waterMaterial)
+	//	{
+	//		waterMaterial->SetTexture(TEXTURE_CLASS_DIFFUSE, rttTexture_[0]);
+	//		dynamicWaterComp->SetMaterial(waterMaterial);
+	//	}
+	//}
 
 	SharedPtr<Viewport> viewport(new Viewport());
 	viewport->Resize(IntRect(0, 0, rect.Width(), rect.Height()));

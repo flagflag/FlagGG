@@ -24,6 +24,9 @@ public:
 	// Resize
 	void Resize(UInt32 width, UInt32 height) override;
 
+	// 拷贝数据到backbuffer
+	void CopyData(GfxTexture* gfxTexture) override;
+
 	// 获取RT
 	GfxRenderSurface* GetRenderTarget() override { return renderTarget_.Get(); }
 

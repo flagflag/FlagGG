@@ -294,7 +294,7 @@ void GfxTextureD3D11::CreateTexture2D()
 			return;
 		}
 
-		SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11());
+		SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this));
 		renderSurface->SetRenderTargetView(renderTargetView);
 		gfxRenderSurfaces_.Push(renderSurface);
 	}
@@ -314,7 +314,7 @@ void GfxTextureD3D11::CreateTexture2D()
 			return;
 		}
 
-		SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11());
+		SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this));
 		renderSurface->SetDepthStencilView(depthStencilView);
 		gfxRenderSurfaces_.Push(renderSurface);
 
@@ -486,7 +486,7 @@ void GfxTextureD3D11::CreateTextureCube()
 				return;
 			}
 
-			SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11());
+			SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this));
 			renderSurface->SetRenderTargetView(renderTargetView);
 			gfxRenderSurfaces_.Push(renderSurface);
 		}
@@ -662,6 +662,15 @@ void GfxTextureD3D11::UpdateTextureSubRegion(const void* dataPtr, UInt32 index, 
 	}
 }
 
+void GfxTextureD3D11::UpdateTexture(GfxTexture* gfxTexture)
+{
+	auto* gfxTextureD3D11 = RTTICast<GfxTextureD3D11>(gfxTexture);
+	if (gfxTextureD3D11)
+	{
+		GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext()->CopyResource(GetD3D11Resource(), gfxTextureD3D11->GetD3D11Resource());
+	}
+}
+
 GfxRenderSurface* GfxTextureD3D11::GetRenderSurface() const
 {
 	return gfxRenderSurfaces_.Size() ? gfxRenderSurfaces_[0] : nullptr;
@@ -670,6 +679,17 @@ GfxRenderSurface* GfxTextureD3D11::GetRenderSurface() const
 GfxRenderSurface* GfxTextureD3D11::GetRenderSurface(UInt32 index) const
 {
 	return index < gfxRenderSurfaces_.Size() ? gfxRenderSurfaces_[index] : nullptr;
+}
+
+ID3D11Resource* GfxTextureD3D11::GetD3D11Resource() const
+{
+	if (d3d11Texture2D_)
+		return d3d11Texture2D_;
+
+	if (d3d11Texture3D_)
+		return d3d11Texture3D_;
+
+	return nullptr;
 }
 
 }

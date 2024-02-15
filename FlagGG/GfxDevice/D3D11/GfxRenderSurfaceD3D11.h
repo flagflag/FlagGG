@@ -15,7 +15,9 @@ class GfxRenderSurfaceD3D11 : public GfxRenderSurface
 {
 	OBJECT_OVERRIDE(GfxRenderSurfaceD3D11, GfxRenderSurface);
 public:
-	explicit GfxRenderSurfaceD3D11();
+	explicit GfxRenderSurfaceD3D11(GfxTexture* ownerTexture);
+
+	explicit GfxRenderSurfaceD3D11(GfxSwapChain* ownerSwapChain);
 
 	~GfxRenderSurfaceD3D11() override;
 

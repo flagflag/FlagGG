@@ -1,7 +1,11 @@
 #include "Graphics/RenderPipline.h"
 #include "Graphics/RenderPass.h"
 #include "Graphics/RenderEngine.h"
+#include "Graphics/Texture2D.h"
 #include "GfxDevice/GfxDevice.h"
+#include "GfxDevice/GfxRenderSurface.h"
+#include "GfxDevice/GfxTexture.h"
+#include "GfxDevice/GfxSwapChain.h"
 
 namespace FlagGG
 {
@@ -9,6 +13,7 @@ namespace FlagGG
 ForwardRenderPipline::ForwardRenderPipline()
 	: CommonRenderPipline()
 	, litRenderPass_{ SharedPtr<RenderPass>(new LitRenderPass()), SharedPtr<RenderPass>(new LitRenderPass()) }
+	, waterRenderPass_(new WaterRenderPass())
 {
 
 }
@@ -24,6 +29,7 @@ void ForwardRenderPipline::Clear()
 	alphaRenderPass_->Clear();
 	litRenderPass_[0]->Clear();
 	litRenderPass_[1]->Clear();
+	waterRenderPass_->Clear();
 }
 
 void ForwardRenderPipline::OnSolveLitBatch()
@@ -64,12 +70,20 @@ void ForwardRenderPipline::OnSolveLitBatch()
 		// shadow pass
 		shadowRenderPass_->CollectBatch(&context);
 	}
+
+	for (auto* drawable : renderPiplineContext_.drawables_)
+	{
+		context.drawable_ = drawable;
+
+		waterRenderPass_->CollectBatch(&context);
+	}
 }
 
 void ForwardRenderPipline::PrepareRender()
 {
 	shadowRenderPass_->SortBatch();
 	alphaRenderPass_->SortBatch();
+	waterRenderPass_->SortBatch();
 	litRenderPass_[0]->SortBatch();
 	litRenderPass_[1]->SortBatch();
 }
@@ -87,14 +101,44 @@ void ForwardRenderPipline::Render()
 
 		shadowRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 	}
+
+	bool needRT = waterRenderPass_->HasAnyBatch();
+	if (needRT)
+	{
+		if (!renderTexture_)
+			renderTexture_ = new Texture2D();
+		
+		if (renderTexture_->GetWidth() != renderPiplineContext_.renderSolution_.x_ ||
+			renderTexture_->GetHeight() != renderPiplineContext_.renderSolution_.y_)
+		{
+			renderTexture_->SetSize(renderPiplineContext_.renderSolution_.x_, renderPiplineContext_.renderSolution_.y_, TEXTURE_FORMAT_RGBA8, TEXTURE_RENDERTARGET);
+		}
 	
-	gfxDevice->SetRenderTarget(renderPiplineContext_.renderTarget_);
+		gfxDevice->SetRenderTarget(renderTexture_->GetGfxTextureRef()->GetRenderSurface());
+	}
+	else
+	{
+		gfxDevice->SetRenderTarget(renderPiplineContext_.renderTarget_);
+	}
 	gfxDevice->SetDepthStencil(renderPiplineContext_.depthStencil_);
 	gfxDevice->Clear(CLEAR_COLOR | CLEAR_DEPTH | CLEAR_STENCIL);
 	
 	litRenderPass_[0]->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 	litRenderPass_[1]->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
+	waterRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 	alphaRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
+
+	if (needRT)
+	{
+		if (auto* swapChain = renderPiplineContext_.renderTarget_->GetOwnerSwapChain())
+		{
+			swapChain->CopyData(renderTexture_->GetGfxTextureRef());
+		}
+		else if (auto* ownerTexture = renderPiplineContext_.renderTarget_->GetOwnerTexture())
+		{
+			ownerTexture->UpdateTexture(renderTexture_);
+		}
+	}
 }
 
 }

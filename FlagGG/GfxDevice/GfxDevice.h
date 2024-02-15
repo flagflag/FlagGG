@@ -61,6 +61,9 @@ public:
 	// 设置DepthStencil
 	virtual void SetDepthStencil(GfxRenderSurface* gfxDepthStencil);
 
+	// 获取RenderTarget
+	virtual GfxRenderSurface* GetRenderTarget(UInt8 slotId);
+
 	// 设置Viewport
 	virtual void SetViewport(const Rect& viewport);
 

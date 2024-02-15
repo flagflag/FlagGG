@@ -44,6 +44,7 @@ static const char* RENDER_PASS_TYPE[MAX_RENDER_PASS_TYPE] =
 {
 	"shadow",
 	"forward_lit",
+	"forward_water",
 	"forward_alpha",
 	"deferred_base",
 	"deferred_lit",

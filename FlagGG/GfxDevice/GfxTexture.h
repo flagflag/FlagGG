@@ -73,7 +73,7 @@ public:
 	// 应用当前设置
 	virtual void Apply(const void* initialDataPtr);
 
-	// 更新纹理
+	// 更新纹理数据
 	virtual void UpdateTexture(const void* dataPtr);
 
 	// 更新2D纹理区域
@@ -82,6 +82,8 @@ public:
 	// 更新3D纹理区域
 	virtual void UpdateTextureSubRegion(const void* dataPtr, UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 z, UInt32 width, UInt32 height, UInt32 depth);
 
+	// 更新纹理数据
+	virtual void UpdateTexture(GfxTexture* gfxTexture);
 
 	// 获取texute2d的render surface
 	virtual GfxRenderSurface* GetRenderSurface() const;

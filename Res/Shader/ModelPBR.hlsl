@@ -93,6 +93,6 @@ struct PixelInput
         float3 viewDirection = cameraPos - input.worldPos;
         float3 color = PBR_BRDF(diffuseColor, metallic, roughness, input.worldPos, input.nor, viewDirection, shadow, 1.0);
 
-        return float4(LinearToGammaSpace(color), 1.0);
+        return float4(LinearToGammaSpace(ToAcesFilmic(color)), 1.0);
     }
 #endif

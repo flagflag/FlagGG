@@ -125,7 +125,7 @@ void GfxTextureOpenGL::CreateTexture2D()
 	GL::PixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	GL::TexStorage2D(oglTarget_, textureDesc_.levels_, oglFormat_, textureDesc_.width_, textureDesc_.height_);
 
-	SharedPtr<GfxRenderSurfaceOpenGL> renderSurface(new GfxRenderSurfaceOpenGL(oglFormat_, textureDesc_.width_, textureDesc_.height_));
+	SharedPtr<GfxRenderSurfaceOpenGL> renderSurface(new GfxRenderSurfaceOpenGL(this, oglFormat_, textureDesc_.width_, textureDesc_.height_));
 	gfxRenderSurfaces_.Push(renderSurface);
 }
 

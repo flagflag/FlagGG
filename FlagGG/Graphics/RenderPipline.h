@@ -148,6 +148,8 @@ public:
 
 private:
 	SharedPtr<RenderPass> litRenderPass_[2];
+	SharedPtr<RenderPass> waterRenderPass_;
+	SharedPtr<Texture2D> renderTexture_;
 };
 
 // 延迟渲染管线

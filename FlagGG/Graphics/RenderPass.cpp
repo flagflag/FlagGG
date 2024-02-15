@@ -5,10 +5,13 @@
 #include "Scene/Node.h"
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Material.h"
+#include "Graphics/Texture2D.h"
 #include "Graphics/TextureCube.h"
 #include "Resource/Image.h"
 #include "Resource/ResourceCache.h"
 #include "GfxDevice/GfxDevice.h"
+#include "GfxDevice/GfxRenderSurface.h"
+#include "GfxDevice/GfxTexture.h"
 
 namespace FlagGG
 {
@@ -107,6 +110,19 @@ void ShadowRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 
 			renderEngine->DrawCallIndexed(renderBatch.geometry_->GetIndexStart(), renderBatch.geometry_->GetIndexCount());
 		}
 	}
+}
+
+bool ShadowRenderPass::HasAnyBatch() const
+{
+	for (auto& it : shadowRenderContextMap_)
+	{
+		if (it.second_.renderBatchQueue_.renderBatches_.Size())
+			return true;
+		if (it.second_.renderBatchQueue_.renderBatchGroups_.Size())
+			return true;
+	}
+
+	return false;
 }
 
 /*********************************************************/
@@ -213,6 +229,105 @@ void LitRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 lay
 			renderEngine->DrawBatch(camera, renderBatch);
 		}
 	}
+}
+
+bool LitRenderPass::HasAnyBatch() const
+{
+	for (auto& it : litRenderContextMap_)
+	{
+		if (it.second_.renderBatchQueue_.renderBatches_.Size())
+			return true;
+		if (it.second_.renderBatchQueue_.renderBatchGroups_.Size())
+			return true;
+	}
+
+	return false;
+}
+
+/*********************************************************/
+/*                    WaterRenderPass                    */
+/*********************************************************/
+
+WaterRenderPass::WaterRenderPass()
+{
+
+}
+
+WaterRenderPass::~WaterRenderPass()
+{
+
+}
+
+void WaterRenderPass::Clear()
+{
+	renderBatchQueue_.renderBatches_.Clear();
+	renderBatchQueue_.renderBatchGroups_.Clear();
+}
+
+void WaterRenderPass::CollectBatch(RenderPassContext* context)
+{
+	auto& renderBatches = renderBatchQueue_.renderBatches_;
+	for (const auto& renderContext : context->drawable_->GetRenderContext())
+	{
+		auto it = renderContext.material_->GetRenderPass().Find(RENDER_PASS_TYPE_FORWARD_WATER);
+		if (it != renderContext.material_->GetRenderPass().End())
+		{
+			auto& renderBatch = renderBatches.EmplaceBack(renderContext);
+			renderBatch.renderPassType_ = RENDER_PASS_TYPE_FORWARD_WATER;
+			renderBatch.renderPassInfo_ = &(it->second_);
+			renderBatch.vertexShader_ = it->second_.GetVertexShader();
+			renderBatch.pixelShader_ = it->second_.GetPixelShader();
+		}
+	}
+}
+
+void WaterRenderPass::SortBatch()
+{
+
+}
+
+void WaterRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer)
+{
+	auto* gfxDevice = GfxDevice::GetDevice();
+	auto* gfxRenderSurface = gfxDevice->GetRenderTarget(0);
+	if (!gfxRenderSurface)
+		return;
+	auto* gfxRenderTexture = gfxRenderSurface->GetOwnerTexture();
+	if (!gfxRenderTexture)
+		return;
+
+	if (!refractionTexture_)
+	{
+		refractionTexture_ = new Texture2D();
+	}
+
+	const auto& rtDesc = gfxRenderTexture->GetDesc();
+	if (rtDesc.width_ != refractionTexture_->GetWidth() ||
+		rtDesc.height_ != refractionTexture_->GetHeight())
+	{
+		refractionTexture_->SetNumLevels(1);
+		refractionTexture_->SetAddressMode(TEXTURE_COORDINATE_U, TEXTURE_ADDRESS_CLAMP);
+		refractionTexture_->SetAddressMode(TEXTURE_COORDINATE_V, TEXTURE_ADDRESS_CLAMP);
+		refractionTexture_->SetAddressMode(TEXTURE_COORDINATE_W, TEXTURE_ADDRESS_CLAMP);
+		refractionTexture_->SetSize(rtDesc.width_, rtDesc.height_, rtDesc.format_, TEXTURE_DYNAMIC);
+	}
+
+	auto* gfxRefractionTexture = refractionTexture_->GetGfxTextureRef();
+	if (gfxRefractionTexture)
+	{
+		gfxRefractionTexture->UpdateTexture(gfxRenderTexture);
+	}
+
+	RenderEngine* renderEngine = GetSubsystem<RenderEngine>();
+	renderEngine->SetDefaultTextures(TEXTURE_CLASS_DIFFUSE, refractionTexture_);
+
+	auto& renderBatches = renderBatchQueue_.renderBatches_;
+	for (auto& renderBatch : renderBatches)
+	{
+		renderEngine->DrawBatch(camera, renderBatch);
+	}
+
+	renderEngine->SetDefaultTextures(TEXTURE_CLASS_DIFFUSE, nullptr);
 }
 
 /*********************************************************/

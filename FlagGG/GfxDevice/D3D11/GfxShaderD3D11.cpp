@@ -1,6 +1,8 @@
 #include "GfxShaderD3D11.h"
 #include "GfxDeviceD3D11.h"
 #include "GfxD3D11Defines.h"
+#include "FileSystem/FileHandle/LocalFileHandle.h"
+#include "Utility/SystemHelper.h"
 #include "Core/CryAssert.h"
 #include "Log.h"
 
@@ -67,8 +69,12 @@ static bool CompileShader(const char* buffer, USize bufferSize, ShaderType type,
 	{
 		FLAGGG_LOG_ERROR("D3DCompile failed.");
 
-		String temp(buffer, bufferSize);
-		FLAGGG_LOG_ERROR(temp);
+		{
+			LocalFileHandle fileHandle;
+			fileHandle.Open(GetProgramDir() + "shader_error.txt", FileMode::FILE_WRITE);
+			fileHandle.Write(buffer, bufferSize);
+			fileHandle.Close();
+		}
 
 		if (errorMsgs)
 		{
