@@ -24,12 +24,12 @@
         "2" =
         {
             type = "texture2d", // texture2d => 2d
-            path = "Editor/TextureStyleGroup/noise01.tga"
+            path = "Editor/TextureStyleGroup/noise03.tga"
         },
 		"3" = 
 		{
             type = "texture2d", // texture2d => 2d
-            path = "Editor/TextureStyleGroup/noise02.tga"
+            path = "Editor/TextureStyleGroup/noise04.tga"
 		}
 	},
 	shader_parameters = 
@@ -37,7 +37,12 @@
 		{
 			name = "blendTexIndex",
 			type = "vector3",
-			value = [ 2, 3, 7 ]
+            value = [ 2, 3, 7 ]
+		},
+		{
+			name = "blendRatio",
+			type = "float",
+			value = 0.25
 		}
 	],
     pass =

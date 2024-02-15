@@ -28,6 +28,7 @@
     cbuffer MaterialParam : register(b1)
     {
         float3 blendTexIndex;
+        float blendRatio;
     }
 #endif
 
@@ -80,6 +81,55 @@ struct PixelInput
         return ww / (ww.x + ww.y + ww.z);
     }
 
+    float4 Hash4(float2 p)
+    {
+        return frac(sin(float4( 1.0+dot(p,float2(37.0,17.0)), 
+                                              2.0+dot(p,float2(11.0,47.0)),
+                                              3.0+dot(p,float2(41.0,29.0)),
+                                              4.0+dot(p,float2(23.0,31.0))))*103.0);
+    }
+
+    #define USE_HASH 1
+    float4 SampleNoTiling(Texture2DArray tex, SamplerState sam, float2 uv, float layer)
+    {
+        float2 iuv = floor(uv);
+        float2 fuv = frac(uv);
+
+        // Generate per-tile transformation
+        #if defined (USE_HASH)
+            float4 ofa = Hash4(iuv + float2(0, 0));
+            float4 ofb = Hash4(iuv + float2(1, 0));
+            float4 ofc = Hash4(iuv + float2(0, 1));
+            float4 ofd = Hash4(iuv + float2(1, 1));
+        #else
+            float4 ofa = noiseMap.Sample(noiseSampler, (iuv + float2(0.5, 0.5)) / 256.0);
+            float4 ofb = noiseMap.Sample(noiseSampler, (iuv + float2(1.5, 0.5)) / 256.0);
+            float4 ofc = noiseMap.Sample(noiseSampler, (iuv + float2(0.5, 1.5)) / 256.0);
+            float4 ofd = noiseMap.Sample(noiseSampler, (iuv + float2(1.5, 1.5)) / 256.0);
+        #endif
+
+        // Compute the correct derivatives
+        float2 dx = ddx(uv);
+        float2 dy = ddy(uv);
+
+        // Mirror per-tile uvs
+        ofa.zw = sign(ofa.zw - 0.5);
+        ofb.zw = sign(ofb.zw - 0.5);
+        ofc.zw = sign(ofc.zw - 0.5);
+        ofd.zw = sign(ofd.zw - 0.5);
+
+        float2 uva = uv * ofa.zw + ofa.xy, dxa = dx * ofa.zw, dya = dy * ofa.zw;
+        float2 uvb = uv * ofb.zw + ofb.xy, dxb = dx * ofb.zw, dyb = dy * ofb.zw;
+        float2 uvc = uv * ofc.zw + ofc.xy, dxc = dx * ofc.zw, dyc = dy * ofc.zw;
+        float2 uvd = uv * ofd.zw + ofd.xy, dxd = dx * ofd.zw, dyd = dy * ofd.zw;
+
+        // Fetch and blend
+        float2 b = smoothstep(blendRatio, 1.0 - blendRatio, fuv);
+
+        return lerp(lerp(tex.SampleGrad(sam, float3(uva, layer), dxa, dya), tex.SampleGrad(sam, float3(uvb, layer), dxb, dyb), b.x),
+                    lerp(tex.SampleGrad(sam, float3(uvc, layer), dxc, dyc), tex.SampleGrad(sam, float3(uvd, layer), dxd, dyd), b.x), b.y);
+    }
+
     float4 PS(PixelInput input) : SV_TARGET
     {
     #ifdef SHADOW
@@ -92,15 +142,15 @@ struct PixelInput
         float T2 = Sample2D(weight2, input.weightTex).r;
         float3 weight = float3((1.0 - T1) * (1.0 - T2), T1 * (1.0 - T2), T2);
 
-        float4 texDiff1 = baseColorMap.Sample(baseColorSampler, float3(input.detailTex, blendTexIndex.x));
-        float4 texDiff2 = baseColorMap.Sample(baseColorSampler, float3(input.detailTex, blendTexIndex.y));
-        float4 texDiff3 = baseColorMap.Sample(baseColorSampler, float3(input.detailTex, blendTexIndex.z));
+        float4 texDiff1 = SampleNoTiling(baseColorMap, baseColorSampler, input.detailTex, blendTexIndex.x);
+        float4 texDiff2 = SampleNoTiling(baseColorMap, baseColorSampler, input.detailTex, blendTexIndex.y);
+        float4 texDiff3 = SampleNoTiling(baseColorMap, baseColorSampler, input.detailTex, blendTexIndex.z);
 
         weight = GetBlendThreeFactor(float3(texDiff1.a, texDiff2.a, texDiff3.a), weight);
 
-        float4 texNormal1 = normalMap.Sample(normalSampler, float3(input.detailTex, blendTexIndex.x));
-        float4 texNormal2 = normalMap.Sample(normalSampler, float3(input.detailTex, blendTexIndex.y));
-        float4 texNormal3 = normalMap.Sample(normalSampler, float3(input.detailTex, blendTexIndex.z));
+        float4 texNormal1 = SampleNoTiling(normalMap, normalSampler, input.detailTex, blendTexIndex.x);
+        float4 texNormal2 = SampleNoTiling(normalMap, normalSampler, input.detailTex, blendTexIndex.y);
+        float4 texNormal3 = SampleNoTiling(normalMap, normalSampler, input.detailTex, blendTexIndex.z);
 
         // => xyz - color, w - metallic
         texDiff1.a = texNormal1.a;

@@ -248,7 +248,24 @@ void GfxTextureD3D11::CreateTexture2D()
 		D3D11_SHADER_RESOURCE_VIEW_DESC resourceViewDesc;
 		memset(&resourceViewDesc, 0, sizeof resourceViewDesc);
 		resourceViewDesc.Format = textureDesc_.sRGB_ ? d3d11TextureFormatInfo[textureDesc_.format_].srgbFormat_ : d3d11TextureFormatInfo[textureDesc_.format_].srvFormat_;
-		resourceViewDesc.ViewDimension = (textureDesc_.multiSample_ > 1 && !textureDesc_.autoResolve_) ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
+		if (textureDesc.ArraySize <= 1)
+		{
+			resourceViewDesc.ViewDimension = (textureDesc_.multiSample_ > 1 && !textureDesc_.autoResolve_) ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
+		}
+		else
+		{
+			if (textureDesc_.multiSample_ > 1 && !textureDesc_.autoResolve_)
+			{
+				resourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY;
+				resourceViewDesc.Texture2DMSArray.ArraySize = textureDesc.ArraySize;
+			}
+			else
+			{
+				resourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+				resourceViewDesc.Texture2DArray.MipLevels = textureDesc.MipLevels;
+				resourceViewDesc.Texture2DArray.ArraySize = textureDesc.ArraySize;
+			}
+		}
 		resourceViewDesc.Texture2D.MipLevels = textureDesc_.usage_ != TEXTURE_DYNAMIC ? (UINT)textureDesc_.levels_ : 1;
 
 		ID3D11Resource* viewObject = resolveTexture_ ? resolveTexture_ : d3d11Texture2D_;
