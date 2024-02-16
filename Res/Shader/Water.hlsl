@@ -31,6 +31,7 @@
     cbuffer MaterialParam : register(b1)
     {
         float noiseStrength;
+        float normalStrength;
         float4 waterColor0;
         float4 waterColor1;
         float specularGloss;
@@ -61,11 +62,11 @@ struct PixelInput
         input.position.w = 1.0;
         float3 worldPosition = mul(input.position, worldMatrix);
         float4 clipPosition  = mul(float4(worldPosition, 1.0), projviewMatrix);
-        
+
         PixelInput output;
         output.position = clipPosition;
-        output.uv1 = waveDensity * (worldPosition.yx / waveScaler.x * waterSpeed * elapsedTime);
-        output.uv2 = waveDensity * (worldPosition.yx / waveScaler.y * waterSpeed * elapsedTime);
+        output.uv1 = waveDensity * (worldPosition.yx / waveScaler.x + waterSpeed * elapsedTime);
+        output.uv2 = waveDensity * (worldPosition.yx / waveScaler.y + waterSpeed * elapsedTime);
         output.screenPos = GetScreenPos(clipPosition);
         output.reflectTex = GetQuadTexCoord(clipPosition) * clipPosition.w;
         output.eyeVec = float4(cameraPos - worldPosition, GetDepth(clipPosition));
@@ -92,12 +93,10 @@ struct PixelInput
         #endif
         float2 noise = worldNormal.xy * noiseStrength; // worldNormal.xy作为distortion系数
         refractUV += noise;
-        float3 waterBottomColor = GammaToLinearSpace(refractionMap.Sample(refractionSampler, refractUV).rgb);
-
-        float3 refrCol = waterBottomColor;
+        float3 refrCol = GammaToLinearSpace(refractionMap.Sample(refractionSampler, refractUV).rgb) * waterColor1;
 
         // 高光
-        float3 worldNormalNoise = lerp(float3(0.0, 0.0, 1.0), worldNormal, noiseStrength);
+        float3 worldNormalNoise = lerp(float3(0.0, 0.0, 1.0), worldNormal, normalStrength);
         NdotV = clamp(dot(worldNormalNoise, eyeVec), 0.0, 1.0);
         float3 viewReflection = 2.0 * NdotV * worldNormalNoise - eyeVec; // Same as: -reflect(viewDirection, worldNormalNoise);
         float3 cubeR = viewReflection.xzy;
