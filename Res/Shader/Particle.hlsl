@@ -9,6 +9,7 @@
         float4 oldPosition     : TEXCOORD0; // xyz: oldPosition, w: particleId
         float4 sizeRotSubImage : TEXCOORD1; // xy: size, z: rotation, w: subImage
         float4 color           : COLOR;     // xyzw: color rgba
+        float2 texcoord        : TEXCOORD2;
     };
 #else
     Texture2D colorMap        : register(t0);
@@ -30,14 +31,17 @@ struct PixelInput
 #ifdef VERTEX
     PixelInput VS(VertexInput input)
     {
-        float3 worldPos = mul(input.position, worldMatrix);
-        float3 oldWorldPos = mul(input.oldPosition, worldMatrix);
-        float4 clipPos = mul(float4(worldPos, 1.0), projviewMatrix);
+        float3 worldPosition    = mul(input.position, worldMatrix);
+        // worldPosition.xy        += input.sizeRotSubImage.xy * input.texcoord;
+        worldPosition.xy        += float2(1, 1) * input.texcoord;
+        float3 oldWorldPosition = mul(input.oldPosition, worldMatrix);
+        float4 clipPosition     = mul(float4(worldPosition, 1.0), projviewMatrix);
         
         PixelInput output;
-        output.position = clipPos;
+        output.position = clipPosition;
         output.texcoord = float2(0, 0);
-        output.color = input.color;
+        // output.color = input.color;
+        output.color = float4(1, 0, 0, 1);
 
         return output;
     }

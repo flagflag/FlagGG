@@ -235,7 +235,7 @@ void GfxDeviceD3D11::PrepareDraw()
 			const SharedPtr<GfxBuffer>& vertexBuffer = vertexBuffers_[i];
 			vertexBuffers[i] = RTTICast<GfxBufferD3D11>(vertexBuffer);
 			d3dVertexBuffers[i] = vertexBuffers[i]->GetD3D11Buffer();
-			d3dVertexSize[i] = vertexBuffer->GetDesc().stride_;
+			d3dVertexSize[i] = vertexDesc_->GetStrideSize();
 			d3dVertexOffset[i] = 0;
 		}
 

@@ -15,7 +15,7 @@ GlobalDynamicVertexBuffer::GlobalDynamicVertexBuffer()
 
 GlobalDynamicVertexBuffer::~GlobalDynamicVertexBuffer()
 {
-
+	Clear();
 }
 
 GlobalDynamicVertexBuffer::Allocation GlobalDynamicVertexBuffer::Allocate(UInt32 sizeInBytes)
@@ -23,13 +23,18 @@ GlobalDynamicVertexBuffer::Allocation GlobalDynamicVertexBuffer::Allocate(UInt32
 	Allocation allocation;
 	allocation.vertexBuffer_ = vertexBuffer_;
 	allocation.vertexData_ = static_cast<UInt8*>(alloctor_.Malloc(sizeInBytes));
-	offsetInBytes_ += sizeInBytes;
 	allocation.offsetInBytes_ = offsetInBytes_;
+	allocation.sizeInBytes_ = sizeInBytes;
+	offsetInBytes_ += sizeInBytes;
+	allocations_.Push(allocation);
 	return allocation;
 }
 
 void GlobalDynamicVertexBuffer::CommitToGPU()
 {
+	if (offsetInBytes_ == 0)
+		return;
+
 	UInt32 vertexCount = (offsetInBytes_ + 5) / 4;
 	// buffer不够大，或者小于buffer的一半，重新重新分配顶点buffer
 	if (vertexCount > vertexBuffer_->GetVertexCount() || vertexCount * 2 < vertexBuffer_->GetVertexCount())

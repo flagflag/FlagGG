@@ -13,6 +13,7 @@
 #include <IOFrame/Buffer/StringBuffer.h>
 #include <FileSystem/FileManager.h>
 #include <FileSystem/FileSystemArchive/DefaultFileSystemArchive.h>
+#include <Config/LJSONFile.h>
 
 #include "GameApplication.h"
 #include "GamePlay/ThirdPersonPerspective.h"
@@ -239,11 +240,6 @@ void GameApplication::CreateScene()
 	terrain_->SetName("Terrain");
 	scene_->AddChild(terrain_);
 
-	simpleParticle_ = new ParticleActor();
-	// simpleParticle_->LoadFile("E:/GitProject/FlagGG/Res/Unit/ParticleActor.ljson");
-	simpleParticle_->SetPosition(Vector3(0, 0, 10));
-	scene_->AddChild(simpleParticle_);
-
 #if 0
 	auto* lightNode = new Unit();
 	lightNode->Load("Unit/MainHero.ljson");
@@ -429,6 +425,18 @@ void GameApplication::OnKeyUp(KeyState* keyState, UInt32 keyCode)
 			viewports_[1]->SetCamera(camera_);
 		}
 		flag = !flag;
+	}
+
+	if (keyCode == VK_F1)
+	{
+		simpleParticle_ = new ParticleActor();
+		simpleParticle_->SetPosition(Vector3(10, 0, 2));
+		simpleParticle_->SetScale(Vector3(0.01, 0.01, 0.01));
+		if (auto stream = GetSubsystem<AssetFileManager>()->OpenFileReader("Unit/ParticleActor.ljson"))
+		{
+			simpleParticle_->LoadStream(stream);
+		}
+		scene_->AddChild(simpleParticle_);
 	}
 
 	if (keyCode == VK_ESCAPE)

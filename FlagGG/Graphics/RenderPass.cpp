@@ -73,6 +73,8 @@ void ShadowRenderPass::CollectBatch(RenderPassContext* context)
 
 	for (const auto& renderContext : context->drawable_->GetRenderContext())
 	{
+		if (!renderContext.material_)
+			continue;
 		auto it = renderContext.material_->GetRenderPass().Find(RENDER_PASS_TYPE_SHADOW);
 		if (it != renderContext.material_->GetRenderPass().End())
 		{
@@ -173,6 +175,8 @@ void LitRenderPass::CollectBatch(RenderPassContext* context)
 
 	for (const auto& renderContext : context->drawable_->GetRenderContext())
 	{
+		if (!renderContext.material_)
+			continue;
 		auto it = renderContext.material_->GetRenderPass().Find(RENDER_PASS_TYPE_FORWARD_LIT);
 		if (it != renderContext.material_->GetRenderPass().End())
 		{
@@ -269,6 +273,8 @@ void WaterRenderPass::CollectBatch(RenderPassContext* context)
 	auto& renderBatches = renderBatchQueue_.renderBatches_;
 	for (const auto& renderContext : context->drawable_->GetRenderContext())
 	{
+		if (!renderContext.material_)
+			continue;
 		auto it = renderContext.material_->GetRenderPass().Find(RENDER_PASS_TYPE_FORWARD_WATER);
 		if (it != renderContext.material_->GetRenderPass().End())
 		{
@@ -355,6 +361,8 @@ void AlphaRenderPass::CollectBatch(RenderPassContext* context)
 	auto& renderBatches = renderBatchQueue_.renderBatches_;
 	for (const auto& renderContext : context->drawable_->GetRenderContext())
 	{
+		if (!renderContext.material_)
+			continue;
 		auto it = renderContext.material_->GetRenderPass().Find(RENDER_PASS_TYPE_FORWARD_ALPHA);
 		if (it != renderContext.material_->GetRenderPass().End())
 		{
@@ -408,6 +416,8 @@ void DeferredBaseRenderPass::CollectBatch(RenderPassContext* context)
 	auto& renderBatches = renderBatchQueue_.renderBatches_;
 	for (const auto& renderContext : context->drawable_->GetRenderContext())
 	{
+		if (!renderContext.material_)
+			continue;
 		auto it = renderContext.material_->GetRenderPass().Find(RENDER_PASS_TYPE_DEFERRED_BASE);
 		if (it != renderContext.material_->GetRenderPass().End())
 		{

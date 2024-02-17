@@ -2387,6 +2387,9 @@ void ParticleSpriteEmitterInstance::RenderUpdate(const RenderPiplineContext* ren
 	if (!currentLODLevel)
 		return;
 
+	if (activeParticles_ == 0)
+		return;
+
 	const Matrix3x4& localToWorld = component_->GetNode()->GetWorldTransform();
 
 	// Put the camera origin in the appropriate coordinate space.
@@ -2416,11 +2419,12 @@ void ParticleSpriteEmitterInstance::RenderUpdate(const RenderPiplineContext* ren
 		vertexElements.Push(VertexElement(VE_VECTOR4, SEM_TEXCOORD, 0));
 		vertexElements.Push(VertexElement(VE_VECTOR4, SEM_TEXCOORD, 1));
 		vertexElements.Push(VertexElement(VE_VECTOR4, SEM_COLOR));
+		vertexElements.Push(VertexElement(VE_VECTOR2, SEM_TEXCOORD, 2));
 		renderContext_->vertexDesc_ = GetSubsystem<VertexDescFactory>()->Create(vertexElements);
 	}
 
 	VertexDescription* vertexDesc = renderContext_->vertexDesc_;
-	ParticleMeshDataBuilder::ParticleMeshData particleMeshData = particleMeshDataBuilder->Allocate(vertexDesc->GetStrideSize() * activeParticles_, activeParticles_ * 6);
+	ParticleMeshDataBuilder::ParticleMeshData particleMeshData = particleMeshDataBuilder->Allocate(vertexDesc->GetStrideSize() * activeParticles_ * 4, activeParticles_ * 6);
 	GlobalDynamicVertexBuffer::Allocation& vertexAllocation = particleMeshData.vertexAllocation_;
 	GlobalDynamicIndexBuffer::Allocation& indexAllocation = particleMeshData.indexAllocation_;
 
@@ -2474,21 +2478,31 @@ void ParticleSpriteEmitterInstance::RenderUpdate(const RenderPiplineContext* ren
 		fillVertex->rotation_		= particle.rotation_;
 		fillVertex->subImageIndex_	= subImageIndex;
 		fillVertex->color_			= particle.color_;
-		
-		++fillVertex;
 
-		(*fillIndex) = idx++;
+		fillVertex->texcoord_ = Vector2(0.0f, 0.0f);
+		fillVertex[1] = fillVertex[0];
+		fillVertex[1].texcoord_ = Vector2(1.0f, 0.0f);
+		fillVertex[2] = fillVertex[0];
+		fillVertex[2].texcoord_ = Vector2(1.0f, 1.0f);
+		fillVertex[3] = fillVertex[0];
+		fillVertex[3].texcoord_ = Vector2(0.0f, 1.0f);
+		
+		fillVertex += 4;
+
+		(*fillIndex) = idx;
 		++fillIndex;
-		(*fillIndex) = idx++;
+		(*fillIndex) = idx + 1;
 		++fillIndex;
-		(*fillIndex) = idx++;
+		(*fillIndex) = idx + 2;
 		++fillIndex;
-		(*fillIndex) = idx++;
+		(*fillIndex) = idx;
 		++fillIndex;
-		(*fillIndex) = idx++;
+		(*fillIndex) = idx + 2;
 		++fillIndex;
-		(*fillIndex) = idx++;
+		(*fillIndex) = idx + 3;
 		++fillIndex;
+
+		idx += 4;
 	}
 }
 

@@ -12,7 +12,7 @@ GlobalDynamicIndexBuffer::GlobalDynamicIndexBuffer()
 
 GlobalDynamicIndexBuffer::~GlobalDynamicIndexBuffer()
 {
-
+	Clear();
 }
 
 GlobalDynamicIndexBuffer::Allocation GlobalDynamicIndexBuffer::Allocate(UInt32 count)
@@ -20,8 +20,10 @@ GlobalDynamicIndexBuffer::Allocation GlobalDynamicIndexBuffer::Allocate(UInt32 c
 	Allocation allocation;
 	allocation.indexBuffer_ = indexBuffer_;
 	allocation.indexData_ = static_cast<UInt32*>(alloctor_.Malloc(count * sizeof(UInt32)));
-	indexCount_ += count;
 	allocation.offsetInCount_ = indexCount_;
+	allocation.sizeInCount_ = count;
+	indexCount_ += count;
+	allocations_.Push(allocation);
 	return allocation;
 }
 

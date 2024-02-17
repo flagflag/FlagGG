@@ -262,6 +262,8 @@ struct ParticleSpriteVertex
 	float subImageIndex_;
 	/** The color of the particle. */
 	Color color_;
+	/** The Texcoord of the particle. */
+	Vector2 texcoord_;
 };
 
 //
@@ -275,9 +277,9 @@ struct FullSubUVPayload
 	float randomImageTime_;
 };
 
-FORCEINLINE Vector3 GetParticleBaseSize(const BaseParticle& Particle, bool bKeepFlipScale = false)
+FORCEINLINE Vector3 GetParticleBaseSize(const BaseParticle& particle, bool keepFlipScale = false)
 {
-	return bKeepFlipScale ? Particle.baseSize_ : Vector3(Abs(Particle.baseSize_.x_), Abs(Particle.baseSize_.y_), Abs(Particle.baseSize_.z_));
+	return keepFlipScale ? particle.baseSize_ : Vector3(Abs(particle.baseSize_.x_), Abs(particle.baseSize_.y_), Abs(particle.baseSize_.z_));
 }
 
 FORCEINLINE Vector2 GetParticleSizeWithUVFlipInSign(const BaseParticle& particle, const Vector2& scaledSize)

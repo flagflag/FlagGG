@@ -25,6 +25,8 @@ Node::Node() :
 Node::~Node()
 {
 	RemoveAllComponent();
+	RemoveAllChild();
+	RemoveFromParent();
 }
 
 void Node::Update(const NodeUpdateContext& updateContext)
@@ -174,6 +176,7 @@ void Node::RemoveFromParent()
 	if (parent_)
 	{
 		parent_->RemoveChild(this);
+		parent_ = nullptr;
 	}
 }
 

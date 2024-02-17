@@ -77,13 +77,13 @@ struct NamedEmitterMaterial
  * in a system, the designer can create elaborate particle effects that are held in a single system. Once created using
  * Cascade, a ParticleSystem can then be inserted into a level or created in script.
  */
-class ParticleSystem : public Resource
+class FlagGG_API ParticleSystem : public Resource
 {
 	OBJECT_OVERRIDE(ParticleSystem, Resource);
 public:
-	FlagGG_API ParticleSystem();
+	 ParticleSystem();
 
-	FlagGG_API ~ParticleSystem() override;
+	~ParticleSystem() override;
 
 	UInt32 maxPoolSize_;
 
@@ -314,13 +314,13 @@ public:
 	 *	@param	ParticleSysParamList	The list of FParticleSysParams used in the system
 	 *	@param	ParticleParameterList	The list of ParticleParameter distributions used in the system
 	 */
-	FlagGG_API void GetParametersUtilized(Vector<Vector<String>>& particleSysParamList,
+	void GetParametersUtilized(Vector<Vector<String>>& particleSysParamList,
 		Vector<Vector<String>>& particleParameterList);
 
 	/**
 	 *	Setup the soloing information... Obliterates all current soloing.
 	 */
-	FlagGG_API void SetupSoloing();
+	void SetupSoloing();
 
 	/**
 	 *	Toggle the bIsSoloing flag on the given emitter.
@@ -329,24 +329,24 @@ public:
 	 *
 	 *	@return	bool			true if ANY emitters are set to soloing, false if none are.
 	 */
-	FlagGG_API bool ToggleSoloing(class ParticleEmitter* inEmitter);
+	bool ToggleSoloing(class ParticleEmitter* inEmitter);
 
 	/**
 	 *	Turn soloing off completely - on every emitter
 	 *
 	 *	@return	bool			true if successful, false if not.
 	 */
-	FlagGG_API bool TurnOffSoloing();
+	bool TurnOffSoloing();
 
 	/**
 	 *	Editor helper function for setting the LOD validity flags used in Cascade.
 	 */
-	FlagGG_API void SetupLODValidity();
+	void SetupLODValidity();
 
 	/**
 	 * Set the time to delay spawning the particle system
 	 */
-	FlagGG_API void SetDelay(float InDelay);
+	void SetDelay(float InDelay);
 
 #if WITH_EDITOR
 	/**
@@ -357,12 +357,12 @@ public:
 	 *
 	 *	@return	bool				true if successful, false if not
 	 */
-	FlagGG_API bool RemoveAllDuplicateModules(bool inMarkForCooker, HashMap<Object*, bool>* outRemovedModules);
+	bool RemoveAllDuplicateModules(bool inMarkForCooker, HashMap<Object*, bool>* outRemovedModules);
 
 	/**
 	 *	Update all emitter module lists
 	 */
-	FlagGG_API void UpdateAllModuleLists();
+	void UpdateAllModuleLists();
 #endif
 	/** Return the currently set LOD method											*/
 	virtual ParticleSystemLODMethod GetCurrentLODMethod();
@@ -415,7 +415,7 @@ public:
 	/**
 	 * Builds all emitters in the particle system.
 	 */
-	FlagGG_API void BuildEmitters();
+	void BuildEmitters();
 
 	/** return true if this psys can tick in any thread */
 	FORCEINLINE bool CanTickInAnyThread()
@@ -427,7 +427,7 @@ public:
 		return isElligibleForAsyncTick_;
 	}
 	/** Decide if this psys can tick in any thread, and set bIsElligibleForAsyncTick */
-	FlagGG_API void ComputeCanTickInAnyThread();
+	void ComputeCanTickInAnyThread();
 
 	/** Returns true if this system contains any GPU emitters. */
 	bool HasGPUEmitter() const;
