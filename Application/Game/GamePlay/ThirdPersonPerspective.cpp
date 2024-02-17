@@ -121,14 +121,14 @@ void ThirdPersonPerspective::Unlock()
 
 void ThirdPersonPerspective::OnMouseDown(KeyState* keyState, MouseKey mouseKey)
 {
-	if (mouseKey == MOUSE_LEFT)
+	if (mouseKey == MOUSE_RIGHT)
 		mouseDown_ = true;
 	GetSubsystem<Input>()->HideMouse();
 }
 
 void ThirdPersonPerspective::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
 {
-	if (mouseKey == MOUSE_LEFT)
+	if (mouseKey == MOUSE_RIGHT)
 		mouseDown_ = false;
 	GetSubsystem<Input>()->ShowMouse();
 }

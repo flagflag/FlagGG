@@ -105,6 +105,22 @@ Component* Node::GetComponent(StringHash compClass)
 	return nullptr;
 }
 
+Component* Node::GetComponentRecursive(StringHash compClass)
+{
+	auto* comp = GetComponent(compClass);
+	if (comp)
+		return comp;
+
+	for (auto& child : children_)
+	{
+		auto* comp = child->GetComponentRecursive(compClass);
+		if (comp)
+			return comp;
+	}
+
+	return nullptr;
+}
+
 void Node::RemoveComponent(Component* component)
 {
 	SharedPtr<Component> sharedComponent(component);

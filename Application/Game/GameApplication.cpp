@@ -439,6 +439,11 @@ void GameApplication::OnKeyUp(KeyState* keyState, UInt32 keyCode)
 		scene_->AddChild(simpleParticle_);
 	}
 
+	if (keyCode == VK_F2)
+	{
+		gameBuilder_.Setup(scene_);
+	}
+
 	if (keyCode == VK_ESCAPE)
 	{
 		isRunning_ = false;
@@ -456,18 +461,18 @@ void GameApplication::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
 	// luaVM_->CallEvent("on_mouse_up", static_cast<uint32_t>(mouseKey));
 	if (mouseKey == MOUSE_RIGHT)
 	{
-		IntVector2 mousePos = window_->GetMousePos();
-		Ray ray = camera_->GetScreenRay((float)mousePos.x_ / window_->GetWidth(), (float)mousePos.y_ / window_->GetHeight());
-		PODVector<RayQueryResult> results;
-		RayOctreeQuery query(results, ray, RAY_QUERY_AABB, 250.0f);
-		scene_->GetComponent<Octree>()->Raycast(query);
-		if (query.results_.Size() > 0u)
-		{
-			const auto& ret = query.results_[0];
-			auto* meshComp = ret.node_->CreateComponent<StaticMeshComponent>();
-			meshComp->SetModel(GetSubsystem<ResourceCache>()->GetResource<Model>("Model/Axes.mdl"));
-			meshComp->SetMaterial(GetSubsystem<ResourceCache>()->GetResource<Material>("Materials/StaticModel.ljson"));
-		}
+		//IntVector2 mousePos = window_->GetMousePos();
+		//Ray ray = camera_->GetScreenRay((float)mousePos.x_ / window_->GetWidth(), (float)mousePos.y_ / window_->GetHeight());
+		//PODVector<RayQueryResult> results;
+		//RayOctreeQuery query(results, ray, RAY_QUERY_AABB, 250.0f);
+		//scene_->GetComponent<Octree>()->Raycast(query);
+		//if (query.results_.Size() > 0u)
+		//{
+		//	const auto& ret = query.results_[0];
+		//	auto* meshComp = ret.node_->CreateComponent<StaticMeshComponent>();
+		//	meshComp->SetModel(GetSubsystem<ResourceCache>()->GetResource<Model>("Model/Axes.mdl"));
+		//	meshComp->SetMaterial(GetSubsystem<ResourceCache>()->GetResource<Material>("Materials/StaticModel.ljson"));
+		//}
 	}
 }
 

@@ -58,13 +58,21 @@ public:
 
 	void RemoveComponent(Component* component);
 
-	template < class ComponentType >
+	template <class ComponentType>
 	ComponentType* GetComponent()
 	{
 		return static_cast<ComponentType*>(GetComponent(ComponentType::GetTypeStatic()));
 	}
 
+	template <class ComponentType>
+	ComponentType* GetComponentRecursive()
+	{
+		return static_cast<ComponentType*>(GetComponentRecursive(ComponentType::GetTypeStatic()));
+	}
+
 	Component* GetComponent(StringHash compClass);
+
+	Component* GetComponentRecursive(StringHash compClass);
 
 	void RemoveAllComponent();
 
