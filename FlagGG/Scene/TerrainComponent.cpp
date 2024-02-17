@@ -90,7 +90,12 @@ void TerrainComponent::CreateGeometry()
 	{
 		for (UInt32 y = 0; y < verticesNum_.y_; ++y)
 		{
-			Real height = src[imgRow * (verticesNum_.x_ - 1 - x) + y];
+#if 0
+			// Real height = src[imgRow * (verticesNum_.x_ - 1 - x) + y];
+#else
+			const Color& color = heightMap_->GetPixel(y, verticesNum_.x_ - 1 - x);
+			Real height = color.r_ * 255.0f;
+#endif
 			Vector3 position(y, x, height);
 			IOFrame::Buffer::WriteVector3(buffer1, position);
 			IOFrame::Buffer::WriteVector3(buffer1, Vector3(0, 0, 1));

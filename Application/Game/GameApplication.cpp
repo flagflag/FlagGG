@@ -282,7 +282,7 @@ void GameApplication::CreateScene()
 
 	water_ = new Unit();
 	water_->Load("Unit/Water.ljson");
-	water_->SetPosition(Vector3(500, 0, 1));
+	water_->SetPosition(Vector3(500, 500 - 80, 1));
 	water_->SetRotation(Quaternion(Vector3(0.f, 0.f, 1.f), Vector3(1.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f)).Inverse());
 	water_->SetScale(Vector3(1000, 1000, 1000));
 	water_->SetName("Water");
