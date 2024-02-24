@@ -25,7 +25,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefineConstants>UNITY_EDITOR;ENABLE_MANAGED_JOBS</DefineConstants>
+    <DefineConstants>UNITY_EDITOR_DELETE;UNITY_2017_1_OR_NEWER;ENABLE_MANAGED_JOBS</DefineConstants>
   </PropertyGroup>
 
 </Project>

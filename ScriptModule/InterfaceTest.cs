@@ -12,7 +12,7 @@ namespace FlagGG
 {
     public static unsafe class ScriptInterface
     {
-        [DllImport("Editor.dll", EntryPoint = "CallCpp3")]
+        [DllImport(Import.DLLName, EntryPoint = "CallCpp3")]
         public static extern void CallCpp3(Vector3 vec3);
 
         [UnmanagedCallersOnly]

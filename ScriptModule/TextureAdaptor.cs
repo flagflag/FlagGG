@@ -37,6 +37,11 @@ namespace UnityEngine
 
     public sealed partial class Texture2D : Texture
     {
+        public Texture2D(int width, int height, TextureFormat format, bool mipChain, bool linear)
+        {
+
+        }
+
         public Texture2D(int width, int height, TextureFormat format, bool mipChain)
         {
 
@@ -56,6 +61,13 @@ namespace UnityEngine
         {
             
         }
+
+        public void ReadPixels(Rect source, int destX, int destY)
+        {
+
+        }
+
+        public int mipmapCount { get { return 0; } }
     }
 
     public partial class RenderTexture : Texture

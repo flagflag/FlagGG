@@ -37,4 +37,41 @@ namespace UnityEngine
         // A combination of not shown in the hierarchy and not saved to to scenes.
         HideAndDontSave = 1 + 4 + 8 + 16 + 32
     }
+
+    public class Object
+    {
+        public string name;
+
+        public HideFlags hideFlags;
+
+        public static implicit operator bool(Object exists)
+        {
+            return exists != null;
+        }
+
+        public static void Destroy(Object obj)
+        {
+
+        }
+
+        public static void DestroyImmediate(Object obj)
+        {
+
+        }
+
+        public static void DontDestroyOnLoad(Object target)
+        {
+
+        }
+
+        public static Object FindObjectOfType(System.Type type)
+        {
+            return null;
+        }
+
+        public static T FindObjectOfType<T>() where T : Object
+        {
+            return (T)FindObjectOfType(typeof(T));
+        }
+    }
 }

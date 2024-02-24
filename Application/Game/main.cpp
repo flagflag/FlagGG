@@ -3,6 +3,7 @@
 //////
 
 #include <Log.h>
+#include <CSharpExport/CSharpExport.h>
 #include "GameApplication.h"
 #include "main.h"
 

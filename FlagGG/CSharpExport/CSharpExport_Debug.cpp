@@ -1,9 +1,8 @@
 #include "CSharpExport.h"
-#include "EditorExport.h"
 
-#include <Math/Vector3.h>
-#include <Math/Color.h>
-#include <Log.h>
+#include "Math/Vector3.h"
+#include "Math/Color.h"
+#include "Log.h"
 
 using namespace FlagGG;
 

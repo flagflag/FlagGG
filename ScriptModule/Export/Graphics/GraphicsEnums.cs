@@ -236,6 +236,154 @@ namespace UnityEngine
         BGR101010_XR = 27,
         R16 = 28,
     }
+}
+
+namespace UnityEngine.Rendering
+{
+    // Match IndexFormat on C++ side
+    public enum IndexFormat
+    {
+        UInt16 = 0,
+        UInt32 = 1,
+    }
+
+    [Flags]
+    public enum MeshUpdateFlags
+    {
+        Default = 0,
+        DontValidateIndices = 1 << 0,
+        DontResetBoneBounds = 1 << 1,
+        DontNotifyMeshUsers = 1 << 2,
+        DontRecalculateBounds = 1 << 3,
+    }
+
+    // Match VertexFormat on C++ side
+    public enum VertexAttributeFormat
+    {
+        Float32 = 0,
+        Float16 = 1,
+        UNorm8 = 2,
+        SNorm8 = 3,
+        UNorm16 = 4,
+        SNorm16 = 5,
+        UInt8 = 6,
+        SInt8 = 7,
+        UInt16 = 8,
+        SInt16 = 9,
+        UInt32 = 10,
+        SInt32 = 11,
+    }
+
+    //Keep in sync with ShaderChannel in GfxDeviceTypes.h
+    [MovedFrom("UnityEngine.Experimental.Rendering")]
+    public enum VertexAttribute
+    {
+        Position = 0, // Vertex (vector3)
+        Normal,       // Normal (vector3)
+        Tangent,      // Tangent (vector4)
+        Color,        // Vertex color
+        TexCoord0,    // Texcoord 0
+        TexCoord1,    // Texcoord 1
+        TexCoord2,    // Texcoord 2
+        TexCoord3,    // Texcoord 3
+        TexCoord4,    // Texcoord 4
+        TexCoord5,    // Texcoord 5
+        TexCoord6,    // Texcoord 6
+        TexCoord7,    // Texcoord 7
+        BlendWeight,
+        BlendIndices,
+    }
+
+    // Match Camera::OpaqueSortMode on C++ side
+    public enum OpaqueSortMode
+    {
+        Default = 0,
+        FrontToBack = 1,
+        NoDistanceSort = 2
+    }
+
+    // Match RenderLoopEnums.h on C++ side
+    public enum RenderQueue
+    {
+        Background = 1000,
+        Geometry = 2000,
+        AlphaTest = 2450, // we want it to be in the end of geometry queue
+        GeometryLast = 2500, // last queue that is considered "opaque" by Unity
+        Transparent = 3000,
+        Overlay = 4000,
+    }
+
+    // Make sure the values are in sync with the native side!
+    public enum RenderBufferLoadAction
+    {
+        Load = 0,
+        Clear = 1,
+        DontCare = 2,
+    }
+
+    // Make sure the values are in sync with the native side!
+    public enum RenderBufferStoreAction
+    {
+        Store = 0,
+        Resolve = 1, // Resolve the MSAA surface (currently only works with RenderPassSetup)
+        StoreAndResolve = 2, // Resolve the MSAA surface into the resolve target, but also store the MSAA version
+        DontCare = 3,
+    }
+
+    public enum BlendMode
+    {
+        Zero = 0,
+        One = 1,
+        DstColor = 2,
+        SrcColor = 3,
+        OneMinusDstColor = 4,
+        SrcAlpha = 5,
+        OneMinusSrcColor = 6,
+        DstAlpha = 7,
+        OneMinusDstAlpha = 8,
+        SrcAlphaSaturate = 9,
+        OneMinusSrcAlpha = 10
+    }
+
+    public enum BlendOp
+    {
+        Add = 0,
+        Subtract = 1,
+        ReverseSubtract = 2,
+        Min = 3,
+        Max = 4,
+        LogicalClear = 5,
+        LogicalSet = 6,
+        LogicalCopy = 7,
+        LogicalCopyInverted = 8,
+        LogicalNoop = 9,
+        LogicalInvert = 10,
+        LogicalAnd = 11,
+        LogicalNand = 12,
+        LogicalOr = 13,
+        LogicalNor = 14,
+        LogicalXor = 15,
+        LogicalEquivalence = 16,
+        LogicalAndReverse = 17,
+        LogicalAndInverted = 18,
+        LogicalOrReverse = 19,
+        LogicalOrInverted = 20,
+        Multiply = 21,
+        Screen = 22,
+        Overlay = 23,
+        Darken = 24,
+        Lighten = 25,
+        ColorDodge = 26,
+        ColorBurn = 27,
+        HardLight = 28,
+        SoftLight = 29,
+        Difference = 30,
+        Exclusion = 31,
+        HSLHue = 32,
+        HSLSaturation = 33,
+        HSLColor = 34,
+        HSLLuminosity = 35,
+    }
 
     public enum CompareFunction
     {
@@ -248,6 +396,23 @@ namespace UnityEngine
         NotEqual = 6,
         GreaterEqual = 7,
         Always = 8
+    }
+
+    public enum CullMode
+    {
+        Off = 0,
+        Front = 1,
+        Back = 2
+    }
+
+    [Flags]
+    public enum ColorWriteMask
+    {
+        Alpha = 1,
+        Blue = 2,
+        Green = 4,
+        Red = 8,
+        All = 15
     }
 
     public enum StencilOp

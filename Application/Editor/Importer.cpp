@@ -378,9 +378,9 @@ static SharedPtr<Node> BuildNode(const aiScene* aiScn, aiNode* aiNd, aiMatrix4x4
 		model->SetIndexBuffers(indexBuffers);
 		model->SetBoundingBox(boundingBox);
 
-		SharedPtr<Material> material = materialList.Size()> 0 ?
+		SharedPtr<Material> material(materialList.Size() > 0 ?
 			materialList[0] :
-			GetSubsystem<ResourceCache>()->GetResource<Material>("Materials/StaticModel.ljson");
+			GetSubsystem<ResourceCache>()->GetResource<Material>("Materials/StaticModel.ljson"));
 
 		StaticMeshComponent* meshComp = node->CreateComponent<StaticMeshComponent>();
 		meshComp->SetModel(model);

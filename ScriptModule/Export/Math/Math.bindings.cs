@@ -23,19 +23,19 @@ namespace UnityEngine
     public partial struct Matrix4x4
     {
         [ThreadSafe]
-        [DllImport("Editor.dll", EntryPoint = "Matrix4x4Export_GetRotation")]
+        [DllImport(Import.DLLName, EntryPoint = "Matrix4x4Export_GetRotation")]
         extern private static Quaternion    Internal_GetRotation(ref Matrix4x4 self);
         [ThreadSafe]
-        [DllImport("Editor.dll", EntryPoint = "Matrix4x4Export_GetLossyScale")]
+        [DllImport(Import.DLLName, EntryPoint = "Matrix4x4Export_GetLossyScale")]
         extern private static Vector3       Internal_GetLossyScale(ref Matrix4x4 self);
         [ThreadSafe]
-        [DllImport("Editor.dll", EntryPoint = "Matrix4x4Export_IsIdentity")]
+        [DllImport(Import.DLLName, EntryPoint = "Matrix4x4Export_IsIdentity")]
         extern private static bool          Internal_IsIdentity(ref Matrix4x4 self);
         [ThreadSafe]
-        [DllImport("Editor.dll", EntryPoint = "Matrix4x4Export_GetDeterminant")]
+        [DllImport(Import.DLLName, EntryPoint = "Matrix4x4Export_GetDeterminant")]
         extern private static float         Internal_GetDeterminant(ref Matrix4x4 self);
         [ThreadSafe]
-        [DllImport("Editor.dll", EntryPoint = "Matrix4x4Export_DecomposeProjection")]
+        [DllImport(Import.DLLName, EntryPoint = "Matrix4x4Export_DecomposeProjection")]
         extern private static FrustumPlanes Internal_DecomposeProjection(ref Matrix4x4 self);
 
 
@@ -71,23 +71,23 @@ namespace UnityEngine
     public partial struct Vector3
     {
         [FreeFunction("VectorScripting::Slerp", IsThreadSafe = true)]
-        [DllImport("Editor.dll", EntryPoint = "MathExport_Slerp")]
+        [DllImport(Import.DLLName, EntryPoint = "MathExport_Slerp")]
         extern public static Vector3 Slerp(Vector3 a, Vector3 b, float t);
         [FreeFunction("VectorScripting::SlerpUnclamped", IsThreadSafe = true)]
-        [DllImport("Editor.dll", EntryPoint = "MathExport_SlerpUnclamped")]
+        [DllImport(Import.DLLName, EntryPoint = "MathExport_SlerpUnclamped")]
         extern public static Vector3 SlerpUnclamped(Vector3 a, Vector3 b, float t);
 
         [FreeFunction("VectorScripting::OrthoNormalize", IsThreadSafe = true)]
-        [DllImport("Editor.dll", EntryPoint = "MathExport_OrthoNormalize2")]
+        [DllImport(Import.DLLName, EntryPoint = "MathExport_OrthoNormalize2")]
         extern private static void OrthoNormalize2(ref Vector3 a, ref Vector3 b);
         public static void OrthoNormalize(ref Vector3 normal, ref Vector3 tangent) { OrthoNormalize2(ref normal, ref tangent); }
         [FreeFunction("VectorScripting::OrthoNormalize", IsThreadSafe = true)]
-        [DllImport("Editor.dll", EntryPoint = "MathExport_OrthoNormalize3")]
+        [DllImport(Import.DLLName, EntryPoint = "MathExport_OrthoNormalize3")]
         extern private static void OrthoNormalize3(ref Vector3 a, ref Vector3 b, ref Vector3 c);
         public static void OrthoNormalize(ref Vector3 normal, ref Vector3 tangent, ref Vector3 binormal) { OrthoNormalize3(ref normal, ref tangent, ref binormal); }
 
         [FreeFunction(IsThreadSafe = true)]
-        [DllImport("Editor.dll", EntryPoint = "MathExport_RotateTowards")]
+        [DllImport(Import.DLLName, EntryPoint = "MathExport_RotateTowards")]
         extern public static Vector3 RotateTowards(Vector3 current, Vector3 target, float maxRadiansDelta, float maxMagnitudeDelta);
     }
 
@@ -132,34 +132,34 @@ namespace UnityEngine
     public partial struct Mathf
     {
         [FreeFunction(IsThreadSafe = true)]
-        [DllImport("Editor.dll", EntryPoint = "MathExport_ClosestPowerOfTwo")]
+        [DllImport(Import.DLLName, EntryPoint = "MathExport_ClosestPowerOfTwo")]
         extern public static int ClosestPowerOfTwo(int value);
         [FreeFunction(IsThreadSafe = true)]
-        [DllImport("Editor.dll", EntryPoint = "MathExport_IsPowerOfTwo")]
+        [DllImport(Import.DLLName, EntryPoint = "MathExport_IsPowerOfTwo")]
         extern public static bool IsPowerOfTwo(int value);
         [FreeFunction(IsThreadSafe = true)]
-        [DllImport("Editor.dll", EntryPoint = "MathExport_NextPowerOfTwo")]
+        [DllImport(Import.DLLName, EntryPoint = "MathExport_NextPowerOfTwo")]
         extern public static int NextPowerOfTwo(int value);
 
         [FreeFunction(IsThreadSafe = true)]
-        [DllImport("Editor.dll", EntryPoint = "MathExport_GammaToLinearSpace")]
+        [DllImport(Import.DLLName, EntryPoint = "MathExport_GammaToLinearSpace")]
         extern public static float GammaToLinearSpace(float value);
         [FreeFunction(IsThreadSafe = true)]
-        [DllImport("Editor.dll", EntryPoint = "MathExport_LinearToGammaSpace")]
+        [DllImport(Import.DLLName, EntryPoint = "MathExport_LinearToGammaSpace")]
         extern public static float LinearToGammaSpace(float value);
         [FreeFunction(IsThreadSafe = true)]
-        [DllImport("Editor.dll", EntryPoint = "MathExport_CorrelatedColorTemperatureToRGB")]
+        [DllImport(Import.DLLName, EntryPoint = "MathExport_CorrelatedColorTemperatureToRGB")]
         extern public static Color CorrelatedColorTemperatureToRGB(float kelvin);
 
         [FreeFunction(IsThreadSafe = true)]
-        [DllImport("Editor.dll", EntryPoint = "MathExport_FloatToHalf")]
+        [DllImport(Import.DLLName, EntryPoint = "MathExport_FloatToHalf")]
         extern public static ushort FloatToHalf(float val);
         [FreeFunction(IsThreadSafe = true)]
-        [DllImport("Editor.dll", EntryPoint = "MathExport_HalfToFloat")]
+        [DllImport(Import.DLLName, EntryPoint = "MathExport_HalfToFloat")]
         extern public static float HalfToFloat(ushort val);
 
         [FreeFunction("PerlinNoise::NoiseNormalized", IsThreadSafe = true)]
-        [DllImport("Editor.dll", EntryPoint = "MathExport_PerlinNoise")]
+        [DllImport(Import.DLLName, EntryPoint = "MathExport_PerlinNoise")]
         extern public static float PerlinNoise(float x, float y);
     }
 }

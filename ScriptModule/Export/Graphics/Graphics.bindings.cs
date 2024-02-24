@@ -20,8 +20,32 @@ namespace UnityEngine
     {
         [FreeFunction("GraphicsScripting::DrawTexture")]
         [VisibleToOtherModules("UnityEngine.IMGUIModule")]
-        [DllImport("Editor.dll", EntryPoint = "Graphics_DrawTexture")]
+        [DllImport(Import.DLLName, EntryPoint = "Graphics_DrawTexture")]
         extern internal static void Internal_DrawTexture(ref Internal_DrawTextureArguments args);
     }
 }
 #endif // UNITY_EDITOR
+
+namespace UnityEngine
+{
+    public sealed partial class Screen
+    {
+        public static extern int width
+        {
+            [DllImport(Import.DLLName, EntryPoint = "Screen_GetWidth")]
+            get;
+        }
+
+        public static extern int height
+        {
+            [DllImport(Import.DLLName, EntryPoint = "Screen_GetHeight")]
+            get;
+        }
+
+        public static extern float dpi
+        {
+            [DllImport(Import.DLLName, EntryPoint = "Screen_GetDPI")]
+            get;
+        }
+    }
+}

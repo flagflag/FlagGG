@@ -56,7 +56,7 @@ namespace UnityEngine
 
         // Draws a line from the /point/ start to /end/ with color for a duration of time and with or without depth testing. If duration is 0 then the line is rendered 1 frame.
         [FreeFunction("DebugDrawLine")]
-        [DllImport("Editor.dll", EntryPoint = "DebugExport_DebugDrawLine")]
+        [DllImport(Import.DLLName, EntryPoint = "DebugExport_DebugDrawLine")]
         public static extern void DrawLine(Vector3 start, Vector3 end, [DefaultValue("Color.white")] Color color, [DefaultValue("0.0f")] float duration, [DefaultValue("true")] bool depthTest);
 
         [ExcludeFromDocs]
@@ -91,7 +91,7 @@ namespace UnityEngine
 
         // Pauses the editor.
         [FreeFunction("PauseEditor")]
-        [DllImport("Editor.dll", EntryPoint = "DebugExport_PauseEditor")]
+        [DllImport(Import.DLLName, EntryPoint = "DebugExport_PauseEditor")]
         public static extern void Break();
 
         // Breaks into the attached debugger, if present
@@ -219,7 +219,7 @@ namespace UnityEngine
         public static extern bool isDebugBuild { get; }
 
         [FreeFunction("DeveloperConsole_OpenConsoleFile")]
-        [DllImport("Editor.dll", EntryPoint = "DeveloperConsole_OpenConsoleFile")]
+        [DllImport(Import.DLLName, EntryPoint = "DeveloperConsole_OpenConsoleFile")]
         internal static extern void OpenConsoleFile();
 
         // 暂时不支持，待补充
