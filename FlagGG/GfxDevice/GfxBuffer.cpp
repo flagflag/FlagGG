@@ -64,4 +64,9 @@ void GfxBuffer::EndWrite(UInt32 bytesWritten)
 
 }
 
+const UInt8* GfxBuffer::GetShadowData() const
+{
+	return nullptr;
+}
+
 }

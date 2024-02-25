@@ -24,7 +24,7 @@ void Camera::OnAddToNode(Node* node)
 
 void Camera::OnRemoveFromNode(Node* node)
 {
-	node->RemoveTransformListener(listenerNode_);
+	listenerNode_.RemoveFromList();
 }
 
 void Camera::OnTransformChange()

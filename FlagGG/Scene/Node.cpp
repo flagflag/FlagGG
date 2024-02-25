@@ -4,6 +4,7 @@
 #include "Scene/Octree.h"
 #include "Scene/DrawableComponent.h"
 #include "Scene/TransformComponent.h"
+#include "Scene/ComponentEventListener.h"
 
 namespace FlagGG
 {
@@ -85,11 +86,22 @@ void Node::AddComponent(Component* component)
 	}
 	components_.Push(sharedComponent);
 	sharedComponent->SetNode(this);
+
+	sharedComponent->OnAddToNode(this);
+	for (auto& it : componentEventListeners_)
+	{
+		it->OnGlobalAddToNode(sharedComponent);
+	}
+
 	if (ownerScene_)
 	{
 		ownerScene_->OnAddToScene(this, component);
+		for (auto& it : componentEventListeners_)
+		{
+			it->OnGlobalAddToScene(ownerScene_, component);
+		}
 	}
-	sharedComponent->OnAddToNode(this);
+
 	sharedComponent->UpdateTreeDirty();
 }
 
@@ -125,10 +137,20 @@ void Node::RemoveComponent(Component* component)
 {
 	SharedPtr<Component> sharedComponent(component);
 	components_.Remove(sharedComponent);
+
 	sharedComponent->OnRemoveFromNode(this);
+	for (auto& it : componentEventListeners_)
+	{
+		it->OnGlobalRemoveFromNode(sharedComponent);
+	}
+
 	if (ownerScene_)
 	{
 		ownerScene_->OnRemoveFromScene(this, sharedComponent);
+		for (auto& it : componentEventListeners_)
+		{
+			it->OnGlobalRemoveFromScene(ownerScene_, sharedComponent);
+		}
 	}
 }
 
@@ -140,8 +162,18 @@ void Node::RemoveAllComponent()
 		{
 			SharedPtr<Component> sharedComponent(components_.Back());
 			components_.Pop();
+
 			sharedComponent->OnRemoveFromNode(this);
+			for (auto& it : componentEventListeners_)
+			{
+				it->OnGlobalRemoveFromNode(sharedComponent);
+			}
+
 			ownerScene_->OnRemoveFromScene(this, sharedComponent);
+			for (auto& it : componentEventListeners_)
+			{
+				it->OnGlobalRemoveFromScene(ownerScene_, sharedComponent);
+			}
 		}
 	}
 	else
@@ -155,9 +187,9 @@ void Node::AddTransformListener(LinkedListNode<ITransformListener>& listenerNode
 	transformListeners_.Push(listenerNode);
 }
 
-void Node::RemoveTransformListener(LinkedListNode<ITransformListener>& listenerNode)
+void Node::AddComponentEventListener(LinkedListNode<IComponentEventListener>& listenerNode)
 {
-	listenerNode.RemoveFromList();
+	componentEventListeners_.Push(listenerNode);
 }
 
 void Node::AddChild(Node* node)
@@ -458,10 +490,18 @@ void Node::UpdateTreeDirty(Scene* scene)
 		if (scene)
 		{
 			scene->OnAddToScene(this, component);
+			for (auto& it : componentEventListeners_)
+			{
+				it->OnGlobalAddToScene(scene, component);
+			}
 		}
 		else if (ownerScene_)
 		{
 			ownerScene_->OnRemoveFromScene(this, component);
+			for (auto& it : componentEventListeners_)
+			{
+				it->OnGlobalRemoveFromScene(ownerScene_, component);
+			}
 		}
 	}
 			

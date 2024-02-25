@@ -10,8 +10,6 @@ namespace FlagGG
 class ITransformListener
 {
 public:
-	ITransformListener() {}
-
 	virtual ~ITransformListener() {}
 
 	// Trasnform发生改变

@@ -20,6 +20,7 @@ namespace FlagGG
 
 // class Component;
 class ITransformListener;
+class IComponentEventListener;
 class Scene;
 class Octree;
 
@@ -78,7 +79,7 @@ public:
 
 	void AddTransformListener(LinkedListNode<ITransformListener>& listenerNode);
 
-	void RemoveTransformListener(LinkedListNode<ITransformListener>& listenerNode);
+	void AddComponentEventListener(LinkedListNode<IComponentEventListener>& listenerNode);
 
 	void AddChild(Node* node);
 
@@ -180,6 +181,7 @@ private:
 	Scene* ownerScene_;
 
 	LinkedList<LinkedListNode<ITransformListener>> transformListeners_;
+	LinkedList<LinkedListNode<IComponentEventListener>> componentEventListeners_;
 
 	bool isTranspent_;
 

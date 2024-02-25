@@ -28,6 +28,8 @@ public:
 
 	void UnlockStaticBuffer();
 
+	const UInt8* GetShadowData() const { return gfxBuffer_->GetShadowData(); }
+
 	// 获取gfx引用
 	GfxBuffer* GetGfxRef() const { return gfxBuffer_; }
 

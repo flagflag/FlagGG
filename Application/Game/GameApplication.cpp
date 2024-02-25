@@ -9,6 +9,7 @@
 #include <Scene/OceanComponent.h>
 #endif
 #include <Scene/PrefabLoader.h>
+#include <Physics/PhysicsScene.h>
 #include <Log.h>
 #include <IOFrame/Buffer/StringBuffer.h>
 #include <FileSystem/FileManager.h>
@@ -198,6 +199,7 @@ void GameApplication::CreateScene()
 	scene_->Start();
 
 	scene_->CreateComponent<Octree>();
+	scene_->CreateComponent<PhysicsScene>();
 
 	auto* cameraNode = new Node();
 	cameraNode->SetName("MainCamera");

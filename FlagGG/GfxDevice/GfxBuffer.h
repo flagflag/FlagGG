@@ -63,6 +63,9 @@ public:
 	// 结束写数据
 	virtual void EndWrite(UInt32 bytesWritten);
 
+	// 获取CPU映射数据
+	virtual const UInt8* GetShadowData() const;
+
 	// 获取buffer描述
 	const GfxBufferDesc& GetDesc() const { return gfxBufferDesc_; }
 

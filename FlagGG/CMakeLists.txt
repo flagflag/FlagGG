@@ -11,6 +11,8 @@ add_definitions (-DFlagGG_EXPORTS)
 
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd)
+include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/PhysX/physx/include)
+include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/PhysX/pxshared/include)
 message ("include dir: ${CMAKE_CURRENT_SOURCE_DIR}")
 
 # 在非windows上把Graphics排除，因为目前Graphics只写了windows的部分
@@ -21,6 +23,9 @@ endif ()
 # 不用boost
 if (FLAGGG_NO_BOOST)
 	add_definitions (-DFLAGGG_NO_BOOST)
+endif ()
+if (FLAGGG_PHYSICS)
+    add_definitions (-DFLAGGG_PHYSICS)
 endif ()
 list (APPEND EXCLUDED_SOURCE_DIRS spdlog)
 # 输出排除的目录

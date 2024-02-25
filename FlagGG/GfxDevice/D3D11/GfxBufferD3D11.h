@@ -35,6 +35,9 @@ public:
 	// 结束写数据
 	void EndWrite(UInt32 bytesWritten) override;
 
+	// 获取CPU映射数据
+	const UInt8* GetShadowData() const override { return shadowdData_.Buffer(); }
+
 	ID3D11Buffer* GetD3D11Buffer() const { return d3d11Buffer_; }
 
 private:

@@ -47,6 +47,7 @@ struct FlagGG_API OctreeNode
 // 八叉树
 class FlagGG_API Octree : public Component
 {
+	OBJECT_OVERRIDE(Octree, Component);
 public:
 	explicit Octree();
 
