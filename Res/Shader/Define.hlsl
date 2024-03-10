@@ -8,7 +8,7 @@
     #ifdef SKINNED
         cbuffer SkinMatrixBuffer : register(b1)
         {
-            uniform float4x3 skinMatrices[64];
+            uniform float4x3 skinMatrices[150];
         }
     #endif
     cbuffer ParamBuffer : register(b2)

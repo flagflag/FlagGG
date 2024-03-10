@@ -52,7 +52,7 @@ public:
 	bool CopyFile(const String& fileName, const String& targetFileName) override;
 
 	// 从目录下搜索文件
-	void FindFiles(Vector<String>& foundFiles, const String& directoryPath, const String& fileExtension, bool recursive, FindFileModeFlags fileMode) override;
+	void FindFiles(Vector<String>& foundFiles, const String& directoryPath, const String& pattern, bool recursive, FindFileModeFlags fileMode) override;
 };
 
 }

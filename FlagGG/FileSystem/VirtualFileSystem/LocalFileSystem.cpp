@@ -83,9 +83,9 @@ bool LocalFileSystem::CopyFile(const String& fileName, const String& targetFileN
 	return PlatformFileInterface::CopyFile(fileName, targetFileName);
 }
 
-void LocalFileSystem::FindFiles(Vector<String>& foundFiles, const String& directoryPath, const String& fileExtension, bool recursive, FindFileModeFlags fileMode)
+void LocalFileSystem::FindFiles(Vector<String>& foundFiles, const String& directoryPath, const String& pattern, bool recursive, FindFileModeFlags fileMode)
 {
-	PlatformFileInterface::FindFiles(foundFiles, directoryPath, fileExtension, recursive, fileMode);
+	PlatformFileInterface::FindFiles(foundFiles, directoryPath, pattern, recursive, fileMode);
 }
 
 IFileSystem* GetLocalFileSystem()

@@ -37,7 +37,7 @@ void SkeletonMeshComponent::OnModel()
 
 	// 设置骨骼
 	SetSkeleton(model_->GetSkeleton());
-	// 分配蒙皮矩阵，设置图形和骨骼的映射‘
+	// 分配蒙皮矩阵，设置图形和骨骼的映射
 	SetBoneMappings(model_->GetBoneMappings());
 	// 更新下dirty
 	UpdateTreeDirty();

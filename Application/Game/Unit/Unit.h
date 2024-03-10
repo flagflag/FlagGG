@@ -6,6 +6,13 @@
 #include <Container/Str.h>
 #include <Container/List.h>
 
+namespace FlagGG
+{
+
+class SkeletonMeshComponent;
+
+}
+
 using namespace FlagGG;
 
 class Unit : public Node
@@ -56,4 +63,17 @@ public:
 	bool Load(const String& path) override;
 
 	void PlayAnimation(const String& path, bool isLoop) override;
+};
+
+class SCEUnit : public Unit
+{
+public:
+	SCEUnit();
+
+	bool Load(const String& path) override;
+
+	void PlayAnimation(const String& path, bool isLoop) override;
+
+private:
+	SkeletonMeshComponent* skeletonMeshComp_;
 };

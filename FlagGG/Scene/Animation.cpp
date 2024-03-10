@@ -51,7 +51,7 @@ Vector3 AnimationKeyFrameInterval::GetScale(Real time)
 AnimationKeyFrameInterval AnimationTrack::GetKeyFrameInterval(Real currentTime, Real totalTime) const
 {
 	AnimationKeyFrameInterval interval;
-	UInt32 index = 0;
+	Int32 index = 0;
 	while (index < keyFrames_.Size() && currentTime > keyFrames_[index].time_) ++index;
 	--index;
 	if (index >= 0)
@@ -118,6 +118,13 @@ bool Animation::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 				IOFrame::Buffer::ReadQuaternion(stream, keyFrame.rotation_);
 			if (track.channelMask_ & AC_SCALE)
 				IOFrame::Buffer::ReadVector3(stream, keyFrame.scale_);
+		}
+
+		if (track.keyFrames_.Size() && !Equals(track.keyFrames_[0].time_, 0.0f))
+		{
+			auto keyFrame = track.keyFrames_[0];
+			keyFrame.time_ = 0.0f;
+			track.keyFrames_.Insert(track.keyFrames_.Begin(), keyFrame);
 		}
 	}
 

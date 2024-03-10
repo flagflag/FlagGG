@@ -67,11 +67,11 @@ bool AssetFileManager::GetFileTimeStamp(const String& fileName, UInt64& timeStam
 	return false;
 }
 
-void AssetFileManager::FindFiles(Vector<String>& foundFiles, const String& directoryPath, const String& fileExtension, bool recursive, FindFileModeFlags fileMode)
+void AssetFileManager::FindFiles(Vector<String>& foundFiles, const String& directoryPath, const String& pattern, bool recursive, FindFileModeFlags fileMode)
 {
 	for (auto& archive : fileSystemArchives_)
 	{
-		archive->FindFiles(foundFiles, directoryPath, fileExtension, recursive, fileMode);
+		archive->FindFiles(foundFiles, directoryPath, pattern, recursive, fileMode);
 	}
 }
 

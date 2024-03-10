@@ -77,7 +77,7 @@ bool FtpFileSystem::CopyFile(const String& fileName, const String& targetFileNam
 	return false;
 }
 
-void FtpFileSystem::FindFiles(Vector<String>& foundFiles, const String& directoryPath, const String& fileExtension, bool recursive, FindFileModeFlags fileMode)
+void FtpFileSystem::FindFiles(Vector<String>& foundFiles, const String& directoryPath, const String& pattern, bool recursive, FindFileModeFlags fileMode)
 {
 
 }

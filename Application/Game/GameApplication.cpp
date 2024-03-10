@@ -218,12 +218,19 @@ void GameApplication::CreateScene()
 	reflectionCamera_->SetUseReflection(true);
 	reflectionCamera_->SetZUp(true);
 
-	mainHero_ = new CEUnit();
 #if 0
+	mainHero_ = new CEUnit();
 	mainHero_->Load("Unit/MainHero.ljson");
 	mainHero_->PlayAnimation("Animation/Warrior_Attack.ani", true);
 	mainHero_->SetPosition(Vector3(4, 0, 0));
 	mainHero_->SetName("MainHero");
+#else
+	mainHero_ = new SCEUnit();
+	mainHero_->Load("characters1/jianke_c96b/model.prefab");
+	mainHero_->PlayAnimation("characters1/jianke_c96b/anim/idle.ani", true);
+	mainHero_->SetPosition(Vector3(4, 0, 0));
+	mainHero_->SetName("MainHero");
+
 #endif
 	scene_->AddChild(mainHero_);
 

@@ -3,6 +3,7 @@
 #include <Scene/SkeletonMeshComponent.h>
 #include <Scene/AnimationComponent.h>
 #include <Scene/OceanComponent.h>
+#include <Scene/PrefabLoader.h>
 #include <Resource/ResourceCache.h>
 #include <Graphics/Model.h>
 #include <Graphics/Material.h>
@@ -153,6 +154,31 @@ bool CEUnit::Load(const String& path)
 void CEUnit::PlayAnimation(const String& path, bool isLoop)
 {
 	Node* node = GetChild(String("SKELETON"));
+	if (!node)
+		return;
+	Unit::PlayAnimation(path, isLoop, node);
+}
+
+
+SCEUnit::SCEUnit()
+{
+
+}
+
+bool SCEUnit::Load(const String& path)
+{
+	SharedPtr<Node> root = LoadPrefab(path);
+	if (!root)
+		return false;
+	root->SetScale(Vector3(0.01, 0.01, 0.01));
+	skeletonMeshComp_ = root->GetComponentRecursive<SkeletonMeshComponent>();
+	AddChild(root);
+	return true;
+}
+
+void SCEUnit::PlayAnimation(const String& path, bool isLoop)
+{
+	auto* node = skeletonMeshComp_->GetNode();
 	if (!node)
 		return;
 	Unit::PlayAnimation(path, isLoop, node);

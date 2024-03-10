@@ -41,9 +41,9 @@ bool DefaultFileSystemArchive::GetFileTimeStamp(const String& fileName, UInt64& 
 	return fileSystem_->GetFileTimeStamp(rootDirectory_ + fileName, timeStamp);
 }
 
-void DefaultFileSystemArchive::FindFiles(Vector<String>& foundFiles, const String& directoryPath, const String& fileExtension, bool recursive, FindFileModeFlags fileMode)
+void DefaultFileSystemArchive::FindFiles(Vector<String>& foundFiles, const String& directoryPath, const String& pattern, bool recursive, FindFileModeFlags fileMode)
 {
-	fileSystem_->FindFiles(foundFiles, directoryPath, fileExtension, recursive, fileMode);
+	fileSystem_->FindFiles(foundFiles, directoryPath, pattern, recursive, fileMode);
 }
 
 

@@ -282,7 +282,7 @@ TextureFormat RenderEngine::GetFormat(const String& formatName)
 
 UInt32 RenderEngine::GetMaxBonesNum()
 {
-	return 64;
+	return 150;
 }
 
 ShaderParameters& RenderEngine::GetShaderParameters()

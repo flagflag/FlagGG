@@ -4,6 +4,9 @@
 #endif
 
 #include <Core/EventManager.h>
+#include <Scene/AnimationComponent.h>
+#include <Scene/Animation.h>
+#include <Resource/ResourceCache.h>
 
 ThirdPersonPerspective::ThirdPersonPerspective(bool moveCameraWhenMouseDown) :
 	controlCamera_(new Camera()),
@@ -26,22 +29,27 @@ ThirdPersonPerspective::ThirdPersonPerspective(bool moveCameraWhenMouseDown) :
 	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, ThirdPersonPerspective::HandleUpdate, this));
 
 	//        W  S  A  D
-	rotation_[0][0][0][0] = Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
-	rotation_[0][0][0][1] = Quaternion(90.0f);
-	rotation_[0][0][1][0] = Quaternion(-90.0f);
-	rotation_[0][0][1][1] = Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
-	rotation_[0][1][0][0] = Quaternion(180.0f);
-	rotation_[0][1][0][1] = Quaternion(135.0f);
-	rotation_[0][1][1][0] = Quaternion(-135.0f);
-	rotation_[0][1][1][1] = Quaternion(180.0f);
-	rotation_[1][0][0][0] = Quaternion(0.0f);
-	rotation_[1][0][0][1] = Quaternion(45.0f);
-	rotation_[1][0][1][0] = Quaternion(-45.0f);
-	rotation_[1][0][1][1] = Quaternion(0.0f);
-	rotation_[1][1][0][0] = Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
-	rotation_[1][1][0][1] = Quaternion(90.0f);
-	rotation_[1][1][1][0] = Quaternion(-90.0f);
-	rotation_[1][1][1][1] = Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
+	rotation_[0][0][0][0] = 0.0f;
+	rotation_[0][0][0][1] = 90.0f;
+	rotation_[0][0][1][0] = -90.0f;
+	rotation_[0][0][1][1] = 0.0f;
+	rotation_[0][1][0][0] = 180.0f;
+	rotation_[0][1][0][1] = 135.0f;
+	rotation_[0][1][1][0] = -135.0f;
+	rotation_[0][1][1][1] = 180.0f;
+	rotation_[1][0][0][0] = 0.0f;
+	rotation_[1][0][0][1] = 45.0f;
+	rotation_[1][0][1][0] = -45.0f;
+	rotation_[1][0][1][1] = 0.0f;
+	rotation_[1][1][0][0] =  0.0f;
+	rotation_[1][1][0][1] = 90.0f;
+	rotation_[1][1][1][0] = -90.0f;
+	rotation_[1][1][1][1] = 0.0f;
+}
+
+ThirdPersonPerspective::~ThirdPersonPerspective()
+{
+
 }
 
 void ThirdPersonPerspective::SetCamera(Camera* camera)
@@ -82,6 +90,13 @@ void ThirdPersonPerspective::SetNode(Node* node)
 	}
 
 	node_ = node;
+
+	if (node_)
+	{
+		animComp_ = node_->GetComponentRecursive<AnimationComponent>();
+		idleAnim_ = GetSubsystem<ResourceCache>()->GetResource<Animation>("characters1/jianke_c96b/anim/idle.ani");
+		moveAnim_ = GetSubsystem<ResourceCache>()->GetResource<Animation>("characters1/jianke_c96b/anim/move.ani");
+	}
 }
 
 Node* ThirdPersonPerspective::GetNode() const
@@ -163,17 +178,31 @@ void ThirdPersonPerspective::HandleUpdate(float timeStep)
 
 	if (syncMode_ == SyncMode_Local)
 	{
+		bool isMoving = false;
+
 		if (GetKeyState('W') < 0 || GetKeyState('w') < 0)
+		{
 			controlCamera_->Walk(walkDelta);
+			isMoving = true;
+		}
 
 		if (GetKeyState('S') < 0 || GetKeyState('s') < 0)
+		{
 			controlCamera_->Walk(-walkDelta);
+			isMoving = true;
+		}
 
 		if (GetKeyState('A') < 0 || GetKeyState('a') < 0)
+		{
 			controlCamera_->Strafe(-walkDelta);
+			isMoving = true;
+		}
 
 		if (GetKeyState('D') < 0 || GetKeyState('d') < 0)
+		{
 			controlCamera_->Strafe(walkDelta);
+			isMoving = true;
+		}
 
 		if (GetKeyState('E') < 0 || GetKeyState('e') < 0)
 			controlCamera_->Fly(walkDelta);
@@ -186,6 +215,48 @@ void ThirdPersonPerspective::HandleUpdate(float timeStep)
 
 		if (GetKeyState('M') < 0 || GetKeyState('m') < 0)
 			controlCamera_->Roll(-0.000020);
+
+		dir_[0] = GetKeyState('W') < 0 || GetKeyState('w') < 0 ? 1 : 0;
+		dir_[1] = GetKeyState('S') < 0 || GetKeyState('s') < 0 ? 1 : 0;
+		dir_[2] = GetKeyState('A') < 0 || GetKeyState('a') < 0 ? 1 : 0;
+		dir_[3] = GetKeyState('D') < 0 || GetKeyState('d') < 0 ? 1 : 0;
+
+		if (animComp_)
+		{
+			if (isMoving_ != isMoving)
+			{
+				isMoving_ = isMoving;
+				if (isMoving_)
+				{
+					animComp_->SetAnimation(moveAnim_);
+					animComp_->Play(true);
+				}
+				else
+				{
+					animComp_->SetAnimation(idleAnim_);
+					animComp_->Play(true);
+				}
+			}
+
+			float facing = rotation_[dir_[0]][dir_[1]][dir_[2]][dir_[3]];
+
+			if (isMoving_)
+			{
+				if (facing_ < 0.0f && facing == 180.0f)
+					facing = -facing;
+				else if (facing_ == -180.0f && facing > 0.0f)
+					facing_ = -facing_;
+				else if(facing_ == 180.0f && facing < 0.0f)
+					facing_ = -facing_;
+
+				if (facing_ > facing)
+					facing_ = Max(facing_ - timeStep * 720.0f, facing);
+				else
+					facing_ = Min(facing_ + timeStep * 720.0f, facing);
+				const Vector3 rotator = lookupNode_->GetRotation().EulerAngles();
+				animComp_->GetNode()->SetRotation(Quaternion(0, 0, facing_));
+			}
+		}
 	}
 	else
 	{
@@ -194,7 +265,7 @@ void ThirdPersonPerspective::HandleUpdate(float timeStep)
 		dir_[2] = GetKeyState('A') < 0 || GetKeyState('a') < 0 ? 1 : 0;
 		dir_[3] = GetKeyState('D') < 0 || GetKeyState('d') < 0 ? 1 : 0;
 
-		Quaternion rot = rotation_[dir_[0]][dir_[1]][dir_[2]][dir_[3]];
+		Quaternion rot = Quaternion(0.0f, 0.0f, rotation_[dir_[0]][dir_[1]][dir_[2]][dir_[3]]);
 
 		if (rot != currentRot_)
 		{

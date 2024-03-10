@@ -8,6 +8,14 @@
 #include <Math/Vector3.h>
 #include <Math/Quaternion.h>
 
+namespace FlagGG
+{
+
+class Animation;
+class AnimationComponent;
+
+}
+
 using namespace FlagGG;
 
 class ThirdPersonPerspective : public Perspective
@@ -15,6 +23,8 @@ class ThirdPersonPerspective : public Perspective
 	OBJECT_OVERRIDE(ThirdPersonPerspective, Perspective);
 public:
 	explicit ThirdPersonPerspective(bool moveCameraWhenMouseDown);
+
+	~ThirdPersonPerspective() override;
 
 	// 设置相机
 	void SetCamera(Camera* camera) override;
@@ -69,7 +79,13 @@ private:
 	// 同步模式
 	SyncMode syncMode_;
 	int dir_[4];
-	Quaternion rotation_[2][2][2][2];
+	float rotation_[2][2][2][2];
 	Quaternion stop_;
 	Quaternion currentRot_;
+
+	WeakPtr<AnimationComponent> animComp_;
+	SharedPtr<Animation> idleAnim_;
+	SharedPtr<Animation> moveAnim_;
+	bool isMoving_{};
+	float facing_{};
 };
