@@ -21,7 +21,7 @@
 #include "GamePlay/GamePlayOnline.h"
 #include "GamePlay/GamePlayLocal.h"
 
-#define ONLINE_GAME 1
+#define ONLINE_GAME 0
 
 static int Begin(lua_State* L)
 {
