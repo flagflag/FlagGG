@@ -158,6 +158,28 @@ public:
 		return *(U*)&data_;
 	}
 
+	template < class T >
+	typename std::decay<T>::type& TryGet()
+	{
+		using U = typename std::decay<T>::type;
+		if (!Is<U>())
+		{
+			return typename std::decay<T>::type();
+		}
+		return *(U*)&data_;
+	}
+
+	template < class T >
+	typename const std::decay<T>::type& TryGet() const
+	{
+		using U = typename std::decay<T>::type;
+		if (!Is<U>())
+		{
+			return typename std::decay<T>::type();
+		}
+		return *(U*)&data_;
+	}
+
 	template < class T, class = typename std::enable_if<Contains<typename std::remove_reference<T>::type, Args...>::value>::type >
 	void Set(T&& value)
 	{

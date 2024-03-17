@@ -2,6 +2,9 @@
 
 #include <Scene/Node.h>
 
+namespace LuaGameEngine
+{
+
 void DirectionMovement::Start()
 {
 	isActive_ = true;
@@ -22,11 +25,13 @@ void DirectionMovement::Update(Real timeStep, Vector3& posDelta, Quaternion& rot
 	if (!IsActive() || !owner_)
 		return;
 
-	const float moveSpeed = owner_->GetAttribute("MOVE_SPEED").Get<float>();
+	const float moveSpeed = Max(owner_->GetAttribute("MOVE_SPEED").TryGet<float>(), 1.0f);
 	posDelta = direction_ * moveSpeed * timeStep;
 }
 
 void DirectionMovement::SetMoveDirection(const Vector3& direction)
 {
 	direction_ = direction.Normalized();
+}
+
 }

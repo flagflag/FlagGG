@@ -2,13 +2,16 @@
 #include "Common.h"
 #include "Engine.h"
 
+#include <Scene/MovementComponent.h>
+
 namespace LuaGameEngine
 {
 
 Int64 Unit::unitIdCount_ = 0;
 
-Unit::Unit() :
-	unitId_(++unitIdCount_)
+Unit::Unit()
+	: unitId_(++unitIdCount_)
+	, node_(new Node())
 {
 
 }
@@ -18,19 +21,8 @@ Unit::~Unit()
 
 }
 
-void Unit::Update()
+void Unit::Update(Real timeStep)
 {
-	for (auto it = movements_.Begin(); it != movements_.End();)
-	{
-		if (!(*it)->IsValid())
-		{
-			(*it)->ReleaseRef();
-			it = movements_.Erase(it);
-		}
-		else
-			++it;
-	}
-
 	for (auto it = buffs_.Begin(); it != buffs_.End(); ++it)
 	{
 		if (!(*it)->IsValid())
@@ -41,6 +33,8 @@ void Unit::Update()
 		else
 			++it;
 	}
+
+	node_->Update({ timeStep });
 }
 
 void Unit::SetName(const String& name)
@@ -50,17 +44,17 @@ void Unit::SetName(const String& name)
 
 void Unit::SetPosition(const Vector3& position)
 {
-	position_ = position;
+	node_->SetPosition(position);
 }
 
 void Unit::SetRotation(const Quaternion& rotation)
 {
-	rotation_ = rotation;
+	node_->SetRotation(rotation);
 }
 
 void Unit::SetScale(const Vector3& scale)
 {
-	scale_ = scale;
+	node_->SetScale(scale);
 }
 
 void Unit::SetStatus(Int32 status)
@@ -68,22 +62,32 @@ void Unit::SetStatus(Int32 status)
 	status_ = status;
 }
 
-void Unit::AddMovement(Movement* movement)
+void Unit::SetAssetId(Int32 assetId)
 {
-	if (!movements_.Contains(movement))
-	{
-		movements_.Push(movement);
-		movement->AddRef();
-	}
+	assetId_ = assetId;
 }
 
-void Unit::RemoveMovement(Movement* movement)
+const List<SharedPtr<BaseMovement>>* Unit::GetAllMovements() const
 {
-	auto it = movements_.Find(movement);
-	if (it != movements_.End())
+	auto* moveComp = node_->GetComponent<MovementComponent>();
+	return moveComp ? &(moveComp->GetAllMovements()) : nullptr;
+}
+
+void Unit::AddMovement(BaseMovement* movement)
+{
+	auto* moveComp = node_->GetComponent<MovementComponent>();
+	if (!moveComp)
+		moveComp = node_->CreateComponent<MovementComponent>();
+
+	moveComp->AddMovement(movement);
+}
+
+void Unit::RemoveMovement(BaseMovement* movement)
+{
+	auto* moveComp = node_->GetComponent<MovementComponent>();
+	if (moveComp)
 	{
-		movements_.Erase(it);
-		movement->ReleaseRef();
+		moveComp->RemoveMovement(movement);
 	}
 }
 
@@ -143,6 +147,13 @@ int Unit::GetScale(lua_State* L)
 	return 3;
 }
 
+int Unit::GetAssetId(lua_State* L)
+{
+	Unit* unit = GetEntry<Unit>(L, 1);
+	lua_pushinteger(L, unit->GetAssetId());
+	return 3;
+}
+
 int Unit::SetName(lua_State* L)
 {
 	Unit* unit = GetEntry<Unit>(L, 1);
@@ -171,10 +182,17 @@ int Unit::SetScale(lua_State* L)
 	return 0;
 }
 
+int Unit::SetAssetId(lua_State* L)
+{
+	Unit* unit = GetEntry<Unit>(L, 1);
+	unit->SetAssetId(lua_tointeger(L, 2));
+	return 0;
+}
+
 int Unit::AddMovement(lua_State* L)
 {
 	Unit* unit = GetEntry<Unit>(L, 1);
-	Movement* movement = GetEntry<Movement>(L, 2);
+	BaseMovement* movement = (BaseMovement*)luaex_tousertype(L, 2, "BaseMovement");
 	unit->AddMovement(movement);
 	return 0;
 }
@@ -182,7 +200,7 @@ int Unit::AddMovement(lua_State* L)
 int Unit::RemoveMovement(lua_State* L)
 {
 	Unit* unit = GetEntry<Unit>(L, 1);
-	Movement* movement = GetEntry<Movement>(L, 2);
+	BaseMovement* movement = (BaseMovement*)luaex_tousertype(L, 2, "BaseMovement");
 	unit->RemoveMovement(movement);
 	return 0;
 }

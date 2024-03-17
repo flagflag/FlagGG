@@ -1,6 +1,8 @@
+local context = GetContext()
+
 game = {}
 
-local event = require 'event'
+local event = require 'server.event'
 
 function game.on_update(time_step)
     event.call('on_update', time_step)
@@ -32,12 +34,13 @@ local players = {}
 
 local function start()
     print ('game start ==> create main hero.')
-    main_hero = engine.unit:create()
+    main_hero = context.Unit.create()
     print ('set main hero attribute.')
     main_hero:set_name('TestUnit')
     main_hero:set_position(1.0, 0.0, 1.0)
-    main_hero:set_rotation(0.0, 0.0, 0.0, 1.0)
+    main_hero:set_rotation(1.0, 0.0, 0.0, 0.0)
     main_hero:set_scale(1.0, 1.0, 1.0)
+    main_hero:set_asset_id(0)
     
     local player = players[0]
     if player then
@@ -46,12 +49,13 @@ local function start()
 
     -- 随机生成十个小怪
     for i = 0, 10 do
-        local monster  = engine.unit:create()
+        local monster  = context.Unit.create()
         print ('create monster.')
         monster:set_name('monster')
         monster:set_position(i, 0.0, 2.0)
-        monster:set_rotation(0.0, 0.0, 0.0, 1.0)
+        monster:set_rotation(1.0, 0.0, 0.0, 0.0)
         monster:set_scale(i + 1, i + 1, i + 1)
+        monster:set_asset_id(1)
         monsters[#monsters + 1] = monster
     end
 end
@@ -67,17 +71,17 @@ local function pause()
 
 end
 
-local add_player(user_id)
-    local player = engine.player:create(user_id)
+local function add_player(user_id)
+    local player = context.Player.get(user_id)
     players[user_id] = player
     return player
 end
 
-local remove_player(user_id)
+local function remove_player(user_id)
     players[user_id] = nil
 end
 
-local get_player(usr_id)
+local function get_player(usr_id)
     return players[user_id]
 end
 

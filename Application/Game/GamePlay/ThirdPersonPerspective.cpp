@@ -16,7 +16,7 @@ ThirdPersonPerspective::ThirdPersonPerspective(bool moveCameraWhenMouseDown) :
 	mouseDown_(false),
 	syncMode_(SyncMode_Local),
 	dir_{ 0 },
-	stop_(0.0f, 0.0f, 0.0f, 0.0f),
+	stop_(Quaternion::IDENTITY),
 	currentRot_(0.0f, 0.0f, 0.0f, 0.0f)
 {
 	network_ = GetSubsystem<Context>()->GetVariable<Network>(NETWORK_TYPE_NAME[NETWORK_TYPE_UDP]);

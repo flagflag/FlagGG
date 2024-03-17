@@ -2,6 +2,7 @@
 
 #include "Export.h"
 #include "Container/Str.h"
+#include "Core/Subsystem.h"
 #include "AsyncFrame/Mutex.h"
 #include "Utility/Format.h"
 #include "spdlog/spdlog.h"
@@ -20,7 +21,7 @@ enum LogType
 
 void FlagGG_API Log(LogType log_type, const char* format, ...);
 
-class FlagGG_API Logger
+class FlagGG_API Logger : public Subsystem<Logger>
 {
 public:
 	Logger();
@@ -34,37 +35,27 @@ public:
 	void RemoveLogger(const String& name);
 
 	std::shared_ptr<spdlog::logger> GetLogger(const String& name);
-
-	static Logger* GetInstance();
-
-	static void DestroyInstance();
-
-private:
-	static volatile bool initialized_;
-	static Logger* logger_;
-
-	static Mutex mutex_;
 };
 
 }
 
-#define FLAGGG_LOG_DEBUG(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(format, ##__VA_ARGS__)
+#define FLAGGG_LOG_DEBUG(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->debug(format, ##__VA_ARGS__)
 
-#define FLAGGG_LOG_INFO(format, ...) FlagGG::Logger::GetInstance()->Default()->info(format, ##__VA_ARGS__)
+#define FLAGGG_LOG_INFO(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->info(format, ##__VA_ARGS__)
 
-#define FLAGGG_LOG_WARN(format, ...) FlagGG::Logger::GetInstance()->Default()->warn(format, ##__VA_ARGS__)
+#define FLAGGG_LOG_WARN(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->warn(format, ##__VA_ARGS__)
 
-#define FLAGGG_LOG_ERROR(format, ...) FlagGG::Logger::GetInstance()->Default()->error(format, ##__VA_ARGS__)
+#define FLAGGG_LOG_ERROR(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->error(format, ##__VA_ARGS__)
 
-#define FLAGGG_LOG_CRITICAL(format, ...) FlagGG::Logger::GetInstance()->Default()->critical(format, ##__VA_ARGS__)
+#define FLAGGG_LOG_CRITICAL(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->critical(format, ##__VA_ARGS__)
 
 
-#define FLAGGG_LOG_STD_DEBUG(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
+#define FLAGGG_LOG_STD_DEBUG(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
 
-#define FLAGGG_LOG_STD_INFO(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
+#define FLAGGG_LOG_STD_INFO(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
 
-#define FLAGGG_LOG_STD_WARN(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
+#define FLAGGG_LOG_STD_WARN(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
 
-#define FLAGGG_LOG_STD_ERROR(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
+#define FLAGGG_LOG_STD_ERROR(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
 
-#define FLAGGG_LOG_STD_CRITICAL(format, ...) FlagGG::Logger::GetInstance()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
+#define FLAGGG_LOG_STD_CRITICAL(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())

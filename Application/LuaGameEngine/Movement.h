@@ -10,24 +10,16 @@
 namespace LuaGameEngine
 {
 
-class LuaGameEngine_API Movement : public EngineObject
+class Movement
 {
-	OBJECT_OVERRIDE(Movement, EngineObject)
 public:
-	virtual void Start() = 0;
-
-	virtual void Stop() = 0;
-
-	virtual void Update(Real timeStep, Vector3& posDelta, Quaternion& rotDelta) = 0;
-
-	virtual bool IsActive() const = 0;
-
-
-	static int Create(lua_State* L);
 	static int Destroy(lua_State* L);
 	static int Start(lua_State* L);
 	static int Stop(lua_State* L);
 	static int IsActive(lua_State* L);
+
+	static int CreateDirectionMovement(lua_State* L);
+	static int SetMoveDirection(lua_State* L);
 };
 
 }

@@ -7,7 +7,10 @@ void MovementComponent::AddMovement(BaseMovement* baseMovment)
 {
 	SharedPtr<BaseMovement> movement(baseMovment);
 	if (!movements_.Contains(movement))
+	{
 		movements_.Push(movement);
+		movement->SetOwner(node_);
+	}
 }
 
 void MovementComponent::RemoveMovement(BaseMovement* baseMovment)
@@ -15,7 +18,10 @@ void MovementComponent::RemoveMovement(BaseMovement* baseMovment)
 	SharedPtr<BaseMovement> movement(baseMovment);
 	auto it = movements_.Find(movement);
 	if (it != movements_.End())
+	{
+		movement->SetOwner(nullptr);
 		movements_.Erase(it);
+	}
 }
 
 void MovementComponent::RemoveMovement(StringHash className)

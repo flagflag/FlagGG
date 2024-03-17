@@ -33,8 +33,13 @@ void Player::SetControlUnit(Unit* unit)
 	}
 }
 
+void Player::SetController(Controller* controller)
+{
+	controller_ = controller;
+}
 
-int Player::Create(lua_State* L)
+
+int Player::Get(lua_State* L)
 {
 	Engine* engine = GetEngine(L);
 	auto* player = engine->GetPlayer(lua_tointeger(L, 1));
@@ -66,8 +71,15 @@ int Player::GetUserName(lua_State* L)
 
 int Player::GetControlUnit(lua_State* L)
 {
-	lua_pushliteral(L, "_control_unit");
-	lua_rawget(L, 1);
+	Player* player = GetEntry<Player>(L, 1);
+	SetEntry<Unit>(L, player->GetControlUnit());
+	return 1;
+}
+
+int Player::GetController(lua_State* L)
+{
+	Player* player = GetEntry<Player>(L, 1);
+	luaex_pushusertyperef(L, "Controller", player->GetController());
 	return 1;
 }
 
@@ -90,10 +102,14 @@ int Player::SetControlUnit(lua_State* L)
 	Player* player = GetEntry<Player>(L, 1);
 	Unit* unit = GetEntry<Unit>(L, 2);
 	player->SetControlUnit(unit);
-		
-	lua_pushliteral(L, "_control_unit");
-	lua_pushvalue(L, 2);
-	lua_rawset(L, 1);
+	return 0;
+}
+
+int Player::SetController(lua_State* L)
+{
+	Player* player = GetEntry<Player>(L, 1);
+	Controller* controller = (Controller*)luaex_tousertype(L, 2, "Controller");
+	player->SetController(controller);
 	return 0;
 }
 

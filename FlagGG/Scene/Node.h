@@ -129,7 +129,7 @@ public:
 
 	void SetWorldPosition(const Vector3& position);
 
-	Quaternion GetWorldRotation() const;
+	const Quaternion& GetWorldRotation() const;
 
 	void SetWorldRotation(const Quaternion& rotation);
 

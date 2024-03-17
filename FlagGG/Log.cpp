@@ -20,7 +20,9 @@ Logger::Logger()
 		if (!PlatformFileInterface::DirectoryExists(logDir))
 			PlatformFileInterface::CreateDirectory(logDir);
 		String logPath = logDir + "/FlagGGLog-" + GetTimeStamp() + ".log";
-		auto FlagGGLog = spdlog::basic_logger_mt(FLAGGG_LOG, logPath.CString());
+		auto file_sink = std::make_shared<spdlog::sinks::simple_file_sink_mt>(logPath.CString(), false);
+		auto stdout_sink = std::make_shared<spdlog::sinks::stdout_sink_mt>();
+		auto FlagGGLog = spdlog::details::registry::instance().create(FLAGGG_LOG, { file_sink, stdout_sink });
 		FlagGGLog->flush_on(spdlog::level::debug);
 		spdlog::register_logger(FlagGGLog);
 
@@ -54,45 +56,6 @@ std::shared_ptr<spdlog::logger> Logger::GetLogger(const String& name)
 {
 	return spdlog::get(name.CString());
 }
-
-Logger* Logger::GetInstance()
-{
-	if (!initialized_)
-	{
-		mutex_.Lock();
-
-		if (!initialized_)
-		{
-			logger_ = new Logger();
-			initialized_ = true;
-		}
-
-		mutex_.UnLock();
-	}
-
-	return logger_;
-}
-
-void Logger::DestroyInstance()
-{
-	if (initialized_)
-	{
-		mutex_.Lock();
-
-		if (initialized_)
-		{
-			delete logger_;
-			logger_ = nullptr;
-			initialized_ = false;
-		}
-
-		mutex_.UnLock();
-	}
-}
-
-volatile bool Logger::initialized_ = false;
-Logger* Logger::logger_ = nullptr;
-Mutex Logger::mutex_;
 
 void Log(LogType log_type, const char* format, ...)
 {

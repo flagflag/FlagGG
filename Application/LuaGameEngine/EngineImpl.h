@@ -2,7 +2,6 @@
 
 #include "Engine.h"
 #include "Unit.h"
-#include "Movement.h"
 #include "Spell.h"
 #include "Buff.h"
 #include "Player.h"
@@ -42,7 +41,7 @@ public:
 
 	void OnFrameUpdate(float timeStep) override;
 
-	Controler* GetControler() override;
+	Controller* GetControler(Int64 userId) override;
 
 	void OnAfterCreateObject(EngineObject* object) override;
 
@@ -59,6 +58,8 @@ protected:
 
 	void CreateMovementClass();
 
+	void CreateControllerClass();
+
 private:
 	lua_State* L_;
 
@@ -69,13 +70,10 @@ private:
 	IoC<EngineObject> engineObjectCreator_;
 
 	ObjectPool<Unit> unitPool_;
-	ObjectPool<Movement> movementPool_;
 	ObjectPool<Spell> spellPool_;
 	ObjectPool<Buff> buffPool_;
 
 	PODVector<EngineObject*> peddingResolve_;
-
-	Controler* controler_;
 };
 
 }

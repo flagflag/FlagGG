@@ -19,6 +19,8 @@ public:
 
 	void RemoveAllMovement();
 
+	const List<SharedPtr<BaseMovement>>& GetAllMovements() const { return movements_; }
+
 protected:
 	void Update(Real timeStep) override;
 

@@ -1,5 +1,5 @@
 #include "GamePlay/GamePlayOnline.h"
-#include "Movement/DirectionMovement.h"
+#include "LuaGameEngine/Movement/DirectionMovement.h"
 
 #include <Core/EventManager.h>
 #include <Scene/MovementComponent.h>
@@ -55,6 +55,8 @@ void GamePlayOnline::StartGame()
 
 		const std::string& buffer = header.SerializeAsString();
 		network_->Send(buffer.data(), buffer.length());
+
+		world_->CreateTerrain();
 	}
 #endif
 }
@@ -74,6 +76,8 @@ void GamePlayOnline::EndGame()
 
 		const std::string& buffer = header.SerializeAsString();
 		network_->Send(buffer.data(), buffer.length());
+
+		world_->DestroyTerrain();
 	}
 #endif
 }
@@ -118,8 +122,8 @@ void GamePlayOnline::HandleUnitAppear(::google::protobuf::Message* message)
 	if (notify->unit_id() == 1)
 	{
 		unit = static_cast<Unit*>(world_->GetScene()->GetChild(String("MainHero")));
-		unit->Load("Unit/MainHero.ljson");
-		unit->PlayAnimation("Animation/Warrior_Idle.ani", true);
+		unit->Load("characters1/jianke_c96b/model.prefab");
+		unit->PlayAnimation("characters1/jianke_c96b/anim/idle.ani", true);
 	}
 	else
 	{
@@ -160,7 +164,8 @@ void GamePlayOnline::HandleStartMove(::google::protobuf::Message* message)
 	if (!moveComp)
 		moveComp = unit->CreateComponent<MovementComponent>();
 
-	SharedPtr<DirectionMovement> movement(new DirectionMovement());
+	SharedPtr<LuaGameEngine::DirectionMovement> movement(new LuaGameEngine::DirectionMovement());
+	movement->Start();
 	moveComp->AddMovement(movement);
 
 	Quaternion direction(notify->rotation().w(), notify->rotation().x(), notify->rotation().y(), notify->rotation().z());
@@ -179,9 +184,9 @@ void GamePlayOnline::HandleStopMove(::google::protobuf::Message* message)
 	}
 
 	auto* moveComp = unit->GetComponent<MovementComponent>();
-	if (!moveComp)
-		moveComp = unit->CreateComponent<MovementComponent>();
-
-	moveComp->RemoveMovement(DirectionMovement::GetTypeStatic());
+	if (moveComp)
+	{
+		moveComp->RemoveMovement(LuaGameEngine::DirectionMovement::GetTypeStatic());
+	}
 }
 #endif

@@ -9,7 +9,7 @@
 namespace FlagGG
 {
 
-class BaseMovement : public Object
+class FlagGG_API BaseMovement : public Object
 {
 	OBJECT_OVERRIDE(BaseMovement, Object);
 public:

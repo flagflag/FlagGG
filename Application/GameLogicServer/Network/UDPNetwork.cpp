@@ -132,7 +132,7 @@ void UDPNetwork::HandleRequestStartMove(IOFrame::Context::IOContextPtr context, 
 	Quaternion direction(request.rotation().w(), request.rotation().x(), request.rotation().y(), request.rotation().z());
 
 	auto* forwarder = GetSubsystem<Context>()->GetVariable<Forwarder<Mutex>>("Forwarder<Mutex>");
-	forwarder->Forward([&, userId]
+	forwarder->Forward([&, userId, direction]
 	{
 		GetSubsystem<EventManager>()->SendEvent<GameEvent::START_MOVE_HANDLER>(userId, direction);
 	});

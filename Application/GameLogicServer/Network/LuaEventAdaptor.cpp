@@ -58,9 +58,8 @@ static Proto::Game::UnitAttribute* ToProtoAttribute(const LuaGameEngine::Attribu
 	return protoAttr;
 }
 
-static Proto::Game::UnitMovementInfo* ToProtoMovementInfo(LuaGameEngine::Movement* movement)
+static void ToProtoMovementInfo(const BaseMovement* movement, Proto::Game::UnitMovementInfo* protoMovement)
 {
-	Proto::Game::UnitMovementInfo* protoMovement = new Proto::Game::UnitMovementInfo();
 	Proto::Game::Vector3D* vec = ToProtoVector3(Vector3::ZERO);
 	Proto::Game::Quaternion* qua = ToProtoQuaternion(Quaternion::IDENTITY);
 	Proto::Game::Transform* startTrans = new Proto::Game::Transform();
@@ -71,7 +70,6 @@ static Proto::Game::UnitMovementInfo* ToProtoMovementInfo(LuaGameEngine::Movemen
 	protoMovement->set_allocated_start_point(startTrans);
 	protoMovement->set_allocated_end_point(endTrans);
 	protoMovement->set_move_type(Proto::Game::MoveType_Line);
-	return protoMovement;
 }
 
 static Proto::Game::SpellInfo* ToProtoSpellInfo(LuaGameEngine::Spell* spell)
@@ -82,12 +80,10 @@ static Proto::Game::SpellInfo* ToProtoSpellInfo(LuaGameEngine::Spell* spell)
 	return protoSpell;
 }
 
-static Proto::Game::BuffInfo* ToProtoBuffInfo(LuaGameEngine::Buff* buff)
+static void ToProtoBuffInfo(LuaGameEngine::Buff* buff, Proto::Game::BuffInfo* protoBuff)
 {
-	Proto::Game::BuffInfo* protoBuff = new Proto::Game::BuffInfo();
 	// TO DO
 	// ......
-	return protoBuff;
 }
 
 void LuaEventAdaptor::OnAppearUnit(Int64 unitId, LuaGameEngine::Unit* unit)
@@ -96,22 +92,27 @@ void LuaEventAdaptor::OnAppearUnit(Int64 unitId, LuaGameEngine::Unit* unit)
 
 	Proto::Game::Transform* trans = ToProtoTransform(unit);
 	Proto::Game::UnitAttribute* attr = ToProtoAttribute(unit->GetAttribute());
-	Proto::Game::UnitMovementInfo* moveInfo = ToProtoMovementInfo(unit->GetCurrentMovement());
 	Proto::Game::SpellInfo* spellInfo = ToProtoSpellInfo(unit->GetCurrentSpell());
 	Proto::Game::BuffInfoList* buffInfoList = new Proto::Game::BuffInfoList();
 	for (UInt32 i = 0; i < unit->GetNumBuff(); ++i)
 	{
 		Proto::Game::BuffInfo* buffInfo = buffInfoList->add_buff_infos();
-		Proto::Game::BuffInfo* temp = ToProtoBuffInfo(unit->GetBuff(i));
-		(*buffInfo) = (*temp);
-		delete temp;
+		ToProtoBuffInfo(unit->GetBuff(i), buffInfo);
 	}
 
 	notify.set_unit_id(unitId);
 	notify.set_allocated_transform(trans);
 	notify.set_status(unit->GetStatus());
+	notify.set_asset_id(unit->GetAssetId());
 	notify.set_allocated_attribute(attr);
-	notify.set_allocated_movement(moveInfo);
+	if (auto* allMovements = unit->GetAllMovements())
+	{
+		for (auto& movement : *allMovements)
+		{
+			Proto::Game::UnitMovementInfo* moveInfo = notify.add_movements();
+			ToProtoMovementInfo(movement, moveInfo);
+		}
+	}
 	notify.set_allocated_spell(spellInfo);
 	notify.set_allocated_buff(buffInfoList);
 

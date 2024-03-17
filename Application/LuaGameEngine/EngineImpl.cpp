@@ -1,7 +1,7 @@
 #include "EngineImpl.h"
 #include "Unit.h"
 #include "Common.h"
-#include "ControlerImpl.h"
+#include "ControllerImpl.h"
 
 #include <Lua/ILua/LuaUtil.h>
 #include <Lua/LuaBinding/LuaBinding.h>
@@ -11,20 +11,19 @@ namespace LuaGameEngine
 {
 
 EngineImpl::EngineImpl(lua_State* L) :
-	L_(L),
-	controler_(new ControlerImpl(L))
+	L_(L)
 {
 	RegisterEngineObjectType();
 	CreateEngineEntry();
 	CreatePlayerClass();
 	CreateUnitClass();
 	CreateMovementClass();
+	CreateControllerClass();
 }
 
 EngineImpl::~EngineImpl()
 {
-	delete controler_;
-	controler_ = nullptr;
+
 }
 
 EngineObject* EngineImpl::CreateObjectImpl(const char* className)
@@ -97,7 +96,7 @@ void EngineImpl::OnFrameUpdate(float timeStep)
 	const auto& units = unitPool_.GetObjects();
 	for (auto unit = units.Begin(); unit != units.End(); ++unit)
 	{
-		(*unit)->Update();
+		(*unit)->Update(timeStep);
 	}
 
 	for(auto it = peddingResolve_.Begin(); it != peddingResolve_.End(); ++it)
@@ -119,10 +118,6 @@ void EngineImpl::OnFrameUpdate(float timeStep)
 	{
 		return object->GetRef() == 0;
 	});
-	movementPool_.Recycling([](EngineObject* object)
-	{
-		return object->GetRef() == 0;
-	});
 	spellPool_.Recycling([](EngineObject* object)
 	{
 		return object->GetRef() == 0;
@@ -133,9 +128,14 @@ void EngineImpl::OnFrameUpdate(float timeStep)
 	});
 }
 
-Controler* EngineImpl::GetControler()
+Controller* EngineImpl::GetControler(Int64 userId)
 {
-	return controler_;
+	auto it = players_.Find(userId);
+	if (it != players_.End())
+	{
+		return it->second_->GetController();
+	}
+	return nullptr;
 }
 
 void EngineImpl::OnAfterCreateObject(EngineObject* object)
@@ -167,7 +167,6 @@ void EngineImpl::OnBeforeDestroyObject(EngineObject* object)
 void EngineImpl::RegisterEngineObjectType()
 {
 	REGISTER_TYPE(Unit, unitPool_);
-	// REGISTER_TYPE(Movement, movementPool_);
 	REGISTER_TYPE(Spell, spellPool_);
 	REGISTER_TYPE(Buff, buffPool_);
 }
@@ -179,19 +178,18 @@ void EngineImpl::CreateEngineEntry()
 	lua_rawset(L_, LUA_REGISTRYINDEX);
 }
 
-#ifdef GetUserName
-#undef  GetUserName
-#endif
-
 void EngineImpl::CreatePlayerClass()
 {
-	luaex_beginclass(L_, "Player", "", &Player::Create, &Player::Destroy);
+	luaex_beginclass(L_, "Player", "", nullptr, &Player::Destroy);
+		luaex_classfunction(L_, "get", &Player::Get);
 		luaex_classfunction(L_, "get_user_id", &Player::GetUserId);
 		luaex_classfunction(L_, "get_user_name", &Player::GetUserName);
 		luaex_classfunction(L_, "get_control_unit", &Player::GetControlUnit);
+		luaex_classfunction(L_, "get_controller", &Player::GetController);
 		luaex_classfunction(L_, "set_user_id", &Player::SetUserId);
 		luaex_classfunction(L_, "set_user_name", &Player::SetUserName);
 		luaex_classfunction(L_, "set_control_unit", &Player::SetControlUnit);
+		luaex_classfunction(L_, "set_controller", &Player::SetController);
 	luaex_endclass(L_);
 }
 
@@ -203,10 +201,12 @@ void EngineImpl::CreateUnitClass()
 		luaex_classfunction(L_, "get_position", &Unit::GetPosition);
 		luaex_classfunction(L_, "get_rotation", &Unit::GetRotation);
 		luaex_classfunction(L_, "get_scale", &Unit::GetScale);
+		luaex_classfunction(L_, "get_asset_id", &Unit::GetAssetId);
 		luaex_classfunction(L_, "set_name", &Unit::SetName);
 		luaex_classfunction(L_, "set_position", &Unit::SetPosition);
 		luaex_classfunction(L_, "set_rotation", &Unit::SetRotation);
 		luaex_classfunction(L_, "set_scale", &Unit::SetScale);
+		luaex_classfunction(L_, "set_asset_id", &Unit::SetAssetId);
 		luaex_classfunction(L_, "add_movement", &Unit::AddMovement);
 		luaex_classfunction(L_, "remove_movement", &Unit::RemoveMovement);
 	luaex_endclass(L_);
@@ -214,10 +214,20 @@ void EngineImpl::CreateUnitClass()
 
 void EngineImpl::CreateMovementClass()
 {
-	luaex_beginclass(L_, "Movement", "", &Movement::Create, &Movement::Destroy);
+	luaex_beginclass(L_, "BaseMovement", "", nullptr, &Movement::Destroy);
 		luaex_classfunction(L_, "start", &Movement::Start);
 		luaex_classfunction(L_, "stop", &Movement::Stop);
 		luaex_classfunction(L_, "is_active", &Movement::IsActive);
+	luaex_endclass(L_);
+
+	luaex_beginclass(L_, "DirectionMovement", "BaseMovement", &Movement::CreateDirectionMovement, &Movement::Destroy);
+		luaex_classfunction(L_, "set_move_direction", &Movement::SetMoveDirection);
+	luaex_endclass(L_);
+}
+
+void EngineImpl::CreateControllerClass()
+{
+	luaex_beginclass(L_, "Controller", "", &ControllerImpl::Create, &ControllerImpl::Destroy);
 	luaex_endclass(L_);
 }
 

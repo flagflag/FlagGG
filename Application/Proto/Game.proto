@@ -173,10 +173,11 @@ message NotifyUnitAppear
 	required int64 unit_id = 1;
 	required int32 status = 2;
 	required Transform transform = 3;
-	required UnitAttribute attribute = 4;
-	optional UnitMovementInfo movement = 5;
-	optional SpellInfo spell = 6;
-	optional BuffInfoList buff = 7;
+	optional int32 asset_id = 4;
+	required UnitAttribute attribute = 5;
+	repeated UnitMovementInfo movements = 6;
+	optional SpellInfo spell = 7;
+	optional BuffInfoList buff = 8;
 }
 
 message NotifyUnitDisappear

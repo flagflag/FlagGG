@@ -53,12 +53,11 @@ void GameLogicServer::CreateLuaVM()
 	engine_ = LuaGameEngine::CreateEngine(*luaVM_);
 	engine_->RegisterEventHandler(luaEventAdaptor_);
 
-	const String luaCodePath = commandParam_["CodePath"].GetString();
+	const String luaCodePath = commandParam_.Contains("CodePath") ? commandParam_["CodePath"].GetString() : GetProgramDir() + "Res/Script/lua/";
 	luaVM_->SetLoaderPath(luaCodePath);
-	if (!luaVM_->Execute(luaCodePath + "main.lua"))
+	if (!luaVM_->Execute(luaCodePath + "Server/main.lua"))
 	{
 		FLAGGG_LOG_ERROR("Failed to execute main.lua.");
-		return;
 	}
 }
 
@@ -68,7 +67,7 @@ void GameLogicServer::CreateNetwork()
 	udpNetwork_ = new UDPNetwork();
 
 	tcpAcceptor_ = IOFrame::TCP::CreateAcceptor(tcpNetwork_, 1);
-	tcpAcceptor_->Bind("127.0.0.1", 5000);
+	tcpAcceptor_->Bind("127.0.0.1", 5001);
 	tcpAcceptor_->Start();
 
 	udpAcceptor_ = IOFrame::UDP::CreateAcceptor(udpNetwork_);
@@ -96,10 +95,10 @@ void GameLogicServer::HandleStopGame(const char* gameName)
 
 void GameLogicServer::HandleStartMove(Int64 userId, Quaternion direction)
 {
-	engine_->GetControler()->StartDirectionMove(userId, direction * Vector3::FORWARD);
+	engine_->GetControler(userId)->StartDirectionMove(direction * Vector3::FORWARD);
 }
 
 void GameLogicServer::HandleStopMove(Int64 userId)
 {
-	engine_->GetControler()->StopDirectionMove(userId);
+	engine_->GetControler(userId)->StopDirectionMove();
 }

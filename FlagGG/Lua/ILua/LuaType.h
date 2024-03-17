@@ -111,8 +111,9 @@ void UserTypeRef::Call(const String& eventName, Args ... args)
 	lua_gettable(L_, -2);
 	if (lua_isfunction(L_, -1) || lua_iscfunction(L_, -1))
 	{
+		SetParam(L_, *this);
 		SetParam(L_, std::forward<Args>(args)...);
-		CallImpl(L_, sizeof...(args), returnCount);
+		CallImpl(L_, sizeof...(args) + 1, returnCount);
 		lua_pop(L_, 1);
 	}
 	else

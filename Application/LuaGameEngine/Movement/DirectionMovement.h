@@ -1,11 +1,16 @@
 #pragma once
 
+#include "LuaGameEngine/LGEExport.h"
+
 #include <Scene/BaseMovement.h>
 #include <Math/Vector3.h>
 
+namespace LuaGameEngine
+{
+
 using namespace FlagGG;
 
-class DirectionMovement : public BaseMovement
+class LuaGameEngine_API DirectionMovement : public BaseMovement
 {
 	OBJECT_OVERRIDE(DirectionMovement, BaseMovement);
 public:
@@ -24,3 +29,5 @@ private:
 
 	Vector3 direction_;
 };
+
+}

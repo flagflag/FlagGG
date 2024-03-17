@@ -21,6 +21,8 @@
 #include "GamePlay/GamePlayOnline.h"
 #include "GamePlay/GamePlayLocal.h"
 
+#define ONLINE_GAME 1
+
 static int Begin(lua_State* L)
 {
 	FLAGGG_LOG_INFO("start excute lua script[main.lua].");
@@ -57,13 +59,19 @@ void GameApplication::Start()
 	GetSubsystem<Context>()->RegisterVariable<Network>(webNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_WEB]);
 
 	perspective_ = new ThirdPersonPerspective(true);
-	perspective_->SetSyncMode(/*SyncMode_State*/SyncMode_Local);
+	perspective_->SetSyncMode(
+#if ONLINE_GAME
+		SyncMode_State
+#else
+		SyncMode_Local
+#endif
+	);
 	perspective_->SetCamera(camera_);
 	perspective_->SetWindow(window_);
 	perspective_->SetNode(mainHero_);
 	perspective_->Reset();
 
-#if 0
+#if ONLINE_GAME
 	gameplay_ = new GamePlayOnline();
 #else
 	gameplay_ = new GamePlayLocal();
@@ -98,8 +106,8 @@ void GameApplication::Start()
 	else
 		luaCodePath = GetProgramDir() + "Res/Script/lua/";
 	luaVM_->SetLoaderPath(luaCodePath);
-#if 0
-	if (!luaVM_->Execute(luaCodePath + "main.lua"))
+#if ONLINE_GAME
+	if (!luaVM_->Execute(luaCodePath + "Client/main.lua"))
 	{
 		FLAGGG_LOG_ERROR("Failed to execute main.lua.");
 	}
@@ -226,8 +234,10 @@ void GameApplication::CreateScene()
 	mainHero_->SetName("MainHero");
 #else
 	mainHero_ = new SCEUnit();
+#if !ONLINE_GAME
 	mainHero_->Load("characters1/jianke_c96b/model.prefab");
 	mainHero_->PlayAnimation("characters1/jianke_c96b/anim/idle.ani", true);
+#endif
 	mainHero_->SetPosition(Vector3(4, 0, 0));
 	mainHero_->SetName("MainHero");
 

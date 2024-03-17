@@ -393,7 +393,7 @@ void Node::SetWorldPosition(const Vector3& position)
 	SetPosition(!parent_ ? position : parent_->GetWorldTransform().Inverse() * position);
 }
 
-Quaternion Node::GetWorldRotation() const
+const Quaternion& Node::GetWorldRotation() const
 {
 	if (dirty_)
 		UpdateWorldTransform();

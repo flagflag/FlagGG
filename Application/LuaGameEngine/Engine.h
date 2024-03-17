@@ -3,7 +3,7 @@
 #include "LGEExport.h"
 #include "LuaEvent.h"
 #include "EngineObject.h"
-#include "Controler.h"
+#include "Controller.h"
 
 namespace LuaGameEngine
 {
@@ -43,7 +43,7 @@ public:
 
 	virtual void OnFrameUpdate(float timeStep) = 0;
 
-	virtual Controler* GetControler() = 0;
+	virtual Controller* GetControler(Int64 userId) = 0;
 
 protected:
 	virtual EngineObject* CreateObjectImpl(const char* className) = 0;
