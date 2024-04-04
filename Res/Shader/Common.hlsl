@@ -10,6 +10,7 @@
 	}
 #endif
 
+#ifdef VERTEX
 float4 GetScreenPos(float4 clipPos)
 {
 	return float4(
@@ -30,8 +31,9 @@ float2 GetQuadTexCoord(float4 clipPos)
 
 float GetDepth(float4 clipPos)
 {
-    return dot(clipPos.zw, float2(0.0, 1.0 / 1000000000.0));
+    return dot(clipPos.zw, float2(0.0, 1.0 / farClip));
 }
+#endif
 
 float4 EncodeFloatRGBA(float value)
 {

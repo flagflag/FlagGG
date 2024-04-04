@@ -75,7 +75,7 @@ public:
     /// Construct from an angle (in degrees, for Urho2D).
     explicit Quaternion(float angle) noexcept
     {
-        FromAngleAxis(angle, Vector3::FORWARD);
+        FromAngleAxis(angle, Vector3::UP);
     }
 
     /// Construct from Euler angles (in degrees.)

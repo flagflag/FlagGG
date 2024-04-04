@@ -40,7 +40,7 @@ struct PixelInput
 	float3 normal    : NORMAL;
     float3 tangent   : TANGENT;
     float3 biNormal  : BINORMAL;
-    float3 worldPosition : WORLD_POS;
+    float4 worldPosition : WORLD_POS;
 #ifdef SHADOW
     float4 shadowPos : POSITION;
 #endif
@@ -63,7 +63,7 @@ struct PixelInput
         output.normal   = worldNormal;
         output.tangent  = worldTangent;
         output.biNormal = worldBiNormal;
-        output.worldPosition = worldPosition;
+        output.worldPosition = float4(worldPosition, GetDepth(clipPosition));
 
     #ifdef SHADOW
         output.shadowPos = GetShadowPos(worldPosition);
@@ -133,7 +133,7 @@ struct PixelInput
     float4 PS(PixelInput input) : SV_TARGET
     {
     #ifdef SHADOW
-        float shadow = GetShadow(input.shadowPos);
+        float shadow = GetShadow(input.shadowPos, input.worldPosition.w);
     #else
         float shadow = 1.0;
     #endif
@@ -173,8 +173,8 @@ struct PixelInput
         float3 row2 = float3(input.tangent.z, input.biNormal.z, input.normal.z);
         normalRoughness.xyz = float3(dot(row0, normalRoughness.xyz), dot(row1, normalRoughness.xyz), dot(row2, normalRoughness.xyz));
 
-        float3 viewDirection = normalize(cameraPos - input.worldPosition);
-        float3 color = PBR_BRDF(baseColorMetallic.rgb, baseColorMetallic.a, normalRoughness.w, input.worldPosition, normalRoughness.xyz, viewDirection, shadow, 1.0);
+        float3 viewDirection = normalize(cameraPos - input.worldPosition.xyz);
+        float3 color = PBR_BRDF(baseColorMetallic.rgb, baseColorMetallic.a, normalRoughness.w, input.worldPosition.xyz, normalRoughness.xyz, viewDirection, shadow, 1.0);
 
         return float4(LinearToGammaSpace(ToAcesFilmic(color)), 1.0);
     }

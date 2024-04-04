@@ -360,6 +360,8 @@ extern FlagGG_API VertexElement DEFAULT_VERTEX_ELEMENT[MAX_DEFAULT_VERTEX_ELEMEN
 extern FlagGG_API const FlagGG::StringHash SP_WORLD_MATRIX;
 extern FlagGG_API const FlagGG::StringHash SP_VIEW_MATRIX;
 extern FlagGG_API const FlagGG::StringHash SP_PROJVIEW_MATRIX;
+extern FlagGG_API const FlagGG::StringHash SP_NEAR_CLIP;
+extern FlagGG_API const FlagGG::StringHash SP_FAR_CLIP;
 extern FlagGG_API const FlagGG::StringHash SP_SKIN_MATRICES;
 extern FlagGG_API const FlagGG::StringHash SP_DELTA_TIME;
 extern FlagGG_API const FlagGG::StringHash SP_ELAPSED_TIME;

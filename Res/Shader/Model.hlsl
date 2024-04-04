@@ -42,7 +42,7 @@ struct PixelInput
 #ifdef COLOR
 	float4 color : COLOR;
 #endif
-	float3 worldPos : WORLD_POS;
+	float4 worldPos : WORLD_POS;
 #ifdef SHADOW
 	float4 shadowPos : POSITION;
 #endif
@@ -68,7 +68,7 @@ struct PixelInput
     #ifdef COLOR
         output.color = input.color;
     #endif
-        output.worldPos = worldPos;
+        output.worldPos = float4(worldPos, GetDepth(clipPos));
 
     #ifdef SHADOW
         output.shadowPos = GetShadowPos(worldPos);
@@ -89,13 +89,13 @@ struct PixelInput
         diffColor = diffColor * textureColor;
 
         float3 reflectDir = (input.nor * lightDir * 2.0) * input.nor - lightDir;
-        float3 eyeDir = cameraPos - input.worldPos;
+        float3 eyeDir = cameraPos - input.worldPos.xyz;
         float3 specColor = specularColor.rgb * pow(saturate(dot(eyeDir, reflectDir)), emissivePower);
 
         float3 ambiColor = ambientColor.rgb * textureColor;
 
     #ifdef SHADOW
-        float shadow = GetShadow(input.shadowPos);
+        float shadow = GetShadow(input.shadowPos, input.worldPos.w);
     #else
         float shadow = 1.0;
     #endif

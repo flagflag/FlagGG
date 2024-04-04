@@ -13,6 +13,8 @@
     #endif
     cbuffer ParamBuffer : register(b2)
     {
+        float nearClip;
+        float farClip;
         float deltaTime;
         float elapsedTime;
         float3 cameraPos;

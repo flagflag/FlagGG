@@ -42,7 +42,7 @@ struct PixelInput
 #ifdef COLOR
 	float4 color : COLOR;
 #endif
-	float3 worldPos : WORLD_POS;
+	float4 worldPos : WORLD_POS;
 #ifdef SHADOW
 	float4 shadowPos : POSITION;
 #endif
@@ -68,7 +68,7 @@ struct PixelInput
     #ifdef COLOR
         output.color = input.color;
     #endif
-        output.worldPos = worldPos;
+        output.worldPos = float4(worldPos, GetDepth(clipPos));
 
     #ifdef SHADOW
         output.shadowPos = GetShadowPos(worldPos);
@@ -80,7 +80,7 @@ struct PixelInput
     float4 PS(PixelInput input) : SV_TARGET
     {
     #ifdef SHADOW
-        float shadow = GetShadow(input.shadowPos);
+        float shadow = GetShadow(input.shadowPos, input.worldPos.w);
     #else
         float shadow = 1.0;
     #endif
@@ -90,8 +90,8 @@ struct PixelInput
     #else
         float3 diffuseColor = baseColor.rgb * input.color.rgb * input.color.a;
     #endif
-        float3 viewDirection = cameraPos - input.worldPos;
-        float3 color = PBR_BRDF(diffuseColor, metallic, roughness, input.worldPos, input.nor, viewDirection, shadow, 1.0);
+        float3 viewDirection = cameraPos - input.worldPos.xyz;
+        float3 color = PBR_BRDF(diffuseColor, metallic, roughness, input.worldPos.xyz, input.nor, viewDirection, shadow, 1.0);
 
         return float4(LinearToGammaSpace(ToAcesFilmic(color)), 1.0);
     }

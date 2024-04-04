@@ -146,13 +146,12 @@ void RenderView::CollectVisibilityObjects()
 		const float quantize = 0.5f;
 
 		Node* lightNode = dirLight->GetNode();
-		const float extrusionDistance = 100.f;
+		const float extrusionDistance = 10.f;
 		
-		const Quaternion lightRotation = lightNode->GetWorldRotation() * Quaternion(-90, Vector3::RIGHT);
+		const Quaternion lightRotation = lightNode->GetWorldRotation();
 		// 阴影深度是在Y轴朝上的坐标系下计算的
 		// Look-Z, Right-X, Up-Z
-		const Vector3 lookDirection(0.0f, 0.0f, 1.0f);
-		const Vector3 pos = camera_->GetNode()->GetWorldPosition() - extrusionDistance * (lightRotation * lookDirection);
+		const Vector3 pos = camera_->GetNode()->GetWorldPosition() - extrusionDistance * (lightRotation * Vector3::UP);
 		shadowCameraNode_->SetTransform(pos, lightRotation, Vector3::ONE);
 
 		Frustum splitFrustum = camera_->GetFrustum();

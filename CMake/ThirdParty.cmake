@@ -16,14 +16,13 @@ set (PUGIXML_LIB PugiXml)
 
 if (WIN32 OR WIN64)
     # Direct3D
-    include_directories ("C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include")
-    link_directories ("C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Samples/C++/Effects11/Debug")
-    link_directories ("C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x64")
+    include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/D3D11/include)
+    link_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/D3D11/lib/x64)
     set (D3D11_LIB
-    d3d9
     d3dx9
     d3dx9d
     d3d11
+    d3dx11.lib
     d3dx11d
     dxerr
     d3dcompiler

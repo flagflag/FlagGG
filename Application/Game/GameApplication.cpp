@@ -272,7 +272,7 @@ void GameApplication::CreateScene()
 	light->SetOrthographic(true);
 	light->SetBrightness(3.f);
 	lightNode->SetPosition(Vector3(-10, 10, 20));
-	lightNode->SetRotation(Quaternion(0.0, 45.f, 45.0));
+	lightNode->SetDirection(Vector3(1.0f, 1.0f, -1.0f));
 	scene_->AddChild(lightNode);
 #endif
 
@@ -319,6 +319,7 @@ void GameApplication::SetupWindow()
 	shadowMap_ = new Texture2D();
 	shadowMap_->SetNumLevels(1);
 	shadowMap_->SetComparisonFunc(COMPARISON_LESS_EQUAL);
+	shadowMap_->SetFilterMode(TEXTURE_FILTER_BILINEAR);
 	shadowMap_->SetAddressMode(TEXTURE_COORDINATE_U, TEXTURE_ADDRESS_CLAMP);
 	shadowMap_->SetAddressMode(TEXTURE_COORDINATE_V, TEXTURE_ADDRESS_CLAMP);
 	shadowMap_->SetAddressMode(TEXTURE_COORDINATE_W, TEXTURE_ADDRESS_CLAMP);

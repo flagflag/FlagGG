@@ -95,7 +95,7 @@ void GameLogicServer::HandleStopGame(const char* gameName)
 
 void GameLogicServer::HandleStartMove(Int64 userId, Quaternion direction)
 {
-	engine_->GetControler(userId)->StartDirectionMove(direction * Vector3::FORWARD);
+	engine_->GetControler(userId)->StartDirectionMove(direction * Vector3::UP);
 }
 
 void GameLogicServer::HandleStopMove(Int64 userId)

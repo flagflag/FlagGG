@@ -23,6 +23,8 @@ RenderEngine::RenderEngine()
 	shaderParameters_->AddParametersDefine<Matrix3x4>(SP_WORLD_MATRIX);
 	shaderParameters_->AddParametersDefine<Matrix3x4>(SP_VIEW_MATRIX);
 	shaderParameters_->AddParametersDefine<Matrix4>(SP_PROJVIEW_MATRIX);
+	shaderParameters_->AddParametersDefine<float>(SP_NEAR_CLIP);
+	shaderParameters_->AddParametersDefine<float>(SP_FAR_CLIP);
 	shaderParameters_->AddParametersDefine<float>(SP_DELTA_TIME);
 	shaderParameters_->AddParametersDefine<float>(SP_ELAPSED_TIME);
 	shaderParameters_->AddParametersDefine<Vector3>(SP_CAMERA_POS);
@@ -330,6 +332,8 @@ void RenderEngine::SetShaderParameter(Camera* camera, const RenderBatch& renderB
 		shaderParameters_->SetValue(SP_WORLD_MATRIX, *renderBatch.worldTransform_);
 		shaderParameters_->SetValue(SP_VIEW_MATRIX, camera->GetViewMatrix());
 		shaderParameters_->SetValue(SP_PROJVIEW_MATRIX, camera->GetProjectionMatrix() * camera->GetViewMatrix());
+		shaderParameters_->SetValue(SP_NEAR_CLIP, camera->GetNearClip());
+		shaderParameters_->SetValue(SP_FAR_CLIP, camera->GetFarClip());
 		shaderParameters_->SetValue(SP_CAMERA_POS, camera->GetNode()->GetWorldPosition());
 
 		if (renderBatch.geometryType_ == GEOMETRY_SKINNED)

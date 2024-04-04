@@ -355,6 +355,16 @@ const Vector3& Node::GetScale() const
 	return scale_;
 }
 
+void Node::SetDirection(const Vector3& direction)
+{
+	SetRotation(Quaternion(Vector3::UP, direction));
+}
+
+Vector3 Node::GetDirection() const
+{
+	return rotation_ * Vector3::UP;
+}
+
 void Node::SetTransform(const Vector3& position, const Quaternion& rotation, const Vector3& scale)
 {
 	position_ = position;
@@ -421,7 +431,7 @@ Vector3 Node::GetWorldDirection() const
 {
 	if (dirty_)
 		UpdateWorldTransform();
-	return worldRotation_ * Vector3::FORWARD;
+	return worldRotation_ * Vector3::UP;
 }
 
 void Node::UpdateWorldTransform() const

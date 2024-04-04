@@ -115,6 +115,10 @@ public:
 
 	const Vector3& GetScale() const;
 
+	void SetDirection(const Vector3& direction);
+
+	Vector3 GetDirection() const;
+
 	void SetTransform(const Vector3& position, const Quaternion& rotation, const Vector3& scale);
 
 	const String& GetName() const;

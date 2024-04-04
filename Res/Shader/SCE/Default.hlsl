@@ -47,7 +47,7 @@ struct PixelInput
 #ifdef COLOR
 	float4 color : COLOR;
 #endif
-	float3 worldPosition : WORLD_POS;
+	float4 worldPosition : WORLD_POS;
 #ifdef SHADOW
 	float4 shadowPos : POSITION;
 #endif
@@ -77,7 +77,7 @@ struct PixelInput
     #ifdef COLOR
         output.color    = input.color;
     #endif
-        output.worldPosition = worldPosition;
+        output.worldPosition = float4(worldPosition, GetDepth(clipPosition));
 
     #ifdef SHADOW
         output.shadowPos = GetShadowPos(worldPosition);
@@ -89,7 +89,7 @@ struct PixelInput
     float4 PS(PixelInput input) : SV_TARGET
     {
     #ifdef SHADOW
-        float shadow = GetShadow(input.shadowPos);
+        float shadow = GetShadow(input.shadowPos, input.worldPosition.w);
     #else
         float shadow = 1.0;
     #endif
@@ -128,8 +128,8 @@ struct PixelInput
     #endif
         metallic *= metalMul0or1;
 
-        float3 viewDirection = normalize(cameraPos - input.worldPosition);
-        float3 color = PBR_BRDF(baseColor, metallic, roughness, input.worldPosition, normalDirection, viewDirection, shadow, 1.0);
+        float3 viewDirection = normalize(cameraPos - input.worldPosition.xyz);
+        float3 color = PBR_BRDF(baseColor, metallic, roughness, input.worldPosition.xyz, normalDirection, viewDirection, shadow, 1.0);
 
     #ifdef EMISSIVECOLOR
         #ifdef ALPHAMASK

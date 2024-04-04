@@ -139,7 +139,7 @@ bool Quaternion::FromLookRotation(const Vector3& direction, const Vector3& up)
         ret.FromAxes(right, up, forward);
     }
     else
-        ret.FromRotationTo(Vector3::FORWARD, forward);
+        ret.FromRotationTo(Vector3::UP, forward);
 
     if (!ret.IsNaN())
     {

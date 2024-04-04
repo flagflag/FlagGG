@@ -169,7 +169,7 @@ void GamePlayOnline::HandleStartMove(::google::protobuf::Message* message)
 	moveComp->AddMovement(movement);
 
 	Quaternion direction(notify->rotation().w(), notify->rotation().x(), notify->rotation().y(), notify->rotation().z());
-	movement->SetMoveDirection(direction * Vector3::FORWARD);
+	movement->SetMoveDirection(direction * Vector3::UP);
 }
 
 void GamePlayOnline::HandleStopMove(::google::protobuf::Message* message)
