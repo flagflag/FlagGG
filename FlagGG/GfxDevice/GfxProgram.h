@@ -11,7 +11,7 @@
 namespace FlagGG
 {
 
-class GfxProgram : public GfxObject
+class FlagGG_API GfxProgram : public GfxObject
 {
 	OBJECT_OVERRIDE(GfxProgram, GfxObject);
 public:

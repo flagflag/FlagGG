@@ -16,10 +16,12 @@
 namespace LuaGameEngine
 {
 
-class LuaGameEngine_API Player : public EngineObject
+class LuaGameEngine_API Player : public EngineContextObject
 {
-	OBJECT_OVERRIDE(Player, EngineObject);
+	OBJECT_OVERRIDE(Player, EngineContextObject);
 public:
+	explicit Player(EngineContext* engineContext);
+
 	~Player() override;
 
 	Int64 GetUserId() const { return userId_; }

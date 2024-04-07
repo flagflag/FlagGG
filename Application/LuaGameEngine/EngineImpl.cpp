@@ -28,7 +28,7 @@ EngineImpl::~EngineImpl()
 
 EngineObject* EngineImpl::CreateObjectImpl(const char* className)
 {
-	return engineObjectCreator_.Create(className);
+	return engineObjectCreator_.Create(className, &engineContext_);
 }
 
 void EngineImpl::DestroyObject(EngineObject* object)
@@ -38,12 +38,12 @@ void EngineImpl::DestroyObject(EngineObject* object)
 
 void EngineImpl::RegisterEventHandler(LuaEventHandler* handler)
 {
-	handlers_.Push(handler);
+	engineContext_.handlers_.Push(handler);
 }
 
 void EngineImpl::UnregisterEventHandler(LuaEventHandler* handler)
 {
-	handlers_.Remove(handler);
+	engineContext_.handlers_.Remove(handler);
 }
 
 void EngineImpl::AddUser(const LuaUserInfo& info)
@@ -51,7 +51,7 @@ void EngineImpl::AddUser(const LuaUserInfo& info)
 	if (players_.Contains(info.userId_))
 		return;
 
-	SharedPtr<Player> player(new Player());
+	SharedPtr<Player> player(new Player(&engineContext_));
 	player->SetUserId(info.userId_);
 	player->SetUserName(info.userName_);
 	players_[info.userId_] = player;
@@ -105,7 +105,7 @@ void EngineImpl::OnFrameUpdate(float timeStep)
 		if (object->GetType() == Unit::GetTypeStatic())
 		{
 			Unit* unit = static_cast<Unit*>(object);
-			for (auto notify : handlers_)
+			for (auto notify : engineContext_.handlers_)
 			{
 				notify->OnAppearUnit(unit->GetId(), unit);
 			}
@@ -150,9 +150,9 @@ void EngineImpl::OnBeforeDestroyObject(EngineObject* object)
 
 #define REGISTER_TYPE(Type, objectPool) \
 	engineObjectCreator_.RegisterTypeEx<Type>(#Type, \
-	[&]() \
+	[&](EngineContext* engineContext) \
 	{ \
-		EngineObject* object = objectPool.CreateObject(); \
+		EngineObject* object = objectPool.CreateObject(engineContext); \
 		object->SetValid(true); \
 		peddingResolve_.Push(object); \
 		return object; \

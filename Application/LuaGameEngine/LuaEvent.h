@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Core/BaseTypes.h>
+#include <Math/Vector3.h>
 
 #include "LGEExport.h"
 #include "Unit.h"
@@ -55,6 +56,8 @@ public:
 	virtual void OnUnitAttachBuff(Int64 unitId, Buff* buff) = 0;
 
 	virtual void OnUnitDettachBuff(Int64 unitId, Buff* buff) = 0;
+
+	virtual void OnDebugUnitTransform(const Vector3& position, const Quaternion& rotation, const Vector3& scale) = 0;
 };
 
 }

@@ -80,12 +80,12 @@ private:
 	SyncMode syncMode_;
 	int dir_[4];
 	float rotation_[2][2][2][2];
-	Quaternion stop_;
-	Quaternion currentRot_;
 
 	WeakPtr<AnimationComponent> animComp_;
 	SharedPtr<Animation> idleAnim_;
 	SharedPtr<Animation> moveAnim_;
 	bool isMoving_{};
 	float facing_{};
+	float targetFacing_{};
+	bool isFirstMoving_{true};
 };

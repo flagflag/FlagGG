@@ -7,13 +7,20 @@
 namespace FlagGG
 {
 
-template < class Object >
+template < class Object, class ... Args >
 class ObjectPool
 {
 public:
-	Object* CreateObject()
+	Object* CreateObject(Args&& ... args)
 	{
-		Object* object = allocator_.Reserve();
+		Object* object = allocator_.Reserve(std::forward<Args>(args)...);
+		objects_.Insert(object);
+		return object;
+	}
+
+	Object* CreateObject(const Args& ... args)
+	{
+		Object* object = allocator_.Reserve(args...);
 		objects_.Insert(object);
 		return object;
 	}

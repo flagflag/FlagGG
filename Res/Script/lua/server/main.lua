@@ -11,6 +11,10 @@ end
 function MyController:start_direction_move(x, y, z)
     print ('start_direction_move')
     local control_unit = self.player:get_control_unit()
+    if control_unit and self.movement then
+        control_unit:remove_movement(self.movement)
+        self.movement = nil
+    end
     self.movement = context.DirectionMovement.new()
     self.movement:set_move_direction(x, y, z)
     self.movement:start()

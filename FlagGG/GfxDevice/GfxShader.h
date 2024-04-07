@@ -11,7 +11,7 @@
 namespace FlagGG
 {
 
-class GfxShader : public GfxObject
+class FlagGG_API GfxShader : public GfxObject
 {
 	OBJECT_OVERRIDE(GfxShader, GfxObject);
 public:

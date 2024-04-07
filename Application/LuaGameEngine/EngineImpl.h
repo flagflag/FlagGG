@@ -6,6 +6,7 @@
 #include "Buff.h"
 #include "Player.h"
 #include "InternalEvent.h"
+#include "EngineContext.h"
 
 #include <Container/IoC.h>
 #include <Container/HashMap.h>
@@ -63,15 +64,15 @@ protected:
 private:
 	lua_State* L_;
 
-	PODVector<LuaEventHandler*> handlers_;
+	EngineContext engineContext_;
 
 	HashMap<Int64, SharedPtr<Player>> players_;
 
-	IoC<EngineObject> engineObjectCreator_;
+	IoC<EngineObject, EngineContext*> engineObjectCreator_;
 
-	ObjectPool<Unit> unitPool_;
-	ObjectPool<Spell> spellPool_;
-	ObjectPool<Buff> buffPool_;
+	ObjectPool<Unit, EngineContext*> unitPool_;
+	ObjectPool<Spell, EngineContext*> spellPool_;
+	ObjectPool<Buff, EngineContext*> buffPool_;
 
 	PODVector<EngineObject*> peddingResolve_;
 };

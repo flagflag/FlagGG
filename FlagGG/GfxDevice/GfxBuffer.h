@@ -25,7 +25,7 @@ struct GfxBufferDesc
 	UInt8 usage_;          // BufferUsage
 };
 
-class GfxBuffer : public GfxObject
+class FlagGG_API GfxBuffer : public GfxObject
 {
 	OBJECT_OVERRIDE(GfxBuffer, GfxObject);
 public:

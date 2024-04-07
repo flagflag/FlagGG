@@ -10,7 +10,7 @@
 namespace FlagGG
 {
 
-class GfxObject : public RTTIObject, public RefCounted
+class FlagGG_API GfxObject : public RTTIObject, public RefCounted
 {
 	OBJECT_OVERRIDE(GfxObject, RTTIObject);
 public:

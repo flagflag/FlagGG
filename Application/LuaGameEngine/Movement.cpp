@@ -52,7 +52,7 @@ int Movement::CreateDirectionMovement(lua_State* L)
 
 int Movement::SetMoveDirection(lua_State* L)
 {
-	DirectionMovement* movement = new DirectionMovement();
+	DirectionMovement* movement = (DirectionMovement*)luaex_tousertype(L, 1, "DirectionMovement");
 	if (movement)
 	{
 		const Vector3 moveDir(lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4));

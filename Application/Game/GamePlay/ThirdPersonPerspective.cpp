@@ -15,9 +15,7 @@ ThirdPersonPerspective::ThirdPersonPerspective(bool moveCameraWhenMouseDown) :
 	moveCameraWhenMouseDown_(moveCameraWhenMouseDown),
 	mouseDown_(false),
 	syncMode_(SyncMode_Local),
-	dir_{ 0 },
-	stop_(Quaternion::IDENTITY),
-	currentRot_(0.0f, 0.0f, 0.0f, 0.0f)
+	dir_{ 0 }
 {
 	network_ = GetSubsystem<Context>()->GetVariable<Network>(NETWORK_TYPE_NAME[NETWORK_TYPE_UDP]);
 
@@ -178,31 +176,17 @@ void ThirdPersonPerspective::HandleUpdate(float timeStep)
 
 	if (syncMode_ == SyncMode_Local)
 	{
-		bool isMoving = false;
-
 		if (GetKeyState('W') < 0 || GetKeyState('w') < 0)
-		{
 			controlCamera_->Walk(walkDelta);
-			isMoving = true;
-		}
 
 		if (GetKeyState('S') < 0 || GetKeyState('s') < 0)
-		{
 			controlCamera_->Walk(-walkDelta);
-			isMoving = true;
-		}
 
 		if (GetKeyState('A') < 0 || GetKeyState('a') < 0)
-		{
 			controlCamera_->Strafe(-walkDelta);
-			isMoving = true;
-		}
 
 		if (GetKeyState('D') < 0 || GetKeyState('d') < 0)
-		{
 			controlCamera_->Strafe(walkDelta);
-			isMoving = true;
-		}
 
 		if (GetKeyState('E') < 0 || GetKeyState('e') < 0)
 			controlCamera_->Fly(walkDelta);
@@ -215,96 +199,112 @@ void ThirdPersonPerspective::HandleUpdate(float timeStep)
 
 		if (GetKeyState('M') < 0 || GetKeyState('m') < 0)
 			controlCamera_->Roll(-0.000020);
+	}
 
-		dir_[0] = GetKeyState('W') < 0 || GetKeyState('w') < 0 ? 1 : 0;
-		dir_[1] = GetKeyState('S') < 0 || GetKeyState('s') < 0 ? 1 : 0;
-		dir_[2] = GetKeyState('A') < 0 || GetKeyState('a') < 0 ? 1 : 0;
-		dir_[3] = GetKeyState('D') < 0 || GetKeyState('d') < 0 ? 1 : 0;
+	dir_[0] = GetKeyState('W') < 0 || GetKeyState('w') < 0 ? 1 : 0;
+	dir_[1] = GetKeyState('S') < 0 || GetKeyState('s') < 0 ? 1 : 0;
+	dir_[2] = GetKeyState('A') < 0 || GetKeyState('a') < 0 ? 1 : 0;
+	dir_[3] = GetKeyState('D') < 0 || GetKeyState('d') < 0 ? 1 : 0;
 
+	bool lastFrameIsMoving = isMoving_;
+	float lastFrameTargetFacing = targetFacing_;
+
+	bool isMoving = dir_[0] || dir_[1] || dir_[2] || dir_[3];
+
+	if (isMoving_ != isMoving)
+	{
+		isMoving_ = isMoving;
 		if (animComp_)
 		{
-			if (isMoving_ != isMoving)
-			{
-				isMoving_ = isMoving;
-				if (isMoving_)
-				{
-					animComp_->SetAnimation(moveAnim_);
-					animComp_->Play(true);
-				}
-				else
-				{
-					animComp_->SetAnimation(idleAnim_);
-					animComp_->Play(true);
-				}
-			}
-
-			float facing = rotation_[dir_[0]][dir_[1]][dir_[2]][dir_[3]];
-
 			if (isMoving_)
 			{
-				if (facing_ < 0.0f && facing == 180.0f)
-					facing = -facing;
-				else if (facing_ == -180.0f && facing > 0.0f)
-					facing_ = -facing_;
-				else if(facing_ == 180.0f && facing < 0.0f)
-					facing_ = -facing_;
-
-				if (facing_ > facing)
-					facing_ = Max(facing_ - timeStep * 720.0f, facing);
-				else
-					facing_ = Min(facing_ + timeStep * 720.0f, facing);
-				const Vector3 rotator = lookupNode_->GetRotation().EulerAngles();
-				animComp_->GetNode()->SetRotation(Quaternion(0, 0, facing_));
-			}
-		}
-	}
-	else
-	{
-		dir_[0] = GetKeyState('W') < 0 || GetKeyState('w') < 0 ? 1 : 0;
-		dir_[1] = GetKeyState('S') < 0 || GetKeyState('s') < 0 ? 1 : 0;
-		dir_[2] = GetKeyState('A') < 0 || GetKeyState('a') < 0 ? 1 : 0;
-		dir_[3] = GetKeyState('D') < 0 || GetKeyState('d') < 0 ? 1 : 0;
-
-		Quaternion rot = Quaternion(0.0f, 0.0f, rotation_[dir_[0]][dir_[1]][dir_[2]][dir_[3]]);
-
-		if (rot != currentRot_)
-		{
-			currentRot_ = rot;
-
-#ifdef FLAGGG_PROTO
-			if (rot != stop_)
-			{
-				rot = node_->GetWorldRotation() * rot;
-
-				Proto::Game::RequestStartMove request;
-				request.set_user_id(0u);
-				Proto::Game::Quaternion* protoRot = new Proto::Game::Quaternion();
-				protoRot->set_w(rot.w_);
-				protoRot->set_x(rot.x_);
-				protoRot->set_y(rot.y_);
-				protoRot->set_z(rot.z_);
-				request.set_allocated_rotation(protoRot);
-
-				Proto::Game::MessageHeader header;
-				header.set_message_type(Proto::Game::MessageType_RequestStartMove);
-				header.set_message_body(request.SerializeAsString());
-
-				const std::string& buffer = header.SerializeAsString();
-				network_->Send(buffer.data(), buffer.length());
+				animComp_->SetAnimation(moveAnim_);
+				animComp_->Play(true);
 			}
 			else
 			{
-				Proto::Game::RequestStopMove request;
-				request.set_user_id(0u);
-				
-				Proto::Game::MessageHeader header;
-				header.set_message_type(Proto::Game::MessageType_RequestStopMove);
-				header.set_message_body(request.SerializeAsString());
-
-				const std::string& buffer = header.SerializeAsString();
-				network_->Send(buffer.data(), buffer.length());
+				animComp_->SetAnimation(idleAnim_);
+				animComp_->Play(true);
 			}
-#endif
 		}
 	}
+
+	float facing = rotation_[dir_[0]][dir_[1]][dir_[2]][dir_[3]];
+	targetFacing_ = facing;
+
+	if (isMoving_)
+	{
+		if (facing_ < 0.0f && facing == 180.0f)
+			facing = -facing;
+		else if (facing_ == -180.0f && facing > 0.0f)
+			facing_ = -facing_;
+		else if (facing_ == 180.0f && facing < 0.0f)
+			facing_ = -facing_;
+
+		if (facing_ > facing)
+			facing_ = Max(facing_ - timeStep * 720.0f, facing);
+		else
+			facing_ = Min(facing_ + timeStep * 720.0f, facing);
+
+		if (animComp_)
+		{
+			animComp_->GetNode()->SetRotation(Quaternion(0, 0, facing_));
+		}
+	}
+
+#ifdef FLAGGG_PROTO
+	if (lastFrameIsMoving != isMoving_ || lastFrameTargetFacing != targetFacing_ || isFirstMoving_)
+	{
+		isFirstMoving_ = false;
+
+		if (lastFrameIsMoving != isMoving_ && !isMoving_)
+		{
+			Proto::Game::RequestStopMove request;
+			request.set_user_id(0u);
+
+			Proto::Game::MessageHeader header;
+			header.set_message_type(Proto::Game::MessageType_RequestStopMove);
+			header.set_message_body(request.SerializeAsString());
+
+			const std::string& buffer = header.SerializeAsString();
+			network_->Send(buffer.data(), buffer.length());
+		}
+		else if (lastFrameTargetFacing != targetFacing_)
+		{
+			Quaternion rot(0, 0, targetFacing_);
+
+			Proto::Game::RequestStartMove request;
+			request.set_user_id(0u);
+			Proto::Game::Quaternion* protoRot = new Proto::Game::Quaternion();
+			protoRot->set_w(rot.w_);
+			protoRot->set_x(rot.x_);
+			protoRot->set_y(rot.y_);
+			protoRot->set_z(rot.z_);
+			request.set_allocated_rotation(protoRot);
+
+			Proto::Game::MessageHeader header;
+			header.set_message_type(Proto::Game::MessageType_RequestStartMove);
+			header.set_message_body(request.SerializeAsString());
+
+			const std::string& buffer = header.SerializeAsString();
+			network_->Send(buffer.data(), buffer.length());
+		}
+	}
+#endif
+
+	//{
+	//	dir_[0] = GetKeyState('W') < 0 || GetKeyState('w') < 0 ? 1 : 0;
+	//	dir_[1] = GetKeyState('S') < 0 || GetKeyState('s') < 0 ? 1 : 0;
+	//	dir_[2] = GetKeyState('A') < 0 || GetKeyState('a') < 0 ? 1 : 0;
+	//	dir_[3] = GetKeyState('D') < 0 || GetKeyState('d') < 0 ? 1 : 0;
+
+	//	Quaternion rot = Quaternion(0.0f, 0.0f, rotation_[dir_[0]][dir_[1]][dir_[2]][dir_[3]]);
+
+	//	if (rot != currentRot_)
+	//	{
+	//		currentRot_ = rot;
+
+
+	//	}
+	//}
 }

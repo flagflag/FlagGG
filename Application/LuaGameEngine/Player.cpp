@@ -5,6 +5,13 @@
 namespace LuaGameEngine
 {
 
+Player::Player(EngineContext* engineContext)
+	: EngineContextObject(engineContext)
+	, controlUnit_(nullptr)
+{
+
+}
+
 Player::~Player()
 {
 	if (controlUnit_)

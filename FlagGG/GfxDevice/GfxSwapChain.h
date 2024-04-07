@@ -13,7 +13,7 @@ class Window;
 class GfxRenderSurface;
 class GfxTexture;
 
-class GfxSwapChain : public GfxObject
+class FlagGG_API GfxSwapChain : public GfxObject
 {
 	OBJECT_OVERRIDE(GfxSwapChain, GfxObject);
 public:

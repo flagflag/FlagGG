@@ -1,6 +1,7 @@
 #include "Unit.h"
 #include "Common.h"
 #include "Engine.h"
+#include "EngineContext.h"
 
 #include <Scene/MovementComponent.h>
 
@@ -9,8 +10,9 @@ namespace LuaGameEngine
 
 Int64 Unit::unitIdCount_ = 0;
 
-Unit::Unit()
-	: unitId_(++unitIdCount_)
+Unit::Unit(EngineContext* engineContext)
+	: EngineContextObject(engineContext)
+	, unitId_(++unitIdCount_)
 	, node_(new Node())
 {
 
@@ -35,6 +37,13 @@ void Unit::Update(Real timeStep)
 	}
 
 	node_->Update({ timeStep });
+
+#if 1
+	for (auto* handler : engineContext_->handlers_)
+	{
+		handler->OnDebugUnitTransform(node_->GetPosition(), node_->GetRotation(), node_->GetScale());
+	}
+#endif
 }
 
 void Unit::SetName(const String& name)

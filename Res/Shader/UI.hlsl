@@ -3,7 +3,7 @@
     {
         float3 pos : POSITION;
         float2 tex : TEXCOORD;
-        int4 color : COLOR;
+        float4 color : COLOR;
     };
 #else
     Texture2D colorMap : register(t0);
@@ -14,7 +14,7 @@ struct PixelInput
 {
     float4 pos : SV_POSITION;
     float2 tex : TEXCOORD;
-    int4 color : COLOR;
+    float4 color : COLOR;
 };
 
 #ifdef VERTEX

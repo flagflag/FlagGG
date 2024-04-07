@@ -17,7 +17,7 @@ struct SamplerDesc
 	ComparisonFunc comparisonFunc_;
 };
 
-class GfxSampler : public GfxObject
+class FlagGG_API GfxSampler : public GfxObject
 {
 	OBJECT_OVERRIDE(GfxSampler, GfxObject);
 public:

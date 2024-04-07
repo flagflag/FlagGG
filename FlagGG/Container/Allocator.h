@@ -65,12 +65,25 @@ public:
 	Allocator<T>& operator =(const Allocator<T>& rhs) = delete;
 
 	/// Reserve and default-construct an object.
-	T* Reserve()
+	template <class ... Args>
+	T* Reserve(Args&& ... args)
 	{
 		if (!allocator_)
 			allocator_ = AllocatorInitialize((unsigned)sizeof(T));
 		auto* newObject = static_cast<T*>(AllocatorReserve(allocator_));
-		new(newObject)T();
+		new(newObject)T(std::forward<Args>(args)...);
+
+		return newObject;
+	}
+
+	/// Reserve and default-construct an object.
+	template <class ... Args>
+	T* Reserve(const Args& ... args)
+	{
+		if (!allocator_)
+			allocator_ = AllocatorInitialize((unsigned)sizeof(T));
+		auto* newObject = static_cast<T*>(AllocatorReserve(allocator_));
+		new(newObject)T(args...);
 
 		return newObject;
 	}

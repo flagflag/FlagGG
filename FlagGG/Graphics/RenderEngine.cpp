@@ -529,6 +529,9 @@ void RenderEngine::RenderRawBatch(Viewport* viewport)
 	gfxDevice_->SetViewport(viewport->GetSize());
 	gfxDevice_->SetRenderTarget(viewport->GetRenderTarget());
 	gfxDevice_->SetDepthStencil(viewport->GetDepthStencil());
+	gfxDevice_->SetDepthTestMode(COMPARISON_ALWAYS);
+	gfxDevice_->SetDepthWrite(false);
+	gfxDevice_->SetCullMode(CULL_BACK);
 
 	if (!vertexBuffer)
 	{

@@ -1,9 +1,16 @@
 #include "Network/LuaEventAdaptor.h"
 #include "Proto/Game.pb.h"
 
+#include <Core/EventManager.h>
+#include <Graphics/Window.h>
+#include <Graphics/RenderEngine.h>
+#include <Graphics/Batch2D.h>
+#include <Graphics/Texture2D.h>
+
 LuaEventAdaptor::LuaEventAdaptor(NetworkSender* sender) :
 	sender_(sender)
 {
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(Frame::END_FRAME, LuaEventAdaptor::EndFrameUpdate, this));
 }
 
 void LuaEventAdaptor::OnKeepAlive()
@@ -157,4 +164,54 @@ void LuaEventAdaptor::OnUnitAttachBuff(Int64 unitId, LuaGameEngine::Buff* buff)
 void LuaEventAdaptor::OnUnitDettachBuff(Int64 unitId, LuaGameEngine::Buff* buff)
 {
 
+}
+
+static SharedPtr<Window> window;
+static SharedPtr<Texture2D> texture;
+
+void LuaEventAdaptor::OnDebugUnitTransform(const Vector3& position, const Quaternion& rotation, const Vector3& scale)
+{
+	const float pixelStep = 1.0f / 100.f;
+	Vector2 pixelPos(position.x_ * pixelStep, position.y_ * pixelStep);
+
+	SharedPtr<Batch2D> batch = MakeShared<Batch2D>();
+	batch->AddTriangle(
+		pixelPos + Vector2(-pixelStep, -pixelStep), pixelPos + Vector2(pixelStep, pixelStep), pixelPos + Vector2(pixelStep, -pixelStep),
+		pixelPos + Vector2(0, 0), pixelPos + Vector2(pixelStep, 0), pixelPos + Vector2(pixelStep, pixelStep),
+		Color::GREEN.ToUInt()
+	);
+	batch->AddTriangle(
+		pixelPos + Vector2(-pixelStep, -pixelStep), pixelPos + Vector2(-pixelStep, pixelStep), pixelPos + Vector2(pixelStep, pixelStep),
+		pixelPos + Vector2(0, 0), pixelPos + Vector2(pixelStep, pixelStep), pixelPos + Vector2(0, pixelStep),
+		Color::GREEN.ToUInt()
+	);
+
+	batch->SetTexture(texture);
+
+	batches_.Push(batch);
+}
+
+void LuaEventAdaptor::EndFrameUpdate(float timeStep)
+{
+	if (!window)
+	{
+		WindowDevice::Initialize();
+		GetSubsystem<RenderEngine>()->Initialize();
+		window = MakeShared<Window>(nullptr, IntRect(0, 0, 600, 600));
+		window->Show();
+
+		texture = MakeShared<Texture2D>();
+		texture->SetSize(1, 1, RenderEngine::GetRGBAFormat());
+		const unsigned color = Color::WHITE.ToUInt();
+		texture->SetData(0, 0, 0, 1, 1, &color);
+	}
+
+	WindowDevice::Update();
+
+	// OnDebugUnitTransform(Vector3::ZERO, Quaternion::IDENTITY, Vector3::ONE);
+
+	GetSubsystem<RenderEngine>()->PostRenderBatch(batches_);
+	batches_.Clear();
+
+	window->Render();
 }

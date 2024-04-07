@@ -1,8 +1,16 @@
 #pragma once
 
-#include <Container/RefCounted.h>
+#include <Container/Ptr.h>
+#include <Container/Vector.h>
 
 #include "LuaGameEngine/LuaEvent.h"
+
+namespace FlagGG
+{
+
+class Batch;
+
+}
 
 using namespace FlagGG;
 
@@ -51,6 +59,13 @@ public:
 
 	void OnUnitDettachBuff(Int64 unitId, LuaGameEngine::Buff* buff) override;
 
+	void OnDebugUnitTransform(const Vector3& position, const Quaternion& rotation, const Vector3& scale) override;
+
+protected:
+	void EndFrameUpdate(float timeStep);
+
 private:
 	NetworkSender* sender_;
+
+	Vector<SharedPtr<Batch>> batches_;
 };

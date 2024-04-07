@@ -12,7 +12,7 @@ namespace FlagGG
 class GfxTexture;
 class GfxSwapChain;
 
-class GfxRenderSurface : public GfxObject
+class FlagGG_API GfxRenderSurface : public GfxObject
 {
 	OBJECT_OVERRIDE(GfxRenderSurface, GfxObject);
 public:

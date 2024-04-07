@@ -163,12 +163,12 @@ public:
 	virtual GfxProgram* CreateProgram();
 
 public:
-	static GfxDevice* CreateDevice();
+	FlagGG_API static GfxDevice* CreateDevice();
 
-	static void DestroyDevice();
+	FlagGG_API static void DestroyDevice();
 
 	// 获取d3d11设备
-	static GfxDevice* GetDevice();
+	FlagGG_API static GfxDevice* GetDevice();
 
 protected:
 	// 准备提交的rt depth stencil
@@ -209,12 +209,12 @@ protected:
 	// 光栅化状态
 	RasterizerState rasterizerState_;
 	// 光珊化状态dirty
-	bool rasterizerStateDirty_{};
+	bool rasterizerStateDirty_{ true };
 
 	// 深度模板状态
 	DepthStencilState depthStencilState_;
 	// 深度模板状态dirty
-	bool depthStencilStateDirty_{};
+	bool depthStencilStateDirty_{ true };
 
 	// 图元类型
 	PrimitiveType primitiveType_{ PRIMITIVE_TRIANGLE };

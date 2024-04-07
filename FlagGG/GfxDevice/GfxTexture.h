@@ -29,7 +29,7 @@ struct TextureDesc
 
 class GfxRenderSurface;
 
-class GfxTexture : public GfxObject
+class FlagGG_API GfxTexture : public GfxObject
 {
 	OBJECT_OVERRIDE(GfxTexture, GfxObject);
 public:

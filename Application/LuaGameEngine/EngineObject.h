@@ -2,6 +2,8 @@
 
 #include <Core/Object.h>
 
+#include "LGEExport.h"
+
 using namespace FlagGG;
 
 namespace LuaGameEngine

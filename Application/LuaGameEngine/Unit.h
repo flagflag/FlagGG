@@ -13,10 +13,12 @@
 #include "LGEExport.h"
 #include "Spell.h"
 #include "Buff.h"
-#include "EngineObject.h"
+#include "EngineContextObject.h"
 
 namespace LuaGameEngine
 {
+
+struct EngineContext;
 
 enum Status
 {
@@ -42,11 +44,11 @@ struct LuaGameEngine_API Attribute
 	float attackSpeed_;
 };
 
-class LuaGameEngine_API Unit : public EngineObject
+class LuaGameEngine_API Unit : public EngineContextObject
 {
-	OBJECT_OVERRIDE(Unit, EngineObject);
+	OBJECT_OVERRIDE(Unit, EngineContextObject);
 public:
-	Unit();
+	explicit Unit(EngineContext* engineContext);
 
 	~Unit() override;
 

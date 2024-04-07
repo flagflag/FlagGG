@@ -9,6 +9,8 @@ Batch2D::Batch2D(Texture* texture, VertexVector* vertexs) :
 {
 }
 
+Batch2D::~Batch2D() = default;
+
 void Batch2D::AddTriangle(const Vector2& v1, const Vector2& v2, const Vector2& v3,
 	const Vector2& uv1, const Vector2& uv2, const Vector2& uv3, unsigned color)
 {
