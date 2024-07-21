@@ -109,6 +109,8 @@ protected:
 
 private:
 	HashMap<GLFrameBufferKey, GLuint> frameBufferMap_;
+
+	SharedPtr<GL::IGLContext> glContext_;
 };
 
 }

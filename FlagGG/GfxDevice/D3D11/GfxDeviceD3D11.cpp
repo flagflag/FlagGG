@@ -68,21 +68,6 @@ static const D3D11_COMPARISON_FUNC d3dComparisonFun[] =
 	D3D11_COMPARISON_ALWAYS
 };
 
-GfxDevice* GfxDevice::CreateDevice()
-{
-	return GfxDeviceD3D11::InstancePtr();
-}
-
-void GfxDevice::DestroyDevice()
-{
-	
-}
-
-GfxDevice* GfxDevice::GetDevice()
-{
-	return GetSubsystem<GfxDeviceD3D11>();
-}
-
 GfxDeviceD3D11::GfxDeviceD3D11()
 	: GfxDevice()
 {

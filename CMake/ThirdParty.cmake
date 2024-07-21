@@ -31,3 +31,4 @@ if (WIN32 OR WIN64)
     # CoreCLR
     link_directories (${CMAKE_CURRENT_SOURCE_DIR}/../Application/CoreCLRHelper/Runtime)
 endif ()
+include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/Khronos)

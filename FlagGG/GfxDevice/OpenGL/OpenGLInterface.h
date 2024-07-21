@@ -2,7 +2,9 @@
 
 #include "Core/BaseMacro.h"
 
-#if !HAS_OPENGL_LIB
+#if HAS_OPENGL_LIB
+#include "ImportOpenGL.h"
+#else
 typedef unsigned int GLenum;
 typedef unsigned char GLboolean;
 typedef unsigned int GLbitfield;
@@ -21,7 +23,6 @@ typedef void GLvoid;
 typedef long long GLsizeiptr;
 typedef long long GLintptr;
 typedef char GLchar;
-#endif
 
 #define GL_UNPACK_ALIGNMENT               0x0CF5
 #define GL_TEXTURE_2D                     0x0DE1
@@ -129,6 +130,7 @@ typedef char GLchar;
 #define GL_STENCIL_ATTACHMENT             0x8D20
 #define GL_FRAMEBUFFER                    0x8D40
 #define GL_RENDERBUFFER                   0x8D41
+#endif
 
 #include "OpenGLDefines.h"
 
@@ -136,7 +138,7 @@ typedef char GLchar;
 #define RED_INTEGER  GL_RED_INTEGER
 #define RG_INTEGER   GL_RG_INTEGER
 #define RGB_INTEGER  GL_RGB_INTEGER
-#define RGBA_INTEGER GL_RGBA_INTEGER
+#define RGBA_INTEGER  GL_RGBA_INTEGER
 
 namespace GL
 {
@@ -193,7 +195,7 @@ FORCEINLINE void PixelStorei(GLenum pname, GLint param)
 FORCEINLINE void TexStorage2D(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height)
 {
 #if HAS_OPENGL_LIB
-	glTexStorage2D(target, levels, internalformat, height);
+	glTexStorage2D(target, levels, internalformat, width, height);
 #endif
 }
 
@@ -235,7 +237,7 @@ FORCEINLINE void CompressedTexImage3D(GLenum target, GLint level, GLenum interna
 FORCEINLINE void CompressedTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, const void* data)
 {
 #if HAS_OPENGL_LIB
-	glCompressedTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, data);
+	glCompressedTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, imageSize, data);
 #endif
 }
 
@@ -379,7 +381,7 @@ FORCEINLINE void GetProgramiv(GLuint program, GLenum pname, GLint* params)
 FORCEINLINE void GetProgramInfoLog(GLuint program, GLsizei bufSize, GLsizei* length, GLchar* infoLog)
 {
 #if HAS_OPENGL_LIB
-	glGetProgramInfoLog(program, shader);
+	glGetProgramInfoLog(program, bufSize, length, infoLog);
 #endif
 }
 
@@ -393,14 +395,14 @@ FORCEINLINE void BindFramebuffer(GLenum target, GLuint framebuffer)
 FORCEINLINE void GenFrameBuffers(GLsizei n, GLuint* framebuffers)
 {
 #if HAS_OPENGL_LIB
-	glGenFrameBuffers(n, framebuffers);
+	glGenFramebuffers(n, framebuffers);
 #endif
 }
 
 FORCEINLINE void DrawElements(GLenum mode, GLsizei count, GLenum type, const void* indices)
 {
 #if HAS_OPENGL_LIB
-	glDrawElements(mode, count, type, indices, instancecount);
+	glDrawElements(mode, count, type, indices);
 #endif
 }
 

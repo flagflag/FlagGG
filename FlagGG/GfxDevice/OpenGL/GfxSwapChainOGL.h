@@ -15,7 +15,7 @@ class GfxSwapChainOpenGL : public GfxSwapChain
 {
 	OBJECT_OVERRIDE(GfxSwapChainOpenGL, GfxSwapChain);
 public:
-	explicit GfxSwapChainOpenGL(Window* window);
+	explicit GfxSwapChainOpenGL(GL::IGLContext* glContext, Window* window);
 
 	~GfxSwapChainOpenGL() override;
 
@@ -34,6 +34,7 @@ public:
 private:
 	SharedPtr<GfxRenderSurfaceOpenGL> renderTarget_;
 	SharedPtr<GfxRenderSurfaceOpenGL> depthStencil_;
+	SharedPtr<GL::IGLSwapChain> glSwapChain_;
 };
 
 }

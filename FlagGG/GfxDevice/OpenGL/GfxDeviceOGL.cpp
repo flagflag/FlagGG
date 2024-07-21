@@ -11,7 +11,7 @@ namespace FlagGG
 GfxDeviceOpenGL::GfxDeviceOpenGL()
 	: GfxDevice()
 {
-
+	glContext_ = GL::CreateGLContext();
 }
 
 GfxDeviceOpenGL::~GfxDeviceOpenGL()
@@ -84,7 +84,7 @@ void GfxDeviceOpenGL::Flush()
 
 GfxSwapChain* GfxDeviceOpenGL::CreateSwapChain(Window* window)
 {
-	return new GfxSwapChainOpenGL(window);
+	return new GfxSwapChainOpenGL(glContext_, window);
 }
 
 GfxTexture* GfxDeviceOpenGL::CreateTexture()
