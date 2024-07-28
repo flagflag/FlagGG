@@ -13,7 +13,7 @@
 namespace FlagGG
 {
 
-struct ConstantBufferVariableDesc
+struct D3D11ConstantBufferVariableDesc
 {
 	String name_;
 	UInt32 offset_;
@@ -24,7 +24,7 @@ struct D3D11ConstantBufferDesc
 {
 	String name_;
 	UInt32 size_;
-	Vector<ConstantBufferVariableDesc> variableDescs_;
+	Vector<D3D11ConstantBufferVariableDesc> variableDescs_;
 };
 
 struct D3D11ShaderTextureDesc

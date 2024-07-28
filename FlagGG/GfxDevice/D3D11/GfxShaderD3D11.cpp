@@ -1,110 +1,14 @@
 #include "GfxShaderD3D11.h"
 #include "GfxDeviceD3D11.h"
 #include "GfxD3D11Defines.h"
+#include "GfxDevice/Shader/HlslShaderCompile.h"
 #include "FileSystem/FileHandle/LocalFileHandle.h"
 #include "Utility/SystemHelper.h"
 #include "Core/CryAssert.h"
 #include "Log.h"
 
-#include <d3dcompiler.h>
-
 namespace FlagGG
 {
-
-static bool CompileShader(const char* buffer, USize bufferSize, ShaderType type, const Vector<String>& defines, ID3DBlob*& outCompileCode, ID3DBlob*& outStrippedCode)
-{
-	char* entryPoint = nullptr;
-	char* profile = nullptr;
-	//unsigned flags = D3DCOMPILE_OPTIMIZATION_LEVEL3;
-	unsigned flags = D3DCOMPILE_ENABLE_STRICTNESS;
-
-#if defined( DEBUG ) || defined( _DEBUG )
-	flags |= D3DCOMPILE_DEBUG;
-#endif
-
-	if (type == VS) // VS
-	{
-		entryPoint = "VS";
-		profile = "vs_4_0";
-	}
-	else if (type == PS) // PS
-	{
-		entryPoint = "PS";
-		profile = "ps_4_0";
-		//flags |= D3DCOMPILE_PREFER_FLOW_CONTROL;
-	}
-
-	ID3DBlob* shaderCode = nullptr;
-	ID3DBlob* errorMsgs = nullptr;
-
-	PODVector<D3D_SHADER_MACRO> macros;
-
-	for (UInt32 i = 0; i < defines.Size(); ++i)
-	{
-		D3D_SHADER_MACRO macro;
-		macro.Name = defines[i].CString();
-		macro.Definition = "1";
-		macros.Push(macro);
-	}
-
-	D3D_SHADER_MACRO emptyMacro;
-	emptyMacro.Name = nullptr;
-	emptyMacro.Definition = nullptr;
-	macros.Push(emptyMacro);
-
-	HRESULT hr = D3DCompile(
-		buffer,
-		bufferSize,
-		nullptr,
-		&macros[0],
-		nullptr,
-		entryPoint,
-		profile,
-		flags,
-		0,
-		&shaderCode,
-		&errorMsgs
-	);
-	if (FAILED(hr))
-	{
-		FLAGGG_LOG_ERROR("D3DCompile failed.");
-
-		{
-			LocalFileHandle fileHandle;
-			fileHandle.Open(GetProgramDir() + "shader_error.txt", FileMode::FILE_WRITE);
-			fileHandle.Write(buffer, bufferSize);
-			fileHandle.Close();
-		}
-
-		if (errorMsgs)
-		{
-			FLAGGG_LOG_ERROR("Error code: {}", (const char*)errorMsgs->GetBufferPointer());
-
-			ASSERT_MESSAGE(false, (const char*)errorMsgs->GetBufferPointer());
-
-			D3D11_SAFE_RELEASE(errorMsgs);
-		}
-
-		return false;
-	}
-
-	ID3DBlob* strippedCode = nullptr;
-	hr = D3DStripShader(shaderCode->GetBufferPointer(), shaderCode->GetBufferSize(),
-		D3DCOMPILER_STRIP_REFLECTION_DATA | D3DCOMPILER_STRIP_DEBUG_INFO | D3DCOMPILER_STRIP_TEST_BLOBS, &strippedCode);
-	if (FAILED(hr))
-	{
-		FLAGGG_LOG_ERROR("D3DStripShader failed.");
-
-		return false;
-	}
-
-	D3D11_SAFE_RELEASE(errorMsgs);
-
-	outCompileCode = shaderCode;
-	outStrippedCode = strippedCode;
-
-	return true;
-}
 
 GfxShaderD3D11::GfxShaderD3D11()
 	: GfxShader()
@@ -189,7 +93,7 @@ void GfxShaderD3D11::AnalysisReflection(ID3DBlob* compileCode)
 			D3D11_SHADER_VARIABLE_DESC d3dVariableDesc;
 			variable->GetDesc(&d3dVariableDesc);
 
-			ConstantBufferVariableDesc variableDesc;
+			D3D11ConstantBufferVariableDesc variableDesc;
 			variableDesc.name_ = d3dVariableDesc.Name;
 			variableDesc.offset_ = d3dVariableDesc.StartOffset;
 			variableDesc.size_ = d3dVariableDesc.Size;

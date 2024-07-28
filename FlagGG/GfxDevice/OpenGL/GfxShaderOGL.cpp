@@ -1,4 +1,5 @@
 #include "GfxShaderOGL.h"
+#include "GfxDevice/Shader/ShaderTranslation.h"
 #include "Log.h"
 
 namespace FlagGG
@@ -32,8 +33,12 @@ void GfxShaderOpenGL::Compile()
 	oglShader_ = GL::CreateShader(oglShaderType);
 	ASSERT_MESSAGE(oglShader_ != 0, "CreateShader failed.");
 
-	const GLchar* oglShaderCode = shaderSource_.Get();
-	GLint oglShaderCodeSize = shaderSourceSize_;
+	String glslShaderCode;
+	if (!CompileShader(COMPILE_SHADER_GLSL, shaderSource_.Get(), shaderSourceSize_, shaderType_, defines_, glslShaderCode))
+		return;
+
+	const GLchar* oglShaderCode = glslShaderCode.CString();
+	const GLint oglShaderCodeSize = glslShaderCode.Length();
 	GL::ShaderSource(oglShader_, 1, &oglShaderCode, &oglShaderCodeSize);
 	GL::CompileShader(oglShader_);
 

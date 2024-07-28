@@ -67,6 +67,7 @@ list (APPEND THIRD_LIB ${SLikeNet_LIB})
 # list (APPEND THIRD_LIB jemallocso)
 # list (APPEND THIRD_LIB $(BDFX_LIB))
 list (APPEND THIRD_LIB ${PUGIXML_LIB})
+list (APPEND THIRD_LIB hlslcc)
 
 target_link_libraries(${TARGET_NAME} ${THIRD_LIB})
 

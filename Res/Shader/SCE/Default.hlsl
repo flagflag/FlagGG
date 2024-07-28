@@ -49,7 +49,7 @@ struct PixelInput
 #endif
 	float4 worldPosition : WORLD_POS;
 #ifdef SHADOW
-	float4 shadowPos : POSITION;
+	float4 shadowPos : SHADOW_POSITION;
 #endif
 };
 

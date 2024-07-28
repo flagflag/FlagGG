@@ -1,0 +1,12 @@
+{
+    "licenses" : [
+        {
+            "formal_name" : "(HLSLcc - HLSL Cross compiler)",
+            "license" : "HLSLcc - HLSL Cross compiler | MIT License\nCopyright (c) 2012 James Jones.  All rights reserved.\nOptimizations and fixes (c) 2014-2015 Unity Technologies.  All rights reserved.\n",
+            "name" : "ShaderCompilers/HLSLcc",
+            "oss_licenses" : "MIT License",
+            "purpose" : "Graphics: Shader",
+            "used_in_editor" : "true"
+        }
+    ]
+}
