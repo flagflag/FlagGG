@@ -4,17 +4,18 @@
 #include "AsyncFrame/Mutex.h"
 #include "Graphics/Window.h"
 
+#include <wgl/wglext.h>
+
 #define GFX_IMPORT(Proto, Func) Proto Func
 #include "OpenGLFunc.h"
 #undef GFX_IMPORT
-
-#include <wgl/wglext.h>
 
 typedef PROC(APIENTRYP PFNWGLGETPROCADDRESSPROC) (LPCSTR lpszProc);
 typedef BOOL(APIENTRYP PFNWGLMAKECURRENTPROC) (HDC hdc, HGLRC hglrc);
 typedef HGLRC(APIENTRYP PFNWGLCREATECONTEXTPROC) (HDC hdc);
 typedef BOOL(APIENTRYP PFNWGLDELETECONTEXTPROC) (HGLRC hglrc);
 
+static HMODULE hOpenGLLib = NULL;
 static bool glInited = false;
 static PFNWGLGETPROCADDRESSPROC _wglGetProcAddress;
 static PFNWGLMAKECURRENTPROC _wglMakeCurrent;
@@ -28,16 +29,20 @@ PFNWGLSWAPINTERVALEXTPROC _wglSwapIntervalEXT;
 namespace GL
 {
 
-void InitOpenGL()
+static void InitWGL()
 {
-	HMODULE hOpenGLLib = ::LoadLibraryA("opengl32.dll");
+	hOpenGLLib = ::LoadLibraryA("opengl32.dll");
 	if (hOpenGLLib)
 	{
 		_wglGetProcAddress = (PFNWGLGETPROCADDRESSPROC)::GetProcAddress(hOpenGLLib, "wglGetProcAddress");
 		_wglMakeCurrent = (PFNWGLMAKECURRENTPROC)::GetProcAddress(hOpenGLLib, "wglMakeCurrent");
 		_wglCreateContext = (PFNWGLCREATECONTEXTPROC)::GetProcAddress(hOpenGLLib, "wglCreateContext");
 		_wglDeleteContext = (PFNWGLDELETECONTEXTPROC)::GetProcAddress(hOpenGLLib, "wglDeleteContext");
+	}
+}
 
+static void ImportGLInterface()
+{
 #define GFX_IMPORT(Proto, Func) \
 	Func = (Proto)::_wglGetProcAddress(#Func); \
 	if (!Func) \
@@ -46,8 +51,6 @@ void InitOpenGL()
 		CRY_ASSERT_MESSAGE(false, #Func);
 #include "OpenGLFunc.h"
 #undef GFX_IMPORT
-	}
-
 	glInited = true;
 }
 
@@ -89,8 +92,30 @@ public:
 			0, 0, 0                // layer masks ignored  
 		}
 	{
-		hGlrc_ = _wglCreateContext(NULL);
-		pixelFormat_ = ::ChoosePixelFormat(NULL, &pfd_);
+		HWND hWnd = CreateWindowA("STATIC"
+			, ""
+			, WS_POPUP | WS_DISABLED
+			, -32000
+			, -32000
+			, 0
+			, 0
+			, NULL
+			, NULL
+			, GetModuleHandle(NULL)
+			, 0
+		);
+
+		// https://web.archive.org/web/20190207230357/https://docs.microsoft.com/en-us/windows/desktop/api/wingdi/nf-wingdi-setpixelformat
+
+		HDC hDC = GetDC(hWnd);
+		// get the best available match of pixel format for the device context   
+		pixelFormat_ = ::ChoosePixelFormat(hDC, &pfd_);
+
+		// make that the pixel format of the device context  
+		SetPixelFormat(hDC, pixelFormat_, &pfd_);
+
+		hGlrc_ = _wglCreateContext(hDC);
+		_wglMakeCurrent(hDC, hGlrc_);
 	}
 
 	~GLContextWindows() override
@@ -155,10 +180,14 @@ static IGLSwapChain* CreateSwapChain(GLContextWindows* glContext, FlagGG::Window
 
 IGLContext* CreateGLContext()
 {
-	if (!glInited)
-		InitOpenGL();
+	if (!hOpenGLLib)
+		InitWGL();
 
 	IGLContext* glContext = new GLContextWindows();
+
+	if (!glInited)
+		ImportGLInterface();
+
 	return glContext;
 }
 
