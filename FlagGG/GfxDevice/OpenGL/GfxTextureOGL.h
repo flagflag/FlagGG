@@ -43,6 +43,13 @@ public:
 	// 2.TextureCube，index传入cube的face
 	GfxRenderSurface* GetRenderSurface(UInt32 index) const override;
 
+
+	//
+	GLenum GetOGLTarget() const { return oglTarget_; }
+
+	//
+	GLuint GetOGLTexture() const { return oglTexture_; }
+
 protected:
 	void CreateTexture2D();
 	void CreateTexture3D();

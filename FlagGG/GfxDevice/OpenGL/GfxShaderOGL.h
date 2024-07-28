@@ -22,7 +22,7 @@ public:
 	void Compile() override;
 
 	//
-	GLuint GetOpenGLShader() const { return oglShader_; }
+	GLuint GetOGLShader() const { return oglShader_; }
 
 private:
 	GLuint oglShader_{};

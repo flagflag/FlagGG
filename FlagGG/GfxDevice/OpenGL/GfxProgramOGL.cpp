@@ -37,8 +37,8 @@ void GfxProgramOpenGL::Link(GfxShader* vertexShader, GfxShader* pixelShader)
 	}
 
 	oglProgram_ = GL::CreateProgram();
-	GL::AttachShader(oglProgram_, oglVS->GetOpenGLShader());
-	GL::AttachShader(oglProgram_, oglPS->GetOpenGLShader());
+	GL::AttachShader(oglProgram_, oglVS->GetOGLShader());
+	GL::AttachShader(oglProgram_, oglPS->GetOGLShader());
 	GL::LinkProgram(oglProgram_);
 	GLint linked = 0;
 	GL::GetProgramiv(oglProgram_, GL_LINK_STATUS, &linked);

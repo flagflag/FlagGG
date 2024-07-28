@@ -399,6 +399,20 @@ FORCEINLINE void GenFrameBuffers(GLsizei n, GLuint* framebuffers)
 #endif
 }
 
+FORCEINLINE void DrawArrays(GLenum mode, GLint first, GLsizei count)
+{
+#if HAS_OPENGL_LIB
+	glDrawArrays(mode, first, count);
+#endif
+}
+
+FORCEINLINE void DrawArraysInstanced(GLenum mode, GLint first, GLsizei count, GLsizei instancecount)
+{
+#if HAS_OPENGL_LIB
+	glDrawArraysInstanced(mode, first, count, instancecount);
+#endif
+}
+
 FORCEINLINE void DrawElements(GLenum mode, GLsizei count, GLenum type, const void* indices)
 {
 #if HAS_OPENGL_LIB
@@ -410,6 +424,34 @@ FORCEINLINE void DrawElementsInstanced(GLenum mode, GLsizei count, GLenum type, 
 {
 #if HAS_OPENGL_LIB
 	glDrawElementsInstanced(mode, count, type, indices, instancecount);
+#endif
+}
+
+FORCEINLINE void ActiveTexture(GLenum texture)
+{
+#if HAS_OPENGL_LIB
+	glActiveTexture(texture);
+#endif
+}
+
+FORCEINLINE void Viewport(GLint x, GLint y, GLsizei width, GLsizei height)
+{
+#if HAS_OPENGL_LIB
+	glViewport(x, y, width, height);
+#endif
+}
+
+FORCEINLINE void UseProgram(GLuint program)
+{
+#if HAS_OPENGL_LIB
+	glUseProgram(program);
+#endif
+}
+
+FORCEINLINE void Flush()
+{
+#if HAS_OPENGL_LIB
+	glFlush();
 #endif
 }
 

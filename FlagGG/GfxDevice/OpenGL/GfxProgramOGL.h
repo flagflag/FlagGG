@@ -24,6 +24,10 @@ public:
 	// link cs
 	void LinkComputeShader(GfxShader* computeShader) override;
 
+
+	// 
+	GLuint GetOGLProgram() const { return oglProgram_; }
+
 private:
 	GLuint oglProgram_{};
 };

@@ -13,6 +13,8 @@
 namespace FlagGG
 {
 
+class GfxProgramOpenGL;
+
 struct GLFrameBufferKey
 {
 	GLFrameBufferKey(UInt32 idx1 = 0u, UInt32 idx2 = 0u, UInt32 idx3 = 0u, UInt32 idx4 = 0u, UInt32 idx5 = 0u)
@@ -105,10 +107,16 @@ public:
 protected:
 	void SetFrameBuffer();
 
+	void PrepareRasterizerState();
+
+	void PrepareDepthStencilState();
+
 	void PrepareDraw();
 
 private:
 	HashMap<GLFrameBufferKey, GLuint> frameBufferMap_;
+
+	HashMap<Pair<WeakPtr<GfxShader>, WeakPtr<GfxShader>>, SharedPtr<GfxProgramOpenGL>> programMap_;
 
 	SharedPtr<GL::IGLContext> glContext_;
 };
