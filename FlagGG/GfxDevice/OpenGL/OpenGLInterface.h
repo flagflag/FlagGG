@@ -441,6 +441,92 @@ FORCEINLINE void Viewport(GLint x, GLint y, GLsizei width, GLsizei height)
 #endif
 }
 
+FORCEINLINE void Uniformli(GLint location, GLint v0)
+{
+#if HAS_OPENGL_LIB
+	glUniform1i(location, v0);
+#endif
+}
+
+FORCEINLINE void Uniform1f(GLint location, GLfloat v0)
+{
+#if HAS_OPENGL_LIB
+	glUniform1f(location, v0);
+#endif
+}
+
+FORCEINLINE void Uniform2f(GLint location, GLfloat v0, GLfloat v1)
+{
+#if HAS_OPENGL_LIB
+	glUniform2f(location, v0, v1);
+#endif
+}
+
+
+FORCEINLINE void Uniform3f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2)
+{
+#if HAS_OPENGL_LIB
+	glUniform3f(location, v0, v1, v2);
+#endif
+}
+
+FORCEINLINE void Uniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
+{
+#if HAS_OPENGL_LIB
+	glUniform4f(location, v0, v1, v2, v3);
+#endif
+}
+
+FORCEINLINE void Uniform1iv(GLint location, GLsizei count, const GLint* value)
+{
+#if HAS_OPENGL_LIB
+	glUniform1iv(location, count, value);
+#endif
+}
+
+FORCEINLINE void Uniform1fv(GLint location, GLsizei count, const GLfloat* value)
+{
+#if HAS_OPENGL_LIB
+	glUniform1fv(location, count, value);
+#endif
+}
+
+FORCEINLINE void Uniform2fv(GLint location, GLsizei count, const GLfloat* value)
+{
+#if HAS_OPENGL_LIB
+	glUniform2fv(location, count, value);
+#endif
+}
+
+FORCEINLINE void Uniform3fv(GLint location, GLsizei count, const GLfloat* value)
+{
+#if HAS_OPENGL_LIB
+	glUniform3fv(location, count, value);
+#endif
+}
+
+FORCEINLINE void Uniform4fv(GLint location, GLsizei count, const GLfloat* value)
+{
+#if HAS_OPENGL_LIB
+	glUniform4fv(location, count, value);
+#endif
+}
+
+FORCEINLINE void UniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
+{
+#if HAS_OPENGL_LIB
+	glUniformMatrix3fv(location, count, transpose, value);
+#endif
+}
+
+FORCEINLINE void UniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
+{
+#if HAS_OPENGL_LIB
+	glUniformMatrix4fv(location, count, transpose, value);
+#endif
+}
+
+
 FORCEINLINE void UseProgram(GLuint program)
 {
 #if HAS_OPENGL_LIB

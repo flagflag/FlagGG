@@ -13,6 +13,7 @@
 namespace FlagGG
 {
 
+struct OGLShaderUniformVariableDesc;
 class GfxProgramOpenGL;
 
 struct GLFrameBufferKey
@@ -113,12 +114,18 @@ protected:
 
 	void PrepareDraw();
 
+	void SetShaderParameters(const Vector<OGLShaderUniformVariableDesc>& uniformVariableDesc);
+
 private:
 	HashMap<GLFrameBufferKey, GLuint> frameBufferMap_;
 
 	HashMap<Pair<WeakPtr<GfxShader>, WeakPtr<GfxShader>>, SharedPtr<GfxProgramOpenGL>> programMap_;
 
+	SharedPtr<GfxProgramOpenGL> currentProgram_;
+
 	SharedPtr<GL::IGLContext> glContext_;
+
+	PODVector<unsigned char> tempBuffer_;
 };
 
 }

@@ -90,7 +90,7 @@ protected:
 
 	void CopyShaderParameterToBuffer(GfxShaderD3D11* shader, GfxBufferD3D11* buffer);
 
-	ID3D11InputLayout* GetD3D11InputLayout(VertexDescription* verteDesc, GfxShaderD3D11* vertexShader);
+	ID3D11InputLayout* GetD3D11InputLayout(VertexDescription* vertxDesc, GfxShaderD3D11* vertexShader);
 
 	ID3D11SamplerState* GetD3D11SamplerState(GfxSampler* gfxSampler);
 

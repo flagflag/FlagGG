@@ -44,7 +44,7 @@ void GfxShaderOpenGL::Compile()
 
 	GLint compiled = 0;
 	GL::GetShaderiv(oglShader_, GL_COMPILE_STATUS, &compiled);
-	ASSERT_MESSAGE(compiled, "Compile shader failed.");
+	ASSERT_MESSAGE(compiled == 0, "Compile shader failed.");
 }
 
 }

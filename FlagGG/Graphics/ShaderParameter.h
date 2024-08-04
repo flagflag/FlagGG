@@ -46,10 +46,11 @@ public:
 	// 设置参数的值（具体实现）
 	bool SetValueImpl(StringHash key, const void* buffer, UInt32 bufferSize);
 
-	friend class GfxDeviceD3D11;
+	// 读取参数
+	bool ReadParameter(StringHash key, void* outData, UInt32 dataSize);
 
 private:
-	HashMap<StringHash, ShaderParameterDesc> descs;
+	HashMap<StringHash, ShaderParameterDesc> descs_;
 
 	SharedPtr<IOFrame::Buffer::StringBuffer> dataBuffer_;
 };

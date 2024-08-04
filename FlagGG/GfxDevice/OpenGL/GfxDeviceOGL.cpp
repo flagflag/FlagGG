@@ -4,6 +4,7 @@
 #include "GfxBufferOGL.h"
 #include "GfxShaderOGL.h"
 #include "GfxProgramOGL.h"
+#include "Graphics/ShaderParameter.h"
 
 namespace FlagGG
 {
@@ -95,6 +96,8 @@ void GfxDeviceOpenGL::PrepareDraw()
 
 		GL::UseProgram(currentProgram->GetOGLProgram());
 
+		currentProgram_ = currentProgram;
+
 		shaderDirty_ = false;
 	}
 
@@ -104,6 +107,8 @@ void GfxDeviceOpenGL::PrepareDraw()
 
 		vertexDescDirty_ = false;
 	}
+
+	SetShaderParameters(currentProgram_->GetUniformVariableDescs());
 
 	if (renderTargetDirty_ || depthStencilDirty_)
 	{
@@ -136,6 +141,66 @@ void GfxDeviceOpenGL::PrepareDraw()
 		GL::Viewport(viewport_.Left(), viewport_.Top(), viewport_.Width(), viewport_.Height());
 
 		viewportDirty_ = false;
+	}
+}
+
+void GfxDeviceOpenGL::SetShaderParameters(const Vector<OGLShaderUniformVariableDesc>& uniformVariableDesc)
+{
+	typedef void (*UniformivFunc)(GLint location, GLsizei count, const GLint* value);
+	typedef void (*UniformfvFunc)(GLint location, GLsizei count, const GLfloat* value);
+
+	// 懒得写了，暂时只支持int数组，int2 int3 int4这种让它崩溃
+	static UniformivFunc UNIFORMIV_FUNCS[] =
+	{
+		&GL::Uniform1iv,
+		nullptr,
+		nullptr,
+		nullptr,
+	};
+
+	static UniformfvFunc UNIFORMFV_FUNCS[] =
+	{
+		&GL::Uniform1fv,
+		&GL::Uniform2fv,
+		&GL::Uniform3fv,
+		&GL::Uniform4fv,
+	};
+
+	auto SetParam = [&](ShaderParameters& shaderParam, const OGLShaderUniformVariableDesc& desc)
+	{
+		if (desc.vectorSize_ == 0 || desc.vectorSize_ > 4)
+			return;
+
+		UInt32 dataSize = 4u * desc.vectorSize_;
+		if (dataSize < tempBuffer_.Size())
+			tempBuffer_.Resize(dataSize);
+
+		if (shaderParam.ReadParameter(desc.name_, &tempBuffer_[0], dataSize))
+		{
+			switch (desc.type_)
+			{
+			case GL_INT:
+			{
+				UNIFORMIV_FUNCS[desc.vectorSize_](desc.location_, 1, (const GLint*)tempBuffer_.Buffer());
+			}
+			break;
+
+			case GL_FLOAT:
+			{
+				UNIFORMFV_FUNCS[desc.vectorSize_ - 1](desc.location_, desc.vectorSize_, (const GLfloat*)tempBuffer_.Buffer());
+			}
+			break;
+			}
+		}
+	};
+
+	for (auto& desc : uniformVariableDesc)
+	{
+		if (engineShaderParameters_)
+			SetParam(*engineShaderParameters_, desc);
+
+		if (materialShaderParameters_)
+			SetParam(*materialShaderParameters_, desc);
 	}
 }
 

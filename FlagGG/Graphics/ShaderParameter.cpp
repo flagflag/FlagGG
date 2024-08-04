@@ -5,13 +5,13 @@ namespace FlagGG
 
 bool ShaderParameters::AddParametersDefineImpl(StringHash key, UInt32 typeSize)
 {
-	if (descs.Contains(key))
+	if (descs_.Contains(key))
 		return false;
 
 	if (!dataBuffer_)
 		dataBuffer_ = new IOFrame::Buffer::StringBuffer();
 
-	ShaderParameterDesc& desc = descs[key];
+	ShaderParameterDesc& desc = descs_[key];
 	desc.offset_ = dataBuffer_->GetSize();
 	desc.size_ = typeSize;
 	dataBuffer_->Seek(desc.offset_);
@@ -28,8 +28,8 @@ bool ShaderParameters::SetValueImpl(StringHash key, const void* buffer, UInt32 b
 	if (!dataBuffer_)
 		return false;
 
-	auto it = descs.Find(key);
-	if (it == descs.End() || bufferSize > it->second_.size_)
+	auto it = descs_.Find(key);
+	if (it == descs_.End() || bufferSize > it->second_.size_)
 		return false;
 
 	dataBuffer_->Seek(it->second_.offset_);
@@ -48,6 +48,18 @@ void ShaderParameters::WriteToBuffer(ConstantBuffer* buffer)
 	dataBuffer_->ClearIndex();
 	dataBuffer_->ReadStream(data, dataSize);
 	buffer->Unlock();
+}
+
+bool ShaderParameters::ReadParameter(StringHash key, void* outData, UInt32 dataSize)
+{
+	auto it = descs_.Find(key);
+	if (it != descs_.End())
+	{
+		dataBuffer_->Seek(it->second_.offset_);
+		dataBuffer_->ReadStream(outData, Min(dataSize, it->second_.size_));
+		return true;
+	}
+	return false;
 }
 
 }

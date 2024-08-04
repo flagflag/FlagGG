@@ -468,31 +468,20 @@ void GfxDeviceD3D11::CopyShaderParameterToBuffer(GfxShaderD3D11* shader, GfxBuff
 			char* data = static_cast<char*>(constantBuffer.BeginWrite(0, bufferDesc.size_));
 			for (const auto& variableDesc : bufferDesc.variableDescs_)
 			{
-				auto CopyParam = [&](ShaderParameters& shaderParam)
-				{
-					auto it2 = shaderParam.descs.Find(variableDesc.name_);
-					if (it2 != shaderParam.descs.End())
-					{
-						shaderParam.dataBuffer_->Seek(it2->second_.offset_);
-						shaderParam.dataBuffer_->ReadStream(data + variableDesc.offset_,
-							Min(variableDesc.size_, it2->second_.size_));
-					}
-				};
-
 				if (engineShaderParameters_)
-					CopyParam(*engineShaderParameters_);
+					engineShaderParameters_->ReadParameter(variableDesc.name_, data + variableDesc.offset_, variableDesc.size_);
 
 				if (materialShaderParameters_)
-					CopyParam(*materialShaderParameters_);
+					materialShaderParameters_->ReadParameter(variableDesc.name_, data + variableDesc.offset_, variableDesc.size_);
 			}
 			constantBuffer.EndWrite(bufferDesc.size_);
 		}
 	}
 }
 
-ID3D11InputLayout* GfxDeviceD3D11::GetD3D11InputLayout(VertexDescription* verteDesc, GfxShaderD3D11* vertexShader)
+ID3D11InputLayout* GfxDeviceD3D11::GetD3D11InputLayout(VertexDescription* vertxDesc, GfxShaderD3D11* vertexShader)
 {
-	auto key = MakePair(verteDesc->GetUUID(), vertexShader);
+	auto key = MakePair(vertxDesc->GetUUID(), vertexShader);
 
 	auto it = d3d11InputLayoutMap_.Find(key);
 	if (it != d3d11InputLayoutMap_.End())
@@ -502,7 +491,7 @@ ID3D11InputLayout* GfxDeviceD3D11::GetD3D11InputLayout(VertexDescription* verteD
 	
 	PODVector<D3D11_INPUT_ELEMENT_DESC> d3d11InputElementDescs;
 
-	const PODVector<VertexElement>& elements = verteDesc->GetElements();
+	const PODVector<VertexElement>& elements = vertxDesc->GetElements();
 
 	for (const auto& element : elements)
 	{

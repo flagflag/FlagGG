@@ -18,8 +18,6 @@ bool CompileShader(CompileShaderLanguage compileShaderLanguage, const char* buff
 		return false;
 	}
 
-	D3D11_SAFE_RELEASE(d3d11CompileCode);
-
 	if (!d3d11ShaderCode)
 	{
 		FLAGGG_LOG_ERROR("D3d11ShaderCode is nullptr.");
@@ -63,18 +61,19 @@ bool CompileShader(CompileShaderLanguage compileShaderLanguage, const char* buff
 	{
 	case COMPILE_SHADER_GLSL:
 	case COMPILE_SHADER_VULKAN:
-		TranslateHLSLFromMem((char*)d3d11ShaderCode->GetBufferPointer(), options, LANG_430, &ext, &dependencyData, pi, relection, &shader);
+		TranslateHLSLFromMem((char*)d3d11CompileCode->GetBufferPointer(), options, LANG_430, &ext, &dependencyData, pi, relection, &shader);
 		break;
 
 	case COMPILE_SHADER_GLES:
-		TranslateHLSLFromMem((char*)d3d11ShaderCode->GetBufferPointer(), options, LANG_ES_310, &ext, &dependencyData, pi, relection, &shader);
+		TranslateHLSLFromMem((char*)d3d11CompileCode->GetBufferPointer(), options, LANG_ES_310, &ext, &dependencyData, pi, relection, &shader);
 		break;
 
 	case COMPILE_SHADER_METAL:
-		TranslateHLSLFromMem((char*)d3d11ShaderCode->GetBufferPointer(), options, LANG_METAL, &ext, &dependencyData, pi, relection, &shader);
+		TranslateHLSLFromMem((char*)d3d11CompileCode->GetBufferPointer(), options, LANG_METAL, &ext, &dependencyData, pi, relection, &shader);
 		break;
 	}
 
+	D3D11_SAFE_RELEASE(d3d11CompileCode);
 	D3D11_SAFE_RELEASE(d3d11ShaderCode);
 
 	outShaderCode.Resize(shader.sourceCode.length());
