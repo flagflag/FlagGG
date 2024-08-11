@@ -43,9 +43,9 @@ void GfxShader::SetDefines(const Vector<String>& defines)
 	definesString_ = HashVectorString(defines_);
 }
 
-void GfxShader::Compile()
+bool GfxShader::Compile()
 {
-
+	return false;
 }
 
 }

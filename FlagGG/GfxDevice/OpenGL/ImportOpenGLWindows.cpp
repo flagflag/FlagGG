@@ -22,9 +22,9 @@ static PFNWGLMAKECURRENTPROC _wglMakeCurrent;
 static PFNWGLCREATECONTEXTPROC _wglCreateContext;
 static PFNWGLDELETECONTEXTPROC _wglDeleteContext;
 
-PFNWGLCHOOSEPIXELFORMATARBPROC _wglChoosePixelFormatARB;
-PFNWGLCREATECONTEXTATTRIBSARBPROC _wglCreateContextAttribsARB;
-PFNWGLSWAPINTERVALEXTPROC _wglSwapIntervalEXT;
+static PFNWGLCHOOSEPIXELFORMATARBPROC _wglChoosePixelFormatARB;
+static PFNWGLCREATECONTEXTATTRIBSARBPROC _wglCreateContextAttribsARB;
+static PFNWGLSWAPINTERVALEXTPROC _wglSwapIntervalEXT;
 
 namespace GL
 {
@@ -38,6 +38,10 @@ static void InitWGL()
 		_wglMakeCurrent = (PFNWGLMAKECURRENTPROC)::GetProcAddress(hOpenGLLib, "wglMakeCurrent");
 		_wglCreateContext = (PFNWGLCREATECONTEXTPROC)::GetProcAddress(hOpenGLLib, "wglCreateContext");
 		_wglDeleteContext = (PFNWGLDELETECONTEXTPROC)::GetProcAddress(hOpenGLLib, "wglDeleteContext");
+
+		_wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)_wglGetProcAddress("wglChoosePixelFormatARB");
+		_wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)_wglGetProcAddress("wglCreateContextAttribsARB");
+		_wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)_wglGetProcAddress("wglSwapIntervalEXT");
 	}
 }
 

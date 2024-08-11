@@ -341,6 +341,13 @@ FORCEINLINE void GetShaderiv(GLuint shader, GLenum pname, GLint* params)
 #endif
 }
 
+FORCEINLINE void GetShaderInfoLog(GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* infoLog)
+{
+#if HAS_OPENGL_LIB
+	glGetShaderInfoLog(shader, bufSize, length, infoLog);
+#endif
+}
+
 FORCEINLINE GLuint CreateProgram()
 {
 #if HAS_OPENGL_LIB

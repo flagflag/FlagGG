@@ -1073,7 +1073,7 @@ void ToGLSL::TranslateVariableNameWithMask(bstring glsl, const Operand* psOperan
                 bcstrfree(tmp);
                 bdestroy(dynamicIndex);
 
-                if (psOperand->eSelMode == OPERAND_4_COMPONENT_SELECT_1_MODE || ((componentsNeeded + minSwiz) <= psVarType->Columns))
+                if (/*psOperand->eSelMode == OPERAND_4_COMPONENT_SELECT_1_MODE || ((componentsNeeded + minSwiz) <= psVarType->Columns)*/true)
                 {
                     // Simple case: just access one component
                     std::string fullName = ShaderInfo::GetShaderVarIndexedFullName(psVarType, arrayIndices, dynamicIndexStr, needsIndexCalcRevert, psContext->flags & HLSLCC_FLAG_TRANSLATE_MATRICES);

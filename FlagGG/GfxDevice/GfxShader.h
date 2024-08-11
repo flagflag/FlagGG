@@ -29,7 +29,7 @@ public:
 	virtual void SetDefines(const Vector<String>& defines);
 
 	// 编译
-	virtual void Compile();
+	virtual bool Compile();
 
 protected:
 	// shader类型

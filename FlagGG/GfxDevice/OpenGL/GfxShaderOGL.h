@@ -19,7 +19,7 @@ public:
 	~GfxShaderOpenGL() override;
 
 	// 编译
-	void Compile() override;
+	bool Compile() override;
 
 	//
 	GLuint GetOGLShader() const { return oglShader_; }

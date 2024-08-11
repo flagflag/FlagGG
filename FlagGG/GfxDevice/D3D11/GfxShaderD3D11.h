@@ -42,7 +42,7 @@ public:
 	~GfxShaderD3D11() override;
 
 	// 编译
-	void Compile() override;
+	bool Compile() override;
 
 	// 获取ConstantBuffer描述
 	const HashMap<UInt32, D3D11ConstantBufferDesc>& GetContantBufferVariableDesc() const { return constantBufferDescs_; }

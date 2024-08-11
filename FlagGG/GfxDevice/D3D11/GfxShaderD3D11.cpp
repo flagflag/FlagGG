@@ -104,19 +104,19 @@ void GfxShaderD3D11::AnalysisReflection(ID3DBlob* compileCode)
 	D3D11_SAFE_RELEASE(reflector);
 }
 
-void GfxShaderD3D11::Compile()
+bool GfxShaderD3D11::Compile()
 {
 	if (shaderType_ == None)
 	{
 		FLAGGG_LOG_WARN("Shader type is None, so initialize failed.");
-		return;
+		return false;
 	}
 
 	ID3DBlob* compileCode = nullptr;
 	if (!CompileShader(shaderSource_.Get(), shaderSourceSize_, shaderType_, defines_, compileCode, shaderCode_))
 	{
 		FLAGGG_LOG_ERROR("Failed to compile shader.");
-		return;
+		return false;
 	}
 
 	AnalysisReflection(compileCode);
@@ -137,7 +137,7 @@ void GfxShaderD3D11::Compile()
 				FLAGGG_LOG_ERROR("CreateVertexShader failed.");
 
 				D3D11_SAFE_RELEASE(vertexShader_);
-				return;
+				return false;
 			}
 		}
 		else if (shaderType_ == PS)
@@ -153,10 +153,12 @@ void GfxShaderD3D11::Compile()
 				FLAGGG_LOG_ERROR("CreatePixelShader failed.");
 
 				D3D11_SAFE_RELEASE(pixelShader_);
-				return;
+				return false;
 			}
 		}
 	}
+
+	return true;
 }
 
 }
