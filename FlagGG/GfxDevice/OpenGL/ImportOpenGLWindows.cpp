@@ -38,15 +38,15 @@ static void InitWGL()
 		_wglMakeCurrent = (PFNWGLMAKECURRENTPROC)::GetProcAddress(hOpenGLLib, "wglMakeCurrent");
 		_wglCreateContext = (PFNWGLCREATECONTEXTPROC)::GetProcAddress(hOpenGLLib, "wglCreateContext");
 		_wglDeleteContext = (PFNWGLDELETECONTEXTPROC)::GetProcAddress(hOpenGLLib, "wglDeleteContext");
-
-		_wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)_wglGetProcAddress("wglChoosePixelFormatARB");
-		_wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)_wglGetProcAddress("wglCreateContextAttribsARB");
-		_wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)_wglGetProcAddress("wglSwapIntervalEXT");
 	}
 }
 
 static void ImportGLInterface()
 {
+	_wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)_wglGetProcAddress("wglChoosePixelFormatARB");
+	_wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)_wglGetProcAddress("wglCreateContextAttribsARB");
+	_wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)_wglGetProcAddress("wglSwapIntervalEXT");
+
 #define GFX_IMPORT(Proto, Func) \
 	Func = (Proto)::_wglGetProcAddress(#Func); \
 	if (!Func) \

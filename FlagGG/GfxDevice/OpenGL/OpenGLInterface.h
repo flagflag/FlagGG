@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/BaseMacro.h"
+#include "Log.h"
 
 #if HAS_OPENGL_LIB
 #include "ImportOpenGL.h"
@@ -140,168 +141,135 @@ typedef char GLchar;
 #define RGB_INTEGER  GL_RGB_INTEGER
 #define RGBA_INTEGER  GL_RGBA_INTEGER
 
+#if HAS_OPENGL_LIB
+#define GL_CHECK(Call) \
+	Call; \
+	GLenum errorCode = glGetError(); \
+	if (errorCode != 0) \
+	{ \
+		FLAGGG_LOG_STD_ERROR("Call opengl api error: %d => " ## #Call, errorCode); \
+		CRY_ASSERT_MESSAGE(false, #Call); \
+	}
+#else
+#define GL_CHECK(...)
+#endif
+
 namespace GL
 {
 
 FORCEINLINE void GenRenderbuffers(GLsizei n, GLuint* renderbuffers)
 {
-#if HAS_OPENGL_LIB
-	glGenRenderbuffers(n, renderbuffers);
-#endif
+	GL_CHECK(glGenRenderbuffers(n, renderbuffers));
 }
 
 FORCEINLINE void BindRenderbuffer(GLenum target, GLuint renderbuffer)
 {
-#if HAS_OPENGL_LIB
-	glBindRenderbuffer(target, renderbuffer);
-#endif
+	GL_CHECK(glBindRenderbuffer(target, renderbuffer));
 }
 
 FORCEINLINE void RenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
 {
-#if HAS_OPENGL_LIB
-	glRenderbufferStorage(target, internalformat, width, height);
-#endif
+	GL_CHECK(glRenderbufferStorage(target, internalformat, width, height));
 }
 
 FORCEINLINE void DeleteRenderbuffers(GLsizei n, const GLuint* renderbuffers)
 {
-#if HAS_OPENGL_LIB
-	glDeleteRenderbuffers(n, renderbuffers);
-#endif
+	GL_CHECK(glDeleteRenderbuffers(n, renderbuffers));
 }
 
 FORCEINLINE void GenTextures(GLsizei n, GLuint* textures)
 {
-#if HAS_OPENGL_LIB
-	glGenTextures(n, textures);
-#endif
+	GL_CHECK(glGenTextures(n, textures));
 }
 
 FORCEINLINE void BindTexture(GLenum target, GLuint texture)
 {
-#if HAS_OPENGL_LIB
-	glBindTexture(target, texture);
-#endif
+	GL_CHECK(glBindTexture(target, texture));
 }
 
 FORCEINLINE void PixelStorei(GLenum pname, GLint param)
 {
-#if HAS_OPENGL_LIB
-	glPixelStorei(pname, param);
-#endif
+	GL_CHECK(glPixelStorei(pname, param));
 }
 
 FORCEINLINE void TexStorage2D(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height)
 {
-#if HAS_OPENGL_LIB
-	glTexStorage2D(target, levels, internalformat, width, height);
-#endif
+	GL_CHECK(glTexStorage2D(target, levels, internalformat, width, height));
 }
 
 FORCEINLINE void TexStorage3D(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth)
 {
-#if HAS_OPENGL_LIB
-	glTexStorage3D(target, levels, internalformat, width, height, depth);
-#endif
+	GL_CHECK(glTexStorage3D(target, levels, internalformat, width, height, depth));
 }
 
 FORCEINLINE void DeleteTextures(GLsizei n, const GLuint* textures)
 {
-#if HAS_OPENGL_LIB
-	glDeleteTextures(n, textures);
-#endif
+	GL_CHECK(glDeleteTextures(n, textures));
 }
 
 FORCEINLINE void CompressedTexImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const void* data)
 {
-#if HAS_OPENGL_LIB
-	glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data);
-#endif
+	GL_CHECK(glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data));
 }
 
 FORCEINLINE void CompressedTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const void* data)
 {
-#if HAS_OPENGL_LIB
-	glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data);
-#endif
+	GL_CHECK(glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data));
 }
 
 FORCEINLINE void CompressedTexImage3D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLsizei imageSize, const void* data)
 {
-#if HAS_OPENGL_LIB
-	glCompressedTexImage3D(target, level, internalformat, width, height, depth, border, imageSize, data);
-#endif
+	GL_CHECK(glCompressedTexImage3D(target, level, internalformat, width, height, depth, border, imageSize, data));
 }
 
 FORCEINLINE void CompressedTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, const void* data)
 {
-#if HAS_OPENGL_LIB
-	glCompressedTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, imageSize, data);
-#endif
+	GL_CHECK(glCompressedTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, imageSize, data));
 }
 
 FORCEINLINE void TexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const void* pixels)
 {
-#if HAS_OPENGL_LIB
-	glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
-#endif
+	GL_CHECK(glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels));
 }
 
 FORCEINLINE void TexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels)
 {
-#if HAS_OPENGL_LIB
-	glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
-#endif
+	GL_CHECK(glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels));
 }
 
 FORCEINLINE void TexImage3D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const void* pixels)
 {
-#if HAS_OPENGL_LIB
-	glTexImage3D(target, level, internalformat, width, height, depth, border, format, type, pixels);
-#endif
+	GL_CHECK(glTexImage3D(target, level, internalformat, width, height, depth, border, format, type, pixels));
 }
 
 FORCEINLINE void TexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void* pixels)
 {
-#if HAS_OPENGL_LIB
-	glTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
-#endif
+	GL_CHECK(glTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels));
 }
 
 FORCEINLINE void GenBuffers(GLsizei n, GLuint* buffers)
 {
-#if HAS_OPENGL_LIB
-	glGenBuffers(n, buffers);
-#endif
+	GL_CHECK(glGenBuffers(n, buffers));
 }
 
 FORCEINLINE void BindBuffer(GLenum target, GLuint buffer)
 {
-#if HAS_OPENGL_LIB
-	glBindBuffer(target, buffer);
-#endif
+	GL_CHECK(glBindBuffer(target, buffer));
 }
 
 FORCEINLINE void BufferData(GLenum target, GLsizeiptr size, const void* data, GLenum usage)
 {
-#if HAS_OPENGL_LIB
-	glBufferData(target, size, data, usage);
-#endif
+	GL_CHECK(glBufferData(target, size, data, usage));
 }
 
 FORCEINLINE void BufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const void* data)
 {
-#if HAS_OPENGL_LIB
-	glBufferSubData(target, offset, size, data);
-#endif
+	GL_CHECK(glBufferSubData(target, offset, size, data));
 }
 
 FORCEINLINE void DeleteBuffers(GLsizei n, const GLuint* buffers)
 {
-#if HAS_OPENGL_LIB
-	glDeleteBuffers(n, buffers);
-#endif
+	GL_CHECK(glDeleteBuffers(n, buffers));
 }
 
 FORCEINLINE GLuint CreateShader(GLenum type)
@@ -315,37 +283,27 @@ FORCEINLINE GLuint CreateShader(GLenum type)
 
 FORCEINLINE void DeleteShader(GLuint shader)
 {
-#if HAS_OPENGL_LIB
-	glDeleteShader(shader);
-#endif
+	GL_CHECK(glDeleteShader(shader));
 }
 
 FORCEINLINE void ShaderSource(GLuint shader, GLsizei count, const GLchar* const* string, const GLint* length)
 {
-#if HAS_OPENGL_LIB
-	glShaderSource(shader, count, string, length);
-#endif
+	GL_CHECK(glShaderSource(shader, count, string, length));
 }
 
 FORCEINLINE void CompileShader(GLuint shader)
 {
-#if HAS_OPENGL_LIB
-	glCompileShader(shader);
-#endif
+	GL_CHECK(glCompileShader(shader));
 }
 
 FORCEINLINE void GetShaderiv(GLuint shader, GLenum pname, GLint* params)
 {
-#if HAS_OPENGL_LIB
-	glGetShaderiv(shader, pname, params);
-#endif
+	GL_CHECK(glGetShaderiv(shader, pname, params));
 }
 
 FORCEINLINE void GetShaderInfoLog(GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* infoLog)
 {
-#if HAS_OPENGL_LIB
-	glGetShaderInfoLog(shader, bufSize, length, infoLog);
-#endif
+	GL_CHECK(glGetShaderInfoLog(shader, bufSize, length, infoLog));
 }
 
 FORCEINLINE GLuint CreateProgram()
@@ -359,193 +317,149 @@ FORCEINLINE GLuint CreateProgram()
 
 FORCEINLINE void DeleteProgram(GLuint program)
 {
-#if HAS_OPENGL_LIB
-	glDeleteProgram(program);
-#endif
+	GL_CHECK(glDeleteProgram(program));
 }
 
 FORCEINLINE void AttachShader(GLuint program, GLuint shader)
 {
-#if HAS_OPENGL_LIB
-	glAttachShader(program, shader);
-#endif
+	GL_CHECK(glAttachShader(program, shader));
 }
 
 FORCEINLINE void LinkProgram(GLuint program)
 {
-#if HAS_OPENGL_LIB
-	glLinkProgram(program);
-#endif
+	GL_CHECK(glLinkProgram(program));
 }
 
 FORCEINLINE void GetProgramiv(GLuint program, GLenum pname, GLint* params)
 {
-#if HAS_OPENGL_LIB
-	glGetProgramiv(program, pname, params);
-#endif
+	GL_CHECK(glGetProgramiv(program, pname, params));
 }
 
 FORCEINLINE void GetProgramInfoLog(GLuint program, GLsizei bufSize, GLsizei* length, GLchar* infoLog)
 {
-#if HAS_OPENGL_LIB
-	glGetProgramInfoLog(program, bufSize, length, infoLog);
-#endif
+	GL_CHECK(glGetProgramInfoLog(program, bufSize, length, infoLog));
 }
 
 FORCEINLINE void BindFramebuffer(GLenum target, GLuint framebuffer)
 {
-#if HAS_OPENGL_LIB
-	glBindFramebuffer(target, framebuffer);
-#endif
+	GL_CHECK(glBindFramebuffer(target, framebuffer));
 }
 
 FORCEINLINE void GenFrameBuffers(GLsizei n, GLuint* framebuffers)
 {
-#if HAS_OPENGL_LIB
-	glGenFramebuffers(n, framebuffers);
-#endif
+	GL_CHECK(glGenFramebuffers(n, framebuffers));
 }
 
 FORCEINLINE void DrawArrays(GLenum mode, GLint first, GLsizei count)
 {
-#if HAS_OPENGL_LIB
-	glDrawArrays(mode, first, count);
-#endif
+	GL_CHECK(glDrawArrays(mode, first, count));
 }
 
 FORCEINLINE void DrawArraysInstanced(GLenum mode, GLint first, GLsizei count, GLsizei instancecount)
 {
-#if HAS_OPENGL_LIB
-	glDrawArraysInstanced(mode, first, count, instancecount);
-#endif
+	GL_CHECK(glDrawArraysInstanced(mode, first, count, instancecount));
 }
 
 FORCEINLINE void DrawElements(GLenum mode, GLsizei count, GLenum type, const void* indices)
 {
-#if HAS_OPENGL_LIB
-	glDrawElements(mode, count, type, indices);
-#endif
+	GL_CHECK(glDrawElements(mode, count, type, indices));
 }
 
 FORCEINLINE void DrawElementsInstanced(GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei instancecount)
 {
-#if HAS_OPENGL_LIB
-	glDrawElementsInstanced(mode, count, type, indices, instancecount);
-#endif
+	GL_CHECK(glDrawElementsInstanced(mode, count, type, indices, instancecount));
 }
 
 FORCEINLINE void ActiveTexture(GLenum texture)
 {
-#if HAS_OPENGL_LIB
-	glActiveTexture(texture);
-#endif
+	GL_CHECK(glActiveTexture(texture));
 }
 
 FORCEINLINE void Viewport(GLint x, GLint y, GLsizei width, GLsizei height)
 {
-#if HAS_OPENGL_LIB
-	glViewport(x, y, width, height);
-#endif
+	GL_CHECK(glViewport(x, y, width, height));
 }
 
 FORCEINLINE void Uniformli(GLint location, GLint v0)
 {
-#if HAS_OPENGL_LIB
-	glUniform1i(location, v0);
-#endif
+	GL_CHECK(glUniform1i(location, v0));
 }
 
 FORCEINLINE void Uniform1f(GLint location, GLfloat v0)
 {
-#if HAS_OPENGL_LIB
-	glUniform1f(location, v0);
-#endif
+	GL_CHECK(glUniform1f(location, v0));
 }
 
 FORCEINLINE void Uniform2f(GLint location, GLfloat v0, GLfloat v1)
 {
-#if HAS_OPENGL_LIB
-	glUniform2f(location, v0, v1);
-#endif
+	GL_CHECK(glUniform2f(location, v0, v1));
 }
 
 
 FORCEINLINE void Uniform3f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2)
 {
-#if HAS_OPENGL_LIB
-	glUniform3f(location, v0, v1, v2);
-#endif
+	GL_CHECK(glUniform3f(location, v0, v1, v2));
 }
 
 FORCEINLINE void Uniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
 {
-#if HAS_OPENGL_LIB
-	glUniform4f(location, v0, v1, v2, v3);
-#endif
+	GL_CHECK(glUniform4f(location, v0, v1, v2, v3));
 }
 
 FORCEINLINE void Uniform1iv(GLint location, GLsizei count, const GLint* value)
 {
-#if HAS_OPENGL_LIB
-	glUniform1iv(location, count, value);
-#endif
+	GL_CHECK(glUniform1iv(location, count, value));
 }
 
 FORCEINLINE void Uniform1fv(GLint location, GLsizei count, const GLfloat* value)
 {
-#if HAS_OPENGL_LIB
-	glUniform1fv(location, count, value);
-#endif
+	GL_CHECK(glUniform1fv(location, count, value));
 }
 
 FORCEINLINE void Uniform2fv(GLint location, GLsizei count, const GLfloat* value)
 {
-#if HAS_OPENGL_LIB
-	glUniform2fv(location, count, value);
-#endif
+	GL_CHECK(glUniform2fv(location, count, value));
 }
 
 FORCEINLINE void Uniform3fv(GLint location, GLsizei count, const GLfloat* value)
 {
-#if HAS_OPENGL_LIB
-	glUniform3fv(location, count, value);
-#endif
+	GL_CHECK(glUniform3fv(location, count, value));
 }
 
 FORCEINLINE void Uniform4fv(GLint location, GLsizei count, const GLfloat* value)
 {
-#if HAS_OPENGL_LIB
-	glUniform4fv(location, count, value);
-#endif
+	GL_CHECK(glUniform4fv(location, count, value));
 }
 
 FORCEINLINE void UniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
 {
-#if HAS_OPENGL_LIB
-	glUniformMatrix3fv(location, count, transpose, value);
-#endif
+	GL_CHECK(glUniformMatrix3fv(location, count, transpose, value));
 }
 
 FORCEINLINE void UniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
 {
-#if HAS_OPENGL_LIB
-	glUniformMatrix4fv(location, count, transpose, value);
-#endif
+GL_CHECK(glUniformMatrix4fv(location, count, transpose, value));
 }
 
 
 FORCEINLINE void UseProgram(GLuint program)
 {
-#if HAS_OPENGL_LIB
-	glUseProgram(program);
-#endif
+	GL_CHECK(glUseProgram(program));
+}
+
+FORCEINLINE void Enable(GLenum cap)
+{
+	GL_CHECK(glEnable(cap));
 }
 
 FORCEINLINE void Flush()
 {
-#if HAS_OPENGL_LIB
-	glFlush();
-#endif
+	GL_CHECK(glFlush());
+}
+
+FORCEINLINE void DebugMessageCallback(GLDEBUGPROC callback, const void* userParam)
+{
+	GL_CHECK(glDebugMessageCallback(callback, userParam));
 }
 
 }

@@ -52,10 +52,10 @@ public:
 
 #define FLAGGG_LOG_STD_DEBUG(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
 
-#define FLAGGG_LOG_STD_INFO(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
+#define FLAGGG_LOG_STD_INFO(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->info(FlagGG::ToString(format, ##__VA_ARGS__).CString())
 
-#define FLAGGG_LOG_STD_WARN(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
+#define FLAGGG_LOG_STD_WARN(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->warn(FlagGG::ToString(format, ##__VA_ARGS__).CString())
 
-#define FLAGGG_LOG_STD_ERROR(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
+#define FLAGGG_LOG_STD_ERROR(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->error(FlagGG::ToString(format, ##__VA_ARGS__).CString())
 
-#define FLAGGG_LOG_STD_CRITICAL(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->debug(FlagGG::ToString(format, ##__VA_ARGS__).CString())
+#define FLAGGG_LOG_STD_CRITICAL(format, ...) FlagGG::GetSubsystem<FlagGG::Logger>()->Default()->critical(FlagGG::ToString(format, ##__VA_ARGS__).CString())

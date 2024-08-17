@@ -118,43 +118,66 @@ GfxTextureOpenGL::~GfxTextureOpenGL()
 void GfxTextureOpenGL::CreateTexture2D()
 {
 	oglTarget_ = textureDesc_.layers_ <= 1 ? GL_TEXTURE_2D : GL_TEXTURE_2D_ARRAY;
-	oglFormat_ = textureDesc_.sRGB_ ? openglTextureFormat[textureDesc_.format_].fmtSrgb_ : openglTextureFormat[textureDesc_.format_].internalFmt_;
+	oglInternalFormat_ = textureDesc_.sRGB_ ? openglTextureFormat[textureDesc_.format_].internalFmtSrgb_ : openglTextureFormat[textureDesc_.format_].internalFmt_;
+	oglFormat_ = textureDesc_.sRGB_ ? openglTextureFormat[textureDesc_.format_].fmtSrgb_ : openglTextureFormat[textureDesc_.format_].fmt_;
 	oglType_ = openglTextureFormat[textureDesc_.format_].type_;
 	GL::GenTextures(1, &oglTexture_);
 	GL::BindTexture(oglTarget_, oglTexture_);
 	GL::PixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	GL::TexStorage2D(oglTarget_, textureDesc_.levels_, oglFormat_, textureDesc_.width_, textureDesc_.height_);
+	if (textureDesc_.layers_ <= 1)
+		GL::TexStorage2D(oglTarget_, textureDesc_.levels_, oglInternalFormat_, textureDesc_.width_, textureDesc_.height_);
+	else
+		GL::TexStorage3D(oglTarget_, textureDesc_.levels_, oglInternalFormat_, textureDesc_.width_, textureDesc_.height_, textureDesc_.layers_);
+	GL::BindTexture(oglTarget_, 0);
 
-	SharedPtr<GfxRenderSurfaceOpenGL> renderSurface(new GfxRenderSurfaceOpenGL(this, oglFormat_, textureDesc_.width_, textureDesc_.height_));
-	gfxRenderSurfaces_.Push(renderSurface);
+	if (textureDesc_.usage_ == TEXTURE_RENDERTARGET || textureDesc_.usage_ == TEXTURE_DEPTHSTENCIL)
+	{
+		SharedPtr<GfxRenderSurfaceOpenGL> renderSurface(new GfxRenderSurfaceOpenGL(this, oglFormat_, textureDesc_.width_, textureDesc_.height_));
+		gfxRenderSurfaces_.Push(renderSurface);
+	}
 }
 
 void GfxTextureOpenGL::CreateTexture3D()
 {
 	oglTarget_ = GL_TEXTURE_3D;
-	oglFormat_ = textureDesc_.sRGB_ ? openglTextureFormat[textureDesc_.format_].fmtSrgb_ : openglTextureFormat[textureDesc_.format_].internalFmt_;
+	oglInternalFormat_ = textureDesc_.sRGB_ ? openglTextureFormat[textureDesc_.format_].internalFmtSrgb_ : openglTextureFormat[textureDesc_.format_].internalFmt_;
+	oglFormat_ = textureDesc_.sRGB_ ? openglTextureFormat[textureDesc_.format_].fmtSrgb_ : openglTextureFormat[textureDesc_.format_].fmt_;
 	oglType_ = openglTextureFormat[textureDesc_.format_].type_;
 	GL::GenTextures(1, &oglTexture_);
 	GL::BindTexture(oglTarget_, oglTexture_);
 	GL::PixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	GL::TexStorage3D(oglTarget_, textureDesc_.levels_, oglFormat_, textureDesc_.width_, textureDesc_.height_, textureDesc_.depth_);
+	GL::TexStorage3D(oglTarget_, textureDesc_.levels_, oglInternalFormat_, textureDesc_.width_, textureDesc_.height_, textureDesc_.depth_);
+	GL::BindTexture(oglTarget_, 0);
 }
 
 void GfxTextureOpenGL::CreateTextureCube()
 {
 	oglTarget_ = textureDesc_.layers_ <= 1 ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_CUBE_MAP_ARRAY;
-	oglFormat_ = textureDesc_.sRGB_ ? openglTextureFormat[textureDesc_.format_].fmtSrgb_ : openglTextureFormat[textureDesc_.format_].internalFmt_;
+	oglInternalFormat_ = textureDesc_.sRGB_ ? openglTextureFormat[textureDesc_.format_].internalFmtSrgb_ : openglTextureFormat[textureDesc_.format_].internalFmt_;
+	oglFormat_ = textureDesc_.sRGB_ ? openglTextureFormat[textureDesc_.format_].fmtSrgb_ : openglTextureFormat[textureDesc_.format_].fmt_;
 	oglType_ = openglTextureFormat[textureDesc_.format_].type_;
 	GL::GenTextures(1, &oglTexture_);
 	GL::BindTexture(oglTarget_, oglTexture_);
 	GL::PixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	GL::TexStorage3D(oglTarget_, textureDesc_.levels_, oglFormat_, textureDesc_.width_, textureDesc_.height_, textureDesc_.depth_);
+	if (textureDesc_.layers_ <= 1)
+		GL::TexStorage2D(oglTarget_, textureDesc_.levels_, oglInternalFormat_, textureDesc_.width_, textureDesc_.height_);
+	else
+		GL::TexStorage3D(oglTarget_, textureDesc_.levels_, oglInternalFormat_, textureDesc_.width_, textureDesc_.height_, textureDesc_.layers_);
+	GL::BindTexture(oglTarget_, 0);
 }
 
 void GfxTextureOpenGL::ReleaseTexture()
 {
+	if (oglTarget_ == 0)
+		return;
+
 	GL::BindTexture(oglTarget_, 0);
 	GL::DeleteTextures(1, &oglTexture_);
+	oglTexture_ = 0;
+	oglTexture_ = 0;
+	oglInternalFormat_ = 0;
+	oglFormat_ = 0;
+	oglType_ = 0;
 	gfxRenderSurfaces_.Clear();
 }
 
@@ -197,12 +220,6 @@ void GfxTextureOpenGL::UpdateTextureSubRegion(const void* dataPtr, UInt32 index,
 		return;
 	}
 
-	if (oglTarget_ != GL_TEXTURE_2D || oglTarget_ != GL_TEXTURE_2D_ARRAY)
-	{
-		FLAGGG_LOG_ERROR("Gfx texture format conflict.");
-		return;
-	}
-
 	if (!dataPtr)
 	{
 		FLAGGG_LOG_ERROR("Texture2D ==> set nullptr data.");
@@ -215,25 +232,42 @@ void GfxTextureOpenGL::UpdateTextureSubRegion(const void* dataPtr, UInt32 index,
 		return;
 	}
 
-	const TextureMipInfo& mipInfo = GetMipInfo(level);
+	const TextureMipInfo mipInfo = GetMipInfo(level);
 	if (x < 0 || x + width > mipInfo.width_ || y < 0 || y + height > mipInfo.height_ || width <= 0 || height <= 0)
 	{
 		FLAGGG_LOG_ERROR("Texture2D ==> illegal dimensions.");
 		return;
 	}
 
-	const UInt8* src = static_cast<const UInt8*>(dataPtr);
-	UInt32 rowSize = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, width);
-	UInt32 rowStart = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, x);
+	GL::BindTexture(oglTarget_, oglTexture_);
 
 	if (IsCompressed())
 	{
-		GL::CompressedTexSubImage2D(oglTarget_, level, x, y, width, height, oglFormat_, mipInfo.height_ * rowSize, dataPtr);
+		const TextureDetail& detail = GfxTextureUtils::GetTextureDetail(textureDesc_.format_);
+		const UInt32 imageSize = (mipInfo.width_ / detail.blockWidth_) * (mipInfo.height_ / detail.blockHeight_) * detail.blockSize_;
+
+		if (oglTarget_ == GL_TEXTURE_2D)
+			GL::CompressedTexSubImage2D(oglTarget_, level, x, y, width, height, oglFormat_, imageSize, dataPtr);
+		else if (oglTarget_ == GL_TEXTURE_2D_ARRAY)
+			GL::CompressedTexSubImage3D(oglTarget_, level, x, y, index, width, height, 1, oglFormat_, imageSize, dataPtr);
+		else if (oglTarget_ == GL_TEXTURE_CUBE_MAP)
+			GL::CompressedTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, level, x, y, width, height, oglFormat_, imageSize, dataPtr);
+		else
+			FLAGGG_LOG_ERROR("Gfx texture format conflict.");
 	}
 	else
 	{
-		GL::TexSubImage2D(oglTarget_, level, x, y, width, height, oglFormat_, oglType_, dataPtr);
+		if (oglTarget_ == GL_TEXTURE_2D)
+			GL::TexSubImage2D(oglTarget_, level, x, y, width, height, oglFormat_, oglType_, dataPtr);
+		else if (oglTarget_ == GL_TEXTURE_2D_ARRAY)
+			GL::TexSubImage3D(oglTarget_, level, x, y, index, width, height, 1, oglFormat_, oglType_, dataPtr);
+		else if (oglTarget_ == GL_TEXTURE_CUBE_MAP)
+			GL::TexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, level, x, y, width, height, oglFormat_, oglType_, dataPtr);
+		else
+			FLAGGG_LOG_ERROR("Gfx texture format conflict.");
 	}
+
+	GL::BindTexture(oglTarget_, 0);
 }
 
 void GfxTextureOpenGL::UpdateTextureSubRegion(const void* dataPtr, UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 z, UInt32 width, UInt32 height, UInt32 depth)
@@ -262,25 +296,28 @@ void GfxTextureOpenGL::UpdateTextureSubRegion(const void* dataPtr, UInt32 index,
 		return;
 	}
 
-	const TextureMipInfo& mipInfo = GetMipInfo(level);
+	const TextureMipInfo mipInfo = GetMipInfo(level);
 	if (x < 0 || x + width > mipInfo.width_ || y < 0 || y + height > mipInfo.height_ || z < 0 || z + depth > mipInfo.depth_ || width <= 0 || height <= 0 || depth <= 0)
 	{
 		FLAGGG_LOG_ERROR("Texture3D ==> illegal dimensions.");
 		return;
 	}
 
-	const UInt8* src = static_cast<const UInt8*>(dataPtr);
-	UInt32 rowSize = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, width);
-	UInt32 rowStart = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, x);
+	GL::BindTexture(oglTarget_, oglTexture_);
 
 	if (IsCompressed())
 	{
-		GL::CompressedTexSubImage3D(oglTarget_, level, x, y, z, width, height, depth, oglFormat_, mipInfo.height_ * rowSize, dataPtr);
+		const TextureDetail& detail = GfxTextureUtils::GetTextureDetail(textureDesc_.format_);
+		const UInt32 imageSize = (mipInfo.width_ / detail.blockWidth_) * (mipInfo.height_ / detail.blockHeight_) * detail.blockSize_;
+
+		GL::CompressedTexSubImage3D(oglTarget_, level, x, y, z, width, height, depth, oglFormat_, imageSize, dataPtr);
 	}
 	else
 	{
 		GL::TexSubImage3D(oglTarget_, level, x, y, z, width, height, depth, oglFormat_, oglType_, dataPtr);
 	}
+
+	GL::BindTexture(oglTarget_, 0);
 }
 
 GfxRenderSurface* GfxTextureOpenGL::GetRenderSurface() const

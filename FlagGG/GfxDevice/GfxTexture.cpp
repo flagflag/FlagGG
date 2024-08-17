@@ -110,7 +110,7 @@ const TextureDetail& GfxTexture::GetDetail() const
 	return GfxTextureUtils::GetTextureDetail(textureDesc_.format_);
 }
 
-const TextureMipInfo& GfxTexture::GetMipInfo(UInt32 level) const
+TextureMipInfo GfxTexture::GetMipInfo(UInt32 level) const
 {
 	return GfxTextureUtils::GetTextureMipInfo(textureDesc_.format_, textureDesc_.width_, textureDesc_.height_, textureDesc_.depth_, textureDesc_.levels_, level);
 }

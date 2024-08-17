@@ -544,7 +544,7 @@ void GfxTextureD3D11::UpdateTextureSubRegion(const void* dataPtr, UInt32 index, 
 		return;
 	}
 
-	const TextureMipInfo& mipInfo = GetMipInfo(level);
+	const TextureMipInfo mipInfo = GetMipInfo(level);
 	if (x < 0 || x + width > mipInfo.width_ || y < 0 || y + height > mipInfo.height_ || width <= 0 || height <= 0)
 	{
 		FLAGGG_LOG_ERROR("Texture2D ==> illegal dimensions.");
@@ -552,7 +552,7 @@ void GfxTextureD3D11::UpdateTextureSubRegion(const void* dataPtr, UInt32 index, 
 	}
 
 	const UInt8* src = static_cast<const UInt8*>(dataPtr);
-	UInt32 rowSize = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, width);
+	UInt32 rowSize = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, mipInfo.width_);
 	UInt32 rowStart = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, x);
 	UInt32 subResource = D3D11CalcSubresource(level, index, textureDesc_.levels_);
 
@@ -611,7 +611,7 @@ void GfxTextureD3D11::UpdateTextureSubRegion(const void* dataPtr, UInt32 index, 
 		return;
 	}
 
-	const TextureMipInfo& mipInfo = GetMipInfo(level);
+	const TextureMipInfo mipInfo = GetMipInfo(level);
 	if (x < 0 || x + width > mipInfo.width_ || y < 0 || y + height > mipInfo.height_ || z < 0 || z + depth > mipInfo.depth_ || width <= 0 || height <= 0 || depth <= 0)
 	{
 		FLAGGG_LOG_ERROR("Texture3D ==> illegal dimensions.");
@@ -619,7 +619,7 @@ void GfxTextureD3D11::UpdateTextureSubRegion(const void* dataPtr, UInt32 index, 
 	}
 
 	const UInt8* src = static_cast<const UInt8*>(dataPtr);
-	UInt32 rowSize = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, width);
+	UInt32 rowSize = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, mipInfo.width_);
 	UInt32 rowStart = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, x);
 	UInt32 subResource = D3D11CalcSubresource(level, index, textureDesc_.levels_);
 

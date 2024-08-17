@@ -13,11 +13,24 @@ GfxDeviceOpenGL::GfxDeviceOpenGL()
 	: GfxDevice()
 {
 	glContext_ = GL::CreateGLContext();
+
+#if _DEBUG
+	GL::Enable(GL_DEBUG_OUTPUT);
+	GL::DebugMessageCallback([](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+	{
+		if (type == GL_DEBUG_TYPE_ERROR)
+			FLAGGG_LOG_STD_ERROR("GL ERROR: type = %d, severity = %d, message = %s", type, severity, message);
+		else
+			FLAGGG_LOG_STD_DEBUG("GL DEBUG: type = %dx, severity = %d, message = %s", type, severity, message);
+	}, glContext_);
+#endif
 }
 
 GfxDeviceOpenGL::~GfxDeviceOpenGL()
 {
-
+#if _DEBUG
+	GL::DebugMessageCallback(nullptr, nullptr);
+#endif
 }
 
 void GfxDeviceOpenGL::SetFrameBuffer()

@@ -59,6 +59,7 @@ protected:
 private:
 	GLuint oglTexture_{};
 	GLenum oglTarget_{};
+	GLenum oglInternalFormat_{};
 	GLenum oglFormat_{};
 	GLenum oglType_{};
 
