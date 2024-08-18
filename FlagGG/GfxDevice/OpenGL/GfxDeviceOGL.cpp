@@ -4,10 +4,27 @@
 #include "GfxBufferOGL.h"
 #include "GfxShaderOGL.h"
 #include "GfxProgramOGL.h"
+#include "GfxDevice/VertexDescFactory.h"
 #include "Graphics/ShaderParameter.h"
 
 namespace FlagGG
 {
+
+struct OglVertexElements
+{
+	GLint components_;
+	GLenum type_;
+};
+static const OglVertexElements oglVertexElements[] =
+{
+	{ 1, GL_INT   },          // VE_INT
+	{ 1, GL_FLOAT },          // VE_FLOAT
+	{ 2, GL_FLOAT  },         // VE_VECTOR2
+	{ 3, GL_FLOAT },          // VE_VECTOR3
+	{ 4, GL_FLOAT },          // VE_VECTOR4
+	{ 4, GL_UNSIGNED_BYTE },  // VE_UBYTE4
+	{ 4, GL_UNSIGNED_BYTE },  // VE_UBYTE4_UNORM
+};
 
 GfxDeviceOpenGL::GfxDeviceOpenGL()
 	: GfxDevice()
@@ -36,14 +53,17 @@ GfxDeviceOpenGL::~GfxDeviceOpenGL()
 void GfxDeviceOpenGL::SetFrameBuffer()
 {
 	GLFrameBufferKey key;
-	for (UInt32 i = 0u; i < MAX_RENDERTARGET_COUNT; ++i)
+
 	{
-		SharedPtr<GfxRenderSurfaceOpenGL> renderTargetGL(RTTICast<GfxRenderSurfaceOpenGL>(renderTargets_[i]));
-		key[i] = renderTargetGL ? renderTargetGL->GetOGLRenderBuffer() : 0u;
+		for (UInt32 i = 0u; i < MAX_RENDERTARGET_COUNT; ++i)
+		{
+			SharedPtr<GfxRenderSurfaceOpenGL> renderTargetGL(RTTICast<GfxRenderSurfaceOpenGL>(renderTargets_[i]));
+			key[i] = renderTargetGL ? renderTargetGL->GetOGLRenderBuffer() : 0u;
+		}
+		SharedPtr<GfxRenderSurfaceOpenGL> depthStencilGL(RTTICast<GfxRenderSurfaceOpenGL>(depthStencil_));
+		key[MAX_RENDERTARGET_COUNT] = depthStencilGL ? depthStencilGL->GetOGLRenderBuffer() : 0u;
+		key.CalculateHash();
 	}
-	SharedPtr<GfxRenderSurfaceOpenGL> depthStencilGL(RTTICast<GfxRenderSurfaceOpenGL>(depthStencil_));
-	key[MAX_RENDERTARGET_COUNT] = depthStencilGL ? depthStencilGL->GetOGLRenderBuffer() : 0u;
-	key.CalculateHash();
 	
 	auto it = frameBufferMap_.Find(key);
 	if (it != frameBufferMap_.End())
@@ -53,8 +73,24 @@ void GfxDeviceOpenGL::SetFrameBuffer()
 	}
 
 	GLuint oglFrameBuffer = 0u;
-	GL::GenFrameBuffers(1, &oglFrameBuffer);
+	GL::GenFramebuffers(1, &oglFrameBuffer);
 	GL::BindFramebuffer(GL_FRAMEBUFFER, oglFrameBuffer);
+
+	{
+		for (UInt32 i = 0u; i < MAX_RENDERTARGET_COUNT; ++i)
+		{
+			SharedPtr<GfxRenderSurfaceOpenGL> renderTargetGL(RTTICast<GfxRenderSurfaceOpenGL>(renderTargets_[i]));
+			if (renderTargetGL && renderTargetGL->GetOGLRenderBuffer())
+			{
+				GL::FramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_RENDERBUFFER, renderTargetGL->GetOGLRenderBuffer());
+			}
+		}
+		SharedPtr<GfxRenderSurfaceOpenGL> depthStencilGL(RTTICast<GfxRenderSurfaceOpenGL>(depthStencil_));
+		if (depthStencilGL && depthStencilGL->GetOGLRenderBuffer())
+		{
+			GL::FramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthStencilGL->GetOGLRenderBuffer());
+		}
+	}
 
 	frameBufferMap_.Insert(MakePair(key, oglFrameBuffer));
 }
@@ -87,13 +123,21 @@ void GfxDeviceOpenGL::PrepareDraw()
 
 	if (vertexBufferDirty_)
 	{
-
+		if (vertexBuffers_.Size())
+		{
+			auto vertexBufferOGL = RTTICast<GfxBufferOpenGL>(vertexBuffers_[0]);
+			if (vertexBufferOGL)
+				GL::BindBuffer(GL_ARRAY_BUFFER, vertexBufferOGL->GetOGLBuffer());
+		}
 
 		vertexBufferDirty_ = false;
 	}
 
 	if (indexBufferDirty_)
 	{
+		auto indexBufferOGL = RTTICast<GfxBufferOpenGL>(indexBuffer_);
+		if (indexBufferOGL)
+			GL::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferOGL->GetOGLBuffer());
 
 		indexBufferDirty_ = false;
 	}
@@ -116,7 +160,7 @@ void GfxDeviceOpenGL::PrepareDraw()
 
 	if (vertexDescDirty_)
 	{
-
+		BindOGLInputLayout(vertexDesc_);
 
 		vertexDescDirty_ = false;
 	}
@@ -135,11 +179,11 @@ void GfxDeviceOpenGL::PrepareDraw()
 	{
 		for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
 		{
-			auto currentTexture = RTTICast<GfxTextureOpenGL>(textures_[i]);
-			if (currentTexture)
+			auto textureOGL = RTTICast<GfxTextureOpenGL>(textures_[i]);
+			if (textureOGL)
 			{
 				GL::ActiveTexture(GL_TEXTURE0 + i);
-				GL::BindTexture(currentTexture->GetOGLTarget(), currentTexture->GetOGLTexture());
+				GL::BindTexture(textureOGL->GetOGLTarget(), textureOGL->GetOGLTexture());
 
 				// TODO: Set sample state
 			}
@@ -217,6 +261,40 @@ void GfxDeviceOpenGL::SetShaderParameters(const Vector<OGLShaderUniformVariableD
 	}
 }
 
+void GfxDeviceOpenGL::BindOGLInputLayout(VertexDescription* vertxDesc)
+{
+	if (currentProgram_)
+	{
+		const auto& vertexInputDescs = currentProgram_->GetVertexInputDescs();
+		const PODVector<VertexElement>& elements = vertxDesc->GetElements();
+
+		for (const auto& element : elements)
+		{
+			const char* semName = VERTEX_ELEMENT_SEM_NAME[element.vertexElementSemantic_];
+
+			auto it = vertexInputDescs.Find(semName);
+			if (it != vertexInputDescs.End())
+			{
+				auto& desc = it->second_;
+
+				GL::EnableVertexAttribArray(desc.location_);
+				GL::VertexAttribDivisor(desc.location_, 0);
+				GL::VertexAttribPointer(desc.location_,
+					oglVertexElements[element.vertexElementType_].components_,
+					oglVertexElements[element.vertexElementType_].type_,
+					false,
+					VERTEX_ELEMENT_TYPE_SIZE[element.vertexElementType_],
+					nullptr);
+			}
+		}
+	}
+}
+
+void GfxDeviceOpenGL::UnbindOGLInputLayout(VertexDescription* vertxDesc)
+{
+
+}
+
 static GLenum GetOGLPrimitive(PrimitiveType primitiveType)
 {
 	switch (primitiveType)
@@ -245,7 +323,8 @@ void GfxDeviceOpenGL::DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 v
 	PrepareDraw();
 
 	UInt32 indexStartByte = indexStart * indexBuffer_->GetDesc().stride_;
-	GL::DrawElements(GetOGLPrimitive(primitiveType_), indexCount, 0, (void*)(uintptr_t)indexStartByte);
+	GLenum indexFormat = indexBuffer_->GetDesc().stride_ == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
+	GL::DrawElements(GetOGLPrimitive(primitiveType_), indexCount, indexFormat, (void*)(uintptr_t)indexStartByte);
 }
 
 void GfxDeviceOpenGL::DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceCount)
@@ -253,7 +332,8 @@ void GfxDeviceOpenGL::DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount,
 	PrepareDraw();
 
 	UInt32 indexStartByte = indexStart * indexBuffer_->GetDesc().stride_;
-	GL::DrawElementsInstanced(GetOGLPrimitive(primitiveType_), indexCount, 0, (void*)(uintptr_t)indexStartByte, instanceCount);
+	GLenum indexFormat = indexBuffer_->GetDesc().stride_ == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
+	GL::DrawElementsInstanced(GetOGLPrimitive(primitiveType_), indexCount, indexFormat, (void*)(uintptr_t)indexStartByte, instanceCount);
 }
 
 void GfxDeviceOpenGL::Flush()

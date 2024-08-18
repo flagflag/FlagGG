@@ -26,6 +26,8 @@ public:
 
 private:
 	GLuint oglShader_{};
+
+	String oglShaderCode_;
 };
 
 }

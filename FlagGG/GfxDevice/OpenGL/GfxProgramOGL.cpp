@@ -53,6 +53,8 @@ void GfxProgramOpenGL::Link(GfxShader* vertexShader, GfxShader* pixelShader)
 	}
 
 	GfxProgram::Link(vertexShader, pixelShader);
+
+	ProcessReflect();
 }
 
 void GfxProgramOpenGL::LinkComputeShader(GfxShader* computeShader)
@@ -74,6 +76,22 @@ void GfxProgramOpenGL::LinkComputeShader(GfxShader* computeShader)
 	// TODO:
 
 	GfxProgram::LinkComputeShader(computeShader);
+}
+
+void GfxProgramOpenGL::ProcessReflect()
+{
+	for (UInt32 i = 0; i < MAX_VERTEX_ELEMENT_SEMANTIC; ++i)
+	{
+		for (UInt32 j = 0; j < 8; ++j)
+		{
+			const String variableName = String("in_") + VERTEX_ELEMENT_SEM_NAME[i] + String(j);
+			GLint location = GL::GetAttribLocation(oglProgram_, variableName.CString());
+			if (location != -1)
+			{
+				vertexInputDescs_.Insert(MakePair(StringHash(VERTEX_ELEMENT_SEM_NAME[i]), OGLVertexInputDesc{ location, variableName }));
+			}
+		}
+	}
 }
 
 }

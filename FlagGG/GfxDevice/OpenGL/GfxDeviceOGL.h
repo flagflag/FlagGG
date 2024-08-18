@@ -116,6 +116,10 @@ protected:
 
 	void SetShaderParameters(const Vector<OGLShaderUniformVariableDesc>& uniformVariableDesc);
 
+	void BindOGLInputLayout(VertexDescription* vertxDesc);
+
+	void UnbindOGLInputLayout(VertexDescription* vertxDesc);
+
 private:
 	HashMap<GLFrameBufferKey, GLuint> frameBufferMap_;
 

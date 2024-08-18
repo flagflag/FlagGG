@@ -17,12 +17,14 @@ class GfxRenderSurfaceOpenGL : public GfxRenderSurface
 public:
 	explicit GfxRenderSurfaceOpenGL(GfxTexture* ownerTexture, GLenum textureFormat, GLsizei width, GLsizei height);
 
+	explicit GfxRenderSurfaceOpenGL(GfxSwapChain* ownerSwapChain);
+
 	~GfxRenderSurfaceOpenGL() override;
 
 	GLuint GetOGLRenderBuffer() const { return oglRenderBuffer_; }
 
 private:
-	GLuint oglRenderBuffer_;
+	GLuint oglRenderBuffer_{};
 };
 
 }

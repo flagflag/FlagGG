@@ -33,6 +33,16 @@ public:
 	// 结束写数据
 	void EndWrite(UInt32 bytesWritten) override;
 
+
+	//
+	GLenum GetOGLTarget() const { return oglTarget_; }
+
+	//
+	GLuint GetOGLBuffer() const { return oglBuffer_; }
+
+	//
+	GLenum GetOGLUsage() const { return oglUsage_; }
+
 protected:
 	void ReleaseBuffer();
 

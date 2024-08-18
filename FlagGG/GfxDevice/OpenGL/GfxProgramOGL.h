@@ -26,6 +26,12 @@ struct OGLShaderTextureDesc
 	String name_;
 };
 
+struct OGLVertexInputDesc
+{
+	GLint location_;
+	String variableName_;
+};
+
 class GfxProgramOpenGL : public GfxProgram
 {
 	OBJECT_OVERRIDE(GfxProgramOpenGL, GfxProgram);
@@ -50,11 +56,19 @@ public:
 	// 获取纹理描述
 	const HashMap<UInt32, OGLShaderTextureDesc>& GetTextureDescs() const { return textureDescs_; }
 
+	// 获取顶点输入描述
+	const HashMap<StringHash, OGLVertexInputDesc>& GetVertexInputDescs() const { return vertexInputDescs_; }
+
+protected:
+	void ProcessReflect();
+
 private:
 	GLuint oglProgram_{};
 
 	Vector<OGLShaderUniformVariableDesc> uniformVariableDescs_;
 	HashMap<UInt32, OGLShaderTextureDesc> textureDescs_;
+	// Key: ElementSemName hash, Value: { location, variableName }
+	HashMap<StringHash, OGLVertexInputDesc> vertexInputDescs_;
 };
 
 }

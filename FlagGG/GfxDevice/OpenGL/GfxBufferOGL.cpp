@@ -103,11 +103,17 @@ void GfxBufferOpenGL::EndWrite(UInt32 bytesWritten)
 
 void GfxBufferOpenGL::ReleaseBuffer()
 {
-	if (oglBuffer_)
-	{
-		GL::BindBuffer(oglTarget_, 0);
-		GL::DeleteBuffers(1, &oglBuffer_);
-	}
+	if (oglBuffer_ == 0)
+		return;
+
+	GL::BindBuffer(oglTarget_, 0);
+	GL::DeleteBuffers(1, &oglBuffer_);
+
+	oglTarget_ = 0;
+	oglBuffer_ = 0;
+	oglUsage_ = 0;
+	shadowdData_.Clear();
+	writeOffset_ = 0;
 }
 
 }

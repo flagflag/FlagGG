@@ -345,9 +345,14 @@ FORCEINLINE void BindFramebuffer(GLenum target, GLuint framebuffer)
 	GL_CHECK(glBindFramebuffer(target, framebuffer));
 }
 
-FORCEINLINE void GenFrameBuffers(GLsizei n, GLuint* framebuffers)
+FORCEINLINE void GenFramebuffers(GLsizei n, GLuint* framebuffers)
 {
 	GL_CHECK(glGenFramebuffers(n, framebuffers));
+}
+
+FORCEINLINE void FramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
+{
+	GL_CHECK(glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer));
 }
 
 FORCEINLINE void DrawArrays(GLenum mode, GLint first, GLsizei count)
@@ -441,7 +446,6 @@ FORCEINLINE void UniformMatrix4fv(GLint location, GLsizei count, GLboolean trans
 GL_CHECK(glUniformMatrix4fv(location, count, transpose, value));
 }
 
-
 FORCEINLINE void UseProgram(GLuint program)
 {
 	GL_CHECK(glUseProgram(program));
@@ -450,6 +454,40 @@ FORCEINLINE void UseProgram(GLuint program)
 FORCEINLINE void Enable(GLenum cap)
 {
 	GL_CHECK(glEnable(cap));
+}
+
+FORCEINLINE void EnableVertexAttribArray(GLuint index)
+{
+	GL_CHECK(glEnableVertexAttribArray(index));
+}
+
+FORCEINLINE void DisableVertexAttribArray(GLuint index)
+{
+	GL_CHECK(glDisableVertexAttribArray(index));
+}
+
+FORCEINLINE void VertexAttribDivisor(GLuint index, GLuint divisor)
+{
+	GL_CHECK(glVertexAttribDivisor(index, divisor));
+}
+
+FORCEINLINE void VertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer)
+{
+	GL_CHECK(glVertexAttribPointer(index, size, type, normalized, stride, pointer));
+}
+
+FORCEINLINE void VertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer)
+{
+	GL_CHECK(glVertexAttribIPointer(index, size, type, stride, pointer));
+}
+
+FORCEINLINE GLint GetAttribLocation(GLuint program, const GLchar* name)
+{
+#if HAS_OPENGL_LIB
+	return glGetAttribLocation(program, name);
+#else
+	return -1;
+#endif
 }
 
 FORCEINLINE void Flush()

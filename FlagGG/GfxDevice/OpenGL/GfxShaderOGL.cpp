@@ -33,12 +33,11 @@ bool GfxShaderOpenGL::Compile()
 	oglShader_ = GL::CreateShader(oglShaderType);
 	ASSERT_MESSAGE(oglShader_ != 0, "CreateShader failed.");
 
-	String glslShaderCode;
-	if (!CompileShader(COMPILE_SHADER_GLSL, shaderSource_.Get(), shaderSourceSize_, shaderType_, defines_, glslShaderCode))
+	if (!CompileShader(COMPILE_SHADER_GLSL, shaderSource_.Get(), shaderSourceSize_, shaderType_, defines_, oglShaderCode_))
 		return false;
 
-	const GLchar* oglShaderCode = glslShaderCode.CString();
-	const GLint oglShaderCodeSize = glslShaderCode.Length();
+	const GLchar* oglShaderCode = oglShaderCode_.CString();
+	const GLint oglShaderCodeSize = oglShaderCode_.Length();
 	GL::ShaderSource(oglShader_, 1, &oglShaderCode, &oglShaderCodeSize);
 	GL::CompileShader(oglShader_);
 
@@ -51,7 +50,7 @@ bool GfxShaderOpenGL::Compile()
 		GLsizei logSize;
 		GL::GetShaderInfoLog(oglShader_, sizeof(log), &logSize, log);
 
-		FLAGGG_LOG_STD_ERROR("Compile shader failed, error log: %s\nSource code: %s", log, glslShaderCode.CString());
+		FLAGGG_LOG_STD_ERROR("Compile shader failed, error log: %s\nSource code: %s", log, oglShaderCode_.CString());
 		ASSERT_MESSAGE(false, "Compile shader failed.");
 
 		GL::DeleteShader(oglShader_);

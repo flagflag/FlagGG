@@ -12,10 +12,19 @@ GfxRenderSurfaceOpenGL::GfxRenderSurfaceOpenGL(GfxTexture* ownerTexture, GLenum 
 	GL::BindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
+GfxRenderSurfaceOpenGL::GfxRenderSurfaceOpenGL(GfxSwapChain* ownerSwapChain)
+	: GfxRenderSurface(ownerSwapChain)
+{
+
+}
+
 GfxRenderSurfaceOpenGL::~GfxRenderSurfaceOpenGL()
 {
 	if (oglRenderBuffer_ != 0)
+	{
 		GL::DeleteRenderbuffers(1, &oglRenderBuffer_);
+		oglRenderBuffer_ = 0;
+	}
 }
 
 }
