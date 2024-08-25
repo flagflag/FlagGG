@@ -92,6 +92,133 @@ void GfxProgramOpenGL::ProcessReflect()
 			}
 		}
 	}
+
+	bool useProgramInterfaceQuery = !!glGetProgramInterfaceiv;
+
+	struct VariableInfo
+	{
+		GLenum type;
+		GLint  loc;
+		GLint  num;
+	} vi;
+
+	char name[1025];
+
+	if (useProgramInterfaceQuery)
+	{
+		GLint numUniforms = 0;
+		GL::GetProgramInterfaceiv(oglProgram_, GL_UNIFORM, GL_ACTIVE_RESOURCES, &numUniforms);
+
+		GLenum props[] = { GL_TYPE, GL_LOCATION, GL_ARRAY_SIZE };
+
+		for (UInt32 i = 0; i < numUniforms; ++i)
+		{
+			GL::GetProgramResourceiv(oglProgram_, GL_UNIFORM, i, 3, props, 3, NULL, (GLint*)&vi);
+			GL::GetProgramResourceName(oglProgram_, GL_UNIFORM, i, 1024, NULL, name);
+
+			OGLShaderUniformVariableDesc& uniformVariableDesc = uniformVariableDescs_.EmplaceBack();
+			uniformVariableDesc.name_ = name;
+			uniformVariableDesc.type_ = vi.type;
+			uniformVariableDesc.location_ = vi.loc;
+			uniformVariableDesc.arraySize_ = Max(vi.num, 1);
+
+			switch (vi.type)
+			{
+			case GL_INT:
+			{
+				uniformVariableDesc.dataSize_ = sizeof(int) * uniformVariableDesc.arraySize_;
+				uniformVariableDesc.uniformFunc_ = [](const OGLShaderUniformVariableDesc& desc, const void* data)
+				{
+					GL::Uniform1iv(desc.location_, desc.arraySize_, (const GLint*)data);
+				};
+			}
+			break;
+
+			case GL_FLOAT:
+			{
+				uniformVariableDesc.dataSize_ = sizeof(float) * uniformVariableDesc.arraySize_;
+				uniformVariableDesc.uniformFunc_ = [](const OGLShaderUniformVariableDesc& desc, const void* data)
+				{
+					GL::Uniform1fv(desc.location_, desc.arraySize_, (const GLfloat*)data);
+				};
+			}
+			break;
+
+			case GL_FLOAT_VEC2:
+			{
+				uniformVariableDesc.dataSize_ = sizeof(float) * 2 * uniformVariableDesc.arraySize_;
+				uniformVariableDesc.uniformFunc_ = [](const OGLShaderUniformVariableDesc& desc, const void* data)
+				{
+					GL::Uniform2fv(desc.location_, desc.arraySize_, (const GLfloat*)data);
+				};
+			}
+			break;
+
+			case GL_FLOAT_VEC3:
+			{
+				uniformVariableDesc.dataSize_ = sizeof(float) * 3 * uniformVariableDesc.arraySize_;
+				uniformVariableDesc.uniformFunc_ = [](const OGLShaderUniformVariableDesc& desc, const void* data)
+				{
+					GL::Uniform3fv(desc.location_, desc.arraySize_, (const GLfloat*)data);
+				};
+			}
+			break;
+
+			case GL_FLOAT_VEC4:
+			{
+				uniformVariableDesc.dataSize_ = sizeof(float) * 4 * uniformVariableDesc.arraySize_;
+				uniformVariableDesc.uniformFunc_ = [](const OGLShaderUniformVariableDesc& desc, const void* data)
+				{
+					GL::Uniform4fv(desc.location_, desc.arraySize_, (const GLfloat*)data);
+				};
+			}
+			break;
+
+			case GL_FLOAT_MAT3:
+			{
+				uniformVariableDesc.dataSize_ = sizeof(float) * 9 * uniformVariableDesc.arraySize_;
+				uniformVariableDesc.uniformFunc_ = [](const OGLShaderUniformVariableDesc& desc, const void* data)
+				{
+					GL::UniformMatrix3fv(desc.location_, desc.arraySize_, false, (const GLfloat*)data);
+				};
+			}
+			break;
+
+			case GL_FLOAT_MAT4:
+			{
+				uniformVariableDesc.dataSize_ = sizeof(float) * 16 * uniformVariableDesc.arraySize_;
+				uniformVariableDesc.uniformFunc_ = [](const OGLShaderUniformVariableDesc& desc, const void* data)
+				{
+					GL::UniformMatrix4fv(desc.location_, desc.arraySize_, false, (const GLfloat*)data);
+				};
+			}
+			break;
+
+			default:
+			{
+				uniformVariableDesc.uniformFunc_ = nullptr;
+			}
+			break;
+			}
+		}
+	}
+	else
+	{
+		GLint numUniforms = 0;
+		GL::GetProgramiv(oglProgram_, GL_UNIFORM, &numUniforms);
+
+		for (UInt32 i = 0; i < numUniforms; ++i)
+		{
+			GL::GetActiveUniform(oglProgram_, i, 1024, NULL, &vi.num, &vi.type, name);
+			vi.loc = GL::GetUniformLocation(oglProgram_, name);
+
+			OGLShaderUniformVariableDesc& uniformVariableDesc = uniformVariableDescs_.EmplaceBack();
+			uniformVariableDesc.name_ = name;
+			uniformVariableDesc.type_ = vi.type;
+			uniformVariableDesc.location_ = vi.loc;
+			uniformVariableDesc.arraySize_ = Max(vi.num, 1);
+		}
+	}
 }
 
 }

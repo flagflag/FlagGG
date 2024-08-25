@@ -340,6 +340,35 @@ FORCEINLINE void GetProgramInfoLog(GLuint program, GLsizei bufSize, GLsizei* len
 	GL_CHECK(glGetProgramInfoLog(program, bufSize, length, infoLog));
 }
 
+FORCEINLINE void GetProgramInterfaceiv(GLuint program, GLenum programInterface, GLenum pname, GLint* params)
+{
+	GL_CHECK(glGetProgramInterfaceiv(program, programInterface, pname, params));
+}
+
+FORCEINLINE void GetProgramResourceiv(GLuint program, GLenum programInterface, GLuint index, GLsizei propCount, const GLenum* props, GLsizei bufSize, GLsizei* length, GLint* params)
+{
+	GL_CHECK(glGetProgramResourceiv(program, programInterface, index, propCount, props, bufSize, length, params));
+}
+
+FORCEINLINE void GetProgramResourceName(GLuint program, GLenum programInterface, GLuint index, GLsizei bufSize, GLsizei* length, GLchar* name)
+{
+	GL_CHECK(glGetProgramResourceName(program, programInterface, index, bufSize, length, name));
+}
+
+FORCEINLINE void GetActiveUniform(GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name)
+{
+	GL_CHECK(GetActiveUniform(program, index, bufSize, length, size, type, name));
+}
+
+FORCEINLINE GLint GetUniformLocation(GLuint program, const GLchar* name)
+{
+#ifdef HAS_OPENGL_LIB
+	return glGetUniformLocation(program, name);
+#else
+	return -1;
+#endif
+}
+
 FORCEINLINE void BindFramebuffer(GLenum target, GLuint framebuffer)
 {
 	GL_CHECK(glBindFramebuffer(target, framebuffer));
@@ -443,7 +472,7 @@ FORCEINLINE void UniformMatrix3fv(GLint location, GLsizei count, GLboolean trans
 
 FORCEINLINE void UniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
 {
-GL_CHECK(glUniformMatrix4fv(location, count, transpose, value));
+	GL_CHECK(glUniformMatrix4fv(location, count, transpose, value));
 }
 
 FORCEINLINE void UseProgram(GLuint program)

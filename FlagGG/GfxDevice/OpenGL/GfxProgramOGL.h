@@ -12,13 +12,18 @@
 namespace FlagGG
 {
 
+class OGLShaderUniformVariableDesc;
+
+typedef void(*UniformFunc)(const OGLShaderUniformVariableDesc& desc, const void* data);
+
 struct OGLShaderUniformVariableDesc
 {
 	String name_;
 	GLenum type_;
 	GLint location_;
-	UInt32 vectorSize_;
 	UInt32 arraySize_;
+	UInt32 dataSize_;
+	UniformFunc uniformFunc_;
 };
 
 struct OGLShaderTextureDesc

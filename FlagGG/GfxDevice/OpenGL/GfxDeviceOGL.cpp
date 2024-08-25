@@ -203,50 +203,20 @@ void GfxDeviceOpenGL::PrepareDraw()
 
 void GfxDeviceOpenGL::SetShaderParameters(const Vector<OGLShaderUniformVariableDesc>& uniformVariableDesc)
 {
-	typedef void (*UniformivFunc)(GLint location, GLsizei count, const GLint* value);
-	typedef void (*UniformfvFunc)(GLint location, GLsizei count, const GLfloat* value);
-
-	// 懒得写了，暂时只支持int数组，int2 int3 int4这种让它崩溃
-	static UniformivFunc UNIFORMIV_FUNCS[] =
-	{
-		&GL::Uniform1iv,
-		nullptr,
-		nullptr,
-		nullptr,
-	};
-
-	static UniformfvFunc UNIFORMFV_FUNCS[] =
-	{
-		&GL::Uniform1fv,
-		&GL::Uniform2fv,
-		&GL::Uniform3fv,
-		&GL::Uniform4fv,
-	};
-
 	auto SetParam = [&](ShaderParameters& shaderParam, const OGLShaderUniformVariableDesc& desc)
 	{
-		if (desc.vectorSize_ == 0 || desc.vectorSize_ > 4)
-			return;
+		if (desc.dataSize_ > tempBuffer_.Size())
+			tempBuffer_.Resize(desc.dataSize_);
 
-		UInt32 dataSize = 4u * desc.vectorSize_;
-		if (dataSize < tempBuffer_.Size())
-			tempBuffer_.Resize(dataSize);
-
-		if (shaderParam.ReadParameter(desc.name_, &tempBuffer_[0], dataSize))
+		if (shaderParam.ReadParameter(desc.name_, &tempBuffer_[0], desc.dataSize_))
 		{
-			switch (desc.type_)
+			if (desc.uniformFunc_)
 			{
-			case GL_INT:
-			{
-				UNIFORMIV_FUNCS[desc.vectorSize_](desc.location_, 1, (const GLint*)tempBuffer_.Buffer());
+				desc.uniformFunc_(desc, tempBuffer_.Buffer());
 			}
-			break;
-
-			case GL_FLOAT:
+			else
 			{
-				UNIFORMFV_FUNCS[desc.vectorSize_ - 1](desc.location_, desc.vectorSize_, (const GLfloat*)tempBuffer_.Buffer());
-			}
-			break;
+				CRY_ASSERT_MESSAGE(false, "Uniform type not supported.");
 			}
 		}
 	};
