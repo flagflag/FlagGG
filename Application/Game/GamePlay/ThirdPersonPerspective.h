@@ -14,6 +14,9 @@ namespace FlagGG
 class Animation;
 class AnimationComponent;
 
+class AnimationBase;
+class AnimationController;
+
 }
 
 using namespace FlagGG;
@@ -84,6 +87,11 @@ private:
 	WeakPtr<AnimationComponent> animComp_;
 	SharedPtr<Animation> idleAnim_;
 	SharedPtr<Animation> moveAnim_;
+
+	WeakPtr<AnimationController> animCtrlComp_;
+	SharedPtr<AnimationBase> idleAnimData_;
+	SharedPtr<AnimationBase> moveAnimData_;
+
 	bool isMoving_{};
 	float facing_{};
 	float targetFacing_{};

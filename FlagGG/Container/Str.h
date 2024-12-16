@@ -29,7 +29,7 @@ public:
 	using ConstIterator = RandomAccessConstIterator<char>;
 
 	/// Construct empty.
-	String() NOEXCEPT :
+	String() noexcept :
 	length_(0),
 		capacity_(0),
 		buffer_(&endZero)
@@ -46,7 +46,7 @@ public:
 	}
 
 	/// Move-construct from another string.
-	String(String && str) NOEXCEPT :
+	String(String && str) noexcept :
 	length_(0),
 		capacity_(0),
 		buffer_(&endZero)
@@ -159,7 +159,7 @@ public:
 	}
 
 	/// Move-assign a string.
-	String& operator =(String && rhs) NOEXCEPT
+	String& operator =(String && rhs) noexcept
 	{
 		assert(&rhs != this);
 		Swap(rhs);

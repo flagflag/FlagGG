@@ -9,15 +9,15 @@ class FlagGG_API DistributionFloatUniform : public DistributionFloat
 {
 	OBJECT_OVERRIDE(DistributionFloatUniform, DistributionFloat);
 public:
-	//~ Begin UDistributionFloat Interface
+	//~ Begin DistributionFloat Interface
 	virtual float GetValue(float f = 0.f, Object* data = NULL, struct RandomStream* randomStream = NULL) const override;
 
 	//@todo.CONSOLE: Currently, consoles need this? At least until we have some sort of cooking/packaging step!
 	virtual RawDistributionOperation GetOperation() const override;
 	virtual UInt32 InitializeRawEntry(float time, float* values) const override;
-	//~ End UDistributionFloat Interface
+	//~ End DistributionFloat Interface
 
-	//~ Begin FCurveEdInterface Interface
+	//~ Begin CurveEdInterface Interface
 	virtual Int32		GetNumKeys() const override;
 	virtual Int32		GetNumSubCurves() const override;
 	virtual Color	GetSubCurveButtonColor(Int32 subCurveIndex, bool isSubCurveHidden) const override;
@@ -35,7 +35,7 @@ public:
 	virtual void	SetKeyOut(Int32 subIndex, Int32 keyIndex, float newOutVal) override;
 	virtual void	SetKeyInterpMode(Int32 keyIndex, InterpCurveMode newMode) override;
 	virtual void	SetTangents(Int32 subIndex, Int32 keyIndex, float arriveTangent, float leaveTangent) override;
-	//~ End FCurveEdInterface Interface
+	//~ End CurveEdInterface Interface
 
 	/** Low end of output float distribution. */
 	float min_;

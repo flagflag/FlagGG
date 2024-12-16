@@ -14,12 +14,12 @@ public:
 
 	virtual Vector3	GetValue(float f = 0.f, Object* data = NULL, Int32 lastExtreme = 0, struct RandomStream* randomStream = NULL) const override;
 
-	//Begin UDistributionVector Interface
+	//Begin DistributionVector Interface
 	//@todo.CONSOLE: Currently, consoles need this? At least until we have some sort of cooking/packaging step!
 	virtual RawDistributionOperation GetOperation() const override;
 	virtual UInt32 InitializeRawEntry(float time, float* values) const override;
 	virtual	void	GetRange(Vector3& outMin, Vector3& outMax) const override;
-	//End UDistributionVector Interface
+	//End DistributionVector Interface
 
 	/** These two functions will retrieve the Min/Max values respecting the Locked and Mirror flags. */
 	virtual Vector3 GetMinValue() const;
@@ -49,7 +49,7 @@ public:
 	virtual void	SetKeyInterpMode(Int32 keyIndex, InterpCurveMode newMode) override;
 	virtual void	SetTangents(Int32 subIndex, Int32 keyIndex, float arriveTangent, float leaveTangent) override;
 	virtual void	LockAndMirror(TwoVectors& value) const;
-	//~ Begin CurveEdInterface Interface
+	//~ End CurveEdInterface Interface
 
 	/** Keyframe data for how output constant varies over time. */
 	InterpCurveTwoVectors constantCurve_;

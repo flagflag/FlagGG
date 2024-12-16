@@ -10,12 +10,12 @@ class FlagGG_API DistributionVectorConstantCurve : public DistributionVector
 {
 	OBJECT_OVERRIDE(DistributionVectorConstantCurve, DistributionVector);
 public:
-	//Begin UDistributionVector Interface
+	//Begin DistributionVector Interface
 	virtual Vector3	GetValue(float f = 0.f, Object* data = NULL, Int32 lastExtreme = 0, struct RandomStream* randomStream = NULL) const override;
 	virtual	void	GetRange(Vector3& outMin, Vector3& outMax) const override;
-	//End UDistributionVector Interface
+	//End DistributionVector Interface
 
-	//~ Begin FCurveEdInterface Interface
+	//~ Begin CurveEdInterface Interface
 	virtual Int32		GetNumKeys() const override;
 	virtual Int32		GetNumSubCurves() const override;
 	virtual Color	GetSubCurveButtonColor(Int32 subCurveIndex, bool isSubCurveHidden) const override;
@@ -33,7 +33,7 @@ public:
 	virtual void	SetKeyOut(Int32 subIndex, Int32 keyIndex, float newOutVal) override;
 	virtual void	SetKeyInterpMode(Int32 keyIndex, InterpCurveMode newMode) override;
 	virtual void	SetTangents(Int32 subIndex, Int32 keyIndex, float arriveTangent, float leaveTangent) override;
-	//~ End FCurveEdInterface Interface
+	//~ End CurveEdInterface Interface
 
 	/** Keyframe data for each component (X,Y,Z) over time. */
 	InterpCurveVector constantCurve_;

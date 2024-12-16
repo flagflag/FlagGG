@@ -13,6 +13,12 @@ public:
 	~Object() override;
 };
 
+class FlagGG_API ThreadSafeObject : public ThreadSafeRefCounted, public RTTIObject
+{
+public:
+	~ThreadSafeObject() override;
+};
+
 }
 
 

@@ -163,7 +163,7 @@ public:
 	}
 
 	/// Move-construct from another list.
-	List(List<T> && list) NOEXCEPT
+	List(List<T> && list) noexcept
 	{
 		Swap(list);
 	}
@@ -198,7 +198,7 @@ public:
 	}
 
 	/// Move-assign from another list.
-	List& operator =(List<T> && rhs) NOEXCEPT
+	List& operator =(List<T> && rhs) noexcept
 	{
 		assert(&rhs != this);
 		Swap(rhs);

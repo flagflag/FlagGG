@@ -31,7 +31,7 @@ public:
 	using ConstIterator = RandomAccessConstIterator<T>;
 
 	/// Construct empty.
-	Vector() NOEXCEPT = default;
+	Vector() noexcept = default;
 
 	/// Construct with initial size.
 	explicit Vector(unsigned size)
@@ -670,7 +670,7 @@ public:
 	using ConstIterator = RandomAccessConstIterator<T>;
 
 	/// Construct empty.
-	PODVector() NOEXCEPT = default;
+	PODVector() noexcept = default;
 
 	/// Construct with initial size.
 	explicit PODVector(unsigned size)

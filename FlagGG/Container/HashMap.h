@@ -32,6 +32,13 @@ public:
 		}
 
 		/// Construct with key and value.
+		KeyValue(const T& first, U&& second) :
+			first_(first),
+			second_(std::move(second))
+		{
+		}
+
+		/// Construct with key and value.
 		KeyValue(const T& first, const U& second) :
 			first_(first),
 			second_(second)
@@ -64,6 +71,12 @@ public:
 	{
 		/// Construct undefined.
 		Node() = default;
+
+		/// Construct with key and value.
+		Node(const T& key, U&& value) :
+			pair_(key, std::move(value))
+		{
+		}
 
 		/// Construct with key and value.
 		Node(const T& key, const U& value) :
@@ -213,7 +226,7 @@ public:
 	}
 
 	/// Move-construct from another hash map.
-	HashMap(HashMap<T, U> && map) NOEXCEPT
+	HashMap(HashMap<T, U> && map) noexcept
 	{
 		Swap(map);
 	}
@@ -252,7 +265,7 @@ public:
 	}
 
 	/// Move-assign a hash map.
-	HashMap& operator =(HashMap<T, U> && rhs) NOEXCEPT
+	HashMap& operator =(HashMap<T, U> && rhs) noexcept
 	{
 		assert(&rhs != this);
 		Swap(rhs);
@@ -333,18 +346,41 @@ public:
 		return node ? &node->pair_.second_ : 0;
 	}
 
+	HashMap& Populate(const T& key, U&& value)
+	{
+		if (!ptrs_)
+		{
+			InsertNode(key, std::move(value), false);
+			return *this;
+		}
+
+		unsigned hashKey = Hash(key);
+
+		Node* node = FindNode(key, hashKey);
+		if (node)
+		{
+			node->pair_.second_ = std::move(value);
+		}
+		else
+		{
+			InsertNode(key, std::move(value), false);
+		}
+		return *this;
+	};
+
 	/// Populate the map using variadic template. This handles the base case.
 	HashMap& Populate(const T& key, const U& value)
 	{
 		this->operator [](key) = value;
 		return *this;
-	};
+	}
+
 	/// Populate the map using variadic template.
 	template <typename... Args> HashMap& Populate(const T& key, const U& value, const Args&... args)
 	{
 		this->operator [](key) = value;
 		return Populate(args...);
-	};
+	}
 
 	/// Insert a pair. Return an iterator to it.
 	Iterator Insert(const Pair<T, U>& pair)
@@ -642,6 +678,43 @@ private:
 	}
 
 	/// Insert a key and value and return either the new or existing node.
+	Node* InsertNode(const T& key, U&& value, bool findExisting = true)
+	{
+		// If no pointers yet, allocate with minimum bucket count
+		if (!ptrs_)
+		{
+			AllocateBuckets(Size(), MIN_BUCKETS);
+			Rehash();
+		}
+
+		unsigned hashKey = Hash(key);
+
+		if (findExisting)
+		{
+			// If exists, just change the value
+			Node* existing = FindNode(key, hashKey);
+			if (existing)
+			{
+				existing->pair_.second_ = std::move(value);
+				return existing;
+			}
+		}
+
+		Node* newNode = InsertNode(Tail(), key, std::move(value));
+		newNode->down_ = Ptrs()[hashKey];
+		Ptrs()[hashKey] = newNode;
+
+		// Rehash if the maximum load factor has been exceeded
+		if (Size() > NumBuckets() * MAX_LOAD_FACTOR)
+		{
+			AllocateBuckets(Size(), NumBuckets() << 1);
+			Rehash();
+		}
+
+		return newNode;
+	}
+
+	/// Insert a key and value and return either the new or existing node.
 	Node* InsertNode(const T& key, const U& value, bool findExisting = true)
 	{
 		// If no pointers yet, allocate with minimum bucket count
@@ -674,6 +747,29 @@ private:
 			AllocateBuckets(Size(), NumBuckets() << 1);
 			Rehash();
 		}
+
+		return newNode;
+	}
+
+	/// Insert a node into the list. Return the new node.
+	Node* InsertNode(Node* dest, const T& key, U&& value)
+	{
+		if (!dest)
+			return 0;
+
+		Node* newNode = ReserveNode(key, std::move(value));
+		Node* prev = dest->Prev();
+		newNode->next_ = dest;
+		newNode->prev_ = prev;
+		if (prev)
+			prev->next_ = newNode;
+		dest->prev_ = newNode;
+
+		// Reassign the head node if necessary
+		if (dest == Head())
+			head_ = newNode;
+
+		SetSize(Size() + 1);
 
 		return newNode;
 	}
@@ -729,6 +825,14 @@ private:
 	{
 		auto* newNode = static_cast<Node*>(AllocatorReserve(allocator_));
 		new(newNode)Node();
+		return newNode;
+	}
+
+	/// Reserve a node with specified key and value.
+	Node* ReserveNode(const T& key, U&& value)
+	{
+		auto* newNode = static_cast<Node*>(AllocatorReserve(allocator_));
+		new(newNode) Node(key, std::move(value));
 		return newNode;
 	}
 

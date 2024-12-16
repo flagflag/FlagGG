@@ -1,3 +1,7 @@
+//
+// 骨骼、骨架
+//
+
 #pragma once
 
 #include "Export.h"
@@ -34,7 +38,7 @@ struct FlagGG_API Bone
 	Vector3 initPosition_{ Vector3::ZERO };
 	Quaternion initRotation_{ Quaternion::IDENTITY };
 	Vector3 initScale_{ Vector3::ONE };
-	Matrix3x4 offsetMatrix{ Matrix3x4::IDENTITY };
+	Matrix3x4 offsetMatrix_{ Matrix3x4::IDENTITY };
 	bool animated_{ true };
 	BoneCollisionShapeFlags collisionMask_{ BONE_COLLISSION_NONE };
 	Real radius_{ 0.0f };
@@ -47,15 +51,15 @@ class FlagGG_API Skeleton
 public:
 	void Load(IOFrame::Buffer::IOBuffer* stream);
 
-	Bone* GetBone(const String& name);
+	const Bone* GetBone(const String& name) const;
 
-	Bone* GetBone(StringHash nameHash);
+	const Bone* GetBone(StringHash nameHash) const;
 
 	const Vector<Bone>& GetBones() const;
 
 	Vector<Bone>& GetBones();
 
-	Bone* GetRootBone();
+	const Bone* GetRootBone() const;
 
 	void ResetNode();
 

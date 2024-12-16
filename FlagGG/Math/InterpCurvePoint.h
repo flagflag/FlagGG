@@ -5,6 +5,7 @@
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 #include "Math/TwoVector3.h"
+#include "Math/Quaternion.h"
 #include "Math/Color.h"
 
 namespace FlagGG
@@ -308,6 +309,16 @@ inline void ComputeCurveTangent(float prevTime, const TwoVectors& prevPoint,
 		curTime, curPoint,
 		nextTime, nextPoint,
 		tension, wantClamping, outTangent);
+}
+
+inline void ComputeCurveTangent(float prevTime, const Quaternion& prevPoint,
+	float curTime, const Quaternion& curPoint,
+	float nextTime, const Quaternion& nextPoint,
+	float tension,
+	bool wantClamping,
+	Quaternion& outTangent)
+{
+	// do nothings.
 }
 
 FlagGG_API void CurveFloatFindIntervalBounds(const InterpCurvePoint<float>& start, const InterpCurvePoint<float>& End, float& currentMin, float& currentMax);

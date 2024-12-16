@@ -9,13 +9,13 @@ class FlagGG_API DistributionFloatParticleParameter : public DistributionFloatPa
 {
 	OBJECT_OVERRIDE(DistributionFloatParticleParameter, DistributionFloatParameterBase);
 public:
-	//~ Begin UDistributionFloatParameterBase Interface
+	//~ Begin DistributionFloatParameterBase Interface
 	virtual bool GetParamValue(Object* Data, const String& ParamName, float& OutFloat) const override
 	{
 		// TODO => Get ParticleSystemComponent
 		return false;
 	}
-	//~ End UDistributionFloatParameterBase Interface
+	//~ End DistributionFloatParameterBase Interface
 };
 
 }

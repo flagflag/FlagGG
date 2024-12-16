@@ -4,6 +4,7 @@
 #include <Scene/AnimationComponent.h>
 #include <Scene/OceanComponent.h>
 #include <Scene/PrefabLoader.h>
+#include <Animation/AnimationController.h>
 #include <Resource/ResourceCache.h>
 #include <Graphics/Model.h>
 #include <Graphics/Material.h>
@@ -75,7 +76,7 @@ bool Unit::Load(const String& path)
 	return Load(path, this);
 }
 
-// 移动到某个点，和SetPosition不同的是：会根据速度慢慢往目标方向移动
+// 绉诲姩鍒版煇涓偣锛屽拰SetPosition涓嶅悓鐨勬槸锛氫細鏍规嵁閫熷害鎱㈡參寰�鐩爣鏂瑰悜绉诲姩
 void Unit::MoveTo(const Vector3& position)
 {
 
@@ -93,6 +94,14 @@ float Unit::GetSpeed() const
 
 void Unit::PlayAnimation(const String& path, bool isLoop, Node* node)
 {
+#if USE_NEW_ANIMATION_COMPONENT
+	AnimationController* animComp = node->GetComponent<AnimationController>();
+	if (!animComp)
+	{
+		animComp = node->CreateComponent<AnimationController>();
+	}
+	animComp->Play(path, 0, isLoop);
+#else
 	AnimationComponent* animComp = node->GetComponent<AnimationComponent>();
 	if (!animComp)
 	{
@@ -101,6 +110,7 @@ void Unit::PlayAnimation(const String& path, bool isLoop, Node* node)
 	auto* cache = GetSubsystem<ResourceCache>();
 	animComp->SetAnimation(cache->GetResource<Animation>(path));
 	animComp->Play(isLoop);
+#endif
 }
 
 void Unit::PlayAnimation(const String& path, bool isLoop)
@@ -110,11 +120,19 @@ void Unit::PlayAnimation(const String& path, bool isLoop)
 
 void Unit::StopAnimation()
 {
+#if USE_NEW_ANIMATION_COMPONENT
+	AnimationController* animComp = GetComponent<AnimationController>();
+	if (animComp)
+	{
+		animComp->Stop(0);
+	}
+#else
 	AnimationComponent* animComp = GetComponent<AnimationComponent>();
 	if (animComp)
 	{
 		animComp->Stop();
 	}
+#endif
 }
 
 Material* Unit::GetMaterial() const

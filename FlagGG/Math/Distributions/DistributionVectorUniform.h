@@ -13,14 +13,14 @@ public:
 
 	virtual Vector3	GetValue(float f = 0.f, Object* data = NULL, Int32 lastExtreme = 0, struct RandomStream* randomStream = NULL) const override;
 
-	//Begin UDistributionVector Interface
+	//Begin DistributionVector Interface
 
 	//@todo.CONSOLE: Currently, consoles need this? At least until we have some sort of cooking/packaging step!
 	virtual RawDistributionOperation GetOperation() const override;
 	virtual UInt8 GetLockFlag() const override;
 	virtual UInt32 InitializeRawEntry(float time, float* values) const override;
 	virtual	void	GetRange(Vector3& outMin, Vector3& outMax) const override;
-	//End UDistributionVector Interface
+	//End DistributionVector Interface
 
 	/** These two functions will retrieve the Min/Max values respecting the Locked and Mirror flags. */
 	virtual Vector3 GetMinValue() const;
@@ -31,7 +31,7 @@ public:
 	// 2,3 = min/max y
 	// 4,5 = min/max z
 
-	//~ Begin FCurveEdInterface Interface
+	//~ Begin CurveEdInterface Interface
 	virtual Int32		GetNumKeys() const override;
 	virtual Int32		GetNumSubCurves() const override;
 	virtual Color	GetSubCurveButtonColor(Int32 SubCurveIndex, bool bIsSubCurveHidden) const override;
@@ -49,7 +49,7 @@ public:
 	virtual void	SetKeyOut(Int32 SubIndex, Int32 KeyIndex, float NewOutVal) override;
 	virtual void	SetKeyInterpMode(Int32 KeyIndex, InterpCurveMode NewMode) override;
 	virtual void	SetTangents(Int32 SubIndex, Int32 KeyIndex, float ArriveTangent, float LeaveTangent) override;
-	//~ Begin FCurveEdInterface Interface
+	//~ End CurveEdInterface Interface
 
 	/** Upper end of Vector3 magnitude range. */
 	Vector3 max_;

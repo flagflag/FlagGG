@@ -133,7 +133,7 @@ void SkeletonMeshComponent::UpdateSkinning()
 		const Bone& bone = bones[i];
 		if (bone.node_)
 		{
-			skinMatrices_[i] = bone.node_->GetWorldTransform() * bone.offsetMatrix;
+			skinMatrices_[i] = bone.node_->GetWorldTransform() * bone.offsetMatrix_;
 		}
 		else
 		{

@@ -1,26 +1,19 @@
 #pragma once
 
-#include "Math/Distributions/DistributionFloat.h"
+#include "Math/Distributions/DistributionQuaternion.h"
 #include "Math/InterpCurve.h"
 
 namespace FlagGG
 {
 
-class FlagGG_API DistributionFloatUniformCurve : public DistributionFloat
+class FlagGG_API DistributionQuaternionConstantCurve : public DistributionQuaternion
 {
-	OBJECT_OVERRIDE(DistributionFloatUniformCurve, DistributionFloat);
+	OBJECT_OVERRIDE(DistributionQuaternionConstantCurve, DistributionQuaternion);
 public:
-	//~ Begin DistributionFloat Interface
-	virtual float GetValue(float f = 0.f, Object* data = NULL, struct RandomStream* randomStream = NULL) const override;
-	//@todo.CONSOLE: Currently, consoles need this? At least until we have some sort of cooking/packaging step!
-	virtual RawDistributionOperation GetOperation() const override;
-	virtual UInt32 InitializeRawEntry(float Time, float* Values) const override;
-	//~ End DistributionFloat Interface
-
-	/**
-	 *	This function will retrieve the max and min values at the given time.
-	 */
-	virtual Vector2 GetMinMaxValue(float f = 0.f, Object* data = NULL) const;
+	//Begin DistributionQuaternion Interface
+	virtual Quaternion GetValue(float f = 0.f, Object* data = NULL, Int32 lastExtreme = 0, struct RandomStream* randomStream = NULL) const override;
+	virtual	void	GetRange(Quaternion& outMin, Quaternion& outMax) const override;
+	//End DistributionQuaternion Interface
 
 	//~ Begin CurveEdInterface Interface
 	virtual Int32		GetNumKeys() const override;
@@ -28,9 +21,9 @@ public:
 	virtual Color	GetSubCurveButtonColor(Int32 subCurveIndex, bool isSubCurveHidden) const override;
 	virtual float	GetKeyIn(Int32 keyIndex) override;
 	virtual float	GetKeyOut(Int32 subIndex, Int32 keyIndex) override;
-	virtual Color	GetKeyColor(Int32 subIndex, Int32 keyIndex, const Color& curveColor) override;
 	virtual void	GetInRange(float& minIn, float& maxIn) const override;
 	virtual void	GetOutRange(float& minOut, float& maxOut) const override;
+	virtual Color	GetKeyColor(Int32 subIndex, Int32 keyIndex, const Color& curveColor) override;
 	virtual InterpCurveMode	GetKeyInterpMode(Int32 keyIndex) const override;
 	virtual void	GetTangents(Int32 subIndex, Int32 keyIndex, float& arriveTangent, float& leaveTangent) const override;
 	virtual float	EvalSub(Int32 subIndex, float inVal) override;
@@ -42,8 +35,8 @@ public:
 	virtual void	SetTangents(Int32 subIndex, Int32 keyIndex, float arriveTangent, float leaveTangent) override;
 	//~ End CurveEdInterface Interface
 
-	/** Keyframe data for how output constant varies over time. */
-	InterpCurveVector2D constantCurve_;
+	/** Keyframe data for each component (X,Y,Z) over time. */
+	InterpCurveQuat constantCurve_;
 };
 
 }

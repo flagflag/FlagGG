@@ -11,9 +11,9 @@ class FlagGG_API DistributionFloatParameterBase : public DistributionFloatConsta
 public:
 	DistributionFloatParameterBase();
 
-	//~ Begin UDistributionFloat Interface
+	//~ Begin DistributionFloat Interface
 	virtual float GetValue(float f = 0.f, Object* data = NULL, struct RandomStream* randomStream = NULL) const override;
-	//~ End UDistributionFloat Interface
+	//~ End DistributionFloat Interface
 
 
 	/** todo document */

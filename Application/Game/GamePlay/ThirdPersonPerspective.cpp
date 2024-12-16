@@ -6,6 +6,9 @@
 #include <Core/EventManager.h>
 #include <Scene/AnimationComponent.h>
 #include <Scene/Animation.h>
+#include <Animation/AnimationController.h>
+#include <Animation/AnimationManager.h>
+#include <Animation/AnimationBase.h>
 #include <Resource/ResourceCache.h>
 
 ThirdPersonPerspective::ThirdPersonPerspective(bool moveCameraWhenMouseDown) :
@@ -91,9 +94,15 @@ void ThirdPersonPerspective::SetNode(Node* node)
 
 	if (node_)
 	{
+#if USE_NEW_ANIMATION_COMPONENT
+		animCtrlComp_ = node_->GetComponentRecursive<AnimationController>();
+		idleAnimData_ = GetSubsystem<AnimationManager>()->GetAnimation("characters1/jianke_c96b/anim/idle.ani");
+		moveAnimData_ = GetSubsystem<AnimationManager>()->GetAnimation("characters1/jianke_c96b/anim/move.ani");
+#else
 		animComp_ = node_->GetComponentRecursive<AnimationComponent>();
 		idleAnim_ = GetSubsystem<ResourceCache>()->GetResource<Animation>("characters1/jianke_c96b/anim/idle.ani");
 		moveAnim_ = GetSubsystem<ResourceCache>()->GetResource<Animation>("characters1/jianke_c96b/anim/move.ani");
+#endif
 	}
 }
 
@@ -214,6 +223,19 @@ void ThirdPersonPerspective::HandleUpdate(float timeStep)
 	if (isMoving_ != isMoving)
 	{
 		isMoving_ = isMoving;
+#if USE_NEW_ANIMATION_COMPONENT
+		if (animCtrlComp_)
+		{
+			if (isMoving_)
+			{
+				animCtrlComp_->PlaySmooth(moveAnimData_, 0, true, 0.3f);
+			}
+			else
+			{
+				animCtrlComp_->PlaySmooth(idleAnimData_, 0, true, 0.3f);
+			}
+		}
+#else
 		if (animComp_)
 		{
 			if (isMoving_)
@@ -227,6 +249,7 @@ void ThirdPersonPerspective::HandleUpdate(float timeStep)
 				animComp_->Play(true);
 			}
 		}
+#endif
 	}
 
 	float facing = rotation_[dir_[0]][dir_[1]][dir_[2]][dir_[3]];
@@ -246,10 +269,17 @@ void ThirdPersonPerspective::HandleUpdate(float timeStep)
 		else
 			facing_ = Min(facing_ + timeStep * 720.0f, facing);
 
+#if USE_NEW_ANIMATION_COMPONENT
+		if (animCtrlComp_)
+		{
+			animCtrlComp_->GetNode()->SetRotation(Quaternion(0, 0, facing_));
+		}
+#else
 		if (animComp_)
 		{
 			animComp_->GetNode()->SetRotation(Quaternion(0, 0, facing_));
 		}
+#endif
 	}
 
 #ifdef FLAGGG_PROTO

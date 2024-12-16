@@ -2,27 +2,17 @@
 
 #include "Export.h"
 #include "Resource/Resource.h"
-#include "Container/FlagSet.h"
 #include "Container/HashMap.h"
 #include "Container/StringHash.h"
 #include "Container/Vector.h"
 #include "Math/Vector3.h"
 #include "Math/Quaternion.h"
+#include "Animation/AnimationSequence.h"
 
 namespace FlagGG
 {
 
-enum AnimationChannel : UInt8
-{
-	AC_NONE = 0,
-	AC_POSITION = 1 << 0,
-	AC_ROTATION = 1 << 1,
-	AC_SCALE = 1 << 2,
-};
-
-FLAGGG_FLAGSET(AnimationChannel, AnimationChannelFlags);
-
-struct AnimationKeyFrame
+struct AnimationKeyFrame_Deprecated
 {
 	Real time_{ 0.0f };
 	Vector3 position_{ Vector3::ZERO };
@@ -30,25 +20,25 @@ struct AnimationKeyFrame
 	Vector3 scale_{ Vector3::ONE };
 };
 
-struct FlagGG_API AnimationKeyFrameInterval
+struct FlagGG_API AnimationKeyFrameInterval_Deprecated
 {
 	Vector3 GetPosition(Real time);
 	Quaternion GetRotation(Real time);
 	Vector3 GetScale(Real time);
 
-	const AnimationKeyFrame* left_{ nullptr };
-	const AnimationKeyFrame* right_{ nullptr };
+	const AnimationKeyFrame_Deprecated* left_{ nullptr };
+	const AnimationKeyFrame_Deprecated* right_{ nullptr };
 	Real timeInterval_{ 1e6 };
 };
 
-struct FlagGG_API AnimationTrack
+struct FlagGG_API AnimationTrack_Deprecated
 {
-	AnimationKeyFrameInterval GetKeyFrameInterval(Real currentTime, Real totalTime) const;
+	AnimationKeyFrameInterval_Deprecated GetKeyFrameInterval(Real currentTime, Real totalTime) const;
 
 	String name_;
 	StringHash nameHash_;
 	AnimationChannelFlags channelMask_;
-	PODVector<AnimationKeyFrame> keyFrames_;
+	PODVector<AnimationKeyFrame_Deprecated> keyFrames_;
 };
 
 class FlagGG_API Animation : public Resource
@@ -63,7 +53,7 @@ public:
 	// 动画时长
 	Real length_;
 	// 动画轨迹
-	HashMap<StringHash, AnimationTrack> tracks_;
+	HashMap<StringHash, AnimationTrack_Deprecated> tracks_;
 
 protected:
 	bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;

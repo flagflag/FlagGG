@@ -379,6 +379,21 @@ void Node::SetTransform(const Vector3& position, const Quaternion& rotation, con
 	}
 }
 
+void Node::SetPositionSilent(const Vector3& position)
+{
+	position_ = position;
+}
+
+void Node::SetRotationSilent(const Quaternion& rotation)
+{
+	rotation_ = rotation;
+}
+
+void Node::SetScaleSilent(const Vector3& scale)
+{
+	scale_ = scale;
+}
+
 Matrix3x4 Node::GetTransform() const
 {
 	return Matrix3x4(position_, rotation_, scale_);
@@ -457,6 +472,18 @@ void Node::SetOwnerScene(Scene* scene)
 	ownerScene_ = scene;
 }
 
+void Node::MarkDirty()
+{
+	UpdateTreeTransformDirty();
+
+	for (auto& it : transformListeners_)
+	{
+		it->OnTransformChange();
+	}
+
+	UpdateComponentsDirty();
+}
+
 void Node::MarkTransformDirty()
 {
 	dirty_ = true;
@@ -468,12 +495,12 @@ void Node::UpdateTreeTransformDirty()
 
 	for (auto& child : children_)
 	{
+		child->UpdateTreeTransformDirty();
+
 		for (auto& it : child->transformListeners_)
 		{
 			it->OnTransformChange();
 		}
-
-		child->UpdateTreeTransformDirty();
 	}
 }
 

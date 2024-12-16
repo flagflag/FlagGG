@@ -9,7 +9,7 @@ namespace FlagGG
 
 REGISTER_TYPE_FACTORY(Animation);
 
-Vector3 AnimationKeyFrameInterval::GetPosition(Real time)
+Vector3 AnimationKeyFrameInterval_Deprecated::GetPosition(Real time)
 {
 	if (left_ && right_)
 	{
@@ -22,7 +22,7 @@ Vector3 AnimationKeyFrameInterval::GetPosition(Real time)
 	return Vector3::ZERO;
 }
 
-Quaternion AnimationKeyFrameInterval::GetRotation(Real time)
+Quaternion AnimationKeyFrameInterval_Deprecated::GetRotation(Real time)
 {
 	if (left_ && right_)
 	{
@@ -35,7 +35,7 @@ Quaternion AnimationKeyFrameInterval::GetRotation(Real time)
 	return Quaternion::IDENTITY;
 }
 
-Vector3 AnimationKeyFrameInterval::GetScale(Real time)
+Vector3 AnimationKeyFrameInterval_Deprecated::GetScale(Real time)
 {
 	if (left_ && right_)
 	{
@@ -48,9 +48,9 @@ Vector3 AnimationKeyFrameInterval::GetScale(Real time)
 	return Vector3::ONE;
 }
 
-AnimationKeyFrameInterval AnimationTrack::GetKeyFrameInterval(Real currentTime, Real totalTime) const
+AnimationKeyFrameInterval_Deprecated AnimationTrack_Deprecated::GetKeyFrameInterval(Real currentTime, Real totalTime) const
 {
-	AnimationKeyFrameInterval interval;
+	AnimationKeyFrameInterval_Deprecated interval;
 	Int32 index = 0;
 	while (index < keyFrames_.Size() && currentTime > keyFrames_[index].time_) ++index;
 	--index;
@@ -96,7 +96,7 @@ bool Animation::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		String trackName;
 		IOFrame::Buffer::ReadString(stream, trackName);
 		StringHash trackNameHash(trackName);
-		AnimationTrack& track = tracks_[trackNameHash];
+		AnimationTrack_Deprecated& track = tracks_[trackNameHash];
 		track.name_ = trackName;
 		track.nameHash_ = trackNameHash;
 
@@ -110,7 +110,7 @@ bool Animation::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 
 		for (UInt32 j = 0; j < keyFramesCount; ++j)
 		{
-			AnimationKeyFrame& keyFrame = track.keyFrames_[j];
+			AnimationKeyFrame_Deprecated& keyFrame = track.keyFrames_[j];
 			stream->ReadFloat(keyFrame.time_);
 			if (track.channelMask_ & AC_POSITION)
 				IOFrame::Buffer::ReadVector3(stream, keyFrame.position_);

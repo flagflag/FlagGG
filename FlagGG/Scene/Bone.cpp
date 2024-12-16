@@ -19,7 +19,7 @@ void Skeleton::Load(IOFrame::Buffer::IOBuffer* stream)
 		IOFrame::Buffer::ReadVector3(stream, bone.initPosition_);
 		IOFrame::Buffer::ReadQuaternion(stream, bone.initRotation_);
 		IOFrame::Buffer::ReadVector3(stream, bone.initScale_);
-		IOFrame::Buffer::ReadMatrix3x4(stream, bone.offsetMatrix);
+		IOFrame::Buffer::ReadMatrix3x4(stream, bone.offsetMatrix_);
 
 		uint8_t byte;
 		stream->ReadUInt8(byte);
@@ -36,12 +36,12 @@ void Skeleton::Load(IOFrame::Buffer::IOBuffer* stream)
 	}
 }
 
-Bone* Skeleton::GetBone(const String& name)
+const Bone* Skeleton::GetBone(const String& name) const
 {
 	return GetBone(StringHash(name));
 }
 
-Bone* Skeleton::GetBone(StringHash nameHash)
+const Bone* Skeleton::GetBone(StringHash nameHash) const
 {
 	for (auto& bone : bones_)
 	{
@@ -63,7 +63,7 @@ Vector<Bone>& Skeleton::GetBones()
 	return bones_;
 }
 
-Bone* Skeleton::GetRootBone()
+const Bone* Skeleton::GetRootBone() const
 {
 	return &bones_[rootBoneIndex_];
 }

@@ -446,4 +446,22 @@ public:
     static const Quaternion IDENTITY;
 };
 
+template <>
+FORCEINLINE Quaternion Lerp(const Quaternion& from, const Quaternion& to, const float t)
+{
+    return from.Slerp(to, t);
+}
+
+template <>
+FORCEINLINE Quaternion CubicInterp(const Quaternion& P0, const Quaternion& T0, const Quaternion& P1, const Quaternion& T1, const float A)
+{
+    throw "Not support quat cubic interp.";
+}
+
+template <>
+FORCEINLINE Quaternion CubicInterpDerivative(const Quaternion& P0, const Quaternion& T0, const Quaternion& P1, const Quaternion& T1, const float A)
+{
+    throw "Not support quat cubic interp derivative.";
+}
+
 }

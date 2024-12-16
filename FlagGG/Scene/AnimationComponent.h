@@ -6,13 +6,15 @@
 #include "Container/Ptr.h"
 #include "Container/Vector.h"
 
+#define USE_NEW_ANIMATION_COMPONENT 1
+
 namespace FlagGG
 {
 
-struct BoneTrack
+struct BoneTrack_Deprecated
 {
-	Bone* bone_{ nullptr };
-	const AnimationTrack* track_{ nullptr };
+	const Bone* bone_{ nullptr };
+	const AnimationTrack_Deprecated* track_{ nullptr };
 };
 
 class FlagGG_API AnimationComponent : public Component
@@ -34,11 +36,11 @@ protected:
 
 	void UpdateAnimation(Real timeStep);
 
-	void UpdateBoneTrack(BoneTrack& boneTrack);
+	void UpdateBoneTrack(BoneTrack_Deprecated& boneTrack);
 
 private:
 	SharedPtr<Animation> animation_;
-	PODVector<BoneTrack> boneTracks_;
+	PODVector<BoneTrack_Deprecated> boneTracks_;
 
 	Real animTime_{ 0.0f };
 	bool startPlay_{ false };

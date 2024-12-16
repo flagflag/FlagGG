@@ -35,12 +35,12 @@ void AnimationComponent::UpdateAnimation(Real timeStep)
 		UpdateBoneTrack(boneTrack);
 	}
 
-	node_->UpdateComponentsDirty();
+	node_->MarkDirty();
 }
 
-void AnimationComponent::UpdateBoneTrack(BoneTrack& boneTrack)
+void AnimationComponent::UpdateBoneTrack(BoneTrack_Deprecated& boneTrack)
 {
-	AnimationKeyFrameInterval keyFrameInterval = boneTrack.track_->GetKeyFrameInterval(animTime_, animation_->length_);
+	AnimationKeyFrameInterval_Deprecated keyFrameInterval = boneTrack.track_->GetKeyFrameInterval(animTime_, animation_->length_);
 	const AnimationChannelFlags channelMask = boneTrack.track_->channelMask_;
 	if (channelMask & AC_POSITION)
 	{
@@ -97,8 +97,8 @@ void AnimationComponent::SetAnimationTrack()
 
 	for (const auto& it : animation_->tracks_)
 	{
-		const AnimationTrack& animTrack = it.second_;
-		BoneTrack boneTrack;
+		const AnimationTrack_Deprecated& animTrack = it.second_;
+		BoneTrack_Deprecated boneTrack;
 		boneTrack.track_ = &animTrack;
 		if (rootBone->nameHash_ == animTrack.nameHash_)
 		{

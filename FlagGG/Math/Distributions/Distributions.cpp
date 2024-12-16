@@ -14,6 +14,8 @@
 #include "Math/Distributions/DistributionVectorParticleParameter.h"
 #include "Math/Distributions/DistributionVectorUniform.h"
 #include "Math/Distributions/DistributionVectorUniformCurve.h"
+#include "Math/Distributions/DistributionQuaternion.h"
+#include "Math/Distributions/DistributionQuaternionConstantCurve.h"
 #include "Core/Context.h"
 
 namespace FlagGG
@@ -48,231 +50,231 @@ static_assert((LOOKUP_TABLE_MAX_SAMPLES& (LOOKUP_TABLE_MAX_SAMPLES - 1)) == 0, "
 //@todo.CONSOLE: Until we have cooking or something in place, these need to be exposed.
 /**
  * Builds a lookup table that returns a constant value.
- * @param OutTable - The table to build.
- * @param ValuesPerEntry - The number of values per entry in the table.
- * @param Values - The values to place in the table.
+ * @param outTable - The table to build.
+ * @param valuesPerEntry - The number of values per entry in the table.
+ * @param values - The values to place in the table.
  */
-static void BuildConstantLookupTable(DistributionLookupTable* OutTable, Int32 ValuesPerEntry, const float* Values)
+static void BuildConstantLookupTable(DistributionLookupTable* outTable, Int32 valuesPerEntry, const float* values)
 {
 	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
-	ASSERT(OutTable != NULL);
-	ASSERT(Values != NULL);
+	ASSERT(outTable != NULL);
+	ASSERT(values != NULL);
 
-	OutTable->values_.Resize(ValuesPerEntry);
-	OutTable->op_ = RDO_None;
-	OutTable->entryCount_ = 1;
-	OutTable->entryStride_ = ValuesPerEntry;
-	OutTable->subEntryStride_ = 0;
-	OutTable->timeBias_ = 0.0f;
-	OutTable->timeScale_ = 0.0f;
-	for (Int32 ValueIndex = 0; ValueIndex < ValuesPerEntry; ++ValueIndex)
+	outTable->values_.Resize(valuesPerEntry);
+	outTable->op_ = RDO_None;
+	outTable->entryCount_ = 1;
+	outTable->entryStride_ = valuesPerEntry;
+	outTable->subEntryStride_ = 0;
+	outTable->timeBias_ = 0.0f;
+	outTable->timeScale_ = 0.0f;
+	for (Int32 valueIndex = 0; valueIndex < valuesPerEntry; ++valueIndex)
 	{
-		OutTable->values_[ValueIndex] = Values[ValueIndex];
+		outTable->values_[valueIndex] = values[valueIndex];
 	}
 }
 
 /**
  * Builds a lookup table that returns zero.
- * @param OutTable - The table to build.
- * @param ValuesPerEntry - The number of values per entry in the table.
+ * @param outTable - The table to build.
+ * @param valuesPerEntry - The number of values per entry in the table.
  */
-static void BuildZeroLookupTable(DistributionLookupTable* OutTable, Int32 ValuesPerEntry)
+static void BuildZeroLookupTable(DistributionLookupTable* outTable, Int32 valuesPerEntry)
 {
-	ASSERT(OutTable != NULL);
-	ASSERT(ValuesPerEntry >= 1 && ValuesPerEntry <= 4);
+	ASSERT(outTable != NULL);
+	ASSERT(valuesPerEntry >= 1 && valuesPerEntry <= 4);
 
-	float Zero[4] = { 0 };
-	BuildConstantLookupTable(OutTable, ValuesPerEntry, Zero);
+	float zero[4] = { 0 };
+	BuildConstantLookupTable(outTable, valuesPerEntry, zero);
 }
 
 /**
  * Builds a lookup table from a distribution.
- * @param OutTable - The table to build.
- * @param Distribution - The distribution for which to build a lookup table.
+ * @param outTable - The table to build.
+ * @param distribution - The distribution for which to build a lookup table.
  */
 template <typename DistributionType>
-void BuildLookupTable(DistributionLookupTable* OutTable, const DistributionType& Distribution)
+void BuildLookupTable(DistributionLookupTable* outTable, const DistributionType& distribution)
 {
 	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
-	ASSERT(Distribution);
+	ASSERT(distribution);
 
 	// Always clear the table.
-	OutTable->Empty();
+	outTable->Empty();
 
 	// Nothing to do if we don't have a distribution.
-	if (!Distribution->CanBeBaked())
+	if (!distribution->CanBeBaked())
 	{
-		BuildZeroLookupTable(OutTable, Distribution->GetValueCount());
+		BuildZeroLookupTable(outTable, distribution->GetValueCount());
 		return;
 	}
 
 	// Always build a lookup table of maximal size. This can/will be optimized later.
-	const Int32 EntryCount = LOOKUP_TABLE_MAX_SAMPLES;
+	const Int32 entryCount = LOOKUP_TABLE_MAX_SAMPLES;
 
 	// Determine the domain of the distribution.
-	float MinIn, MaxIn;
-	Distribution->GetInRange(MinIn, MaxIn);
-	const float TimeScale = (MaxIn - MinIn) / (float)(EntryCount - 1);
+	float minIn, maxIn;
+	distribution->GetInRange(minIn, maxIn);
+	const float timeScale = (maxIn - minIn) / (float)(entryCount - 1);
 
 	// Get the operation to use, and calculate the number of values needed for that operation.
-	const UInt8 Op = Distribution->GetOperation();
-	const Int32 ValuesPerEntry = Distribution->GetValueCount();
-	const UInt32 EntryStride = ((Op == RDO_None) ? 1 : 2) * (UInt32)ValuesPerEntry;
+	const UInt8 Op = distribution->GetOperation();
+	const Int32 valuesPerEntry = distribution->GetValueCount();
+	const UInt32 entryStride = ((Op == RDO_None) ? 1 : 2) * (UInt32)valuesPerEntry;
 
 	// Get the lock flag to use.
-	const UInt8 LockFlag = Distribution->GetLockFlag();
+	const UInt8 lockFlag = distribution->GetLockFlag();
 
 	// Allocate a lookup table of the appropriate size.
-	OutTable->op_ = Op;
-	OutTable->entryCount_ = EntryCount;
-	OutTable->entryStride_ = EntryStride;
-	OutTable->subEntryStride_ = (Op == RDO_None) ? 0 : ValuesPerEntry;
-	OutTable->timeScale_ = (TimeScale > 0.0f) ? (1.0f / TimeScale) : 0.0f;
-	OutTable->timeBias_ = MinIn;
-	OutTable->values_.Resize(EntryCount * EntryStride);
-	for (auto& value : OutTable->values_) value = 0.f;
-	OutTable->lockFlag_ = LockFlag;
+	outTable->op_ = Op;
+	outTable->entryCount_ = entryCount;
+	outTable->entryStride_ = entryStride;
+	outTable->subEntryStride_ = (Op == RDO_None) ? 0 : valuesPerEntry;
+	outTable->timeScale_ = (timeScale > 0.0f) ? (1.0f / timeScale) : 0.0f;
+	outTable->timeBias_ = minIn;
+	outTable->values_.Resize(entryCount * entryStride);
+	for (auto& value : outTable->values_) value = 0.f;
+	outTable->lockFlag_ = lockFlag;
 
 	// Sample the distribution.
-	for (UInt32 SampleIndex = 0; SampleIndex < EntryCount; SampleIndex++)
+	for (UInt32 sampleIndex = 0; sampleIndex < entryCount; sampleIndex++)
 	{
-		const float Time = MinIn + SampleIndex * TimeScale;
-		float Values[8];
-		Distribution->InitializeRawEntry(Time, Values);
-		for (UInt32 ValueIndex = 0; ValueIndex < EntryStride; ValueIndex++)
+		const float time = minIn + sampleIndex * timeScale;
+		float values[8];
+		distribution->InitializeRawEntry(time, values);
+		for (UInt32 valueIndex = 0; valueIndex < entryStride; valueIndex++)
 		{
-			OutTable->values_[SampleIndex * EntryStride + ValueIndex] = Values[ValueIndex];
+			outTable->values_[sampleIndex * entryStride + valueIndex] = values[valueIndex];
 		}
 	}
 }
 
 /**
  * Appends one lookup table to another.
- * @param Table - Table which contains the first set of components [1-3].
- * @param OtherTable - Table to append which contains a single component.
+ * @param table - table which contains the first set of components [1-3].
+ * @param otherTable - Table to append which contains a single component.
  */
-static void AppendLookupTable(DistributionLookupTable* Table, const DistributionLookupTable& OtherTable)
+static void AppendLookupTable(DistributionLookupTable* table, const DistributionLookupTable& otherTable)
 {
 	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
-	ASSERT(Table != NULL);
-	ASSERT(Table->GetValuesPerEntry() >= 1 && Table->GetValuesPerEntry() <= 3);
-	ASSERT(OtherTable.GetValuesPerEntry() == 1);
+	ASSERT(table != NULL);
+	ASSERT(table->GetValuesPerEntry() >= 1 && table->GetValuesPerEntry() <= 3);
+	ASSERT(otherTable.GetValuesPerEntry() == 1);
 
 	// Copy the input table.
-	DistributionLookupTable TableCopy = *Table;
+	DistributionLookupTable tableCopy = *table;
 
 	// Compute the domain of the composed distribution.
-	const float OneOverTimeScale = (TableCopy.timeScale_ == 0.0f) ? 0.0f : 1.0f / TableCopy.timeScale_;
-	const float OneOverOtherTimeScale = (OtherTable.timeScale_ == 0.0f) ? 0.0f : 1.0f / OtherTable.timeScale_;
-	const float MinIn = Min(TableCopy.timeBias_, OtherTable.timeBias_);
-	const float MaxIn = Max(TableCopy.timeBias_ + (TableCopy.entryCount_ - 1) * OneOverTimeScale, OtherTable.timeBias_ + (OtherTable.entryCount_ - 1) * OneOverOtherTimeScale);
+	const float oneOverTimeScale = (tableCopy.timeScale_ == 0.0f) ? 0.0f : 1.0f / tableCopy.timeScale_;
+	const float oneOverOtherTimeScale = (otherTable.timeScale_ == 0.0f) ? 0.0f : 1.0f / otherTable.timeScale_;
+	const float minIn = Min(tableCopy.timeBias_, otherTable.timeBias_);
+	const float maxIn = Max(tableCopy.timeBias_ + (tableCopy.entryCount_ - 1) * oneOverTimeScale, otherTable.timeBias_ + (otherTable.entryCount_ - 1) * oneOverOtherTimeScale);
 
-	const Int32 InValuesPerEntry = TableCopy.GetValuesPerEntry();
-	const Int32 OtherValuesPerEntry = 1;
-	const Int32 NewValuesPerEntry = InValuesPerEntry + OtherValuesPerEntry;
-	const UInt8 NewOp = (TableCopy.op_ == RDO_None) ? OtherTable.op_ : TableCopy.op_;
-	const Int32 NewEntryCount = LOOKUP_TABLE_MAX_SAMPLES;
-	const Int32 NewStride = (NewOp == RDO_None) ? NewValuesPerEntry : NewValuesPerEntry * 2;
-	const float NewTimeScale = (MaxIn - MinIn) / (float)(NewEntryCount - 1);
+	const Int32 inValuesPerEntry = tableCopy.GetValuesPerEntry();
+	const Int32 otherValuesPerEntry = 1;
+	const Int32 newValuesPerEntry = inValuesPerEntry + otherValuesPerEntry;
+	const UInt8 newOp = (tableCopy.op_ == RDO_None) ? otherTable.op_ : tableCopy.op_;
+	const Int32 newEntryCount = LOOKUP_TABLE_MAX_SAMPLES;
+	const Int32 newStride = (newOp == RDO_None) ? newValuesPerEntry : newValuesPerEntry * 2;
+	const float newTimeScale = (maxIn - minIn) / (float)(newEntryCount - 1);
 
 	// Now build the new lookup table.
-	Table->op_ = NewOp;
-	Table->entryCount_ = NewEntryCount;
-	Table->entryStride_ = NewStride;
-	Table->subEntryStride_ = (NewOp == RDO_None) ? 0 : NewValuesPerEntry;
-	Table->timeScale_ = (NewTimeScale > 0.0f) ? 1.0f / NewTimeScale : 0.0f;
-	Table->timeBias_ = MinIn;
-	Table->values_.Resize(NewEntryCount * NewStride);
-	for (auto& value : Table->values_) value = 0.f;
-	for (Int32 SampleIndex = 0; SampleIndex < NewEntryCount; ++SampleIndex)
+	table->op_ = newOp;
+	table->entryCount_ = newEntryCount;
+	table->entryStride_ = newStride;
+	table->subEntryStride_ = (newOp == RDO_None) ? 0 : newValuesPerEntry;
+	table->timeScale_ = (newTimeScale > 0.0f) ? 1.0f / newTimeScale : 0.0f;
+	table->timeBias_ = minIn;
+	table->values_.Resize(newEntryCount * newStride);
+	for (auto& value : table->values_) value = 0.f;
+	for (Int32 sampleIndex = 0; sampleIndex < newEntryCount; ++sampleIndex)
 	{
-		const float* InEntry1;
-		const float* InEntry2;
-		const float* OtherEntry1;
-		const float* OtherEntry2;
-		float InLerpAlpha;
-		float OtherLerpAlpha;
+		const float* inEntry1;
+		const float* inEntry2;
+		const float* otherEntry1;
+		const float* otherEntry2;
+		float inLerpAlpha;
+		float otherLerpAlpha;
 
-		const float Time = MinIn + SampleIndex * NewTimeScale;
-		TableCopy.GetEntry(Time, InEntry1, InEntry2, InLerpAlpha);
-		OtherTable.GetEntry(Time, OtherEntry1, OtherEntry2, OtherLerpAlpha);
+		const float time = minIn + sampleIndex * newTimeScale;
+		tableCopy.GetEntry(time, inEntry1, inEntry2, inLerpAlpha);
+		otherTable.GetEntry(time, otherEntry1, otherEntry2, otherLerpAlpha);
 
 		// Store sub-entry 1.
-		for (Int32 ValueIndex = 0; ValueIndex < InValuesPerEntry; ++ValueIndex)
+		for (Int32 valueIndex = 0; valueIndex < inValuesPerEntry; ++valueIndex)
 		{
-			Table->values_[SampleIndex * NewStride + ValueIndex] =
-				Lerp(InEntry1[ValueIndex], InEntry2[ValueIndex], InLerpAlpha);
+			table->values_[sampleIndex * newStride + valueIndex] =
+				Lerp(inEntry1[valueIndex], inEntry2[valueIndex], inLerpAlpha);
 		}
-		Table->values_[SampleIndex * NewStride + InValuesPerEntry] =
-			Lerp(OtherEntry1[0], OtherEntry2[0], OtherLerpAlpha);
+		table->values_[sampleIndex * newStride + inValuesPerEntry] =
+			Lerp(otherEntry1[0], otherEntry2[0], otherLerpAlpha);
 
 		// Store sub-entry 2 if needed. 
-		if (NewOp != RDO_None)
+		if (newOp != RDO_None)
 		{
-			InEntry1 += TableCopy.subEntryStride_;
-			InEntry2 += TableCopy.subEntryStride_;
-			OtherEntry1 += OtherTable.subEntryStride_;
-			OtherEntry2 += OtherTable.subEntryStride_;
+			inEntry1 += tableCopy.subEntryStride_;
+			inEntry2 += tableCopy.subEntryStride_;
+			otherEntry1 += otherTable.subEntryStride_;
+			otherEntry2 += otherTable.subEntryStride_;
 
-			for (Int32 ValueIndex = 0; ValueIndex < InValuesPerEntry; ++ValueIndex)
+			for (Int32 valueIndex = 0; valueIndex < inValuesPerEntry; ++valueIndex)
 			{
-				Table->values_[SampleIndex * NewStride + NewValuesPerEntry + ValueIndex] =
-					Lerp(InEntry1[ValueIndex], InEntry2[ValueIndex], InLerpAlpha);
+				table->values_[sampleIndex * newStride + newValuesPerEntry + valueIndex] =
+					Lerp(inEntry1[valueIndex], inEntry2[valueIndex], inLerpAlpha);
 			}
-			Table->values_[SampleIndex * NewStride + NewValuesPerEntry + InValuesPerEntry] =
-				Lerp(OtherEntry1[0], OtherEntry2[0], OtherLerpAlpha);
+			table->values_[sampleIndex * newStride + newValuesPerEntry + inValuesPerEntry] =
+				Lerp(otherEntry1[0], otherEntry2[0], otherLerpAlpha);
 		}
 	}
 }
 
 /**
  * Keeps only the first components of each entry in the table.
- * @param Table - Table to slice.
- * @param ChannelsToKeep - The number of channels to keep.
+ * @param table - Table to slice.
+ * @param channelsToKeep - The number of channels to keep.
  */
-static void SliceLookupTable(DistributionLookupTable* Table, Int32 ChannelsToKeep)
+static void SliceLookupTable(DistributionLookupTable* table, Int32 channelsToKeep)
 {
 	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
-	ASSERT(Table != NULL);
-	ASSERT(Table->GetValuesPerEntry() >= ChannelsToKeep);
+	ASSERT(table != NULL);
+	ASSERT(table->GetValuesPerEntry() >= channelsToKeep);
 
 	// If the table only has the requested number of channels there is nothing to do.
-	if (Table->GetValuesPerEntry() == ChannelsToKeep)
+	if (table->GetValuesPerEntry() == channelsToKeep)
 	{
 		return;
 	}
 
 	// Copy the table.
-	DistributionLookupTable OldTable = *Table;
+	DistributionLookupTable oldTable = *table;
 
 	// The new table will have the same number of entries as the input table.
-	const Int32 NewEntryCount = OldTable.entryCount_;
-	const Int32 NewStride = (OldTable.op_ == RDO_None) ? (ChannelsToKeep) : (2 * ChannelsToKeep);
-	Table->op_ = OldTable.op_;
-	Table->entryCount_ = NewEntryCount;
-	Table->entryStride_ = NewStride;
-	Table->subEntryStride_ = (OldTable.op_ == RDO_None) ? (0) : (ChannelsToKeep);
-	Table->timeBias_ = OldTable.timeBias_;
-	Table->timeScale_ = OldTable.timeScale_;
-	Table->values_.Resize(NewEntryCount * NewStride);
-	for (auto& value : Table->values_) value = 0.f;
+	const Int32 newEntryCount = oldTable.entryCount_;
+	const Int32 newStride = (oldTable.op_ == RDO_None) ? (channelsToKeep) : (2 * channelsToKeep);
+	table->op_ = oldTable.op_;
+	table->entryCount_ = newEntryCount;
+	table->entryStride_ = newStride;
+	table->subEntryStride_ = (oldTable.op_ == RDO_None) ? (0) : (channelsToKeep);
+	table->timeBias_ = oldTable.timeBias_;
+	table->timeScale_ = oldTable.timeScale_;
+	table->values_.Resize(newEntryCount * newStride);
+	for (auto& value : table->values_) value = 0.f;
 
 	// Copy values over.
-	for (Int32 EntryIndex = 0; EntryIndex < NewEntryCount; ++EntryIndex)
+	for (Int32 entryIndex = 0; entryIndex < newEntryCount; ++entryIndex)
 	{
-		const float* RESTRICT SrcValues = &OldTable.values_[EntryIndex * OldTable.entryStride_];
-		float* RESTRICT DestValues = &Table->values_[EntryIndex * Table->entryStride_];
-		for (Int32 ValueIndex = 0; ValueIndex < ChannelsToKeep; ++ValueIndex)
+		const float* RESTRICT SrcValues = &oldTable.values_[entryIndex * oldTable.entryStride_];
+		float* RESTRICT DestValues = &table->values_[entryIndex * table->entryStride_];
+		for (Int32 valueIndex = 0; valueIndex < channelsToKeep; ++valueIndex)
 		{
-			DestValues[ValueIndex] = SrcValues[ValueIndex];
+			DestValues[valueIndex] = SrcValues[valueIndex];
 		}
-		if (OldTable.subEntryStride_ > 0)
+		if (oldTable.subEntryStride_ > 0)
 		{
-			SrcValues += OldTable.subEntryStride_;
-			DestValues += Table->subEntryStride_;
-			for (Int32 ValueIndex = 0; ValueIndex < ChannelsToKeep; ++ValueIndex)
+			SrcValues += oldTable.subEntryStride_;
+			DestValues += table->subEntryStride_;
+			for (Int32 valueIndex = 0; valueIndex < channelsToKeep; ++valueIndex)
 			{
-				DestValues[ValueIndex] = SrcValues[ValueIndex];
+				DestValues[valueIndex] = SrcValues[valueIndex];
 			}
 		}
 	}
@@ -280,83 +282,83 @@ static void SliceLookupTable(DistributionLookupTable* Table, Int32 ChannelsToKee
 
 /**
  * Scales each value in the lookup table by a constant.
- * @param InTable - Table to be scaled.
- * @param Scale - The amount to scale by.
+ * @param table - Table to be scaled.
+ * @param scale - The amount to scale by.
  */
-static void ScaleLookupTableByConstant(DistributionLookupTable* Table, float Scale)
+static void ScaleLookupTableByConstant(DistributionLookupTable* table, float scale)
 {
 	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
-	ASSERT(Table != NULL);
+	ASSERT(table != NULL);
 
-	for (Int32 ValueIndex = 0; ValueIndex < Table->values_.Size(); ++ValueIndex)
+	for (Int32 valueIndex = 0; valueIndex < table->values_.Size(); ++valueIndex)
 	{
-		Table->values_[ValueIndex] *= Scale;
+		table->values_[valueIndex] *= scale;
 	}
 }
 
 /**
  * Scales each value in the lookup table by a constant.
- * @param InTable - Table to be scaled.
- * @param Scale - The amount to scale by.
+ * @param table - Table to be scaled.
+ * @param scale - The amount to scale by.
  * @param ValueCount - The number of scale values.
  */
-static void ScaleLookupTableByConstants(DistributionLookupTable* Table, const float* Scale, Int32 ValueCount)
+static void ScaleLookupTableByConstants(DistributionLookupTable* table, const float* scale, Int32 valueCount)
 {
 	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
-	ASSERT(Table != NULL);
-	ASSERT(ValueCount == Table->GetValuesPerEntry());
+	ASSERT(table != NULL);
+	ASSERT(valueCount == table->GetValuesPerEntry());
 
-	const Int32 EntryCount = Table->entryCount_;
-	const Int32 SubEntryCount = (Table->subEntryStride_ > 0) ? 2 : 1;
-	const Int32 Stride = Table->entryStride_;
-	const Int32 SubEntryStride = Table->subEntryStride_;
-	float* RESTRICT Values = &(Table->values_[0]);
+	const Int32 entryCount = table->entryCount_;
+	const Int32 subEntryCount = (table->subEntryStride_ > 0) ? 2 : 1;
+	const Int32 stride = table->entryStride_;
+	const Int32 subEntryStride = table->subEntryStride_;
+	float* RESTRICT values = &(table->values_[0]);
 
-	for (Int32 Index = 0; Index < EntryCount; ++Index)
+	for (Int32 index = 0; index < entryCount; ++index)
 	{
-		float* RESTRICT EntryValues = Values;
-		for (Int32 SubEntryIndex = 0; SubEntryIndex < SubEntryCount; ++SubEntryIndex)
+		float* RESTRICT entryValues = values;
+		for (Int32 subEntryIndex = 0; subEntryIndex < subEntryCount; ++subEntryIndex)
 		{
-			for (Int32 ValueIndex = 0; ValueIndex < ValueCount; ++ValueIndex)
+			for (Int32 valueIndex = 0; valueIndex < valueCount; ++valueIndex)
 			{
-				EntryValues[ValueIndex] *= Scale[ValueIndex];
+				entryValues[valueIndex] *= scale[valueIndex];
 			}
-			EntryValues += SubEntryStride;
+			entryValues += subEntryStride;
 		}
-		Values += Stride;
+		values += stride;
 	}
 }
 
 /**
  * Adds a constant to each value in the lookup table.
- * @param InTable - Table to be scaled.
- * @param Addend - The amount to add by.
- * @param ValueCount - The number of values per entry.
+ * @param table - Table to be scaled.
+ * @param addend - The amount to add by.
+ * @param valueCount - The number of values per entry.
  */
-static void AddConstantToLookupTable(DistributionLookupTable* Table, const float* Addend, Int32 ValueCount)
+static void AddConstantToLookupTable(DistributionLookupTable* table, const float* addend, Int32 valueCount)
 {
 	ASSERT(GetSubsystem<Context>()->IsInGameThread() || GetSubsystem<Context>()->IsInAsyncLoadingThread());
-	ASSERT(Table != NULL);
-	ASSERT(ValueCount == Table->GetValuesPerEntry());
+	ASSERT(table != NULL);
+	ASSERT(valueCount == table->GetValuesPerEntry());
 
-	const Int32 EntryCount = Table->entryCount_;
-	const Int32 SubEntryCount = (Table->subEntryStride_ > 0) ? 2 : 1;
-	const Int32 Stride = Table->entryStride_;
-	const Int32 SubEntryStride = Table->subEntryStride_;
-	float* RESTRICT Values = &(Table->values_[0]);
+	const Int32 entryCount = table->entryCount_;
+	const Int32 subEntryCount = (table->subEntryStride_ > 0) ? 2 : 1;
+	const Int32 stride = table->entryStride_;
+	const Int32 subEntryStride = table->subEntryStride_;
+	float* RESTRICT values = &(table->values_[0]);
 
-	for (Int32 Index = 0; Index < EntryCount; ++Index)
+	for (Int32 index = 0; index < entryCount; ++index)
 	{
-		float* RESTRICT EntryValues = Values;
-		for (Int32 SubEntryIndex = 0; SubEntryIndex < SubEntryCount; ++SubEntryIndex)
+		float* RESTRICT entryValues = values;
+		for (Int32 subEntryIndex = 0; subEntryIndex < subEntryCount; ++subEntryIndex)
 		{
-			for (Int32 ValueIndex = 0; ValueIndex < ValueCount; ++ValueIndex)
+			for (Int32 valueIndex = 0; valueIndex < valueCount; ++valueIndex)
 			{
-				EntryValues[ValueIndex] += Addend[ValueIndex];
+				entryValues[valueIndex] += addend[valueIndex];
 			}
-			EntryValues += SubEntryStride;
+			entryValues += subEntryStride;
 		}
-		Values += Stride;
+		values += stride;
 	}
 }
 
@@ -4090,6 +4092,256 @@ Vector3 DistributionVectorParameterBase::GetValue(float F, Object* Data, Int32 E
 	}
 
 	return Output;
+}
+
+Quaternion DistributionQuaternion::GetQuatValue(float f)
+{
+	return GetValue(f);
+}
+
+Quaternion DistributionQuaternion::GetValue(float f, Object* data, Int32 lastExtreme, struct RandomStream* randomStream) const
+{
+	return Quaternion::IDENTITY;
+}
+
+void DistributionQuaternion::GetInRange(float& minIn, float& maxIn) const
+{
+	minIn = 0.0f;
+	maxIn = 0.0f;
+}
+
+void DistributionQuaternion::GetOutRange(float& minOut, float& maxOut) const
+{
+	minOut = 0.0f;
+	maxOut = 0.0f;
+}
+
+void DistributionQuaternion::GetRange(Quaternion& outMin, Quaternion& outMax) const
+{
+	outMin = Quaternion::IDENTITY;
+	outMax = Quaternion::IDENTITY;
+}
+
+Quaternion DistributionQuaternionConstantCurve::GetValue(float f, Object* data, Int32 lastExtreme, struct RandomStream* randomStream) const
+{
+	return constantCurve_.Eval(f, Quaternion::IDENTITY);
+}
+
+void DistributionQuaternionConstantCurve::GetRange(Quaternion& outMin, Quaternion& outMax) const
+{
+	constantCurve_.CalcBounds(outMin, outMax, Quaternion::IDENTITY);
+}
+
+Int32 DistributionQuaternionConstantCurve::GetNumKeys() const
+{
+	return constantCurve_.points_.Size();
+}
+
+Int32 DistributionQuaternionConstantCurve::GetNumSubCurves() const
+{
+	return 4;
+}
+
+Color DistributionQuaternionConstantCurve::GetSubCurveButtonColor(Int32 subCurveIndex, bool isSubCurveHidden) const
+{
+	// Check for array out of bounds because it will crash the program
+	ASSERT(subCurveIndex >= 0);
+	ASSERT(subCurveIndex < GetNumSubCurves());
+
+	Color buttonColor;
+
+	switch (subCurveIndex)
+	{
+	case 0:
+		// Red
+		buttonColor = isSubCurveHidden ? Color(32, 0, 0) : Color::RED;
+		break;
+	case 1:
+		// Green
+		buttonColor = isSubCurveHidden ? Color(0, 32, 0) : Color::GREEN;
+		break;
+	case 2:
+		// Blue
+		buttonColor = isSubCurveHidden ? Color(0, 0, 32) : Color::BLUE;
+		break;
+	case 3:
+		// White
+		buttonColor = isSubCurveHidden ? Color(0, 0, 32) : Color::WHITE;
+		break;
+	default:
+		// A bad sub-curve index was given. 
+		ASSERT(false);
+		break;
+	}
+
+	return buttonColor;
+}
+
+float DistributionQuaternionConstantCurve::GetKeyIn(Int32 keyIndex)
+{
+	ASSERT(keyIndex >= 0 && keyIndex < constantCurve_.points_.Size());
+	return constantCurve_.points_[keyIndex].inVal_;
+}
+
+float DistributionQuaternionConstantCurve::GetKeyOut(Int32 subIndex, Int32 keyIndex)
+{
+	ASSERT(subIndex >= 0 && subIndex < 3);
+	ASSERT(keyIndex >= 0 && keyIndex < constantCurve_.points_.Size());
+
+	return (&(constantCurve_.points_[keyIndex].outVal_.w_))[subIndex];
+}
+
+void DistributionQuaternionConstantCurve::GetInRange(float& minIn, float& maxIn) const
+{
+	if (constantCurve_.points_.Size() == 0)
+	{
+		minIn = 0.f;
+		maxIn = 0.f;
+	}
+	else
+	{
+		float min = BIG_NUMBER;
+		float max = -BIG_NUMBER;
+		for (Int32 index = 0; index < constantCurve_.points_.Size(); index++)
+		{
+			float value = constantCurve_.points_[index].inVal_;
+			if (value < min)
+			{
+				min = value;
+			}
+			if (value > max)
+			{
+				max = value;
+			}
+		}
+		minIn = min;
+		maxIn = max;
+	}
+}
+
+void DistributionQuaternionConstantCurve::GetOutRange(float& minOut, float& maxOut) const
+{
+	Quaternion minQuat, maxQuat;
+	constantCurve_.CalcBounds(minQuat, maxQuat, Quaternion::IDENTITY);
+	minOut = Min(minQuat.w_, Min(minQuat.x_, Min(minQuat.y_, minQuat.z_)));
+	maxOut = Max(maxQuat.w_, Max(maxQuat.x_, Max(maxQuat.y_, maxQuat.z_)));
+}
+
+Color DistributionQuaternionConstantCurve::GetKeyColor(Int32 subIndex, Int32 keyIndex, const Color& curveColor)
+{
+	ASSERT(subIndex >= 0 && subIndex < 4);
+	ASSERT(keyIndex >= 0 && keyIndex < constantCurve_.points_.Size());
+
+	switch (subIndex)
+	{
+	case 0:
+		return Color::RED;
+	case 1:
+		return Color::GREEN;
+	case 2:
+		return Color::BLUE;
+	case 4:
+		return Color::WHITE;
+	default:
+		return Color::BLACK;
+	}
+}
+
+InterpCurveMode	DistributionQuaternionConstantCurve::GetKeyInterpMode(Int32 keyIndex) const
+{
+	ASSERT(keyIndex >= 0 && keyIndex < constantCurve_.points_.Size());
+	return constantCurve_.points_[keyIndex].interpMode_;
+}
+
+void DistributionQuaternionConstantCurve::GetTangents(Int32 subIndex, Int32 keyIndex, float& arriveTangent, float& leaveTangent) const
+{
+	arriveTangent = 0.0f;
+	leaveTangent = 0.0f;
+}
+
+float DistributionQuaternionConstantCurve::EvalSub(Int32 subIndex, float inVal)
+{
+	ASSERT(subIndex >= 0 && subIndex < 4);
+
+	Quaternion outVal = constantCurve_.Eval(inVal, Quaternion::IDENTITY);
+	return (&outVal.w_)[subIndex];
+}
+
+Int32 DistributionQuaternionConstantCurve::CreateNewKey(float keyIn)
+{
+	Quaternion newKeyVal = constantCurve_.Eval(keyIn, Quaternion::IDENTITY);
+	Int32 newPointIndex = constantCurve_.AddPoint(keyIn, newKeyVal);
+	constantCurve_.AutoSetTangents(0.f);
+
+	isDirty_ = true;
+
+	return newPointIndex;
+}
+
+void DistributionQuaternionConstantCurve::DeleteKey(Int32 keyIndex)
+{
+	ASSERT(keyIndex >= 0 && keyIndex < constantCurve_.points_.Size());
+	constantCurve_.points_.Erase(keyIndex);
+	constantCurve_.AutoSetTangents(0.f);
+
+	isDirty_ = true;
+}
+
+Int32 DistributionQuaternionConstantCurve::SetKeyIn(Int32 keyIndex, float newInVal)
+{
+	ASSERT(keyIndex >= 0 && keyIndex < constantCurve_.points_.Size());
+	Int32 NewPointIndex = constantCurve_.MovePoint(keyIndex, newInVal);
+	constantCurve_.AutoSetTangents(0.f);
+
+	isDirty_ = true;
+
+	return NewPointIndex;
+}
+
+void DistributionQuaternionConstantCurve::SetKeyOut(Int32 subIndex, Int32 keyIndex, float newOutVal)
+{
+	ASSERT(subIndex >= 0 && subIndex < 4);
+	ASSERT(keyIndex >= 0 && keyIndex < constantCurve_.points_.Size());
+
+	(&(constantCurve_.points_[keyIndex].outVal_.w_))[subIndex] = newOutVal;
+
+	constantCurve_.AutoSetTangents(0.f);
+
+	isDirty_ = true;
+}
+
+void DistributionQuaternionConstantCurve::SetKeyInterpMode(Int32 keyIndex, InterpCurveMode newMode)
+{
+	ASSERT(keyIndex >= 0 && keyIndex < constantCurve_.points_.Size());
+
+	constantCurve_.points_[keyIndex].interpMode_ = newMode;
+	constantCurve_.AutoSetTangents(0.f);
+
+	isDirty_ = true;
+}
+
+void DistributionQuaternionConstantCurve::SetTangents(Int32 subIndex, Int32 keyIndex, float arriveTangent, float leaveTangent)
+{
+	ASSERT(subIndex >= 0 && subIndex < 3);
+	ASSERT(keyIndex >= 0 && keyIndex < constantCurve_.points_.Size());
+
+	if (subIndex == 0)
+	{
+		constantCurve_.points_[keyIndex].arriveTangent_.x_ = arriveTangent;
+		constantCurve_.points_[keyIndex].leaveTangent_.x_ = leaveTangent;
+	}
+	else if (subIndex == 1)
+	{
+		constantCurve_.points_[keyIndex].arriveTangent_.y_ = arriveTangent;
+		constantCurve_.points_[keyIndex].leaveTangent_.y_ = leaveTangent;
+	}
+	else if (subIndex == 2)
+	{
+		constantCurve_.points_[keyIndex].arriveTangent_.z_ = arriveTangent;
+		constantCurve_.points_[keyIndex].leaveTangent_.z_ = leaveTangent;
+	}
+
+	isDirty_ = true;
 }
 
 

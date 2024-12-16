@@ -266,7 +266,7 @@ class FlagGG_API VectorBase
 {
 public:
 	/// Construct.
-	VectorBase() NOEXCEPT :
+	VectorBase() noexcept :
 		size_(0),
 		capacity_(0),
 		buffer_(nullptr)

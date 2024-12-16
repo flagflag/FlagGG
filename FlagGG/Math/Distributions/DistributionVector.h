@@ -137,15 +137,15 @@ public:
 	 * @param Values An array of values to be filled out, guaranteed to be big enough for 2 vectors
 	 * @return The number of elements (values) set in the array
 	 */
-	virtual UInt32 InitializeRawEntry(float Time, float* Values) const;
+	virtual UInt32 InitializeRawEntry(float time, float* values) const;
 
 	virtual Vector3	GetValue(float f = 0.f, Object* data = NULL, Int32 lastExtreme = 0, struct RandomStream* randomStream = NULL) const;
 
-	//~ Begin FCurveEdInterface Interface
+	//~ Begin CurveEdInterface Interface
 	virtual void GetInRange(float& minIn, float& maxIn) const override;
 	virtual void GetOutRange(float& minOut, float& maxOut) const override;
 	virtual	void GetRange(Vector3& outMin, Vector3& outMax) const;
-	//~ End FCurveEdInterface Interface
+	//~ End CurveEdInterface Interface
 
 	/** @return true of this distribution can be baked into a FRawDistribution lookup table, otherwise false */
 	virtual bool CanBeBaked() const

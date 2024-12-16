@@ -11,10 +11,10 @@ class FlagGG_API DistributionVectorParameterBase : public DistributionVectorCons
 public:
 	DistributionVectorParameterBase();
 
-	//Begin UDistributionVector Interface
+	//Begin DistributionVector Interface
 	virtual Vector3 GetValue(float f = 0.f, Object* data = NULL, Int32 extreme = 0, struct RandomStream* randomStream = NULL) const override;
 	virtual bool CanBeBaked() const override { return false; }
-	//End UDistributionVector Interface
+	//End DistributionVector Interface
 	
 	/** todo document */
 	virtual bool GetParamValue(Object* data, const String& paramName, Vector3& outVector) const { return false; }

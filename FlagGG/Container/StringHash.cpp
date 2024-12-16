@@ -6,23 +6,23 @@ namespace FlagGG
 
 const StringHash StringHash::ZERO(0u);
 
-StringHash::StringHash() :
+StringHash::StringHash() noexcept :
 	value_(0)
 { }
 
-StringHash::StringHash(const char* str) :
+StringHash::StringHash(const char* str) noexcept :
 	value_(HashString(str))
 { }
 
-StringHash::StringHash(const String& str) :
+StringHash::StringHash(const String& str) noexcept :
 	value_(HashString(str.CString()))
 { }
 
-StringHash::StringHash(UInt32 value) :
+StringHash::StringHash(UInt32 value) noexcept :
 	value_(value)
 { }
 
-StringHash::StringHash(const StringHash& value) :
+StringHash::StringHash(const StringHash& value) noexcept :
 	value_(value.value_)
 { }
 

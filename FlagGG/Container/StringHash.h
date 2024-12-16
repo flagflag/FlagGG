@@ -8,17 +8,17 @@ namespace FlagGG
 class FlagGG_API StringHash
 {
 public:
-	StringHash() NOEXCEPT;
+	StringHash() noexcept;
 
-	StringHash(const char* str) NOEXCEPT;
+	StringHash(const char* str) noexcept;
 
-	StringHash(const String& str) NOEXCEPT;
+	StringHash(const String& str) noexcept;
 
-	StringHash(UInt32 value) NOEXCEPT;
+	StringHash(UInt32 value) noexcept;
 
-	StringHash(const StringHash& value) NOEXCEPT;
+	StringHash(const StringHash& value) noexcept;
 
-	StringHash& operator=(const StringHash& rhs) NOEXCEPT = default;
+	StringHash& operator=(const StringHash& rhs) noexcept = default;
 
 	StringHash operator+(const StringHash& rhs) const;
 
