@@ -58,7 +58,7 @@ struct D3D11TextureFormatInfo
 	DXGI_FORMAT srgbFormat_;
 };
 
-D3D11TextureFormatInfo d3d11TextureFormatInfo[] =
+static const D3D11TextureFormatInfo d3d11TextureFormatInfo[] =
 {
 	{ DXGI_FORMAT_BC1_UNORM,          DXGI_FORMAT_BC1_UNORM,             DXGI_FORMAT_UNKNOWN,           DXGI_FORMAT_BC1_UNORM_SRGB       }, // BC1
 	{ DXGI_FORMAT_BC2_UNORM,          DXGI_FORMAT_BC2_UNORM,             DXGI_FORMAT_UNKNOWN,           DXGI_FORMAT_BC2_UNORM_SRGB       }, // BC2

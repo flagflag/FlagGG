@@ -26,6 +26,18 @@ static const OglVertexElements oglVertexElements[] =
 	{ 4, GL_UNSIGNED_BYTE },  // VE_UBYTE4_UNORM
 };
 
+static const GLenum oglComparisonFun[] =
+{
+	0,
+	GL_LESS,
+	GL_EQUAL,
+	GL_LEQUAL,
+	GL_GREATER,
+	GL_NOTEQUAL,
+	GL_GEQUAL,
+	GL_ALWAYS
+};
+
 GfxDeviceOpenGL::GfxDeviceOpenGL()
 	: GfxDevice()
 {
@@ -107,12 +119,70 @@ void GfxDeviceOpenGL::Clear(ClearTargetFlags flags, const Color& color/* = Color
 
 void GfxDeviceOpenGL::PrepareRasterizerState()
 {
+	if (rasterizerStateDirty_)
+	{
+		switch (rasterizerState_.fillMode_)
+		{
+		case FILL_WIREFRAME:
+			GL::PolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			break;
 
+		case FILL_SOLID:
+			GL::PolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			break;
+		}
+
+		switch (rasterizerState_.cullMode_)
+		{
+		case CULL_NONE:
+			GL::Disable(GL_CULL_FACE);
+			break;
+
+		case CULL_FRONT:
+			GL::Enable(GL_CULL_FACE);
+			GL::CullFace(GL_FRONT);
+			break;
+
+		case CULL_BACK:
+			GL::Enable(GL_CULL_FACE);
+			GL::CullFace(GL_BACK);
+			break;
+		}
+
+		if (rasterizerState_.colorWrite_)
+			GL::ColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		else
+			GL::ColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
+		if (rasterizerState_.scissorTest_)
+			GL::Enable(GL_SCISSOR_TEST);
+		else
+			GL::Disable(GL_SCISSOR_TEST);
+
+		GL::PolygonOffset(rasterizerState_.slopeScaledDepthBias_, rasterizerState_.depthBias_);
+
+		rasterizerStateDirty_ = false;
+	}
 }
 
 void GfxDeviceOpenGL::PrepareDepthStencilState()
 {
+	if (depthStencilStateDirty_)
+	{
+		if (depthStencilState_.depthTestMode_ == COMPARISON_ALWAYS)
+		{
+			GL::Disable(GL_DEPTH_TEST);
+		}
+		else
+		{
+			GL::Enable(GL_DEPTH_TEST);
+			GL::DepthFunc(oglComparisonFun[depthStencilState_.depthTestMode_]);
+		}
 
+		GL::DepthMask(depthStencilState_.depthWrite_);
+
+		depthStencilStateDirty_ = false;
+	}
 }
 
 void GfxDeviceOpenGL::PrepareDraw()

@@ -485,6 +485,41 @@ FORCEINLINE void Enable(GLenum cap)
 	GL_CHECK(glEnable(cap));
 }
 
+FORCEINLINE void Disable(GLenum cap)
+{
+	GL_CHECK(glDisable(cap));
+}
+
+FORCEINLINE void CullFace(GLenum mode)
+{
+	GL_CHECK(glCullFace(mode));
+}
+
+FORCEINLINE void PolygonMode(GLenum face, GLenum mode)
+{
+	GL_CHECK(glPolygonMode(face, mode));
+}
+
+FORCEINLINE void PolygonOffset(GLfloat factor, GLfloat units)
+{
+	GL_CHECK(glPolygonOffset(factor, units));
+}
+
+FORCEINLINE void DepthFunc(GLenum func)
+{
+	GL_CHECK(glDepthFunc(func));
+}
+
+FORCEINLINE void DepthMask(GLboolean flag)
+{
+	GL_CHECK(glDepthMask(flag));
+}
+
+FORCEINLINE void ColorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
+{
+	GL_CHECK(glColorMask(red, green, blue, alpha));
+}
+
 FORCEINLINE void EnableVertexAttribArray(GLuint index)
 {
 	GL_CHECK(glEnableVertexAttribArray(index));
