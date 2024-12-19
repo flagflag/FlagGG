@@ -37,6 +37,9 @@ public:
 	// 获取CPU映射数据
 	const UInt8* GetShadowData() const override { return shadowdData_.Buffer(); }
 
+	// 获取metal buffer
+	mtlpp::Buffer& GetMetalBuffer() { return mtlBuffer_; }
+
 private:
 	mtlpp::Buffer mtlBuffer_;
 

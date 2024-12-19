@@ -81,7 +81,7 @@ private:
 	SharedArrayPtr<char> buffer_;
 	UInt32 bufferSize_{ 0 };
 
-	ShaderType shaderType_{ None };
+	ShaderType shaderType_{};
 
 	Vector<String> defines_;
 	String definesString_;

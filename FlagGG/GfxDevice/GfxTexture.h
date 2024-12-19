@@ -25,6 +25,7 @@ struct TextureDesc
 	bool autoResolve_{};
 	bool sRGB_{};
 	TextureUsage usage_{};
+	StorageMode storageMode_{};
 };
 
 class GfxRenderSurface;

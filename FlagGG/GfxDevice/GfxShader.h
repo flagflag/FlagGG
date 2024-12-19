@@ -33,7 +33,7 @@ public:
 
 protected:
 	// shader类型
-	ShaderType shaderType_{ None };
+	ShaderType shaderType_{};
 
 	// shader代码
 	SharedArrayPtr<char> shaderSource_;

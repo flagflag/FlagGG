@@ -16,10 +16,9 @@ enum PrimitiveType
 
 enum ShaderType
 {
-	None = 0,
-	VS = 1,
-	PS = 2,
-	CS = 3,
+	VS,
+	PS,
+	CS,
 };
 
 enum TextureClass : UInt32
@@ -180,6 +179,18 @@ enum ComparisonFunc : UInt8
 	COMPARISON_ALWAYS,
 };
 
+enum StencilOperation : UInt8
+{
+	STENCIL_KEEP = 0,
+	STENCIL_ZERO,
+	STENCIL_REPLACE,
+	STENCIL_INCREMENT_CLAMP,
+	STENCIL_DECREMENT_CLAMP,
+	STENCIL_INVERT,
+	STENCIL_INCREMENT_WRAP,
+	STENCIL_DECREMENT_WRAP,
+};
+
 enum CubeMapFace
 {
 	FACE_POSITIVE_X = 0,
@@ -294,6 +305,13 @@ enum TextureUsage
 	TEXTURE_DEPTHSTENCIL
 };
 
+enum StorageMode
+{
+	STORAGE_MODE_SHARED = 0,   // CPU-GPU共享
+	STORAGE_MODE_PRIVATE,      // GPU独享
+	STORAGE_MODE_MEMORYLESS,   // GPU独享（移动端设备上会被翻译成tile meomry）
+};
+
 struct FlagGG_API VertexElement
 {
 	VertexElement();
@@ -340,6 +358,9 @@ struct FlagGG_API DepthStencilState
 	UInt8 stencilReadMask_{};
 	UInt8 stencilWriteMask_{};
 	ComparisonFunc stencilTestMode_{ COMPARISON_ALWAYS };
+	StencilOperation stencilFailOp_{};
+	StencilOperation depthFailOp_{};
+	StencilOperation depthStencilPassOp_{};
 
 	UInt32 GetHash() const;
 };

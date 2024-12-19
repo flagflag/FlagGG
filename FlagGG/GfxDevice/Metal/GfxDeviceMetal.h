@@ -17,6 +17,9 @@
 namespace FlagGG
 {
 
+class GfxProgramMetal;
+struct MetalConstanceBufferDesc;
+
 class GfxDeviceMetal : public GfxDevice, public Subsystem<GfxDeviceMetal>
 {
 public:
@@ -36,6 +39,9 @@ public:
 
 	// 提交渲染指令
 	void DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart) override;
+
+	// 提交渲染指令
+	void DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceCount) override;
 
 	// Flush
 	void Flush() override;
@@ -61,17 +67,38 @@ public:
 	GfxProgram* CreateProgram() override;
 
 	// 获取metal设备
-	mtlpp::Device& GetMetalDevice();
+	mtlpp::Device& GetMetalDevice() { return mtlDevice_; }
 
 protected:
 	// 提交渲染指令之前预处理工作
 	void PrepareDraw();
 
-	void PrepareRasterizerState();
+	void PrepareRenderPassAttachments();
+
+	void PrepareRenderPiplineState();
 
 	void PrepareDepthStencilState();
 
+	void CopyShaderParameterToBuffer(const HashMap<UInt32, MetalConstanceBufferDesc>& bufferDesc, GfxBuffer* bufferArray);
+
 private:
+	mtlpp::Device mtlDevice_;
+
+	mtlpp::CommandBuffer mtlCommandBuffer_;
+
+	mtlpp::RenderCommandEncoder mtlRenderCommandEncoder_;
+
+	struct RenderPiplineStateAndShaders
+	{
+		mtlpp::RenderPipelineState mtlRenderPiplineState_;
+		SharedPtr<GfxProgramMetal> program_;
+	};
+	HashMap<UInt32, RenderPiplineStateAndShaders> renderPiplineStateMap_;
+
+	SharedPtr<GfxProgramMetal> currentProgram_;
+
+	HashMap<UInt32, mtlpp::DepthStencilState> depthStencilStateMap_;
+
 	// Constant buffer用途
 	enum ConstBufferType
 	{

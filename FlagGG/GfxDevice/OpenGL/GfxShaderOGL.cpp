@@ -22,12 +22,6 @@ GfxShaderOpenGL::~GfxShaderOpenGL()
 
 bool GfxShaderOpenGL::Compile()
 {
-	if (shaderType_ == None)
-	{
-		FLAGGG_LOG_WARN("Shader type is None, so initialize failed.");
-		return false;
-	}
-
 	GLenum oglShaderType = shaderType_ == CS ? GL_COMPUTE_SHADER : (shaderType_ == VS ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER);
 
 	oglShader_ = GL::CreateShader(oglShaderType);

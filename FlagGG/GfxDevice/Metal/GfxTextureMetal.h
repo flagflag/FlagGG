@@ -49,6 +49,9 @@ public:
 	// 获取Metal纹理
 	mtlpp::Texture& GetMetalTexture() { return mtlTexture_; }
 
+	// 转成metal PixelFormat
+	static mtlpp::PixelFormat ToMetalPixelFormat(TextureFormat format);
+
 private:
 	mtlpp::Texture mtlTexture_;
 

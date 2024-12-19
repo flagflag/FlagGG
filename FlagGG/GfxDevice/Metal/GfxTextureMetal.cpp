@@ -135,14 +135,30 @@ void GfxTextureMetal::Apply(const void* initialDataPtr)
 	mtlTexDesc.SetMipmapLevelCount(textureDesc_.levels_);
 	mtlTexDesc.SetSampleCount(1); // 各向异性？
 	mtlTexDesc.SetArrayLength(textureDesc_.layers_);
-	UInt32 options = (UInt32)mtlpp::ResourceOptions::StorageModeShared | (UInt32)mtlpp::ResourceOptions::CpuCacheModeDefaultCache;
-	mtlTexDesc.SetResourceOptions((mtlpp::ResourceOptions)options);
+	UInt32 options = (UInt32)mtlpp::ResourceOptions::CpuCacheModeDefaultCache;
 	mtlTexDesc.SetCpuCacheMode(mtlpp::CpuCacheMode::DefaultCache);
-	mtlTexDesc.SetStorageMode(mtlpp::StorageMode::Shared);
+	switch (textureDesc_.storageMode_)
+	{
+	case STORAGE_MODE_SHARED:
+		options |= (UInt32)mtlpp::ResourceOptions::StorageModeShared;
+		mtlTexDesc.SetStorageMode(mtlpp::StorageMode::Shared);
+		break;
+
+	case STORAGE_MODE_PRIVATE:
+		options |= (UInt32)mtlpp::ResourceOptions::StorageModePrivate;
+		mtlTexDesc.SetStorageMode(mtlpp::StorageMode::Private);
+		break;
+
+	case STORAGE_MODE_MEMORYLESS:
+		options |= (UInt32)mtlpp::ResourceOptions::StorageModeMemoryless;
+		mtlTexDesc.SetStorageMode(mtlpp::StorageMode::Memoryless);
+		break;
+	}
+	mtlTexDesc.SetResourceOptions((mtlpp::ResourceOptions)options);
 	if (textureDesc_.usage_ == TEXTURE_RENDERTARGET || textureDesc_.usage_ == TEXTURE_DEPTHSTENCIL)
 		mtlTexDesc.SetUsage(mtlpp::TextureUsage::RenderTarget);
 	else
-		mtlTexDesc.SetUsage(mtlpp::TextureUsage::PixelFormatView);
+		mtlTexDesc.SetUsage(mtlpp::TextureUsage::ShaderRead);
 
 	mtlTexture_ = GetSubsystem<GfxDeviceMetal>()->GetMetalDevice().NewTexture(mtlTexDesc);
 
@@ -183,5 +199,9 @@ GfxRenderSurface* GfxTextureMetal::GetRenderSurface(UInt32 index) const
 	return index < gfxRenderSurfaces_.Size() ? gfxRenderSurfaces_[index] : nullptr;
 }
 
+mtlpp::PixelFormat GfxTextureMetal::ToMetalPixelFormat(TextureFormat format)
+{
+	return metalTextureFormat[format].format_;
+}
 
 }

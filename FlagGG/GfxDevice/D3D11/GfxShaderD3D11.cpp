@@ -106,12 +106,6 @@ void GfxShaderD3D11::AnalysisReflection(ID3DBlob* compileCode)
 
 bool GfxShaderD3D11::Compile()
 {
-	if (shaderType_ == None)
-	{
-		FLAGGG_LOG_WARN("Shader type is None, so initialize failed.");
-		return false;
-	}
-
 	ID3DBlob* compileCode = nullptr;
 	if (!CompileShader(shaderSource_.Get(), shaderSourceSize_, shaderType_, defines_, compileCode, shaderCode_))
 	{
