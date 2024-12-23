@@ -1,4 +1,4 @@
-#define FlagGG_ColorSpaceDielectricSpec float4(0.04, 0.04, 0.04, 1.0)
+#define FlagGG_ColorSpaceDielectricSpec float4(0.08, 0.08, 0.08, 1.0)
 
 #ifndef FLAGGG_CONSERVE_ENERGY
     #define FLAGGG_CONSERVE_ENERGY 1
@@ -34,7 +34,7 @@ float3 EnergyConservationBetweenDiffuseAndSpecular(float3 albedo, float3 specCol
     #elif FLAGGG_CONSERVE_ENERGY_MONOCHROME
         return albedo * oneMinusReflectivity;
     #else
-        return albedo * (vec3(1.0,1.0,1.0) - specColor);
+        return albedo * (float3(1.0,1.0,1.0) - specColor);
     #endif
 }
 
@@ -49,14 +49,30 @@ float OneMinusReflectivityFromMetallic(float metallic)
     return oneMinusDielectricSpec - metallic * oneMinusDielectricSpec;
 }
 
-float3 DiffuseAndSpecularFromMetallic(float3 albedo, float metallic, out float3 specColor, out float oneMinusReflectivity)
+float3 DiffuseAndSpecularFromMetallic(float3 albedo, float metallic, float specular, out float3 specColor, out float oneMinusReflectivity)
 {
-    specColor = lerp(FlagGG_ColorSpaceDielectricSpec.rgb, albedo, metallic);
+    specColor = lerp(FlagGG_ColorSpaceDielectricSpec.rgb * specular, albedo, metallic);
     oneMinusReflectivity = OneMinusReflectivityFromMetallic(metallic);
     return albedo * oneMinusReflectivity;
 }
 
-float GGXTerm(float NdotH, float roughness)
+// Convert a roughness and an anisotropy factor into GGX alpha values respectively for the major and minor axis of the tangent frame
+void GetAnisotropicRoughness(float alpha, float anisotropy, out float ax, out float ay)
+{
+#if 1
+	// Anisotropic parameters: ax and ay are the roughness along the tangent and bitangent	
+	// Kulla 2017, "Revisiting Physically Based Shading at Imageworks"
+	ax = max(alpha * (1.0 + anisotropy), 0.001);
+	ay = max(alpha * (1.0 - anisotropy), 0.001);
+#else
+	float k = sqrt(1.0f - 0.95f * anisotropy);
+	ax = max(alpha / k, 0.001f);
+	ay = max(alpha * k, 0.001f);
+#endif
+}
+
+// Trowbridge-Reitz GGX
+float D_GGX(float NdotH, float roughness)
 {
     float a2 = roughness * roughness;
     float d = (NdotH * a2 - NdotH) * NdotH + 1.0;  // 2 mad
@@ -64,7 +80,25 @@ float GGXTerm(float NdotH, float roughness)
                                                     // therefore epsilon is smaller than what can be represented by half
 }
 
-float SmithJointGGXVisibilityTerm(float NdotL, float NdotV, float roughness)
+// Anisotropic GGX
+// [Burley 2012, "Physically-Based Shading at Disney"]
+float D_GGXaniso( float ax, float ay, float NoH, float XoH, float YoH )
+{
+// The two formulations are mathematically equivalent
+#if 1
+	float a2 = ax * ay;
+	float3 v = float3(ay * XoH, ax * YoH, a2 * NoH);
+	float s = dot(v, v);
+
+	return M_INV_PI * a2 * Square(a2 / s);
+#else
+	float d = XoH * XoH / (ax * ax) + YoH * YoH / (ay * ay) + NoH * NoH;
+	return 1.0f / ( M_PI * ax*ay * d*d );
+#endif
+}
+
+// Visibility - GGX - Smith Joint
+float Vis_GGX(float NdotL, float NdotV, float roughness)
 {
 #if 0
     // Original formulation:
@@ -92,9 +126,12 @@ float SmithJointGGXVisibilityTerm(float NdotL, float NdotV, float roughness)
 #endif
 }
 
-float Pow5 (float x)
+// [Heitz 2014, "Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs"]
+float Vis_SmithJointAniso(float ax, float ay, float NoV, float NoL, float XoV, float XoL, float YoV, float YoL)
 {
-    return x*x * x*x * x;
+	float vis_SmithV = NoL * length(float3(ax * XoV, ay * YoV, NoV));
+	float vis_SmithL = NoV * length(float3(ax * XoL, ay * YoL, NoL));
+	return 0.5 / (vis_SmithV + vis_SmithL);
 }
 
 float3 FresnelTerm(float3 F0, float cosA)

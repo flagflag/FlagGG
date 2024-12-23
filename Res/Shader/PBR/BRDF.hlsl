@@ -1,18 +1,33 @@
 #include "Shader/PBR/PBRCommon.hlsl"
 
+struct PBRContext
+{
+    float3 diffuseColor;            // 固有色
+    float metallic;                 // 金属度
+    float roughness;                // 粗糙度
+    float specular;                 // 高光率
+    float3 worldPosition;           // 世界坐标
+    float3 normalDirection;         // 世界坐标法线向量
+    float3 viewDirection;           // 物体到相机的向量
+    float3 tangentDirecntion;       // 世界坐标切线向量
+    float3 bnormalDirection;        // 世界坐标副法线向量
+    float shadow;                   // 阴影衰减
+    float occlusion;                // 环境光遮蔽
+};
+
 /**
  * @param specularColor - 高光颜色
  * @param roughness     - 粗糙度
  * @param NoV           - normal dot veiwDir
  */
-float3 EnvBRDFApprox(float3 specularColor, float roughness, float NoV)
+float3 EnvBRDFApprox(float3 specularColor, float roughness, float NdotV)
 {
 	// [ Lazarov 2013, "Getting More Physical in Call of Duty: Black Ops II" ]
 	// Adaptation to fit our G term.
 	const float4 c0 = float4(-1.0, -0.0275, -0.572, 0.022);
 	const float4 c1 = float4(1.0, 0.0425, 1.04, -0.04);
 	float4 r = roughness * c0 + c1;
-	float a004 = min( r.x * r.x, exp2( -9.28 * NoV ) ) * r.x + r.y;
+	float a004 = min( r.x * r.x, exp2( -9.28 * NdotV ) ) * r.x + r.y;
 	float2 AB = float2( -1.04, 1.04 ) * a004 + r.zw;
 
 	// Anything less than 2% is physically impossible and is instead considered to be shadowing
@@ -39,7 +54,7 @@ float3 GetLightingColor(float3 diffuseColor, float3 specularColor, float roughne
 
 #ifdef USES_ANISOTROPY
     float VdotL = dot(viewDirection, lightVec);
-    float InvLenH = rsqrt( 2.0 + 2.0 * VdotL );
+    float invLenH = rsqrt(2.0 + 2.0 * VdotL);
 
     #if 0
         float XdotL = clamp(dot(X, lightVec), M_EPSILON, 1.0);
@@ -51,8 +66,8 @@ float3 GetLightingColor(float3 diffuseColor, float3 specularColor, float roughne
 
     // float XdotH = clamp(dot(X, halfDirection), M_EPSILON, 1.0);
     // float YdotH = clamp(dot(Y, halfDirection), M_EPSILON, 1.0);
-    float XdotH = (XdotL + XdotV) * InvLenH;
-    float YdotH = (YdotL + YdotV) * InvLenH;
+    float XdotH = (XdotL + XdotV) * invLenH;
+    float YdotH = (YdotL + YdotV) * invLenH;
 #endif
 
 // Diffuse
@@ -65,8 +80,8 @@ float3 GetLightingColor(float3 diffuseColor, float3 specularColor, float roughne
         float D = D_GGXaniso(ax, ay, NdotH, XdotH, YdotH);
     #else
         roughness = max(roughness, 0.002);
-        float V = SmithJointGGXVisibilityTerm(NdotL, NdotV, roughness);
-        float D = GGXTerm(NdotH, roughness);
+        float V = Vis_GGX(NdotL, NdotV, roughness);
+        float D = D_GGX(NdotH, roughness);
     #endif
     float3 F = FresnelTerm(specularColor, LdotH);
     
@@ -78,32 +93,33 @@ float3 GetLightingColor(float3 diffuseColor, float3 specularColor, float roughne
 }
 
 /**
- * @param diffuseColor              - 已经经过能量守恒的漫反色颜色（和高光做了比例）
+ * @param context                   - PBR上下文参数
  * @param specularColor             - 高光颜色
  * @param oneMinusReflectivity      - 1.0 - 反色率
- * @param roughness                 - 粗糙度比例
- * @param normalDirection           - 法线向量
- * @param viewDirection             - 物体到相机的向量
- * @param shadow                    - 阴影衰减
- * @param occlusion                 - 材质传入的环境光遮蔽
  */
-float3 DisneyBRDF(
-    float3 diffuseColor,
-    float3 specularColor,
-    float oneMinusReflectivity,
-    float perceptualRoughness,
-    float3 worldPosition,
-    float3 normalDirection,
-    float3 viewDirection,
-    float shadow,
-    float occlusion)
+float3 DisneyBRDF(PBRContext context, float3 specularColor, float oneMinusReflectivity)
 {
     float3 finalColor = float3(0.0, 0.0, 0.0);
 
 // roughness
+    float perceptualRoughness = context.roughness;
     float roughness = PerceptualRoughnessToRoughness(perceptualRoughness);
     
-    float NdotV = abs(dot(normalDirection, viewDirection));
+    float NdotV = abs(dot(context.normalDirection, context.viewDirection));
+
+#ifdef USES_ANISOTROPY
+    float ax = 0;
+    float ay = 0;
+    GetAnisotropicRoughness(perceptualRoughness, anisotropy, ax, ay);
+
+    // X: Tangent
+    // Y: Bnormal
+    float3 X = context.tangentDirecntion;
+    float3 Y = context.bnormalDirection;
+
+    float XdotV = dot(X, context.viewDirection);
+    float YdotV = dot(Y, context.viewDirection);
+#endif
 
     float3 lightColor;
     float3 lightDirection;
@@ -113,20 +129,30 @@ float3 DisneyBRDF(
 #if defined(DIRLIGHT)
 // GI => light color, light dir, light attenuation
     lightColor = GetLightColor();
-    attenuation = GetAttenAndLightDir(worldPosition, lightDirection);
+    attenuation = GetAttenAndLightDir(context.worldPosition, lightDirection);
 
-    lightingColor = GetLightingColor(diffuseColor, specularColor, roughness, perceptualRoughness, normalDirection, viewDirection, lightDirection, NdotV);
-    finalColor += lightingColor * lightColor * (attenuation * shadow);
+    lightingColor = GetLightingColor(context.diffuseColor, specularColor, roughness, perceptualRoughness, context.normalDirection, context.viewDirection, lightDirection, NdotV
+    #ifdef USES_ANISOTROPY
+        , XdotV, YdotV, ax, ay, X, Y
+    #endif
+    );
+    finalColor += lightingColor * lightColor * (attenuation * context.shadow);
 #endif // DIRLIGHT
 
 #if defined(AMBIENT)
 // Indirect Diffuse, Indirect Specular
     float3 indirectDiffuse;
     float3 indirectSpecular;
-    GI_Indirect(normalDirection, viewDirection, perceptualRoughness, occlusion, indirectDiffuse, indirectSpecular);
+    GI_Indirect(context.normalDirection, context.viewDirection, perceptualRoughness, context.occlusion, indirectDiffuse, indirectSpecular);
 
-    indirectDiffuse *= diffuseColor;
-    indirectSpecular = indirectSpecular * EnvBRDFApprox(specularColor, perceptualRoughness, NdotV);
+    indirectDiffuse *= context.diffuseColor;
+    #if 1
+        indirectSpecular = indirectSpecular * EnvBRDFApprox(specularColor, perceptualRoughness, NdotV);
+    #else
+        float surfaceReduction = 1.0 / (roughness * roughness + 1.0);
+        float grazingTerm = saturate(1.0 - perceptualRoughness + (1.0 - oneMinusReflectivity));
+        indirectSpecular = indirectSpecular * surfaceReduction * FresnelLerp(specularColor, vec3_splat(grazingTerm), NdotV);
+    #endif
 
     finalColor += indirectDiffuse + indirectSpecular;
 #endif // AMBIENT

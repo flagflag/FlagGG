@@ -132,12 +132,6 @@ struct PixelInput
 
     float4 PS(PixelInput input) : SV_TARGET
     {
-    #ifdef SHADOW
-        float shadow = GetShadow(input.shadowPos, input.worldPosition.w);
-    #else
-        float shadow = 1.0;
-    #endif
-
         float T1 = Sample2D(weight1, input.weightTex).r;
         float T2 = Sample2D(weight2, input.weightTex).r;
         float3 weight = float3((1.0 - T1) * (1.0 - T2), T1 * (1.0 - T2), T2);
@@ -173,8 +167,25 @@ struct PixelInput
         float3 row2 = float3(input.tangent.z, input.biNormal.z, input.normal.z);
         normalRoughness.xyz = float3(dot(row0, normalRoughness.xyz), dot(row1, normalRoughness.xyz), dot(row2, normalRoughness.xyz));
 
-        float3 viewDirection = normalize(cameraPos - input.worldPosition.xyz);
-        float3 color = PBR_BRDF(baseColorMetallic.rgb, baseColorMetallic.a, normalRoughness.w, input.worldPosition.xyz, normalRoughness.xyz, viewDirection, shadow, 1.0);
+        PBRContext context;
+        context.diffuseColor = baseColorMetallic.rgb;
+        context.metallic = baseColorMetallic.a;
+        context.roughness = normalRoughness.w;
+        context.specular = 0.5;
+        context.worldPosition = input.worldPosition.xyz;
+        context.normalDirection = normalRoughness.xyz;
+        context.tangentDirecntion = input.tangent;
+        context.bnormalDirection = input.biNormal;
+        context.viewDirection = normalize(cameraPos - input.worldPosition.xyz);
+
+    #ifdef SHADOW
+        context.shadow = GetShadow(input.shadowPos, input.worldPosition.w);
+    #else
+        context.shadow = 1.0;
+    #endif
+        context.occlusion = 1.0;
+
+        float3 color = PBR_BRDF(context);
 
         return float4(LinearToGammaSpace(ToAcesFilmic(color)), 1.0);
     }

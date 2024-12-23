@@ -2,6 +2,7 @@
 ///现在只是随便写一个带帧逻辑的lua环境，后面这部分可以合并到客户端或者服务器里
 //////
 
+#include "Core/EngineSettings.h"
 #include <Log.h>
 #include <CSharpExport/CSharpExport.h>
 #include "GameApplication.h"
@@ -14,6 +15,16 @@ static GameApplication* ApplicationInstance = nullptr;
 
 void RunApplication(SetupFinish setupFinish)
 {
+	String rendererType = CommandParam["renderer_type"].GetString();
+	if (rendererType == "dx11")
+		GetSubsystem<EngineSettings>()->rendererType_ = RENDERER_TYPE_D3D11;
+	else if(rendererType == "gl")
+		GetSubsystem<EngineSettings>()->rendererType_ = RENDERER_TYPE_OPENGL;
+	else if(rendererType == "metal")
+		GetSubsystem<EngineSettings>()->rendererType_ = RENDERER_TYPE_METAL;
+	else if(rendererType == "vk")
+		GetSubsystem<EngineSettings>()->rendererType_ = RENDERER_TYPE_VULKAN;
+
 	GameApplication app(CommandParam, setupFinish);
 	ApplicationInstance = &app;
 	app.Run();

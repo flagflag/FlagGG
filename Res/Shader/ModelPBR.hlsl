@@ -79,19 +79,29 @@ struct PixelInput
 #else
     float4 PS(PixelInput input) : SV_TARGET
     {
+        PBRContext context;
+
     #ifdef SHADOW
-        float shadow = GetShadow(input.shadowPos, input.worldPos.w);
+        context.shadow = GetShadow(input.shadowPos, input.worldPos.w);
     #else
-        float shadow = 1.0;
+        context.shadow = 1.0;
     #endif
 
     #ifndef COLOR
-        float3 diffuseColor = baseColor.rgb * colorMap.Sample(colorSampler, input.tex).rgb;
+        context.diffuseColor = baseColor.rgb * colorMap.Sample(colorSampler, input.tex).rgb;
     #else
-        float3 diffuseColor = baseColor.rgb * input.color.rgb * input.color.a;
+        context.diffuseColor = baseColor.rgb * input.color.rgb * input.color.a;
     #endif
-        float3 viewDirection = cameraPos - input.worldPos.xyz;
-        float3 color = PBR_BRDF(diffuseColor, metallic, roughness, input.worldPos.xyz, input.nor, viewDirection, shadow, 1.0);
+        context.viewDirection = cameraPos - input.worldPos.xyz;
+        context.metallic = metallic;
+        context.roughness = roughness;
+        context.specular = 0.5;
+        context.worldPosition = input.worldPos.xyz;
+        context.normalDirection = input.nor;
+        context.viewDirection = viewDirection;
+        context.occlusion = 1.0;
+
+        float3 color = PBR_BRDF(context);
 
         return float4(LinearToGammaSpace(ToAcesFilmic(color)), 1.0);
     }

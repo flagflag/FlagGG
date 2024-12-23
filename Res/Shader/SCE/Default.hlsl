@@ -88,12 +88,6 @@ struct PixelInput
 #else
     float4 PS(PixelInput input) : SV_TARGET
     {
-    #ifdef SHADOW
-        float shadow = GetShadow(input.shadowPos, input.worldPosition.w);
-    #else
-        float shadow = 1.0;
-    #endif
-
     #ifdef PBR_NOTEXTURE
         float4 texDiff = float4(1.0, 1.0, 1.0, 1.0);
     #else
@@ -105,31 +99,39 @@ struct PixelInput
             discard;
     #endif
 
-    #ifdef ALPHA_DIFF_A
-        float4 baseColor = texDiff * colorFactor;
-    #else
-        float4 baseColor = float4(texDiff.rgb, 1.0) * colorFactor;
-    #endif
+        PBRContext context;
+        context.diffuseColor = texDiff.rgb * colorFactor;
 
     #ifdef NORMALMAP
         float4 texNormal = mixMap.Sample(mixSampler, input.texcoord);
         float3 normal = DecodeNormal(texNormal);
-        float metallic = texNormal.a * metallicFactor;
-        float roughness = texNormal.b * roughnessFactor;
+        context.metallic = texNormal.a * metallicFactor;
+        context.roughness = texNormal.b * roughnessFactor;
 
         float3 row0 = float3(input.tangent.x, input.biNormal.x, input.normal.x);
         float3 row1 = float3(input.tangent.y, input.biNormal.y, input.normal.y);
         float3 row2 = float3(input.tangent.z, input.biNormal.z, input.normal.z);
-        float3 normalDirection = float3(dot(row0, normal), dot(row1, normal), dot(row2, normal));
+        context.normalDirection = float3(dot(row0, normal), dot(row1, normal), dot(row2, normal));
     #else
-        float metallic = metallicFactor;
-        float roughness = roughnessFactor;
-        float3 normalDirection = input.normal;
+        context.metallic = metallicFactor;
+        context.roughness = roughnessFactor;
+        context.normalDirection = input.normal;
     #endif
-        metallic *= metalMul0or1;
+        context.metallic *= metalMul0or1;
+        context.specular = 0.5;
 
-        float3 viewDirection = normalize(cameraPos - input.worldPosition.xyz);
-        float3 color = PBR_BRDF(baseColor, metallic, roughness, input.worldPosition.xyz, normalDirection, viewDirection, shadow, 1.0);
+        context.worldPosition = input.worldPosition.xyz;
+        context.viewDirection = normalize(cameraPos - input.worldPosition.xyz);
+        context.tangentDirecntion = input.tangent;
+        context.bnormalDirection = input.biNormal;
+    #ifdef SHADOW
+        context.shadow = GetShadow(input.shadowPos, input.worldPosition.w);
+    #else
+        context.shadow = 1.0;
+    #endif
+        context.occlusion = 1.0;
+
+        float3 color = PBR_BRDF(context);
 
     #ifdef EMISSIVECOLOR
         #ifdef ALPHAMASK
@@ -139,6 +141,10 @@ struct PixelInput
         #endif
     #endif
 
-        return float4(LinearToGammaSpace(color), 1.0);
+        #ifdef ALPHA_DIFF_A
+            return float4(LinearToGammaSpace(color), texDiff.a);
+        #else
+            return float4(LinearToGammaSpace(color), 1.0);
+        #endif
     }
 #endif

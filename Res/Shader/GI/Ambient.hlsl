@@ -35,7 +35,6 @@ float3 ShadeSHPerPixel(float3 normal, float3 ambient, float shIntensity)
 {
     float3 ambientContrib = float3(0.0, 0.0, 0.0);
 
-    // 只有high及以上渲染质量才开全sh
     #if SAMPLE_FULL_SH_PER_PIXEL
         // Completely per-pixel
         ambientContrib = SHEvalLinearL0L1(float4(normal, 1.0));
