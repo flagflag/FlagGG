@@ -21,6 +21,7 @@ class GfxRenderSurface;
 class GfxShader;
 class Texture2D;
 class RenderPass;
+class ComputePass;
 struct RenderContext;
 class DrawableComponent;
 class Camera;
@@ -147,6 +148,7 @@ public:
 	void Render() override;
 
 private:
+	SharedPtr<ComputePass> clusterLightPass_;
 	SharedPtr<RenderPass> litRenderPass_[2];
 	SharedPtr<RenderPass> waterRenderPass_;
 	SharedPtr<Texture2D> renderTexture_;

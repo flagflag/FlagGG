@@ -1,5 +1,6 @@
 #include "HlslShaderCompile.h"
 #include "FileSystem/FileHandle/LocalFileHandle.h"
+#include "FileSystem/FileSystem.h"
 #include "Utility/SystemHelper.h"
 #include "Core/CryAssert.h"
 #include "Log.h"
@@ -74,8 +75,11 @@ bool CompileShader(const char* buffer, USize bufferSize, ShaderType type, const 
 		FLAGGG_LOG_ERROR("D3DCompile failed.");
 
 		{
+			const String shaderCacheDir = GetProgramDir() + "ShaderCache/";
+			if (!GetLocalFileSystem()->DirectoryExists(shaderCacheDir))
+				GetLocalFileSystem()->CreateDirectory(shaderCacheDir);
 			LocalFileHandle fileHandle;
-			fileHandle.Open(GetProgramDir() + "shader_error.txt", FileMode::FILE_WRITE);
+			fileHandle.Open(shaderCacheDir + "shader_error_" + GetTimeStamp() + ".txt", FileMode::FILE_WRITE);
 			fileHandle.Write(buffer, bufferSize);
 			fileHandle.Close();
 		}

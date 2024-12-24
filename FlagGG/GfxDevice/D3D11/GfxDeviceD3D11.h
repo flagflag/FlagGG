@@ -45,6 +45,9 @@ public:
 	// Flush
 	void Flush() override;
 
+	// Compute dispatch
+	void Dispatch(UInt32 threadGroupCountX, UInt32 threadGroupCountY, UInt32 threadGroupCountZ) override;
+
 
 	/**********************************************************/
 	/*                     创建Gfx对象                        */

@@ -1,4 +1,10 @@
 #include "Shader/PBR/PBRCommon.hlsl"
+#if defined(CLUSTER)
+#include "Shader/PBR/Clusters.hlsl"
+#endif
+#if defined(NONPUNCTUAL_LIGHTING)
+#include "Shader/CapsuleLight.hlsl"
+#endif
 
 struct PBRContext
 {
@@ -13,6 +19,12 @@ struct PBRContext
     float3 bnormalDirection;        // 世界坐标副法线向量
     float shadow;                   // 阴影衰减
     float occlusion;                // 环境光遮蔽
+#if defined(CLUSTER)
+    float4 fragCoord;
+#elif defined(DEFERRED_CLUSTER)
+    float2 fragCoord;
+    float sceneDepth;
+#endif
 };
 
 /**
@@ -126,10 +138,10 @@ float3 DisneyBRDF(PBRContext context, float3 specularColor, float oneMinusReflec
     float attenuation;
     float3 lightingColor;
 
+// Directional light => light color, light dir, light attenuation
 #if defined(DIRLIGHT)
-// GI => light color, light dir, light attenuation
-    lightColor = GetLightColor();
-    attenuation = GetAttenAndLightDir(context.worldPosition, lightDirection);
+    lightColor = DirectionalLight_GetLightColor();
+    attenuation = DirectionalLight_GetAttenAndLightDir(context.worldPosition, lightDirection);
 
     lightingColor = GetLightingColor(context.diffuseColor, specularColor, roughness, perceptualRoughness, context.normalDirection, context.viewDirection, lightDirection, NdotV
     #ifdef USES_ANISOTROPY
@@ -139,8 +151,62 @@ float3 DisneyBRDF(PBRContext context, float3 specularColor, float oneMinusReflec
     finalColor += lightingColor * lightColor * (attenuation * context.shadow);
 #endif // DIRLIGHT
 
-#if defined(AMBIENT)
+// Point/Spot light
+#if defined(CLUSTER) || defined(DEFERRED_CLUSTER)
+#if defined(DEFERRED_CLUSTER)
+    uint cluster = GetDeferredClusterIndex(context.fragCoord.xy, sceneDepth);
+#else
+    // 这里从gl_FragCoord减去viewport的起点，得到viewport坐标
+    float4 realCoord = GetRealCoord(context.fragCoord);
+    uint cluster = GetClusterIndex(realCoord);
+#endif
+    LightGrid grid = GetLightGrid(cluster); // Sample buffer
+    for (uint i = 0u; i < grid.pointLights; ++i)
+    {
+        uint lightIndex = GetGridLightIndex(grid.offset, i); // Sample buffer
+#ifdef CLUSTER_SPOTLIGHT
+        SpotLight light = GetSpotLight(lightIndex); // Sample buffer
+#else
+        PointLight light = GetPointLight(lightIndex); // Sample buffer
+#endif
+
+        lightColor = light.intensity;
+        attenuation = GetAttenAndLightDir(context.worldPosition, light.position, light.range, lightDirection);
+#ifdef CLUSTER_SPOTLIGHT
+        attenuation *= GetLightDirectionFalloff(lightDirection, light.direction, light.cosOuterCone, light.invCosConeDiff);
+#endif
+
+        lightingColor = GetLightingColor(context.diffuseColor, specularColor, roughness, perceptualRoughness, context.normalDirection, context.viewDirection, lightDirection, NdotV
+        #ifdef USES_ANISOTROPY
+            , XdotV, YdotV, ax, ay, X, Y
+        #endif
+        );
+
+        finalColor += lightingColor * lightColor * attenuation;
+    }
+
+// 非精确光源计算
+#ifdef NONPUNCTUAL_LIGHTING
+    for (uint i = 0u; i < grid.nonPunctualPointLights; ++i)
+    {
+        uint lightIndex = GetGridLightIndex(grid.nonPunctualPointLightsOffset, i); // Sample buffer
+        NonPunctualPointLight light = GetNonPunctualPointLight(lightIndex); // Sample buffer
+
+        //capsule light
+        if (light.length > 0.0)
+        {
+            finalColor += GetCapsuleLighting(light, context.worldPosition, context.normalDirection, context.viewDirection, context.diffuseColor, specularColor, roughness, perceptualRoughness);
+        }
+        else if (light.packRadius > 0.0)
+        {
+            finalColor += GetSphereLighting(light, context.worldPosition, context.normalDirection, context.viewDirection, context.diffuseColor, specularColor, roughness, perceptualRoughness);
+        }
+    }
+#endif
+#endif
+
 // Indirect Diffuse, Indirect Specular
+#if defined(AMBIENT)
     float3 indirectDiffuse;
     float3 indirectSpecular;
     GI_Indirect(context.normalDirection, context.viewDirection, perceptualRoughness, context.occlusion, indirectDiffuse, indirectSpecular);

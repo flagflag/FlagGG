@@ -104,6 +104,16 @@ void GfxDevice::SetVertexDescription(VertexDescription* vertexDesc)
 	vertexDescDirty_ = true;
 }
 
+void GfxDevice::SetComputeBuffer(UInt8 slotID, GfxBuffer* gfxComputeBuffer)
+{
+	CRY_ASSERT(slotID < MAX_GPU_UNITS_COUNT);
+	if (slotID < MAX_GPU_UNITS_COUNT)
+	{
+		computeBuffers_[slotID] = gfxComputeBuffer;
+		computeBufferDirty_ = true;
+	}
+}
+
 void GfxDevice::SetTexture(UInt32 slotID, GfxTexture* gfxTexture)
 {
 	if (slotID < MAX_TEXTURE_CLASS)
@@ -126,8 +136,17 @@ void GfxDevice::SetShaders(GfxShader* vertexShader, GfxShader* pixelShader)
 {
 	vertexShader_ = vertexShader;
 	pixelShader_ = pixelShader;
+	computeShader_ = nullptr;
 	shaderDirty_ = true;
 	vertexDescDirty_ = true;
+}
+
+void GfxDevice::SetComputeShader(GfxShader* computeShader)
+{
+	vertexShader_ = nullptr;
+	pixelShader_ = nullptr;
+	computeShader_ = computeShader;
+	shaderDirty_ = true;
 }
 
 void GfxDevice::SetEngineShaderParameters(ShaderParameters* engineShaderParameters)
@@ -243,6 +262,11 @@ void GfxDevice::DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt3
 }
 
 void GfxDevice::Flush()
+{
+
+}
+
+void GfxDevice::Dispatch(UInt32 threadGroupCountX, UInt32 threadGroupCountY, UInt32 threadGroupCountZ)
 {
 
 }

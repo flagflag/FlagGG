@@ -33,7 +33,11 @@ enum ClearTarget : UInt32
 };
 FLAGGG_FLAGSET(ClearTarget, ClearTargetFlags);
 
-static const unsigned MAX_RENDERTARGET_COUNT = 4;
+// MRT最大个数
+static const UInt32 MAX_RENDERTARGET_COUNT = 4;
+
+// 最大Gpu texture、buffer处理单元寄存器个数
+static const UInt32 MAX_GPU_UNITS_COUNT = 16;
 
 class GfxDevice
 {
@@ -85,6 +89,9 @@ public:
 	// 设置顶点描述
 	virtual void SetVertexDescription(VertexDescription* vertexDesc);
 
+	// 设置compute buffer
+	virtual void SetComputeBuffer(UInt8 slotID, GfxBuffer* gfxComputeBuffer);
+
 	// 在slotID通道绑定纹理
 	virtual void SetTexture(UInt32 slotID, GfxTexture* gfxTexture);
 
@@ -93,6 +100,9 @@ public:
 
 	// 设置shaders
 	virtual void SetShaders(GfxShader* vertexShader, GfxShader* pixelShader);
+
+	// 设置compute shader
+	virtual void SetComputeShader(GfxShader* computeShader);
 
 	// 设置有引擎shader参数
 	virtual void SetEngineShaderParameters(ShaderParameters* engineShaderParameters);
@@ -138,6 +148,9 @@ public:
 
 	// Flush
 	virtual void Flush();
+
+	// Compute dispatch
+	virtual void Dispatch(UInt32 threadGroupCountX, UInt32 threadGroupCountY, UInt32 threadGroupCountZ);
 
 
 	/**********************************************************/
@@ -193,9 +206,14 @@ protected:
 	SharedPtr<VertexDescription> vertexDesc_;
 	bool vertexDescDirty_{};
 
+	// compute buffer
+	SharedPtr<GfxBuffer> computeBuffers_[MAX_GPU_UNITS_COUNT];
+	bool computeBufferDirty_{};
+
 	// 准备提交的shaders
 	SharedPtr<GfxShader> vertexShader_;
 	SharedPtr<GfxShader> pixelShader_;
+	SharedPtr<GfxShader> computeShader_;
 	bool shaderDirty_{};
 
 	// 准备提交的texture

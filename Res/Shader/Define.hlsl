@@ -24,7 +24,7 @@
         float4x3 lightViewMatrix;
         float4x4 lightProjviewMatrix;
     }
-#else
+#elif defined(PIXEL)
     cbuffer ParamBuffer : register(b0)
     {
         float deltaTime;

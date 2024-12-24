@@ -200,4 +200,11 @@ private:
 	RenderBatchQueue renderBatchQueue_;
 };
 
+// Compute cluster pass
+class FlagGG_API ComputeClusterLightPass : public RenderPass
+{
+public:
+
+};
+
 }

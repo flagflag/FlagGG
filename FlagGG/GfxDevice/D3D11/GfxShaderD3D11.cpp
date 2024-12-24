@@ -150,6 +150,22 @@ bool GfxShaderD3D11::Compile()
 				return false;
 			}
 		}
+		else if (shaderType_ == CS)
+		{
+			HRESULT hr = GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device()->CreateComputeShader(
+				shaderCode_->GetBufferPointer(),
+				shaderCode_->GetBufferSize(),
+				nullptr,
+				&computeShader_
+			);
+			if (hr != 0)
+			{
+				FLAGGG_LOG_ERROR("CreateComputeShader failed.");
+
+				D3D11_SAFE_RELEASE(pixelShader_);
+				return false;
+			}
+		}
 	}
 
 	return true;

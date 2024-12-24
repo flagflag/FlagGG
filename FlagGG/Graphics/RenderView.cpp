@@ -247,6 +247,8 @@ void RenderView::Render()
 
 	gfxDevice_->SetViewport(viewport_);
 
+	renderPipline_->PrepareRender();
+
 	renderPipline_->Render();
 }
 

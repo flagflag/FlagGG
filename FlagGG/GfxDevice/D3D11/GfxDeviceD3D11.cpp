@@ -184,6 +184,11 @@ void GfxDeviceD3D11::Flush()
 	deviceContext_->Flush();
 }
 
+void GfxDeviceD3D11::Dispatch(UInt32 threadGroupCountX, UInt32 threadGroupCountY, UInt32 threadGroupCountZ)
+{
+	deviceContext_->Dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
+}
+
 void GfxDeviceD3D11::PrepareDraw()
 {
 	static GfxBufferD3D11* vertexBuffers[MAX_VERTEX_BUFFER_COUNT + 1] = { 0 };

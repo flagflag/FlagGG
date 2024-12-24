@@ -1,11 +1,13 @@
 #include "Graphics/RenderPipline.h"
 #include "Graphics/RenderPass.h"
+#include "Graphics/ComputePass.h"
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Texture2D.h"
 #include "GfxDevice/GfxDevice.h"
 #include "GfxDevice/GfxRenderSurface.h"
 #include "GfxDevice/GfxTexture.h"
 #include "GfxDevice/GfxSwapChain.h"
+#include "Core/EngineSettings.h"
 
 namespace FlagGG
 {
@@ -15,7 +17,8 @@ ForwardRenderPipline::ForwardRenderPipline()
 	, litRenderPass_{ SharedPtr<RenderPass>(new LitRenderPass()), SharedPtr<RenderPass>(new LitRenderPass()) }
 	, waterRenderPass_(new WaterRenderPass())
 {
-
+	if (GetSubsystem<EngineSettings>()->clusterLightEnabled_)
+		clusterLightPass_ = new ClusterLightPass();
 }
 
 ForwardRenderPipline::~ForwardRenderPipline()
@@ -25,6 +28,8 @@ ForwardRenderPipline::~ForwardRenderPipline()
 
 void ForwardRenderPipline::Clear()
 {
+	if (clusterLightPass_)
+		clusterLightPass_->Clear();
 	shadowRenderPass_->Clear();
 	alphaRenderPass_->Clear();
 	litRenderPass_[0]->Clear();
@@ -81,6 +86,8 @@ void ForwardRenderPipline::OnSolveLitBatch()
 
 void ForwardRenderPipline::PrepareRender()
 {
+	if (clusterLightPass_)
+		clusterLightPass_->Dispatch(GetRenderPiplineContext());
 	shadowRenderPass_->SortBatch();
 	alphaRenderPass_->SortBatch();
 	waterRenderPass_->SortBatch();

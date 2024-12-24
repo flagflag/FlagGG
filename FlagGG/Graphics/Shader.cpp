@@ -41,7 +41,12 @@ ShaderCode::~ShaderCode()
 Shader* ShaderCode::GetShader(ShaderType type, const Vector<String>& defines)
 {
 	Vector<String> newDefines = defines;
-	newDefines.Push(type == VS ? "VERTEX" : "PIXEL");
+	if (type == VS)
+		newDefines.Push("VERTEX");
+	else if (type == PS)
+		newDefines.Push("PIXEL");
+	else if (type == CS)
+		newDefines.Push("COMPUTE");
 	String definesStr = HashVectorString(newDefines);
 	for (const auto& shader : shaders_)
 	{
@@ -139,7 +144,8 @@ bool ShaderCode::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 	PreCompileShaderCode(buffer.CString(), buffer.CString() + buffer.Length(), out);
 
 	bufferSize_ = out.Length();
-	buffer_ = new char[bufferSize_];
+	buffer_ = new char[bufferSize_ + 1];
+	buffer_[bufferSize_] = '\0';
 	memcpy(buffer_.Get(), out.CString(), bufferSize_);
 
 	return true;

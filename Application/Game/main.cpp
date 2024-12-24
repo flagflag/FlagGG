@@ -24,6 +24,8 @@ void RunApplication(SetupFinish setupFinish)
 		GetSubsystem<EngineSettings>()->rendererType_ = RENDERER_TYPE_METAL;
 	else if(rendererType == "vk")
 		GetSubsystem<EngineSettings>()->rendererType_ = RENDERER_TYPE_VULKAN;
+	if (CommandParam.Contains("cluster_light"))
+		GetSubsystem<EngineSettings>()->clusterLightEnabled_ = true;
 
 	GameApplication app(CommandParam, setupFinish);
 	ApplicationInstance = &app;

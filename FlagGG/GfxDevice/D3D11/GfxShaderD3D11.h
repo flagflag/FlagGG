@@ -58,6 +58,9 @@ public:
 	ID3D11PixelShader* GetD3D11PixelShader() const { return pixelShader_; }
 
 	//
+	ID3D11ComputeShader* GetD3D11ComputeShader() const { return computeShader_; }
+
+	//
 	ID3DBlob* GetByteCode() const { return shaderCode_; }
 
 protected:
@@ -67,6 +70,7 @@ private:
 	ID3DBlob* shaderCode_{};
 	ID3D11VertexShader* vertexShader_{};
 	ID3D11PixelShader* pixelShader_{};
+	ID3D11ComputeShader* computeShader_{};
 
 	HashMap<UInt32, D3D11ConstantBufferDesc> constantBufferDescs_;
 	HashMap<UInt32, D3D11ShaderTextureDesc> textureDescs_;
