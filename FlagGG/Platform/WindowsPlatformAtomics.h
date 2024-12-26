@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include "Platform/PlatformAtomics.h"
 #include "Core/BaseMacro.h"
 #include "Core/BaseTypes.h"
 #include <intrin.h>

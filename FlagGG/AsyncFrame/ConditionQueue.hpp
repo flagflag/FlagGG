@@ -7,7 +7,7 @@
 namespace FlagGG
 {
 
-template < class ObjectType >
+template <typename ObjectType>
 class ConditionQueue
 {
 public:
@@ -24,11 +24,29 @@ public:
 		cnd_.Trigger();
 	}
 
+	void PushBack(Object&& obj)
+	{
+		Locker locker(mutex_);
+
+		queueImpl_.Push(std::move(obj));
+
+		cnd_.Trigger();
+	}
+
 	void PushFront(const Object& obj)
 	{
 		Locker locker(mutex_);
 
 		queueImpl_.PushFront(obj);
+
+		cnd_.Trigger();
+	}
+
+	void PushFront(Object&& obj)
+	{
+		Locker locker(mutex_);
+
+		queueImpl_.PushFront(std::move(obj));
 
 		cnd_.Trigger();
 	}

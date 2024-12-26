@@ -1,5 +1,4 @@
-﻿#ifndef __RUNTIME__
-#define __RUNTIME__
+#pragma once
 
 #include "Export.h"
 
@@ -13,13 +12,14 @@ class FlagGG_API Runtime
 public:
 	virtual ~Runtime() = default;
 
+	// 主动停止
 	virtual void Stop() = 0;
 
+	// 阻塞等待停止
 	virtual void WaitForStop() = 0;
 
-	virtual void WaitForStop(UInt32) = 0;
+	// 阻塞等待停止，最大等待时间waitTime
+	virtual void WaitForStop(UInt32 waitTime) = 0;
 };
 
 }
-
-#endif

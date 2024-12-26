@@ -24,7 +24,9 @@ extern const char* const PATH_SEPARATOR;
 FlagGG_API String FormatPath(const String& path);
 
 // 单位：毫秒
-FlagGG_API void Sleep(uint64_t time);
+FlagGG_API void Sleep(UInt64 time);
+
+FlagGG_API void SleepNoStats(UInt64 time);
 
 // 单位：毫秒
 FlagGG_API UInt32 Tick();

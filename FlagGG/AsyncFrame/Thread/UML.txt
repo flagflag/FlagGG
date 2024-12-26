@@ -1,0 +1,35 @@
+                                                                      HandleObject
+                                                                                  |
+       -----------------------------------------------------------------------------------------------------------
+       |                                            |                                                    |                                                             |
+ Mutex                         ConditionVariable                       UniqueThread                                     ProcessObject  
+（锁）                              （条件变量）                                  （线程）                                                （进程）
+
+
+
+
+ThreadPool只做启动线程的操作，持有 IThreadPoolRunnable，由IThreadPoolRunnable::Run执行线程的逻辑
+
+
+                                                         IQueuedThreadPool
+                                                                               |
+                           -----------------------------------------------------------------------
+                           |                                                                                                         |                                                            
+              TaskThreadPool                                                                      ParallelTaskThreadPool               
+(即时性稍低，线程任务可被抛弃)                       (即时性高，线程任务不可被抛弃，通常用于在某个阶段阻塞并行执行任务)
+
+IQueuedThreadPool子类成员重写IThreadPoolRunnable::Run
+
+
+
+
+
+
+
+
+                                                                                                                                 
+
+
+                                                                 
+
+

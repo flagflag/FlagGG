@@ -5,7 +5,7 @@
 #pragma once
 
 #ifdef _WIN32
-#include "WindowsPlatformAtomics.h"
+#include "Platform/WindowsPlatformAtomics.h"
 #else
 #error
 #endif

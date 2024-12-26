@@ -25,6 +25,12 @@ public:
 		{
 		}
 
+		/// Construct with value.
+		explicit Node(T&& value) :
+			value_(std::move(value))
+		{
+		}
+
 		/// Node value.
 		T value_;
 
@@ -260,8 +266,14 @@ public:
 	/// Insert an element to the end.
 	void Push(const T& value) { InsertNode(Tail(), value); }
 
+	/// Insert an element to the end.
+	void Push(T&& value) { InsertNode(Tail(), value); }
+
 	/// Insert an element to the beginning.
 	void PushFront(const T& value) { InsertNode(Head(), value); }
+
+	/// Insert an element to the beginning.
+	void PushFront(T&& value) { InsertNode(Head(), value); }
 
 	/// Insert an element at position.
 	void Insert(const Iterator& dest, const T& value) { InsertNode(static_cast<Node*>(dest.ptr_), value); }
@@ -429,6 +441,27 @@ private:
 		++size_;
 	}
 
+	/// Allocate and insert a node into the list.
+	void InsertNode(Node* dest, T&& value)
+	{
+		if (!dest)
+			return;
+
+		Node* newNode = ReserveNode(std::move(value));
+		Node* prev = dest->Prev();
+		newNode->next_ = dest;
+		newNode->prev_ = prev;
+		if (prev)
+			prev->next_ = newNode;
+		dest->prev_ = newNode;
+
+		// Reassign the head node if necessary
+		if (dest == Head())
+			head_ = newNode;
+
+		++size_;
+	}
+
 	/// Erase and free a node. Return pointer to the next node, or to the end if could not erase.
 	Node* EraseNode(Node* node)
 	{
@@ -465,6 +498,14 @@ private:
 	{
 		auto* newNode = static_cast<Node*>(AllocatorReserve(allocator_));
 		new(newNode)Node(value);
+		return newNode;
+	}
+
+	/// Reserve a node with initial value.
+	Node* ReserveNode(T&& value)
+	{
+		auto* newNode = static_cast<Node*>(AllocatorReserve(allocator_));
+		new(newNode)Node(std::move(value));
 		return newNode;
 	}
 

@@ -8,7 +8,8 @@ namespace FlagGG
 SharedThread::SharedThread()
 	: thread_(nullptr)
 	, running_(false)
-{ }
+{
+}
 
 SharedThread::~SharedThread()
 {
@@ -62,11 +63,11 @@ void SharedThread::WaitForStop(UInt32 wait_time)
 	}
 }
 
-void SharedThread::Add(ThreadTask task_func)
+void SharedThread::Add(ThreadTask taskFunc)
 {
 	if (running_ && thread_)
 	{
-		taskQueue_.PushBack(task_func);
+		taskQueue_.PushBack(taskFunc);
 	}
 }
 

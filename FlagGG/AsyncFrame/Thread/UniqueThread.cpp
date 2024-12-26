@@ -17,55 +17,87 @@ namespace FlagGG
 
 struct ThreadParam
 {
-	std::function < void(void) > thread_func;
+	IRunnable* runnable_;
 #ifndef _WIN32
-	pthread_cond_t* pcond;
+	pthread_cond_t* pcond_;
 #endif
 };
 
 static THREAD_RETURN THREAD_MARK ThreadFunc(THREAD_PARAM inParam)
 {
 	ThreadParam* param = (ThreadParam*)inParam;
-	if (param && param->thread_func)
+	if (param && param->runnable_)
 	{
-		param->thread_func();
+		param->runnable_->Run();
 #ifndef _WIN32
-		pthread_cond_signal(param->pcond);
+		pthread_cond_signal(param->pcond_);
 #endif
+		param->runnable_->Exit();
 		delete param;
 	}
 
 	return 0;
 }
 
-UniqueThread::UniqueThread(std::function < void(void) > thread_func)
+class ThreadRunnable : public IRunnable
 {
-	if (thread_func)
+public:
+	ThreadRunnable(const std::function<void(void)>& threadFunc)
+		: threadFunc_(threadFunc)
 	{
-		ThreadParam* param = new ThreadParam();
-		param->thread_func = thread_func;
-#if _WIN32
-		handle_ = CreateThread(nullptr, 0, ThreadFunc, param, 0, nullptr);
+		if (!threadFunc_)
+			throw "Empty thread function.";
+	}
 
-		if (!handle_)
-		{
-			FLAGGG_LOG_ERROR("create thread failed!");
-		}
-#else
-		pthread_mutex_init(&mutex_, nullptr);
-		pthread_cond_init(&cond_, nullptr);
-		param->pcond = &cond_;
-		pthread_t* thread_id = new pthread_t();
-		if (0 == pthread_create(thread_id, nullptr, ThreadFunc, param))
-		{
-			handle_ = thread_id;
-		}
-		else
-		{
-			delete thread_id;
-			FLAGGG_LOG_ERROR("create thread failed!");
-		}
-#endif
+	ThreadRunnable(std::function<void(void)>&& threadFunc)
+		: threadFunc_(std::move(threadFunc))
+	{
+		if (!threadFunc_)
+			throw "Empty thread function.";
+	}
+
+	void Init() override
+	{
+
+	}
+
+	void Run() override
+	{
+		threadFunc_();
+	}
+
+	void Stop() override
+	{
+
+	}
+
+	void Exit() override
+	{
+
+	}
+
+private:
+	std::function<void(void)> threadFunc_;
+};
+
+UniqueThread::UniqueThread(const std::function<void(void)>& threadFunc)
+{
+	runnable_ = new ThreadRunnable(threadFunc);
+	CreateRunnableThread(runnable_);
+}
+
+UniqueThread::UniqueThread(std::function<void(void)>&& threadFunc)
+{
+	runnable_ = new ThreadRunnable(std::move(threadFunc));
+	CreateRunnableThread(runnable_);
+}
+
+UniqueThread::UniqueThread(IRunnable* runnable)
+	: runnable_(runnable)
+{
+	if (runnable_)
+	{
+		CreateRunnableThread(runnable_);
 	}
 }
 
@@ -78,6 +110,34 @@ UniqueThread::~UniqueThread()
 	{
 		delete handle_;
 		handle_ = nullptr;
+	}
+#endif
+}
+
+void UniqueThread::CreateRunnableThread(IRunnable* runnable)
+{
+	ThreadParam* param = new ThreadParam();
+	param->runnable_ = runnable;
+#if _WIN32
+	handle_ = CreateThread(nullptr, 0, ThreadFunc, param, 0, nullptr);
+
+	if (!handle_)
+	{
+		FLAGGG_LOG_ERROR("create thread failed!");
+	}
+#else
+	pthread_mutex_init(&mutex_, nullptr);
+	pthread_cond_init(&cond_, nullptr);
+	param->pcond_ = &cond_;
+	pthread_t* thread_id = new pthread_t();
+	if (0 == pthread_create(thread_id, nullptr, ThreadFunc, param))
+	{
+		handle_ = thread_id;
+	}
+	else
+	{
+		delete thread_id;
+		FLAGGG_LOG_ERROR("create thread failed!");
 	}
 #endif
 }
@@ -107,15 +167,15 @@ void UniqueThread::WaitForStop()
 #endif
 }
 
-void UniqueThread::WaitForStop(UInt32 wait_time)
+void UniqueThread::WaitForStop(UInt32 waitTime)
 {
 #if _WIN32
-	WaitForSingleObject(handle_, wait_time);
+	WaitForSingleObject(handle_, waitTime);
 #else
 	pthread_mutex_lock(&mutex_);
 	static timespec out_time;
 	out_time.tv_sec = 0;
-	out_time.tv_nsec = wait_time * 1000;
+	out_time.tv_nsec = waitTime * 1000;
 	pthread_cond_timedwait(&cond_, &mutex_, &out_time);
 	pthread_mutex_unlock(&mutex_);
 #endif

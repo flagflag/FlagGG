@@ -1,5 +1,4 @@
-﻿#ifndef __SHARED_THREAD__
-#define __SHARED_THREAD__
+﻿#pragma once
 
 #include "Export.h"
 
@@ -14,7 +13,7 @@
 namespace FlagGG
 {
 
-typedef std::function < void(void) > ThreadTask;
+typedef std::function<void(void)> ThreadTask;
 
 class FlagGG_API SharedThread : public Runtime, public RefCounted
 {
@@ -31,7 +30,7 @@ public:
 
 	void WaitForStop(UInt32 wait_time) override;
 
-	void Add(ThreadTask task_func);
+	void Add(ThreadTask taskFunc);
 
 	void ForceStop();
 
@@ -48,8 +47,6 @@ private:
 	std::atomic<bool>			running_;
 };
 
-typedef SharedPtr < SharedThread > SharedThreadPtr;
+typedef SharedPtr<SharedThread> SharedThreadPtr;
 
 }
-
-#endif

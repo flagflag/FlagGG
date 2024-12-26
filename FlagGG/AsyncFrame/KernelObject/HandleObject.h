@@ -1,5 +1,4 @@
-﻿#ifndef __HANDLE_OBJECT__
-#define __HANDLE_OBJECT__
+﻿#pragma once
 
 #include "Export.h"
 
@@ -29,5 +28,3 @@ protected:
 };
 
 }
-
-#endif

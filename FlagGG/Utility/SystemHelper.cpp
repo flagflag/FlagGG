@@ -83,12 +83,27 @@ String FormatPath(const String& path)
 	return std::move(String(buffer));
 }
 
-void Sleep(uint64_t time)
+void Sleep(UInt64 time)
 {
 #if _WIN32
 	::Sleep(time);
 #else
 	usleep(time * 1000);
+#endif
+}
+
+void SleepNoStats(UInt64 time)
+{
+#ifdef _WIN32
+	if (time == 0)
+		::SwitchToThread();
+	else
+		::Sleep(time);
+#else
+	if (time == 0)
+		sched_yield();
+	else
+		usleep(time * 1000);
 #endif
 }
 

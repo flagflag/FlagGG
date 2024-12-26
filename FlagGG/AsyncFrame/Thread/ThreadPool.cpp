@@ -1,51 +1,69 @@
 ﻿#include "ThreadPool.h"
 #include "Utility/SystemHelper.h"
-
-#include <assert.h>
+#include "Core/CryAssert.h"
 
 namespace FlagGG
 {
 
 #define THREAD_POOL_MAX_SIZE 64
 
-ThreadPool::ThreadPool(UInt32 threadCount)
+class PerThreadRunnable : public IRunnable
 {
-	assert(threadCount <= THREAD_POOL_MAX_SIZE);
-
-	for (USize i = 0; i < threadCount; ++i)
+public:
+	PerThreadRunnable(PerThreadFromThreadPool* currentThread, IThreadPoolRunnable* threadPoolRunnable)
+		: currentThread_(currentThread)
+		, threadPoolRunnable_(threadPoolRunnable)
 	{
-		threads_.Push(SharedThreadPtr(new SharedThread));
+
+	}
+
+	void Init() override
+	{
+		threadPoolRunnable_->Init(currentThread_);
+	}
+
+	void Run() override
+	{
+		threadPoolRunnable_->Run(currentThread_);
+	}
+
+	void Stop() override
+	{
+
+	}
+
+	void Exit() override
+	{
+		threadPoolRunnable_->Exit(currentThread_);
+	}
+
+private:
+	PerThreadFromThreadPool* currentThread_;
+
+	IThreadPoolRunnable* threadPoolRunnable_;
+};
+
+PerThreadFromThreadPool::PerThreadFromThreadPool(UInt32 index, IThreadPoolRunnable* runnable)
+	: UniqueThread(new PerThreadRunnable(this, runnable))
+	, index_(index)
+{
+}
+
+PerThreadFromThreadPool::~PerThreadFromThreadPool() = default;
+
+ThreadPool::ThreadPool(UInt32 numThreads, ThreadPriority threadPriority, IThreadPoolRunnable* runnable)
+{
+	CRY_ASSERT(numThreads <= THREAD_POOL_MAX_SIZE);
+
+	threads_.Resize(numThreads);
+
+	for (USize i = 0; i < numThreads; ++i)
+	{
+		threads_[i] = MakeShared<PerThreadFromThreadPool>(i, runnable);
 	}
 }
 
-void ThreadPool::Add(ThreadTask task_func)
-{
-	USize index = 0;
-	UInt32 minWaitingTime = INT_MAX;
-
-	for (USize i = 0; i < threads_.Size(); ++i)
-	{
-		UInt32 waitingTime = threads_[i]->WaitingTime();
-		if (waitingTime < minWaitingTime)
-		{
-			index = i;
-			minWaitingTime = waitingTime;
-		}
-	}
-
-	if (threads_.Size() > 0)
-	{
-		threads_[index]->Add(task_func);
-	}
-}
-
-void ThreadPool::Start()
-{
-	for (USize i = 0; i < threads_.Size(); ++i)
-	{
-		threads_[i]->Start();
-	}
-}
+ThreadPool::~ThreadPool() = default;
 
 void ThreadPool::Stop()
 {
@@ -63,9 +81,18 @@ void ThreadPool::WaitForStop()
 	}
 };
 
-void ThreadPool::WaitForStop(UInt32 wait_time)
+void ThreadPool::WaitForStop(UInt32 waitTime)
 {
-	Sleep(wait_time);
+	UInt32 startTime = Tick();
+	UInt32 deltaTime = 0;
+
+	for (USize i = 0; i < threads_.Size(); ++i)
+	{
+		threads_[i]->WaitForStop(waitTime - deltaTime);
+		deltaTime = Tick() - startTime;
+		if (deltaTime >= waitTime)
+			break;
+	}
 }
 
 }

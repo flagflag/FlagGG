@@ -50,21 +50,62 @@
 #endif
 #endif
 
-#ifndef FORCE_INLINE
-#if defined(__GNUC__)
-#define FORCE_INLINE inline __attribute__ ((always_inline))
-#elif defined(_MSC_VER)
-#define FORCE_INLINE __forceinline
+#ifdef _WIN32
+	#define FORCEINLINE __forceinline									/* Force code to be inline */
+#elif defined(__ANDROID__) || defined(IOS) || defined(__linux__)
+	#define FORCEINLINE inline __attribute__ ((always_inline))			/* Force code to be inline */
 #else
-#define FORCE_INLINE inline
-#endif
-#endif
-
-#ifndef FORCEINLINE
-#define FORCEINLINE FORCE_INLINE
+	#define FORCEINLINE
 #endif
 
-#define FORCENOINLINE __declspec(noinline)							/* Force code to NOT be inline */
+#define FORCENOINLINE __declspec(noinline)                            /* Force code to NOT be inline */
+
+#ifdef _WIN32
+	#if defined(__clang__)
+		#define GCC_PACK(n) __attribute__((packed,aligned(n)))
+		#define GCC_ALIGN(n) __attribute__((aligned(n)))
+		#if defined(_MSC_VER)
+			#define MS_ALIGN(n) __declspec(align(n)) // With -fms-extensions, Clang will accept either alignment attribute
+		#endif
+	#else
+		#define MS_ALIGN(n) __declspec(align(n))
+	#endif
+#elif defined(__ANDROID__) || defined(IOS)
+	#define GCC_PACK(n) __attribute__((packed,aligned(n)))
+	#define GCC_ALIGN(n) __attribute__((aligned(n)))
+#endif
+
+#ifndef GCC_PACK
+	#define GCC_PACK(n)
+#endif
+#ifndef GCC_ALIGN
+	#define GCC_ALIGN(n)
+#endif
+#ifndef MS_ALIGN
+	#define MS_ALIGN(n)
+#endif
+
+/** Branch prediction hints */
+#ifndef LIKELY						/* Hints compiler that expression is likely to be true, much softer than UE_ASSUME - allows (penalized by worse performance) expression to be false */
+	#if ( defined(__clang__) || defined(__GNUC__) ) && defined(__linux__)	// effect of these on non-Linux platform has not been analyzed as of 2016-03-21
+		#define LIKELY(x)			__builtin_expect(!!(x), 1)
+	#else
+		// the additional "!!" is added to silence "warning: equality comparison with exteraneous parenthese" messages on android
+		#define LIKELY(x)			(!!(x))
+	#endif
+#endif
+
+#ifndef UNLIKELY					/* Hints compiler that expression is unlikely to be true, allows (penalized by worse performance) expression to be true */
+	#if ( defined(__clang__) || defined(__GNUC__) ) && defined(__linux__)	// effect of these on non-Linux platform has not been analyzed as of 2016-03-21
+		#define UNLIKELY(x)			__builtin_expect(!!(x), 0)
+	#else
+		// the additional "!!" is added to silence "warning: equality comparison with exteraneous parenthese" messages on android
+		#define UNLIKELY(x)			(!!(x))
+	#endif
+#endif
+
+// https://source.android.google.cn/devices/tech/debug/intsan?hl=zh-cn
+#define TSAN_SAFE
 
 #define PURE_VIRTUAL(func,...) { ASSERT_MESSAGE(false, "Pure virtual not implemented (" #func ")"); __VA_ARGS__ }
 

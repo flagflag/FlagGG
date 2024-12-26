@@ -1,5 +1,4 @@
-#ifndef __EXPORT__
-#define __EXPORT__
+#pragma once
 
 #if defined(FlagGG_STATIC_DEFINE) || !defined(WIN32)
 #  define FlagGG_API
@@ -14,6 +13,3 @@
 #    endif
 #  endif
 #endif
-
-#endif
-

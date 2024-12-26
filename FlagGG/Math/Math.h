@@ -155,6 +155,8 @@ FlagGG_API UInt32 NextPowerOfTwo(UInt32 value);
 
 FORCEINLINE Int32 Rand() { return rand(); }
 
+FORCEINLINE float Random() { return Rand() / 32768.0f; }
+
 void SRandInit(Int32 Seed);
 
 Int32 GetRandSeed();
