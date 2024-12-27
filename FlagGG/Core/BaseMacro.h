@@ -107,6 +107,25 @@
 // https://source.android.google.cn/devices/tech/debug/intsan?hl=zh-cn
 #define TSAN_SAFE
 
+#if 0
+	#define OPERATOR_NEW_MSVC_PRAGMA MSVC_PRAGMA( warning( suppress : 28251 ) )	//	warning C28251: Inconsistent annotation for 'new': this instance has no annotations
+#else
+	#define OPERATOR_NEW_MSVC_PRAGMA
+#endif
+
+#ifndef OPERATOR_NEW_THROW_SPEC
+	#define OPERATOR_NEW_THROW_SPEC
+#endif
+#ifndef OPERATOR_DELETE_THROW_SPEC
+	#define OPERATOR_DELETE_THROW_SPEC
+#endif
+#ifndef OPERATOR_NEW_NOTHROW_SPEC
+	#define OPERATOR_NEW_NOTHROW_SPEC throw()
+#endif
+#ifndef OPERATOR_DELETE_NOTHROW_SPEC
+	#define OPERATOR_DELETE_NOTHROW_SPEC throw()
+#endif
+
 #define PURE_VIRTUAL(func,...) { ASSERT_MESSAGE(false, "Pure virtual not implemented (" #func ")"); __VA_ARGS__ }
 
 #define HELPER_NAME_CAT_IMPL(A, B) A ## B

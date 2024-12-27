@@ -5,6 +5,7 @@
 #include <Math/Vector3.h>
 #include <Container/RefCounted.h>
 #include <Log.h>
+#include <Memory/MemoryHook.h>
 
 #include <string>
 
@@ -317,3 +318,5 @@ int main()
 
 	return 0;
 }
+
+IMPLEMENT_MODULE_USD("LuaTest");

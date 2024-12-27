@@ -4,6 +4,7 @@
 #include <Container/ArrayPtr.h>
 #include <Utility/SystemHelper.h>
 #include <Log.h>
+#include <Memory/MemoryHook.h>
 
 #include <Windows.h>
 
@@ -129,3 +130,5 @@ int DotNet_LoadAssmblyAndGetFunctionPtr(DotNetLibRuntime* libRuntime, const Stri
 }
 
 }
+
+IMPLEMENT_MODULE_USD("CoreCLRHelper");

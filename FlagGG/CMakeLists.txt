@@ -13,6 +13,7 @@ include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/PhysX/physx/include)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/PhysX/pxshared/include)
+include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/mimalloc/include)
 message ("include dir: ${CMAKE_CURRENT_SOURCE_DIR}")
 
 # 在非windows上把Graphics排除，因为目前Graphics只写了windows的部分
@@ -74,6 +75,7 @@ list (APPEND THIRD_LIB ${SLikeNet_LIB})
 # list (APPEND THIRD_LIB $(BDFX_LIB))
 list (APPEND THIRD_LIB ${PUGIXML_LIB})
 list (APPEND THIRD_LIB hlslcc)
+list (APPEND THIRD_LIB mimalloc-static)
 
 target_link_libraries(${TARGET_NAME} ${THIRD_LIB})
 

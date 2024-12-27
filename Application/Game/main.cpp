@@ -4,6 +4,7 @@
 
 #include "Core/EngineSettings.h"
 #include <Log.h>
+#include <Memory/MemoryHook.h>
 #include <CSharpExport/CSharpExport.h>
 #include "GameApplication.h"
 #include "main.h"
@@ -75,3 +76,5 @@ CSharp_API void ShowPrefab(const char* prefabPathCStr)
 		ApplicationInstance->ShowPrefab(prefabPath);
 	});
 }
+
+IMPLEMENT_MODULE_USD("Game");

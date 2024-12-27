@@ -4,6 +4,7 @@
 #include <Container/Vector.h>
 #include <Utility/SystemHelper.h>
 #include <Log.h>
+#include <Memory/MemoryHook.h>
 
 using namespace FlagGG;
 
@@ -90,3 +91,4 @@ int main()
 	return 0;
 }
 
+IMPLEMENT_MODULE_USD("ThreadTest");

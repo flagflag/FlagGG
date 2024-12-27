@@ -1,5 +1,6 @@
 
 #include <Log.h>
+#include <Memory/MemoryHook.h>
 
 #include "GameLogicServer.h"
 
@@ -24,3 +25,5 @@ int main(int argc, const char* argv[])
 	
 	return 0;
 }
+
+IMPLEMENT_MODULE_USD("GameLogicServer");

@@ -7,6 +7,7 @@
 #include <Graphics/Shader.h>
 #include <GfxDevice/GfxDevice.h>
 #include <GfxDevice/GfxProgram.h>
+#include <Memory/MemoryHook.h>
 
 using namespace FlagGG;
 
@@ -26,3 +27,4 @@ int main()
 	return 0;
 }
 
+IMPLEMENT_MODULE_USD("UniformTest");

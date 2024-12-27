@@ -2,6 +2,7 @@
 #include <Log.h>
 
 #include <Container/Variant.h>
+#include <Memory/MemoryHook.h>
 
 #include <functional>
 #include <tuple>
@@ -52,8 +53,7 @@ void Print(const LJSONValue& root, const std::string& t = "")
 
 void Run()
 {
-	Context context;
-	LJSONFile jsonFile(&context);
+	LJSONFile jsonFile;
 	if (!jsonFile.LoadFile("../../../Samples/Test/TestConfig.ljson"))
 	{
 		FLAGGG_LOG_DEBUG("fuck.");
@@ -117,3 +117,4 @@ int main()
 	return 0;
 }
 
+IMPLEMENT_MODULE_USD("Test");

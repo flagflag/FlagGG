@@ -527,26 +527,33 @@ bool Material::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 				for (UInt32 i = 0; i < pass.Size(); ++i)
 				{
 					RenderPassInfo renderPass;
-					vsShaderCode = cache->GetResource<ShaderCode>(pass[i]["vsshader"]["path"].GetString());
-					if (vsShaderCode)
+
+					if (pass[i]["vsshader"].Contains("path"))
 					{
-						ParseStringVector(pass[i]["vsshader"]["defines"], defines);
-						renderPass.SetVertexShader(vsShaderCode->GetShader(VS, defines));
-					}
-					else
-					{
-						renderPass.SetVertexShader(vsShader_);
+						vsShaderCode = cache->GetResource<ShaderCode>(pass[i]["vsshader"]["path"].GetString());
+						if (vsShaderCode)
+						{
+							ParseStringVector(pass[i]["vsshader"]["defines"], defines);
+							renderPass.SetVertexShader(vsShaderCode->GetShader(VS, defines));
+						}
+						else
+						{
+							renderPass.SetVertexShader(vsShader_);
+						}
 					}
 
-					psShaderCode = cache->GetResource<ShaderCode>(pass[i]["psshader"]["path"].GetString());
-					if (psShaderCode)
+					if (pass[i]["psshader"].Contains("path"))
 					{
-						ParseStringVector(pass[i]["psshader"]["defines"], defines);
-						renderPass.SetPixelShader(psShaderCode->GetShader(PS, defines));
-					}
-					else
-					{
-						renderPass.SetPixelShader(psShader_);
+						psShaderCode = cache->GetResource<ShaderCode>(pass[i]["psshader"]["path"].GetString());
+						if (psShaderCode)
+						{
+							ParseStringVector(pass[i]["psshader"]["defines"], defines);
+							renderPass.SetPixelShader(psShaderCode->GetShader(PS, defines));
+						}
+						else
+						{
+							renderPass.SetPixelShader(psShader_);
+						}
 					}
 
 					RasterizerState passRasterizerState = rasterizerState;

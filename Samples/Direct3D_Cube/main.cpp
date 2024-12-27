@@ -10,6 +10,7 @@
 #include <Core/DeviceEvent.h>
 #include <Container/Ptr.h>
 #include <Core/Function.h>
+#include <Memory/MemoryHook.h>
 
 #include <fstream>
 
@@ -355,4 +356,4 @@ int main()
 	return 0;
 }
 
-
+IMPLEMENT_MODULE_USD("Direct3D_Cube");

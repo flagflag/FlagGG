@@ -1,5 +1,6 @@
 #include "PhysicsSystem.h"
 #include "Log.h"
+#include "Memory/Memory.h"
 
 #ifdef FLAGGG_PHYSICS
 #include <PxPhysics.h>
@@ -20,12 +21,12 @@ class PxAllocatorCallbackImpl : public physx::PxAllocatorCallback
 public:
 	void* allocate(size_t size, const char* typeName, const char* filename, int line) override
 	{
-		return ::malloc(size);
+		return GetSubsystem<Memory>()->Malloc(size);
 	}
 
 	void deallocate(void* ptr) override
 	{
-		::free(ptr);
+		GetSubsystem<Memory>()->Free(ptr);
 	}
 };
 

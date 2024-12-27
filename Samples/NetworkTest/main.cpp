@@ -3,6 +3,7 @@
 #include <AsyncFrame/AsyncFrame.h>
 #include <Utility/SystemHelper.h>
 #include <Log.h>
+#include <Memory/MemoryHook.h>
 
 #include <iostream>
 
@@ -144,3 +145,4 @@ int main()
     return 0;
 }
 
+IMPLEMENT_MODULE_USD("NetworkTest");

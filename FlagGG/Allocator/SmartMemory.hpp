@@ -1,33 +1,33 @@
-﻿#ifndef __SMART_MEMORY__
-#define __SMART_MEMORY__
+﻿#pragma once
 
 #include "Export.h"
+#include "Memory/Memory.h"
 
 #include <stdlib.h>
 
 namespace FlagGG
 {
 
-template < class Type = char >
+template <typename Type = char>
 class FlagGG_API SmartMemory
 {
 public:
 	SmartMemory(size_t count,
-	Type* default_memory = nullptr)
+	Type* defaultMemory = nullptr)
 		: memory_(nullptr)
 	{
 		if (count > 0)
 		{
-			if (default_memory)
+			if (defaultMemory)
 			{
-				memory_ = default_memory;
+				memory_ = defaultMemory;
 			}
 			else
 			{
-				memory_ = (Type*)malloc(count * (sizeof (Type)));
+				memory_ = (Type*)GetSubsystem<Memory>()->Malloc(count * (sizeof (Type)));
 			}
 
-			default_ = !!default_memory;			
+			default_ = !!defaultMemory;
 		}
 	}
 
@@ -35,7 +35,7 @@ public:
 	{
 		if (memory_ && !default_)
 		{
-			free(memory_);
+			GetSubsystem<Memory>()->Free(memory_);
 		}
 	}
 
@@ -51,5 +51,3 @@ private:
 };
 
 }
-
-#endif

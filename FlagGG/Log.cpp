@@ -24,8 +24,7 @@ Logger::Logger()
 		auto stdout_sink = std::make_shared<spdlog::sinks::stdout_sink_mt>();
 		auto FlagGGLog = spdlog::details::registry::instance().create(FLAGGG_LOG, { file_sink, stdout_sink });
 		FlagGGLog->flush_on(spdlog::level::debug);
-		spdlog::register_logger(FlagGGLog);
-
+		// spdlog::register_logger(FlagGGLog);
 	}
 	catch (spdlog::spdlog_ex& ex)
 	{
@@ -71,7 +70,7 @@ void Log(LogType log_type, const char* format, ...)
     size_t len = vsnprintf(nullptr, 0, format, va);
         
     char _buffer[ONE_KB + 1];
-    SmartMemory <char> temp(len + 1, len <= ONE_KB ? _buffer : nullptr);
+    SmartMemory<char> temp(len + 1, len <= ONE_KB ? _buffer : nullptr);
     char* buffer = temp.Get();
 
     vsnprintf(buffer, len + 1, format, va);

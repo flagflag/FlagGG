@@ -2,6 +2,7 @@
 #include "Utility/SystemHelper.h"
 #include "Platform/PlatformTLS.h"
 #include "Core/Context.h"
+#include "Memory/Memory.h"
 
 namespace FlagGG
 {
@@ -44,12 +45,13 @@ static void ChangeMem(Int64 Delta)
 void* LockFreeAllocLinks(USize AllocSize)
 {
 	ChangeMem(AllocSize);
-	return ::malloc(AllocSize);
+	return GetSubsystem<Memory>()->Malloc(AllocSize);
 }
+
 void LockFreeFreeLinks(USize AllocSize, void* Ptr)
 {
 	ChangeMem(-Int32(AllocSize));
-	::free(Ptr);
+	GetSubsystem<Memory>()->Free(Ptr);
 }
 
 class LockFreeLinkAllocator_TLSCache : public Noncopyable

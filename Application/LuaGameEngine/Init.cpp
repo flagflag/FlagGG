@@ -1,6 +1,8 @@
 #include "Init.h"
 #include "EngineImpl.h"
 
+#include <Memory/MemoryHook.h>
+
 namespace LuaGameEngine
 {
 
@@ -15,3 +17,5 @@ void DestroyEngine(Engine* engine)
 }
 
 }
+
+IMPLEMENT_MODULE_USD("LuaGameEngine");
