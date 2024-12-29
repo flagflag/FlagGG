@@ -5,7 +5,7 @@
 
 #if PLATFORM_WINDOWS
 #include <windows.h>
-#elif PLATFORM_UNIX || PLATFORM_MACOS
+#elif PLATFORM_UNIX || PLATFORM_APPLE
 #include <sys/mman.h>
 #endif
 
@@ -42,9 +42,10 @@ void* MallocStomp::TryMalloc(USize size, UInt32 alignment)
 	const USize allocFullPageSize = alignedSize + sizeof(AllocationData) + (pageSize_ - 1) & ~(pageSize_ - 1U);
 	const USize totalAllocationSize = allocFullPageSize + pageSize_;
 
-#if PLATFORM_UNIX || PLATFORM_MACOS
+#if PLATFORM_UNIX || PLATFORM_APPLE
 	void* fullAllocationPointer = mmap(nullptr, totalAllocationSize, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0);
-#elif PLATFORM_WINDOWS && MALLOC_STOMP_KEEP_VIRTUAL_MEMORY
+#elif PLATFORM_WINDOWS
+#if MALLOC_STOMP_KEEP_VIRTUAL_MEMORY
 	// Allocate virtual address space from current block using linear allocation strategy.
 	// If there is not enough space, try to allocate new block from OS. Report OOM if block allocation fails.
 	void* fullAllocationPointer = nullptr;
@@ -66,10 +67,12 @@ void* MallocStomp::TryMalloc(USize size, UInt32 alignment)
 
 	// No atomics or locks required here, as Malloc is externally synchronized (as indicated by FMallocStomp::IsInternallyThreadSafe()).
 	virtualAddressCursor_ += totalAllocationSize;
-
 #else
-	void* fullAllocationPointer = PlatformMemory::BinnedAllocFromOS(totalAllocationSize);
-#endif // PLATFORM_UNIX || PLATFORM_MACOS
+	void* fullAllocationPointer = VirtualAlloc(nullptr, totalAllocationSize, MEM_RESERVE, PAGE_NOACCESS);
+#endif // MALLOC_STOMP_KEEP_VIRTUAL_MEMORY
+#else
+#error
+#endif // PLATFORM_UNIX || PLATFORM_APPLE
 
 	if (!fullAllocationPointer)
 	{
@@ -87,7 +90,10 @@ void* MallocStomp::TryMalloc(USize size, UInt32 alignment)
 		returnedPointer = reinterpret_cast<void*>(reinterpret_cast<UInt8*>(fullAllocationPointer) + pageSize_ + alignedAllocationData);
 		void* allocDataPointerStart = reinterpret_cast<AllocationData*>(reinterpret_cast<UInt8*>(fullAllocationPointer) + pageSize_);
 
-#if PLATFORM_WINDOWS && MALLOC_STOMP_KEEP_VIRTUAL_MEMORY
+		// Page protect the first page, this will cause the exception in case the is an underrun.
+#if PLATFORM_UNIX || PLATFORM_APPLE
+		mprotect(fullAllocationPointer, pageSize_, PROT_NONE);
+#elif PLATFORM_WINDOWS
 		// Commit physical pages to the used range, leaving the first page unmapped.
 		void* committedMemory = VirtualAlloc(allocDataPointerStart, allocFullPageSize, MEM_COMMIT, PAGE_READWRITE);
 		if (!committedMemory)
@@ -97,15 +103,17 @@ void* MallocStomp::TryMalloc(USize size, UInt32 alignment)
 		}
 		CRY_ASSERT(committedMemory == allocDataPointerStart);
 #else
-		// Page protect the first page, this will cause the exception in case the is an underrun.
-		PlatformMemory::PageProtect(fullAllocationPointer, pageSize_, false, false);
-#endif
+#error
+#endif // PLATFORM_UNIX || PLATFORM_APPLE
 	} //-V773
 	else
 	{
 		returnedPointer = reinterpret_cast<void*>(reinterpret_cast<UInt8*>(fullAllocationPointer) + allocFullPageSize - alignedSize);
 
-#if PLATFORM_WINDOWS && MALLOC_STOMP_KEEP_VIRTUAL_MEMORY
+		// Page protect the last page, this will cause the exception in case the is an overrun.
+#if PLATFORM_UNIX || PLATFORM_APPLE
+		mprotect(reinterpret_cast<void*>(reinterpret_cast<UInt8*>(fullAllocationPointer) + allocFullPageSize), pageSize_, PROT_NONE);
+#elif PLATFORM_WINDOWS
 		// Commit physical pages to the used range, leaving the last page unmapped.
 		void* committedMemory = VirtualAlloc(fullAllocationPointer, allocFullPageSize, MEM_COMMIT, PAGE_READWRITE);
 		if (!committedMemory)
@@ -115,9 +123,8 @@ void* MallocStomp::TryMalloc(USize size, UInt32 alignment)
 		}
 		CRY_ASSERT(committedMemory == fullAllocationPointer);
 #else
-		// Page protect the last page, this will cause the exception in case the is an overrun.
-		PlatformMemory::PageProtect(reinterpret_cast<void*>(reinterpret_cast<UInt8*>(fullAllocationPointer) + allocFullPageSize), pageSize_, false, false);
-#endif
+#error
+#endif // PLATFORM_UNIX || PLATFORM_APPLE
 	} //-V773
 
 	AllocationData* allocDataPointer = reinterpret_cast<AllocationData*>(reinterpret_cast<UInt8*>(returnedPointer) - allocationDataSize);
@@ -196,14 +203,18 @@ void MallocStomp::Free(void* ptr)
 		DEBUG_BREAK();
 	}
 
-#if PLATFORM_UNIX || PLATFORM_MACOS
+#if PLATFORM_UNIX || PLATFORM_APPLE
 	munmap(allocDataPtr->fullAllocationPointer_, allocDataPtr->fullSize_);
-#elif PLATFORM_WINDOWS && MALLOC_STOMP_KEEP_VIRTUAL_MEMORY
+#elif PLATFORM_WINDOWS
+#if MALLOC_STOMP_KEEP_VIRTUAL_MEMORY
 	// Unmap physical memory, but keep virtual address range reserved to catch use-after-free errors.
 	VirtualFree(allocDataPtr->fullAllocationPointer_, allocDataPtr->fullSize_, MEM_DECOMMIT);
 #else
-	PlatformMemory::BinnedFreeToOS(allocDataPtr->fullAllocationPointer_, allocDataPtr->fullSize_);
-#endif // PLATFORM_UNIX || PLATFORM_MACOS
+	VirtualFree(allocDataPtr->fullAllocationPointer_, 0, MEM_RELEASE);
+#endif
+#else
+#error
+#endif // PLATFORM_UNIX || PLATFORM_APPLE
 }
 
 bool MallocStomp::GetAllocationSize(void* ptr, USize& outSize)
