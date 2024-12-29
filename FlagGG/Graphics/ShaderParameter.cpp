@@ -33,7 +33,7 @@ bool ShaderParameters::SetValueImpl(StringHash key, const void* buffer, UInt32 b
 		return false;
 
 	dataBuffer_->Seek(it->second_.offset_);
-	dataBuffer_->WriteStream(buffer, it->second_.size_);
+	dataBuffer_->WriteStream(buffer, /*it->second_.size_*/bufferSize);
 	return true;
 }
 

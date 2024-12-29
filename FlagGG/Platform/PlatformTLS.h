@@ -4,7 +4,8 @@
 
 #pragma once
 
-#ifdef _WIN32
+#include "Core/GenericPlatform.h"
+#ifdef PLATFORM_WINDOWS
 #include "Platform/WindowsPlatformTLS.h"
 #else
 #error

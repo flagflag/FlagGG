@@ -1,6 +1,7 @@
 #include "AsyncFrame/Mutex.h"
+#include "Core/GenericPlatform.h"
 
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 #include <windows.h>
 #ifdef GetObject
 #undef GetObject
@@ -14,7 +15,7 @@ namespace FlagGG
 
 Mutex::Mutex()
 {
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	handle_ = new CRITICAL_SECTION;
 	InitializeCriticalSection(GetObject<CRITICAL_SECTION>());
 #else	
@@ -30,7 +31,7 @@ Mutex::~Mutex()
 {
 	if (handle_)
 	{
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 		auto* cs = GetObject<CRITICAL_SECTION>();
 		DeleteCriticalSection(cs);
 		delete cs;
@@ -45,7 +46,7 @@ Mutex::~Mutex()
 
 void Mutex::Lock()
 {
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	EnterCriticalSection(GetObject<CRITICAL_SECTION>());
 #else
 	pthread_mutex_lock(GetObject<pthread_mutex_t>());
@@ -54,7 +55,7 @@ void Mutex::Lock()
 
 bool Mutex::TryLock()
 {
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	return TryEnterCriticalSection(GetObject<CRITICAL_SECTION>()) != FALSE;
 #else
 	return pthread_mutex_trylock(GetObject<pthread_mutex_t>()) == 0;
@@ -63,7 +64,7 @@ bool Mutex::TryLock()
 
 void Mutex::UnLock()
 {
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	LeaveCriticalSection(GetObject<CRITICAL_SECTION>());
 #else
 	pthread_mutex_unlock(GetObject<pthread_mutex_t>());

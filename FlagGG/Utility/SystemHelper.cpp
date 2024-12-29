@@ -4,7 +4,7 @@
 
 #include <ctime>
 #include <chrono>
-#if _WIN32
+#if PLATFORM_WINDOWS
 #include <windows.h>
 #include <shlwapi.h>
 #include <io.h>
@@ -29,7 +29,7 @@
 namespace FlagGG
 {
 
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 const char* const PATH_SEPARATOR = "\\";
 #else
 const char* const PATH_SEPARATOR = "/";
@@ -43,7 +43,7 @@ String FormatPath(const String& path)
 	wchar_t buffer[MAX_PATH] = { 0 };
 	UInt32 cur = 0;
 	bool lastMatch = false;
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	char match1 = wchar_t('\\');
 	char match2 = wchar_t('/');
 #else
@@ -85,7 +85,7 @@ String FormatPath(const String& path)
 
 void Sleep(UInt64 time)
 {
-#if _WIN32
+#if PLATFORM_WINDOWS
 	::Sleep(time);
 #else
 	usleep(time * 1000);
@@ -94,7 +94,7 @@ void Sleep(UInt64 time)
 
 void SleepNoStats(UInt64 time)
 {
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	if (time == 0)
 		::SwitchToThread();
 	else
@@ -109,7 +109,7 @@ void SleepNoStats(UInt64 time)
 
 UInt32 Tick()
 {
-#if _WIN32
+#if PLATFORM_WINDOWS
 	return (UInt32)timeGetTime();
 #else
 	struct timeval time{};
@@ -120,7 +120,7 @@ UInt32 Tick()
 
 UInt64 HiresTick()
 {
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	if (HiresTimer::IsSupported())
 	{
 		LARGE_INTEGER counter;
@@ -211,7 +211,7 @@ bool HasAccess(const String& path)
 
 IntRect GetDesktopRect()
 {
-#if _WIN32
+#if PLATFORM_WINDOWS
 	RECT rect;
 	SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
 	return IntRect(IntVector2(rect.left, rect.top), IntVector2(rect.right, rect.bottom));
@@ -292,18 +292,18 @@ String ReplaceExtension(const String& fullPath, const String& newExtension)
 
 String GetProgramDir()
 {
-#if defined(_WIN32)
+#if PLATFORM_WINDOWS
 	wchar_t exeName[MAX_PATH];
 	exeName[0] = 0;
 	GetModuleFileNameW(nullptr, exeName, MAX_PATH);
 	return GetPath(String(exeName));
-#elif defined(__APPLE__)
+#elif PLATFORM_APPLE
 	char exeName[MAX_PATH];
 	memset(exeName, 0, MAX_PATH);
 	unsigned size = MAX_PATH;
 	_NSGetExecutablePath(exeName, &size);
 	return GetPath(String(exeName));
-#elif defined(__linux__)
+#elif PLATFORM_UNIX
 	char exeName[MAX_PATH];
 	memset(exeName, 0, MAX_PATH);
 	pid_t pid = getpid();
@@ -341,7 +341,7 @@ UInt64 HiresTimer::frequency(1000);
 
 void HiresTimer::InitSupported()
 {
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	LARGE_INTEGER frequency;
 	if (QueryPerformanceFrequency(&frequency))
 	{

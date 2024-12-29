@@ -99,3 +99,23 @@ struct GenericPlatformTypes
 
 // Prefetch
 #define PLATFORM_CACHE_LINE_SIZE	64
+
+#if defined(_WIN32)
+	#define PLATFORM_WINDOWS 1
+#elif defined(__APPLE__)
+	#if defined(IOS)
+		#define PLATFORM_IOS 1
+	#else
+		#define PLATFORM_MACOS 1
+	#endif
+	#define PLATFORM_APPLE 1
+#elif defined(__ANDROID__)
+	#define PLATFORM_ANDROID 1
+	#define PLATFORM_UNIX 1
+#elif defined(__linux__)
+	#define PLATFORM_LINUX 1
+	#define PLATFORM_UNIX 1
+#endif
+
+// 暂时不支持32bits
+#define PLATFORM_64BITS 1

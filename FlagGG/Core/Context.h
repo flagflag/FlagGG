@@ -42,7 +42,7 @@ public:
 		wrappers_.Insert(Pair<String, SharedPtr<VariableWrapper>>(variableName, wrapper));
 	}
 
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	template <> void RegisterVariable<Int8>(Int8* variable, const String& variableName);
 	template <> void RegisterVariable<UInt8>(UInt8* variable, const String& variableName);
 	template <> void RegisterVariable<Int16>(Int16* variable, const String& variableName);

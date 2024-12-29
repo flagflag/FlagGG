@@ -4,7 +4,7 @@
 
 #include <math.h>
 
-#if _WIN32
+#if PLATFORM_WINDOWS
 #include <d3dx9math.h>
 #endif
 
@@ -288,7 +288,7 @@ Vector3 Vector3TransformCoord(const Vector3& target, const Matrix4& T)
 
 Matrix4 MatrixPerspectiveFovLH(Real fovy, Real aspect, Real zn, Real zf)
 {
-#if _WIN32
+#if PLATFORM_WINDOWS
 	D3DXMATRIX out;
 	D3DXMatrixPerspectiveFovLH(
 		&out,
@@ -300,7 +300,7 @@ Matrix4 MatrixPerspectiveFovLH(Real fovy, Real aspect, Real zn, Real zf)
 #endif
 
 	Matrix4 output;
-#if _WIN32
+#if PLATFORM_WINDOWS
 	memcpy(&output, &out, sizeof(Matrix4));
 #endif
 

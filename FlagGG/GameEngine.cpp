@@ -26,7 +26,7 @@ void GameEngine::Start()
 
 	CreateCoreObject();
 
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	WindowDevice::Initialize();
 	RenderEngine::Instance().Initialize();
 #endif
@@ -85,7 +85,7 @@ void GameEngine::Stop()
 {
 	isRunning_ = false;
 
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	WindowDevice::Uninitialize();
 	RenderEngine::Instance().Uninitialize();
 #endif

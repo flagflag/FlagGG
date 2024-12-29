@@ -22,7 +22,7 @@ public:
 
 	int Alert(LuaVM* vm)
 	{
-#if _WIN32
+#if PLATFORM_WINDOWS
 		MessageBoxA(nullptr,  vm->Get<const char*>(1), "", 0);
 #endif
 		return 0;

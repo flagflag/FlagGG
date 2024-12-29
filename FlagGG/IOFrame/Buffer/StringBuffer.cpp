@@ -1,5 +1,6 @@
 #include "IOFrame/Buffer/StringBuffer.h"
 #include "Math/Math.h"
+#include "Memory/MemoryHook.h"
 
 namespace FlagGG { namespace IOFrame { namespace Buffer {
 
@@ -73,21 +74,36 @@ UInt32 StringBuffer::ReadStream(void* data, UInt32 dataSize)
 
 UInt32 StringBuffer::WriteStream(const void* data, UInt32 dataSize)
 {
-	if (readOnly_) return 0;
-	if (index_ + dataSize > capacity_)
+	if (readOnly_)
+		return 0u;
+	
+	UInt32 newSize = index_ + dataSize;
+	if (capacity_ < newSize)
 	{
-		if (sizeFixed_) return 0;
-		capacity_ = (index_ + dataSize) << 1u;
-		auto* newBuffer = static_cast<char*>(realloc(cBuffer_, sizeof(char)* capacity_));
+		if (sizeFixed_)
+			return 0u;
+		
+		if (capacity_ == 0u)
+			capacity_ = newSize;
+		else
+		{
+			while (capacity_ < newSize)
+				capacity_ += (capacity_ + 1) >> 1;
+		}
+
+		auto* newBuffer = static_cast<char*>(realloc(cBuffer_, capacity_));
 		if (!newBuffer)
 		{
 			throw "Failed to realloc buffer!";
 		}
+
 		ccBuffer_ = cBuffer_ = newBuffer;
 	}
+
 	memcpy(cBuffer_ + index_, data, dataSize);
-	index_ += dataSize;
-	bufferSize_ = Max(bufferSize_, index_);
+	index_ = newSize;
+	bufferSize_ = Max(bufferSize_, newSize);
+
 	return dataSize;
 }
 

@@ -23,7 +23,7 @@
 #if 1
 	#define checkLockFreePointerList CRY_ASSERT
 #else
-	#if _WIN32
+	#if PLATFORM_WINDOWS
 		#pragma warning(disable : 4706)
 	#endif
 	#define checkLockFreePointerList(x) ((x)||((*(char*)3) = 0))

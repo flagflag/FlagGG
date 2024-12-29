@@ -6,9 +6,11 @@
 #pragma once
 
 #include "Core/Subsystem.h"
+#include "Memory/MemoryDefines.h"
 #include "Memory/Malloc.h"
 
 #include <malloc.h>
+#include <memory.h>
 
 namespace FlagGG
 {
@@ -17,6 +19,8 @@ class FlagGG_API Memory : public Subsystem<Memory>, public IMalloc
 {
 public:
 	Memory();
+
+	Memory(IMalloc* malloc);
 
 	~Memory();
 
@@ -38,6 +42,24 @@ public:
 		::free(ptr);
 	}
 
+	//
+	static FORCEINLINE void Memcpy(void* destPtr, const void* sourcePtr, USize size)
+	{
+		::memcpy(destPtr, sourcePtr, size);
+	}
+
+	//
+	static FORCEINLINE void Memmove(void* destPtr, const void* sourcePtr, USize size)
+	{
+		::memmove(destPtr, sourcePtr, size);
+	}
+
+	//
+	static FORCEINLINE void Memzero(void* destPtr, USize size)
+	{
+		::memset(destPtr, 0, size);
+	}
+
 	// 分配内存
 	void* Malloc(USize size, UInt32 alignment = DEFAULT_ALIGNMENT) override;
 
@@ -52,6 +74,12 @@ public:
 
 	// 释放内存缓存
 	void Trim(bool trimThreadCache) override;
+	
+	// 内部是否线程安全
+	bool IsInternallyThreadSafe() const override
+	{
+		return true;
+	}
 
 	// 获取内存分配器实例
 	IMalloc* GetMalloc() { return malloc_; }

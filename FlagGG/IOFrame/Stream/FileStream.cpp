@@ -6,7 +6,7 @@ namespace FlagGG { namespace IOFrame { namespace Stream {
 
 #define FileHandler(file) static_cast<FILE*>(file)
 
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 #define FilePathString WString
 #define FormatPath(filePath) WString(filePath.Replaced('/', '\\'))
 #define FileAPI_Open(file, filePath, fileMode) (file = _wfopen(filePath.CString(), fileMode))

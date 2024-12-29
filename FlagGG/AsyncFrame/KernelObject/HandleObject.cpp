@@ -1,6 +1,7 @@
 ﻿#include "HandleObject.h"
+#include "Core/GenericPlatform.h"
 
-#if _WIN32
+#if PLATFORM_WINDOWS
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -17,7 +18,7 @@ HandleObject::~HandleObject()
 {
 	if (handle_)
 	{
-#if _WIN32
+#if PLATFORM_WINDOWS
 		CloseHandle((HANDLE)handle_);
 #endif
 		handle_ = NULL_HANDLE;

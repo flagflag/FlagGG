@@ -1,5 +1,9 @@
 #pragma once
 
-#define USE_SYSTEM_MALLOC 1
+#define USE_SYSTEM_MALLOC 0
+
+#define USE_MALLOC_STOMP 0
 
 #define USD_MANAGER 1
+
+#define MALLOC_STOMP_KEEP_VIRTUAL_MEMORY 1

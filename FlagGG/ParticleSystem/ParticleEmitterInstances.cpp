@@ -10,6 +10,7 @@
 #include "Scene/Node.h"
 #include "Scene/Camera.h"
 #include "Graphics/RenderPipline.h"
+#include "Memory/MemoryHook.h"
 
 namespace FlagGG
 {

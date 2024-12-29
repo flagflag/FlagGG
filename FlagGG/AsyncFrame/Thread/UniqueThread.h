@@ -9,7 +9,7 @@
 
 #include <functional>
 
-#ifndef _WIN32
+#if !PLATFORM_WINDOWS
 #include <pthread.h>
 #endif
 
@@ -52,7 +52,7 @@ protected:
 	void CreateRunnableThread(IRunnable* runnable);
 
 private:
-#ifndef _WIN32
+#if !PLATFORM_WINDOWS
 	pthread_mutex_t mutex_;
 	pthread_cond_t cond_;
 #endif

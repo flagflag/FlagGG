@@ -9,7 +9,7 @@
 namespace FlagGG
 {
 
-class MallocSystem : public IMalloc
+class FlagGG_API MallocSystem : public IMalloc
 {
 public:
 	// 分配内存
@@ -26,6 +26,12 @@ public:
 
 	// 释放内存缓存
 	void Trim(bool trimThreadCache) override;
+
+	// 内部是否线程安全
+	bool IsInternallyThreadSafe() const override
+	{
+		return true;
+	}
 };
 
 }

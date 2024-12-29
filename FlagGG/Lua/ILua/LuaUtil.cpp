@@ -4,7 +4,7 @@
 #include "Log.h"
 
 #include <lua.hpp>
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 #include <windows.h>
 #endif
 
@@ -57,7 +57,7 @@ static int TrackBack(lua_State* L)
 
 	FLAGGG_LOG_ERROR(errorMessage);
 
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	MessageBoxA(nullptr, errorMessage, "FlagGG Lua Error", 0);
 #endif
 	return 0;

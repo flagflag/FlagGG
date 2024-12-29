@@ -1,6 +1,6 @@
 #include "AsyncFrame/ConditionVariable.h"
 
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 #include <windows.h>
 #ifdef GetObject
 #undef GetObject
@@ -14,7 +14,7 @@ namespace FlagGG
 
 ConditionVariable::ConditionVariable()
 {
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	handle_ = new CONDITION_VARIABLE;
 	InitializeConditionVariable(GetObject<CONDITION_VARIABLE>());
 #else
@@ -27,7 +27,7 @@ ConditionVariable::~ConditionVariable()
 {
 	if (handle_)
 	{
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 		auto* cv = GetObject<CONDITION_VARIABLE>();
 		delete cv;
 #else
@@ -41,7 +41,7 @@ ConditionVariable::~ConditionVariable()
 
 void ConditionVariable::Wait(HandleObject* object)
 {
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	SleepConditionVariableCS(GetObject<CONDITION_VARIABLE>(), object->GetObject<CRITICAL_SECTION>(), INFINITE);
 #else
 	pthread_cond_wait(GetObject<pthread_cond_t>(), object->GetObject<pthread_mutex_t>());
@@ -50,7 +50,7 @@ void ConditionVariable::Wait(HandleObject* object)
 
 void ConditionVariable::Wait(HandleObject* object, UInt32 waitTime)
 {
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	SleepConditionVariableCS(GetObject<CONDITION_VARIABLE>(), object->GetObject<CRITICAL_SECTION>(), waitTime);
 #else
 	timespec timeout;
@@ -62,7 +62,7 @@ void ConditionVariable::Wait(HandleObject* object, UInt32 waitTime)
 
 void ConditionVariable::Trigger()
 {
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	WakeConditionVariable(GetObject<CONDITION_VARIABLE>());
 #else
 	pthread_cond_signal(GetObject<pthread_cond_t>());

@@ -3,10 +3,8 @@
 #include "Core/EventDefine.h"
 #include "Core/Context.h"
 #include "Core/DeviceEvent.h"
-#ifdef _WIN32
 #include "Graphics/Viewport.h"
 #include "Graphics/Batch.h"
-#endif
 #include "Resource/ResourceCache.h"
 #include "Container/Ptr.h"
 #include "Utility/SystemHelper.h"
@@ -31,9 +29,7 @@ protected:
 
 	void CreateCoreObject();
 
-#ifdef _WIN32
 	Vector<SharedPtr<Viewport>> viewports_;
-#endif
 
 	Timer timer_;
 	Real elapsedTime_{ 0.0f };

@@ -52,6 +52,9 @@ public:
 
 	// 释放内存缓存
 	virtual void Trim(bool trimThreadCache) = 0;
+
+	// 内部是否线程安全
+	virtual bool IsInternallyThreadSafe() const = 0;
 };
 
 }

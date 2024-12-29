@@ -6,7 +6,7 @@
 namespace FlagGG
 {
 
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 static const wchar_t* openMode[] =
 {
 	L"rb",
@@ -33,10 +33,10 @@ const Int32 FSEEK_ORIGIN[] =
 	SEEK_END,
 };
 
-// ¶Ô±ê×¼¿â½Ó¿Ú½øĞĞÇáÁ¿·â×°£¬ÊÊÅäx86ºÍx64Æ½Ì¨µÄftell¡¢fseekµÈ½Ó¿Ú
+// å¯¹æ ‡å‡†åº“æ¥å£è¿›è¡Œè½»é‡å°è£…ï¼Œé€‚é…x86å’Œx64å¹³å°çš„ftellã€fseekç­‰æ¥å£
 struct FileInterfaceBase
 {
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	FORCEINLINE static FILE* fopen(const wchar_t* fileName, const wchar_t* mode)
 	{
 		return ::_wfopen(fileName, mode);
@@ -119,7 +119,7 @@ bool LocalFileHandle::Open(const String& fileName, FileMode mode)
 {
 	sizeDirty_ = true;
 
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	WString fileNameW(fileName);
 	handle_ = std_file::fopen(fileNameW.CString(), openMode[Int32(mode)]);
 #else
@@ -129,7 +129,7 @@ bool LocalFileHandle::Open(const String& fileName, FileMode mode)
 	// If file did not exist in readwrite mode, retry with write-update mode
 	if (mode == FileMode::FILE_READWRITE && !handle_)
 	{
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 		handle_ = std_file::fopen(fileNameW.CString(), openMode[Int32(mode) + 1]);
 #else
 		handle_ = std_file::fopen(fileName.CString(), openMode[Int32(mode) + 1]);

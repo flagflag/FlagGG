@@ -1,7 +1,7 @@
 ﻿#include "UniqueThread.h"
 #include "Log.h"
 
-#if _WIN32
+#if PLATFORM_WINDOWS
 #include <windows.h>
 #define THREAD_MARK WINAPI
 #define THREAD_RETURN DWORD
@@ -18,7 +18,7 @@ namespace FlagGG
 struct ThreadParam
 {
 	IRunnable* runnable_;
-#ifndef _WIN32
+#if !PLATFORM_WINDOWS
 	pthread_cond_t* pcond_;
 #endif
 };
@@ -29,7 +29,7 @@ static THREAD_RETURN THREAD_MARK ThreadFunc(THREAD_PARAM inParam)
 	if (param && param->runnable_)
 	{
 		param->runnable_->Run();
-#ifndef _WIN32
+#if !PLATFORM_WINDOWS
 		pthread_cond_signal(param->pcond_);
 #endif
 		param->runnable_->Exit();
@@ -103,7 +103,7 @@ UniqueThread::UniqueThread(IRunnable* runnable)
 
 UniqueThread::~UniqueThread()
 {
-#ifndef _WIN32
+#if !PLATFORM_WINDOWS
 	pthread_mutex_destroy(&mutex_);
 	pthread_cond_destroy(&cond_);
 	if (handle_)
@@ -118,7 +118,7 @@ void UniqueThread::CreateRunnableThread(IRunnable* runnable)
 {
 	ThreadParam* param = new ThreadParam();
 	param->runnable_ = runnable;
-#if _WIN32
+#if PLATFORM_WINDOWS
 	handle_ = CreateThread(nullptr, 0, ThreadFunc, param, 0, nullptr);
 
 	if (!handle_)
@@ -145,7 +145,7 @@ void UniqueThread::CreateRunnableThread(IRunnable* runnable)
 void UniqueThread::Stop()
 {
 				
-#if _WIN32
+#if PLATFORM_WINDOWS
 	TerminateThread(handle_, -1);
 #else
 	if (handle_)
@@ -157,7 +157,7 @@ void UniqueThread::Stop()
 
 void UniqueThread::WaitForStop()
 {
-#if _WIN32
+#if PLATFORM_WINDOWS
 	WaitForSingleObject(handle_, INFINITE);
 #else
 	if (handle_)
@@ -169,7 +169,7 @@ void UniqueThread::WaitForStop()
 
 void UniqueThread::WaitForStop(UInt32 waitTime)
 {
-#if _WIN32
+#if PLATFORM_WINDOWS
 	WaitForSingleObject(handle_, waitTime);
 #else
 	pthread_mutex_lock(&mutex_);
@@ -183,7 +183,7 @@ void UniqueThread::WaitForStop(UInt32 waitTime)
 
 UInt64 UniqueThread::GetCurrentThreadId()
 {
-#if _WIN32
+#if PLATFORM_WINDOWS
 	return ::GetCurrentThreadId();
 #else
 	return 0;

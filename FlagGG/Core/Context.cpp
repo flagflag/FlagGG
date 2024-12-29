@@ -4,7 +4,7 @@
 namespace FlagGG
 {
 
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 template <> void Context::RegisterVariable<Int8>(Int8* variable, const String& variableName)
 {
             

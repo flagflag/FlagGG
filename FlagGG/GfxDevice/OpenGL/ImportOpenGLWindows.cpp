@@ -1,4 +1,5 @@
-#if defined(_WIN32)
+#include "Core/GenericPlatform.h"
+#if PLATFORM_WINDOWS
 #include "ImportOpenGL.h"
 #include "Core/CryAssert.h"
 #include "AsyncFrame/Mutex.h"

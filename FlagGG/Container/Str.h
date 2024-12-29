@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Container/Vector.h"
+#include "Core/GenericPlatform.h"
 #include "Export.h"
 
 #include <cstdarg>
@@ -468,7 +469,7 @@ public:
 	static void EncodeUTF8(char*& dest, unsigned unicodeChar);
 	/// Decode Unicode character from UTF8. Pointer will be incremented.
 	static unsigned DecodeUTF8(const char*& src);
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
 	/// Encode Unicode character to UTF16. Pointer will be incremented.
 	static void EncodeUTF16(wchar_t*& dest, unsigned unicodeChar);
 	/// Decode Unicode character from UTF16. Pointer will be incremented.

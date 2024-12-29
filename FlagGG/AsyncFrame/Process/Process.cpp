@@ -2,7 +2,7 @@
 #include "Code/Code.h"
 #include "Allocator/SmartMemory.hpp"
 
-#if _WIN32
+#if PLATFORM_WINDOWS
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -94,7 +94,7 @@ UInt32 ProcessObject::GetID()
 
 void ProcessObject::Stop()
 {
-#if _WIN32
+#if PLATFORM_WINDOWS
 	TerminateProcess(handle_, -1);
 #else
 
@@ -103,7 +103,7 @@ void ProcessObject::Stop()
 
 void ProcessObject::WaitForStop()
 {
-#if _WIN32
+#if PLATFORM_WINDOWS
 	WaitForSingleObject(handle_, INFINITE);
 #else
 	waitpid(*((pid_t*)handle_), nullptr, 0);
@@ -112,7 +112,7 @@ void ProcessObject::WaitForStop()
 
 void ProcessObject::WaitForStop(UInt32 wait_time)
 {
-#if _WIN32
+#if PLATFORM_WINDOWS
 	WaitForSingleObject(handle_, wait_time);
 #else
 
@@ -130,7 +130,7 @@ ProcessObjectPtr Builder::CreateProcess(const std::wstring& proc_path)
 
 ProcessObjectPtr Builder::CreateProcess(const std::wstring& proc_path, const std::wstring& param)
 {
-#if _WIN32
+#if PLATFORM_WINDOWS
 	STARTUPINFOW startup_info;
 	ZeroMemory(&startup_info, sizeof startup_info);
 	startup_info.cb = sizeof(startup_info);
