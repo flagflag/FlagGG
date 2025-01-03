@@ -7,6 +7,7 @@
 #include "Scene/Camera.h"
 #include "Scene/Octree.h"
 #include "Scene/Light.h"
+#include "Scene/Probe.h"
 #include "ParticleSystem/ParticleSystemRenderer.h"
 #include "Math/Polyhedron.h"
 #include "GfxDevice/GfxDevice.h"
@@ -115,10 +116,10 @@ void RenderView::CollectVisibilityObjects()
 		{
 			renderPiplineContext_->lights_.Push(light);
 		}
-		//else if (auto* probe = drawableComponent->Cast<Probe>())
-		//{
-		//	renderPiplineContext_->probes_.Push(probe);
-		//}
+		else if (auto* probe = drawableComponent->Cast<Probe>())
+		{
+			renderPiplineContext_->probes_.Push(probe);
+		}
 		else
 		{
 			renderPiplineContext_->drawables_.Push(drawableComponent);

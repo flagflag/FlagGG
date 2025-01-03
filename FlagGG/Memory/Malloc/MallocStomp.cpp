@@ -200,7 +200,7 @@ void MallocStomp::Free(void* ptr)
 	if (allocDataPtr->sentinel_ != sentinelExpectedValue_)
 	{
 		// There was a memory underrun related to this allocation.
-		DEBUG_BREAK();
+		DEBUG_BREAK;
 	}
 
 #if PLATFORM_UNIX || PLATFORM_APPLE

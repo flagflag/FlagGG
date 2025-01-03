@@ -419,7 +419,7 @@ void Camera::SetOrthographic(bool enable)
 	}
 }
 
-bool Camera::GetOrthographics() const
+bool Camera::IsOrthographic() const
 {
 	return orthographic_;
 }

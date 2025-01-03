@@ -16,7 +16,6 @@ namespace FlagGG
 {
 
 class Context;
-class ResourceCache;
 class GfxRenderSurface;
 class GfxShader;
 class Texture2D;
@@ -124,6 +123,9 @@ protected:
 
 	SharedPtr<RenderPass> shadowRenderPass_;
 	SharedPtr<RenderPass> alphaRenderPass_;
+	SharedPtr<RenderPass> waterRenderPass_;
+	SharedPtr<Texture2D> colorTexture_;
+	SharedPtr<Texture2D> depthTexture_;
 };
 
 // 前向渲染管线
@@ -150,8 +152,6 @@ public:
 private:
 	SharedPtr<ComputePass> clusterLightPass_;
 	SharedPtr<RenderPass> litRenderPass_[2];
-	SharedPtr<RenderPass> waterRenderPass_;
-	SharedPtr<Texture2D> renderTexture_;
 };
 
 // 延迟渲染管线
@@ -179,9 +179,9 @@ protected:
 	void AllocGBuffers();
 
 private:
-	ResourceCache* cache_;
-
+	SharedPtr<RenderPass> depthRenderPass_;
 	SharedPtr<RenderPass> baseRenderPass_;
+	SharedPtr<RenderPass> deferredLitRenderPass_;
 
 	// rgb - normal
 	// a   - ao
@@ -194,9 +194,9 @@ private:
 	// rgb - base color
 	// a   - directional light shadow factor
 	SharedPtr<Texture2D> GBufferC_;
-
-	SharedPtr<GfxShader> litVertexShader_;
-	SharedPtr<GfxShader> litPixelShader_;
+	// rgb - emissive color
+	// a   - 
+	SharedPtr<Texture2D> GBufferD_;
 };
 
 class FlagGG_API ScriptRenderPipline : public RenderPipline

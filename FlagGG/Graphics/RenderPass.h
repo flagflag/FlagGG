@@ -21,6 +21,7 @@ class TextureCube;
 struct FlagGG_API RenderPassContext
 {
 	Light* light_;
+	Probe* probe_;
 	DrawableComponent* drawable_;
 };
 
@@ -83,6 +84,34 @@ private:
 	HashMap<Light*, ShadowRenderContext> shadowRenderContextMap_;
 };
 
+// Depth pass
+class FlagGG_API DepthRenderPass : public RenderPass
+{
+	OBJECT_OVERRIDE(DepthRenderPass, RenderPass);
+public:
+	explicit DepthRenderPass();
+
+	~DepthRenderPass() override;
+
+	// 清理
+	void Clear() override;
+
+	// 收集
+	void CollectBatch(RenderPassContext* context) override;
+
+	// 排序
+	void SortBatch() override;
+
+	// 渲染
+	void RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer) override;
+
+	// 返回是否有渲染批次
+	bool HasAnyBatch() const override { return renderBatchQueue_.renderBatches_.Size() || renderBatchQueue_.renderBatchGroups_.Size(); }
+
+private:
+	RenderBatchQueue renderBatchQueue_;
+};
+
 // 光照pass
 class FlagGG_API LitRenderPass : public RenderPass
 {
@@ -109,9 +138,6 @@ public:
 
 private:
 	HashMap<Light*, LitRenderContext> litRenderContextMap_;
-
-	Vector4 shaderConstants_[SphericalHarmonicsL2::kVec4Count];
-	SharedPtr<TextureCube> iblCube_;
 };
 
 // 水体pass
@@ -142,6 +168,8 @@ private:
 	RenderBatchQueue renderBatchQueue_;
 
 	SharedPtr<Texture2D> refractionTexture_;
+
+	SharedPtr<Texture2D> screenDepthTexture_;
 };
 
 // 无光pass
@@ -198,6 +226,37 @@ public:
 
 private:
 	RenderBatchQueue renderBatchQueue_;
+};
+
+// 延迟lit pass
+class FlagGG_API DeferredLitRenderPass : public RenderPass
+{
+	OBJECT_OVERRIDE(DeferredLitRenderPass, RenderPass);
+public:
+	explicit DeferredLitRenderPass();
+
+	~DeferredLitRenderPass() override;
+
+	// 清理
+	void Clear() override;
+
+	// 收集
+	void CollectBatch(RenderPassContext* context) override;
+
+	// 排序
+	void SortBatch() override;
+
+	// 渲染
+	void RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer) override;
+
+	// 返回是否有渲染批次
+	bool HasAnyBatch() const override;
+
+private:
+	HashMap<Light*, DeferredLitRenderContext> litRenderContextMap_;
+
+	SharedPtr<GfxShader> litVertexShader_;
+	SharedPtr<GfxShader> litPixelShader_;
 };
 
 // Compute cluster pass

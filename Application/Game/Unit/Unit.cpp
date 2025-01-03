@@ -196,6 +196,8 @@ bool SCEUnit::Load(const String& path)
 
 void SCEUnit::PlayAnimation(const String& path, bool isLoop)
 {
+	if (!skeletonMeshComp_)
+		return;
 	auto* node = skeletonMeshComp_->GetNode();
 	if (!node)
 		return;

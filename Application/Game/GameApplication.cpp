@@ -4,6 +4,7 @@
 #include <Graphics/Batch2D.h>
 #include <Graphics/RenderPipline.h>
 #include <Scene/Light.h>
+#include <Scene/Probe.h>
 #include <Scene/Octree.h>
 #include <Scene/StaticMeshComponent.h>
 #include <Scene/OceanComponent.h>
@@ -276,6 +277,11 @@ void GameApplication::CreateScene()
 	scene_->AddChild(lightNode);
 #endif
 
+	auto* probeNode = new Node();
+	auto* probe = probeNode->CreateComponent<Probe>();
+	probe->SetArea(BoundingBox(-1e5, 1e5));
+	scene_->AddChild(probeNode);
+
 	skybox_ = new Unit();
 	skybox_->Load("Unit/Skybox.ljson");
 	skybox_->SetScale(Vector3(100000, 100000, 100000));
@@ -385,7 +391,8 @@ void GameApplication::SetupWindow()
 	window_->Show();
 	window_->GetViewport()->SetCamera(camera_);
 	window_->GetViewport()->SetScene(scene_);
-	// window_->GetViewport()->SetRenderPipline(new DeferredRenderPipline());
+	if (commandParam_.Contains("deferred_rendering"))
+		window_->GetViewport()->SetRenderPipline(new DeferredRenderPipline());
 
 	WindowDevice::RegisterWinMessage(window_);
 #endif

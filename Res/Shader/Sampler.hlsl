@@ -55,4 +55,9 @@ float4 GetShadowPos(float3 worldPos)
         return normalize(normalInput.rgb * 2.0 - 1.0);
     #endif
     }
+
+    float ReconstructDepth(float hwDepth)
+    {
+        return dot(float2(hwDepth, depthReconstruct.y / (hwDepth - depthReconstruct.x)), depthReconstruct.zw);
+    }
 #endif

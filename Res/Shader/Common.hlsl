@@ -33,7 +33,48 @@ float GetDepth(float4 clipPos)
 {
     return dot(clipPos.zw, float2(0.0, 1.0 / farClip));
 }
+
+float3x3 GetCameraRot()
+{
+    return (float3x3)invViewMatrix;
+}
+
+float3 GetFarRay(float4 clipPos)
+{
+    float3 viewRay = float3(
+        clipPos.x / clipPos.w * frustumSize.x,
+        clipPos.y / clipPos.w * frustumSize.y,
+        frustumSize.z);
+
+    return mul(viewRay, GetCameraRot());
+}
+
+float3 GetNearRay(float4 clipPos)
+{
+#ifdef ORTHO
+    float3 viewRay = float3(
+        clipPos.x / clipPos.w * frustumSize.x,
+        clipPos.y / clipPos.w * frustumSize.y,
+        0.0);
+    return mul(viewRay, GetCameraRot());
+#else
+    return float3(0.0, 0.0, 0.0);
 #endif
+}
+
+#endif
+
+float LinearizeDepth(float depth, float zNear, float zFar)
+{
+#if SHADER_LANGUAGE_GLSL
+    float z_n = 2.0 * depth - 1.0;
+    float linearDepth = 2.0 * zNear * zFar / (zFar + zNear - z_n * (zFar - zNear));
+    return linearDepth;
+#else
+    float linearDepth = zNear * zFar / (zFar - depth * (zFar - zNear));
+    return linearDepth;
+#endif
+}
 
 float4 EncodeFloatRGBA(float value)
 {
@@ -49,6 +90,16 @@ float DecodeFloatRG(float2 enc)
 {  
     float2 kDecodeDot = float2(1.0, 1.0 / 255.0);
     return dot(enc, kDecodeDot);
+}
+
+float3 EncodeGBufferNormal(float3 normalDirection)
+{
+    return normalDirection * 0.5 + 0.5;
+}
+
+float3 DecodeGBufferNormal(float3 normalDirection)
+{
+    return normalDirection * 2.0 - 1.0;
 }
 
 float GammaToLinearSpaceExact(float value)

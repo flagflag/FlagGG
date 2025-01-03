@@ -210,6 +210,7 @@ enum RenderPassType : UInt32
 	RENDER_PASS_TYPE_FORWARD_ALPHA,
 	RENDER_PASS_TYPE_DEFERRED_BASE,
 	RENDER_PASS_TYPE_DEFERRED_LIT,
+	RENDER_PASS_TYPE_DEPTH,
 	MAX_RENDER_PASS_TYPE,
 };
 
@@ -381,8 +382,11 @@ extern FlagGG_API VertexElement DEFAULT_VERTEX_ELEMENT[MAX_DEFAULT_VERTEX_ELEMEN
 extern FlagGG_API const FlagGG::StringHash SP_WORLD_MATRIX;
 extern FlagGG_API const FlagGG::StringHash SP_VIEW_MATRIX;
 extern FlagGG_API const FlagGG::StringHash SP_PROJVIEW_MATRIX;
+extern FlagGG_API const FlagGG::StringHash SP_INV_VIEW_MATRIX;
 extern FlagGG_API const FlagGG::StringHash SP_NEAR_CLIP;
 extern FlagGG_API const FlagGG::StringHash SP_FAR_CLIP;
+extern FlagGG_API const FlagGG::StringHash SP_FRUSTUM_SIZE;
+extern FlagGG_API const FlagGG::StringHash SP_DEPTH_RECONSTRUCT;
 extern FlagGG_API const FlagGG::StringHash SP_SKIN_MATRICES;
 extern FlagGG_API const FlagGG::StringHash SP_DELTA_TIME;
 extern FlagGG_API const FlagGG::StringHash SP_ELAPSED_TIME;

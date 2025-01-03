@@ -124,12 +124,32 @@ static void LoadArchetypeMaterial(const LJSONValue& source, StaticMeshComponent*
 							pixelDefines.Push("SHADOW");
 							pixelDefines.Push("DIRLIGHT");
 							pass.SetPixelShader(shaderCode->GetShader(PS, pixelDefines));
+							pass.SetDepthTestMode(COMPARISON_LESS_EQUAL);
+						}
+						{
+							auto& pass = material->CreateOrGetRenderPass(RENDER_PASS_TYPE_DEFERRED_BASE);
+							pass.SetRasterizerState(it.rasterizerState_);
+							pass.SetDepthStencilState(it.depthStencilState_);
+							auto shaderCode = cache->GetResource<ShaderCode>("Shader/SCE/Default.hlsl");
+							pass.SetVertexShader(shaderCode->GetShader(VS, { meshTypeDefine }));
+							Vector<String> pixelDefines = it.pixelDefines_.Split(' ');
+							pixelDefines.Push("DEFERRED_BASEPASS");
+							pass.SetPixelShader(shaderCode->GetShader(PS, pixelDefines));
+							pass.SetDepthTestMode(COMPARISON_EQUAL);
+							pass.SetDepthWrite(false);
 						}
 						{
 							auto& pass = material->CreateOrGetRenderPass(RENDER_PASS_TYPE_SHADOW);
 							auto shaderCode = cache->GetResource<ShaderCode>("Shader/Shadow.hlsl");
 							pass.SetVertexShader(shaderCode->GetShader(VS, { meshTypeDefine }));
 							pass.SetPixelShader(shaderCode->GetShader(PS, { "MODEL_SHADOW" }));
+						}
+						{
+							auto& pass = material->CreateOrGetRenderPass(RENDER_PASS_TYPE_DEPTH);
+							auto shaderCode = cache->GetResource<ShaderCode>("Shader/Depth.hlsl");
+							pass.SetVertexShader(shaderCode->GetShader(VS, { meshTypeDefine }));
+							pass.SetPixelShader(shaderCode->GetShader(PS, {}));
+							pass.SetDepthTestMode(COMPARISON_LESS_EQUAL);
 						}
 						break;
 					}

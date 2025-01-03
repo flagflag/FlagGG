@@ -33,6 +33,9 @@ public:
 	// 设置深度写
 	void SetDepthWrite(bool depthWrite);
 
+	// 设置深度测试模式
+	void SetDepthTestMode(ComparisonFunc depthTestMode);
+
 	// 设置深度偏移
 	void SetSlopeScaledDepthBias(float slopeScaledDepthBias);
 
@@ -58,11 +61,20 @@ public:
 	// 获取深度写
 	bool GetDepthWrite() const;
 
+	// 获取深度测试模式
+	ComparisonFunc GetDepthTestMode() const;
+
 	// 获取光栅化状态
 	const RasterizerState& GetRasterizerState() const { return rasterizerState_; }
 
+	//
+	RasterizerState& GetModifiableRasterizerState() { return rasterizerState_; }
+
 	// 获取深度模板状态
 	const DepthStencilState& GetDepthStencilState() const { return depthStencilState_; }
+
+	//
+	DepthStencilState& GetModifiableDepthStencilState() { return depthStencilState_; }
 
 	// 获取顶点着色器
 	Shader* GetVertexShader() const { return vertexShader_; }

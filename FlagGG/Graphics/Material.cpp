@@ -48,6 +48,7 @@ static const char* RENDER_PASS_TYPE[MAX_RENDER_PASS_TYPE] =
 	"forward_alpha",
 	"deferred_base",
 	"deferred_lit",
+	"depth",
 };
 
 static const UInt32 T_INT = StringHash("int").ToHash();
@@ -213,6 +214,11 @@ void RenderPassInfo::SetDepthWrite(bool depthWrite)
 	depthStencilState_.depthWrite_ = depthWrite;
 }
 
+void RenderPassInfo::SetDepthTestMode(ComparisonFunc depthTestMode)
+{
+	depthStencilState_.depthTestMode_ = depthTestMode;
+}
+
 void RenderPassInfo::SetSlopeScaledDepthBias(float slopeScaledDepthBias)
 {
 	rasterizerState_.slopeScaledDepthBias_ = slopeScaledDepthBias;
@@ -251,6 +257,11 @@ CullMode RenderPassInfo::GetCullMode() const
 bool RenderPassInfo::GetDepthWrite() const
 {
 	return depthStencilState_.depthWrite_;
+}
+
+ComparisonFunc RenderPassInfo::GetDepthTestMode() const
+{
+	return depthStencilState_.depthTestMode_;
 }
 
 
@@ -528,13 +539,18 @@ bool Material::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 				{
 					RenderPassInfo renderPass;
 
-					if (pass[i]["vsshader"].Contains("path"))
 					{
-						vsShaderCode = cache->GetResource<ShaderCode>(pass[i]["vsshader"]["path"].GetString());
-						if (vsShaderCode)
+						ShaderCode* passVsShaderCode = nullptr;
+
+						if (pass[i]["vsshader"].Contains("path"))
+							passVsShaderCode = cache->GetResource<ShaderCode>(pass[i]["vsshader"]["path"].GetString());
+						if (!passVsShaderCode)
+							passVsShaderCode = vsShaderCode;
+
+						ParseStringVector(pass[i]["vsshader"]["defines"], defines);
+						if (passVsShaderCode && !defines.Empty())
 						{
-							ParseStringVector(pass[i]["vsshader"]["defines"], defines);
-							renderPass.SetVertexShader(vsShaderCode->GetShader(VS, defines));
+							renderPass.SetVertexShader(passVsShaderCode->GetShader(VS, defines));
 						}
 						else
 						{
@@ -542,13 +558,18 @@ bool Material::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 						}
 					}
 
-					if (pass[i]["psshader"].Contains("path"))
 					{
-						psShaderCode = cache->GetResource<ShaderCode>(pass[i]["psshader"]["path"].GetString());
-						if (psShaderCode)
+						ShaderCode* passPsShaderCode = nullptr;
+
+						if (pass[i]["psshader"].Contains("path"))
+							passPsShaderCode = cache->GetResource<ShaderCode>(pass[i]["psshader"]["path"].GetString());
+						if (!passPsShaderCode)
+							passPsShaderCode = psShaderCode;
+
+						ParseStringVector(pass[i]["psshader"]["defines"], defines);
+						if (passPsShaderCode && !defines.Empty())
 						{
-							ParseStringVector(pass[i]["psshader"]["defines"], defines);
-							renderPass.SetPixelShader(psShaderCode->GetShader(PS, defines));
+							renderPass.SetPixelShader(passPsShaderCode->GetShader(PS, defines));
 						}
 						else
 						{
@@ -556,22 +577,13 @@ bool Material::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 						}
 					}
 
-					RasterizerState passRasterizerState = rasterizerState;
+					RasterizerState& passRasterizerState = renderPass.GetModifiableRasterizerState();
+					passRasterizerState = rasterizerState;
 					LoadRasterizerState(pass[i], passRasterizerState);
 
-					DepthStencilState passDepthStencilState = depthStencilState;
+					DepthStencilState& passDepthStencilState = renderPass.GetModifiableDepthStencilState();
+					passDepthStencilState = depthStencilState;
 					LoadDepthStencilState(pass[i], passDepthStencilState);
-
-					renderPass.SetCullMode(passRasterizerState.cullMode_);
-					renderPass.SetFillMode(passRasterizerState.fillMode_);
-					// renderPass.SetBlendMode(passRasterizerState.blendMode_);
-					renderPass.SetDepthWrite(depthStencilState.depthWrite_);
-					// renderPass.SetDepthTestMode(depthStencilState.depthTestMode_);
-					// renderPass.SetStencilTest(depthStencilState.stencilTest_);
-					// renderPass.SetStencilTestMode(depthStencilState.stencilTestMode_);
-					// renderPass.SetStencilRef(depthStencilState.stencilRef_);
-					// renderPass.SetStencilReadMask(depthStencilState.stencilReadMask_);
-					// renderPass.SetStencilWriteMask(depthStencilState.stencilWriteMask_);
 
 					const String& name = pass[i]["name"].GetString();
 					renderPass_.Insert(MakePair(static_cast<UInt32>(ToRenderPassType(name)), renderPass));

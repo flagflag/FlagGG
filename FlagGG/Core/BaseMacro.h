@@ -126,7 +126,7 @@
 	#define OPERATOR_DELETE_NOTHROW_SPEC throw()
 #endif
 
-#define DEBUG_BREAK __debugbreak
+// #define DEBUG_BREAK __debugbreak()
 
 #define PURE_VIRTUAL(func,...) { ASSERT_MESSAGE(false, "Pure virtual not implemented (" #func ")"); __VA_ARGS__ }
 

@@ -12,6 +12,8 @@ struct PBRContext
     float metallic;                 // 金属度
     float roughness;                // 粗糙度
     float specular;                 // 高光率
+    float3 emissiveColor;           // 自发光
+    float alpha;                    // 透明度
     float3 worldPosition;           // 世界坐标
     float3 normalDirection;         // 世界坐标法线向量
     float3 viewDirection;           // 物体到相机的向量

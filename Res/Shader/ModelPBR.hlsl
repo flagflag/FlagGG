@@ -77,7 +77,7 @@ struct PixelInput
         return output;
     }
 #else
-    float4 PS(PixelInput input) : SV_TARGET
+    PixelOutput PS(PixelInput input)
     {
         PBRContext context;
 
@@ -96,13 +96,13 @@ struct PixelInput
         context.metallic = metallic;
         context.roughness = roughness;
         context.specular = 0.5;
+        context.emissiveColor = float3(0.0, 0.0, 0.0);
         context.worldPosition = input.worldPos.xyz;
-        context.normalDirection = input.nor;
+        context.normalDirection = normalize(input.nor);
         context.viewDirection = viewDirection;
         context.occlusion = 1.0;
+        context.alpha = 1.0;
 
-        float3 color = PBR_BRDF(context);
-
-        return float4(LinearToGammaSpace(ToAcesFilmic(color)), 1.0);
+        return PBRPipline(context);
     }
 #endif

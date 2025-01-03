@@ -76,4 +76,14 @@ struct FlagGG_API UnlitRenderContext
 	RenderBatchQueue renderBatchQueue_;
 };
 
+struct FlagGG_API DeferredLitRenderContext
+{
+	// 灯光
+	Light* light_{};
+	//
+	Probe* probe_{};
+	// 阴影纹理
+	Texture2D* shadowMap_{};
+};
+
 }

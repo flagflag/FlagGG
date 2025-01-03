@@ -94,8 +94,11 @@ VertexElement DEFAULT_VERTEX_ELEMENT[] =
 const FlagGG::StringHash SP_WORLD_MATRIX("worldMatrix");
 const FlagGG::StringHash SP_VIEW_MATRIX("viewMatrix");
 const FlagGG::StringHash SP_PROJVIEW_MATRIX("projviewMatrix");
+const FlagGG::StringHash SP_INV_VIEW_MATRIX("invViewMatrix");
 const FlagGG::StringHash SP_NEAR_CLIP("nearClip");
 const FlagGG::StringHash SP_FAR_CLIP("farClip");
+const FlagGG::StringHash SP_FRUSTUM_SIZE("frustumSize");
+const FlagGG::StringHash SP_DEPTH_RECONSTRUCT("depthReconstruct");
 const FlagGG::StringHash SP_SKIN_MATRICES("skinMatrices");
 const FlagGG::StringHash SP_DELTA_TIME("deltaTime");
 const FlagGG::StringHash SP_ELAPSED_TIME("elapsedTime");

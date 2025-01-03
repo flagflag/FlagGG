@@ -60,6 +60,11 @@ GfxRenderSurface* GfxDevice::GetRenderTarget(UInt8 slotId)
 	return slotId < MAX_RENDERTARGET_COUNT ? renderTargets_[slotId] : nullptr;
 }
 
+GfxRenderSurface* GfxDevice::GetDepthStencil()
+{
+	return depthStencil_;
+}
+
 void GfxDevice::SetViewport(const Rect& viewport)
 {
 	viewport_ = viewport;

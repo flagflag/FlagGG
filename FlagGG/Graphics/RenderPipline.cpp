@@ -1,5 +1,6 @@
 #include "RenderPipline.h"
 #include "Graphics/RenderPass.h"
+#include "Graphics/Texture2D.h"
 #include "Scene/Light.h"
 #include "Scene/DrawableComponent.h"
 #include "Lua/ILua/LuaType.h"
@@ -15,6 +16,7 @@ void RenderPiplineContext::Clear()
 	drawables_.Clear();
 	shadowCasters_.Clear();
 	lights_.Clear();
+	probes_.Clear();
 	shadowLight_ = nullptr;
 	probes_.Clear();
 }
@@ -45,6 +47,7 @@ RenderPipline::~RenderPipline()
 CommonRenderPipline::CommonRenderPipline()
 	: shadowRenderPass_(new ShadowRenderPass())
 	, alphaRenderPass_(new AlphaRenderPass())
+	, waterRenderPass_(new WaterRenderPass())
 {
 
 }

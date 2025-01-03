@@ -4,6 +4,8 @@
         float4x3 worldMatrix;
         float4x3 viewMatrix;
         float4x4 projviewMatrix;
+        float4x3 invViewMatrix;
+        float3 frustumSize;
     }
     #ifdef SKINNED
         cbuffer SkinMatrixBuffer : register(b1)
@@ -27,6 +29,9 @@
 #elif defined(PIXEL)
     cbuffer ParamBuffer : register(b0)
     {
+        float nearClip;
+        float farClip;
+        float4 depthReconstruct;
         float deltaTime;
         float elapsedTime;
         float3 cameraPos;

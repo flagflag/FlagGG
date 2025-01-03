@@ -291,14 +291,7 @@ void GfxDeviceD3D11::PrepareDraw()
 		auto depthStencilD3D11 = RTTICast<GfxRenderSurfaceD3D11>(depthStencil_);
 		auto* d3dDepthStencilView = depthStencilD3D11 ? depthStencilD3D11->GetDepthStencilView() : nullptr;
 
-		if (depthStencilState_.depthWrite_)
-		{
-			deviceContext_->OMSetRenderTargets(renderTargetCount, d3dRenderTargetViews, d3dDepthStencilView);
-		}
-		else
-		{
-			deviceContext_->OMSetRenderTargets(renderTargetCount, d3dRenderTargetViews, nullptr);
-		}
+		deviceContext_->OMSetRenderTargets(renderTargetCount, d3dRenderTargetViews, d3dDepthStencilView);
 
 		renderTargetDirty_ = false;
 		depthStencilDirty_ = false;
@@ -426,7 +419,7 @@ void GfxDeviceD3D11::PrepareDepthStencilState()
 
 			d3d11DepthStencilDesc.DepthEnable = true;
 			d3d11DepthStencilDesc.DepthFunc = d3dComparisonFun[depthStencilState_.depthTestMode_];
-			d3d11DepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+			d3d11DepthStencilDesc.DepthWriteMask = depthStencilState_.depthWrite_ ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
 
 			d3d11DepthStencilDesc.StencilEnable = depthStencilState_.stencilTest_;
 			d3d11DepthStencilDesc.StencilReadMask = depthStencilState_.stencilReadMask_;

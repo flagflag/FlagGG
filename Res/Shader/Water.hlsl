@@ -18,14 +18,17 @@
         float waveDensity;
     }
 #else
-    Texture2D waterNormalMap : register(t0);
-    SamplerState waterNormalSampler : register(s0);
+    Texture2D refractionMap : register(t0);
+    SamplerState refractionSampler : register(s0);
 
-    Texture2D refractionMap : register(t1);
-    SamplerState refractionSampler : register(s1);
+    Texture2D depthBuffer : register(t1);
+    SamplerState depthBufferSampler : register(s1);
 
-    TextureCube reflectionCube : register(t2);
-    SamplerState reflectionSampler : register(s2);
+    Texture2D waterNormalMap : register(t2);
+    SamplerState waterNormalSampler : register(s2);
+
+    TextureCube reflectionCube : register(t3);
+    SamplerState reflectionSampler : register(s3);
 
     // 材质参数
     cbuffer MaterialParam : register(b1)
@@ -92,7 +95,12 @@ struct PixelInput
             float2 refractUV = input.screenPos.xy / input.screenPos.w;
         #endif
         float2 noise = worldNormal.xy * noiseStrength; // worldNormal.xy作为distortion系数
-        refractUV += noise;
+        
+        float waterBottomDepth = ReconstructDepth(depthBuffer.Sample(depthBufferSampler, refractUV + noise).r);
+        if (waterBottomDepth < input.eyeVec.w)       
+        {
+            refractUV += noise;
+        }
         float3 refrCol = GammaToLinearSpace(refractionMap.Sample(refractionSampler, refractUV).rgb) * waterColor1;
 
         // 高光

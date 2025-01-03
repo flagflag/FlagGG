@@ -48,19 +48,29 @@
 			}
 		},
 		{
-			name = "forward_lit"
+			name = "forward_lit",
+			depthtestmode = "COMPARISON_LESS_EQUAL"
 		},
 		{
 			name = "deferred_base",
-			vsshader = 
-			{
-				path = "Shader/Deferred/ModelMRT.hlsl",
-                defines = [ "SKINNED", "VERTEX_POSITION", "VERTEX_NORMAL", "VERTEX_TEXCOORD" ]
-			},
+			depthtestmode = "COMPARISON_EQUAL",
+			depthwrite = false,
 			psshader =
 			{
-				path = "Shader/Deferred/ModelMRT.hlsl",
-                defines = [ "VERTEX_POSITION", "VERTEX_NORMAL", "VERTEX_TEXCOORD" ]
+				defines = [ "DEFERRED_BASEPASS" ]
+			}
+		},
+		{
+			name = "depth",
+			depthtestmode = "COMPARISON_LESS_EQUAL",
+			vsshader = 
+			{
+				path = "Shader/Depth.hlsl",
+				defines = [ "STATIC" ]
+			},
+			psshader = 
+			{
+				path = "Shader/Depth.hlsl"
 			}
 		}
 	]

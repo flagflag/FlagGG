@@ -130,7 +130,7 @@ struct PixelInput
                     lerp(tex.SampleGrad(sam, float3(uvc, layer), dxc, dyc), tex.SampleGrad(sam, float3(uvd, layer), dxd, dyd), b.x), b.y);
     }
 
-    float4 PS(PixelInput input) : SV_TARGET
+    PixelOutput PS(PixelInput input)
     {
         float T1 = Sample2D(weight1, input.weightTex).r;
         float T2 = Sample2D(weight2, input.weightTex).r;
@@ -172,8 +172,9 @@ struct PixelInput
         context.metallic = baseColorMetallic.a;
         context.roughness = normalRoughness.w;
         context.specular = 0.5;
+        context.emissiveColor = float3(0.0, 0.0, 0.0);
         context.worldPosition = input.worldPosition.xyz;
-        context.normalDirection = normalRoughness.xyz;
+        context.normalDirection = normalize(normalRoughness.xyz);
         context.tangentDirecntion = input.tangent;
         context.bnormalDirection = input.biNormal;
         context.viewDirection = normalize(cameraPos - input.worldPosition.xyz);
@@ -184,9 +185,8 @@ struct PixelInput
         context.shadow = 1.0;
     #endif
         context.occlusion = 1.0;
+        context.alpha = 1.0;
 
-        float3 color = PBR_BRDF(context);
-
-        return float4(LinearToGammaSpace(ToAcesFilmic(color)), 1.0);
+        return PBRPipline(context);
     }
 #endif

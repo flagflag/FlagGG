@@ -84,6 +84,8 @@ public:
 
 	Viewport* GetViewport() const;
 
+	GfxSwapChain* GetSwapChain() { return gfxSwapChain_; }
+
 	void* GetHandle() const { return window_; }
 
 	void WinProc(UINT message, WPARAM wParam, LPARAM lParam);

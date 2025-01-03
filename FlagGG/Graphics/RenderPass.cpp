@@ -2,6 +2,7 @@
 #include "Scene/DrawableComponent.h"
 #include "Scene/Camera.h"
 #include "Scene/Light.h"
+#include "Scene/Probe.h"
 #include "Scene/Node.h"
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Material.h"
@@ -128,24 +129,66 @@ bool ShadowRenderPass::HasAnyBatch() const
 }
 
 /*********************************************************/
+/*                     DepthRenderPass                   */
+/*********************************************************/
+
+DepthRenderPass::DepthRenderPass()
+{
+
+}
+
+DepthRenderPass::~DepthRenderPass()
+{
+
+}
+
+void DepthRenderPass::Clear()
+{
+	renderBatchQueue_.renderBatches_.Clear();
+	renderBatchQueue_.renderBatchGroups_.Clear();
+}
+
+void DepthRenderPass::CollectBatch(RenderPassContext* context)
+{
+	auto& renderBatches = renderBatchQueue_.renderBatches_;
+	for (const auto& renderContext : context->drawable_->GetRenderContext())
+	{
+		if (!renderContext.material_)
+			continue;
+		auto it = renderContext.material_->GetRenderPass().Find(RENDER_PASS_TYPE_DEPTH);
+		if (it != renderContext.material_->GetRenderPass().End())
+		{
+			auto& renderBatch = renderBatches.EmplaceBack(renderContext);
+			renderBatch.renderPassType_ = RENDER_PASS_TYPE_DEPTH;
+			renderBatch.renderPassInfo_ = &(it->second_);
+			renderBatch.vertexShader_ = it->second_.GetVertexShader();
+			renderBatch.pixelShader_ = it->second_.GetPixelShader();
+		}
+	}
+}
+
+void DepthRenderPass::SortBatch()
+{
+
+}
+
+void DepthRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer)
+{
+	RenderEngine* renderEngine = GetSubsystem<RenderEngine>();
+
+	auto& renderBatches = renderBatchQueue_.renderBatches_;
+	for (auto& renderBatch : renderBatches)
+	{
+		renderEngine->DrawBatch(camera, renderBatch);
+	}
+}
+
+/*********************************************************/
 /*                     LitRenderPass                     */
 /*********************************************************/
 
 LitRenderPass::LitRenderPass()
 {
-	shaderConstants_[0] = Vector4(0.274252, 0.245369, -0.0620501, 0.701207);
-	shaderConstants_[1] = Vector4(0.353687, 0.365217, -0.0740966, 0.796212);
-	shaderConstants_[2] = Vector4(0.381397, 0.505522, -0.0679338, 0.825213);
-	shaderConstants_[3] = Vector4(0.102849, -0.0645187, -0.0388975, -0.0904622);
-	shaderConstants_[4] = Vector4(0.121485, -0.0651856, -0.0317596, -0.10881);
-	shaderConstants_[5] = Vector4(0.127528, -0.0572494, -0.0096643, -0.118525);
-	shaderConstants_[6] = Vector4(0.104437, 0.112997, 0.0955683, 1);
-
-	iblCube_ = GetSubsystem<ResourceCache>()->GetResource<TextureCube>("Textures/daySpecularHDR.dds");
-	iblCube_->SetAddressMode(TEXTURE_COORDINATE_U, TEXTURE_ADDRESS_CLAMP);
-	iblCube_->SetAddressMode(TEXTURE_COORDINATE_V, TEXTURE_ADDRESS_CLAMP);
-	iblCube_->SetAddressMode(TEXTURE_COORDINATE_W, TEXTURE_ADDRESS_CLAMP);
-	iblCube_->SetFilterMode(TEXTURE_FILTER_TRILINEAR);
 }
 
 LitRenderPass::~LitRenderPass()
@@ -185,6 +228,7 @@ void LitRenderPass::CollectBatch(RenderPassContext* context)
 			renderBatch.renderPassInfo_ = &(it->second_);
 			renderBatch.vertexShader_ = it->second_.GetVertexShader();
 			renderBatch.pixelShader_ = it->second_.GetPixelShader();
+			renderBatch.probe_ = context->probe_;
 		}
 	}
 }
@@ -209,27 +253,24 @@ void LitRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 lay
 		engineShaderParameters.SetValue(SP_LIGHT_COLOR, light->GetEffectiveColor());
 		engineShaderParameters.SetValue(SP_LIGHT_VIEW_MATRIX, shadowCamera->GetViewMatrix());
 		engineShaderParameters.SetValue(SP_LIGHT_PROJVIEW_MATRIX, shadowCamera->GetProjectionMatrix() * shadowCamera->GetViewMatrix());
-		engineShaderParameters.SetValue(SP_ENV_CUBE_ANGLE, Vector4(0, 1, 0, 1));
-		engineShaderParameters.SetValue(SP_SH_INTENSITY, 0.3f);
-		engineShaderParameters.SetValue(SP_IBL_INTENSITY, 0.3f);
-		engineShaderParameters.SetValue(SP_AMBIENT_OCCLUSION_INTENSITY, 1.0f);
-		engineShaderParameters.SetValue(SP_SHAR, shaderConstants_[0]);
-		engineShaderParameters.SetValue(SP_SHAG, shaderConstants_[1]);
-		engineShaderParameters.SetValue(SP_SHAB, shaderConstants_[2]);
-		engineShaderParameters.SetValue(SP_SHBR, shaderConstants_[3]);
-		engineShaderParameters.SetValue(SP_SHBG, shaderConstants_[4]);
-		engineShaderParameters.SetValue(SP_SHBB, shaderConstants_[5]);
-		engineShaderParameters.SetValue(SP_SHC, shaderConstants_[6]);
-		renderEngine->SetDefaultTextures(TEXTURE_CLASS_IBL, iblCube_);
 		auto shadowMap = renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP);
 		if (shadowMap)
 		{
 			engineShaderParameters.SetValue(SP_SHADOWMAP_PIXEL_TEXELS, Vector2(1.f / shadowMap->GetWidth(), 1.f / shadowMap->GetHeight()));
 		}
 
+		Probe* probe = nullptr;
+
 		auto& renderBatches = it.second_.renderBatchQueue_.renderBatches_;
 		for (auto& renderBatch : renderBatches)
 		{
+			if (renderBatch.probe_ != probe)
+			{
+				probe = renderBatch.probe_;
+				if (probe)
+					probe->ApplyRender(renderEngine);
+			}
+
 			renderEngine->DrawBatch(camera, renderBatch);
 		}
 	}
@@ -301,10 +342,17 @@ void WaterRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 l
 	auto* gfxRenderTexture = gfxRenderSurface->GetOwnerTexture();
 	if (!gfxRenderTexture)
 		return;
+	auto* gfxDepthSurface = gfxDevice->GetDepthStencil();
+	if (!gfxDepthSurface)
+		return;
+	auto* gfxDepthTexture = gfxDepthSurface->GetOwnerTexture();
+	if (!gfxDepthTexture)
+		return;
 
 	if (!refractionTexture_)
 	{
 		refractionTexture_ = new Texture2D();
+		screenDepthTexture_ = new Texture2D();
 	}
 
 	const auto& rtDesc = gfxRenderTexture->GetDesc();
@@ -316,6 +364,12 @@ void WaterRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 l
 		refractionTexture_->SetAddressMode(TEXTURE_COORDINATE_V, TEXTURE_ADDRESS_CLAMP);
 		refractionTexture_->SetAddressMode(TEXTURE_COORDINATE_W, TEXTURE_ADDRESS_CLAMP);
 		refractionTexture_->SetSize(rtDesc.width_, rtDesc.height_, rtDesc.format_, TEXTURE_DYNAMIC);
+
+		screenDepthTexture_->SetNumLevels(1);
+		screenDepthTexture_->SetAddressMode(TEXTURE_COORDINATE_U, TEXTURE_ADDRESS_CLAMP);
+		screenDepthTexture_->SetAddressMode(TEXTURE_COORDINATE_V, TEXTURE_ADDRESS_CLAMP);
+		screenDepthTexture_->SetAddressMode(TEXTURE_COORDINATE_W, TEXTURE_ADDRESS_CLAMP);
+		screenDepthTexture_->SetSize(rtDesc.width_, rtDesc.height_, gfxDepthTexture->GetDesc().format_, TEXTURE_DYNAMIC);
 	}
 
 	auto* gfxRefractionTexture = refractionTexture_->GetGfxTextureRef();
@@ -324,8 +378,15 @@ void WaterRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 l
 		gfxRefractionTexture->UpdateTexture(gfxRenderTexture);
 	}
 
+	auto* gfxScreenDepthTexture = screenDepthTexture_->GetGfxTextureRef();
+	if (gfxScreenDepthTexture)
+	{
+		gfxScreenDepthTexture->UpdateTexture(gfxDepthTexture);
+	}
+
 	RenderEngine* renderEngine = GetSubsystem<RenderEngine>();
-	renderEngine->SetDefaultTextures(TEXTURE_CLASS_DIFFUSE, refractionTexture_);
+	renderEngine->SetDefaultTextures(TextureClass(0), refractionTexture_);
+	renderEngine->SetDefaultTextures(TextureClass(1), screenDepthTexture_);
 
 	auto& renderBatches = renderBatchQueue_.renderBatches_;
 	for (auto& renderBatch : renderBatches)
@@ -333,7 +394,8 @@ void WaterRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 l
 		renderEngine->DrawBatch(camera, renderBatch);
 	}
 
-	renderEngine->SetDefaultTextures(TEXTURE_CLASS_DIFFUSE, nullptr);
+	renderEngine->SetDefaultTextures(TextureClass(0), nullptr);
+	renderEngine->SetDefaultTextures(TextureClass(1), nullptr);
 }
 
 /*********************************************************/
@@ -444,6 +506,89 @@ void DeferredBaseRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, U
 	{
 		renderEngine->DrawBatch(camera, renderBatch);
 	}
+}
+
+/*********************************************************/
+/*                  DeferredLitRenderPass                */
+/*********************************************************/
+
+DeferredLitRenderPass::DeferredLitRenderPass()
+{
+
+}
+
+DeferredLitRenderPass::~DeferredLitRenderPass()
+{
+
+}
+
+void DeferredLitRenderPass::Clear()
+{
+
+}
+
+void DeferredLitRenderPass::CollectBatch(RenderPassContext* context)
+{
+	auto it = litRenderContextMap_.Find(context->light_);
+	if (it == litRenderContextMap_.End())
+	{
+		it = litRenderContextMap_.Insert(MakePair(context->light_, DeferredLitRenderContext()));
+		it->second_.light_ = context->light_;
+		it->second_.probe_ = context->probe_;
+	}
+}
+
+void DeferredLitRenderPass::SortBatch()
+{
+
+}
+
+void DeferredLitRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer)
+{
+	RenderEngine* renderEngine = GetSubsystem<RenderEngine>();
+	GfxDevice* gfxDevice = GfxDevice::GetDevice();
+
+	for (auto& it : litRenderContextMap_)
+	{
+		Light* light = it.first_;
+		Node* lightCameraNode = light->GetNode();
+
+		auto& engineShaderParameters = renderEngine->GetShaderParameters();
+		engineShaderParameters.SetValue(SP_LIGHT_POS, lightCameraNode->GetWorldPosition());
+		engineShaderParameters.SetValue(SP_LIGHT_DIR, -lightCameraNode->GetWorldDirection());
+		engineShaderParameters.SetValue(SP_LIGHT_COLOR, light->GetEffectiveColor());
+		engineShaderParameters.SetValue(SP_LIGHT_VIEW_MATRIX, shadowCamera->GetViewMatrix());
+		engineShaderParameters.SetValue(SP_LIGHT_PROJVIEW_MATRIX, shadowCamera->GetProjectionMatrix() * shadowCamera->GetViewMatrix());
+		auto shadowMap = renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP);
+		if (shadowMap)
+		{
+			engineShaderParameters.SetValue(SP_SHADOWMAP_PIXEL_TEXELS, Vector2(1.f / shadowMap->GetWidth(), 1.f / shadowMap->GetHeight()));
+		}
+
+		if (!litVertexShader_ || !litPixelShader_)
+		{
+			auto shaderCode = GetSubsystem<ResourceCache>()->GetResource<ShaderCode>("Shader/Deferred/LitQuad.hlsl");
+
+			auto vs = shaderCode->GetShader(VS, {});
+			litVertexShader_ = vs->GetGfxRef();
+
+			auto ps = shaderCode->GetShader(PS, { "DIRLIGHT", "AMBIENT" });
+			litPixelShader_ = ps->GetGfxRef();
+		}
+
+		gfxDevice->SetShaders(litVertexShader_, litPixelShader_);
+
+		Probe* probe = it.second_.probe_;
+		if (probe)
+			probe->ApplyRender(renderEngine);
+
+		renderEngine->DrawQuad(camera);
+	}
+}
+
+bool DeferredLitRenderPass::HasAnyBatch() const
+{
+	return litRenderContextMap_.Size();
 }
 
 }

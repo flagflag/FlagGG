@@ -86,7 +86,7 @@ struct PixelInput
         return output;
     }
 #else
-    float4 PS(PixelInput input) : SV_TARGET
+    PixelOutput PS(PixelInput input)
     {
     #ifdef PBR_NOTEXTURE
         float4 texDiff = float4(1.0, 1.0, 1.0, 1.0);
@@ -111,11 +111,11 @@ struct PixelInput
         float3 row0 = float3(input.tangent.x, input.biNormal.x, input.normal.x);
         float3 row1 = float3(input.tangent.y, input.biNormal.y, input.normal.y);
         float3 row2 = float3(input.tangent.z, input.biNormal.z, input.normal.z);
-        context.normalDirection = float3(dot(row0, normal), dot(row1, normal), dot(row2, normal));
+        context.normalDirection = normalize(float3(dot(row0, normal), dot(row1, normal), dot(row2, normal)));
     #else
         context.metallic = metallicFactor;
         context.roughness = roughnessFactor;
-        context.normalDirection = input.normal;
+        context.normalDirection = normalize(input.normal);
     #endif
         context.metallic *= metalMul0or1;
         context.specular = 0.5;
@@ -131,20 +131,22 @@ struct PixelInput
     #endif
         context.occlusion = 1.0;
 
-        float3 color = PBR_BRDF(context);
-
     #ifdef EMISSIVECOLOR
         #ifdef ALPHAMASK
-            color = color + baseColor.rgb * 2.5 + saturate(texDiff.a - 0.6) * emissiveMul * emissiveColor;
+            context.emissiveColor = context.diffuseColor * 2.5 + saturate(texDiff.a - 0.6) * emissiveMul * emissiveColor.rgb;
         #else
-            color = color + baseColor.rgb * texDiff.a * emissiveMul * emissiveColor;
+            context.emissiveColor = context.diffuseColor * texDiff.a * emissiveMul * emissiveColor.rgb;
         #endif
+    #else
+        context.emissiveColor = float3(0.0, 0.0, 0.0);
     #endif
 
-        #ifdef ALPHA_DIFF_A
-            return float4(LinearToGammaSpace(color), texDiff.a);
-        #else
-            return float4(LinearToGammaSpace(color), 1.0);
-        #endif
+    #ifdef ALPHA_DIFF_A
+        context.alpha = texDiff.a;
+    #else
+        context.alpha = 1.0;
+    #endif
+
+        return PBRPipline(context);
     }
 #endif

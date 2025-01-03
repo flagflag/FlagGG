@@ -20,7 +20,7 @@
     FlagGG_API void CryAssertTrace(const char *,...);
 	FlagGG_API bool CryAssert(const char *,const char *,unsigned int,bool *);
 #ifdef _WIN64
-	#define DEBUG_BREAK _wassert(_CRT_WIDE(__FILE__), _CRT_WIDE(__FILE__), (unsigned)(__LINE__))
+	#define DEBUG_BREAK /*_wassert(_CRT_WIDE(__FILE__), _CRT_WIDE(__FILE__), (unsigned)(__LINE__))*/__debugbreak()
 #else
     #define DEBUG_BREAK _asm { int 3 }
 #endif

@@ -11,12 +11,12 @@
 	},
 	textures =
 	{
-		"0" =
+		"2" =
 		{
 			type = "texture2d",
 			path = "Textures/WaterNormal.png"
 		},
-		"2" =
+		"3" =
 		{
 			type = "texturecube",
 			path = "Textures/WaterReflection.dds"
@@ -25,7 +25,8 @@
 	pass =
 	[
 		{
-			name = "forward_water"
+			name = "forward_water",
+			depthtestmode = "COMPARISON_LESS_EQUAL"
 		}
 	],
 	shader_parameters = 

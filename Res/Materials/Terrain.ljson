@@ -61,17 +61,29 @@
 			}
 		},
 		{
-			name = "forward_lit"
+			name = "forward_lit",
+			depthtestmode = "COMPARISON_LESS_EQUAL"
 		},
 		{
 			name = "deferred_base",
-			vsshader = 
-			{
-				path = "Shader/Deferred/TerrainMRT.hlsl"
-			},
+			depthtestmode = "COMPARISON_EQUAL",
+			depthwrite = false,
 			psshader =
 			{
-				path = "Shader/Deferred/TerrainMRT.hlsl"
+				defines = [ "PACKEDNORMAL", "DEFERRED_BASEPASS" ]
+			}
+		},
+		{
+			name = "depth",
+			depthtestmode = "COMPARISON_LESS_EQUAL",
+			vsshader = 
+			{
+				path = "Shader/Depth.hlsl",
+				defines = [ "STATIC" ]
+			},
+			psshader = 
+			{
+				path = "Shader/Depth.hlsl"
 			}
 		}
 	],

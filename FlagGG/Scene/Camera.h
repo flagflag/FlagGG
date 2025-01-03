@@ -92,7 +92,7 @@ public:
 
 	// 设置正交模式
 	void SetOrthographic(bool enable);
-	bool GetOrthographics() const;
+	bool IsOrthographic() const;
 
 	void SetOrthoSize(float orthoSize);
 	void SetOrthoSize(const Vector2& orthoSize);
@@ -135,8 +135,8 @@ private:
 	mutable Matrix3x4 view_;
 	mutable bool viewDirty_{true};
 
-	Real farClip_{ 1.0f };
-	Real nearClip_{ 100.0f };
+	Real farClip_{ 100000.0f };
+	Real nearClip_{ 1.0f };
 	Real aspect_{ 1.0f };
 	Real fov_{ 45.0f };
 	Real zoom_{ 1.0f };

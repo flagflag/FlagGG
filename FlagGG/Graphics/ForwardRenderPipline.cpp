@@ -15,7 +15,6 @@ namespace FlagGG
 ForwardRenderPipline::ForwardRenderPipline()
 	: CommonRenderPipline()
 	, litRenderPass_{ SharedPtr<RenderPass>(new LitRenderPass()), SharedPtr<RenderPass>(new LitRenderPass()) }
-	, waterRenderPass_(new WaterRenderPass())
 {
 	if (GetSubsystem<EngineSettings>()->clusterLightEnabled_)
 		clusterLightPass_ = new ClusterLightPass();
@@ -46,9 +45,12 @@ void ForwardRenderPipline::OnSolveLitBatch()
 
 	RenderPassContext context{};
 
+	Probe* globalProbe = renderPiplineContext_.probes_.Size() ? renderPiplineContext_.probes_[0] : nullptr;
+
 	for (auto& litRenderObjects : litRenderObjectsResult_)
 	{
 		context.light_ = litRenderObjects.light_;
+		context.probe_ = globalProbe;
 		for (auto* drawable : litRenderObjects.drawables_)
 		{
 			context.drawable_ = drawable;
@@ -80,6 +82,7 @@ void ForwardRenderPipline::OnSolveLitBatch()
 	{
 		context.drawable_ = drawable;
 
+		alphaRenderPass_->CollectBatch(&context);
 		waterRenderPass_->CollectBatch(&context);
 	}
 }
@@ -112,22 +115,26 @@ void ForwardRenderPipline::Render()
 	bool needRT = waterRenderPass_->HasAnyBatch();
 	if (needRT)
 	{
-		if (!renderTexture_)
-			renderTexture_ = new Texture2D();
+		if (!colorTexture_)
+			colorTexture_ = new Texture2D();
+		if (!depthTexture_)
+			depthTexture_ = new Texture2D();
 		
-		if (renderTexture_->GetWidth() != renderPiplineContext_.renderSolution_.x_ ||
-			renderTexture_->GetHeight() != renderPiplineContext_.renderSolution_.y_)
+		if (colorTexture_->GetWidth() != renderPiplineContext_.renderSolution_.x_ ||
+			colorTexture_->GetHeight() != renderPiplineContext_.renderSolution_.y_)
 		{
-			renderTexture_->SetSize(renderPiplineContext_.renderSolution_.x_, renderPiplineContext_.renderSolution_.y_, TEXTURE_FORMAT_RGBA8, TEXTURE_RENDERTARGET);
+			colorTexture_->SetSize(renderPiplineContext_.renderSolution_.x_, renderPiplineContext_.renderSolution_.y_, TEXTURE_FORMAT_RGBA8, TEXTURE_RENDERTARGET);
+			depthTexture_->SetSize(renderPiplineContext_.renderSolution_.x_, renderPiplineContext_.renderSolution_.y_, TEXTURE_FORMAT_D24S8, TEXTURE_DEPTHSTENCIL);
 		}
 	
-		gfxDevice->SetRenderTarget(renderTexture_->GetGfxTextureRef()->GetRenderSurface());
+		gfxDevice->SetRenderTarget(colorTexture_->GetRenderSurface());
+		gfxDevice->SetDepthStencil(depthTexture_->GetRenderSurface());
 	}
 	else
 	{
 		gfxDevice->SetRenderTarget(renderPiplineContext_.renderTarget_);
+		gfxDevice->SetDepthStencil(renderPiplineContext_.depthStencil_);
 	}
-	gfxDevice->SetDepthStencil(renderPiplineContext_.depthStencil_);
 	gfxDevice->Clear(CLEAR_COLOR | CLEAR_DEPTH | CLEAR_STENCIL);
 	
 	litRenderPass_[0]->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
@@ -139,11 +146,11 @@ void ForwardRenderPipline::Render()
 	{
 		if (auto* swapChain = renderPiplineContext_.renderTarget_->GetOwnerSwapChain())
 		{
-			swapChain->CopyData(renderTexture_->GetGfxTextureRef());
+			swapChain->CopyData(colorTexture_->GetGfxTextureRef());
 		}
 		else if (auto* ownerTexture = renderPiplineContext_.renderTarget_->GetOwnerTexture())
 		{
-			ownerTexture->UpdateTexture(renderTexture_);
+			ownerTexture->UpdateTexture(colorTexture_);
 		}
 	}
 }
