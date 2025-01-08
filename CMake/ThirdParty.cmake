@@ -25,7 +25,6 @@ if (WIN32 OR WIN64)
     d3dx11.lib
     d3dx11d
     dxerr
-    d3dcompiler
     dxgi
     dxguid)
     # CoreCLR

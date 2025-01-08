@@ -7,6 +7,12 @@
 #include "Core/Object.h"
 #include "Container/Ptr.h"
 
+#define SAMPLER_CLUSTERS_CLUSTERS 11
+#define SAMPLER_CLUSTERS_ATOMICINDEX 12
+#define SAMPLER_CLUSTERS_LIGHTINDICES 13
+#define SAMPLER_CLUSTERS_LIGHTGRID 14
+#define SAMPLER_LIGHTS_POINTLIGHTS 15
+
 namespace FlagGG
 {
 
@@ -14,6 +20,7 @@ struct RenderPiplineContext;
 class GfxBuffer;
 class GfxShader;
 class ShaderParameters;
+struct ClusterLightInfo;
 
 // Compute pass基类
 class FlagGG_API ComputePass : public Object
@@ -28,7 +35,10 @@ public:
 	virtual void Clear() = 0;
 
 	// 执行compute
-	virtual void Dispatch(RenderPiplineContext& context) = 0;
+	virtual void Dispatch(RenderPiplineContext& renderPiplineContext) = 0;
+
+	// 绑定gpu对象
+	virtual void BindGpuObject() = 0;
 };
 
 // Cluster light pass
@@ -44,12 +54,17 @@ public:
 	void Clear() override;
 
 	// 执行compute
-	void Dispatch(RenderPiplineContext& context) override;
+	void Dispatch(RenderPiplineContext& renderPiplineContext) override;
+
+	// 绑定gpu对象
+	void BindGpuObject() override;
 
 protected:
 	void InitShader();
 
-	void InitShaderParameters(RenderPiplineContext& context);
+	void InitShaderParameters(RenderPiplineContext& renderPiplineContext);
+
+	void ApplyLightInfo(RenderPiplineContext& renderPiplineContext);
 
 private:
 	// compute buffer
@@ -58,6 +73,9 @@ private:
 	SharedPtr<GfxBuffer> lightGridBuffer_;        // 保存每个Cluster所受光源下标的范围（例如：cluster(x, y, z) = [offset, count]，指向lightIndicesBuffer_[offset ~ offset + count - 1]）
 	SharedPtr<GfxBuffer> lightIndicesBuffer_;     // 保存光源的下标x（指向lightsBuffer[x]）
 	SharedPtr<GfxBuffer> lightsBuffer_;           // 光源信息（position, falloffRange，intensity，radius）
+
+	//
+	PODVector<ClusterLightInfo> lightsBufferCache_;
 
 	// shader
 	SharedPtr<GfxShader> clusterBuildingShader_;

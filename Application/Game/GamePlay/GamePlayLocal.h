@@ -2,6 +2,7 @@
 
 #include "GamePlay/GamePlayBase.h"
 #include "GamePlay/World.h"
+#include "GameBuilder/GameBuilder.h"
 
 #include <Core/Context.h>
 #include <Container/HashMap.h>
@@ -33,4 +34,6 @@ private:
 	SharedPtr<World> world_;
 
 	LuaGameEngine::Engine* engine_;
+
+	GameBuilder gameBuilder_;
 };

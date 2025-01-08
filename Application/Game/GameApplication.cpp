@@ -466,11 +466,6 @@ void GameApplication::OnKeyUp(KeyState* keyState, UInt32 keyCode)
 		scene_->AddChild(simpleParticle_);
 	}
 
-	if (keyCode == VK_F2)
-	{
-		gameBuilder_.Setup(scene_);
-	}
-
 	if (keyCode == VK_ESCAPE)
 	{
 		isRunning_ = false;

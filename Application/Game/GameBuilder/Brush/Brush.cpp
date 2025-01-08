@@ -28,8 +28,8 @@ void Brush::AttachComponent(BrushComponent* brushComponent)
 void Brush::DetachComponent(BrushComponent* brushComponent)
 {
 	brushComponents_.Remove(SharedPtr<BrushComponent>(brushComponent));
-	brushComponent->SetOwnerBrush(nullptr);
 	brushComponent->OnDetach();
+	brushComponent->SetOwnerBrush(nullptr);
 }
 
 

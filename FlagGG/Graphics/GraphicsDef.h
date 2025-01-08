@@ -283,6 +283,9 @@ enum BufferBind : UInt8
 	BUFFER_BIND_VERTEX  = 0x1,
 	BUFFER_BIND_INDEX   = 0x2,
 	BUFFER_BIND_UNIFORM = 0x4,
+	BUFFER_BIND_COMPUTE_READ  = 0x8,
+	BUFFER_BIND_COMPUTE_WRITE = 0x10,
+	BUFFER_BIND_DRAW_INDIRECT = 0x20,
 };
 
 enum BufferAccess : UInt8
@@ -311,6 +314,13 @@ enum StorageMode
 	STORAGE_MODE_SHARED = 0,   // CPU-GPU共享
 	STORAGE_MODE_PRIVATE,      // GPU独享
 	STORAGE_MODE_MEMORYLESS,   // GPU独享（移动端设备上会被翻译成tile meomry）
+};
+
+enum ComputeBindAccess : UInt8
+{
+	COMPUTE_BIND_ACCESS_READ  = 0,
+	COMPUTE_BIND_ACCESS_WRITE,
+	COMPUTE_BIND_ACCESS_READWRITE,
 };
 
 struct FlagGG_API VertexElement

@@ -1,6 +1,8 @@
 #include "Shader/PBR/PBRCommon.hlsl"
-#if defined(CLUSTER)
-#include "Shader/PBR/Clusters.hlsl"
+#if defined(CLUSTER) || defined(DEFERRED_CLUSTER)
+#include "Shader/Cluster/ClusterUniform.hlsl"
+#include "Shader/Cluster/ClusterLights.hlsl"
+#include "Shader/Cluster/Clusters.hlsl"
 #endif
 #if defined(NONPUNCTUAL_LIGHTING)
 #include "Shader/CapsuleLight.hlsl"
@@ -156,7 +158,7 @@ float3 DisneyBRDF(PBRContext context, float3 specularColor, float oneMinusReflec
 // Point/Spot light
 #if defined(CLUSTER) || defined(DEFERRED_CLUSTER)
 #if defined(DEFERRED_CLUSTER)
-    uint cluster = GetDeferredClusterIndex(context.fragCoord.xy, sceneDepth);
+    uint cluster = GetDeferredClusterIndex(context.fragCoord.xy, context.sceneDepth);
 #else
     // 这里从gl_FragCoord减去viewport的起点，得到viewport坐标
     float4 realCoord = GetRealCoord(context.fragCoord);

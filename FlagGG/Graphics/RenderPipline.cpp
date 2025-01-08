@@ -1,9 +1,11 @@
 #include "RenderPipline.h"
 #include "Graphics/RenderPass.h"
 #include "Graphics/Texture2D.h"
+#include "Graphics/ComputePass.h"
 #include "Scene/Light.h"
 #include "Scene/DrawableComponent.h"
 #include "Lua/ILua/LuaType.h"
+#include "Core/EngineSettings.h"
 
 namespace FlagGG
 {
@@ -49,7 +51,8 @@ CommonRenderPipline::CommonRenderPipline()
 	, alphaRenderPass_(new AlphaRenderPass())
 	, waterRenderPass_(new WaterRenderPass())
 {
-
+	if (GetSubsystem<EngineSettings>()->clusterLightEnabled_)
+		clusterLightPass_ = new ClusterLightPass();
 }
 
 CommonRenderPipline::~CommonRenderPipline()
@@ -82,27 +85,15 @@ void CommonRenderPipline::CollectLitBatch()
 
 	for (auto* light : renderPiplineContext_.lights_)
 	{
-		auto& litRenderObjects = litRenderObjectsResult_.EmplaceBack();
-
-		litRenderObjects.light_ = light;
-
-		auto type = light->GetLightType();
-		switch (type)
+		if (light->GetLightType() == LIGHT_TYPE_DIRECTIONAL)
 		{
-		case LIGHT_TYPE_DIRECTIONAL:
-			for(auto* drawable : renderPiplineContext_.drawables_)
+			auto& litRenderObjects = litRenderObjectsResult_.EmplaceBack();
+			litRenderObjects.light_ = light;
+
+			for (auto* drawable : renderPiplineContext_.drawables_)
 			{
 				litRenderObjects.drawables_.Push(drawable);
 			}
-			break;
-
-		case LIGHT_TYPE_POINT:
-
-			break;
-
-		case LIGHT_TYPE_SPOT:
-
-			break;
 		}
 	}
 

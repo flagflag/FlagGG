@@ -5,19 +5,19 @@
 namespace FlagGG
 {
 
-class TerrainComponent;
+class Node;
 
 }
 
-class TerrainBrushComponent : public BrushComponent
+class LightBrushComponent : public BrushComponent
 {
-	OBJECT_OVERRIDE(TerrainBrushComponent, BrushComponent);
+	OBJECT_OVERRIDE(LightBrushComponent, BrushComponent);
 public:
-	TerrainBrushComponent();
+	LightBrushComponent();
 
-	~TerrainBrushComponent() override;
+	~LightBrushComponent() override;
 
-// Override BrushComponent interface
+	// Override BrushComponent interface
 	void OnAttach() override;
 
 	void OnDetach() override;
@@ -33,7 +33,5 @@ public:
 	void OnUpdate(float timeStep) override;
 
 private:
-	bool isWorking_;
-
-	TerrainComponent* terrainComponent_;
+	SharedPtr<Node> controlNode_;
 };

@@ -92,8 +92,17 @@ public:
 	// 设置顶点描述
 	virtual void SetVertexDescription(VertexDescription* vertexDesc);
 
+	// 重置compute buffer
+	virtual void ResetComputeBuffers();
+
 	// 设置compute buffer
-	virtual void SetComputeBuffer(UInt8 slotID, GfxBuffer* gfxComputeBuffer);
+	virtual void SetComputeBuffer(UInt8 slotID, GfxBuffer* gfxComputeBuffer, ComputeBindAccess bindFlags = COMPUTE_BIND_ACCESS_READ);
+
+	// 重置buffer
+	virtual void ResetBuffers();
+
+	// 在slotID通道绑定buffer
+	virtual void SetBuffer(UInt8 slotID, GfxBuffer* gfxBuffer);
 
 	// 在slotID通道绑定纹理
 	virtual void SetTexture(UInt32 slotID, GfxTexture* gfxTexture);
@@ -211,6 +220,7 @@ protected:
 
 	// compute buffer
 	SharedPtr<GfxBuffer> computeBuffers_[MAX_GPU_UNITS_COUNT];
+	ComputeBindAccess computeBindFlags_[MAX_GPU_UNITS_COUNT];
 	bool computeBufferDirty_{};
 
 	// 准备提交的shaders
@@ -218,6 +228,10 @@ protected:
 	SharedPtr<GfxShader> pixelShader_;
 	SharedPtr<GfxShader> computeShader_;
 	bool shaderDirty_{};
+
+	// 准备提交的buffer
+	SharedPtr<GfxBuffer> buffers_[MAX_GPU_UNITS_COUNT];
+	bool buffersDirty_{};
 
 	// 准备提交的texture
 	SharedPtr<GfxTexture> textures_[MAX_TEXTURE_CLASS];

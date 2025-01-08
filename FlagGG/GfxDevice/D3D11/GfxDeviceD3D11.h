@@ -87,6 +87,9 @@ protected:
 	// 提交渲染指令之前预处理工作
 	void PrepareDraw();
 
+	// 提交Compute指令之前预处理工作
+	void PrepareDispatch();
+
 	void PrepareRasterizerState();
 
 	void PrepareDepthStencilState();
@@ -123,6 +126,7 @@ private:
 	// uniform
 	GfxBufferD3D11 vsConstantBuffer_[MAX_CONST_BUFFER_COUNT];
 	GfxBufferD3D11 psConstantBuffer_[MAX_CONST_BUFFER_COUNT];
+	GfxBufferD3D11 csConstantBuffer_[MAX_CONST_BUFFER_COUNT];
 
 	HashMap<Pair<UInt32, GfxShaderD3D11*>, ID3D11InputLayout*> d3d11InputLayoutMap_;
 

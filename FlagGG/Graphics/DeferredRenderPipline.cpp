@@ -1,5 +1,6 @@
 #include "Graphics/RenderPipline.h"
 #include "Graphics/RenderPass.h"
+#include "Graphics/ComputePass.h"
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Texture2D.h"
 #include "Graphics/Shader.h"
@@ -28,6 +29,8 @@ DeferredRenderPipline::~DeferredRenderPipline()
 
 void DeferredRenderPipline::Clear()
 {
+	if (clusterLightPass_)
+		clusterLightPass_->Clear();
 	shadowRenderPass_->Clear();
 	depthRenderPass_->Clear();
 	alphaRenderPass_->Clear();
@@ -83,6 +86,8 @@ void DeferredRenderPipline::OnSolveLitBatch()
 
 void DeferredRenderPipline::PrepareRender()
 {
+	if (clusterLightPass_)
+		clusterLightPass_->Dispatch(GetRenderPiplineContext());
 	shadowRenderPass_->SortBatch();
 	depthRenderPass_->SortBatch();
 	alphaRenderPass_->SortBatch();
@@ -216,6 +221,9 @@ void DeferredRenderPipline::Render()
 			gfxDevice->SetRenderTarget(renderPiplineContext_.renderTarget_);
 			gfxDevice->SetDepthStencil(nullptr);
 		}
+
+		if (clusterLightPass_)
+			clusterLightPass_->BindGpuObject();
 
 		deferredLitRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 	}

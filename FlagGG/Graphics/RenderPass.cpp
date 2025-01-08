@@ -8,11 +8,13 @@
 #include "Graphics/Material.h"
 #include "Graphics/Texture2D.h"
 #include "Graphics/TextureCube.h"
+#include "Graphics/ComputePass.h"
 #include "Resource/Image.h"
 #include "Resource/ResourceCache.h"
 #include "GfxDevice/GfxDevice.h"
 #include "GfxDevice/GfxRenderSurface.h"
 #include "GfxDevice/GfxTexture.h"
+#include "Core/EngineSettings.h"
 
 namespace FlagGG
 {
@@ -572,7 +574,30 @@ void DeferredLitRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UI
 			auto vs = shaderCode->GetShader(VS, {});
 			litVertexShader_ = vs->GetGfxRef();
 
-			auto ps = shaderCode->GetShader(PS, { "DIRLIGHT", "AMBIENT" });
+			Vector<String> psDefines;
+
+			if (GetSubsystem<EngineSettings>()->clusterLightEnabled_)
+			{
+				psDefines =
+				{
+					"DIRLIGHT",
+					"AMBIENT",
+					"DEFERRED_CLUSTER",
+					ToString("SAMPLER_CLUSTERS_LIGHTINDICES=%d ", SAMPLER_CLUSTERS_LIGHTINDICES),
+					ToString("SAMPLER_CLUSTERS_LIGHTGRID=%d ", SAMPLER_CLUSTERS_LIGHTGRID),
+					ToString("SAMPLER_LIGHTS_POINTLIGHTS=%d ", SAMPLER_LIGHTS_POINTLIGHTS),
+				};
+			}
+			else
+			{
+				psDefines =
+				{
+					"DIRLIGHT",
+					"AMBIENT",
+				};
+			}
+
+			auto ps = shaderCode->GetShader(PS, psDefines);
 			litPixelShader_ = ps->GetGfxRef();
 		}
 

@@ -109,13 +109,40 @@ void GfxDevice::SetVertexDescription(VertexDescription* vertexDesc)
 	vertexDescDirty_ = true;
 }
 
-void GfxDevice::SetComputeBuffer(UInt8 slotID, GfxBuffer* gfxComputeBuffer)
+void GfxDevice::ResetComputeBuffers()
+{
+	for (auto& it : computeBuffers_)
+	{
+		it = nullptr;
+	}
+}
+
+void GfxDevice::SetComputeBuffer(UInt8 slotID, GfxBuffer* gfxComputeBuffer, ComputeBindAccess bindFlags)
 {
 	CRY_ASSERT(slotID < MAX_GPU_UNITS_COUNT);
 	if (slotID < MAX_GPU_UNITS_COUNT)
 	{
 		computeBuffers_[slotID] = gfxComputeBuffer;
+		computeBindFlags_[slotID] = bindFlags;
 		computeBufferDirty_ = true;
+	}
+}
+
+void GfxDevice::ResetBuffers()
+{
+	for (auto& it : buffers_)
+	{
+		it = nullptr;
+	}
+}
+
+void GfxDevice::SetBuffer(UInt8 slotID, GfxBuffer* gfxBuffer)
+{
+	CRY_ASSERT(slotID < MAX_GPU_UNITS_COUNT);
+	if (slotID < MAX_GPU_UNITS_COUNT)
+	{
+		buffers_[slotID] = gfxBuffer;
+		buffersDirty_ = true;
 	}
 }
 

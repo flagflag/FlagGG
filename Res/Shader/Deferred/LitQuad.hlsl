@@ -99,6 +99,7 @@ struct PixelInput
         context.worldPosition = worldPosition;
         context.viewDirection = normalize(eyeVec);
     #if defined(DEFERRED_CLUSTER)
+        context.fragCoord = input.position.xy;
         context.sceneDepth = LinearizeDepth(sourceDepth, nearClip, farClip);
     #endif
 

@@ -37,13 +37,23 @@ void GfxBufferD3D11::Apply(const void* initialDataPtr)
 		D3D11_SAFE_RELEASE(d3d11Buffer_);
 	}
 
+	if (d3d11UAV_)
+	{
+		D3D11_SAFE_RELEASE(d3d11UAV_);
+	}
+
 	UINT bindFlags = 0;
+	bool isComputeWrite = !!(gfxBufferDesc_.bindFlags_ & UInt8(BUFFER_BIND_COMPUTE_WRITE | BUFFER_BIND_DRAW_INDIRECT));
 	if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_VERTEX)
 		bindFlags |= D3D11_BIND_VERTEX_BUFFER;
 	if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_INDEX)
 		bindFlags |= D3D11_BIND_INDEX_BUFFER;
 	if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_UNIFORM)
 		bindFlags |= D3D11_BIND_CONSTANT_BUFFER;
+	if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_COMPUTE_READ)
+		bindFlags |= D3D11_BIND_SHADER_RESOURCE;
+	if (isComputeWrite)
+		bindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
 	UINT accessFlags = 0;
 	if (gfxBufferDesc_.accessFlags_ & BUFFER_ACCESS_WRITE)
@@ -61,13 +71,51 @@ void GfxBufferD3D11::Apply(const void* initialDataPtr)
 	desc.CPUAccessFlags = accessFlags;
 	desc.Usage = d3d11Usage[gfxBufferDesc_.usage_];
 	desc.ByteWidth = byteCount;
+	if (isComputeWrite)
+	{
+		desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+		desc.StructureByteStride = gfxBufferDesc_.stride_;
+		desc.Usage = D3D11_USAGE_DEFAULT;
+	}
 
-	HRESULT hr = GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device()->CreateBuffer(&desc, nullptr, &d3d11Buffer_);
+	HRESULT hr;
+
+	if (initialDataPtr)
+	{
+		D3D11_SUBRESOURCE_DATA d3d11Data;
+		d3d11Data.pSysMem = initialDataPtr;
+		d3d11Data.SysMemPitch = 0;
+		d3d11Data.SysMemSlicePitch = 0;
+
+		hr = GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device()->CreateBuffer(&desc, &d3d11Data, &d3d11Buffer_);
+	}
+	else
+	{
+		hr = GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device()->CreateBuffer(&desc, nullptr, &d3d11Buffer_);
+	}
+
 	if (FAILED(hr))
 	{
 		D3D11_SAFE_RELEASE(d3d11Buffer_);
 		FLAGGG_LOG_ERROR("Failed to create vertex buffer.");
 		return;
+	}
+
+	if (isComputeWrite)
+	{
+		D3D11_UNORDERED_ACCESS_VIEW_DESC d3d11Desc;
+		d3d11Desc.Format = DXGI_FORMAT_UNKNOWN;
+		d3d11Desc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+		d3d11Desc.Buffer.FirstElement = 0;
+		d3d11Desc.Buffer.NumElements = gfxBufferDesc_.size_ / gfxBufferDesc_.stride_;
+		d3d11Desc.Buffer.Flags = 0;
+
+		HRESULT hr = GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device()->CreateUnorderedAccessView(d3d11Buffer_, &d3d11Desc, &d3d11UAV_);
+		if (FAILED(hr))
+		{
+			D3D11_SAFE_RELEASE(d3d11UAV_);
+			FLAGGG_LOG_ERROR("Failed to CreateUnorderedAccessView.");
+		}
 	}
 }
 

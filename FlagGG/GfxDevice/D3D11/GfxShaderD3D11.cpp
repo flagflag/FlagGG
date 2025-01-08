@@ -26,8 +26,8 @@ GfxShaderD3D11::~GfxShaderD3D11()
 void GfxShaderD3D11::AnalysisReflection(ID3DBlob* compileCode)
 {
 	ID3D11ShaderReflection* reflector = nullptr;
-	HRESULT hr = D3DReflect(compileCode->GetBufferPointer(), compileCode->GetBufferSize(),
-		IID_ID3D11ShaderReflection, (void**)&reflector);
+	HRESULT hr = GetSubsystem<D3DCompiler>()->D3DReflect(compileCode->GetBufferPointer(), compileCode->GetBufferSize(),
+		GetSubsystem<D3DCompiler>()->IID_ID3D11ShaderReflection, (void**)&reflector);
 
 	if (FAILED(hr))
 	{
@@ -43,7 +43,7 @@ void GfxShaderD3D11::AnalysisReflection(ID3DBlob* compileCode)
 		return;
 	}
 
-	HashMap<StringHash, UInt32> bindMap;
+	HashMap<StringHash, UInt32> cbufferBindMap;
 	for (UInt32 i = 0; i < shaderDesc.BoundResources; ++i)
 	{
 		D3D11_SHADER_INPUT_BIND_DESC bindDesc;
@@ -57,7 +57,7 @@ void GfxShaderD3D11::AnalysisReflection(ID3DBlob* compileCode)
 		switch (bindDesc.Type)
 		{
 		case D3D_SIT_CBUFFER:
-			bindMap[bindDesc.Name] = bindDesc.BindPoint;
+			cbufferBindMap[bindDesc.Name] = bindDesc.BindPoint;
 			break;
 
 		case D3D_SIT_TEXTURE:
@@ -73,6 +73,22 @@ void GfxShaderD3D11::AnalysisReflection(ID3DBlob* compileCode)
 			desc.samplerName_ = bindDesc.Name;
 		}
 		break;
+
+		case D3D_SIT_STRUCTURED:
+		{
+			D3D11StructBufferDesc& dest = structBufferDescs_[bindDesc.BindPoint];
+			dest.name_ = bindDesc.Name;
+			dest.readonly_ = true;
+		}
+		break;
+
+		case D3D_SIT_UAV_RWSTRUCTURED:
+		{
+			D3D11StructBufferDesc& dest = structBufferDescs_[bindDesc.BindPoint];
+			dest.name_ = bindDesc.Name;
+			dest.readonly_ = false;
+		}
+		break;
 		}
 	}
 
@@ -82,22 +98,24 @@ void GfxShaderD3D11::AnalysisReflection(ID3DBlob* compileCode)
 		D3D11_SHADER_BUFFER_DESC d3dBufferDesc;
 		rConstantBuffer->GetDesc(&d3dBufferDesc);
 
-		UInt32 index = bindMap[d3dBufferDesc.Name];
-		auto& bufferDesc = constantBufferDescs_[index];
-		bufferDesc.name_ = d3dBufferDesc.Name;
-		bufferDesc.size_ = d3dBufferDesc.Size;
-
-		for (UInt32 j = 0; j < d3dBufferDesc.Variables; ++j)
+		if (auto* index = cbufferBindMap.TryGetValue(d3dBufferDesc.Name))
 		{
-			ID3D11ShaderReflectionVariable* variable = rConstantBuffer->GetVariableByIndex(j);
-			D3D11_SHADER_VARIABLE_DESC d3dVariableDesc;
-			variable->GetDesc(&d3dVariableDesc);
+			auto& bufferDesc = constantBufferDescs_[*index];
+			bufferDesc.name_ = d3dBufferDesc.Name;
+			bufferDesc.size_ = d3dBufferDesc.Size;
 
-			D3D11ConstantBufferVariableDesc variableDesc;
-			variableDesc.name_ = d3dVariableDesc.Name;
-			variableDesc.offset_ = d3dVariableDesc.StartOffset;
-			variableDesc.size_ = d3dVariableDesc.Size;
-			bufferDesc.variableDescs_.Push(variableDesc);
+			for (UInt32 j = 0; j < d3dBufferDesc.Variables; ++j)
+			{
+				ID3D11ShaderReflectionVariable* variable = rConstantBuffer->GetVariableByIndex(j);
+				D3D11_SHADER_VARIABLE_DESC d3dVariableDesc;
+				variable->GetDesc(&d3dVariableDesc);
+
+				D3D11ConstantBufferVariableDesc variableDesc;
+				variableDesc.name_ = d3dVariableDesc.Name;
+				variableDesc.offset_ = d3dVariableDesc.StartOffset;
+				variableDesc.size_ = d3dVariableDesc.Size;
+				bufferDesc.variableDescs_.Push(variableDesc);
+			}
 		}
 	}
 
@@ -129,7 +147,6 @@ bool GfxShaderD3D11::Compile()
 			if (hr != 0)
 			{
 				FLAGGG_LOG_ERROR("CreateVertexShader failed.");
-
 				D3D11_SAFE_RELEASE(vertexShader_);
 				return false;
 			}
@@ -145,7 +162,6 @@ bool GfxShaderD3D11::Compile()
 			if (hr != 0)
 			{
 				FLAGGG_LOG_ERROR("CreatePixelShader failed.");
-
 				D3D11_SAFE_RELEASE(pixelShader_);
 				return false;
 			}
@@ -161,7 +177,6 @@ bool GfxShaderD3D11::Compile()
 			if (hr != 0)
 			{
 				FLAGGG_LOG_ERROR("CreateComputeShader failed.");
-
 				D3D11_SAFE_RELEASE(pixelShader_);
 				return false;
 			}

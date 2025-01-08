@@ -12,6 +12,7 @@ void GamePlayLocal::Initialize(Scene* scene)
 {
 	world_ = new World();
 	world_->SetScene(scene);
+	gameBuilder_.Setup(scene);
 }
 
 void GamePlayLocal::Login(const LuaFunction& callback)

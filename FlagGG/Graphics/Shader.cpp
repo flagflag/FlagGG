@@ -69,7 +69,6 @@ bool ShaderCode::PreCompileShaderCode(const char* head, const char* tail, String
 {
 	while (head != tail)
 	{
-		while (head != tail && (*head == '\n' || *head == '\r' || *head == ' ' || *head == '\t')) ++head;
 		if (head + 10 < tail &&
 			head[0] == '#' &&
 			head[1] == 'i' &&
@@ -128,11 +127,12 @@ bool ShaderCode::PreCompileShaderCode(const char* head, const char* tail, String
 		}
 		else
 		{
-			break;
+			out += *head;
+			++head;
 		}
 	}
 
-	out.Append(head, tail - head);
+	// out.Append(head, tail - head);
 }
 
 bool ShaderCode::BeginLoad(IOFrame::Buffer::IOBuffer* stream)

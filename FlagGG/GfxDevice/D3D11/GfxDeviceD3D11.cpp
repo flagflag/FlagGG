@@ -186,13 +186,13 @@ void GfxDeviceD3D11::Flush()
 
 void GfxDeviceD3D11::Dispatch(UInt32 threadGroupCountX, UInt32 threadGroupCountY, UInt32 threadGroupCountZ)
 {
+	PrepareDispatch();
+
 	deviceContext_->Dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
 }
 
 void GfxDeviceD3D11::PrepareDraw()
 {
-	static GfxBufferD3D11* vertexBuffers[MAX_VERTEX_BUFFER_COUNT + 1] = { 0 };
-
 	PrepareRasterizerState();
 
 	PrepareDepthStencilState();
@@ -223,8 +223,8 @@ void GfxDeviceD3D11::PrepareDraw()
 		for (UInt32 i = 0; i < d3dVertexBufferCount; ++i)
 		{
 			const SharedPtr<GfxBuffer>& vertexBuffer = vertexBuffers_[i];
-			vertexBuffers[i] = RTTICast<GfxBufferD3D11>(vertexBuffer);
-			d3dVertexBuffers[i] = vertexBuffers[i]->GetD3D11Buffer();
+			auto* vertexBufferD3D11 = RTTICast<GfxBufferD3D11>(vertexBuffer);
+			d3dVertexBuffers[i] = vertexBufferD3D11->GetD3D11Buffer();
 			d3dVertexSize[i] = vertexDesc_->GetStrideSize();
 			d3dVertexOffset[i] = 0;
 		}
@@ -262,12 +262,35 @@ void GfxDeviceD3D11::PrepareDraw()
 		CopyShaderParameterToBuffer(vertexShaderD3D11, vsConstantBuffer_);
 		CopyShaderParameterToBuffer(pixelShaderD3D11, psConstantBuffer_);
 
-		static ID3D11Buffer* d3dVSConstantBuffer[MAX_CONST_BUFFER_COUNT] = { nullptr };
-		static ID3D11Buffer* d3dPSConstantBuffer[MAX_CONST_BUFFER_COUNT] = { nullptr };
+		static ID3D11Buffer* d3dVSConstantBuffer[MAX_GPU_UNITS_COUNT] = { nullptr };
+		static ID3D11Buffer* d3dPSConstantBuffer[MAX_GPU_UNITS_COUNT] = { nullptr };
+
 		for (UInt32 i = 0; i < MAX_CONST_BUFFER; ++i)
 		{
 			d3dVSConstantBuffer[i] = vsConstantBuffer_[i].GetD3D11Buffer();
 			d3dPSConstantBuffer[i] = psConstantBuffer_[i].GetD3D11Buffer();
+		}
+
+		if (buffersDirty_)
+		{
+			for (UInt32 i = MAX_CONST_BUFFER; i < MAX_GPU_UNITS_COUNT; ++i)
+			{
+				d3dPSConstantBuffer[i] = nullptr;
+			}
+
+			for (auto& it : vertexShaderD3D11->GetStructBufferVariableDesc())
+			{
+				auto* vsBufferD3D11 = RTTICast<GfxBufferD3D11>(buffers_[it.first_]);
+				d3dVSConstantBuffer[it.first_] = vsBufferD3D11 ? vsBufferD3D11->GetD3D11Buffer() : nullptr;
+			}
+
+			for (auto& it : pixelShaderD3D11->GetStructBufferVariableDesc())
+			{
+				auto* vsBufferD3D11 = RTTICast<GfxBufferD3D11>(buffers_[it.first_]);
+				d3dVSConstantBuffer[it.first_] = vsBufferD3D11 ? vsBufferD3D11->GetD3D11Buffer() : nullptr;
+			}
+
+			buffersDirty_ = false;
 		}
 
 		deviceContext_->VSSetConstantBuffers(0, MAX_CONST_BUFFER, d3dVSConstantBuffer);
@@ -364,6 +387,53 @@ void GfxDeviceD3D11::PrepareDraw()
 
 		viewportDirty_ = false;
 	}
+}
+
+void GfxDeviceD3D11::PrepareDispatch()
+{
+	auto computeShaderD3D11 = RTTICast<GfxShaderD3D11>(computeShader_);
+	ID3D11Buffer* d3dComputeConstantBuffer[MAX_GPU_UNITS_COUNT] = {};
+
+	if (computeBufferDirty_)
+	{
+		ID3D11UnorderedAccessView* d3dUAV[MAX_GPU_UNITS_COUNT] = {};
+
+		for (UInt32 i = 0; i < MAX_GPU_UNITS_COUNT; ++i)
+		{
+			auto* computeBufferD3D11 = RTTICast<GfxBufferD3D11>(computeBuffers_[i]);
+			if (computeBufferD3D11)
+			{
+				if (computeBindFlags_[i] == COMPUTE_BIND_ACCESS_READ)
+				{
+					d3dComputeConstantBuffer[i] = computeBufferD3D11->GetD3D11Buffer();
+				}
+				else
+				{
+					d3dUAV[i] = computeBufferD3D11->GetUnorderedAccessViews();
+				}
+			}
+		}
+
+		deviceContext_->CSSetUnorderedAccessViews(0, MAX_GPU_UNITS_COUNT, d3dUAV, nullptr);
+
+		computeBufferDirty_ = false;
+	}
+
+	if (shaderDirty_)
+	{
+		deviceContext_->CSSetShader(computeShaderD3D11->GetD3D11ComputeShader(), nullptr, 0);
+
+		shaderDirty_ = false;
+	}
+
+	CopyShaderParameterToBuffer(computeShaderD3D11, csConstantBuffer_);
+
+	for (UInt32 i = 0; i < MAX_CONST_BUFFER; ++i)
+	{
+		d3dComputeConstantBuffer[i] = csConstantBuffer_[i].GetD3D11Buffer();
+	}
+
+	deviceContext_->CSSetConstantBuffers(0, MAX_GPU_UNITS_COUNT, d3dComputeConstantBuffer);
 }
 
 void GfxDeviceD3D11::PrepareRasterizerState()

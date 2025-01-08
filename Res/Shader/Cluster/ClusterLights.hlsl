@@ -1,11 +1,7 @@
 // for each light:
 //   float4 position (w is padding)
 //   float4 intensity + radius (xyz is intensity, w is radius)
-#if PLATFORM_WINDOWS_DIRECTX
-    StructuredBuffer<float4> clusterLightsBuffer : REGISTER(u, SAMPLER_LIGHTS_POINTLIGHTS);
-#else
-    cbuffer float4 clusterLightsBuffer[600u] : REGISTER(b, SAMPLER_LIGHTS_POINTLIGHTS);
-#endif
+StructuredBuffer<float4> clusterLightsBuffer : REGISTER(u, SAMPLER_LIGHTS_POINTLIGHTS);
 
 struct PointLight
 {

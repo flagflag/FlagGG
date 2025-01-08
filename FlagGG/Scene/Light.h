@@ -66,11 +66,17 @@ public:
 	// 获取灯光范围
 	float GetRange() const { return range_; }
 
+	// 设置源半径
+	void SetSourceRadius(float sourceRadius) { sourceRadius_ = sourceRadius; }
+
+	// 获取源半径
+	float GetSourceRadius() const { return sourceRadius_; }
+
 	// 获取实际的光照强度颜色
 	Color GetEffectiveColor() const;
 
 protected:
-	Color Light::GetColorFromTemperature() const;
+	Color GetColorFromTemperature() const;
 
 private:
 	LightType lightType_;
@@ -82,6 +88,8 @@ private:
 	float brightness_;
 
 	float range_;
+
+	float sourceRadius_;
 
 	// 色温
 	float temperature_;

@@ -7,7 +7,6 @@
 #include "GfxDevice/GfxRenderSurface.h"
 #include "GfxDevice/GfxTexture.h"
 #include "GfxDevice/GfxSwapChain.h"
-#include "Core/EngineSettings.h"
 
 namespace FlagGG
 {
@@ -16,8 +15,7 @@ ForwardRenderPipline::ForwardRenderPipline()
 	: CommonRenderPipline()
 	, litRenderPass_{ SharedPtr<RenderPass>(new LitRenderPass()), SharedPtr<RenderPass>(new LitRenderPass()) }
 {
-	if (GetSubsystem<EngineSettings>()->clusterLightEnabled_)
-		clusterLightPass_ = new ClusterLightPass();
+
 }
 
 ForwardRenderPipline::~ForwardRenderPipline()

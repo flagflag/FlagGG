@@ -121,6 +121,7 @@ protected:
 
 	Vector<LitRenderObjects> litRenderObjectsResult_;
 
+	SharedPtr<ComputePass> clusterLightPass_;
 	SharedPtr<RenderPass> shadowRenderPass_;
 	SharedPtr<RenderPass> alphaRenderPass_;
 	SharedPtr<RenderPass> waterRenderPass_;
@@ -150,7 +151,6 @@ public:
 	void Render() override;
 
 private:
-	SharedPtr<ComputePass> clusterLightPass_;
 	SharedPtr<RenderPass> litRenderPass_[2];
 };
 

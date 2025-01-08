@@ -27,7 +27,6 @@
 #include "Lobby/Lobby.h"
 #include "GamePlay/GamePlayBase.h"
 #include "GamePlay/Perspective.h"
-#include "GameBuilder/GameBuilder.h"
 
 using namespace FlagGG;
 
@@ -66,8 +65,6 @@ private:
 	LJSONValue commandParam_;
 
 	SetupFinish setupFinish_;
-
-	GameBuilder gameBuilder_;
 
 #ifdef _WIN32
 	SharedPtr<Window> window_;
