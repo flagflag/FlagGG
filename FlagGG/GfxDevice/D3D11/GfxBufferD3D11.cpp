@@ -43,7 +43,7 @@ void GfxBufferD3D11::Apply(const void* initialDataPtr)
 	}
 
 	UINT bindFlags = 0;
-	bool isComputeWrite = !!(gfxBufferDesc_.bindFlags_ & UInt8(BUFFER_BIND_COMPUTE_WRITE | BUFFER_BIND_DRAW_INDIRECT));
+	bool isComputeWrite = !!(gfxBufferDesc_.bindFlags_ & (BUFFER_BIND_COMPUTE_WRITE | BUFFER_BIND_DRAW_INDIRECT));
 	if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_VERTEX)
 		bindFlags |= D3D11_BIND_VERTEX_BUFFER;
 	if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_INDEX)

@@ -7,9 +7,12 @@
 #include "GfxDevice/GfxObject.h"
 #include "GfxDevice/GfxTextureUtils.h"
 #include "Graphics/GraphicsDef.h"
+#include "Container/FlagSet.h"
 
 namespace FlagGG
 {
+
+FLAGGG_FLAGSET(TextureBind, TextureBindFlags);
 
 struct TextureDesc
 {
@@ -25,6 +28,7 @@ struct TextureDesc
 	bool autoResolve_{};
 	bool sRGB_{};
 	TextureUsage usage_{};
+	TextureBindFlags bindFlags_{};
 	StorageMode storageMode_{};
 };
 
@@ -70,6 +74,9 @@ public:
 
 	// 设置纹理用法
 	virtual void SetUsage(TextureUsage usage);
+
+	// 设置纹理绑定类型
+	virtual void SetBind(TextureBindFlags bindFlags);
 
 	// 应用当前设置
 	virtual void Apply(const void* initialDataPtr);

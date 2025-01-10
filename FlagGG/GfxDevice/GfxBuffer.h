@@ -15,14 +15,13 @@ namespace FlagGG
 FLAGGG_FLAGSET(BufferBind, BufferBindFlags);
 FLAGGG_FLAGSET(BufferAccess, BufferAccessFlags);
 
-// Total 8 bit
 struct GfxBufferDesc
 {
 	UInt32 size_;
 	UInt16 stride_;
-	UInt8 bindFlags_;      // BufferBind
-	UInt8 accessFlags_;    // BufferAccess
-	UInt8 usage_;          // BufferUsage
+	BufferBindFlags bindFlags_;      // BufferBind
+	BufferAccessFlags accessFlags_;  // BufferAccess
+	BufferUsage usage_;              // BufferUsage
 };
 
 class FlagGG_API GfxBuffer : public GfxObject

@@ -29,6 +29,11 @@ if (WIN32 OR WIN64)
     dxguid)
     # CoreCLR
     link_directories (${CMAKE_CURRENT_SOURCE_DIR}/../Application/CoreCLRHelper/Runtime)
+    # Vulkan
+    link_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/vulkan/lib/x64)
+    set (VULKAN_LIB
+        vulkan-1
+    )
 endif ()
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/Khronos)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/HLSLcc/include)

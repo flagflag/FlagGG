@@ -301,6 +301,12 @@ enum BufferUsage : UInt8
 	BUFFER_USAGE_DYNAMIC,
 };
 
+enum TextureBind : UInt8
+{
+	TEXTURE_BIND_COMPUTE_READ  = 0x1,
+	TEXTURE_BIND_COMPUTE_WRITE = 0x2,
+};
+
 enum TextureUsage
 {
 	TEXTURE_STATIC = 0,

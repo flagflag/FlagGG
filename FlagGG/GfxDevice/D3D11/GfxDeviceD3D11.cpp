@@ -222,8 +222,7 @@ void GfxDeviceD3D11::PrepareDraw()
 
 		for (UInt32 i = 0; i < d3dVertexBufferCount; ++i)
 		{
-			const SharedPtr<GfxBuffer>& vertexBuffer = vertexBuffers_[i];
-			auto* vertexBufferD3D11 = RTTICast<GfxBufferD3D11>(vertexBuffer);
+			auto* vertexBufferD3D11 = RTTICast<GfxBufferD3D11>(vertexBuffers_[i]);
 			d3dVertexBuffers[i] = vertexBufferD3D11->GetD3D11Buffer();
 			d3dVertexSize[i] = vertexDesc_->GetStrideSize();
 			d3dVertexOffset[i] = 0;

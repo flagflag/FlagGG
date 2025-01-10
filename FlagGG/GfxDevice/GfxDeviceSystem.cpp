@@ -3,11 +3,11 @@
 #if FLAGGG_OPENGL
 #include "OpenGL/GfxDeviceOGL.h"
 #endif
-#if FALGGG_METAL
-#include "Metal/GfxBufferMetal.h"
+#if FLAGGG_METAL
+#include "Metal/GfxDeviceMetal.h"
 #endif
-#if FALGGG_VULKAN
-#include "Metal/GfxBufferVulkan.h"
+#if FLAGGG_VULKAN
+#include "Vulkan/GfxDeviceVulkan.h"
 #endif
 #include "FileSystem/FileSystem.h"
 #include "Utility/SystemHelper.h"
@@ -35,13 +35,13 @@ static GfxDevice* CreateOrGetDevice()
 				break;
 #endif
 
-#if FALGGG_METAL
+#if FLAGGG_METAL
 			case RENDERER_TYPE_METAL:
 				device_ = GetSubsystem<GfxDeviceMetal>();
 				break;
 #endif
 
-#if FALGGG_VULKAN
+#if FLAGGG_VULKAN
 			case RENDERER_TYPE_VULKAN:
 				device_ = GetSubsystem<GfxDeviceVulkan>();
 				break;

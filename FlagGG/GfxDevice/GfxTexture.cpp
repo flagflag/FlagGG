@@ -70,6 +70,11 @@ void GfxTexture::SetUsage(TextureUsage usage)
 	textureDesc_.usage_ = usage;
 }
 
+void GfxTexture::SetBind(TextureBindFlags bindFlags)
+{
+	textureDesc_.bindFlags_ = bindFlags;
+}
+
 void GfxTexture::Apply(const void* initialDataPtr)
 {
 
