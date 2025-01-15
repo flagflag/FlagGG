@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.18)
 project(libmimalloc C CXX)
 
 set(CMAKE_C_STANDARD 11)
-# set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17)
 
 option(MI_SECURE            "Use full security mitigations (like guard pages, allocation randomization, double-free mitigation, and free-list corruption detection)" OFF)
 option(MI_DEBUG_FULL        "Use full internal heap invariant checking in DEBUG mode (expensive)" OFF)

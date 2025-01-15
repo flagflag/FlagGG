@@ -512,6 +512,8 @@ target_include_directories(Jolt PUBLIC
 	$<BUILD_INTERFACE:${PHYSICS_REPO_ROOT}>
 	$<INSTALL_INTERFACE:include/>)
 
+set_target_properties(Jolt PROPERTIES FOLDER "3rd")
+
 # Code coverage doesn't work when using precompiled headers
 if (CMAKE_GENERATOR STREQUAL "Ninja Multi-Config" AND MSVC)
 	# The Ninja Multi-Config generator errors out when selectively disabling precompiled headers for certain configurations.
