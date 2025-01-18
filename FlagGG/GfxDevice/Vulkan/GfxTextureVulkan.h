@@ -47,15 +47,36 @@ public:
 	// 2.TextureCube，index传入cube的face
 	GfxRenderSurface* GetRenderSurface(UInt32 index) const override;
 
+	// 获取纹理试图
+	VkImageView GetVulkanImageView() { return vkImageView_; }
+
+	// 获取采样器试图
+	VkImageView GetVulkanSamplerView();
+
+	// 获取ComputeWrite视图
+	VkImageView GetVulkanStorageView() { return vkStorageView_; }
+
 	// 
 	static VkFormat ToVulkanTextureFormat(TextureFormat textureFormat);
 
 private:
+	//
+	VkImageAspectFlags imageAspectMask_;
+
 	// 
 	VkImage vkImage_;
 
 	// 
 	VkDeviceMemory vkMemory_;
+
+	// 纹理采样视图
+	VkImageView vkImageView_;
+
+	// 采样深度纹理 => DepthView
+	VkImageView vkDepthView_;
+
+	// Compute写 => StorageView
+	VkImageView vkStorageView_;
 
 	// render surfaces
 	Vector<SharedPtr<GfxRenderSurfaceVulkan>> gfxRenderSurfaces_;

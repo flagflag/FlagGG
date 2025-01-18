@@ -83,6 +83,18 @@ public:
 	/*                        渲染指令                        */
 	/**********************************************************/
 
+	// 帧开始
+	void BeginFrame() override;
+
+	// 帧结束
+	void EndFrame() override;
+
+	// 开始Pass
+	void BeginPass(const char* renderPassName) override;
+
+	// 结束Pass
+	void EndPass() override;
+
 	// 清理RenderTarget、DepthStencil
 	void Clear(ClearTargetFlags flags, const Color& color = Color::TRANSPARENT_BLACK, float depth = 1.0f, unsigned stencil = 0) override;
 
@@ -118,8 +130,14 @@ public:
 	// 创建gpu program
 	GfxProgram* CreateProgram() override;
 
+	// 获取vulkan物理设备
+	VkPhysicalDevice GetVulkanPhysicalDevice() { return vkPhysicalDevice_; }
+
+	// 获取vulkan instnace
+	VkInstance GetVulkanInstance() { return vkInstance_; }
+
 	// 获取vukan device
-	VkDevice& GetVulkanDevice() { return vkDevice_; }
+	VkDevice GetVulkanDevice() { return vkDevice_; }
 
 	// 获取vulkan alloction callback
 	VkAllocationCallbacks& GetVulkanAllocCallback() { return vkAllocCallback_; }
@@ -140,7 +158,15 @@ protected:
 	// 提交渲染指令之前预处理工作
 	void PrepareDraw();
 
-	void PrepareRenderPassAttachments();
+	VkCommandBuffer BeginNewRenderCommand(VkRenderPass vkRenderPass, VkFramebuffer vkFramebuffer);
+
+	void EndRenderCommand(VkCommandBuffer vkCmdBuffer);
+
+	VkRenderPass CreateRenderPassFromCurrentState();
+
+	VkFramebuffer CreateFramebufferFromCurrentState(VkRenderPass vkRenderPass);
+
+	void PrepareRenderPass();
 
 	void PrepareRenderPipelineState();
 
@@ -169,11 +195,16 @@ protected:
 	void CopyShaderParameterToBuffer(const HashMap<UInt32, VulkanConstanceBufferDesc>& bufferDesc, GfxBuffer* bufferArray);
 
 private:
+	// 当前选择的物理设备
+	VkPhysicalDevice vkPhysicalDevice_;
+
 	VkInstance vkInstance_;
 
 	VkDevice vkDevice_;
 
 	VkAllocationCallbacks vkAllocCallback_;
+
+	VkDebugReportCallbackEXT debugReportCallback_;
 
 	VkPhysicalDeviceMemoryProperties vkPhyDvMemProp_;
 
@@ -185,15 +216,26 @@ private:
 
 	VkCommandBuffer vkCmdBuffer_;
 
+	VkCommandBuffer vkCmdBuffers_[4];
+
 	VkPipelineCache vkAllPipelineCache_;
 
 	VkPipeline vkComputePipeline_;
 
 	VkPipeline vkGraphicsPipeline_;
 
+	// 当前执行的RenderPass
 	VkRenderPass vkRenderPass_;
 
-	HashMap<VulkanRenderPassAttachmentsKey, VkRenderPass> vkRenderPassMap_;
+	// 当前绑定的Framebuffer
+	VkFramebuffer vkFramebuffer_;
+
+	struct VulkanRenderPassInfo
+	{
+		VkRenderPass vkRenderPass_;
+		VkFramebuffer vkFramebuffer_;
+	};
+	HashMap<VulkanRenderPassAttachmentsKey, VulkanRenderPassInfo> vkRenderPassMap_;
 
 	bool vkRenderPassDirty_;
 

@@ -129,14 +129,23 @@ void GfxTextureVulkan::Apply(const void* initialDataPtr)
 	auto* deviceVulkan = GetSubsystem<GfxDeviceVulkan>();
 
 // 创建vulkan image
+	VkImageType vkImageType = VK_IMAGE_TYPE_1D;
+	VkImageViewType vkImageViewType = VK_IMAGE_VIEW_TYPE_1D;
+	if (textureDesc_.depth_ == 1)
+	{
+		vkImageType = VK_IMAGE_TYPE_2D;
+		vkImageViewType = VK_IMAGE_VIEW_TYPE_2D;
+	}
+	else
+	{
+		vkImageType = VK_IMAGE_TYPE_3D;
+		vkImageViewType = VK_IMAGE_VIEW_TYPE_3D;
+	}
 	VkImageCreateInfo vkICI;
 	vkICI.sType                 = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	vkICI.pNext                 = nullptr;
 	vkICI.flags                 = textureDesc_.isCube_ ? VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT : 0;
-	if (textureDesc_.depth_ == 1)
-		vkICI.imageType         = VK_IMAGE_TYPE_2D;
-	else
-		vkICI.imageType         = VK_IMAGE_TYPE_3D;
+	vkICI.imageType             = vkImageType;
 	if (textureDesc_.format_ > TEXTURE_FORMAT_UNKNOWN_DEPTH)
 		vkICI.format            = vulkanTextureFormat[textureDesc_.format_].fmtDsv_;
 	else
@@ -179,8 +188,91 @@ void GfxTextureVulkan::Apply(const void* initialDataPtr)
 	if (initialDataPtr)
 		UpdateTexture(initialDataPtr);
 
+// 创建TextureView
+	{
+		if (textureDesc_.format_ > TEXTURE_FORMAT_UNKNOWN_DEPTH)
+		{
+			imageAspectMask_ = 0;
+			if (textureDesc_.format_ == TEXTURE_FORMAT_D16 ||
+				textureDesc_.format_ == TEXTURE_FORMAT_D24 ||
+				textureDesc_.format_ == TEXTURE_FORMAT_D24S8 ||
+				textureDesc_.format_ == TEXTURE_FORMAT_D32 ||
+				textureDesc_.format_ == TEXTURE_FORMAT_D16F ||
+				textureDesc_.format_ == TEXTURE_FORMAT_D24F ||
+				textureDesc_.format_ == TEXTURE_FORMAT_D32F)
+			{
+				imageAspectMask_ |= VK_IMAGE_ASPECT_DEPTH_BIT;
+			}
+			if (textureDesc_.format_ == TEXTURE_FORMAT_D24S8 ||
+				textureDesc_.format_ == TEXTURE_FORMAT_D0S8)
+			{
+				imageAspectMask_ |= VK_IMAGE_ASPECT_STENCIL_BIT;
+			}
+		}
+		else
+			imageAspectMask_ = VK_IMAGE_ASPECT_COLOR_BIT;
+
+		VkImageViewCreateInfo vkIVCI;
+		vkIVCI.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		vkIVCI.pNext                           = nullptr;
+		vkIVCI.flags                           = 0;
+		vkIVCI.image                           = vkImage_;
+		vkIVCI.viewType                        = vkImageViewType;
+		vkIVCI.format                          = vkICI.format;
+		vkIVCI.components                      = vulkanTextureFormat[textureDesc_.format_].components_;
+		vkIVCI.subresourceRange.aspectMask     = imageAspectMask_;
+		vkIVCI.subresourceRange.baseMipLevel   = 0;
+		vkIVCI.subresourceRange.levelCount     = vkICI.mipLevels;
+		vkIVCI.subresourceRange.baseArrayLayer = 0;
+		vkIVCI.subresourceRange.layerCount     = vkICI.arrayLayers;
+		vkCreateImageView(deviceVulkan->GetVulkanDevice(), &vkIVCI, &deviceVulkan->GetVulkanAllocCallback(), &vkImageView_);
+	}
+
+// 创建DepthView
+	if ((imageAspectMask_ & VK_IMAGE_ASPECT_DEPTH_BIT) && (imageAspectMask_ & VK_IMAGE_ASPECT_STENCIL_BIT))
+	{
+		VkImageViewCreateInfo vkIVCI;
+		vkIVCI.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		vkIVCI.pNext                           = nullptr;
+		vkIVCI.flags                           = 0;
+		vkIVCI.image                           = vkImage_;
+		vkIVCI.viewType                        = textureDesc_.isCube_ ? VK_IMAGE_VIEW_TYPE_2D_ARRAY : vkImageViewType;
+		vkIVCI.format                          = vkICI.format;
+		vkIVCI.components                      = vulkanTextureFormat[textureDesc_.format_].components_;
+		vkIVCI.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_DEPTH_BIT;
+		vkIVCI.subresourceRange.baseMipLevel   = 0;
+		vkIVCI.subresourceRange.levelCount     = vkICI.mipLevels;
+		vkIVCI.subresourceRange.baseArrayLayer = 0;
+		vkIVCI.subresourceRange.layerCount     = vkICI.arrayLayers;
+		vkCreateImageView(deviceVulkan->GetVulkanDevice(), &vkIVCI, &deviceVulkan->GetVulkanAllocCallback(), &vkDepthView_);
+	}
+
+// 创建StorageView
+	if (textureDesc_.bindFlags_ & TEXTURE_BIND_COMPUTE_WRITE)
+	{
+		VkImageViewCreateInfo vkIVCI;
+		vkIVCI.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		vkIVCI.pNext                           = nullptr;
+		vkIVCI.flags                           = 0;
+		vkIVCI.image                           = vkImage_;
+		vkIVCI.viewType                        = textureDesc_.isCube_ ? VK_IMAGE_VIEW_TYPE_2D_ARRAY : vkImageViewType;
+		vkIVCI.format                          = vkICI.format;
+		vkIVCI.components                      = vulkanTextureFormat[textureDesc_.format_].components_;
+		vkIVCI.subresourceRange.aspectMask     = imageAspectMask_;
+		vkIVCI.subresourceRange.baseMipLevel   = 0;
+		vkIVCI.subresourceRange.levelCount     = vkICI.mipLevels;
+		vkIVCI.subresourceRange.baseArrayLayer = 0;
+		vkIVCI.subresourceRange.layerCount     = vkICI.arrayLayers;
+		vkCreateImageView(deviceVulkan->GetVulkanDevice(), &vkIVCI, &deviceVulkan->GetVulkanAllocCallback(), &vkStorageView_);
+	}
+
 	gfxRenderSurfaces_.Clear();
 	gfxRenderSurfaces_.Push(MakeShared<GfxRenderSurfaceVulkan>(this));
+}
+
+VkImageView GfxTextureVulkan::GetVulkanSamplerView()
+{
+	return vkDepthView_ ? vkDepthView_ : vkImageView_;
 }
 
 void GfxTextureVulkan::UpdateTexture(const void* dataPtr)
@@ -258,14 +350,12 @@ void GfxTextureVulkan::UpdateTextureSubRegion(const void* dataPtr, UInt32 index,
 
 	VkCommandBuffer vkCmdBuffer = deviceVulkan->BeginCommandBuffer(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
-	VkImageAspectFlags aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-
 	// setImageMemoryBarrier
 	VkBufferImageCopy vkBufferCopyInfo;
 	vkBufferCopyInfo.bufferOffset                    = 0;
 	vkBufferCopyInfo.bufferRowLength                 = 0;
 	vkBufferCopyInfo.bufferImageHeight               = 0;
-	vkBufferCopyInfo.imageSubresource.aspectMask     = aspectMask;
+	vkBufferCopyInfo.imageSubresource.aspectMask     = imageAspectMask_;
 	vkBufferCopyInfo.imageSubresource.mipLevel       = level;
 	vkBufferCopyInfo.imageSubresource.baseArrayLayer = index;
 	vkBufferCopyInfo.imageSubresource.layerCount     = 1;

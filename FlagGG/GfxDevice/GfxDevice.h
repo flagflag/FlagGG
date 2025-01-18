@@ -50,6 +50,18 @@ public:
 	/*                        渲染指令                        */
 	/**********************************************************/
 
+	// 帧开始
+	virtual void BeginFrame();
+
+	// 帧结束
+	virtual void EndFrame();
+
+	// 开始Pass
+	virtual void BeginPass(const char* renderPassName);
+
+	// 结束Pass
+	virtual void EndPass();
+
 	// 清理RenderTarget、DepthStencil
 	virtual void Clear(ClearTargetFlags flags , const Color& color = Color::BLACK, float depth = 1.0f, unsigned stencil = 0);
 

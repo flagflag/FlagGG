@@ -20,6 +20,26 @@ GfxDevice::~GfxDevice()
 	
 }
 
+void GfxDevice::BeginFrame()
+{
+
+}
+
+void GfxDevice::EndFrame()
+{
+
+}
+
+void GfxDevice::BeginPass(const char* renderPassName)
+{
+
+}
+
+void GfxDevice::EndPass()
+{
+
+}
+
 void GfxDevice::Clear(ClearTargetFlags flags, const Color& color/* = Color::TRANSPARENT_BLACK*/, float depth/* = 1.0f*/, unsigned stencil/* = 0*/)
 {
 
@@ -27,8 +47,11 @@ void GfxDevice::Clear(ClearTargetFlags flags, const Color& color/* = Color::TRAN
 
 void GfxDevice::SetRenderTarget(GfxRenderSurface* gfxRenderTarget)
 {
-	renderTargets_[0] = gfxRenderTarget;
-	renderTargetDirty_ = true;
+	if (renderTargets_[0] != gfxRenderTarget)
+	{
+		renderTargets_[0] = gfxRenderTarget;
+		renderTargetDirty_ = true;
+	}
 }
 
 void GfxDevice::ResetRenderTargets()
@@ -42,7 +65,7 @@ void GfxDevice::ResetRenderTargets()
 
 void GfxDevice::SetRenderTarget(UInt8 slotID, GfxRenderSurface* gfxRenderTarget)
 {
-	if (slotID < MAX_RENDERTARGET_COUNT)
+	if (slotID < MAX_RENDERTARGET_COUNT && renderTargets_[slotID] != gfxRenderTarget)
 	{
 		renderTargets_[slotID] = gfxRenderTarget;
 		renderTargetDirty_ = true;
@@ -51,8 +74,11 @@ void GfxDevice::SetRenderTarget(UInt8 slotID, GfxRenderSurface* gfxRenderTarget)
 
 void GfxDevice::SetDepthStencil(GfxRenderSurface* gfxDepthStencil)
 {
-	depthStencil_ = gfxDepthStencil;
-	depthStencilDirty_ = true;
+	if (depthStencil_ != gfxDepthStencil)
+	{
+		depthStencil_ = gfxDepthStencil;
+		depthStencilDirty_ = true;
+	}
 }
 
 GfxRenderSurface* GfxDevice::GetRenderTarget(UInt8 slotId)
@@ -67,15 +93,16 @@ GfxRenderSurface* GfxDevice::GetDepthStencil()
 
 void GfxDevice::SetViewport(const Rect& viewport)
 {
-	viewport_ = viewport;
-	viewportDirty_ = true;
+	if (viewport_ != viewport)
+	{
+		viewport_ = viewport;
+		viewportDirty_ = true;
+	}
 }
 
 void GfxDevice::SetViewport(const IntRect& viewport)
 {
-	viewport_.min_ = Vector2(viewport.Min());
-	viewport_.max_ = Vector2(viewport.Max());
-	viewportDirty_ = true;
+	SetViewport(Rect(Vector2(viewport.Min()), Vector2(viewport.Max())));
 }
 
 void GfxDevice::SetVertexBuffer(GfxBuffer* gfxVertexBuffer)
@@ -169,19 +196,25 @@ void GfxDevice::SetSampler(UInt32 slotID, GfxSampler* gfxSampler)
 
 void GfxDevice::SetShaders(GfxShader* vertexShader, GfxShader* pixelShader)
 {
-	vertexShader_ = vertexShader;
-	pixelShader_ = pixelShader;
-	computeShader_ = nullptr;
-	shaderDirty_ = true;
-	vertexDescDirty_ = true;
+	if (vertexShader_ != vertexShader || pixelShader_ != pixelShader)
+	{
+		vertexShader_ = vertexShader;
+		pixelShader_ = pixelShader;
+		computeShader_ = nullptr;
+		shaderDirty_ = true;
+		vertexDescDirty_ = true;
+	}
 }
 
 void GfxDevice::SetComputeShader(GfxShader* computeShader)
 {
-	vertexShader_ = nullptr;
-	pixelShader_ = nullptr;
-	computeShader_ = computeShader;
-	shaderDirty_ = true;
+	if (computeShader_ != computeShader)
+	{
+		vertexShader_ = nullptr;
+		pixelShader_ = nullptr;
+		computeShader_ = computeShader;
+		shaderDirty_ = true;
+	}
 }
 
 void GfxDevice::SetEngineShaderParameters(ShaderParameters* engineShaderParameters)

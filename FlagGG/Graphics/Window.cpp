@@ -23,7 +23,7 @@ static LRESULT APIENTRY StaticWndProc(HWND handler, UINT message, WPARAM wParam,
 	switch (message)
 	{
 	case WM_CREATE:
-		FLAGGG_LOG_ERROR("create window success.");
+		FLAGGG_LOG_INFO("create window success.");
 		break;
 	}
 

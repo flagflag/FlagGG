@@ -8,6 +8,8 @@
 #include "GfxDevice/Vulkan/GfxRenderSurfaceVulkan.h"
 #include "Container/Ptr.h"
 
+#include <vulkan-local/vulkan.h>
+
 namespace FlagGG
 {
 
@@ -34,13 +36,37 @@ public:
 	// Swap buffer
 	void Present() override;
 
-private:
-	UInt32 multiSample_{ 1 };
+	// 获取backbuffer宽
+	UInt32 GetBackbufferWidth() const { return backbufferWidth_; }
 
-	bool sRGB_{};
+	// 获取backbuffer高
+	UInt32 GetBackbufferHeight() const { return backbufferHeight_; }
+
+	// 获取交换链
+	VkSwapchainKHR GetVulkanSwapChain() { return vkSwapChain_; }
+
+protected:
+	void DestroyVKObject();
+
+private:	
+	Window* outputWindow_;
+
+	// Backbuffer大小
+	UInt32 backbufferWidth_;
+	UInt32 backbufferHeight_;
 
 	SharedPtr<GfxRenderSurfaceVulkan> renderTarget_;
+	SharedPtr<GfxTextureVulkan> depthStencilTexture_;
 	SharedPtr<GfxRenderSurfaceVulkan> depthStencil_;
+
+	// vulkan surface
+	VkSurfaceKHR vkSurface_;
+
+	// vulkan swapchain
+	VkSwapchainKHR vkSwapChain_;
+
+	// color view
+	VkImageView vkColorView_;
 };
 
 }

@@ -7,6 +7,11 @@
 #include "VulkanDefines.h"
 #include "GfxDevice/VertexDescFactory.h"
 #include "Memory/MemoryHook.h"
+#if PLATFORM_WINDOWS
+#include <vulkan-local/vulkan_win32.h>
+#elif PLATFORM_ANDROID
+#include <vulkan-local/vulkan_android.h>
+#endif
 
 namespace FlagGG
 {
@@ -95,6 +100,39 @@ static const VkPrimitiveTopology vulkanPrimitiveType[] =
 	VK_PRIMITIVE_TOPOLOGY_LINE_LIST,
 };
 
+static const char* debugReportObjectType[] =
+{
+	"Unknown",
+	"Instance",
+	"PhysicalDevice",
+	"Device",
+	"Queue",
+	"Semaphore",
+	"CommandBuffer",
+	"Fence",
+	"DeviceMemory",
+	"Buffer",
+	"Image",
+	"Event",
+	"QueryPool",
+	"BufferView",
+	"ImageView",
+	"ShaderModule",
+	"PipelineCache",
+	"PipelineLayout",
+	"RenderPass",
+	"Pipeline",
+	"DescriptorSetLayout",
+	"Sampler",
+	"DescriptorPool",
+	"DescriptorSet",
+	"Framebuffer",
+	"CommandPool",
+	"SurfaceKHR",
+	"SwapchainKHR",
+	"DebugReport",
+};
+
 GfxDeviceVulkan::GfxDeviceVulkan()
 	: vkRenderPassDirty_(false)
 {
@@ -129,15 +167,32 @@ GfxDeviceVulkan::GfxDeviceVulkan()
 	vkAppInfo.pApplicationName   = "FlagGG";
 	vkAppInfo.pEngineName        = "FlagGG";
 
+	const char* enabledLayerNames[] = 
+	{
+		"VK_LAYER_LUNARG_standard_validation",
+		"VK_LAYER_LUNARG_vktrace",
+		"VK_LAYER_KHRONOS_validation",
+	};
+
+	const char* enabledExtensionNames[] =
+	{
+		VK_KHR_SURFACE_EXTENSION_NAME,
+#if PLATFORM_WINDOWS
+		VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
+#elif PLATFORM_ANDROID
+		VK_KHR_ANDROID_SURFACE_EXTENSION_NAME,
+#endif
+	};
+
 	VkInstanceCreateInfo vkICI;
 	vkICI.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	vkICI.pNext                   = nullptr;
-	vkICI.enabledExtensionCount   = 0;
-	vkICI.enabledLayerCount       = 0;
 	vkICI.flags                   = 0;
 	vkICI.pApplicationInfo        = &vkAppInfo;
-	vkICI.ppEnabledExtensionNames = nullptr;
-	vkICI.ppEnabledLayerNames     = nullptr;
+	vkICI.enabledLayerCount       = /*3*/0;
+	vkICI.ppEnabledLayerNames     = enabledLayerNames;
+	vkICI.enabledExtensionCount   = 2;
+	vkICI.ppEnabledExtensionNames = enabledExtensionNames;
 	VULKAN_CHECK(vkCreateInstance(&vkICI, &vkAllocCallback_, &vkInstance_));
 
 	uint32_t numPhysicalDevices = 0;
@@ -146,19 +201,19 @@ GfxDeviceVulkan::GfxDeviceVulkan()
 	physicalDevices.Resize(numPhysicalDevices);
 	VULKAN_CHECK(vkEnumeratePhysicalDevices(vkInstance_, &numPhysicalDevices, &physicalDevices[0]));
 
-	VkPhysicalDevice selectPhysicalDevice = nullptr;
+	vkPhysicalDevice_ = nullptr;
 	for (UInt32 i = 0; i < numPhysicalDevices; ++i)
 	{
-		selectPhysicalDevice = physicalDevices[i];
+		vkPhysicalDevice_ = physicalDevices[i];
 	}
 
-	vkGetPhysicalDeviceMemoryProperties(selectPhysicalDevice, &vkPhyDvMemProp_);
+	vkGetPhysicalDeviceMemoryProperties(vkPhysicalDevice_, &vkPhyDvMemProp_);
 
 	uint32_t numQueueFamilyPropertices;
-	vkGetPhysicalDeviceQueueFamilyProperties(selectPhysicalDevice, &numQueueFamilyPropertices, nullptr);
+	vkGetPhysicalDeviceQueueFamilyProperties(vkPhysicalDevice_, &numQueueFamilyPropertices, nullptr);
 	PODVector<VkQueueFamilyProperties> queueFamilyProperties;
 	queueFamilyProperties.Resize(numQueueFamilyPropertices);
-	vkGetPhysicalDeviceQueueFamilyProperties(selectPhysicalDevice, &numQueueFamilyPropertices, &queueFamilyProperties[0]);
+	vkGetPhysicalDeviceQueueFamilyProperties(vkPhysicalDevice_, &numQueueFamilyPropertices, &queueFamilyProperties[0]);
 	uint32_t graphicsQueueIndex = 0;
 	uint32_t computeQueueIndex = 0;
 	for (uint32_t i = 0; i < numQueueFamilyPropertices; ++i)
@@ -197,7 +252,7 @@ GfxDeviceVulkan::GfxDeviceVulkan()
 	vkDCI.ppEnabledLayerNames     = nullptr;
 	vkDCI.pQueueCreateInfos       = &vkDQCI[0];
 	vkDCI.queueCreateInfoCount    = 2;
-	VULKAN_CHECK(vkCreateDevice(selectPhysicalDevice, &vkDCI, &vkAllocCallback_, &vkDevice_));
+	VULKAN_CHECK(vkCreateDevice(vkPhysicalDevice_, &vkDCI, &vkAllocCallback_, &vkDevice_));
 
 	vkGetDeviceQueue(vkDevice_, graphicsQueueIndex, 0, &vkGraphicsQueue_);
 	vkGetDeviceQueue(vkDevice_, computeQueueIndex, 0, &vkComputeQueue_);
@@ -209,6 +264,14 @@ GfxDeviceVulkan::GfxDeviceVulkan()
 	vkCPCI.queueFamilyIndex = graphicsQueueIndex;
 	VULKAN_CHECK(vkCreateCommandPool(vkDevice_, &vkCPCI, &vkAllocCallback_, &vkCmdPool_));
 
+	VkCommandBufferAllocateInfo vkCBAI;
+	vkCBAI.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	vkCBAI.pNext = nullptr;
+	vkCBAI.commandPool = vkCmdPool_;
+	vkCBAI.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	vkCBAI.commandBufferCount = 4;
+	VULKAN_CHECK(vkAllocateCommandBuffers(vkDevice_, &vkCBAI, vkCmdBuffers_));
+
 	VkPipelineCacheCreateInfo vkPCCI;
 	vkPCCI.sType           = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
 	vkPCCI.pNext           = nullptr;
@@ -216,13 +279,68 @@ GfxDeviceVulkan::GfxDeviceVulkan()
 	vkPCCI.initialDataSize = 0;
 	vkPCCI.pInitialData    = nullptr;
 	VULKAN_CHECK(vkCreatePipelineCache(vkDevice_, &vkPCCI, &vkAllocCallback_, &vkAllPipelineCache_));
+
+#if 0
+	VkDebugReportCallbackCreateInfoEXT vkDRCCI;
+	vkDRCCI.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT;
+	vkDRCCI.pNext = nullptr;
+	vkDRCCI.pfnCallback = [](VkDebugReportFlagsEXT _flags, VkDebugReportObjectTypeEXT _objectType, uint64_t _object, size_t _location, int32_t _messageCode,
+		const char* _layerPrefix, const char* _message, void* _userData) -> VkBool32
+	{
+		FLAGGG_LOG_STD_ERROR("%c%c%c%c%c %19s, %s, %d: %s"
+			, 0 != (_flags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT) ? 'I' : '-'
+			, 0 != (_flags & VK_DEBUG_REPORT_WARNING_BIT_EXT) ? 'W' : '-'
+			, 0 != (_flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT) ? 'P' : '-'
+			, 0 != (_flags & VK_DEBUG_REPORT_ERROR_BIT_EXT) ? 'E' : '-'
+			, 0 != (_flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT) ? 'D' : '-'
+			, debugReportObjectType[_objectType]
+			, _layerPrefix
+			, _messageCode
+			, _message
+		);
+
+		return VK_TRUE;
+	};
+	vkDRCCI.pUserData = nullptr;
+	vkDRCCI.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
+	VULKAN_CHECK(vkCreateDebugReportCallbackEXT(vkInstance_, &vkDRCCI, &vkAllocCallback_, &debugReportCallback_));
+#endif
 }
 
 GfxDeviceVulkan::~GfxDeviceVulkan()
 {
+	vkFreeCommandBuffers(vkDevice_, vkCmdPool_, 4, vkCmdBuffers_);
 	vkDestroyCommandPool(vkDevice_, vkCmdPool_, &vkAllocCallback_);
 	vkDestroyDevice(vkDevice_, &vkAllocCallback_);
 	vkDestroyInstance(vkInstance_, &vkAllocCallback_);
+}
+
+void GfxDeviceVulkan::BeginFrame()
+{
+	if (vkCmdBuffer_)
+	{
+		EndRenderCommand(vkCmdBuffer_);
+		vkCmdBuffer_ = nullptr;
+	}
+}
+
+void GfxDeviceVulkan::EndFrame()
+{
+	if (vkCmdBuffer_)
+	{
+		EndRenderCommand(vkCmdBuffer_);
+		vkCmdBuffer_ = nullptr;
+	}
+}
+
+void GfxDeviceVulkan::BeginPass(const char* renderPassName)
+{
+
+}
+
+void GfxDeviceVulkan::EndPass()
+{
+
 }
 
 void GfxDeviceVulkan::Clear(ClearTargetFlags flags, const Color& color, float depth, unsigned stencil)
@@ -291,7 +409,7 @@ GfxProgram* GfxDeviceVulkan::CreateProgram()
 
 void GfxDeviceVulkan::PrepareDraw()
 {
-	PrepareRenderPassAttachments();
+	PrepareRenderPass();
 
 	PrepareRenderPipelineState();
 
@@ -330,7 +448,154 @@ void GfxDeviceVulkan::PrepareDraw()
 	}
 }
 
-void GfxDeviceVulkan::PrepareRenderPassAttachments()
+VkCommandBuffer GfxDeviceVulkan::BeginNewRenderCommand(VkRenderPass vkRenderPass, VkFramebuffer vkFramebuffer)
+{
+	VkCommandBuffer vkCmdBuffer = BeginCommandBuffer(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+
+	VkRenderPassBeginInfo vkRPBI;
+	vkRPBI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	vkRPBI.pNext = nullptr;
+	vkRPBI.renderPass = vkRenderPass;
+	vkRPBI.framebuffer = vkFramebuffer;
+	vkRPBI.renderArea.offset = { (Int32)viewport_.Left(), (Int32)viewport_.Top() };
+	vkRPBI.renderArea.extent = { (UInt32)viewport_.Width(), (UInt32)viewport_.Height() };
+	vkRPBI.clearValueCount = 0;
+	vkRPBI.pClearValues = nullptr;
+	vkCmdBeginRenderPass(vkCmdBuffer, &vkRPBI, VK_SUBPASS_CONTENTS_INLINE);
+
+	return vkCmdBuffer;
+}
+
+void GfxDeviceVulkan::EndRenderCommand(VkCommandBuffer vkCmdBuffer)
+{
+	vkCmdEndRenderPass(vkCmdBuffer);
+	EndCommandBuffer(vkCmdBuffer, true);
+}
+
+VkRenderPass GfxDeviceVulkan::CreateRenderPassFromCurrentState()
+{
+	VkRenderPassCreateInfo vkRPCI;
+	vkRPCI.sType           = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	vkRPCI.pNext           = nullptr;
+
+	VkAttachmentDescription vkAttachmentDescArray[MAX_RENDERTARGET_COUNT + 1];
+	VkAttachmentReference vkColorAttachmentRef[MAX_RENDERTARGET_COUNT];
+	VkAttachmentReference vkResolveAttachmentRef[MAX_RENDERTARGET_COUNT + 1];
+	VkAttachmentReference vkDepthStencilAttachmentRef;
+	UInt32 colorAttachmentCount = 0;
+	UInt32 depthStencilAttachmentCount = 0;
+
+	for (UInt32 i = 0; i < MAX_RENDERTARGET_COUNT; ++i)
+	{
+		if (renderTargets_[i])
+		{
+			auto* texture = renderTargets_[i]->GetOwnerTexture();
+			// 移动端使用TileMemory存储RT内容
+			bool useTileMemory = texture->GetDesc().storageMode_ == STORAGE_MODE_MEMORYLESS;
+			auto& vkAttachmentDesc = vkAttachmentDescArray[colorAttachmentCount];
+			vkAttachmentDesc.flags          = 0;
+			vkAttachmentDesc.format         = GfxTextureVulkan::ToVulkanTextureFormat(texture->GetDesc().format_);
+			vkAttachmentDesc.samples        = VK_SAMPLE_COUNT_1_BIT;
+			vkAttachmentDesc.loadOp         = useTileMemory ? VK_ATTACHMENT_LOAD_OP_DONT_CARE : VK_ATTACHMENT_LOAD_OP_LOAD;
+			vkAttachmentDesc.storeOp        = useTileMemory ? VK_ATTACHMENT_STORE_OP_DONT_CARE : VK_ATTACHMENT_STORE_OP_STORE;
+			vkAttachmentDesc.stencilLoadOp  = useTileMemory ? VK_ATTACHMENT_LOAD_OP_DONT_CARE : VK_ATTACHMENT_LOAD_OP_LOAD;
+			vkAttachmentDesc.stencilStoreOp = useTileMemory ? VK_ATTACHMENT_STORE_OP_DONT_CARE : VK_ATTACHMENT_STORE_OP_STORE;
+			vkAttachmentDesc.initialLayout  = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			vkAttachmentDesc.finalLayout    = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			vkColorAttachmentRef[colorAttachmentCount].attachment = colorAttachmentCount;
+			vkColorAttachmentRef[colorAttachmentCount].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			vkResolveAttachmentRef[colorAttachmentCount].attachment = colorAttachmentCount;
+			vkResolveAttachmentRef[colorAttachmentCount].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			++colorAttachmentCount;
+		}
+	}
+	if (depthStencil_)
+	{
+		auto* texture = depthStencil_->GetOwnerTexture();
+		// 移动端使用TileMemory存储RT内容
+		bool useTileMemory = texture->GetDesc().storageMode_ == STORAGE_MODE_MEMORYLESS;
+		auto& vkAttachmentDesc = vkAttachmentDescArray[colorAttachmentCount];
+		vkAttachmentDesc.flags          = 0;
+		vkAttachmentDesc.format         = GfxTextureVulkan::ToVulkanTextureFormat(texture->GetDesc().format_);
+		vkAttachmentDesc.samples        = VK_SAMPLE_COUNT_1_BIT;
+		vkAttachmentDesc.loadOp         = useTileMemory ? VK_ATTACHMENT_LOAD_OP_DONT_CARE : VK_ATTACHMENT_LOAD_OP_LOAD;
+		vkAttachmentDesc.storeOp        = useTileMemory ? VK_ATTACHMENT_STORE_OP_DONT_CARE : VK_ATTACHMENT_STORE_OP_STORE;
+		vkAttachmentDesc.stencilLoadOp  = useTileMemory ? VK_ATTACHMENT_LOAD_OP_DONT_CARE : VK_ATTACHMENT_LOAD_OP_LOAD;
+		vkAttachmentDesc.stencilStoreOp = useTileMemory ? VK_ATTACHMENT_STORE_OP_DONT_CARE : VK_ATTACHMENT_STORE_OP_STORE;
+		vkAttachmentDesc.initialLayout  = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
+		vkAttachmentDesc.finalLayout    = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
+		vkDepthStencilAttachmentRef.attachment = colorAttachmentCount;
+		vkDepthStencilAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
+		vkResolveAttachmentRef[colorAttachmentCount].attachment = colorAttachmentCount;
+		vkResolveAttachmentRef[colorAttachmentCount].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		++depthStencilAttachmentCount;
+	}
+	vkRPCI.attachmentCount = colorAttachmentCount + depthStencilAttachmentCount;
+	vkRPCI.pAttachments = vkAttachmentDescArray;
+
+	VkSubpassDescription vkSubpassDesc;
+	vkSubpassDesc.flags                   = 0;
+	vkSubpassDesc.pipelineBindPoint       = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	vkSubpassDesc.inputAttachmentCount    = 0;
+	vkSubpassDesc.pInputAttachments       = nullptr;
+	vkSubpassDesc.colorAttachmentCount    = colorAttachmentCount;
+	vkSubpassDesc.pColorAttachments       = vkColorAttachmentRef;
+	vkSubpassDesc.pResolveAttachments     = /*vkResolveAttachmentRef*/nullptr;
+	vkSubpassDesc.pDepthStencilAttachment = &vkDepthStencilAttachmentRef;
+	vkSubpassDesc.preserveAttachmentCount = 0;
+	vkSubpassDesc.pPreserveAttachments    = nullptr;
+
+	vkRPCI.subpassCount    = 1;
+	vkRPCI.pSubpasses      = &vkSubpassDesc;
+	vkRPCI.dependencyCount = 0;
+	vkRPCI.pDependencies   = nullptr;
+
+	VkRenderPass vkRenderPass;
+	VULKAN_CHECK(vkCreateRenderPass(vkDevice_, &vkRPCI, &vkAllocCallback_, &vkRenderPass), nullptr);
+
+	return vkRenderPass;
+}
+
+VkFramebuffer GfxDeviceVulkan::CreateFramebufferFromCurrentState(VkRenderPass vkRenderPass)
+{
+	VkImageView vkImageViews[MAX_RENDERTARGET_COUNT + 1];
+	UInt32 attachmentCount = 0;
+	Int32 width = -1;
+	Int32 height = -1;
+
+	for (UInt32 i = 0; i < MAX_RENDERTARGET_COUNT; ++i)
+	{
+		if (renderTargets_[i])
+		{
+			auto* surfaceVulkan = RTTICast<GfxRenderSurfaceVulkan>(renderTargets_[i]);
+			vkImageViews[attachmentCount++] = surfaceVulkan->GetVulkanImageView();
+			
+			if (width == -1)
+			{
+				width = surfaceVulkan->GetWidth();
+				height = surfaceVulkan->GetHeight();
+			}
+		}
+	}
+
+	VkFramebufferCreateInfo vkFCI;
+	vkFCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+	vkFCI.pNext = nullptr;
+	vkFCI.flags = 0;
+	vkFCI.renderPass = vkRenderPass;
+	vkFCI.attachmentCount = attachmentCount;
+	vkFCI.pAttachments = vkImageViews;
+	vkFCI.width = width;
+	vkFCI.height = height;
+	vkFCI.layers = 1;
+	
+	VkFramebuffer vkFramebuffer;
+	VULKAN_CHECK(vkCreateFramebuffer(vkDevice_, &vkFCI, &vkAllocCallback_, &vkFramebuffer), nullptr);
+
+	return vkFramebuffer;
+}
+
+void GfxDeviceVulkan::PrepareRenderPass()
 {
 	if (renderTargetDirty_ || depthStencilDirty_)
 	{
@@ -338,89 +603,22 @@ void GfxDeviceVulkan::PrepareRenderPassAttachments()
 		auto it = vkRenderPassMap_.Find(key);
 		if (it == vkRenderPassMap_.End())
 		{
-			VkRenderPassCreateInfo vkRPCI;
-			vkRPCI.sType           = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-			vkRPCI.pNext           = nullptr;
-
-			VkAttachmentDescription vkAttachmentDescArray[MAX_RENDERTARGET_COUNT + 1];
-			VkAttachmentReference vkColorAttachmentRef[MAX_RENDERTARGET_COUNT];
-			VkAttachmentReference vkResolveAttachmentRef[MAX_RENDERTARGET_COUNT + 1];
-			VkAttachmentReference vkDepthStencilAttachmentRef;
-			UInt32 colorAttachmentCount = 0;
-			UInt32 depthStencilAttachmentCount = 0;
-
-			for (UInt32 i = 0; i < MAX_RENDERTARGET_COUNT; ++i)
-			{
-				if (renderTargets_[i])
-				{
-					auto* texture = renderTargets_[i]->GetOwnerTexture();
-					// 移动端使用TileMemory存储RT内容
-					bool useTileMemory = texture->GetDesc().storageMode_ == STORAGE_MODE_MEMORYLESS;
-					auto& vkAttachmentDesc = vkAttachmentDescArray[colorAttachmentCount];
-					vkAttachmentDesc.flags          = 0;
-					vkAttachmentDesc.format         = GfxTextureVulkan::ToVulkanTextureFormat(texture->GetDesc().format_);
-					vkAttachmentDesc.samples        = VK_SAMPLE_COUNT_1_BIT;
-					vkAttachmentDesc.loadOp         = useTileMemory ? VK_ATTACHMENT_LOAD_OP_DONT_CARE : VK_ATTACHMENT_LOAD_OP_LOAD;
-					vkAttachmentDesc.storeOp        = useTileMemory ? VK_ATTACHMENT_STORE_OP_DONT_CARE : VK_ATTACHMENT_STORE_OP_STORE;
-					vkAttachmentDesc.stencilLoadOp  = useTileMemory ? VK_ATTACHMENT_LOAD_OP_DONT_CARE : VK_ATTACHMENT_LOAD_OP_LOAD;
-					vkAttachmentDesc.stencilStoreOp = useTileMemory ? VK_ATTACHMENT_STORE_OP_DONT_CARE : VK_ATTACHMENT_STORE_OP_STORE;
-					vkAttachmentDesc.initialLayout  = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-					vkAttachmentDesc.finalLayout    = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-					vkColorAttachmentRef[colorAttachmentCount].attachment = colorAttachmentCount;
-					vkColorAttachmentRef[colorAttachmentCount].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-					vkResolveAttachmentRef[colorAttachmentCount].attachment = colorAttachmentCount;
-					vkResolveAttachmentRef[colorAttachmentCount].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-					++colorAttachmentCount;
-				}
-			}
-			if (depthStencil_)
-			{
-				auto* texture = depthStencil_->GetOwnerTexture();
-				// 移动端使用TileMemory存储RT内容
-				bool useTileMemory = texture->GetDesc().storageMode_ == STORAGE_MODE_MEMORYLESS;
-				auto& vkAttachmentDesc = vkAttachmentDescArray[colorAttachmentCount];
-				vkAttachmentDesc.flags          = 0;
-				vkAttachmentDesc.format         = GfxTextureVulkan::ToVulkanTextureFormat(texture->GetDesc().format_);
-				vkAttachmentDesc.samples        = VK_SAMPLE_COUNT_1_BIT;
-				vkAttachmentDesc.loadOp         = useTileMemory ? VK_ATTACHMENT_LOAD_OP_DONT_CARE : VK_ATTACHMENT_LOAD_OP_LOAD;
-				vkAttachmentDesc.storeOp        = useTileMemory ? VK_ATTACHMENT_STORE_OP_DONT_CARE : VK_ATTACHMENT_STORE_OP_STORE;
-				vkAttachmentDesc.stencilLoadOp  = useTileMemory ? VK_ATTACHMENT_LOAD_OP_DONT_CARE : VK_ATTACHMENT_LOAD_OP_LOAD;
-				vkAttachmentDesc.stencilStoreOp = useTileMemory ? VK_ATTACHMENT_STORE_OP_DONT_CARE : VK_ATTACHMENT_STORE_OP_STORE;
-				vkAttachmentDesc.initialLayout  = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
-				vkAttachmentDesc.finalLayout    = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
-				vkDepthStencilAttachmentRef.attachment = colorAttachmentCount;
-				vkDepthStencilAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
-				vkResolveAttachmentRef[colorAttachmentCount].attachment = colorAttachmentCount;
-				vkResolveAttachmentRef[colorAttachmentCount].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-				++depthStencilAttachmentCount;
-			}
-			vkRPCI.attachmentCount = colorAttachmentCount + depthStencilAttachmentCount;
-			vkRPCI.pAttachments = vkAttachmentDescArray;
-
-			VkSubpassDescription vkSubpassDesc;
-			vkSubpassDesc.flags                   = 0;
-			vkSubpassDesc.pipelineBindPoint       = VK_PIPELINE_BIND_POINT_GRAPHICS;
-			vkSubpassDesc.inputAttachmentCount    = 0;
-			vkSubpassDesc.pInputAttachments       = nullptr;
-			vkSubpassDesc.colorAttachmentCount    = colorAttachmentCount;
-			vkSubpassDesc.pColorAttachments       = vkColorAttachmentRef;
-			vkSubpassDesc.pResolveAttachments     = /*vkResolveAttachmentRef*/nullptr;
-			vkSubpassDesc.pDepthStencilAttachment = &vkDepthStencilAttachmentRef;
-			vkSubpassDesc.preserveAttachmentCount = 0;
-			vkSubpassDesc.pPreserveAttachments    = nullptr;
-
-			vkRPCI.subpassCount    = 1;
-			vkRPCI.pSubpasses      = &vkSubpassDesc;
-			vkRPCI.dependencyCount = 0;
-			vkRPCI.pDependencies   = nullptr;
-
-			VkRenderPass vkRenderPass;
-			VULKAN_CHECK(vkCreateRenderPass(vkDevice_, &vkRPCI, &vkAllocCallback_, &vkRenderPass));
-
-			it = vkRenderPassMap_.Insert(MakePair(key, vkRenderPass));
+			VulkanRenderPassInfo renderPassInfo;
+			renderPassInfo.vkRenderPass_ = CreateRenderPassFromCurrentState();
+			renderPassInfo.vkFramebuffer_ = CreateFramebufferFromCurrentState(renderPassInfo.vkRenderPass_);
+			it = vkRenderPassMap_.Insert(MakePair(key, renderPassInfo));
 		}
 
-		vkRenderPass_ = it->second_;
+		vkRenderPass_ = it->second_.vkRenderPass_;
+		vkFramebuffer_ = it->second_.vkFramebuffer_;
+
+		if (vkCmdBuffer_)
+		{
+			EndRenderCommand(vkCmdBuffer_);
+			vkCmdBuffer_ = nullptr;
+		}
+
+		vkCmdBuffer_ = BeginNewRenderCommand(vkRenderPass_, vkFramebuffer_);
 
 		vkRenderPassDirty_ = true;
 		renderTargetDirty_ = false;
