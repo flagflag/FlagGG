@@ -94,6 +94,9 @@ list (APPEND THIRD_LIB ${SLikeNet_LIB})
 list (APPEND THIRD_LIB ${PUGIXML_LIB})
 list (APPEND THIRD_LIB hlslcc)
 list (APPEND THIRD_LIB mimalloc-static)
+if (FLAGGG_VULKAN)
+    list (APPEND THIRD_LIB glslang spirv-tools spirv-reflect-lib)
+endif ()
 
 target_link_libraries(${TARGET_NAME} ${THIRD_LIB})
 

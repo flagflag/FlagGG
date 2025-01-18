@@ -105,8 +105,11 @@ void GfxDevice::SetIndexBuffer(GfxBuffer* gfxIndexBuffer)
 
 void GfxDevice::SetVertexDescription(VertexDescription* vertexDesc)
 {
-	vertexDesc_ = vertexDesc;
-	vertexDescDirty_ = true;
+	if (vertexDesc_ != vertexDesc)
+	{
+		vertexDesc_ = vertexDesc;
+		vertexDescDirty_ = true;
+	}
 }
 
 void GfxDevice::ResetComputeBuffers()

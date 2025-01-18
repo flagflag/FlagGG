@@ -51,11 +51,11 @@ void GfxBufferVulkan::Apply(const void* initialDataPtr)
 
 // 创建vulkan buffer
 	VkBufferCreateInfo vkBCI;
-	vkBCI.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	vkBCI.pNext = nullptr;
-	vkBCI.flags = 0;
-	vkBCI.size = gfxBufferDesc_.size_;
-	vkBCI.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+	vkBCI.sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+	vkBCI.pNext                 = nullptr;
+	vkBCI.flags                 = 0;
+	vkBCI.size                  = gfxBufferDesc_.size_;
+	vkBCI.usage                 = VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 	if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_VERTEX)
 		vkBCI.usage |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 	if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_INDEX)
@@ -65,9 +65,9 @@ void GfxBufferVulkan::Apply(const void* initialDataPtr)
 		vkBCI.usage |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 	if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_DRAW_INDIRECT)
 		vkBCI.usage |= VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT;
-	vkBCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	vkBCI.sharingMode           = VK_SHARING_MODE_EXCLUSIVE;
 	vkBCI.queueFamilyIndexCount = 0;
-	vkBCI.pQueueFamilyIndices = nullptr;
+	vkBCI.pQueueFamilyIndices   = nullptr;
 
 	VULKAN_CHECK(vkCreateBuffer(deviceVulkan->GetVulkanDevice(), &vkBCI, &deviceVulkan->GetVulkanAllocCallback(), &vkBuffer_));
 
@@ -82,9 +82,9 @@ void GfxBufferVulkan::Apply(const void* initialDataPtr)
 		vkMemPropFlags |= VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
 	VkMemoryAllocateInfo vkMAI;
-	vkMAI.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-	vkMAI.pNext = nullptr;
-	vkMAI.allocationSize = vkMR.size;
+	vkMAI.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+	vkMAI.pNext           = nullptr;
+	vkMAI.allocationSize  = vkMR.size;
 	vkMAI.memoryTypeIndex = deviceVulkan->GetVulkanMemoryTypeIndex(vkMR.memoryTypeBits, vkMemPropFlags);
 	VULKAN_CHECK(vkAllocateMemory(deviceVulkan->GetVulkanDevice(), &vkMAI, &deviceVulkan->GetVulkanAllocCallback(), &vkMemory_));
 
@@ -163,14 +163,14 @@ void* GfxBufferVulkan::CreateWriteBuffer(UInt32 offset, UInt32 size)
 
 // 创建临时buffer
 	VkBufferCreateInfo vkBCI;
-	vkBCI.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	vkBCI.pNext = nullptr;
-	vkBCI.flags = 0;
-	vkBCI.size = size;
-	vkBCI.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-	vkBCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	vkBCI.sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+	vkBCI.pNext                 = nullptr;
+	vkBCI.flags                 = 0;
+	vkBCI.size                  = size;
+	vkBCI.usage                 = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+	vkBCI.sharingMode           = VK_SHARING_MODE_EXCLUSIVE;
 	vkBCI.queueFamilyIndexCount = 0;
-	vkBCI.pQueueFamilyIndices = nullptr;
+	vkBCI.pQueueFamilyIndices   = nullptr;
 	VULKAN_CHECK(vkCreateBuffer(deviceVulkan->GetVulkanDevice(), &vkBCI, &deviceVulkan->GetVulkanAllocCallback(), &vkWriteBuffer_), nullptr);
 
 // 分配CPU内存 => VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
@@ -178,9 +178,9 @@ void* GfxBufferVulkan::CreateWriteBuffer(UInt32 offset, UInt32 size)
 	vkGetBufferMemoryRequirements(deviceVulkan->GetVulkanDevice(), vkWriteBuffer_, &vkMR);
 	  
 	VkMemoryAllocateInfo vkMAI;
-	vkMAI.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-	vkMAI.pNext = nullptr;
-	vkMAI.allocationSize = vkMR.size;
+	vkMAI.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+	vkMAI.pNext           = nullptr;
+	vkMAI.allocationSize  = vkMR.size;
 	vkMAI.memoryTypeIndex = deviceVulkan->GetVulkanMemoryTypeIndex(vkMR.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 	VULKAN_CHECK(vkAllocateMemory(deviceVulkan->GetVulkanDevice(), &vkMAI, &deviceVulkan->GetVulkanAllocCallback(), &vkWriteMemory_), nullptr);
 

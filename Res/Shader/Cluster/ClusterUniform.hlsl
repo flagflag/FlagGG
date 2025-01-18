@@ -1,13 +1,13 @@
 
 #define REGISTER(type, reg) register(type[reg])
 
-// cluster size in screen coordinates (pixels)
 #if !defined(PIXEL)
-cbuffer ParamBuffer : register(b0)
+cbuffer ClusterParam : register(b0)
 #else
-cbuffer ParamBuffer : register(b1)
+cbuffer ClusterParam : register(b1)
 #endif
 {
+    // cluster size in screen coordinates (pixels)
     float2 clusterSizes;
     float2 clusterOrigin;
     float4 viewRect;

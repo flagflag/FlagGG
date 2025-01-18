@@ -8,7 +8,7 @@
 		VkResult result = call; \
 		if (result != VK_SUCCESS) \
 		{ \
-			FLAGGG_LOG_STD_ERROR(#call "=> Vulkan error: 0x%x", result); \
+			FLAGGG_LOG_STD_ERROR(#call "=> Vulkan error: %d", result); \
 			ASSERT_MESSAGE(false, #call); \
 			return fail; \
 		} \

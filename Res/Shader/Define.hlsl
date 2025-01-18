@@ -1,20 +1,11 @@
 #ifdef VERTEX
-    cbuffer MatrixBuffer : register(b0)
+    cbuffer EngineParam : register(b0)
     {
         float4x3 worldMatrix;
         float4x3 viewMatrix;
         float4x4 projviewMatrix;
         float4x3 invViewMatrix;
         float3 frustumSize;
-    }
-    #ifdef SKINNED
-        cbuffer SkinMatrixBuffer : register(b1)
-        {
-            uniform float4x3 skinMatrices[150];
-        }
-    #endif
-    cbuffer ParamBuffer : register(b2)
-    {
         float nearClip;
         float farClip;
         float deltaTime;
@@ -26,8 +17,14 @@
         float4x3 lightViewMatrix;
         float4x4 lightProjviewMatrix;
     }
+    #ifdef SKINNED
+        cbuffer SkinMatrixBuffer : register(b1)
+        {
+            uniform float4x3 skinMatrices[150];
+        }
+    #endif
 #elif defined(PIXEL)
-    cbuffer ParamBuffer : register(b0)
+    cbuffer EngineParam : register(b0)
     {
         float nearClip;
         float farClip;

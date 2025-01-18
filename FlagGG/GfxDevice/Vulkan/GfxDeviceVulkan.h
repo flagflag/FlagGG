@@ -18,8 +18,59 @@
 namespace FlagGG
 {
 
+class GfxShaderVulkan;
 class GfxProgramVulkan;
 struct VulkanConstanceBufferDesc;
+
+struct VulkanRenderPassAttachmentsKey
+{
+	VulkanRenderPassAttachmentsKey()
+		: hashValue_(0u)
+		, id_{}
+	{
+
+	}
+
+	VulkanRenderPassAttachmentsKey(GfxRenderSurface* surface1, GfxRenderSurface* surface2, GfxRenderSurface* surface3, GfxRenderSurface* surface4, GfxRenderSurface* surface5)
+		: id_{ UInt64(surface1), UInt64(surface2), UInt64(surface3), UInt64(surface4), UInt64(surface5), }
+		, hashValue_(0u)
+	{}
+
+	bool operator==(const VulkanRenderPassAttachmentsKey& rhs) const
+	{
+		for (unsigned i = 0; i < MAX_RENDERTARGET_COUNT + 1; ++i)
+		{
+			if (id_[i] != rhs.id_[i])
+				return false;
+		}
+		return true;
+	}
+
+	inline UInt64& operator[](unsigned idx)
+	{
+		return id_[idx];
+	}
+
+	void CalculateHash()
+	{
+		hashValue_ = 0u;
+		UInt32 num = (MAX_RENDERTARGET_COUNT + 1u) * 8u;
+		const char* ptr = reinterpret_cast<const char*>(id_);
+		while (num--)
+		{
+			hashValue_ = *ptr + (hashValue_ << 6u) + (hashValue_ << 16u) - hashValue_;
+			++ptr;
+		}
+	}
+
+	inline UInt32 ToHash() const
+	{
+		return hashValue_;
+	}
+
+	UInt32 hashValue_;
+	UInt64 id_[MAX_RENDERTARGET_COUNT + 1];
+};
 
 class GfxDeviceVulkan : public GfxDevice, public Subsystem<GfxDeviceVulkan>
 {
@@ -91,9 +142,29 @@ protected:
 
 	void PrepareRenderPassAttachments();
 
-	void PrepareRenderPiplineState();
+	void PrepareRenderPipelineState();
 
-	void PrepareDepthStencilState();
+	void PrepareShaderStage(GfxShaderVulkan* shader, VkShaderStageFlagBits shaderStage, VkPipelineShaderStageCreateInfo& vkPSSCI);
+
+	void PrepareVertexInputState(VertexDescription* vertxDesc, VkPipelineVertexInputStateCreateInfo& vkPVISCI);
+
+	void PrepareInputAssemblyState(VkPipelineInputAssemblyStateCreateInfo& vkPIASCI);
+
+	void PrepareViewportState(VkPipelineViewportStateCreateInfo& vkPVSCI);
+
+	void PrepareRasterizationState(VkPipelineRasterizationStateCreateInfo& vkPRSCI);
+
+	void PrepareMultisampleState(VkPipelineMultisampleStateCreateInfo& vkPMSCI);
+
+	void PrepareDepthStencilState(VkPipelineDepthStencilStateCreateInfo& vkPDSSCI);
+
+	void PrepareColorBlendState(VkPipelineColorBlendStateCreateInfo& vkPCBSCI, VkPipelineColorBlendAttachmentState& vkPCBAS);
+
+	void PrepareDynamicState(VkPipelineDynamicStateCreateInfo& vkPDSCI);
+
+	VkPipeline CreateRenderPipelineFromCurrentState();
+
+	void PrepareComputePipelineState();
 
 	void CopyShaderParameterToBuffer(const HashMap<UInt32, VulkanConstanceBufferDesc>& bufferDesc, GfxBuffer* bufferArray);
 
@@ -113,6 +184,23 @@ private:
 	VkQueue vkComputeQueue_;
 
 	VkCommandBuffer vkCmdBuffer_;
+
+	VkPipelineCache vkAllPipelineCache_;
+
+	VkPipeline vkComputePipeline_;
+
+	VkPipeline vkGraphicsPipeline_;
+
+	VkRenderPass vkRenderPass_;
+
+	HashMap<VulkanRenderPassAttachmentsKey, VkRenderPass> vkRenderPassMap_;
+
+	bool vkRenderPassDirty_;
+
+	HashMap<UInt32, VkPipeline> vkPipelineMap_;
+
+	HashMap<Pair<WeakPtr<GfxShader>, WeakPtr<GfxShader>>, SharedPtr<GfxProgramVulkan>> programMap_;
+	SharedPtr<GfxProgramVulkan> currentProgram_;
 
 	// Constant buffer用途
 	enum ConstBufferType

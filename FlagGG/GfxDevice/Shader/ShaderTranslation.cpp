@@ -3,6 +3,7 @@
 
 #include "ShaderTranslation.h"
 #include "HlslShaderCompile.h"
+#include "SpirvHelper.h"
 #include "Log.h"
 
 namespace FlagGG
@@ -59,8 +60,9 @@ bool CompileShader(CompileShaderLanguage compileShaderLanguage, const char* buff
 
 	switch (compileShaderLanguage)
 	{
-	case COMPILE_SHADER_GLSL:
 	case COMPILE_SHADER_VULKAN:
+		options |= HLSLCC_FLAG_VULKAN_BINDINGS;
+	case COMPILE_SHADER_GLSL:
 		TranslateHLSLFromMem((char*)d3d11CompileCode->GetBufferPointer(), options, LANG_430, &ext, &dependencyData, pi, relection, &shader);
 		break;
 
@@ -78,6 +80,20 @@ bool CompileShader(CompileShaderLanguage compileShaderLanguage, const char* buff
 
 	outShaderCode.Resize(shader.sourceCode.length());
 	memcpy(&outShaderCode[0], shader.sourceCode.c_str(), shader.sourceCode.length());
+
+#if FLAGGG_VULKAN
+	// GLSL to SPIR-V
+	if (compileShaderLanguage == COMPILE_SHADER_VULKAN)
+	{
+		String spirvShaderCode;
+		if (!GetSubsystem<SpirvHelper>()->GlslToSpirv(type, outShaderCode, spirvShaderCode))
+		{
+			FLAGGG_LOG_ERROR("Glsl to Spir-V error.");
+			return false;
+		}
+		outShaderCode = std::move(spirvShaderCode);
+	}
+#endif
 
 	return true;
 }

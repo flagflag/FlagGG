@@ -47,6 +47,9 @@ public:
 	// 2.TextureCube，index传入cube的face
 	GfxRenderSurface* GetRenderSurface(UInt32 index) const override;
 
+	// 
+	static VkFormat ToVulkanTextureFormat(TextureFormat textureFormat);
+
 private:
 	// 
 	VkImage vkImage_;

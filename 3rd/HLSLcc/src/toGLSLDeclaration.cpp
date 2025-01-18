@@ -920,7 +920,7 @@ void ToGLSL::DeclareUBOConstants(const uint32_t ui32BindingPoint, const Constant
     /* [layout (location = X)] uniform vec4 HLSLConstantBufferName[numConsts]; */
     if ((psContext->flags & HLSLCC_FLAG_VULKAN_BINDINGS) != 0)
     {
-        GLSLCrossDependencyData::VulkanResourceBinding binding = psContext->psDependencies->GetVulkanResourceBinding(cbName, false, 1);
+        GLSLCrossDependencyData::VulkanResourceBinding binding = psContext->psDependencies->GetVulkanResourceBinding(cbName, false, 2);
         bformata(glsl, "layout(set = %d, binding = %d, std140) ", binding.set, binding.binding);
     }
     else
@@ -1567,7 +1567,7 @@ static void TranslateVulkanResource(HLSLCrossCompilerContext* psContext, const D
         psDecl->value.eResourceDimension,
         psDecl->asOperands[0].ui32RegisterNumber);
 
-    GLSLCrossDependencyData::VulkanResourceBinding binding = psContext->psDependencies->GetVulkanResourceBinding(tname);
+    GLSLCrossDependencyData::VulkanResourceBinding binding = psContext->psDependencies->GetVulkanResourceBinding(tname, false, 1);
     bformata(glsl, "layout(set = %d, binding = %d) ", binding.set, binding.binding);
     bcatcstr(glsl, "uniform ");
     bcatcstr(glsl, samplerPrecision);
@@ -3276,7 +3276,7 @@ void ToGLSL::TranslateDeclaration(const Declaration* psDecl)
                 std::string name = ResourceName(psContext, RGROUP_SAMPLER, psDecl->asOperands[0].ui32RegisterNumber, 0);
                 const char *samplerPrecision = GetSamplerPrecision(psContext, pRes ? pRes->ePrecision : REFLECT_RESOURCE_PRECISION_UNKNOWN);
 
-                GLSLCrossDependencyData::VulkanResourceBinding binding = psContext->psDependencies->GetVulkanResourceBinding(name);
+                GLSLCrossDependencyData::VulkanResourceBinding binding = psContext->psDependencies->GetVulkanResourceBinding(name, false, 0);
                 const char *samplerType = psDecl->value.eSamplerMode == D3D10_SB_SAMPLER_MODE_COMPARISON ? "samplerShadow" : "sampler";
                 bformata(glsl, "layout(set = %d, binding = %d) uniform %s %s %s;\n", binding.set, binding.binding, samplerPrecision, samplerType, name.c_str());
                 // Store the sampler mode to ShaderInfo, it's needed when we use the sampler
