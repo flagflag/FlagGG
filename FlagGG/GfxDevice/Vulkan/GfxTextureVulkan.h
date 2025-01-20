@@ -47,11 +47,20 @@ public:
 	// 2.TextureCube，index传入cube的face
 	GfxRenderSurface* GetRenderSurface(UInt32 index) const override;
 
+	// 内存同步
+	void ImageMemoryBarrier(VkCommandBuffer vkCmdBuffer, VkImageLayout vkImageLayout);
+
+	// 
+	static void SetImageMemoryBarrier(VkCommandBuffer _commandBuffer, VkImage _image, VkImageAspectFlags _aspectMask, VkImageLayout _oldLayout, VkImageLayout _newLayout, uint32_t _levelCount, uint32_t _layerCount);
+
 	// 获取vulkan纹理格式
 	VkFormat GetVulkanFormat() const { return vkFormat_; }
 
 	//
-	VkImageAspectFlags GetVulkanImageAspect() const { return imageAspectMask_; }
+	VkImageAspectFlags GetVulkanImageAspect() const { return vkImageAspectMask_; }
+
+	//
+	VkImageLayout GetVulkanImageLayout() const { return vkImageLayout_; }
 
 	// 获取纹理
 	VkImage GetVulkanImage() const { return vkImage_; }
@@ -70,7 +79,10 @@ private:
 	VkFormat vkFormat_;
 
 	//
-	VkImageAspectFlags imageAspectMask_;
+	VkImageAspectFlags vkImageAspectMask_;
+
+	//
+	VkImageLayout vkImageLayout_;
 
 	// 
 	VkImage vkImage_;

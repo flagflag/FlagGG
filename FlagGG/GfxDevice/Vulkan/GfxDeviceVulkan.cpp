@@ -603,7 +603,7 @@ void GfxDeviceVulkan::PrepareDraw()
 
 VkCommandBuffer GfxDeviceVulkan::BeginNewRenderCommand(VkRenderPass vkRenderPass, VkFramebuffer vkFramebuffer)
 {
-	VkCommandBuffer vkCmdBuffer = BeginCommandBuffer(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+	VkCommandBuffer vkCmdBuffer = BeginCommandBuffer();
 
 	VkRenderPassBeginInfo vkRPBI;
 	vkRPBI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -888,7 +888,7 @@ void GfxDeviceVulkan::PrepareRasterizationState(VkPipelineRasterizationStateCrea
 	vkPRSCI.rasterizerDiscardEnable = VK_FALSE;
 	vkPRSCI.polygonMode             = vulkanFillMode[rasterizerState_.fillMode_];
 	vkPRSCI.cullMode                = vulkanCullMode[rasterizerState_.cullMode_];
-	vkPRSCI.frontFace               = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+	vkPRSCI.frontFace               = VK_FRONT_FACE_CLOCKWISE;
 	if (!Equals(rasterizerState_.depthBias_, 0.0f) && !Equals(rasterizerState_.slopeScaledDepthBias_, 0.0f))
 	{
 		vkPRSCI.depthBiasEnable         = VK_TRUE;
@@ -901,7 +901,6 @@ void GfxDeviceVulkan::PrepareRasterizationState(VkPipelineRasterizationStateCrea
 	{
 		vkPRSCI.depthBiasEnable = VK_FALSE;
 	}
-
 }
 
 void GfxDeviceVulkan::PrepareMultisampleState(VkPipelineMultisampleStateCreateInfo& vkPMSCI)

@@ -214,7 +214,7 @@ void GfxBufferVulkan::SubmitWriteBuffer(UInt32 bytesWritten)
 	vkUnmapMemory(deviceVulkan->GetVulkanDevice(), vkWriteMemory_);
 
 // 创建命令buffer，把cpu内存拷贝到vkBuffer_对应的GPU内存上
-	VkCommandBuffer vkCmdBuffer = deviceVulkan->BeginCommandBuffer(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+	VkCommandBuffer vkCmdBuffer = deviceVulkan->BeginCommandBuffer();
 
 	VkBufferCopy vkBC;
 	vkBC.srcOffset = 0;

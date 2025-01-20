@@ -5,9 +5,11 @@
 #include <Resource/ResourceCache.h>
 #include <Utility/SystemHelper.h>
 #include <Graphics/Shader.h>
+#include <Graphics/Texture2D.h>
 #include <GfxDevice/GfxDevice.h>
 #include <GfxDevice/GfxProgram.h>
 #include <Core/EngineSettings.h>
+#include <Resource/ResourceCache.h>
 #include <Memory/MemoryHook.h>
 
 using namespace FlagGG;
@@ -55,9 +57,7 @@ void GfxTextureTest()
 {
 	auto* device = GfxDevice::GetDevice();
 
-	SharedPtr<GfxTexture> texture(device->CreateTexture());
-	texture->SetWidth(128);
-	texture->SetHeight(128);
+	auto texture = GetSubsystem<ResourceCache>()->GetResource<Texture2D>("Textures/WaterReflection.dds");
 }
 
 int main()

@@ -108,7 +108,8 @@ static const VulkanTextureFormatInfo vulkanTextureFormat[] =
 
 GfxTextureVulkan::GfxTextureVulkan()
 	: vkFormat_(VK_FORMAT_UNDEFINED)
-	, imageAspectMask_(0)
+	, vkImageAspectMask_(0)
+	, vkImageLayout_(VK_IMAGE_LAYOUT_UNDEFINED)
 	, vkImage_(VK_NULL_HANDLE)
 	, vkMemory_(VK_NULL_HANDLE)
 	, vkImageView_(VK_NULL_HANDLE)
@@ -140,6 +141,7 @@ void GfxTextureVulkan::Apply(const void* initialDataPtr)
 		vkFormat_ = vulkanTextureFormat[textureDesc_.format_].fmtDsv_;
 	else
 		vkFormat_ = textureDesc_.sRGB_ ? vulkanTextureFormat[textureDesc_.format_].fmtSrgb_ : vulkanTextureFormat[textureDesc_.format_].fmt_;
+	vkImageLayout_ = VK_IMAGE_LAYOUT_UNDEFINED;
 	VkImageType vkImageType = VK_IMAGE_TYPE_1D;
 	VkImageViewType vkImageViewType = VK_IMAGE_VIEW_TYPE_1D;
 	if (textureDesc_.depth_ == 1)
@@ -175,7 +177,7 @@ void GfxTextureVulkan::Apply(const void* initialDataPtr)
 	vkICI.sharingMode           = VK_SHARING_MODE_EXCLUSIVE;
 	vkICI.queueFamilyIndexCount = 0;
 	vkICI.pQueueFamilyIndices   = nullptr;
-	vkICI.initialLayout         = VK_IMAGE_LAYOUT_UNDEFINED;
+	vkICI.initialLayout         = vkImageLayout_;
 
 	VULKAN_CHECK(vkCreateImage(deviceVulkan->GetVulkanDevice(), &vkICI, &deviceVulkan->GetVulkanAllocCallback(), &vkImage_));
 
@@ -195,12 +197,18 @@ void GfxTextureVulkan::Apply(const void* initialDataPtr)
 
 	if (initialDataPtr)
 		UpdateTexture(initialDataPtr);
+	else
+	{
+		VkCommandBuffer vkCmdBuffer = deviceVulkan->BeginCommandBuffer();
+		ImageMemoryBarrier(vkCmdBuffer, (textureDesc_.bindFlags_ & TEXTURE_BIND_COMPUTE_WRITE) ? VK_IMAGE_LAYOUT_GENERAL : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		deviceVulkan->EndCommandBuffer(vkCmdBuffer, true);
+	}
 
 // 创建TextureView
 	{
 		if (textureDesc_.format_ > TEXTURE_FORMAT_UNKNOWN_DEPTH)
 		{
-			imageAspectMask_ = 0;
+			vkImageAspectMask_ = 0;
 			if (textureDesc_.format_ == TEXTURE_FORMAT_D16 ||
 				textureDesc_.format_ == TEXTURE_FORMAT_D24 ||
 				textureDesc_.format_ == TEXTURE_FORMAT_D24S8 ||
@@ -209,16 +217,16 @@ void GfxTextureVulkan::Apply(const void* initialDataPtr)
 				textureDesc_.format_ == TEXTURE_FORMAT_D24F ||
 				textureDesc_.format_ == TEXTURE_FORMAT_D32F)
 			{
-				imageAspectMask_ |= VK_IMAGE_ASPECT_DEPTH_BIT;
+				vkImageAspectMask_ |= VK_IMAGE_ASPECT_DEPTH_BIT;
 			}
 			if (textureDesc_.format_ == TEXTURE_FORMAT_D24S8 ||
 				textureDesc_.format_ == TEXTURE_FORMAT_D0S8)
 			{
-				imageAspectMask_ |= VK_IMAGE_ASPECT_STENCIL_BIT;
+				vkImageAspectMask_ |= VK_IMAGE_ASPECT_STENCIL_BIT;
 			}
 		}
 		else
-			imageAspectMask_ = VK_IMAGE_ASPECT_COLOR_BIT;
+			vkImageAspectMask_ = VK_IMAGE_ASPECT_COLOR_BIT;
 
 		VkImageViewCreateInfo vkIVCI;
 		vkIVCI.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -228,7 +236,7 @@ void GfxTextureVulkan::Apply(const void* initialDataPtr)
 		vkIVCI.viewType                        = vkImageViewType;
 		vkIVCI.format                          = vkICI.format;
 		vkIVCI.components                      = vulkanTextureFormat[textureDesc_.format_].components_;
-		vkIVCI.subresourceRange.aspectMask     = imageAspectMask_;
+		vkIVCI.subresourceRange.aspectMask     = vkImageAspectMask_;
 		vkIVCI.subresourceRange.baseMipLevel   = 0;
 		vkIVCI.subresourceRange.levelCount     = vkICI.mipLevels;
 		vkIVCI.subresourceRange.baseArrayLayer = 0;
@@ -237,7 +245,7 @@ void GfxTextureVulkan::Apply(const void* initialDataPtr)
 	}
 
 // 创建DepthView
-	if ((imageAspectMask_ & VK_IMAGE_ASPECT_DEPTH_BIT) && (imageAspectMask_ & VK_IMAGE_ASPECT_STENCIL_BIT))
+	if ((vkImageAspectMask_ & VK_IMAGE_ASPECT_DEPTH_BIT) && (vkImageAspectMask_ & VK_IMAGE_ASPECT_STENCIL_BIT))
 	{
 		VkImageViewCreateInfo vkIVCI;
 		vkIVCI.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -266,7 +274,7 @@ void GfxTextureVulkan::Apply(const void* initialDataPtr)
 		vkIVCI.viewType                        = textureDesc_.isCube_ ? VK_IMAGE_VIEW_TYPE_2D_ARRAY : vkImageViewType;
 		vkIVCI.format                          = vkICI.format;
 		vkIVCI.components                      = vulkanTextureFormat[textureDesc_.format_].components_;
-		vkIVCI.subresourceRange.aspectMask     = imageAspectMask_;
+		vkIVCI.subresourceRange.aspectMask     = vkImageAspectMask_;
 		vkIVCI.subresourceRange.baseMipLevel   = 0;
 		vkIVCI.subresourceRange.levelCount     = vkICI.mipLevels;
 		vkIVCI.subresourceRange.baseArrayLayer = 0;
@@ -356,20 +364,21 @@ void GfxTextureVulkan::UpdateTextureSubRegion(const void* dataPtr, UInt32 index,
 	Memory::Memcpy(cpuMemory, dataPtr, subResourceSize);
 	vkUnmapMemory(deviceVulkan->GetVulkanDevice(), vkTempMemory);
 
-	VkCommandBuffer vkCmdBuffer = deviceVulkan->BeginCommandBuffer(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+	VkCommandBuffer vkCmdBuffer = deviceVulkan->BeginCommandBuffer();
 
-	// setImageMemoryBarrier
 	VkBufferImageCopy vkBufferCopyInfo;
 	vkBufferCopyInfo.bufferOffset                    = 0;
 	vkBufferCopyInfo.bufferRowLength                 = 0;
 	vkBufferCopyInfo.bufferImageHeight               = 0;
-	vkBufferCopyInfo.imageSubresource.aspectMask     = imageAspectMask_;
+	vkBufferCopyInfo.imageSubresource.aspectMask     = vkImageAspectMask_;
 	vkBufferCopyInfo.imageSubresource.mipLevel       = level;
 	vkBufferCopyInfo.imageSubresource.baseArrayLayer = index;
 	vkBufferCopyInfo.imageSubresource.layerCount     = 1;
 	vkBufferCopyInfo.imageOffset                     = { Int32(x), Int32(y), 0 };
 	vkBufferCopyInfo.imageExtent                     = { width, height, 1 };
+	ImageMemoryBarrier(vkCmdBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	vkCmdCopyBufferToImage(vkCmdBuffer, vkTempBuffer, vkImage_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &vkBufferCopyInfo);
+	ImageMemoryBarrier(vkCmdBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	deviceVulkan->EndCommandBuffer(vkCmdBuffer, true);
 
@@ -391,9 +400,15 @@ void GfxTextureVulkan::UpdateTexture(GfxTexture* gfxTexture)
 	bool createNewBuffer = false;
 	if (!vkCmdBuffer)
 	{
-		vkCmdBuffer = deviceVulkan->BeginCommandBuffer(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+		vkCmdBuffer = deviceVulkan->BeginCommandBuffer();
 		createNewBuffer = true;
 	}
+
+	VkImageLayout srcImageLayout = textureVulkan->GetVulkanImageLayout();
+	VkImageLayout dstImageLayout = GetVulkanImageLayout();
+
+	textureVulkan->ImageMemoryBarrier(vkCmdBuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+	ImageMemoryBarrier(vkCmdBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
 	VkImageBlit vkIB;
 	vkIB.srcSubresource.aspectMask = textureVulkan->GetVulkanImageAspect();
@@ -419,6 +434,11 @@ void GfxTextureVulkan::UpdateTexture(GfxTexture* gfxTexture)
 
 	vkCmdBlitImage(vkCmdBuffer, textureVulkan->GetVulkanImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, GetVulkanImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &vkIB, VK_FILTER_NEAREST);
 
+	if (srcImageLayout != VK_IMAGE_LAYOUT_UNDEFINED)
+		textureVulkan->ImageMemoryBarrier(vkCmdBuffer, srcImageLayout);
+	if (dstImageLayout != VK_IMAGE_LAYOUT_UNDEFINED)
+		ImageMemoryBarrier(vkCmdBuffer, dstImageLayout);
+
 	if (createNewBuffer)
 	{
 		deviceVulkan->EndCommandBuffer(vkCmdBuffer, true);
@@ -433,6 +453,142 @@ GfxRenderSurface* GfxTextureVulkan::GetRenderSurface() const
 GfxRenderSurface* GfxTextureVulkan::GetRenderSurface(UInt32 index) const
 {
 	return index < gfxRenderSurfaces_.Size() ? gfxRenderSurfaces_[index] : nullptr;
+}
+
+void GfxTextureVulkan::SetImageMemoryBarrier(VkCommandBuffer _commandBuffer, VkImage _image, VkImageAspectFlags _aspectMask, VkImageLayout _oldLayout, VkImageLayout _newLayout, uint32_t _levelCount, uint32_t _layerCount)
+{
+	ASSERT(true
+		&& _newLayout != VK_IMAGE_LAYOUT_UNDEFINED
+		&& _newLayout != VK_IMAGE_LAYOUT_PREINITIALIZED
+		, "_newLayout cannot use VK_IMAGE_LAYOUT_UNDEFINED or VK_IMAGE_LAYOUT_PREINITIALIZED."
+	);
+
+	VkAccessFlags srcAccessMask = 0;
+	VkAccessFlags dstAccessMask = 0;
+
+	switch (_oldLayout)
+	{
+	case VK_IMAGE_LAYOUT_UNDEFINED:
+		//			srcAccessMask |= VK_ACCESS_HOST_WRITE_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
+		break;
+
+	case VK_IMAGE_LAYOUT_GENERAL:
+		break;
+
+	case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+		srcAccessMask |= VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		break;
+
+	case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+		srcAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+		break;
+
+	case VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL:
+		break;
+
+	case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+		srcAccessMask |= VK_ACCESS_SHADER_READ_BIT;
+		break;
+
+	case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+		srcAccessMask |= VK_ACCESS_TRANSFER_READ_BIT;
+		break;
+
+	case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+		break;
+
+	case VK_IMAGE_LAYOUT_PREINITIALIZED:
+		srcAccessMask |= VK_ACCESS_HOST_WRITE_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
+		break;
+
+	case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
+		srcAccessMask |= VK_ACCESS_MEMORY_READ_BIT;
+		break;
+
+	default:
+		break;
+	}
+
+	switch (_newLayout)
+	{
+	case VK_IMAGE_LAYOUT_UNDEFINED:
+		break;
+
+	case VK_IMAGE_LAYOUT_GENERAL:
+		break;
+
+	case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+		dstAccessMask |= VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		break;
+
+	case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+		dstAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+		// aspectMask     = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+		break;
+
+	case VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL:
+		break;
+
+	case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+		dstAccessMask |= VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
+		break;
+
+	case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+		dstAccessMask |= VK_ACCESS_SHADER_READ_BIT;
+		break;
+
+	case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+		dstAccessMask |= VK_ACCESS_TRANSFER_READ_BIT;
+		break;
+
+	case VK_IMAGE_LAYOUT_PREINITIALIZED:
+		break;
+
+	case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
+		dstAccessMask |= VK_ACCESS_MEMORY_READ_BIT;
+		break;
+
+	default:
+		break;
+	}
+
+	VkImageMemoryBarrier imb;
+	imb.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	imb.pNext = NULL;
+	imb.srcAccessMask = srcAccessMask;
+	imb.dstAccessMask = dstAccessMask;
+	imb.oldLayout = _oldLayout;
+	imb.newLayout = _newLayout;
+	imb.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	imb.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	imb.image = _image;
+	imb.subresourceRange.aspectMask = _aspectMask;
+	imb.subresourceRange.baseMipLevel = 0;
+	imb.subresourceRange.levelCount = _levelCount;
+	imb.subresourceRange.baseArrayLayer = 0;
+	imb.subresourceRange.layerCount = _layerCount;
+	vkCmdPipelineBarrier(_commandBuffer
+		, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT
+		, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT
+		, 0
+		, 0
+		, NULL
+		, 0
+		, NULL
+		, 1
+		, &imb
+	);
+}
+
+
+void GfxTextureVulkan::ImageMemoryBarrier(VkCommandBuffer vkCmdBuffer, VkImageLayout vkImageLayout)
+{
+	//if (vkImageLayout_ == vkImageLayout)
+	//	return;
+
+	//SetImageMemoryBarrier(vkCmdBuffer, vkImage_, vkImageAspectMask_, vkImageLayout_, vkImageLayout, GetDesc().levels_, Max(GetDesc().layers_, 1u));
+
+	//vkImageLayout_ = vkImageLayout;
 }
 
 }

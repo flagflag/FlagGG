@@ -174,9 +174,13 @@ void GfxSwapChainVulkan::CopyData(GfxTexture* gfxTexture)
 	bool createNewBuffer = false;
 	if (!vkCmdBuffer)
 	{
-		vkCmdBuffer = deviceVulkan->BeginCommandBuffer(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+		vkCmdBuffer = deviceVulkan->BeginCommandBuffer();
 		createNewBuffer = true;
 	}
+
+	VkImageLayout srcImageLayout = textureVulkan->GetVulkanImageLayout();
+
+	textureVulkan->ImageMemoryBarrier(vkCmdBuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
 	VkImageBlit vkIB;
 	vkIB.srcSubresource.aspectMask = textureVulkan->GetVulkanImageAspect();
@@ -201,6 +205,9 @@ void GfxSwapChainVulkan::CopyData(GfxTexture* gfxTexture)
 	vkIB.dstOffsets[1].z = 1;
 
 	vkCmdBlitImage(vkCmdBuffer, textureVulkan->GetVulkanImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, vkImages_[currentImageIdx_], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &vkIB, VK_FILTER_NEAREST);
+
+	if (srcImageLayout != VK_IMAGE_LAYOUT_UNDEFINED)
+		textureVulkan->ImageMemoryBarrier(vkCmdBuffer, srcImageLayout);
 
 	if (createNewBuffer)
 	{

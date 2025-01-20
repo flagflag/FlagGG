@@ -157,7 +157,7 @@ public:
 	uint32_t GetVulkanMemoryTypeIndex(uint32_t vkMemoryTypeBits, VkMemoryPropertyFlags vkMemPropFlags) const;
 
 	//
-	VkCommandBuffer BeginCommandBuffer(VkCommandBufferUsageFlagBits vkCmdBufferUsageFlags);
+	VkCommandBuffer BeginCommandBuffer(VkCommandBufferUsageFlagBits vkCmdBufferUsageFlags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 	//
 	void EndCommandBuffer(VkCommandBuffer vkCmdBuffer, bool waitForFinish);
