@@ -1054,6 +1054,13 @@ public:
 		}
 	}
 
+	// Appaned element and return it
+	T& Append()
+	{
+		Resize(size_ + 1);
+		return Back();
+	}
+
 	/// Reallocate so that no extra memory is used.
 	void Compact() { Reserve(size_); }
 

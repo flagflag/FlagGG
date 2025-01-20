@@ -9,11 +9,23 @@
 namespace FlagGG
 {
 
+static const char* SHADER_LANGUAGE_DEFINE[] =
+{
+	"SHADER_LANGUAGE_GLSL=1",
+	"SHADER_LANGUAGE_GLES=1",
+	"SHADER_LANGUAGE_METAL=1",
+	"SHADER_LANGUAGE_VULKAN=1",
+};
+
 bool CompileShader(CompileShaderLanguage compileShaderLanguage, const char* buffer, USize bufferSize, ShaderType type, const Vector<String>& defines, String& outShaderCode)
 {
 	ID3DBlob* d3d11CompileCode = nullptr;
 	ID3DBlob* d3d11ShaderCode = nullptr;
-	if (!CompileShader(buffer, bufferSize, type, defines, d3d11CompileCode, d3d11ShaderCode))
+
+	Vector<String> actualDefines = defines;
+	actualDefines.Push(SHADER_LANGUAGE_DEFINE[compileShaderLanguage]);
+
+	if (!CompileShader(buffer, bufferSize, type, actualDefines, d3d11CompileCode, d3d11ShaderCode))
 	{
 		FLAGGG_LOG_ERROR("Failed to compile shader.");
 		return false;
@@ -40,7 +52,7 @@ bool CompileShader(CompileShaderLanguage compileShaderLanguage, const char* buff
 		HLSLCC_FLAG_DISABLE_GLOBALS_STRUCT |
 		HLSLCC_FLAG_GLOBAL_CONSTS_NEVER_IN_UBO |
 		HLSLCC_FLAG_REMOVE_UNUSED_GLOBALS |
-		// HLSLCC_FLAG_TRANSLATE_MATRICES |
+		HLSLCC_FLAG_TRANSLATE_MATRICES |
 		HLSLCC_FLAG_UNIFORM_BUFFER_OBJECT |
 		// HLSLCC_FLAG_MOBILE_TARGET|
 		HLSLCC_FLAG_METAL_SHADOW_SAMPLER_LINEAR;

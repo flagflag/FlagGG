@@ -1,5 +1,6 @@
 #include "GameEngine.h"
 #include "Core/EventManager.h"
+#include "GfxDevice/GfxDevice.h"
 #ifdef _WIN32
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Window.h"
@@ -65,12 +66,16 @@ void GameEngine::RunFrame()
 	RenderEngine::Instance().GetShaderParameters().SetValue(SP_DELTA_TIME, timeStep);
 	RenderEngine::Instance().GetShaderParameters().SetValue(SP_ELAPSED_TIME, elapsedTime_);
 
+	GfxDevice::GetDevice()->BeginFrame();
+
 	for (const auto& viewport : viewports_)
 	{
 		RenderEngine::Instance().Render(viewport);
 	}
 
 	WindowDevice::Render();
+
+	GfxDevice::GetDevice()->EndFrame();
 
 	GetSubsystem<EventManager>()->SendEvent<Frame::END_FRAME_HANDLER>(timeStep);
 

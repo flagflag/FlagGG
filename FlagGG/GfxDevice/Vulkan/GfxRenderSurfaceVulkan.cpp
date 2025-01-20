@@ -7,14 +7,16 @@ namespace FlagGG
 
 GfxRenderSurfaceVulkan::GfxRenderSurfaceVulkan(GfxTextureVulkan* ownerTexture)
 	: GfxRenderSurface(ownerTexture)
-	, vkImageView_(ownerTexture->GetVulkanImageView())
 	, width_(ownerTexture->GetDesc().width_)
 	, height_(ownerTexture->GetDesc().height_)
+	, vkFormat_(ownerTexture->GetVulkanFormat())
+	, vkImageView_(ownerTexture->GetVulkanImageView())
 {
 }
 
-GfxRenderSurfaceVulkan::GfxRenderSurfaceVulkan(GfxSwapChainVulkan* ownerSwapChain, VkImageView vkImageView)
+GfxRenderSurfaceVulkan::GfxRenderSurfaceVulkan(GfxSwapChainVulkan* ownerSwapChain, VkFormat vkFormat, VkImageView vkImageView)
 	: GfxRenderSurface(ownerSwapChain)
+	, vkFormat_(vkFormat)
 	, vkImageView_(vkImageView)
 	, width_(ownerSwapChain->GetBackbufferWidth())
 	, height_(ownerSwapChain->GetBackbufferHeight())
@@ -25,6 +27,11 @@ GfxRenderSurfaceVulkan::GfxRenderSurfaceVulkan(GfxSwapChainVulkan* ownerSwapChai
 GfxRenderSurfaceVulkan::~GfxRenderSurfaceVulkan()
 {
 
+}
+
+void GfxRenderSurfaceVulkan::UpdateImageView(VkImageView vkImageView)
+{
+	vkImageView_ = vkImageView;
 }
 
 }

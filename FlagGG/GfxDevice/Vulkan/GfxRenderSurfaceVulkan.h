@@ -20,7 +20,7 @@ class GfxRenderSurfaceVulkan : public GfxRenderSurface
 public:
 	explicit GfxRenderSurfaceVulkan(GfxTextureVulkan* ownerTexture);
 
-	explicit GfxRenderSurfaceVulkan(GfxSwapChainVulkan* ownerSwapChain, VkImageView vkImageView);
+	explicit GfxRenderSurfaceVulkan(GfxSwapChainVulkan* ownerSwapChain, VkFormat vkFormat, VkImageView vkImageView);
 
 	~GfxRenderSurfaceVulkan() override;
 
@@ -30,14 +30,24 @@ public:
 	// 获取ImageView高
 	UInt32 GetHeight() const { return height_; }
 
+	// 获取format
+	VkFormat GetVulkanFormat() { return vkFormat_; }
+
 	// 获取ImageView
 	VkImageView GetVulkanImageView() { return vkImageView_; }
+
+	// Call by GfxSwapChainVulkan
+	void UpdateImageView(VkImageView vkImageView);
 
 private:
 	UInt32 width_;
 
 	UInt32 height_;
 
+	// Surface format
+	VkFormat vkFormat_;
+
+	// Surface image view
 	VkImageView vkImageView_;
 };
 

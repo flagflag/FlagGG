@@ -49,6 +49,8 @@ void GfxBufferVulkan::Apply(const void* initialDataPtr)
 {
 	auto* deviceVulkan = GetSubsystem<GfxDeviceVulkan>();
 
+	const bool useAsUniformBuffer = gfxBufferDesc_.bindFlags_ & BUFFER_BIND_UNIFORM;
+
 // 创建vulkan buffer
 	VkBufferCreateInfo vkBCI;
 	vkBCI.sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -60,6 +62,8 @@ void GfxBufferVulkan::Apply(const void* initialDataPtr)
 		vkBCI.usage |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 	if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_INDEX)
 		vkBCI.usage |= VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+	if (useAsUniformBuffer)
+		vkBCI.usage |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 	// 通常DrawIndirect配合ComputeShader使用，由Compute计算（例如：GpuDriven）
 	if (gfxBufferDesc_.bindFlags_ & (BUFFER_BIND_COMPUTE_READ | BUFFER_BIND_COMPUTE_WRITE | BUFFER_BIND_DRAW_INDIRECT))
 		vkBCI.usage |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
@@ -75,10 +79,10 @@ void GfxBufferVulkan::Apply(const void* initialDataPtr)
 	VkMemoryRequirements vkMR;
 	vkGetBufferMemoryRequirements(deviceVulkan->GetVulkanDevice(), vkBuffer_, &vkMR);
 
-	VkMemoryPropertyFlags vkMemPropFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-	if (gfxBufferDesc_.accessFlags_ & BUFFER_ACCESS_READ)
+	VkMemoryPropertyFlags vkMemPropFlags = useAsUniformBuffer ? 0 : VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	if (gfxBufferDesc_.accessFlags_ & (BUFFER_ACCESS_READ | BUFFER_ACCESS_WRITE))
 		vkMemPropFlags |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-	if (gfxBufferDesc_.accessFlags_ & BUFFER_ACCESS_WRITE)
+	if ((gfxBufferDesc_.accessFlags_ & BUFFER_ACCESS_WRITE)/* && !useAsUniformBuffer*/)
 		vkMemPropFlags |= VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
 	VkMemoryAllocateInfo vkMAI;
@@ -147,6 +151,16 @@ void GfxBufferVulkan::EndWrite(UInt32 bytesWritten)
 
 	if (gfxBufferDesc_.accessFlags_ & BUFFER_ACCESS_WRITE)
 	{
+		//if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_UNIFORM)
+		//{
+		//	VkMappedMemoryRange range;
+		//	range.sType  = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+		//	range.pNext  = nullptr;
+		//	range.memory = vkMemory_;
+		//	range.offset = 0;
+		//	range.size   = bytesWritten;
+		//	vkFlushMappedMemoryRanges(GetSubsystem<GfxDeviceVulkan>()->GetVulkanDevice(), 1, &range);
+		//}
 		vkUnmapMemory(GetSubsystem<GfxDeviceVulkan>()->GetVulkanDevice(), vkMemory_);
 	}
 	else

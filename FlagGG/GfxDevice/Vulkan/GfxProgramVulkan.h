@@ -26,6 +26,9 @@ public:
 	void LinkComputeShader(GfxShader* computeShader) override;
 
 	//
+	VkDescriptorSetLayout GetVulkanDescSetLayout() const { return vkDescSetLayout_; }
+
+	//
 	VkPipelineLayout GetVulkanPipelineLayout() { return vkPipelineLayout_; }
 
 private:

@@ -20,6 +20,7 @@ typedef void(*SetUniformToBuffer)(const VulkanConstantBufferVariableDesc& desc, 
 struct VulkanConstantBufferVariableDesc
 {
 	String name_;
+	StringHash nameHash_;
 	UInt32 offset_;
 	UInt32 size_;
 	SetUniformToBuffer setterFunc_;
@@ -29,6 +30,7 @@ struct VulkanConstanceBufferDesc
 {
 	String name_;
 	UInt32 size_;
+	UInt32 binding_;
 	Vector<VulkanConstantBufferVariableDesc> variableDescs_;
 };
 
@@ -36,6 +38,8 @@ struct VulkanShaderTextureDesc
 {
 	String textureName_;
 	String samplerName_;
+	UInt32 textureBinding_;
+	UInt32 samplerBinding_;
 };
 
 struct VulkanInputDesc

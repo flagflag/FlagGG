@@ -107,6 +107,13 @@ static const VulkanTextureFormatInfo vulkanTextureFormat[] =
 };
 
 GfxTextureVulkan::GfxTextureVulkan()
+	: vkFormat_(VK_FORMAT_UNDEFINED)
+	, imageAspectMask_(0)
+	, vkImage_(VK_NULL_HANDLE)
+	, vkMemory_(VK_NULL_HANDLE)
+	, vkImageView_(VK_NULL_HANDLE)
+	, vkDepthView_(VK_NULL_HANDLE)
+	, vkStorageView_(VK_NULL_HANDLE)
 {
 
 }
@@ -129,6 +136,10 @@ void GfxTextureVulkan::Apply(const void* initialDataPtr)
 	auto* deviceVulkan = GetSubsystem<GfxDeviceVulkan>();
 
 // 创建vulkan image
+	if (textureDesc_.format_ > TEXTURE_FORMAT_UNKNOWN_DEPTH)
+		vkFormat_ = vulkanTextureFormat[textureDesc_.format_].fmtDsv_;
+	else
+		vkFormat_ = textureDesc_.sRGB_ ? vulkanTextureFormat[textureDesc_.format_].fmtSrgb_ : vulkanTextureFormat[textureDesc_.format_].fmt_;
 	VkImageType vkImageType = VK_IMAGE_TYPE_1D;
 	VkImageViewType vkImageViewType = VK_IMAGE_VIEW_TYPE_1D;
 	if (textureDesc_.depth_ == 1)
@@ -146,10 +157,7 @@ void GfxTextureVulkan::Apply(const void* initialDataPtr)
 	vkICI.pNext                 = nullptr;
 	vkICI.flags                 = textureDesc_.isCube_ ? VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT : 0;
 	vkICI.imageType             = vkImageType;
-	if (textureDesc_.format_ > TEXTURE_FORMAT_UNKNOWN_DEPTH)
-		vkICI.format            = vulkanTextureFormat[textureDesc_.format_].fmtDsv_;
-	else
-		vkICI.format            = textureDesc_.sRGB_ ? vulkanTextureFormat[textureDesc_.format_].fmtSrgb_ : vulkanTextureFormat[textureDesc_.format_].fmt_;
+	vkICI.format                = vkFormat_;
 	vkICI.extent.width          = textureDesc_.width_;
 	vkICI.extent.height         = textureDesc_.height_;
 	vkICI.extent.depth          = textureDesc_.depth_;
@@ -376,7 +384,45 @@ void GfxTextureVulkan::UpdateTextureSubRegion(const void* dataPtr, UInt32 index,
 
 void GfxTextureVulkan::UpdateTexture(GfxTexture* gfxTexture)
 {
+	auto* deviceVulkan = GetSubsystem<GfxDeviceVulkan>();
+	auto* textureVulkan = RTTICast<GfxTextureVulkan>(gfxTexture);
 
+	auto* vkCmdBuffer = deviceVulkan->GetVulkanCmdBuffer();
+	bool createNewBuffer = false;
+	if (!vkCmdBuffer)
+	{
+		vkCmdBuffer = deviceVulkan->BeginCommandBuffer(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+		createNewBuffer = true;
+	}
+
+	VkImageBlit vkIB;
+	vkIB.srcSubresource.aspectMask = textureVulkan->GetVulkanImageAspect();
+	vkIB.srcSubresource.mipLevel       = 0;
+	vkIB.srcSubresource.baseArrayLayer = 0;
+	vkIB.srcSubresource.layerCount     = 1;
+	vkIB.srcOffsets[0].x = 0;
+	vkIB.srcOffsets[0].y = 0;
+	vkIB.srcOffsets[0].z = 0;
+	vkIB.srcOffsets[1].x = textureVulkan->GetDesc().width_;
+	vkIB.srcOffsets[1].y = textureVulkan->GetDesc().height_;
+	vkIB.srcOffsets[1].z = textureVulkan->GetDesc().depth_;
+	vkIB.dstSubresource.aspectMask     = GetVulkanImageAspect();
+	vkIB.dstSubresource.mipLevel       = 0;
+	vkIB.dstSubresource.baseArrayLayer = 0;
+	vkIB.dstSubresource.layerCount     = 1;
+	vkIB.dstOffsets[0].x = 0;
+	vkIB.dstOffsets[0].y = 0;
+	vkIB.dstOffsets[0].z = 0;
+	vkIB.dstOffsets[1].x = GetDesc().width_;
+	vkIB.dstOffsets[1].y = GetDesc().height_;
+	vkIB.dstOffsets[1].z = 1;
+
+	vkCmdBlitImage(vkCmdBuffer, textureVulkan->GetVulkanImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, GetVulkanImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &vkIB, VK_FILTER_NEAREST);
+
+	if (createNewBuffer)
+	{
+		deviceVulkan->EndCommandBuffer(vkCmdBuffer, true);
+	}
 }
 
 GfxRenderSurface* GfxTextureVulkan::GetRenderSurface() const
@@ -387,11 +433,6 @@ GfxRenderSurface* GfxTextureVulkan::GetRenderSurface() const
 GfxRenderSurface* GfxTextureVulkan::GetRenderSurface(UInt32 index) const
 {
 	return index < gfxRenderSurfaces_.Size() ? gfxRenderSurfaces_[index] : nullptr;
-}
-
-VkFormat GfxTextureVulkan::ToVulkanTextureFormat(TextureFormat textureFormat)
-{
-	return VK_FORMAT_UNDEFINED;
 }
 
 }

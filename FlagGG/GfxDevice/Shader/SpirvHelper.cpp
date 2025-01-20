@@ -180,6 +180,16 @@ String ResolveGlsl(ShaderType type, const String& glslShaderCode)
 		pos = findPos + 8;
 	}
 
+	pos = 0;
+	while (true)
+	{
+		auto findPos = resolveGlslShaderCode.Find(" hlslcc_mtx", pos);
+		if (findPos == String::NPOS)
+			break;
+		resolveGlslShaderCode.Replace(findPos, 14, " ");
+		pos = findPos + 1;
+	}
+
 	return resolveGlslShaderCode;
 }
 

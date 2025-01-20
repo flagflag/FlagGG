@@ -7,6 +7,7 @@
 #include "GfxDevice/GfxSwapChain.h"
 #include "GfxDevice/Vulkan/GfxRenderSurfaceVulkan.h"
 #include "Container/Ptr.h"
+#include "Container/Vector.h"
 
 #include <vulkan-local/vulkan.h>
 
@@ -28,7 +29,7 @@ public:
 	void CopyData(GfxTexture* gfxTexture) override;
 
 	// 获取RT
-	GfxRenderSurface* GetRenderTarget() override { return renderTarget_.Get(); }
+	GfxRenderSurface* GetRenderTarget() override { return renderTarget_; }
 
 	// 获取depth stencil
 	GfxRenderSurface* GetDepthStencil() override { return depthStencil_.Get(); }
@@ -48,6 +49,8 @@ public:
 protected:
 	void DestroyVKObject();
 
+	void AcquireNextImage();
+
 private:	
 	Window* outputWindow_;
 
@@ -65,8 +68,17 @@ private:
 	// vulkan swapchain
 	VkSwapchainKHR vkSwapChain_;
 
-	// color view
-	VkImageView vkColorView_;
+	// backbuffer image
+	PODVector<VkImage> vkImages_;
+
+	// backbuffer image view
+	PODVector<VkImageView> vkColorViews_;
+
+	// backbuffer format
+	VkSurfaceFormatKHR vkSurfaceFormat_;
+
+	//
+	uint32_t currentImageIdx_;
 };
 
 }

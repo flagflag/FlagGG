@@ -179,6 +179,7 @@ void CEUnit::PlayAnimation(const String& path, bool isLoop)
 
 
 SCEUnit::SCEUnit()
+	: skeletonMeshComp_(nullptr)
 {
 
 }

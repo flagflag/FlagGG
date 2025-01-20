@@ -18,6 +18,8 @@
 
 using namespace HLSLcc;
 
+#define VULKAN_SINGLE_SET_BINDING 1
+
 #ifndef fpcheck
 #ifdef _MSC_VER
 #define fpcheck(x) (_isnan(x) || !_finite(x))
@@ -921,7 +923,11 @@ void ToGLSL::DeclareUBOConstants(const uint32_t ui32BindingPoint, const Constant
     if ((psContext->flags & HLSLCC_FLAG_VULKAN_BINDINGS) != 0)
     {
         GLSLCrossDependencyData::VulkanResourceBinding binding = psContext->psDependencies->GetVulkanResourceBinding(cbName, false, 2);
+#if VULKAN_SINGLE_SET_BINDING
+        bformata(glsl, "layout(binding = %d, std140) ", binding.binding + 32 + (psContext->psShader->eShaderType == PIXEL_SHADER ? 48 : 0));
+#else
         bformata(glsl, "layout(set = %d, binding = %d, std140) ", binding.set, binding.binding);
+#endif
     }
     else
     {
@@ -1039,7 +1045,11 @@ static void DeclareBufferVariable(HLSLCrossCompilerContext* psContext, uint32_t 
     if (isVulkan)
     {
         GLSLCrossDependencyData::VulkanResourceBinding binding = psContext->psDependencies->GetVulkanResourceBinding(BufName);
+#if VULKAN_SINGLE_SET_BINDING
+        bformata(glsl, "layout(binding = %d, std430) ", binding.binding);
+#else
         bformata(glsl, "layout(set = %d, binding = %d, std430) ", binding.set, binding.binding);
+#endif
     }
     else
     {
@@ -1108,7 +1118,11 @@ void ToGLSL::DeclareStructConstants(const uint32_t ui32BindingPoint,
         ASSERT(0); // Catch this to see what's going on
         std::string bname = "wut";
         GLSLCrossDependencyData::VulkanResourceBinding binding = psContext->psDependencies->GetVulkanResourceBinding(bname);
+#if VULKAN_SINGLE_SET_BINDING
+        bformata(glsl, "layout(binding = %d) ", binding.binding);
+#else
         bformata(glsl, "layout(set = %d, binding = %d) ", binding.set, binding.binding);
+#endif
     }
     else
     {
@@ -1567,8 +1581,12 @@ static void TranslateVulkanResource(HLSLCrossCompilerContext* psContext, const D
         psDecl->value.eResourceDimension,
         psDecl->asOperands[0].ui32RegisterNumber);
 
+#if VULKAN_SINGLE_SET_BINDING
+    bformata(glsl, "layout(binding = %d) ", psDecl->asOperands[0].ui32RegisterNumber + 16 + (psContext->psShader->eShaderType == PIXEL_SHADER ? 48 : 0));
+#else
     GLSLCrossDependencyData::VulkanResourceBinding binding = psContext->psDependencies->GetVulkanResourceBinding(tname, false, 1);
     bformata(glsl, "layout(set = %d, binding = %d) ", binding.set, binding.binding);
+#endif
     bcatcstr(glsl, "uniform ");
     bcatcstr(glsl, samplerPrecision);
     bcatcstr(glsl, samplerTypeName);
@@ -3276,9 +3294,13 @@ void ToGLSL::TranslateDeclaration(const Declaration* psDecl)
                 std::string name = ResourceName(psContext, RGROUP_SAMPLER, psDecl->asOperands[0].ui32RegisterNumber, 0);
                 const char *samplerPrecision = GetSamplerPrecision(psContext, pRes ? pRes->ePrecision : REFLECT_RESOURCE_PRECISION_UNKNOWN);
 
-                GLSLCrossDependencyData::VulkanResourceBinding binding = psContext->psDependencies->GetVulkanResourceBinding(name, false, 0);
                 const char *samplerType = psDecl->value.eSamplerMode == D3D10_SB_SAMPLER_MODE_COMPARISON ? "samplerShadow" : "sampler";
+#if VULKAN_SINGLE_SET_BINDING
+                bformata(glsl, "layout(binding = %d) uniform %s %s %s;\n", psDecl->asOperands[0].ui32RegisterNumber + (psContext->psShader->eShaderType == PIXEL_SHADER ? 48 : 0), samplerPrecision, samplerType, name.c_str());
+#else
+                GLSLCrossDependencyData::VulkanResourceBinding binding = psContext->psDependencies->GetVulkanResourceBinding(name, false, 0);
                 bformata(glsl, "layout(set = %d, binding = %d) uniform %s %s %s;\n", binding.set, binding.binding, samplerPrecision, samplerType, name.c_str());
+#endif
                 // Store the sampler mode to ShaderInfo, it's needed when we use the sampler
                 pRes->m_SamplerMode = psDecl->value.eSamplerMode;
             }

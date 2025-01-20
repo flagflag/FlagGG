@@ -94,9 +94,11 @@ void GfxShaderVulkan::AnalysisReflection()
 		if (desc.descriptor_type == SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
 		{
 			const auto& block = desc.block;
-			auto& uboDesc = constantBufferDescs_[desc.binding];
+			const UInt32 engineRegister = desc.binding - 32 - (shaderType_ == PS ? 48 : 0);
+			auto& uboDesc = constantBufferDescs_[engineRegister];
 			uboDesc.name_ = desc.name;
 			uboDesc.size_ = 0;
+			uboDesc.binding_ = desc.binding;
 
 			uboDesc.variableDescs_.Resize(block.member_count);
 
@@ -105,8 +107,12 @@ void GfxShaderVulkan::AnalysisReflection()
 				const auto& var = block.members[j];
 				auto& uniformDesc = uboDesc.variableDescs_[j];
 				uniformDesc.name_ = var.name;
+				uniformDesc.nameHash_ = StringHash(uniformDesc.name_);
 				uniformDesc.offset_ = var.offset;
 				uniformDesc.size_ = var.size;
+				// 内存可能出现直接对齐，所以取最大的offset+size
+				if (var.offset + var.size > uboDesc.size_)
+					uboDesc.size_ = var.offset + var.size;
 				if (var.type_description->op == SpvOpTypeInt ||
 					var.type_description->op == SpvOpTypeFloat ||
 					var.type_description->op == SpvOpTypeVector ||
@@ -122,14 +128,18 @@ void GfxShaderVulkan::AnalysisReflection()
 		// Texture
 		else if (desc.descriptor_type == SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLED_IMAGE)
 		{
-			auto& texDesc = textureDescs_[desc.binding];
+			const UInt32 engineRegister = desc.binding - 16 - (shaderType_ == PS ? 48 : 0);
+			auto& texDesc = textureDescs_[engineRegister];
 			texDesc.textureName_ = desc.name;
+			texDesc.textureBinding_ = desc.binding;
 		}
 		// Sampler
 		else if (desc.descriptor_type == SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLER)
 		{
-			auto& texDesc = textureDescs_[desc.binding];
+			const UInt32 engineRegister = desc.binding - (shaderType_ == PS ? 48 : 0);
+			auto& texDesc = textureDescs_[engineRegister];
 			texDesc.samplerName_ = desc.name;
+			texDesc.samplerBinding_ = desc.binding;
 		}
 
 		vkBindings_.Resize(vkBindings_.Size() + 1);

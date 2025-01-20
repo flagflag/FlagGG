@@ -17,7 +17,6 @@ GfxSwapChainVulkan::GfxSwapChainVulkan(Window* window)
 	: GfxSwapChain(window)
 	, vkSurface_(VK_NULL_HANDLE)
 	, vkSwapChain_(VK_NULL_HANDLE)
-	, vkColorView_(VK_NULL_HANDLE)
 	, outputWindow_(window)
 	, backbufferWidth_(0u)
 	, backbufferHeight_(0u)
@@ -82,11 +81,11 @@ void GfxSwapChainVulkan::Resize(UInt32 width, UInt32 height)
 	VULKAN_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(deviceVulkan->GetVulkanPhysicalDevice(), vkSurface_, &numSurfaceFormats, nullptr));
 	PODVector<VkSurfaceFormatKHR> surfaceFormats(numSurfaceFormats);
 	VULKAN_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(deviceVulkan->GetVulkanPhysicalDevice(), vkSurface_, &numSurfaceFormats, &surfaceFormats[0]));
-	UInt32 selectIndex = 0;
-	for (; selectIndex < numSurfaceFormats; ++selectIndex)
+	for (UInt32 selectIndex = 0; selectIndex < numSurfaceFormats; ++selectIndex)
 	{
 		if (surfaceFormats[selectIndex].colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
 		{
+			vkSurfaceFormat_ = surfaceFormats[selectIndex];
 			break;
 		}
 	}
@@ -107,8 +106,8 @@ void GfxSwapChainVulkan::Resize(UInt32 width, UInt32 height)
 	vkSCI.flags                 = 0;
 	vkSCI.surface               = vkSurface_;
 	vkSCI.minImageCount         = vkSurfaceCaps.minImageCount;
-	vkSCI.imageFormat           = surfaceFormats[selectIndex].format;
-	vkSCI.imageColorSpace       = surfaceFormats[selectIndex].colorSpace;
+	vkSCI.imageFormat           = vkSurfaceFormat_.format;
+	vkSCI.imageColorSpace       = vkSurfaceFormat_.colorSpace;
 	vkSCI.imageExtent           = { backbufferWidth_, backbufferHeight_ };
 	vkSCI.imageArrayLayers      = 1;
 	vkSCI.imageUsage            = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
@@ -124,23 +123,30 @@ void GfxSwapChainVulkan::Resize(UInt32 width, UInt32 height)
 
 	uint32_t numSwapChainImages;
 	VULKAN_CHECK(vkGetSwapchainImagesKHR(deviceVulkan->GetVulkanDevice(), vkSwapChain_, &numSwapChainImages, nullptr));
-	PODVector<VkImage> vkImages(numSwapChainImages);
-	VULKAN_CHECK(vkGetSwapchainImagesKHR(deviceVulkan->GetVulkanDevice(), vkSwapChain_, &numSwapChainImages, &vkImages[0]));
+	vkImages_.Resize(numSwapChainImages);
+	VULKAN_CHECK(vkGetSwapchainImagesKHR(deviceVulkan->GetVulkanDevice(), vkSwapChain_, &numSwapChainImages, &vkImages_[0]));
 
-	VkImageViewCreateInfo vkIVCI;
-	vkIVCI.sType       = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-	vkIVCI.pNext       = nullptr;
-	vkIVCI.flags       = 0;
-	vkIVCI.image       = vkImages[0];
-	vkIVCI.viewType    = VK_IMAGE_VIEW_TYPE_2D;
-	vkIVCI.format      = VK_FORMAT_R8G8B8A8_UNORM;
-	vkIVCI.components  = { VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, };
-	vkIVCI.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
-	vkIVCI.subresourceRange.baseMipLevel   = 0;
-	vkIVCI.subresourceRange.levelCount     = 1;
-	vkIVCI.subresourceRange.baseArrayLayer = 0;
-	vkIVCI.subresourceRange.layerCount     = 1;
-	VULKAN_CHECK(vkCreateImageView(deviceVulkan->GetVulkanDevice(), &vkIVCI, &deviceVulkan->GetVulkanAllocCallback(), &vkColorView_));
+	for (UInt32 i = 0; i < numSwapChainImages; ++i)
+	{
+		auto& colorView = vkColorViews_.Append();
+
+		VkImageViewCreateInfo vkIVCI;
+		vkIVCI.sType       = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		vkIVCI.pNext       = nullptr;
+		vkIVCI.flags       = 0;
+		vkIVCI.image       = vkImages_[i];
+		vkIVCI.viewType    = VK_IMAGE_VIEW_TYPE_2D;
+		vkIVCI.format      = vkSurfaceFormat_.format;
+		vkIVCI.components  = { VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, };
+		vkIVCI.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+		vkIVCI.subresourceRange.baseMipLevel   = 0;
+		vkIVCI.subresourceRange.levelCount     = 1;
+		vkIVCI.subresourceRange.baseArrayLayer = 0;
+		vkIVCI.subresourceRange.layerCount     = 1;
+		VULKAN_CHECK(vkCreateImageView(deviceVulkan->GetVulkanDevice(), &vkIVCI, &deviceVulkan->GetVulkanAllocCallback(), &colorView));
+	}
+
+	renderTarget_ = new GfxRenderSurfaceVulkan(this, vkSurfaceFormat_.format, VK_NULL_HANDLE);
 
 	depthStencilTexture_ = new GfxTextureVulkan();
 	depthStencilTexture_->SetFormat(TEXTURE_FORMAT_D24S8);
@@ -154,18 +160,82 @@ void GfxSwapChainVulkan::Resize(UInt32 width, UInt32 height)
 	depthStencilTexture_->SetUsage(TEXTURE_DEPTHSTENCIL);
 	depthStencilTexture_->Apply(nullptr);
 
-	renderTarget_ = new GfxRenderSurfaceVulkan(this, vkColorView_);
 	depthStencil_ = RTTICast<GfxRenderSurfaceVulkan>(depthStencilTexture_->GetRenderSurface());
+
+	AcquireNextImage();
 }
 
 void GfxSwapChainVulkan::CopyData(GfxTexture* gfxTexture)
 {
+	auto* deviceVulkan = GetSubsystem<GfxDeviceVulkan>();
+	auto* textureVulkan = RTTICast<GfxTextureVulkan>(gfxTexture);
 
+	auto* vkCmdBuffer = deviceVulkan->GetVulkanCmdBuffer();
+	bool createNewBuffer = false;
+	if (!vkCmdBuffer)
+	{
+		vkCmdBuffer = deviceVulkan->BeginCommandBuffer(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+		createNewBuffer = true;
+	}
+
+	VkImageBlit vkIB;
+	vkIB.srcSubresource.aspectMask = textureVulkan->GetVulkanImageAspect();
+	vkIB.srcSubresource.mipLevel       = 0;
+	vkIB.srcSubresource.baseArrayLayer = 0;
+	vkIB.srcSubresource.layerCount     = 1;
+	vkIB.srcOffsets[0].x = 0;
+	vkIB.srcOffsets[0].y = 0;
+	vkIB.srcOffsets[0].z = 0;
+	vkIB.srcOffsets[1].x = textureVulkan->GetDesc().width_;
+	vkIB.srcOffsets[1].y = textureVulkan->GetDesc().height_;
+	vkIB.srcOffsets[1].z = textureVulkan->GetDesc().depth_;
+	vkIB.dstSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+	vkIB.dstSubresource.mipLevel       = 0;
+	vkIB.dstSubresource.baseArrayLayer = 0;
+	vkIB.dstSubresource.layerCount     = 1;
+	vkIB.dstOffsets[0].x = 0;
+	vkIB.dstOffsets[0].y = 0;
+	vkIB.dstOffsets[0].z = 0;
+	vkIB.dstOffsets[1].x = backbufferWidth_;
+	vkIB.dstOffsets[1].y = backbufferHeight_;
+	vkIB.dstOffsets[1].z = 1;
+
+	vkCmdBlitImage(vkCmdBuffer, textureVulkan->GetVulkanImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, vkImages_[currentImageIdx_], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &vkIB, VK_FILTER_NEAREST);
+
+	if (createNewBuffer)
+	{
+		deviceVulkan->EndCommandBuffer(vkCmdBuffer, true);
+	}
+}
+
+void GfxSwapChainVulkan::AcquireNextImage()
+{
+	VkResult result = vkAcquireNextImageKHR(GetSubsystem<GfxDeviceVulkan>()->GetVulkanDevice(), vkSwapChain_, 0xffffffffffffffffui64, nullptr, VK_NULL_HANDLE, &currentImageIdx_);
+	ASSERT(result == VK_SUCCESS);
+	if (result == VK_SUCCESS)
+	{
+		renderTarget_->UpdateImageView(vkColorViews_[currentImageIdx_]);
+	}
 }
 
 void GfxSwapChainVulkan::Present()
 {
-	
+	auto* deviceVulkan = GetSubsystem<GfxDeviceVulkan>();
+
+	deviceVulkan->FlushCommandBuffer();
+
+	VkPresentInfoKHR vkPI;
+	vkPI.sType              = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	vkPI.pNext              = nullptr;
+	vkPI.waitSemaphoreCount = 0;
+	vkPI.pWaitSemaphores    = nullptr;
+	vkPI.swapchainCount     = 1;
+	vkPI.pSwapchains        = &vkSwapChain_;
+	vkPI.pImageIndices      = &currentImageIdx_;
+	vkPI.pResults           = nullptr;
+	VkResult result = vkQueuePresentKHR(deviceVulkan->GetGraphicsQueue(), &vkPI);
+
+	AcquireNextImage();
 }
 
 }

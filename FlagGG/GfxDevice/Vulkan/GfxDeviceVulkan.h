@@ -18,8 +18,10 @@
 namespace FlagGG
 {
 
+class GfxSampler;
 class GfxShaderVulkan;
 class GfxProgramVulkan;
+class VulkanDynamicUniformBuffer;
 struct VulkanConstanceBufferDesc;
 
 struct VulkanRenderPassAttachmentsKey
@@ -146,6 +148,12 @@ public:
 	VkPhysicalDeviceMemoryProperties& GetVulkanPhyDvMemProp() { return vkPhyDvMemProp_; }
 
 	//
+	VkQueue GetGraphicsQueue() { return vkGraphicsQueue_; }
+
+	//
+	VkCommandBuffer GetVulkanCmdBuffer() { return vkCmdBuffer_; }
+
+	//
 	uint32_t GetVulkanMemoryTypeIndex(uint32_t vkMemoryTypeBits, VkMemoryPropertyFlags vkMemPropFlags) const;
 
 	//
@@ -153,6 +161,9 @@ public:
 
 	//
 	void EndCommandBuffer(VkCommandBuffer vkCmdBuffer, bool waitForFinish);
+
+	//
+	void FlushCommandBuffer();
 
 protected:
 	// 提交渲染指令之前预处理工作
@@ -184,7 +195,7 @@ protected:
 
 	void PrepareDepthStencilState(VkPipelineDepthStencilStateCreateInfo& vkPDSSCI);
 
-	void PrepareColorBlendState(VkPipelineColorBlendStateCreateInfo& vkPCBSCI, VkPipelineColorBlendAttachmentState& vkPCBAS);
+	void PrepareColorBlendState(VkPipelineColorBlendStateCreateInfo& vkPCBSCI);
 
 	void PrepareDynamicState(VkPipelineDynamicStateCreateInfo& vkPDSCI);
 
@@ -192,36 +203,56 @@ protected:
 
 	void PrepareComputePipelineState();
 
-	void CopyShaderParameterToBuffer(const HashMap<UInt32, VulkanConstanceBufferDesc>& bufferDesc, GfxBuffer* bufferArray);
+	VkSampler GetSampler(GfxSampler* gfxSampler);
+
+	void BindTextures(VkDescriptorSet vkDescSet, GfxShaderVulkan* shaderVulkan);
+
+	void SetShaderParameters(VkDescriptorSet vkDescSet, GfxShaderVulkan* shaderVulkan);
 
 private:
 	// 当前选择的物理设备
 	VkPhysicalDevice vkPhysicalDevice_;
 
+	// vulkan实例
 	VkInstance vkInstance_;
 
+	// Vulkan设备
 	VkDevice vkDevice_;
 
+	// 内存分配器
 	VkAllocationCallbacks vkAllocCallback_;
 
+	// 调试
 	VkDebugReportCallbackEXT debugReportCallback_;
 
+	// 物理设备的内存属性
 	VkPhysicalDeviceMemoryProperties vkPhyDvMemProp_;
 
+	// 物理设备可用features
+	VkPhysicalDeviceFeatures vkPhyDvFeatures_;
+
+	// 命令buffer内存池
 	VkCommandPool vkCmdPool_;
 
 	VkQueue vkGraphicsQueue_;
 
 	VkQueue vkComputeQueue_;
 
+	// 当前的命令buffer
 	VkCommandBuffer vkCmdBuffer_;
 
 	VkCommandBuffer vkCmdBuffers_[4];
 
+	// 描述集合内存池
+	VkDescriptorPool vkDescPool_;
+
+	// 所有Pipeline的缓存
 	VkPipelineCache vkAllPipelineCache_;
 
+	// compute管线
 	VkPipeline vkComputePipeline_;
 
+	// 光栅化管线
 	VkPipeline vkGraphicsPipeline_;
 
 	// 当前执行的RenderPass
@@ -235,28 +266,40 @@ private:
 		VkRenderPass vkRenderPass_;
 		VkFramebuffer vkFramebuffer_;
 	};
+	// RenderPass和Framebuffer的缓存
 	HashMap<VulkanRenderPassAttachmentsKey, VulkanRenderPassInfo> vkRenderPassMap_;
 
 	bool vkRenderPassDirty_;
 
+	// 管线缓存
 	HashMap<UInt32, VkPipeline> vkPipelineMap_;
 
+	//
+	PODVector<VkDescriptorSet> vkDescSets_;
+
+	//
+	PODVector<VkDescriptorImageInfo> vkDescImageInfos_;
+
+	//
+	PODVector<VkDescriptorBufferInfo> vkDescBufferInfos_;
+
+	//
+	PODVector<uint32_t> uniformBufferOffset_;
+
+	//
+	PODVector<VkWriteDescriptorSet> vkWriteDescSets_;
+
+	// VS + PS => Program
 	HashMap<Pair<WeakPtr<GfxShader>, WeakPtr<GfxShader>>, SharedPtr<GfxProgramVulkan>> programMap_;
+
+	// 当前使用的program
 	SharedPtr<GfxProgramVulkan> currentProgram_;
 
-	// Constant buffer用途
-	enum ConstBufferType
-	{
-		CONST_BUFFER_WORLD = 0,
-		CONST_BUFFER_SKIN,
-		CONST_BUFFER_VS,
-		CONST_BUFFER_PS,
-		MAX_CONST_BUFFER,
-	};
+	// 采样器缓存
+	HashMap<UInt32, VkSampler> samplerStateMap_;
 
-	// uniform
-	GfxBufferVulkan vsConstantBuffer_[MAX_CONST_BUFFER_COUNT];
-	GfxBufferVulkan psConstantBuffer_[MAX_CONST_BUFFER_COUNT];
+	// 当前使用的UniformBuffer
+	SharedPtr<VulkanDynamicUniformBuffer> currentUniformBuffer_;
 };
 
 }
