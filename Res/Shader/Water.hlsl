@@ -96,11 +96,15 @@ struct PixelInput
         #endif
         float2 noise = worldNormal.xy * noiseStrength; // worldNormal.xy作为distortion系数
         
+#if 0
         float waterBottomDepth = ReconstructDepth(depthBuffer.Sample(depthBufferSampler, refractUV + noise).r);
         if (waterBottomDepth < input.eyeVec.w)       
         {
             refractUV += noise;
         }
+#else
+        refractUV += noise;
+#endif
         float3 refrCol = GammaToLinearSpace(refractionMap.Sample(refractionSampler, refractUV).rgb) * waterColor1;
 
         // 高光

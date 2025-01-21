@@ -946,7 +946,7 @@ void GfxDeviceVulkan::PrepareColorBlendState(VkPipelineColorBlendStateCreateInfo
 	static VkPipelineColorBlendAttachmentState vkPCBASArray[MAX_RENDERTARGET_COUNT + 1];
 
 	VkPipelineColorBlendAttachmentState vkPCBAS;
-	vkPCBAS.blendEnable         = rasterizerState_.blendMode_ == BLEND_REPLACE ? VK_TRUE : VK_FALSE;
+	vkPCBAS.blendEnable         = rasterizerState_.blendMode_ == BLEND_REPLACE ? VK_FALSE : VK_TRUE;
 	vkPCBAS.srcColorBlendFactor = vulkanSourceRgbBlendFactor[rasterizerState_.blendMode_];
 	vkPCBAS.dstColorBlendFactor = vulkanDestRgbBlendFactor[rasterizerState_.blendMode_];
 	vkPCBAS.colorBlendOp        = vulkanRgbBlendOpt[rasterizerState_.blendMode_];

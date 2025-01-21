@@ -46,8 +46,11 @@ public:
 	// 获取纹理level层mip的信息
 	static TextureMipInfo GetTextureMipInfo(TextureFormat format, UInt32 width, UInt32 height, UInt32 depth, UInt32 levels, UInt32 level);
 
-	// 根据宽度获取行数据大小
+	// 根据格式、宽度获取行数据大小
 	static UInt32 GetRowDataSize(TextureFormat format, Int32 width);
+
+	// 根据格式、宽度获取大小
+	static UInt32 GetDataSize(TextureFormat format, UInt32 width, UInt32 height);
 
 	// 
 	static UInt32 CheckMaxLevels(UInt32 width, UInt32 height, UInt32 requestedLevels);

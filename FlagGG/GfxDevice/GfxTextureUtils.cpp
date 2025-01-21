@@ -151,10 +151,9 @@ TextureMipInfo GfxTextureUtils::GetTextureMipInfo(TextureFormat format, UInt32 w
 	return mipInfo;
 }
 
-UInt32 GfxTextureUtils::GetRowDataSize(TextureFormat format, Int32 width)
-{
 /*
-      | bits per pixel |  block width |  block height |  block size |
+简单样例对照表
+	  | bits per pixel |  block width |  block height |  block size |
 ---------------------------------------------------------------------
 BC1   |       4        |       4      |       4       |       8     |
 ASTC4 |       8        |       4      |       4       |      16     |
@@ -162,8 +161,18 @@ RGBA  |      32        |       1      |       1       |       4     |
 ---------------------------------------------------------------------
 */
 
+UInt32 GfxTextureUtils::GetRowDataSize(TextureFormat format, Int32 width)
+{
 	const TextureDetail& detail = GetTextureDetail(format);
 	return (width + detail.blockWidth_ - 1) / detail.blockWidth_ * detail.blockSize_;
+}
+
+UInt32 GfxTextureUtils::GetDataSize(TextureFormat format, UInt32 width, UInt32 height)
+{
+	const TextureDetail& detail = GetTextureDetail(format);
+	UInt32 widthBlockCount  = (width + detail.blockWidth_ - 1) / detail.blockWidth_;
+	UInt32 heightBlockCount = (height + detail.blockHeight_ - 1) / detail.blockHeight_;
+	return widthBlockCount * heightBlockCount * detail.blockSize_;
 }
 
 UInt32 GfxTextureUtils::CheckMaxLevels(UInt32 width, UInt32 height, UInt32 requestedLevels)

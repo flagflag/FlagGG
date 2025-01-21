@@ -55,9 +55,14 @@ void GfxBufferTest()
 
 void GfxTextureTest()
 {
-	auto* device = GfxDevice::GetDevice();
-
-	auto texture = GetSubsystem<ResourceCache>()->GetResource<Texture2D>("Textures/WaterReflection.dds");
+	auto* cache = GetSubsystem<ResourceCache>();
+	cache->GetResource<Texture2D>("Textures/WaterNoise.dds");
+	cache->GetResource<Texture2D>("tiles/Textures/Mix/BaseColor_Terrain.png");
+	cache->GetResource<Texture2D>("tiles/Textures/Mix/MixColor_Terrain.png");
+	cache->GetResource<Texture2D>("Editor/TextureStyleGroup/noise03.tga");
+	cache->GetResource<Texture2D>("Editor/TextureStyleGroup/noise04.tga");
+	cache->GetResource<Texture2D>("Textures/WaterNormal.png");
+	cache->GetResource<Texture2D>("Textures/WaterReflection.dds");
 }
 
 int main()

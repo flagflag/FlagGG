@@ -144,16 +144,23 @@ void GfxTextureVulkan::Apply(const void* initialDataPtr)
 	vkImageLayout_ = VK_IMAGE_LAYOUT_UNDEFINED;
 	VkImageType vkImageType = VK_IMAGE_TYPE_1D;
 	VkImageViewType vkImageViewType = VK_IMAGE_VIEW_TYPE_1D;
-	if (textureDesc_.depth_ == 1)
+	if (textureDesc_.isCube_)
 	{
 		vkImageType = VK_IMAGE_TYPE_2D;
-		vkImageViewType = VK_IMAGE_VIEW_TYPE_2D;
+		vkImageViewType = textureDesc_.layers_ > 1 ? VK_IMAGE_VIEW_TYPE_CUBE_ARRAY : VK_IMAGE_VIEW_TYPE_CUBE;
 	}
-	else
+	else if (textureDesc_.depth_ > 1)
 	{
 		vkImageType = VK_IMAGE_TYPE_3D;
 		vkImageViewType = VK_IMAGE_VIEW_TYPE_3D;
 	}
+	else
+	{
+		vkImageType = VK_IMAGE_TYPE_2D;
+		vkImageViewType = textureDesc_.layers_ > 1 ? VK_IMAGE_VIEW_TYPE_2D_ARRAY : VK_IMAGE_VIEW_TYPE_2D;
+	}
+	UInt32 numLayers = Max(textureDesc_.layers_, 1u) * (textureDesc_.isCube_ ? 6 : 1);
+
 	VkImageCreateInfo vkICI;
 	vkICI.sType                 = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	vkICI.pNext                 = nullptr;
@@ -164,7 +171,7 @@ void GfxTextureVulkan::Apply(const void* initialDataPtr)
 	vkICI.extent.height         = textureDesc_.height_;
 	vkICI.extent.depth          = textureDesc_.depth_;
 	vkICI.mipLevels             = textureDesc_.levels_;
-	vkICI.arrayLayers           = Max(textureDesc_.layers_, 1u);
+	vkICI.arrayLayers           = numLayers;
 	vkICI.samples               = VK_SAMPLE_COUNT_1_BIT;
 	vkICI.tiling                = VK_IMAGE_TILING_OPTIMAL;
 	vkICI.usage                 = VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
@@ -325,8 +332,7 @@ void GfxTextureVulkan::UpdateTextureSubRegion(const void* dataPtr, UInt32 index,
 
 	auto* deviceVulkan = GetSubsystem<GfxDeviceVulkan>();
 
-	UInt32 subResourceRowSize = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, width);
-	UInt32 subResourceSize = subResourceRowSize * height;
+	UInt32 subResourceSize = GfxTextureUtils::GetDataSize(textureDesc_.format_, width, height);
 
 	VkBuffer vkTempBuffer;
 	VkDeviceMemory vkTempMemory;
