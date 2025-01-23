@@ -34,8 +34,8 @@ emscripten - 构建
 * 增加metal支持（接了一版mtlpp，还有很多要改）
 * 增加vulkan支持（基本完成，还有一些小问题）
 * 多线程任务调度系统
- - ParallelTaskThreadPool，即时性高，线程任务不可被抛弃 （完成）
- - TaskThreadPool ，即时性稍低，线程任务可被抛弃（暂时用不到，等后面做大场景流式加载了在补全）
+    * ParallelTaskThreadPool，即时性高，线程任务不可被抛弃 （完成）
+    * TaskThreadPool ，即时性稍低，线程任务可被抛弃（暂时用不到，等后面做大场景流式加载了在补全）
 * 分层动画系统（目前完成基本盘，高阶混合树的方式之后再慢慢加上）
 * 物理系统
 * UI系统
