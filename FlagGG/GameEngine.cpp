@@ -1,12 +1,11 @@
 #include "GameEngine.h"
 #include "Core/EventManager.h"
 #include "GfxDevice/GfxDevice.h"
-#ifdef _WIN32
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Window.h"
-#endif
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileSystemArchive/DefaultFileSystemArchive.h"
+#include "UI/UISystem.h"
 
 namespace FlagGG
 {
@@ -31,6 +30,8 @@ void GameEngine::Start()
 	WindowDevice::Initialize();
 	RenderEngine::Instance().Initialize();
 #endif
+
+	GetSubsystem<UISystem>()->Initialize();
 
 	isRunning_ = true;
 	elapsedTime_ = 0.0f;

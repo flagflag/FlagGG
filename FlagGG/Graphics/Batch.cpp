@@ -4,11 +4,11 @@
 namespace FlagGG
 {
 
-Batch::Batch(BatchType type, Texture* texture, VertexVector* vertexs, USize vertexSize) :
+Batch::Batch(BatchType type, VertexVector* vertexs, USize vertexSize, Texture* texture) :
 	type_(type),
-	texture_(texture),
 	vertexs_(vertexs),
-	vertexSize_(vertexSize)
+	vertexSize_(vertexSize),
+	texture_(texture)
 {
 	owner_ = vertexs_ == nullptr;
 
@@ -35,22 +35,12 @@ Batch::~Batch()
 
 const char* Batch::GetVertexs() const
 {
-	return (const char*)&(vertexs_->At(0));
+	return (const char*)&(vertexs_->At(vertexStart_));
 }
 
-unsigned Batch::GetVertexSize() const
+UInt32 Batch::GetVertexCount() const
 {
-	return vertexSize_;
-}
-
-unsigned Batch::GetVertexCount() const
-{
-	return vertexs_->Size() * 4u / vertexSize_;
-}
-
-Texture* Batch::GetTexture() const
-{
-	return texture_;
+	return (vertexEnd_ - vertexStart_) * 4u / vertexSize_;
 }
 
 void Batch::SetTexture(Texture* texture)

@@ -404,6 +404,16 @@ void GfxDeviceVulkan::BeginFrame()
 		vkFreeDescriptorSets(vkDevice_, vkDescPool_, vkDescSets_.Size(), &vkDescSets_[0]);
 		vkDescSets_.Clear();
 	}
+
+	GfxDevice::BeginFrame();
+
+	vkCmdBuffer_ = nullptr;
+	vkComputePipeline_ = nullptr;
+	vkGraphicsPipeline_ = nullptr;
+	vkRenderPass_ = nullptr;
+	vkFramebuffer_ = nullptr;
+	currentProgram_ = nullptr;
+	vkRenderPassDirty_ = false;
 }
 
 void GfxDeviceVulkan::EndFrame()

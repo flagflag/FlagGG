@@ -4,6 +4,8 @@
 #include "Graphics/Texture.h"
 #include "GfxDevice/GfxDevice.h"
 #include "GfxDevice/GfxSwapChain.h"
+#include "UI/UISystem.h"
+#include "UI/UIEvents.h"
 #include "Log.h"
 
 #include <windows.h>
@@ -18,6 +20,7 @@ Vector<SharedPtr<Window>> WindowDevice::recivers_;
 
 PODVector<DefferedMessage> WindowDevice::defferedMsgs_;
 
+#if PLATFORM_WINDOWS
 static LRESULT APIENTRY StaticWndProc(HWND handler, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
@@ -36,9 +39,11 @@ static LRESULT APIENTRY StaticWndProc(HWND handler, UINT message, WPARAM wParam,
 
 	return DefWindowProc(handler, message, wParam, lParam);
 }
+#endif
 
 void WindowDevice::Initialize()
 {
+#if PLATFORM_WINDOWS
 	WNDCLASSEXW cls;
 
 	memset(&cls, 0, sizeof(cls));
@@ -51,15 +56,19 @@ void WindowDevice::Initialize()
 	cls.hIconSm = nullptr;
 
 	RegisterClassExW(&cls);
+#endif
 }
 
 void WindowDevice::Uninitialize()
 {
+#if PLATFORM_WINDOWS
 	UnregisterClassW(className_, nullptr);
+#endif
 }
 
 void WindowDevice::Update()
 {
+#if PLATFORM_WINDOWS
 	MSG msg;
 	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 	{
@@ -71,7 +80,7 @@ void WindowDevice::Update()
 	{
 		for (auto rec = recivers_.Begin(); rec != recivers_.End(); ++rec)
 		{
-			if ((*rec)->GetWindow() == msg->handler_)
+			if ((*rec)->GetHandle() == msg->handler_)
 			{
 				(*rec)->WinProc(msg->message_, msg->wParam_, msg->lParam_);
 			}
@@ -79,6 +88,7 @@ void WindowDevice::Update()
 	}
 
 	defferedMsgs_.Clear();
+#endif
 }
 
 void WindowDevice::RenderUpdate()
@@ -119,8 +129,7 @@ void WindowDevice::UnregisterWinMessage(Window* wv)
 Window::Window(void* parentWindow, const IntRect& rect) :
 	window_(nullptr),
 	parentWindow_(parentWindow),
-	rect_(rect),
-	input_(GetSubsystem<Input>())
+	rect_(rect)
 {
 	Create(parentWindow, rect);
 
@@ -134,6 +143,7 @@ Window::~Window()
 
 bool Window::Create(void* parentWindow, const IntRect& rect)
 {
+#if PLATFORM_WINDOWS
 	window_ = CreateWindowExW(
 		0,
 		WindowDevice::className_,
@@ -154,6 +164,7 @@ bool Window::Create(void* parentWindow, const IntRect& rect)
 		FLAGGG_LOG_ERROR("CreateWindow failed, error code({}).", GetLastError());
 		return false;
 	}
+#endif
 
 	CreateSwapChain();
 	UpdateSwapChain(rect.Width(), rect.Height());
@@ -179,34 +190,52 @@ void Window::UpdateSwapChain(UInt32 width, UInt32 height)
 
 UInt32 Window::GetWidth()
 {
+#if PLATFORM_WINDOWS
 	RECT rect;
 	::GetWindowRect((HWND)window_, &rect);
 	return rect.right - rect.left;
+#else
+	return 0u;
+#endif
 }
 
 UInt32 Window::GetHeight()
 {
+#if PLATFORM_WINDOWS
 	RECT rect;
 	::GetWindowRect((HWND)window_, &rect);
 	return rect.bottom - rect.top;
+#else
+	return 0u;
+#endif
 }
 
 IntVector2 Window::GetMousePos() const
 {
+#if PLATFORM_WINDOWS
 	POINT point;
 	::GetCursorPos(&point);
 	::ScreenToClient((HWND)window_, &point);
 	return IntVector2(point.x, point.y);
+#else
+	return IntVector2::ZERO;
+#endif
 }
 
 bool Window::IsForegroundWindow() const
 {
+#if PLATFORM_WINDOWS
 	return ::GetForegroundWindow() == window_;
+#else
+	return false;
+#endif
 }
 
 void Window::Resize(UInt32 width, UInt32 height)
 {
+#if PLATFORM_WINDOWS
 	::SetWindowPos((HWND)window_, nullptr, 0, 0, width, height, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+#endif
 
 	UpdateSwapChain(width, height);
 
@@ -214,19 +243,28 @@ void Window::Resize(UInt32 width, UInt32 height)
 	rect_.bottom_ = rect_.top_ + height;
 }
 
-void* Window::GetWindow()
-{
-	return window_;
-}
-
 void Window::Show()
 {
+#if PLATFORM_WINDOWS
 	::ShowWindow((HWND)window_, SW_SHOW);
+#endif
 }
 
 void Window::Hide()
 {
+#if PLATFORM_WINDOWS
 	::ShowWindow((HWND)window_, SW_HIDE);
+#endif
+}
+
+void Window::CreateUIElement()
+{
+	if (!uiRoot_)
+	{
+		uiRoot_ = new UIElement();
+
+		GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(UIEvent::GATHER_RENDER_UI_TREE, Window::GatherRenderUITrees, this));
+	}
 }
 
 void Window::RenderUpdate()
@@ -238,7 +276,7 @@ void Window::Render()
 {
 	RenderEngine::Instance().Render(viewport_);
 
-	RenderEngine::Instance().RenderRawBatch(viewport_);
+	GetSubsystem<UISystem>()->Render(uiRoot_);
 
 	gfxSwapChain_->Present();
 }
@@ -248,19 +286,30 @@ Viewport* Window::GetViewport() const
 	return viewport_;
 }
 
+void Window::GatherRenderUITrees(Vector<RenderUITree>& renderUITrees)
+{
+	RenderUITree& item = renderUITrees.EmplaceBack();
+	item.uiRoot_ = uiRoot_;
+	item.renderSurface_ = viewport_->GetRenderTarget();
+	auto rect = viewport_->GetSize();
+	item.viewport_ = Rect(rect.Left(), rect.Top(), rect.Right(), rect.Bottom());
+	item.manualRender_ = true;
+}
+
 void Window::WinProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if (!input_) return;
+#if PLATFORM_WINDOWS
+	auto* input = GetSubsystem<Input>();
 
 	switch (message)
 	{
 	case WM_KEYDOWN:
-		input_->OnKeyDown(nullptr, wParam);
+		input->OnKeyDown(nullptr, wParam);
 
 		break;
 
 	case WM_KEYUP:
-		input_->OnKeyUp(nullptr, wParam);
+		input->OnKeyUp(nullptr, wParam);
 
 		break;
 
@@ -273,7 +322,7 @@ void Window::WinProc(UINT message, WPARAM wParam, LPARAM lParam)
 			else if (message == WM_RBUTTONDOWN) key = MOUSE_RIGHT;
 			else if (message == WM_MBUTTONDOWN) key = MOUSE_MID;
 					
-			input_->OnMouseDown(nullptr, key);
+			input->OnMouseDown(nullptr, key);
 		}
 		break;
 
@@ -286,7 +335,7 @@ void Window::WinProc(UINT message, WPARAM wParam, LPARAM lParam)
 			else if (message == WM_RBUTTONUP) key = MOUSE_RIGHT;
 			else if (message == WM_MBUTTONUP) key = MOUSE_MID;
 
-			input_->OnMouseUp(nullptr, key);
+			input->OnMouseUp(nullptr, key);
 		}
 		break;
 			
@@ -294,12 +343,12 @@ void Window::WinProc(UINT message, WPARAM wParam, LPARAM lParam)
 		static POINT mousePos;
 
 		::GetCursorPos(&mousePos);
-		input_->OnMouseMove(nullptr,
+		input->OnMouseMove(nullptr,
 			Vector2(mousePos.x - mousePos_.x, mousePos.y - mousePos_.y));
 
 		mousePos_ = mousePos;
 
-		if (!input_->IsMouseShow())
+		if (!input->IsMouseShow())
 		{
 			mousePos_.x = GetWidth() / 2;
 			mousePos_.y = GetHeight() / 2;
@@ -314,6 +363,7 @@ void Window::WinProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 		break;
 	}
+#endif
 }
 
 }

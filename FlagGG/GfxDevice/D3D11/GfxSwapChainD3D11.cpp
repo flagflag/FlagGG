@@ -10,7 +10,7 @@ namespace FlagGG
 GfxSwapChainD3D11::GfxSwapChainD3D11(Window* window) :
 	GfxSwapChain(window)
 {
-	HWND handler = (HWND)window->GetWindow();
+	HWND handler = (HWND)window->GetHandle();
 
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
 	memset(&swapChainDesc, 0, sizeof(swapChainDesc));

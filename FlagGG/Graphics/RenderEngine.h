@@ -88,8 +88,6 @@ public:
 
 	void Render(Viewport* viewport);
 
-	void RenderRawBatch(Viewport* viewport);
-
 
 	/**********************************************************/
 	/*                    引擎层渲染指令                      */

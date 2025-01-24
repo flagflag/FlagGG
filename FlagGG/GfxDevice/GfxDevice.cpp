@@ -22,7 +22,32 @@ GfxDevice::~GfxDevice()
 
 void GfxDevice::BeginFrame()
 {
-
+	// Reset to default state
+	ResetRenderTargets();
+	depthStencil_.Reset();
+	viewport_ = Rect::ZERO;
+	ClearVertexBuffer();
+	indexBuffer_.Reset();
+	vertexDesc_.Reset();
+	ResetComputeBuffers();
+	vertexShader_.Reset();
+	pixelShader_.Reset();
+	computeShader_.Reset();
+	ResetBuffers();
+	for (auto& texture : textures_)
+	{
+		texture.Reset();
+	}
+	for (auto& sampler : samplers_)
+	{
+		sampler.Reset();
+	}
+	rasterizerState_ = RasterizerState();
+	depthStencilState_ = DepthStencilState();
+	rasterizerStateDirty_ = depthStencilStateDirty_ = true;
+	primitiveType_ = PRIMITIVE_TRIANGLE;
+	engineShaderParameters_ = nullptr;
+	materialShaderParameters_ = nullptr;
 }
 
 void GfxDevice::EndFrame()

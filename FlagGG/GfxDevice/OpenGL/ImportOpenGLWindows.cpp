@@ -144,7 +144,7 @@ class GLSwapChainWindows : public IGLSwapChain
 public:
 	GLSwapChainWindows(GLContextWindows* glContext, FlagGG::Window* window)
 	{
-		hWnd_ = (HWND)window->GetWindow();
+		hWnd_ = (HWND)window->GetHandle();
 		hDC_ = ::GetDC(hWnd_);
 
 		::SetPixelFormat(hDC_, glContext->pixelFormat_, &glContext->pfd_);

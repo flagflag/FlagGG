@@ -77,6 +77,9 @@ private:
 	// 每帧重置Camera
 	SharedPtr<Camera> camera_;
 
+	// 当前帧需要渲染
+	bool needRenderView_{};
+
 	// 阴影相机
 	SharedPtr<Camera> shadowCamera_;
 	SharedPtr<Node> shadowCameraNode_;

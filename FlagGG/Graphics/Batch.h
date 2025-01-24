@@ -1,5 +1,4 @@
-#ifndef __BATCH__
-#define __BATCH__
+#pragma once
 
 #include "Export.h"
 #include "Container/RefCounted.h"
@@ -12,7 +11,7 @@ namespace FlagGG
 
 class Texture;
 
-typedef Vector<Real>VertexVector;
+typedef Vector<Real> VertexVector;
 
 enum BatchType
 {
@@ -23,17 +22,19 @@ enum BatchType
 class FlagGG_API Batch : public RefCounted
 {
 public:
-	Batch(BatchType type, Texture* texture, VertexVector* vertexs, USize vertexSize);
+	Batch(BatchType type, VertexVector* vertexs, USize vertexSize, Texture* texture);
 
 	virtual ~Batch();
 
 	const char* GetVertexs() const;
 
-	unsigned GetVertexSize() const;
+	UInt32 GetVertexStart() const { return vertexStart_; }
 
-	unsigned GetVertexCount() const;
+	UInt32 GetVertexSize() const { return vertexSize_; }
 
-	Texture* GetTexture() const;
+	UInt32 GetVertexCount() const;
+
+	Texture* GetTexture() const { return texture_; }
 
 	void SetTexture(Texture* texture);
 
@@ -43,11 +44,11 @@ protected:
 	VertexVector* vertexs_;
 	bool owner_;
 
-	unsigned vertexSize_;
+	UInt32 vertexSize_;
 			
-	unsigned vertexStart_;
+	UInt32 vertexStart_;
 
-	unsigned vertexEnd_;
+	UInt32 vertexEnd_;
 
 	SharedPtr<Texture> texture_;
 
@@ -55,5 +56,3 @@ protected:
 };
 
 }
-
-#endif

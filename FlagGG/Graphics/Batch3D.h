@@ -20,13 +20,13 @@ public:
 	void AddTriangle(const Vector3& v1, const Vector3& v2, const Vector3& v3,
 		const Vector2& uv1, const Vector2& uv2, const Vector2& uv3, 
 		const Vector3& n1, const Vector3& n2, const Vector3& n3,
-		unsigned color);
+		UInt32 color);
 
 	void AddLine(const Vector3& v1, const Vector3& v2,
 		const Vector2& uv1, const Vector2& uv2,
-		unsigned color);
+		UInt32 color);
 
-	void AddBlob(const void* data, unsigned size);
+	void AddBlob(const void* data, UInt32 size);
 };
 
 }

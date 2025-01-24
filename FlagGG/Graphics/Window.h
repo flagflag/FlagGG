@@ -29,6 +29,8 @@ struct DefferedMessage
 
 class Window;
 class GfxSwapChain;
+class UIElement;
+struct RenderUITree;
 
 class FlagGG_API WindowDevice
 {
@@ -62,32 +64,52 @@ public:
 
 	~Window() override;
 
+	// 获取窗口宽度
 	UInt32 GetWidth();
 
+	// 获取窗口高度
 	UInt32 GetHeight();
 
+	// 获取在窗口坐标系下的鼠标坐标
 	IntVector2 GetMousePos() const;
 
+	// 判断窗口是否是最上层可见窗口
 	bool IsForegroundWindow() const;
 
+	// 改窗口大小
 	void Resize(UInt32 width, UInt32 height);
 
-	void* GetWindow();
-
+	// 显示窗口
 	void Show();
 
+	// 隐藏窗口
 	void Hide();
 
+	// 创建ui根节点
+	void CreateUIElement();
+
+	// 获取ui根节点
+	UIElement* GetUIElement() { return uiRoot_; }
+
+	// 窗口渲染更新
 	void RenderUpdate();
 
+	// 渲染窗口
 	void Render();
 
+	// 获取视口
 	Viewport* GetViewport() const;
 
+	// 获取交换链
 	GfxSwapChain* GetSwapChain() { return gfxSwapChain_; }
 
+	// 获取窗口句柄
 	void* GetHandle() const { return window_; }
 
+	// 收集ui渲染树（作为事件，由UISystem调用）
+	void GatherRenderUITrees(Vector<RenderUITree>& renderUITrees);
+
+	// 窗口事件
 	void WinProc(UINT message, WPARAM wParam, LPARAM lParam);
 
 protected:
@@ -98,11 +120,14 @@ protected:
 	void UpdateSwapChain(UInt32 width, UInt32 height);
 
 private:
-	Input* input_;
-
+	// 视口
 	SharedPtr<Viewport> viewport_;
 
+	// 交换链
 	SharedPtr<GfxSwapChain> gfxSwapChain_;
+
+	// 窗口ui根节点
+	SharedPtr<UIElement> uiRoot_;
 
 	UInt32 multiSample_{ 1 };
 

@@ -4,17 +4,18 @@
 namespace FlagGG
 {
 
-Batch2D::Batch2D(Texture* texture, VertexVector* vertexs) :
-	Batch(DRAW_TRIANGLE, texture, vertexs, 24)
+Batch2D::Batch2D(VertexVector* vertexs, Texture* texture) :
+	Batch(DRAW_TRIANGLE, vertexs, 24, texture)
 {
 }
 
 Batch2D::~Batch2D() = default;
 
 void Batch2D::AddTriangle(const Vector2& v1, const Vector2& v2, const Vector2& v3,
-	const Vector2& uv1, const Vector2& uv2, const Vector2& uv3, unsigned color)
+	const Vector2& uv1, const Vector2& uv2, const Vector2& uv3,
+	UInt32 color1, UInt32 color2, UInt32 color3)
 {
-	unsigned begin = vertexs_->Size();
+	UInt32 begin = vertexs_->Size();
 	vertexEnd_ = vertexs_->Size() + vertexSize_ / 4u * 3;
 	vertexs_->Resize(vertexEnd_);
 
@@ -24,21 +25,21 @@ void Batch2D::AddTriangle(const Vector2& v1, const Vector2& v2, const Vector2& v
 	dest[2] = 0.0f;
 	dest[3] = uv1.x_;
 	dest[4] = uv1.y_;
-	((unsigned&)dest[5]) = color;
+	((UInt32&)dest[5]) = color1;
 
 	dest[6] = v2.x_;
 	dest[7] = v2.y_;
 	dest[8] = 0.0f;
 	dest[9] = uv2.x_;
 	dest[10] = uv2.y_;
-	((unsigned&)dest[11]) = color;
+	((UInt32&)dest[11]) = color2;
 
 	dest[12] = v3.x_;
 	dest[13] = v3.y_;
 	dest[14] = 0.0f;
 	dest[15] = uv3.x_;
 	dest[16] = uv3.y_;
-	((unsigned&)dest[17]) = color;
+	((UInt32&)dest[17]) = color3;
 }
 
 }

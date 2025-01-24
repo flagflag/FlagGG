@@ -11,7 +11,7 @@
 namespace FlagGG
 {
 
-extern bool UsdMemoryInitializing;
+FlagGG_API extern bool UsdMemoryInitializing;
 
 class FlagGG_API UsdMemoryManager
 {
@@ -89,7 +89,7 @@ struct FlagGG_API UsdMemoryModule
 #endif
 
 #if USD_MANAGER
-#define malloc(ptr) UsdMemoryManager::Malloc(ptr)
-#define realloc(originPtr, newSize) UsdMemoryManager::Realloc(originPtr, newSize)
-#define free(ptr) UsdMemoryManager::Free(ptr)
+#define malloc(ptr) FlagGG::UsdMemoryManager::Malloc(ptr)
+#define realloc(originPtr, newSize) FlagGG::UsdMemoryManager::Realloc(originPtr, newSize)
+#define free(ptr) FlagGG::UsdMemoryManager::Free(ptr)
 #endif

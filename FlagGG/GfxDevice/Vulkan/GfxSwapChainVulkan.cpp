@@ -58,7 +58,7 @@ void GfxSwapChainVulkan::Resize(UInt32 width, UInt32 height)
 	vkWSCI.pNext     = nullptr;
 	vkWSCI.flags     = 0;
 	vkWSCI.hinstance = ::GetModuleHandle(nullptr);
-	vkWSCI.hwnd      = (HWND)outputWindow_->GetWindow();
+	vkWSCI.hwnd      = (HWND)outputWindow_->GetHandle();
 	VULKAN_CHECK(vkCreateWin32SurfaceKHR(deviceVulkan->GetVulkanInstance(), &vkWSCI, &deviceVulkan->GetVulkanAllocCallback(), &vkSurface_));
 #elif PLATFORM_ANDROID
 	VkAndroidSurfaceCreateInfoKHR vkASCI;

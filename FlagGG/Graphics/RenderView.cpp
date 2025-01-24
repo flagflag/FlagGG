@@ -62,7 +62,7 @@ void RenderView::Define(Viewport* viewport)
 	depthStencil_ = viewport->GetDepthStencil();
 	scene_ = viewport->GetScene();
 	camera_ = viewport->GetCamera();
-	octree_ = scene_->GetComponent<Octree>();
+	octree_ = scene_ ? scene_->GetComponent<Octree>() : nullptr;
 	viewport_ = viewport->GetSize();
 	renderPiplineContext_ = nullptr;
 
@@ -72,6 +72,8 @@ void RenderView::Define(Viewport* viewport)
 			defaultRenderPipline_ = new ForwardRenderPipline();
 		renderPipline_ = defaultRenderPipline_;
 	}
+
+	needRenderView_ = scene_ && camera_ && renderPipline_;
 }
 
 void RenderView::Undefine()
@@ -85,6 +87,9 @@ void RenderView::Undefine()
 
 void RenderView::RenderUpdate()
 {
+	if (!needRenderView_)
+		return;
+
 	renderPiplineContext_ = &renderPipline_->GetRenderPiplineContext();
 	renderPiplineContext_->Clear();
 
@@ -240,7 +245,7 @@ void RenderView::CollectVisibilityObjects()
 
 void RenderView::Render()
 {
-	if (!scene_ || !camera_ || !renderPipline_)
+	if (!needRenderView_)
 		return;
 
 	float aspect = (float)viewport_.Width() / viewport_.Height();

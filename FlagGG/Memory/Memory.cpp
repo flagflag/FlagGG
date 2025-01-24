@@ -8,7 +8,7 @@
 namespace FlagGG
 {
 
-extern bool UsdMemoryInitializing = false;
+FlagGG_API extern bool UsdMemoryInitializing = false;
 
 Memory::Memory()
 {
