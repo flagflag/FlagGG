@@ -38,6 +38,9 @@ public:
 	// 更新纹理数据
 	void UpdateTexture(GfxTexture* gfxTexture) override;
 
+	// 回读GPU数据
+	bool ReadBack(void* dataPtr, UInt32 index, UInt32 level) override;
+
 
 	// 获取texute2d的render surface
 	GfxRenderSurface* GetRenderSurface() const override;

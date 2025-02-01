@@ -8,6 +8,7 @@
 #include "GfxDevice/GfxSampler.h"
 #include "GfxDevice/VertexDescFactory.h"
 #include "Graphics/ShaderParameter.h"
+#include "Memory/Memory.h"
 
 #include "Log.h"
 
@@ -56,6 +57,84 @@ static const D3D11_TEXTURE_ADDRESS_MODE d3dAddressMode[] =
 	D3D11_TEXTURE_ADDRESS_BORDER
 };
 
+static const D3D11_BLEND d3d11SourceRgbBlendFactor[] =
+{
+	D3D11_BLEND_ONE,
+	D3D11_BLEND_ONE,
+	D3D11_BLEND_DEST_COLOR,
+	D3D11_BLEND_SRC_ALPHA,
+	D3D11_BLEND_SRC_ALPHA,
+	D3D11_BLEND_ONE,
+	D3D11_BLEND_INV_DEST_ALPHA,
+	D3D11_BLEND_ONE,
+	D3D11_BLEND_SRC_ALPHA,
+};
+
+static const D3D11_BLEND d3d11DestRgbBlendFactor[] =
+{
+	D3D11_BLEND_ZERO,
+	D3D11_BLEND_ONE,
+	D3D11_BLEND_ZERO,
+	D3D11_BLEND_INV_SRC_ALPHA,
+	D3D11_BLEND_ONE,
+	D3D11_BLEND_INV_SRC_ALPHA,
+	D3D11_BLEND_DEST_ALPHA,
+	D3D11_BLEND_ONE,
+	D3D11_BLEND_ONE,
+};
+
+static const D3D11_BLEND_OP d3d11RgbBlendOpt[] =
+{
+	D3D11_BLEND_OP_ADD,
+	D3D11_BLEND_OP_ADD,
+	D3D11_BLEND_OP_ADD,
+	D3D11_BLEND_OP_ADD,
+	D3D11_BLEND_OP_ADD,
+	D3D11_BLEND_OP_ADD,
+	D3D11_BLEND_OP_ADD,
+	D3D11_BLEND_OP_REV_SUBTRACT,
+	D3D11_BLEND_OP_REV_SUBTRACT,
+};
+
+static const D3D11_BLEND d3d11SourceAlphaBlendFactor[] =
+{
+	D3D11_BLEND_ONE,
+	D3D11_BLEND_ONE,
+	D3D11_BLEND_DEST_COLOR,
+	D3D11_BLEND_SRC_ALPHA,
+	D3D11_BLEND_SRC_ALPHA,
+	D3D11_BLEND_ONE,
+	D3D11_BLEND_INV_DEST_ALPHA,
+	D3D11_BLEND_ONE,
+	D3D11_BLEND_SRC_ALPHA,
+};
+
+static const D3D11_BLEND d3d11DestAlphaBlendFactor[] =
+{
+	D3D11_BLEND_ZERO,
+	D3D11_BLEND_ONE,
+	D3D11_BLEND_ZERO,
+	D3D11_BLEND_INV_SRC_ALPHA,
+	D3D11_BLEND_ONE,
+	D3D11_BLEND_INV_SRC_ALPHA,
+	D3D11_BLEND_DEST_ALPHA,
+	D3D11_BLEND_ONE,
+	D3D11_BLEND_ONE,
+};
+
+static const D3D11_BLEND_OP d3d11AlphaBlendOpt[] =
+{
+	D3D11_BLEND_OP_ADD,
+	D3D11_BLEND_OP_ADD,
+	D3D11_BLEND_OP_ADD,
+	D3D11_BLEND_OP_ADD,
+	D3D11_BLEND_OP_ADD,
+	D3D11_BLEND_OP_ADD,
+	D3D11_BLEND_OP_ADD,
+	D3D11_BLEND_OP_REV_SUBTRACT,
+	D3D11_BLEND_OP_REV_SUBTRACT,
+};
+
 static const D3D11_COMPARISON_FUNC d3dComparisonFun[] =
 {
 	D3D11_COMPARISON_NEVER,
@@ -66,6 +145,18 @@ static const D3D11_COMPARISON_FUNC d3dComparisonFun[] =
 	D3D11_COMPARISON_NOT_EQUAL,
 	D3D11_COMPARISON_GREATER_EQUAL,
 	D3D11_COMPARISON_ALWAYS
+};
+
+static const D3D11_STENCIL_OP d3d11StencilOperation[] =
+{
+	D3D11_STENCIL_OP_KEEP,
+	D3D11_STENCIL_OP_ZERO,
+	D3D11_STENCIL_OP_REPLACE,
+	D3D11_STENCIL_OP_INCR_SAT,
+	D3D11_STENCIL_OP_DECR_SAT,
+	D3D11_STENCIL_OP_INVERT,
+	D3D11_STENCIL_OP_INCR,
+	D3D11_STENCIL_OP_DECR,
 };
 
 GfxDeviceD3D11::GfxDeviceD3D11()
@@ -113,6 +204,22 @@ GfxDeviceD3D11::~GfxDeviceD3D11()
 	{
 		D3D11_SAFE_RELEASE(it.second_);
 	}
+	for (auto& it : blendStates_)
+	{
+		D3D11_SAFE_RELEASE(it);
+	}
+}
+
+void GfxDeviceD3D11::BeginFrame()
+{
+	GfxDevice::BeginFrame();
+
+	deviceContext_->ClearState();
+}
+
+void GfxDeviceD3D11::EndFrame()
+{
+	GfxDevice::EndFrame();
 }
 
 void GfxDeviceD3D11::Clear(ClearTargetFlags flags, const Color& color/* = Color::TRANSPARENT_BLACK*/, float depth/* = 1.0f*/, unsigned stencil/* = 0*/)
@@ -445,7 +552,7 @@ void GfxDeviceD3D11::PrepareRasterizerState()
 			int scaledDepthBias = (int)(rasterizerState_.depthBias_ * (1 << 24));
 
 			D3D11_RASTERIZER_DESC stateDesc;
-			memset(&stateDesc, 0, sizeof(stateDesc));
+			Memory::Memzero(&stateDesc, sizeof(stateDesc));
 			stateDesc.FillMode = d3d11FillMode[rasterizerState_.fillMode_];
 			stateDesc.CullMode = d3d11CullMode[rasterizerState_.cullMode_];
 			stateDesc.FrontCounterClockwise = FALSE;
@@ -461,7 +568,7 @@ void GfxDeviceD3D11::PrepareRasterizerState()
 			ID3D11RasterizerState* newRasterizerState = nullptr;
 
 			HRESULT hr = device_->CreateRasterizerState(&stateDesc, &newRasterizerState);
-			if (hr != 0)
+			if (FAILED(hr))
 			{
 				FLAGGG_LOG_ERROR("CreateRasterizerState failed.");
 				D3D11_SAFE_RELEASE(newRasterizerState);
@@ -472,6 +579,33 @@ void GfxDeviceD3D11::PrepareRasterizerState()
 		}
 
 		deviceContext_->RSSetState(rasterizerStates_[stateHash]);
+
+		if (!blendStates_[rasterizerState_.blendMode_])
+		{
+			D3D11_BLEND_DESC blendDesc;
+			Memory::Memzero(&blendDesc, sizeof(blendDesc));
+			blendDesc.AlphaToCoverageEnable = FALSE;
+			blendDesc.IndependentBlendEnable = FALSE;
+			blendDesc.RenderTarget[0].BlendEnable = rasterizerState_.blendMode_ == BLEND_REPLACE ? FALSE : TRUE;
+			blendDesc.RenderTarget[0].SrcBlend = d3d11SourceRgbBlendFactor[rasterizerState_.blendMode_];
+			blendDesc.RenderTarget[0].DestBlend = d3d11DestRgbBlendFactor[rasterizerState_.blendMode_];
+			blendDesc.RenderTarget[0].BlendOp = d3d11RgbBlendOpt[rasterizerState_.blendMode_];
+			blendDesc.RenderTarget[0].SrcBlendAlpha = d3d11SourceAlphaBlendFactor[rasterizerState_.blendMode_];
+			blendDesc.RenderTarget[0].DestBlendAlpha = d3d11DestAlphaBlendFactor[rasterizerState_.blendMode_];
+			blendDesc.RenderTarget[0].BlendOpAlpha = d3d11AlphaBlendOpt[rasterizerState_.blendMode_];
+			blendDesc.RenderTarget[0].RenderTargetWriteMask = rasterizerState_.colorWrite_ ? D3D11_COLOR_WRITE_ENABLE_ALL : 0;
+
+			HRESULT hr = device_->CreateBlendState(&blendDesc, &blendStates_[rasterizerState_.blendMode_]);
+			if (FAILED(hr))
+			{
+				FLAGGG_LOG_ERROR("CreateBlendState failed.");
+				D3D11_SAFE_RELEASE(blendStates_[rasterizerState_.blendMode_]);
+				return;
+			}
+		}
+
+		deviceContext_->OMSetBlendState(blendStates_[rasterizerState_.blendMode_], nullptr, F_MAX_UNSIGNED);
+
 		rasterizerStateDirty_ = false;
 	}
 }
@@ -484,7 +618,7 @@ void GfxDeviceD3D11::PrepareDepthStencilState()
 		if (!depthStencilStates_.Contains(stateHash))
 		{
 			D3D11_DEPTH_STENCIL_DESC d3d11DepthStencilDesc;
-			memset(&d3d11DepthStencilDesc, 0, sizeof(d3d11DepthStencilDesc));
+			Memory::Memzero(&d3d11DepthStencilDesc, sizeof(d3d11DepthStencilDesc));
 
 			d3d11DepthStencilDesc.DepthEnable = true;
 			d3d11DepthStencilDesc.DepthFunc = d3dComparisonFun[depthStencilState_.depthTestMode_];
@@ -493,6 +627,11 @@ void GfxDeviceD3D11::PrepareDepthStencilState()
 			d3d11DepthStencilDesc.StencilEnable = depthStencilState_.stencilTest_;
 			d3d11DepthStencilDesc.StencilReadMask = depthStencilState_.stencilReadMask_;
 			d3d11DepthStencilDesc.StencilWriteMask = depthStencilState_.stencilWriteMask_;
+
+			d3d11DepthStencilDesc.FrontFace.StencilFailOp = d3d11StencilOperation[depthStencilState_.stencilFailOp_];
+			d3d11DepthStencilDesc.FrontFace.StencilDepthFailOp = d3d11StencilOperation[depthStencilState_.depthFailOp_];
+			d3d11DepthStencilDesc.FrontFace.StencilPassOp = d3d11StencilOperation[depthStencilState_.depthStencilPassOp_];
+			d3d11DepthStencilDesc.FrontFace.StencilFunc = d3dComparisonFun[depthStencilState_.stencilTestMode_];
 
 			ID3D11DepthStencilState* d3d11DepthStencilState = nullptr;
 			HRESULT hr = device_->CreateDepthStencilState(&d3d11DepthStencilDesc, &d3d11DepthStencilState);
@@ -609,7 +748,7 @@ ID3D11SamplerState* GfxDeviceD3D11::GetD3D11SamplerState(GfxSampler* gfxSampler)
 	const SamplerDesc& desc = gfxSampler->GetDesc();
 
 	D3D11_SAMPLER_DESC d3d11SamplerDesc;
-	memset(&d3d11SamplerDesc, 0, sizeof(d3d11SamplerDesc));
+	Memory::Memzero(&d3d11SamplerDesc, sizeof(d3d11SamplerDesc));
 	d3d11SamplerDesc.Filter = d3d11Filter[desc.filterMode_];
 	d3d11SamplerDesc.AddressU = d3dAddressMode[desc.addresMode_[TEXTURE_COORDINATE_U]];
 	d3d11SamplerDesc.AddressV = d3dAddressMode[desc.addresMode_[TEXTURE_COORDINATE_V]];

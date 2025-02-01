@@ -1,10 +1,12 @@
-#ifndef __BATCH2D__
-#define __BATCH2D__
+#pragma once
 
 #include "Export.h"
 
 #include "Math/Vector2.h"
+#include "Math/Vector4.h"
 #include "Batch.h"
+#include "Graphics/GraphicsDef.h"
+#include "Container/Vector.h"
 
 namespace FlagGG
 {
@@ -19,8 +21,33 @@ public:
 	void AddTriangle(const Vector2& v1, const Vector2& v2, const Vector2& v3,
 		const Vector2& uv1, const Vector2& uv2, const Vector2& uv3,
 		UInt32 color1, UInt32 color2, UInt32 color3);
+
+	static const PODVector<VertexElement>& GetVertexElements();
+
+	static UInt32 GetVertexElementsSize();
+};
+
+class FlagGG_API BatchWebKit : public Batch
+{
+public:
+	BatchWebKit(VertexVector* vertexs = nullptr, Texture* texture = nullptr);
+
+	~BatchWebKit() override;
+
+	void AddTriangle(const Vector2& v1, const Vector2& v2, const Vector2& v3,
+		const Vector2& uv1, const Vector2& uv2, const Vector2& uv3,
+		UInt32 color1, UInt32 color2, UInt32 color3,
+		const Vector4& data0 = Vector4::ZERO,
+		const Vector4& data1 = Vector4::ZERO,
+		const Vector4& data2 = Vector4::ZERO,
+		const Vector4& data3 = Vector4::ZERO,
+		const Vector4& data4 = Vector4::ZERO,
+		const Vector4& data5 = Vector4::ZERO,
+		const Vector4& data6 = Vector4::ZERO);
+
+	static const PODVector<VertexElement>& GetVertexElements();
+
+	static UInt32 GetVertexElementsSize();
 };
 
 }
-
-#endif

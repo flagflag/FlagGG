@@ -27,6 +27,7 @@
 #include "Lobby/Lobby.h"
 #include "GamePlay/GamePlayBase.h"
 #include "GamePlay/Perspective.h"
+#include "WebUISystem/UIView.h"
 
 using namespace FlagGG;
 
@@ -46,7 +47,6 @@ protected:
 	void Stop() override;
 	void Update(float timeStep);
 
-	void Create2DBatch();
 	void CreateScene();
 	void SetupWindow();
 	void OpenLuaVM();
@@ -68,6 +68,7 @@ private:
 
 #ifdef _WIN32
 	SharedPtr<Window> window_;
+	SharedPtr<UIView> uiView_;
 	SharedPtr<Camera> camera_;
 	SharedPtr<Camera> reflectionCamera_;
 	SharedPtr<Scene> scene_;

@@ -2,6 +2,7 @@
 #include "Graphics/RenderEngine.h"
 #include "Graphics/GraphicsDef.h"
 #include "GfxDevice/GfxTexture.h"
+#include "GfxDevice/GfxDevice.h"
 #include "Core/ObjectFactory.h"
 #include "Math/Math.h"
 #include "Log.h"
@@ -291,18 +292,17 @@ bool Texture2D::GetData(UInt32 level, void* dest)
 
 SharedPtr<Image> Texture2D::GetImage()
 {
-	//SharedPtr<Image> image(new Image());
-	//if (format_ != RenderEngine::GetRGBAFormat() && format_ != RenderEngine::GetRGBFormat())
-	//{
-	//	FLAGGG_LOG_ERROR("Unsupported texture format, can not convert to Image");
-	//	return nullptr;
-	//}
+	SharedPtr<Image> image(new Image());
+	if (gfxTexture_->GetDesc().format_ != TEXTURE_FORMAT_RGBA8 && gfxTexture_->GetDesc().format_ != TEXTURE_FORMAT_RGBA8)
+	{
+		FLAGGG_LOG_ERROR("Unsupported texture format, can not convert to Image");
+		return nullptr;
+	}
 
-	//image->SetSize(width_, height_, GetComponents());
-	//GetData(0, image->GetData());
+	image->SetSize(gfxTexture_->GetDesc().width_, gfxTexture_->GetDesc().height_, GetComponents());
+	gfxTexture_->ReadBack(image->GetData(), 0, 0);
 
-	//return image;
-	return nullptr;
+	return image;
 }
 
 }

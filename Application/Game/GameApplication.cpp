@@ -50,7 +50,6 @@ void GameApplication::Start()
 
 	CreateScene();
 	SetupWindow();
-	Create2DBatch();
 	OpenLuaVM();
 	CreateNetwork();
 
@@ -179,26 +178,6 @@ void GameApplication::Update(float timeStep)
 	}
 
 	gameplay_->FrameUpdate(timeStep);
-}
-
-void GameApplication::Create2DBatch()
-{
-	Vector<SharedPtr<Batch>> batches;
-
-	SharedPtr<Batch2D> batch(new Batch2D());
-	batch->AddTriangle(
-		Vector2(-1, -1), Vector2(1, -1), Vector2(1, 1),
-		Vector2(0, 0), Vector2(1, 0), Vector2(1, 1),
-		0u
-		);
-	batch->AddTriangle(
-		Vector2(-1, -1), Vector2(1, 1), Vector2(-1, 1),
-		Vector2(0, 0), Vector2(1, 1), Vector2(0, 1),
-		0u
-	);
-	batch->SetTexture(renderTexture_[0]);
-	batches.Push(batch);
-	// RenderEngine::Instance()->PostRenderBatch(batches);
 }
 
 void GameApplication::CreateScene()
@@ -397,6 +376,16 @@ void GameApplication::SetupWindow()
 		window_->GetViewport()->SetRenderPipline(new DeferredRenderPipline());
 
 	WindowDevice::RegisterWinMessage(window_);
+
+	if (auto buffer = GetSubsystem<AssetFileManager>()->OpenFileReader("WebUI/GameEntry.html"))
+	{
+		String htmlContent;
+		buffer->ToString(htmlContent);
+
+		uiView_ = new UIView(window_);
+		uiView_->LoadHTML(htmlContent);
+		uiView_->SetBackgroundTransparency(0.5f);
+	}
 #endif
 }
 

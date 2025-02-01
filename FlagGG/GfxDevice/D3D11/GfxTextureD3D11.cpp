@@ -671,6 +671,57 @@ void GfxTextureD3D11::UpdateTexture(GfxTexture* gfxTexture)
 	}
 }
 
+bool GfxTextureD3D11::ReadBack(void* dataPtr, UInt32 index, UInt32 level)
+{
+	auto* gfxDevice = GetSubsystem<GfxDeviceD3D11>();
+	auto* d3d11Device = GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device();
+	auto* d3d11DeviceContext = GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext();
+
+	D3D11_TEXTURE2D_DESC textureDesc;
+	memset(&textureDesc, 0, sizeof textureDesc);
+	textureDesc.Format = textureDesc_.sRGB_ ? d3d11TextureFormatInfo[textureDesc_.format_].srgbFormat_ : d3d11TextureFormatInfo[textureDesc_.format_].format_;
+	textureDesc.Width = (UINT)textureDesc_.width_;
+	textureDesc.Height = (UINT)textureDesc_.height_;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.SampleDesc.Quality = gfxDevice->GetMultiSampleQuality(textureDesc.Format, 1);
+	textureDesc.Usage = D3D11_USAGE_STAGING;
+	textureDesc.BindFlags = 0;
+	textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+
+	ID3D11Texture2D* copyTexture;
+	HRESULT hr = d3d11Device->CreateTexture2D(&textureDesc, nullptr, &copyTexture);
+	if (FAILED(hr))
+	{
+		FLAGGG_LOG_ERROR("Can not create d3d11 texture2d");
+		return false;
+	}
+
+	d3d11DeviceContext->CopyResource(copyTexture, GetD3D11Resource());
+
+	UInt32 subResource = D3D11CalcSubresource(level, index, 1);
+
+	D3D11_MAPPED_SUBRESOURCE mapped;
+	d3d11DeviceContext->Map(copyTexture, subResource, D3D11_MAP_READ, 0, &mapped);
+
+	UInt32 rowDataSize = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, textureDesc_.width_);
+	const char* srcPtr = (const char*)mapped.pData;
+	char* destPtr      = (char*)dataPtr;
+	for (UInt32 row = 0; row < textureDesc_.height_; ++row)
+	{
+		memcpy(destPtr, srcPtr, rowDataSize);
+		srcPtr  += mapped.RowPitch;
+		destPtr += rowDataSize;
+	}
+
+	d3d11DeviceContext->Unmap(copyTexture, subResource);
+
+	D3D11_SAFE_RELEASE(copyTexture);
+
+	return true;
+}
+
 GfxRenderSurface* GfxTextureD3D11::GetRenderSurface() const
 {
 	return gfxRenderSurfaces_.Size() ? gfxRenderSurfaces_[0] : nullptr;

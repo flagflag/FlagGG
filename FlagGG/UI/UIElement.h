@@ -67,7 +67,7 @@ public:
 	void CalculateLayout(float availableWidth, float availableHeight);
 
 	// 更新UI批次数据（由渲染底层调用）
-	void UpdateBatch(VertexVector* vertexVector, Vector<SharedPtr<Batch>>& uiBatches);
+	virtual void UpdateBatch(VertexVector* vertexVector, Vector<SharedPtr<Batch>>& uiBatches);
 
 private:
 	// Yoga布局节点

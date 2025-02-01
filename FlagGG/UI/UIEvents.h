@@ -24,6 +24,10 @@ struct RenderUITree
 	Rect viewport_;
 	// 主动调用渲染
 	bool manualRender_{};
+	// 渲染webkit-ui
+	bool webKitRendering_{};
+	// 背景透明度（只有webkit有效）
+	Real backgroundTransparency_{ 1.0f };
 };
 
 namespace UIEvent

@@ -93,6 +93,9 @@ public:
 	// 更新纹理数据
 	virtual void UpdateTexture(GfxTexture* gfxTexture);
 
+	// 回读GPU数据
+	virtual bool ReadBack(void* dataPtr, UInt32 index, UInt32 level);
+
 	// 获取texute2d的render surface
 	virtual GfxRenderSurface* GetRenderSurface() const;
 

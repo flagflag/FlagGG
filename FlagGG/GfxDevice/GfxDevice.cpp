@@ -299,6 +299,11 @@ void GfxDevice::SetDepthBias(float depthBias, float slopeScaledDepthBias)
 	}
 }
 
+void GfxDevice::SetAntialiasedLineEnable(bool enable)
+{
+
+}
+
 void GfxDevice::SetDepthTestMode(ComparisonFunc depthTestMode)
 {
 	if (depthTestMode != depthStencilState_.depthTestMode_)

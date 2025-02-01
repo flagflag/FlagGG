@@ -100,6 +100,11 @@ void GfxTexture::UpdateTexture(GfxTexture* gfxTexture)
 
 }
 
+bool GfxTexture::ReadBack(void* dataPtr, UInt32 index, UInt32 level)
+{
+	return false;
+}
+
 GfxRenderSurface* GfxTexture::GetRenderSurface() const
 {
 	return nullptr;

@@ -14,6 +14,8 @@ include_directories (${APP_DIR})
 
 define_source_files (RECURSE GROUP)
 
+link_directories (${CMAKE_CURRENT_SOURCE_DIR}/../UltralightSDK/lib)
+
 setup_main_executable ()
 
 target_link_libraries (${TARGET_NAME} Game)

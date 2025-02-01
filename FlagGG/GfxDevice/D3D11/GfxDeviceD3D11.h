@@ -33,6 +33,12 @@ public:
 	/*                        渲染指令                        */
 	/**********************************************************/
 
+	// 帧开始
+	void BeginFrame() override;
+
+	// 帧结束
+	void EndFrame() override;
+
 	// 清理RenderTarget、DepthStencil
 	void Clear(ClearTargetFlags flags, const Color& color = Color::TRANSPARENT_BLACK, float depth = 1.0f, unsigned stencil = 0) override;
 
@@ -122,6 +128,9 @@ private:
 
 	// 深度模板状态缓存
 	HashMap<UInt32, ID3D11DepthStencilState*> depthStencilStates_;
+
+	// Blend状态缓存
+	ID3D11BlendState* blendStates_[BLEND_MAX]{};
 
 	// uniform
 	GfxBufferD3D11 vsConstantBuffer_[MAX_CONST_BUFFER_COUNT];

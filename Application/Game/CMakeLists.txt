@@ -20,6 +20,8 @@ message ("exclude folder: ${EXCLUDED_SOURCE_DIRS}")
 string (REPLACE ";" "/[^;]+;" EXCLUDE_PATTERNS "${EXCLUDED_SOURCE_DIRS};")
 define_source_files (EXCLUDE_PATTERNS ${EXCLUDE_PATTERNS} RECURSE GROUP)
 
+link_directories (${CMAKE_CURRENT_SOURCE_DIR}/../UltralightSDK/lib)
+
 if (FLAGGG_LIB_TYPE STREQUAL SHARED)
     setup_library (SHARED)
 else()
@@ -33,7 +35,7 @@ else ()
 	target_link_libraries (${TARGET_NAME} FlagGG)
 endif ()
 
-target_link_libraries (${TARGET_NAME} LuaGameEngine)
+target_link_libraries (${TARGET_NAME} LuaGameEngine WebUISystem)
 
 setup_test ()
 

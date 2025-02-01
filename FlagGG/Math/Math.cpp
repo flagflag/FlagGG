@@ -148,6 +148,21 @@ UInt32 HashString(const char* str)
 	return hash;
 }
 
+UInt32 HashBuffer(const void* buffer, UInt32 bufferSize)
+{
+	UInt32 hash = 0;
+	const char* str = (const char*)buffer;
+
+	for (UInt32 i = 0; i < bufferSize; ++i)
+	{
+		// SDBM Hash
+		hash = static_cast<UInt32>(*str) + (hash << 6u) + (hash << 16u) - hash;
+		++str;
+	}
+
+	return hash;
+}
+
 UInt32 SDBM_Hash(UInt32 hashValue, UInt8 charValue)
 {
 	return static_cast<UInt32>(charValue) + (hashValue << 6u) + (hashValue << 16u) - hashValue;

@@ -78,7 +78,7 @@ UInt32 Texture::GetComponents() const
 		return 0;
 	}
 
-	return gfxTexture_->GetDetail().bitsPerPixel_ / 4;
+	return gfxTexture_->GetDetail().bitsPerPixel_ / 8;
 }
 
 GfxRenderSurface* Texture::GetRenderSurface() const

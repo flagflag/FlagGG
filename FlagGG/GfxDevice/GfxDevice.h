@@ -149,6 +149,9 @@ public:
 	// 设置深度偏移
 	virtual void SetDepthBias(float depthBias, float slopeScaledDepthBias);
 
+	// 设置AntialiasedLine
+	virtual void SetAntialiasedLineEnable(bool enable);
+
 	// 设置深度模式
 	virtual void SetDepthTestMode(ComparisonFunc depthTestMode);
 

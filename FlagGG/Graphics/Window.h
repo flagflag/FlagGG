@@ -88,6 +88,9 @@ public:
 	// 创建ui根节点
 	void CreateUIElement();
 
+	// 设置ui根节点
+	void SetUIElementRoot(UIElement* uiRoot);
+
 	// 获取ui根节点
 	UIElement* GetUIElement() { return uiRoot_; }
 

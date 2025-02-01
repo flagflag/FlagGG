@@ -9,6 +9,7 @@
 #include "Container/Vector.h"
 #include "Container/HashMap.h"
 #include "Graphics/Batch.h"
+#include "Math/Rect.h"
 
 namespace FlagGG
 {
@@ -20,8 +21,10 @@ class Batch;
 class VertexBuffer;
 class ShaderCode;
 class Shader;
+class GfxRenderSurface;
 struct RenderUITree;
 struct UIBatchRenderData;
+class ShaderParameters;
 
 class FlagGG_API UISystem : public Subsystem<UISystem>
 {
@@ -34,6 +37,8 @@ public:
 
 	void Render(UIElement* uiElement);
 
+	void RenderWebKit(GfxRenderSurface* renderSurface, const Rect& viewport, const Vector<SharedPtr<Batch>>& uiBatches);
+
 	void HandleRenderUpdate(Real timeStep);
 
 protected:
@@ -43,14 +48,14 @@ private:
 	// 默认贴图
 	SharedPtr<Texture2D> defaultTexture_;
 
-	// CPU端batch顶点
-	VertexVector vertexVector_;
-
 	// 渲染ui树
 	Vector<RenderUITree> renderUITreesCache_;
 
 	// 渲染数据
 	HashMap<SharedPtr<UIElement>, UIBatchRenderData> batchRenderDataMap_;
+
+	// 材质参数
+	SharedPtr<ShaderParameters> materialParameters_;
 };
 
 }

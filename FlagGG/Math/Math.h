@@ -147,6 +147,8 @@ FlagGG_API UInt32 FloatToRawIntBits(Real value);
 
 FlagGG_API UInt32 HashString(const char* str);
 
+FlagGG_API UInt32 HashBuffer(const void* buffer, UInt32 bufferSize);
+
 FlagGG_API UInt32 SDBM_Hash(UInt32 hashValue, UInt8 charValue);
 
 FlagGG_API bool IsPowerOfTwo(UInt32 value);
@@ -163,22 +165,22 @@ Int32 GetRandSeed();
 
 float SRand();
 
-// Î»ÒÆ¾ØÕó
+// ä½ç§»çŸ©é˜µ
 FlagGG_API Matrix4 MatrixTranslation(Real dx, Real dy, Real dz);
 
-// XÖáË³Ê±ÕëĞı×ª¾ØÕó
+// Xè½´é¡ºæ—¶é’ˆæ—‹è½¬çŸ©é˜µ
 // https://baike.baidu.com/item/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/3265181?fr=aladdin
 FlagGG_API Matrix4 MatrixRotationX(Real angle);
 
-// YÖáË³Ê±ÕëĞı×ª¾ØÕó
+// Yè½´é¡ºæ—¶é’ˆæ—‹è½¬çŸ©é˜µ
 // https://baike.baidu.com/item/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/3265181?fr=aladdin
 FlagGG_API Matrix4 MatrixRotationY(Real angle);
 
-// ZÖáË³Ê±ÕëĞı×ª¾ØÕó
+// Zè½´é¡ºæ—¶é’ˆæ—‹è½¬çŸ©é˜µ
 // https://baike.baidu.com/item/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/3265181?fr=aladdin
 FlagGG_API Matrix4 MatrixRotationZ(Real angle);
 
-// ÈÎÒâÖáË³Ê±ÕëĞı×ª¾ØÕó
+// ä»»æ„è½´é¡ºæ—¶é’ˆæ—‹è½¬çŸ©é˜µ
 // https://baike.baidu.com/item/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/3265181?fr=aladdin
 FlagGG_API Matrix4 MatrixRotationAxis(const Vector3& axis, Real angle);
 
@@ -188,19 +190,19 @@ FlagGG_API Vector3 Vector3TransformCoord(const Vector3& target, const Matrix4& T
 
 /**
   * @brief
-  * @param eye - ÉãÏñ»úµÄÎ»ÖÃ
-  * @param at  - ¹Û²ìµãµÄÎ»ÖÃ
-  * @param up  - ÉãÏñ»úµÄÏòÉÏ·ÖÁ¿
+  * @param eye - æ‘„åƒæœºçš„ä½ç½®
+  * @param at  - è§‚å¯Ÿç‚¹çš„ä½ç½®
+  * @param up  - æ‘„åƒæœºçš„å‘ä¸Šåˆ†é‡
   */
 FlagGG_API Matrix4 MatrixLookAtLH(const Matrix4& eye, const Matrix4& at, const Matrix4& up);
 
 /**
-  * @brief Í¶Ó°¾ØÕó±ä»»
-  * @param fovy   - ÓÃÓÚÖ¸¶¨ÒÔ»¡¶ÈÎªµ¥Î»µÄĞéÄâÉãÏñ»úÔÚyÖáÉÏµÄ³ÉÏñ½Ç¶È£¬¼´ÊÓÓò½Ç¶È£¨View of View£©£¬³ÉÏñ½Ç¶ÈÔ½´ó£¬Ó³Éäµ½Í¶Ó°´°¿ÚÖĞµÄÍ¼ĞÎ¾ÍÔ½Ğ¡£»·´Ö®£¬Í¶Ó°Í¼Ïñ¾ÍÔ½´ó
-  * @param aspect - ÓÃÓÚÃèÊöÆÁÄ»ÏÔÊ¾ÇøµÄºá×İ±È£¬ËûµÄÖµ¾ÍÎªÆÁÄ»µÄ¿í¶È/¸ß¶È¡£¶ÔÓ¦²»Í¬±ÈÀıµÄÏÔÊ¾ÆÁÄ»£¬±ÈÈç16/9£¬4/3µÈµÈ£¬×îÖÕÏÔÊ¾µÄÍ¶Ó°Í¼Ïñ¿ÉÄÜ»áÊ¹Í¼Ïñ±»À­Éì
-  * @param zn     - ±íÊ¾ÊÓ½ØÌåÖĞ½ü²Ã¼ôÃæ¾àÎÒÃÇÉãÏñ»úµÄÎ»ÖÃ£¬¼´ÈËÑÛµ½¡°ÊÒÄÚÂäµØ´°¡±Ö®¼äµÄ¾àÀë
-  * @param zf     - ±íÊ¾ÊÓ½ØÌåÖĞÔ¶²Ã¼ôÃæ¾àÎÒÃÇÉãÏñ»úµÄÎ»ÖÃ£¬¼´ÈËÑÛµ½¡°ÊÒÍâºÚÉ«Ç½±Ú¡±Ö®¼äµÄ¾àÀë
-  * ×¢£º¾ßÌå¿ÉÒÔ²Î¿¼ÕâÀï£ºhttps://blog.csdn.net/poem_qianmo/article/details/8408723
+  * @brief æŠ•å½±çŸ©é˜µå˜æ¢
+  * @param fovy   - ç”¨äºæŒ‡å®šä»¥å¼§åº¦ä¸ºå•ä½çš„è™šæ‹Ÿæ‘„åƒæœºåœ¨yè½´ä¸Šçš„æˆåƒè§’åº¦ï¼Œå³è§†åŸŸè§’åº¦ï¼ˆView of Viewï¼‰ï¼Œæˆåƒè§’åº¦è¶Šå¤§ï¼Œæ˜ å°„åˆ°æŠ•å½±çª—å£ä¸­çš„å›¾å½¢å°±è¶Šå°ï¼›åä¹‹ï¼ŒæŠ•å½±å›¾åƒå°±è¶Šå¤§
+  * @param aspect - ç”¨äºæè¿°å±å¹•æ˜¾ç¤ºåŒºçš„æ¨ªçºµæ¯”ï¼Œä»–çš„å€¼å°±ä¸ºå±å¹•çš„å®½åº¦/é«˜åº¦ã€‚å¯¹åº”ä¸åŒæ¯”ä¾‹çš„æ˜¾ç¤ºå±å¹•ï¼Œæ¯”å¦‚16/9ï¼Œ4/3ç­‰ç­‰ï¼Œæœ€ç»ˆæ˜¾ç¤ºçš„æŠ•å½±å›¾åƒå¯èƒ½ä¼šä½¿å›¾åƒè¢«æ‹‰ä¼¸
+  * @param zn     - è¡¨ç¤ºè§†æˆªä½“ä¸­è¿‘è£å‰ªé¢è·æˆ‘ä»¬æ‘„åƒæœºçš„ä½ç½®ï¼Œå³äººçœ¼åˆ°â€œå®¤å†…è½åœ°çª—â€ä¹‹é—´çš„è·ç¦»
+  * @param zf     - è¡¨ç¤ºè§†æˆªä½“ä¸­è¿œè£å‰ªé¢è·æˆ‘ä»¬æ‘„åƒæœºçš„ä½ç½®ï¼Œå³äººçœ¼åˆ°â€œå®¤å¤–é»‘è‰²å¢™å£â€ä¹‹é—´çš„è·ç¦»
+  * æ³¨ï¼šå…·ä½“å¯ä»¥å‚è€ƒè¿™é‡Œï¼šhttps://blog.csdn.net/poem_qianmo/article/details/8408723
   */
 FlagGG_API Matrix4 MatrixPerspectiveFovLH(Real fovy, Real aspect, Real zn, Real zf);
 

@@ -14,7 +14,7 @@
 namespace FlagGG
 {
 
-const wchar_t* WindowDevice::className_ = L"Custom D3D11 Window";
+const wchar_t* WindowDevice::className_ = L"FlagGGWindow";
 
 Vector<SharedPtr<Window>> WindowDevice::recivers_;
 
@@ -264,6 +264,14 @@ void Window::CreateUIElement()
 		uiRoot_ = new UIElement();
 
 		GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(UIEvent::GATHER_RENDER_UI_TREE, Window::GatherRenderUITrees, this));
+	}
+}
+
+void Window::SetUIElementRoot(UIElement* uiRoot)
+{
+	if (!uiRoot_)
+	{
+		uiRoot_ = uiRoot;
 	}
 }
 

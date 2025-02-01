@@ -14,11 +14,15 @@
 #include <Core/EventDefine.h>
 #include <Core/EventManager.h>
 #include <Core/EngineSettings.h>
+#include <FileSystem/FileHandle/LocalFileHandle.h>
 #include <Memory/MemoryHook.h>
+#include <WebUISystem/UIView.h>
 
 #include <fstream>
 
 using namespace FlagGG;
+
+static LJSONValue CommandParam;
 
 class UITestApp : public GameEngine
 {
@@ -35,7 +39,14 @@ public:
 
 		GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, UITestApp::OnKeyUp, this));
 
-		CreateUIElement();
+		if (CommandParam.Contains("html_path"))
+		{
+			CreateWebUI(CommandParam["html_path"].GetString());
+		}
+		else
+		{
+			CreateUIElement();
+		}
 	}
 
 	void Stop() override
@@ -65,6 +76,21 @@ public:
 		}
 	}
 
+	void CreateWebUI(const String& htmlPath)
+	{
+		FlagGG::LocalFileHandle localFile;
+		if (localFile.Open(htmlPath, FlagGG::FileMode::FILE_READ))
+		{
+			FlagGG::String fileContent;
+			fileContent.Resize(localFile.Size());
+			localFile.Read(&fileContent[0], fileContent.Length());
+
+			uiView_ = new UIView(window_);
+			uiView_->LoadHTML(fileContent);
+			uiView_->SetBackgroundTransparency(0.1f);
+		}
+	}
+
 	void OnKeyUp(KeyState* keyState, UInt32 keyCode)
 	{
 		if (keyCode == VK_ESCAPE)
@@ -76,10 +102,10 @@ public:
 private:
 	SharedPtr<Window> window_;
 
+	SharedPtr<UIView> uiView_;
+
 	Vector<SharedPtr<Batch>> batches_;
 };
-
-static LJSONValue CommandParam;
 
 void Run()
 {
