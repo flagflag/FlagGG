@@ -30,7 +30,7 @@ protected:
 
 	void OnKeyUp(KeyState* keyState, unsigned keyCode);
 
-	void OnMouseUp(KeyState* keyState, MouseKey mouseKey);
+	void OnMouseUp(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos);
 
 	void OnTick(Real timeStep);
 

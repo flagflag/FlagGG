@@ -9,6 +9,7 @@
 #include "Log.h"
 
 #include <windows.h>
+#include <windowsx.h>
 #include <memory>
 
 namespace FlagGG
@@ -309,49 +310,66 @@ void Window::WinProc(UINT message, WPARAM wParam, LPARAM lParam)
 #if PLATFORM_WINDOWS
 	auto* input = GetSubsystem<Input>();
 
+	RawMsgParam rawMsgParam;
+	rawMsgParam.Clear();
+	rawMsgParam.AddRawParam((UInt64)message);
+	rawMsgParam.AddRawParam((UInt64)wParam);
+	rawMsgParam.AddRawParam((UInt64)lParam);
+
+	KeyState keyState(this, false, false, false, &rawMsgParam);
+
 	switch (message)
 	{
 	case WM_KEYDOWN:
-		input->OnKeyDown(nullptr, wParam);
-
+		input->OnKeyDown(&keyState, wParam);
 		break;
 
 	case WM_KEYUP:
-		input->OnKeyUp(nullptr, wParam);
+		input->OnKeyUp(&keyState, wParam);
+		break;
 
+	case WM_CHAR:
+		input->OnChar(&keyState, wParam);
 		break;
 
 	case WM_LBUTTONDOWN:
+	case WM_LBUTTONDBLCLK:
+		SetCapture((HWND)window_);
+		input->OnMouseDown(&keyState, MOUSE_LEFT, IntVector2(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+		break;
+
 	case WM_RBUTTONDOWN:
+	case WM_RBUTTONDBLCLK:
+		SetCapture((HWND)window_);
+		input->OnMouseDown(&keyState, MOUSE_RIGHT, IntVector2(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+		break;
+
 	case WM_MBUTTONDOWN:
-		{
-			MouseKey key;
-			if (message == WM_LBUTTONDOWN) key = MOUSE_LEFT;
-			else if (message == WM_RBUTTONDOWN) key = MOUSE_RIGHT;
-			else if (message == WM_MBUTTONDOWN) key = MOUSE_MID;
-					
-			input->OnMouseDown(nullptr, key);
-		}
+	case WM_MBUTTONDBLCLK:
+		SetCapture((HWND)window_);
+		input->OnMouseDown(&keyState, MOUSE_MID, IntVector2(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		break;
 
 	case WM_LBUTTONUP:
-	case WM_RBUTTONUP:
-	case WM_MBUTTONUP:
-		{
-			MouseKey key;
-			if (message == WM_LBUTTONUP) key = MOUSE_LEFT;
-			else if (message == WM_RBUTTONUP) key = MOUSE_RIGHT;
-			else if (message == WM_MBUTTONUP) key = MOUSE_MID;
+		ReleaseCapture();
+		input->OnMouseUp(&keyState, MOUSE_LEFT, IntVector2(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+		break;
 
-			input->OnMouseUp(nullptr, key);
-		}
+	case WM_RBUTTONUP:
+		ReleaseCapture();
+		input->OnMouseUp(&keyState, MOUSE_RIGHT, IntVector2(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+		break;
+
+	case WM_MBUTTONUP:
+		ReleaseCapture();
+		input->OnMouseUp(&keyState, MOUSE_MID, IntVector2(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		break;
 			
 	case WM_MOUSEMOVE:
 		static POINT mousePos;
 
 		::GetCursorPos(&mousePos);
-		input->OnMouseMove(nullptr,
+		input->OnMouseMove(&keyState, IntVector2(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)),
 			Vector2(mousePos.x - mousePos_.x, mousePos.y - mousePos_.y));
 
 		mousePos_ = mousePos;
@@ -366,9 +384,20 @@ void Window::WinProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 		break;
 
+	case WM_MOUSEWHEEL:
+		input->OnMouseWheel(&keyState, GET_WHEEL_DELTA_WPARAM(wParam));
+		break;
+
+	case WM_SETFOCUS:
+		input->OnSetFocus(this);
+		break;
+
+	case WM_KILLFOCUS:
+		input->OnKillFocus(this);
+		break;
+
 	case WM_CLOSE:
 		GetSubsystem<EventManager>()->SendEvent<Application::WINDOW_CLOSE_HANDLER>(window_);
-
 		break;
 	}
 #endif

@@ -98,7 +98,7 @@ void CameraOperation::OnKeyUp(KeyState* keyState, unsigned keyCode)
 	// printf("OnKeyUp keyCode = %u\n", keyCode);
 }
 
-void CameraOperation::OnMouseDown(KeyState* keyState, MouseKey mouseKey)
+void CameraOperation::OnMouseDown(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos)
 {
 	if (mouseKey == MOUSE_LEFT)
 	{
@@ -106,7 +106,7 @@ void CameraOperation::OnMouseDown(KeyState* keyState, MouseKey mouseKey)
 	}
 }
 
-void CameraOperation::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
+void CameraOperation::OnMouseUp(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos)
 {
 	if (mouseKey == MOUSE_LEFT)
 	{
@@ -114,7 +114,7 @@ void CameraOperation::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
 	}
 }
 
-void CameraOperation::OnMouseMove(KeyState* keyState, const Vector2& delta)
+void CameraOperation::OnMouseMove(KeyState* keyState, const IntVector2& mousePos, const Vector2& delta)
 {
 	if (mouseDown_)
 	{

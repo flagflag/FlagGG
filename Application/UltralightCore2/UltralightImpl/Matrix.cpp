@@ -314,12 +314,22 @@ bool Matrix::GetInverse(Matrix& result) const
 
 Point Matrix::Apply(const Point& p) const
 {
-	return Point();
+	float resultX = data[3][0] + p.x * data[0][0] + p.y * data[1][0];
+	float resultY = data[3][1] + p.x * data[0][1] + p.y * data[1][1];
+	double w = data[3][3] + p.x * data[0][3] + p.y * data[1][3];
+	if (w != 1 && w != 0)
+	{
+		resultX /= w;
+		resultY /= w;
+	}
+	return Point(resultX, resultY);
 }
 
 Rect Matrix::Apply(const Rect& r) const
 {
-	return Rect();
+	Point p0 = Apply(Point{ r.left,  r.top });
+	Point p1 = Apply(Point{ r.right, r.bottom });
+	return Rect{ p0.x, p0.y, p1.x, p1.y };
 }
 
 uint32_t Matrix::Hash() const

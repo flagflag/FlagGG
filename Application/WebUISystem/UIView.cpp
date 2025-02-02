@@ -42,6 +42,7 @@ private:
 UIView::UIView(UInt32 width, UInt32 height)
 	: webView_(nullptr)
 	, backgroundTransparency_(1.0f)
+	, lastMouseKey_(ultralight::MouseEvent::kButton_None)
 {
 	CreateView(width, height);
 }
@@ -49,6 +50,7 @@ UIView::UIView(UInt32 width, UInt32 height)
 UIView::UIView(Window* window)
 	: webView_(nullptr)
 	, backgroundTransparency_(1.0f)
+	, lastMouseKey_(ultralight::MouseEvent::kButton_None)
 {
 	CreateView(window->GetWidth(), window->GetHeight());
 
@@ -99,6 +101,16 @@ void UIView::CreateView(UInt32 width, UInt32 height)
 	webViewAdaptor_ = new WebViewUIElement(webView_);
 
 	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(UIEvent::GATHER_RENDER_UI_TREE, UIView::GatherRenderUITrees, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_DOWN, UIView::OnKeyDown, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, UIView::OnKeyUp, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_CHAR, UIView::OnChar, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_DOWN, UIView::OnMouseDown, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_UP, UIView::OnMouseUp, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_MOVE, UIView::OnMouseMove, this));
+
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_WHEEL, UIView::OnMouseWheel, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::SET_FOCUS, UIView::OnSetFocus, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KILL_FOCUS, UIView::OnKillFocus, this));
 }
 
 void UIView::GatherRenderUITrees(Vector<RenderUITree>& renderUITrees)
@@ -113,6 +125,104 @@ void UIView::GatherRenderUITrees(Vector<RenderUITree>& renderUITrees)
 		item.manualRender_ = true;
 		item.webKitRendering_ = true;
 		item.backgroundTransparency_ = backgroundTransparency_;
+	}
+}
+
+void UIView::OnKeyDown(KeyState* keyState, UInt32 keyCode)
+{
+	if (keyState->GetSender() == window_)
+	{
+		auto* rawMsgParam = keyState->GetRawMsgParam();
+		ultralight::KeyEvent evt(ultralight::KeyEvent::kType_RawKeyDown, rawMsgParam->GetRawParam(1), rawMsgParam->GetRawParam(2), false);
+		webView_->FireKeyEvent(evt);
+	}
+}
+
+void UIView::OnKeyUp(KeyState* keyState, UInt32 keyCode)
+{
+	if (keyState->GetSender() == window_)
+	{
+		auto* rawMsgParam = keyState->GetRawMsgParam();
+		ultralight::KeyEvent evt(ultralight::KeyEvent::kType_KeyUp, rawMsgParam->GetRawParam(1), rawMsgParam->GetRawParam(2), false);
+		webView_->FireKeyEvent(evt);
+	}
+}
+
+void UIView::OnChar(KeyState* keyState, UInt32 keyCode)
+{
+	if (keyState->GetSender() == window_)
+	{
+		auto* rawMsgParam = keyState->GetRawMsgParam();
+		ultralight::KeyEvent evt(ultralight::KeyEvent::kType_Char, rawMsgParam->GetRawParam(1), rawMsgParam->GetRawParam(2), false);
+		webView_->FireKeyEvent(evt);
+	}
+}
+
+void UIView::OnMouseDown(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos)
+{
+	if (keyState->GetSender() == window_)
+	{
+		ultralight::MouseEvent::Button button = ultralight::MouseEvent::kButton_None;
+		if (mouseKey == MOUSE_LEFT)
+			button = ultralight::MouseEvent::kButton_Left;
+		else if(mouseKey == MOUSE_MID)
+			button = ultralight::MouseEvent::kButton_Middle;
+		else if(mouseKey == MOUSE_RIGHT)
+			button = ultralight::MouseEvent::kButton_Right;
+
+		webView_->FireMouseEvent(ultralight::MouseEvent{ ultralight::MouseEvent::kType_MouseDown, mousePos.x_, mousePos.y_, button });
+
+		lastMouseKey_ = button;
+	}
+}
+
+void UIView::OnMouseUp(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos)
+{
+	if (keyState->GetSender() == window_)
+	{
+		ultralight::MouseEvent::Button button = ultralight::MouseEvent::kButton_None;
+		if (mouseKey == MOUSE_LEFT)
+			button = ultralight::MouseEvent::kButton_Left;
+		else if (mouseKey == MOUSE_MID)
+			button = ultralight::MouseEvent::kButton_Middle;
+		else if (mouseKey == MOUSE_RIGHT)
+			button = ultralight::MouseEvent::kButton_Right;
+
+		webView_->FireMouseEvent(ultralight::MouseEvent{ ultralight::MouseEvent::kType_MouseUp, mousePos.x_, mousePos.y_, button });
+
+		lastMouseKey_ = ultralight::MouseEvent::kButton_None;
+	}
+}
+
+void UIView::OnMouseMove(KeyState* keyState, const IntVector2& mousePos, const Vector2& delta)
+{
+	if (keyState->GetSender() == window_)
+	{
+		webView_->FireMouseEvent(ultralight::MouseEvent{ ultralight::MouseEvent::kType_MouseMoved, mousePos.x_, mousePos.y_, ultralight::MouseEvent::Button(lastMouseKey_) });
+	}
+}
+
+void UIView::OnMouseWheel(KeyState* keyState, Int32 delta)
+{
+	if (keyState->GetSender() == window_)
+	{
+		webView_->FireScrollEvent(ultralight::ScrollEvent{ ultralight::ScrollEvent::kType_ScrollByPixel, 0, delta });
+	}
+}
+
+void UIView::OnSetFocus(Window* window)
+{
+	if (window == window_)
+	{
+		webView_->Focus();
+	}
+}
+
+void UIView::OnKillFocus(Window* window)
+{
+	if (window == window_)
+	{
+		webView_->Unfocus();
 	}
 }
 

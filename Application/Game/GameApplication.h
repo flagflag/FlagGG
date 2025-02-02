@@ -55,9 +55,9 @@ protected:
 #ifdef _WIN32
 	void OnKeyDown(KeyState* keyState, UInt32 keyCode);
 	void OnKeyUp(KeyState* keyState, UInt32 keyCode);
-	void OnMouseDown(KeyState* keyState, MouseKey mouseKey);
-	void OnMouseUp(KeyState* keyState, MouseKey mouseKey);
-	void OnMouseMove(KeyState* keyState, const Vector2& delta);
+	void OnMouseDown(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos);
+	void OnMouseUp(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos);
+	void OnMouseMove(KeyState* keyState, const IntVector2& mousePos, const Vector2& delta);
 	void WindowClose(void* window);
 #endif
 

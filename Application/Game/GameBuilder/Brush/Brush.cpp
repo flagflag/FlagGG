@@ -33,7 +33,7 @@ void Brush::DetachComponent(BrushComponent* brushComponent)
 }
 
 
-void Brush::OnMouseDown(KeyState* keyState, MouseKey mouseKey)
+void Brush::OnMouseDown(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos)
 {
 	for (auto& brushComponent : brushComponents_)
 	{
@@ -41,7 +41,7 @@ void Brush::OnMouseDown(KeyState* keyState, MouseKey mouseKey)
 	}
 }
 
-void Brush::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
+void Brush::OnMouseUp(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos)
 {
 	for (auto& brushComponent : brushComponents_)
 	{
@@ -49,7 +49,7 @@ void Brush::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
 	}
 }
 
-void Brush::OnMouseMove(KeyState* keyState, const Vector2& delta)
+void Brush::OnMouseMove(KeyState* keyState, const IntVector2& mousePos, const Vector2& delta)
 {
 	for (auto& brushComponent : brushComponents_)
 	{

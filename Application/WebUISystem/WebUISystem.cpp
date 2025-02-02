@@ -11,7 +11,6 @@
 #include <Ultralight/Renderer.h>
 
 #include <Core/EventManager.h>
-#include <Core/EventDefine.h>
 #include <Log.h>
 #include <Memory/MemoryHook.h>
 

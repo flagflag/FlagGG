@@ -1,41 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
-    <style type="text/css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>面板</title>
+    <style>
         html {
-            margin: 0;
-            padding: 0;
             overflow: hidden;
-            color: white;
-            font-family: -apple-system, 'Segoe UI', 'Roboto', 'Ubuntu', 'Arial', sans-serif;
-            background: linear-gradient(45deg, #4e95ff80, #6032e480, #c478ff80);
+            background: rgba(0, 0, 0, 0);
             height: 100%;
         }
-
-        div {
-            width: 350px;
-            text-align: center;
-            border-radius: 5px;
-            background: rgba(0, 10, 30, 0.1);
-            border: 1px solid rgba(0, 10, 30, 0.5);
-        }
-
-        html, div {
+        .panel {
+            width: 500px;
+            height: 500px;
+            background-color: #f9f9f980;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            justify-content: space-evenly;
             align-items: center;
+            border: 2px solid #ccc;
+            padding: 20px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
         }
 
-        h1 {
-            padding: 1em;
-            font-size: 24px;
-            font-weight: normal;
+        .button {
+            width: 200px;
+            height: 50px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <div>
-        <h1>Hello FlagGG</h1>
-    </div>
+
+<div class="panel">
+    <button class="button">按钮 1</button>
+    <button class="button">按钮 2</button>
+    <button class="button">按钮 3</button>
+</div>
+
 </body>
 </html>

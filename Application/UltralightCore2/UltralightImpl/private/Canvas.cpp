@@ -278,7 +278,7 @@ public:
 	// Clip Methods
 	virtual void SetClip(const Rect& rect, bool inverse) override
 	{
-
+		clipRect_ = rect;
 	}
 
 	virtual void SetClip(const RoundedRect& rrect, bool inverse) override
@@ -298,7 +298,7 @@ public:
 
 	virtual Rect GetClipBounds() const override
 	{
-		return Rect();
+		return clipRect_;
 	}
 
 	// Transform Methods
@@ -397,10 +397,12 @@ public:
 		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
 #endif
 
-		float x1 = rect.left;
-		float y1 = rect.top;
-		float x2 = rect.right;
-		float y2 = rect.bottom;
+		const Rect rectFinal = mat_.Apply(rect);
+
+		float x1 = rectFinal.left;
+		float y1 = rectFinal.top;
+		float x2 = rectFinal.right;
+		float y2 = rectFinal.bottom;
 
 		FlagGG::Color color = UltralightColorGetFloat4(paint.color);
 		UInt32 color32 = color.ToUInt();
@@ -447,10 +449,12 @@ public:
 		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
 #endif
 
-		float x1 = rrect.rect.left;
-		float y1 = rrect.rect.top;
-		float x2 = rrect.rect.right;
-		float y2 = rrect.rect.bottom;
+		const Rect rectFinal = mat_.Apply(rrect.rect);
+
+		float x1 = rectFinal.left;
+		float y1 = rectFinal.top;
+		float x2 = rectFinal.right;
+		float y2 = rectFinal.bottom;
 
 		FlagGG::Color color = UltralightColorGetFloat4(paint.color);
 		UInt32 color32 = color.ToUInt();
@@ -537,10 +541,12 @@ public:
 		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
 #endif
 
-		float x1 = dest.left;
-		float y1 = dest.top;
-		float x2 = dest.right;
-		float y2 = dest.bottom;
+		const Rect rectFinal = mat_.Apply(dest);
+
+		float x1 = rectFinal.left;
+		float y1 = rectFinal.top;
+		float x2 = rectFinal.right;
+		float y2 = rectFinal.bottom;
 		float width = x2 - x1;
 		float height = y2 - y1;
 
@@ -650,6 +656,8 @@ private:
 	bool scissorEnable_{ false };
 
 	IntRect scissorRect_;
+
+	Rect clipRect_;
 
 #if !APP_CORE_FOR_ENGINE
 // for gpu rendering:

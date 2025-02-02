@@ -25,7 +25,7 @@ class ThirdPersonPerspective : public Perspective
 {
 	OBJECT_OVERRIDE(ThirdPersonPerspective, Perspective);
 public:
-	explicit ThirdPersonPerspective(bool moveCameraWhenMouseDown);
+	explicit ThirdPersonPerspective(bool moveCameraWhenMouseDown, bool fixCamera = false);
 
 	~ThirdPersonPerspective() override;
 
@@ -55,9 +55,9 @@ public:
 	void Unlock() override;
 
 protected:
-	void OnMouseDown(KeyState* keyState, MouseKey mouseKey);
-	void OnMouseUp(KeyState* keyState, MouseKey mouseKey);
-	void OnMouseMove(KeyState* keyState, const Vector2& delta);
+	void OnMouseDown(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos);
+	void OnMouseUp(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos);
+	void OnMouseMove(KeyState* keyState, const IntVector2& mousePos, const Vector2& delta);
 	void HandleUpdate(float timeStep);
 
 private:

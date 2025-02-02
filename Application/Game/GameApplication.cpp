@@ -58,7 +58,7 @@ void GameApplication::Start()
 	GetSubsystem<Context>()->RegisterVariable<Network>(udpNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_UDP]);
 	GetSubsystem<Context>()->RegisterVariable<Network>(webNetwork_, NETWORK_TYPE_NAME[NETWORK_TYPE_WEB]);
 
-	perspective_ = new ThirdPersonPerspective(true);
+	perspective_ = new ThirdPersonPerspective(true, !commandParam_.Contains("camera_opt"));
 	perspective_->SetSyncMode(
 #if ONLINE_GAME
 		SyncMode_State
@@ -464,12 +464,12 @@ void GameApplication::OnKeyUp(KeyState* keyState, UInt32 keyCode)
 	// luaVM_->CallEvent("on_key_up", keyCode);
 }
 
-void GameApplication::OnMouseDown(KeyState* keyState, MouseKey mouseKey)
+void GameApplication::OnMouseDown(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos)
 {
 	// luaVM_->CallEvent("on_mouse_down", static_cast<uint32_t>(mouseKey));
 }
 
-void GameApplication::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
+void GameApplication::OnMouseUp(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos)
 {
 	// luaVM_->CallEvent("on_mouse_up", static_cast<uint32_t>(mouseKey));
 	if (mouseKey == MOUSE_RIGHT)
@@ -489,7 +489,7 @@ void GameApplication::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
 	}
 }
 
-void GameApplication::OnMouseMove(KeyState* keyState, const Vector2& delta)
+void GameApplication::OnMouseMove(KeyState* keyState, const IntVector2& mousePos, const Vector2& delta)
 {
 	// luaVM_->CallEvent("on_mouse_move");
 }

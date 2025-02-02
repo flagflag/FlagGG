@@ -2,6 +2,7 @@
 
 #include <Core/Subsystem.h>
 #include <Core/BaseTypes.h>
+#include <Core/EventDefine.h>
 
 #include "WebUISystem/WebUISystemExport.h"
 

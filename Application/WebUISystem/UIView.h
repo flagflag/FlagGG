@@ -27,6 +27,10 @@ class Viewport;
 class GfxRenderSurface;
 class UIElement;
 struct RenderUITree;
+class KeyState;
+enum MouseKey;
+class IntVector2;
+class Vector2;
 
 class WebUISystem_API UIView : public Object
 {
@@ -52,6 +56,24 @@ public:
 	// 收集ui渲染树（作为事件，由UISystem调用）
 	void GatherRenderUITrees(Vector<RenderUITree>& renderUITrees);
 
+	void OnKeyDown(KeyState* keyState, UInt32 keyCode);
+
+	void OnKeyUp(KeyState* keyState, UInt32 keyCode);
+
+	void OnChar(KeyState* keyState, UInt32 keyCode);
+
+	void OnMouseDown(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos);
+
+	void OnMouseUp(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos);
+
+	void OnMouseMove(KeyState* keyState, const IntVector2& mousePos, const Vector2& delta);
+
+	void OnMouseWheel(KeyState* keyState, Int32 delta);
+
+	void OnSetFocus(Window* window);
+
+	void OnKillFocus(Window* window);
+
 protected:
 	void CreateView(UInt32 width, UInt32 height);
 
@@ -67,6 +89,8 @@ private:
 	SharedPtr<Viewport> viewport_;
 
 	SharedPtr<GfxRenderSurface> renderSurface_;
+
+	UInt32 lastMouseKey_;
 };
 
 }

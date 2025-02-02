@@ -21,11 +21,11 @@ public:
 
 	void OnKeyUp(KeyState* keyState, UInt32 keyCode);
 
-	void OnMouseDown(KeyState* keyState, MouseKey mouseKey);
+	void OnMouseDown(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos);
 
-	void OnMouseUp(KeyState* keyState, MouseKey mouseKey);
+	void OnMouseUp(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos);
 
-	void OnMouseMove(KeyState* keyState, const Vector2& delta);
+	void OnMouseMove(KeyState* keyState, const IntVector2& mousePos, const Vector2& delta);
 
 	void HandleUpdate(float timeStep);
 

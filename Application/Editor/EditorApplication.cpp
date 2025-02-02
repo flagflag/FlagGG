@@ -188,7 +188,7 @@ void EditorApplication::OnKeyUp(KeyState* keyState, unsigned keyCode)
 	}
 }
 
-void EditorApplication::OnMouseUp(KeyState* keyState, MouseKey mouseKey)
+void EditorApplication::OnMouseUp(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos)
 {
 	if (mouseKey == MOUSE_RIGHT)
 	{
