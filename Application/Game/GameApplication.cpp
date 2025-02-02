@@ -384,7 +384,7 @@ void GameApplication::SetupWindow()
 
 		uiView_ = new UIView(window_);
 		uiView_->LoadHTML(htmlContent);
-		uiView_->SetBackgroundTransparency(0.5f);
+		uiView_->SetBackgroundTransparency(0.0f);
 	}
 #endif
 }
@@ -461,6 +461,22 @@ void GameApplication::OnKeyUp(KeyState* keyState, UInt32 keyCode)
 	{
 		isRunning_ = false;
 	}
+
+	if (keyCode == VK_F2)
+	{
+		if (uiView_)
+		{
+			if (Equals(uiView_->GetBackgroundTransparency(), 1.0f))
+			{
+				uiView_->SetBackgroundTransparency(0.0f);
+			}
+			else
+			{
+				uiView_->SetBackgroundTransparency(1.0f);
+			}
+		}
+	}
+
 	// luaVM_->CallEvent("on_key_up", keyCode);
 }
 

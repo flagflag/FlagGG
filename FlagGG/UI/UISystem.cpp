@@ -215,7 +215,7 @@ void UIBatchRenderData::Render(Texture2D* defaultTexture, ShaderParameters* mate
 	{
 		const auto& batch = batches_[i];
 
-		materialParameters->SetValue<Real>("transparency", i == 0 && webKitRendering_ ? 0.0f : 1.0f);
+		materialParameters->SetValue<Real>("transparency", i == 0 && webKitRendering_ ? backgroundTransparency : 1.0f);
 
 		if (auto* texture = batch->GetTexture())
 		{

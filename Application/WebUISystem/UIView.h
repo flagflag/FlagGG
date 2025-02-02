@@ -50,11 +50,17 @@ public:
 	// 设置背景透明度
 	void SetBackgroundTransparency(Real transparency);
 
+	// 获取背景透明度
+	Real GetBackgroundTransparency() const { return backgroundTransparency_; }
+
 	// 获取渲染的RT
 	GfxRenderSurface* GetRenderSurface() { return renderSurface_; }
 
 	// 收集ui渲染树（作为事件，由UISystem调用）
 	void GatherRenderUITrees(Vector<RenderUITree>& renderUITrees);
+
+
+// 系统事件：
 
 	void OnKeyDown(KeyState* keyState, UInt32 keyCode);
 
@@ -79,6 +85,8 @@ protected:
 
 private:
 	ultralight::View* webView_;
+
+	String htmlContent_;
 
 	Real backgroundTransparency_;
 

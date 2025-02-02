@@ -75,12 +75,18 @@ void UIView::LoadHTML(const String& html)
 	if (webView_)
 	{
 		webView_->LoadHTML(html.CString());
+		htmlContent_ = html;
 	}
 }
 
 void UIView::SetBackgroundTransparency(Real transparency)
 {
-	backgroundTransparency_ = transparency;
+	if (backgroundTransparency_ != transparency)
+	{
+		backgroundTransparency_ = transparency;
+		if (!webView_->needs_paint())
+			webView_->LoadHTML(htmlContent_.CString());
+	}
 }
 
 void UIView::CreateView(UInt32 width, UInt32 height)
