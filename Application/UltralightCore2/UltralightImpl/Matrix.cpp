@@ -1,5 +1,6 @@
 #include "Ultralight/Matrix.h"
 
+#include <Math/Math.h>
 #include <Memory/Memory.h>
 
 using namespace FlagGG;
@@ -88,12 +89,28 @@ bool Matrix::IsIdentity() const
 
 bool Matrix::IsIdentityOrTranslation() const
 {
-	return false;
+	return IsIdentity() ||
+		(
+			data[0][0] == 1 && data[0][1] == 0 && data[0][2] == 0 && data[0][3] == 0 &&
+			data[1][0] == 0 && data[1][1] == 1 && data[1][2] == 0 && data[1][3] == 0 &&
+			data[2][0] == 0 && data[2][1] == 0 && data[2][2] == 1 && data[2][3] == 0 &&
+                                                  data[3][2] == 0 && data[3][3] == 1
+		);
 }
 
 bool Matrix::IsAffine() const
 {
-	return false;
+	return
+		data[0][2] == 0 &&
+		data[0][3] == 0 &&
+		data[1][2] == 0 &&
+		data[1][3] == 0 &&
+		data[2][0] == 0 &&
+		data[2][1] == 0 &&
+		data[2][2] == 0 &&
+		data[2][3] == 0 &&
+		data[3][2] == 0 &&
+		data[3][3] == 1;
 }
 
 bool Matrix::IsSimple() const
@@ -334,7 +351,7 @@ Rect Matrix::Apply(const Rect& r) const
 
 uint32_t Matrix::Hash() const
 {
-	return 0;
+	return FlagGG::HashBuffer(data, sizeof(double) * 16u);
 }
 
 Matrix4x4 Matrix::GetMatrix4x4() const
