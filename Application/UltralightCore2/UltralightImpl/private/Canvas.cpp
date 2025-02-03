@@ -639,7 +639,48 @@ public:
 
 	virtual void DrawGlyphs(RefPtr<Font> font, const Paint& paint, const Point& origin, Glyph* glyphs, size_t num_glyphs, const Point& offset) override
 	{
+#if APP_CORE_FOR_ENGINE
+		SharedPtr<BatchWebKit> batch(new BatchWebKit(GetSubsystem<ultralight::RenderContext>()->GetCallStackVertexVector()));
+#else
+		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
+#endif
 
+		batch->SetBlendMode(blendEnable_ ? BLEND_ALPHA : BLEND_REPLACE);
+
+		const Point finalOrigin = mat_.Apply(origin + offset);
+
+		for (UInt32 i = 0; i < num_glyphs; ++i)
+		{
+			float x1 = finalOrigin.x;
+			float y1 = finalOrigin.y;
+			float x2 = finalOrigin.x + font->GetGlyphWidth(glyphs[i].index);
+			float y2 = finalOrigin.y + font->GetGlyphHeight(glyphs[i].index);
+
+			FlagGG::Color color = UltralightColorGetFloat4(paint.color);
+			UInt32 color32 = color.ToUInt();
+
+			batch->AddTriangle(
+				Vector2(x1, y1), Vector2(x1, y2), Vector2(x2, y2),
+				Vector2(0, 0), Vector2(0, 1), Vector2(1, 1),
+				color32,
+				color32,
+				color32
+			);
+
+			batch->AddTriangle(
+				Vector2(x1, y1), Vector2(x2, y2), Vector2(x2, y1),
+				Vector2(0, 0), Vector2(1, 1), Vector2(1, 0),
+				color32,
+				color32,
+				color32
+			);
+		}
+
+#if APP_CORE_FOR_ENGINE
+		GetSubsystem<ultralight::RenderContext>()->GetCallStackBatches()->Push(batch);
+#else
+		frameRenderData_->uiBatches_.Push(batch);
+#endif
 	}
 
 	virtual void DrawGradient(Gradient* gradient, const Rect& dest) override
