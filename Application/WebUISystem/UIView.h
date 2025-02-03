@@ -44,6 +44,9 @@ public:
 
 	~UIView() override;
 
+	// 加载url
+	void LoadUrl(const String& url);
+
 	// 加载html
 	void LoadHTML(const String& html);
 
@@ -85,6 +88,8 @@ protected:
 
 private:
 	ultralight::View* webView_;
+
+	String htmlUrl_;
 
 	String htmlContent_;
 

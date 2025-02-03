@@ -1,5 +1,7 @@
 #include "Ultralight/Defines.h"
 
+#include <Memory/MemoryHook.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -60,3 +62,5 @@ UExport uint32_t WebKitVersionNano()
 #ifdef __cplusplus
 }
 #endif
+
+IMPLEMENT_MODULE_USD("UltralightCore");

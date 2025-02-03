@@ -39,9 +39,13 @@ public:
 
 		GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, UITestApp::OnKeyUp, this));
 
-		if (CommandParam.Contains("html_path"))
+		if (CommandParam.Contains("html_url"))
 		{
-			CreateWebUI(CommandParam["html_path"].GetString());
+			CreateWebUIFromURL(CommandParam["html_url"].GetString());
+		}
+		else if (CommandParam.Contains("html_path"))
+		{
+			CreateWebUIFromFile(CommandParam["html_path"].GetString());
 		}
 		else
 		{
@@ -76,7 +80,13 @@ public:
 		}
 	}
 
-	void CreateWebUI(const String& htmlPath)
+	void CreateWebUIFromURL(const String& url)
+	{
+		uiView_ = new UIView(window_);
+		uiView_->LoadUrl(url);
+	}
+
+	void CreateWebUIFromFile(const String& htmlPath)
 	{
 		FlagGG::LocalFileHandle localFile;
 		if (localFile.Open(htmlPath, FlagGG::FileMode::FILE_READ))
@@ -87,7 +97,6 @@ public:
 
 			uiView_ = new UIView(window_);
 			uiView_->LoadHTML(fileContent);
-			uiView_->SetBackgroundTransparency(0.1f);
 		}
 	}
 

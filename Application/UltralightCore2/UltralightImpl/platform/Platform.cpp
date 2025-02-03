@@ -158,17 +158,17 @@ public:
 private:
 	Config config_;
 
-	Logger* logger_;
+	Logger* logger_{};
 
-	GPUDriver* gpuDriver_;
+	GPUDriver* gpuDriver_{};
 
-	FontLoader* fontLoader_;
+	FontLoader* fontLoader_{};
 
-	FileSystem* fileSystem_;
+	FileSystem* fileSystem_{};
 
-	Clipboard* clipboard_;
+	Clipboard* clipboard_{};
 
-	SurfaceFactory* surfaceFactory_;
+	SurfaceFactory* surfaceFactory_{};
 };
 
 Platform::~Platform() = default;

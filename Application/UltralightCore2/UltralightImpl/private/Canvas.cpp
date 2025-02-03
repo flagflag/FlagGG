@@ -18,15 +18,19 @@ using namespace FlagGG;
 namespace ultralight
 {
 
+extern Texture2D* GetImageInnerTexture(Image* image, uint32_t frame_id);
+
 class RenderTexture : public RefCounted
 {
 };
 
+#if !APP_CORE_FOR_ENGINE
 struct FrameRenderData : public FlagGG::RefCounted
 {
 	VertexVector vertexVector_;
 	FlagGG::Vector<SharedPtr<Batch>> uiBatches_;
 };
+#endif
 
 class CanvasImpl : public Canvas, public RefCountedImpl<CanvasImpl>
 {
@@ -397,6 +401,8 @@ public:
 		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
 #endif
 
+		batch->SetBlendMode(blendEnable_ ? BLEND_ALPHA : BLEND_REPLACE);
+
 		const Rect rectFinal = mat_.Apply(rect);
 
 		float x1 = rectFinal.left;
@@ -448,6 +454,8 @@ public:
 #else
 		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
 #endif
+
+		batch->SetBlendMode(blendEnable_ ? BLEND_ALPHA : BLEND_REPLACE);
 
 		const Rect rectFinal = mat_.Apply(rrect.rect);
 
@@ -519,13 +527,114 @@ public:
 	virtual void DrawImage(RefPtr<Image> image, uint32_t cur_frame,
 		const Rect& src, const Rect& dest, const Paint& paint) override
 	{
+#if APP_CORE_FOR_ENGINE
+		SharedPtr<BatchWebKit> batch(new BatchWebKit(GetSubsystem<ultralight::RenderContext>()->GetCallStackVertexVector()));
+#else
+		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
+#endif
 
+		batch->SetBlendMode(blendEnable_ ? BLEND_ALPHA : BLEND_REPLACE);
+		auto* texture = GetImageInnerTexture(image.get(), cur_frame);
+		batch->SetTexture(texture);
+
+		const Rect rectFinal = mat_.Apply(dest);
+
+		float x1 = rectFinal.left;
+		float y1 = rectFinal.top;
+		float x2 = rectFinal.right;
+		float y2 = rectFinal.bottom;
+
+		float uvX1 = src.left / texture->GetWidth();
+		float uvY1 = src.top / texture->GetHeight();
+		float uvX2 = src.right / texture->GetWidth();
+		float uvY2 = src.bottom / texture->GetHeight();
+
+		UInt32 color32 = FlagGG::Color::WHITE.ToUInt();
+
+		Vector4 data0(/*FillType_Image*/1, 0, 0, 0);
+
+		batch->AddTriangle(
+			Vector2(x1, y1), Vector2(x1, y2), Vector2(x2, y2),
+			Vector2(uvX1, uvY1), Vector2(uvX1, uvY2), Vector2(uvX2, uvY2),
+			color32,
+			color32,
+			color32,
+			data0
+		);
+
+		batch->AddTriangle(
+			Vector2(x1, y1), Vector2(x2, y2), Vector2(x2, y1),
+			Vector2(uvX1, uvY1), Vector2(uvX2, uvY2), Vector2(uvX2, uvY1),
+			color32,
+			color32,
+			color32,
+			data0
+		);
+
+#if APP_CORE_FOR_ENGINE
+		GetSubsystem<ultralight::RenderContext>()->GetCallStackBatches()->Push(batch);
+#else
+		frameRenderData_->uiBatches_.Push(batch);
+#endif
 	}
 
 	virtual void DrawPattern(RefPtr<Image> image, uint32_t cur_frame,
 		const Rect& src, const Rect& dest, const Matrix& transform) override
 	{
+#if APP_CORE_FOR_ENGINE
+		SharedPtr<BatchWebKit> batch(new BatchWebKit(GetSubsystem<ultralight::RenderContext>()->GetCallStackVertexVector()));
+#else
+		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
+#endif
 
+		batch->SetBlendMode(blendEnable_ ? BLEND_ALPHA : BLEND_REPLACE);
+		auto* texture = GetImageInnerTexture(image.get(), cur_frame);
+		batch->SetTexture(texture);
+
+		const Rect rectFinal = mat_.Apply(dest);
+
+		float x1 = rectFinal.left;
+		float y1 = rectFinal.top;
+		float x2 = rectFinal.right;
+		float y2 = rectFinal.bottom;
+
+		float uvX1 = src.left / texture->GetWidth();
+		float uvY1 = src.top / texture->GetHeight();
+		float uvX2 = src.right / texture->GetWidth();
+		float uvY2 = src.bottom / texture->GetHeight();
+
+		batch->vector_[0] = Vector4(uvX1, uvY1, uvX2, uvY2);
+		batch->vector_[1] = Vector4(0, 0, src.right - src.left, src.bottom - src.top);
+		batch->vector_[2] = Vector4(transform.data[0][0], transform.data[0][1], transform.data[1][0], transform.data[1][1]);
+		batch->vector_[3] = Vector4(transform.data[3][0], transform.data[3][1], 0, 0);
+
+		UInt32 color32 = FlagGG::Color::WHITE.ToUInt();
+
+		Vector4 data0(/*FillType_Pattern_Image*/2, 0, 0, 0);
+
+		batch->AddTriangle(
+			Vector2(x1, y1), Vector2(x1, y2), Vector2(x2, y2),
+			Vector2(uvX1, uvY1), Vector2(uvX1, uvY2), Vector2(uvX2, uvY2),
+			color32,
+			color32,
+			color32,
+			data0
+		);
+
+		batch->AddTriangle(
+			Vector2(x1, y1), Vector2(x2, y2), Vector2(x2, y1),
+			Vector2(uvX1, uvY1), Vector2(uvX2, uvY2), Vector2(uvX2, uvY1),
+			color32,
+			color32,
+			color32,
+			data0
+		);
+
+#if APP_CORE_FOR_ENGINE
+		GetSubsystem<ultralight::RenderContext>()->GetCallStackBatches()->Push(batch);
+#else
+		frameRenderData_->uiBatches_.Push(batch);
+#endif
 	}
 
 	virtual void DrawGlyphs(RefPtr<Font> font, const Paint& paint, const Point& origin, Glyph* glyphs, size_t num_glyphs, const Point& offset) override
@@ -540,6 +649,8 @@ public:
 #else
 		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
 #endif
+
+		batch->SetBlendMode(blendEnable_ ? BLEND_ALPHA : BLEND_REPLACE);
 
 		const Rect rectFinal = mat_.Apply(dest);
 
@@ -641,7 +752,7 @@ private:
 
 	void* surfaceLockedPixel_{};
 
-	float deviceScaleHint_{};
+	float deviceScaleHint_{ 1.0 };
 
 	CompositeOp compositeOp_{};
 

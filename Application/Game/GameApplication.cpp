@@ -377,6 +377,7 @@ void GameApplication::SetupWindow()
 
 	WindowDevice::RegisterWinMessage(window_);
 
+#if 0
 	if (auto buffer = GetSubsystem<AssetFileManager>()->OpenFileReader("WebUI/GameEntry.html"))
 	{
 		String htmlContent;
@@ -386,6 +387,11 @@ void GameApplication::SetupWindow()
 		uiView_->LoadHTML(htmlContent);
 		uiView_->SetBackgroundTransparency(0.0f);
 	}
+#else
+	uiView_ = new UIView(window_);
+	uiView_->LoadUrl("file:///WebUI/GameEntry.html");
+	uiView_->SetBackgroundTransparency(0.0f);
+#endif
 #endif
 }
 

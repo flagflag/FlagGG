@@ -45,9 +45,14 @@ public:
 		const Vector4& data5 = Vector4::ZERO,
 		const Vector4& data6 = Vector4::ZERO);
 
+	void ApplyShaderParameters(ShaderParameters* shaderParameters) override;
+
 	static const PODVector<VertexElement>& GetVertexElements();
 
 	static UInt32 GetVertexElementsSize();
+
+// shader parameters
+	Vector4 vector_[8];
 };
 
 }

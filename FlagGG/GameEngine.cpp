@@ -91,6 +91,8 @@ void GameEngine::Stop()
 {
 	isRunning_ = false;
 
+	GetSubsystem<EventManager>()->SendEvent<Application::ENGINE_EXIT_HANDLER>();
+
 #if PLATFORM_WINDOWS
 	WindowDevice::Uninitialize();
 	RenderEngine::Instance().Uninitialize();

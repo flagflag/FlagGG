@@ -40,6 +40,7 @@ namespace Frame
 
 namespace Application
 {
+	DEFINE_EVENT(ENGINE_EXIT,  void());
 	DEFINE_EVENT(WINDOW_CLOSE, void(void*));
 }
 

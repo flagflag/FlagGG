@@ -56,6 +56,7 @@ WebUISystem::WebUISystem()
 	renderer_->AddRef();
 
 	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, WebUISystem::Update, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(Application::ENGINE_EXIT, WebUISystem::EngineExit, this));
 }
 
 WebUISystem::~WebUISystem()
@@ -66,22 +67,20 @@ WebUISystem::~WebUISystem()
 	ultralight::Platform::instance().set_file_system(nullptr);
 	ultralight::Platform::instance().set_clipboard(nullptr);
 	ultralight::Platform::instance().set_surface_factory(nullptr);
-
-	if (renderer_)
-	{
-		renderer_->Release();
-		renderer_ = nullptr;
-	}
-}
-
-void WebUISystem::Initialize()
-{
-	
 }
 
 void WebUISystem::Update(Real timeStep)
 {
 	renderer_->Update();
+}
+
+void WebUISystem::EngineExit()
+{
+	if (renderer_)
+	{
+		renderer_->Release();
+		renderer_ = nullptr;
+	}
 }
 
 }

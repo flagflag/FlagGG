@@ -55,6 +55,7 @@ UISystem::UISystem()
 
 	materialParameters_ = new ShaderParameters();
 	materialParameters_->AddParametersDefine<Real>("transparency");
+	materialParameters_->AddParametersDefineImpl("Vector", sizeof(Vector4) * 8u);
 
 	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(Frame::PRERENDER_UPDATE, UISystem::HandleRenderUpdate, this));
 }
@@ -189,15 +190,6 @@ void UIBatchRenderData::Render(Texture2D* defaultTexture, ShaderParameters* mate
 		}
 	}
 
-	if (webKitRendering_)
-	{
-		gfxDevice->SetBlendMode(BLEND_ALPHA);
-	}
-	else
-	{
-		gfxDevice->SetBlendMode(BLEND_REPLACE);
-	}
-
 	auto& shaderParameters = renderEngine->GetShaderParameters();
 	shaderParameters.SetValue(SP_WORLD_MATRIX, Matrix3x4(Vector3(-1.0f, 1.0f), Quaternion::IDENTITY, Vector3(2.0f / viewport_.Width(), -2.0f / viewport_.Height(), 1.0f)));
 	gfxDevice->SetEngineShaderParameters(&shaderParameters);
@@ -216,6 +208,10 @@ void UIBatchRenderData::Render(Texture2D* defaultTexture, ShaderParameters* mate
 		const auto& batch = batches_[i];
 
 		materialParameters->SetValue<Real>("transparency", i == 0 && webKitRendering_ ? backgroundTransparency : 1.0f);
+
+		batch->ApplyShaderParameters(materialParameters);
+
+		gfxDevice->SetBlendMode(batch->GetBlendMode());
 
 		if (auto* texture = batch->GetTexture())
 		{

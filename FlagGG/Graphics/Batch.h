@@ -5,11 +5,13 @@
 #include "Container/Ptr.h"
 #include "Container/Vector.h"
 #include "Core/BaseTypes.h"
+#include "Graphics/GraphicsDef.h"
 
 namespace FlagGG
 {
 
 class Texture;
+class ShaderParameters;
 
 typedef Vector<Real> VertexVector;
 
@@ -38,7 +40,13 @@ public:
 
 	void SetTexture(Texture* texture);
 
+	BlendMode GetBlendMode() const { return blendMode_; }
+
+	void SetBlendMode(BlendMode blendMode);
+
 	BatchType GetType() const;
+
+	virtual void ApplyShaderParameters(ShaderParameters* shaderParameters) {}
 
 protected:
 	VertexVector* vertexs_;
@@ -51,6 +59,8 @@ protected:
 	UInt32 vertexEnd_;
 
 	SharedPtr<Texture> texture_;
+
+	BlendMode blendMode_;
 
 	BatchType type_;
 };

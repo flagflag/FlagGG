@@ -4,11 +4,12 @@
 namespace FlagGG
 {
 
-Batch::Batch(BatchType type, VertexVector* vertexs, USize vertexSize, Texture* texture) :
-	type_(type),
-	vertexs_(vertexs),
-	vertexSize_(vertexSize),
-	texture_(texture)
+Batch::Batch(BatchType type, VertexVector* vertexs, USize vertexSize, Texture* texture)
+	: type_(type)
+	, vertexs_(vertexs)
+	, vertexSize_(vertexSize)
+	, texture_(texture)
+	, blendMode_(BLEND_REPLACE)
 {
 	owner_ = vertexs_ == nullptr;
 
@@ -46,6 +47,11 @@ UInt32 Batch::GetVertexCount() const
 void Batch::SetTexture(Texture* texture)
 {
 	texture_ = texture;
+}
+
+void Batch::SetBlendMode(BlendMode blendMode)
+{
+	blendMode_ = blendMode;
 }
 
 BatchType Batch::GetType() const

@@ -1,5 +1,6 @@
 #include "Batch2D.h"
 #include "Texture.h"
+#include "ShaderParameter.h"
 
 namespace FlagGG
 {
@@ -83,6 +84,7 @@ UInt32 Batch2D::GetVertexElementsSize()
 
 BatchWebKit::BatchWebKit(VertexVector* vertexs, Texture* texture)
 	: Batch(DRAW_TRIANGLE, vertexs, BatchWebKit::GetVertexElementsSize(), texture)
+	, vector_{}
 {
 
 }
@@ -241,6 +243,11 @@ void BatchWebKit::AddTriangle(const Vector2& v1, const Vector2& v2, const Vector
 		dest[idx++] = data6.z_;
 		dest[idx++] = data6.w_;
 	}
+}
+
+void BatchWebKit::ApplyShaderParameters(ShaderParameters* shaderParameters)
+{
+	shaderParameters->SetValueImpl("Vector", vector_, sizeof(Vector4) * 8u);
 }
 
 const PODVector<VertexElement>& BatchWebKit::GetVertexElements()

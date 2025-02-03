@@ -70,11 +70,22 @@ UIView::~UIView()
 	}
 }
 
+void UIView::LoadUrl(const String& url)
+{
+	if (webView_)
+	{
+		webView_->LoadURL(url.CString());
+		htmlUrl_ = url;
+		htmlContent_ = nullptr;
+	}
+}
+
 void UIView::LoadHTML(const String& html)
 {
 	if (webView_)
 	{
 		webView_->LoadHTML(html.CString());
+		htmlUrl_ = nullptr;
 		htmlContent_ = html;
 	}
 }
@@ -85,7 +96,12 @@ void UIView::SetBackgroundTransparency(Real transparency)
 	{
 		backgroundTransparency_ = transparency;
 		if (!webView_->needs_paint())
-			webView_->LoadHTML(htmlContent_.CString());
+		{
+			if (htmlUrl_.Length())
+				webView_->LoadURL(htmlUrl_.CString());
+			else
+				webView_->LoadHTML(htmlContent_.CString());
+		}
 	}
 }
 

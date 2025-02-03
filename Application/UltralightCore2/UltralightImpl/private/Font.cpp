@@ -10,6 +10,8 @@ public:
 	REF_COUNTED_IMPL(FontImpl);
 
 	FontImpl(void* platform_data, uint64_t font_file_hash, float font_size)
+		: fontSize_(font_size)
+		, deviceScale_(1.0f)
 	{
 
 	}
@@ -22,17 +24,17 @@ public:
 	// Font size in pixels
 	virtual float font_size() const override
 	{
-		return 0.0f;
+		return fontSize_;
 	}
 
 	virtual float device_scale_hint() const override
 	{
-		return 0.0f;
+		return deviceScale_;
 	}
 
 	virtual void set_device_scale_hint(float scale) override
 	{
-
+		deviceScale_ = scale;
 	}
 
 	virtual bool HasGlyph(uint32_t index) const override
@@ -43,25 +45,25 @@ public:
 	// Pre-scaled to layout units
 	virtual double GetGlyphAdvance(uint32_t glyph_index) override
 	{
-		return 16.0f;
+		return fontSize_;
 	}
 
 	// Pre-scaled to layout units
 	virtual double GetGlyphWidth(uint32_t glyph_index) override
 	{
-		return 0.0;
+		return fontSize_;
 	}
 
 	// Pre-scaled to layout units
 	virtual double GetGlyphHeight(uint32_t glyph_index) override
 	{
-		return 0.0;
+		return fontSize_;
 	}
 
 	// Pre-scaled to layout units
 	virtual double GetGlyphBearing(uint32_t glyph_index) override
 	{
-		return 0.0;
+		return fontSize_;
 	}
 
 	// Get bitmap for scaled glyph
@@ -90,6 +92,11 @@ public:
 	{
 		return 0;
 	}
+
+private:
+	float fontSize_;
+
+	float deviceScale_;
 };
 
 Font::Font() = default;

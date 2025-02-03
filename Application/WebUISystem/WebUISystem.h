@@ -23,9 +23,9 @@ public:
 
 	~WebUISystem() override;
 
-	void Initialize();
-
 	void Update(Real timeStep);
+
+	void EngineExit();
 
 	ultralight::Renderer* GetRenderer() const { return renderer_; }
 

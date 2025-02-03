@@ -5,10 +5,12 @@ namespace ultralight
 
 void UltralightGPUDriver::BeginSynchronize()
 {
+
 }
 
 void UltralightGPUDriver::EndSynchronize()
 {
+
 }
 
 uint32_t UltralightGPUDriver::NextTextureId()
@@ -18,14 +20,17 @@ uint32_t UltralightGPUDriver::NextTextureId()
 
 void UltralightGPUDriver::CreateTexture(uint32_t texture_id, RefPtr<Bitmap> bitmap)
 {
+
 }
 
 void UltralightGPUDriver::UpdateTexture(uint32_t texture_id, RefPtr<Bitmap> bitmap)
 {
+
 }
 
 void UltralightGPUDriver::DestroyTexture(uint32_t texture_id)
 {
+
 }
 
 uint32_t UltralightGPUDriver::NextRenderBufferId()
@@ -35,10 +40,12 @@ uint32_t UltralightGPUDriver::NextRenderBufferId()
 
 void UltralightGPUDriver::CreateRenderBuffer(uint32_t render_buffer_id, const RenderBuffer& buffer)
 {
+
 }
 
 void UltralightGPUDriver::DestroyRenderBuffer(uint32_t render_buffer_id)
 {
+
 }
 
 uint32_t UltralightGPUDriver::NextGeometryId()
@@ -60,10 +67,12 @@ void UltralightGPUDriver::UpdateGeometry(uint32_t geometry_id, const VertexBuffe
 
 void UltralightGPUDriver::DestroyGeometry(uint32_t geometry_id)
 {
+
 }
 
 void UltralightGPUDriver::UpdateCommandList(const CommandList& list)
 {
+
 }
 
 }
