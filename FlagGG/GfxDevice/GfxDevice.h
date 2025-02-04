@@ -24,6 +24,7 @@ class GfxProgram;
 class GfxRenderSurface;
 class VertexDescription;
 class ShaderParameters;
+class AmbientOcclusionRendering;
 
 enum ClearTarget : UInt32
 {
@@ -201,6 +202,9 @@ public:
 
 	// 创建gpu program
 	virtual GfxProgram* CreateProgram();
+
+	// 创建环境管遮蔽渲染器
+	virtual AmbientOcclusionRendering* CreateAmbientOcclusionRendering();
 
 public:
 	FlagGG_API static GfxDevice* CreateDevice();

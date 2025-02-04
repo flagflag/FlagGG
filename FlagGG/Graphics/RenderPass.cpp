@@ -387,8 +387,8 @@ void WaterRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 l
 	}
 
 	RenderEngine* renderEngine = GetSubsystem<RenderEngine>();
-	renderEngine->SetDefaultTextures(TextureClass(0), refractionTexture_);
-	renderEngine->SetDefaultTextures(TextureClass(1), screenDepthTexture_);
+	renderEngine->SetDefaultTexture(TextureClass(0), refractionTexture_);
+	renderEngine->SetDefaultTexture(TextureClass(1), screenDepthTexture_);
 
 	auto& renderBatches = renderBatchQueue_.renderBatches_;
 	for (auto& renderBatch : renderBatches)
@@ -396,8 +396,8 @@ void WaterRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 l
 		renderEngine->DrawBatch(camera, renderBatch);
 	}
 
-	renderEngine->SetDefaultTextures(TextureClass(0), nullptr);
-	renderEngine->SetDefaultTextures(TextureClass(1), nullptr);
+	renderEngine->SetDefaultTexture(TextureClass(0), nullptr);
+	renderEngine->SetDefaultTexture(TextureClass(1), nullptr);
 }
 
 /*********************************************************/

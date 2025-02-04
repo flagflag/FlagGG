@@ -27,8 +27,14 @@ if (WIN32 OR WIN64)
     dxerr
     dxgi
     dxguid)
+    
+    # NVIDIA HBAO+ 4.0
+    include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/NVIDIA_HBAO+_4.0/include)
+    link_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/NVIDIA_HBAO+_4.0/lib)
+
     # CoreCLR
     link_directories (${CMAKE_CURRENT_SOURCE_DIR}/../Application/CoreCLRHelper/Runtime)
+    
     # Vulkan
     link_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/vulkan/lib/x64)
     set (VULKAN_LIB

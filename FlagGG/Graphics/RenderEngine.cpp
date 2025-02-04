@@ -411,7 +411,7 @@ void RenderEngine::SetMaterialTextures(Material* material)
 	}
 }
 
-void RenderEngine::SetDefaultTextures(TextureClass index, Texture* texture)
+void RenderEngine::SetDefaultTexture(TextureClass index, Texture* texture)
 {
 	defaultTextures_[index] = texture;
 }

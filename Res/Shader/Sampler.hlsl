@@ -44,6 +44,9 @@ float4 GetShadowPos(float3 worldPos)
     TextureCube iblCube : register(t7);
     SamplerState iblSampler : register(s7);
 
+    Texture2D aoMap : register(t8);
+    SamplerState aoSampler : register(s8);
+
     float3 DecodeNormal(float4 normalInput)
     {
     #ifdef PACKEDNORMAL

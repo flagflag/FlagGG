@@ -8,6 +8,7 @@
 #include "GfxDevice/GfxRenderSurface.h"
 #include "GfxDevice/GfxTexture.h"
 #include "GfxDevice/GfxSwapChain.h"
+#include "GfxDevice/AmbientOcclusionRendering.h"
 #include "Core/EngineSettings.h"
 
 namespace FlagGG
@@ -182,6 +183,36 @@ void DeferredRenderPipline::Render()
 		gfxDevice->Clear(CLEAR_COLOR);
 
 		baseRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
+	}
+
+	// Render ssao
+	if (GetSubsystem<EngineSettings>()->renderAO_)
+	{
+		if (!aoRendering_)
+			aoRendering_ = gfxDevice->CreateAmbientOcclusionRendering();
+
+		AmbientOcclusionInputData inputData;
+		inputData.depthTexture_ = depthTexture_->GetGfxTextureRef();
+		inputData.normalTexture_ = GBufferA_->GetGfxTextureRef();
+		inputData.viewMatrix_ = renderPiplineContext_.camera_->GetViewMatrix();
+		inputData.projectMatrix_ = renderPiplineContext_.camera_->GetProjectionMatrix();
+		inputData.renderSolution_ = renderPiplineContext_.renderSolution_;
+
+		aoRendering_->RenderAO(inputData);
+
+		renderEngine->SetDefaultTexture(TEXTURE_CLASS_SSAO, aoRendering_->GetAmbientOcclusionTexture());
+	}
+	else
+	{
+		if (!noAOTexture_)
+		{
+			noAOTexture_ = new Texture2D();
+			noAOTexture_->SetSize(1, 1, TEXTURE_FORMAT_R8);
+			const UInt32 color32 = Color::WHITE.ToUInt();
+			noAOTexture_->SetData(0, 0, 0, 1, 1, &color32);
+		}
+
+		renderEngine->SetDefaultTexture(TEXTURE_CLASS_SSAO, noAOTexture_);
 	}
 
 	bool needRT = waterRenderPass_->HasAnyBatch();

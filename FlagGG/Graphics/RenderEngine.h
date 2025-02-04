@@ -80,7 +80,7 @@ public:
 
 	void PostRenderBatch(const Vector<SharedPtr<Batch>>& batches);
 
-	void SetDefaultTextures(TextureClass index, Texture* texture);
+	void SetDefaultTexture(TextureClass index, Texture* texture);
 
 	Texture* GetDefaultTexture(TextureClass index) const { return defaultTextures_[index]; }
 

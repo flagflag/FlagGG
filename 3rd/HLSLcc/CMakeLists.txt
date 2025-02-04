@@ -1,5 +1,7 @@
 set (TARGET_NAME hlslcc)
 
+set(CMAKE_CXX_STANDARD 14)
+
 file(GLOB HLSLCC_HDRS "${CMAKE_CURRENT_SOURCE_DIR}/include/*")
 set(HLSLCC_SRC
 		src/ControlFlowGraph.cpp

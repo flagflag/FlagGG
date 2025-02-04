@@ -16,6 +16,7 @@
 #include <FileSystem/FileManager.h>
 #include <FileSystem/FileSystemArchive/DefaultFileSystemArchive.h>
 #include <Config/LJSONFile.h>
+#include <Core/EngineSettings.h>
 
 #include "GameApplication.h"
 #include "GamePlay/ThirdPersonPerspective.h"
@@ -311,7 +312,7 @@ void GameApplication::SetupWindow()
 	shadowMap_->SetAddressMode(TEXTURE_COORDINATE_V, TEXTURE_ADDRESS_CLAMP);
 	shadowMap_->SetAddressMode(TEXTURE_COORDINATE_W, TEXTURE_ADDRESS_CLAMP);
 	shadowMap_->SetSize(rect.Width(), rect.Height(), RenderEngine::GetReadableDepthFormat(), TEXTURE_DEPTHSTENCIL);
-	RenderEngine::Instance().SetDefaultTextures(TEXTURE_CLASS_SHADOWMAP, shadowMap_);
+	RenderEngine::Instance().SetDefaultTexture(TEXTURE_CLASS_SHADOWMAP, shadowMap_);
 
 	renderTexture_[0] = new Texture2D();
 	renderTexture_[0]->SetNumLevels(1);
@@ -388,9 +389,12 @@ void GameApplication::SetupWindow()
 		uiView_->SetBackgroundTransparency(0.0f);
 	}
 #else
-	uiView_ = new UIView(window_);
-	uiView_->LoadUrl("file:///WebUI/GameEntry.html");
-	uiView_->SetBackgroundTransparency(0.0f);
+	if (commandParam_.Contains("web_ui"))
+	{
+		uiView_ = new UIView(window_);
+		uiView_->LoadUrl("file:///WebUI/GameEntry.html");
+		uiView_->SetBackgroundTransparency(0.0f);
+	}
 #endif
 #endif
 }
@@ -481,6 +485,11 @@ void GameApplication::OnKeyUp(KeyState* keyState, UInt32 keyCode)
 				uiView_->SetBackgroundTransparency(1.0f);
 			}
 		}
+	}
+
+	if (keyCode == VK_F3)
+	{
+		GetSubsystem<EngineSettings>()->renderAO_ = !GetSubsystem<EngineSettings>()->renderAO_;
 	}
 
 	// luaVM_->CallEvent("on_key_up", keyCode);

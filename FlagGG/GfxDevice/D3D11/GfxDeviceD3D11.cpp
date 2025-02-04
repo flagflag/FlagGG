@@ -4,6 +4,7 @@
 #include "GfxTextureD3D11.h"
 #include "GfxShaderD3D11.h"
 #include "GfxRenderSurfaceD3D11.h"
+#include "AmbientOcclusionRenderingD3D11.h"
 #include "GfxDevice/GfxProgram.h"
 #include "GfxDevice/GfxSampler.h"
 #include "GfxDevice/VertexDescFactory.h"
@@ -795,6 +796,11 @@ GfxShader* GfxDeviceD3D11::CreateShader()
 GfxProgram* GfxDeviceD3D11::CreateProgram()
 {
 	return new GfxProgram();
+}
+
+AmbientOcclusionRendering* GfxDeviceD3D11::CreateAmbientOcclusionRendering()
+{
+	return new AmbientOcclusionRenderingD3D11();
 }
 
 bool GfxDeviceD3D11::CheckMultiSampleSupport(DXGI_FORMAT format, UInt32 sampleCount)

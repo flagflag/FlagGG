@@ -399,4 +399,9 @@ GfxProgram* GfxDevice::CreateProgram()
 	return nullptr;
 }
 
+AmbientOcclusionRendering* GfxDevice::CreateAmbientOcclusionRendering()
+{
+	return nullptr;
+}
+
 }

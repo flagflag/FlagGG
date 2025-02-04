@@ -65,7 +65,7 @@ struct PixelInput
         PBRContext context;
 
         context.normalDirection = DecodeGBufferNormal(GBufferA.rgb);
-        context.occlusion = GBufferA.a;
+        context.occlusion = GBufferA.a * aoMap.Sample(aoSampler, input.texcoord).r;
 
         context.metallic = GBufferB.r;
         context.specular = GBufferB.g;

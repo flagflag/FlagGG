@@ -74,6 +74,8 @@ public:
 	// 创建gpu program
 	GfxProgram* CreateProgram() override;
 
+	// 创建环境管遮蔽渲染器
+	AmbientOcclusionRendering* CreateAmbientOcclusionRendering() override;
 
 	ID3D11Device* GetD3D11Device() const
 	{

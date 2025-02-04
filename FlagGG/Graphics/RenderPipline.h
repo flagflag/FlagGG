@@ -26,6 +26,7 @@ class DrawableComponent;
 class Camera;
 class Light;
 class Probe;
+class AmbientOcclusionRendering;
 
 // 渲染管线上下文
 struct FlagGG_API RenderPiplineContext
@@ -182,6 +183,12 @@ private:
 	SharedPtr<RenderPass> depthRenderPass_;
 	SharedPtr<RenderPass> baseRenderPass_;
 	SharedPtr<RenderPass> deferredLitRenderPass_;
+
+	// 环境光遮蔽渲染器
+	SharedPtr<AmbientOcclusionRendering> aoRendering_;
+
+	//
+	SharedPtr<Texture2D> noAOTexture_;
 
 	// rgb - normal
 	// a   - ao

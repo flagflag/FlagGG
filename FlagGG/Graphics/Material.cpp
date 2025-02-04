@@ -11,6 +11,7 @@
 #include "Core/ObjectFactory.h"
 #include "Resource/ResourceCache.h"
 #include "Utility/Format.h"
+#include "TypeTraits/IsArray.h"
 
 #include "Math/Color.h"
 #include "Math/Rect.h"
@@ -28,7 +29,7 @@ namespace FlagGG
 
 REGISTER_TYPE_FACTORY(Material);
 
-static const char* TEXTURE_CLASS[MAX_TEXTURE_CLASS] =
+static const char* TEXTURE_CLASS[] =
 {
 	"universal",
 	"diffuse",
@@ -38,9 +39,11 @@ static const char* TEXTURE_CLASS[MAX_TEXTURE_CLASS] =
 	"environment",
 	"shadowmap",
 	"ibl",
+	"ao",
 };
+static_assert(ARRAY_COUNT(TEXTURE_CLASS) == MAX_TEXTURE_CLASS, "TEXTURE_CLASS array size error.");
 
-static const char* RENDER_PASS_TYPE[MAX_RENDER_PASS_TYPE] =
+static const char* RENDER_PASS_TYPE[] =
 {
 	"shadow",
 	"forward_lit",
@@ -50,6 +53,7 @@ static const char* RENDER_PASS_TYPE[MAX_RENDER_PASS_TYPE] =
 	"deferred_lit",
 	"depth",
 };
+static_assert(ARRAY_COUNT(RENDER_PASS_TYPE) == MAX_RENDER_PASS_TYPE, "RENDER_PASS_TYPE array size error.");
 
 static const UInt32 T_INT = StringHash("int").ToHash();
 static const UInt32 T_INT32 = StringHash("int32").ToHash();

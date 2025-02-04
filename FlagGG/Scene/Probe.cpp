@@ -41,7 +41,7 @@ void Probe::ApplyRender(RenderEngine* renderEngine)
 	engineShaderParameters.SetValue(SP_SHBG, shaderConstants_[4]);
 	engineShaderParameters.SetValue(SP_SHBB, shaderConstants_[5]);
 	engineShaderParameters.SetValue(SP_SHC, shaderConstants_[6]);
-	renderEngine->SetDefaultTextures(TEXTURE_CLASS_IBL, iblCube_);
+	renderEngine->SetDefaultTexture(TEXTURE_CLASS_IBL, iblCube_);
 }
 
 }

@@ -142,7 +142,7 @@ void EditorApplication::SetupWindow()
 	shadowMap_->SetNumLevels(1);
 	shadowMap_->SetSize(rect.Width(), rect.Height(), RenderEngine::GetRGBFormat(), TEXTURE_RENDERTARGET);
 	// shadowMap_->Initialize();
-	RenderEngine::Instance().SetDefaultTextures(TEXTURE_CLASS_SHADOWMAP, shadowMap_);
+	RenderEngine::Instance().SetDefaultTexture(TEXTURE_CLASS_SHADOWMAP, shadowMap_);
 
 	window_ = new Window(nullptr, rect);
 	window_->Show();
