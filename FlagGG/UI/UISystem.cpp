@@ -207,6 +207,15 @@ void UIBatchRenderData::Render(Texture2D* defaultTexture, ShaderParameters* mate
 	{
 		const auto& batch = batches_[i];
 
+		if (batch->GetScissorRect() != IntRect::ZERO)
+		{
+			gfxDevice->SetScissorTest(true, batch->GetScissorRect());
+		}
+		else
+		{
+			gfxDevice->SetScissorTest(false);
+		}
+
 		materialParameters->SetValue<Real>("transparency", i == 0 && webKitRendering_ ? backgroundTransparency : 1.0f);
 
 		batch->ApplyShaderParameters(materialParameters);

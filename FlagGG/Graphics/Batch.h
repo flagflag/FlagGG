@@ -6,6 +6,7 @@
 #include "Container/Vector.h"
 #include "Core/BaseTypes.h"
 #include "Graphics/GraphicsDef.h"
+#include "Math/Rect.h"
 
 namespace FlagGG
 {
@@ -44,6 +45,10 @@ public:
 
 	void SetBlendMode(BlendMode blendMode);
 
+	const IntRect& GetScissorRect() const { return scissorRect_; }
+
+	void SetScissorRect(const IntRect& scissorRect);
+
 	BatchType GetType() const;
 
 	virtual void ApplyShaderParameters(ShaderParameters* shaderParameters) {}
@@ -61,6 +66,8 @@ protected:
 	SharedPtr<Texture> texture_;
 
 	BlendMode blendMode_;
+
+	IntRect scissorRect_;
 
 	BatchType type_;
 };

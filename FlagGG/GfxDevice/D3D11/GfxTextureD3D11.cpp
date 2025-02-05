@@ -2,6 +2,7 @@
 #include "GfxDeviceD3D11.h"
 #include "GfxRenderSurfaceD3D11.h"
 #include "GfxD3D11Defines.h"
+#include "Memory/Memory.h"
 #include "Log.h"
 
 #define DXGI_FORMAT_ASTC_4X4_TYPELESS     DXGI_FORMAT(133)
@@ -552,7 +553,7 @@ void GfxTextureD3D11::UpdateTextureSubRegion(const void* dataPtr, UInt32 index, 
 	}
 
 	const UInt8* src = static_cast<const UInt8*>(dataPtr);
-	UInt32 rowSize = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, mipInfo.width_);
+	UInt32 rowSize = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, width);
 	UInt32 rowStart = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, x);
 	UInt32 subResource = D3D11CalcSubresource(level, index, textureDesc_.levels_);
 
@@ -572,7 +573,7 @@ void GfxTextureD3D11::UpdateTextureSubRegion(const void* dataPtr, UInt32 index, 
 		else
 		{
 			for (Int32 row = 0; row < height; ++row)
-				memcpy((UInt8*)mappedData.pData + (row + y) * mappedData.RowPitch + rowStart, src + row * rowSize, rowSize);
+				Memory::Memcpy((UInt8*)mappedData.pData + (row + y) * mappedData.RowPitch + rowStart, src + row * rowSize, rowSize);
 
 			GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext()->Unmap(d3d11Texture2D_, subResource);
 		}
@@ -619,7 +620,7 @@ void GfxTextureD3D11::UpdateTextureSubRegion(const void* dataPtr, UInt32 index, 
 	}
 
 	const UInt8* src = static_cast<const UInt8*>(dataPtr);
-	UInt32 rowSize = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, mipInfo.width_);
+	UInt32 rowSize = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, width);
 	UInt32 rowStart = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, x);
 	UInt32 subResource = D3D11CalcSubresource(level, index, textureDesc_.levels_);
 
@@ -641,7 +642,7 @@ void GfxTextureD3D11::UpdateTextureSubRegion(const void* dataPtr, UInt32 index, 
 			for (Int32 page = 0; page < depth; ++page)
 			{
 				for (Int32 row = 0; row < height; ++row)
-					memcpy((UInt8*)mappedData.pData + (page + z) * mappedData.DepthPitch + (row + y) * mappedData.RowPitch + rowStart,
+					Memory::Memcpy((UInt8*)mappedData.pData + (page + z) * mappedData.DepthPitch + (row + y) * mappedData.RowPitch + rowStart,
 						src + row * rowSize, rowSize);
 			}
 
@@ -710,7 +711,7 @@ bool GfxTextureD3D11::ReadBack(void* dataPtr, UInt32 index, UInt32 level)
 	char* destPtr      = (char*)dataPtr;
 	for (UInt32 row = 0; row < textureDesc_.height_; ++row)
 	{
-		memcpy(destPtr, srcPtr, rowDataSize);
+		Memory::Memcpy(destPtr, srcPtr, rowDataSize);
 		srcPtr  += mapped.RowPitch;
 		destPtr += rowDataSize;
 	}

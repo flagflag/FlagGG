@@ -31,8 +31,8 @@ public:
 		, format_(format)
 		, readonlyPixels_(nullptr)
 	{
-		pixelData_ = new char[size()];
 		rowBytes_ = width * bpp();
+		pixelData_ = new char[size()];
 	}
 
 	BitmapImpl(uint32_t width, uint32_t height, BitmapFormat format, uint32_t alignment)
@@ -41,8 +41,8 @@ public:
 		, format_(format)
 		, readonlyPixels_(nullptr)
 	{
-		pixelData_ = new char[size()];
 		rowBytes_ = width * bpp();
+		pixelData_ = new char[size()];
 	}
 
 	BitmapImpl(uint32_t width, uint32_t height, BitmapFormat format,
@@ -57,16 +57,24 @@ public:
 			readonlyPixels_ = nullptr;
 			pixelData_ = new char[width * height * bpp()];
 			rowBytes_ = width * bpp();
-			const uint32_t minRowBytes = rowBytes_ < row_bytes ? rowBytes_ : row_bytes;
-			
-			const char* srcPixel = (const char*)pixels;
-			char* destPixel      = pixelData_;
 
-			for (uint32_t row = 0; row < height; ++row)
+			if (row_bytes != rowBytes_)
 			{
-				srcPixel  += row_bytes;
-				destPixel += rowBytes_;
-				Memory::Memcpy(destPixel, srcPixel, minRowBytes);
+				const uint32_t minRowBytes = rowBytes_ < row_bytes ? rowBytes_ : row_bytes;
+
+				const char* srcPixel = (const char*)pixels;
+				char* destPixel = pixelData_;
+
+				for (uint32_t row = 0; row < height; ++row)
+				{
+					srcPixel += row_bytes;
+					destPixel += rowBytes_;
+					Memory::Memcpy(destPixel, srcPixel, minRowBytes);
+				}
+			}
+			else
+			{
+				Memory::Memcpy(pixelData_, pixels, width * height * bpp());
 			}
 		}
 		else
@@ -243,7 +251,18 @@ public:
 	///
 	virtual void Erase() override
 	{
-		Memory::Memzero(pixelData_, size());
+		uint32_t actualRowBytes = width_ * bpp();
+		if (actualRowBytes != rowBytes_)
+		{
+			for (uint32_t row = 0; row < height_; ++row)
+			{
+				Memory::Memzero(pixelData_ + row * rowBytes_, actualRowBytes);
+			}
+		}
+		else
+		{
+			Memory::Memzero(pixelData_, size());
+		}
 	}
 
 	///

@@ -3,6 +3,7 @@
 #include "Ultralight/private/Image.h"
 #include "Ultralight/private/VideoFrame.h"
 #include "Ultralight/platform/Surface.h"
+#include "UltralightImpl/UltralightInnerType.h"
 #include "UltralightImpl/ThreadCall.h"
 #include "RenderContext.h"
 
@@ -18,11 +19,7 @@ using namespace FlagGG;
 namespace ultralight
 {
 
-extern Texture2D* GetImageInnerTexture(Image* image, uint32_t frame_id);
-
-class RenderTexture : public RefCounted
-{
-};
+extern Texture2D* GetImageInnerTexture(Image* image, uint32_t frameId);
 
 #if !APP_CORE_FOR_ENGINE
 struct FrameRenderData : public FlagGG::RefCounted
@@ -401,6 +398,10 @@ public:
 		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
 #endif
 
+		if (scissorEnable_)
+			batch->SetScissorRect(FlagGG::IntRect(scissorRect_.left, scissorRect_.top, scissorRect_.right, scissorRect_.bottom));
+		else
+			batch->SetScissorRect(FlagGG::IntRect::ZERO);
 		batch->SetBlendMode(blendEnable_ ? BLEND_ALPHA : BLEND_REPLACE);
 
 		const Rect rectFinal = mat_.Apply(rect);
@@ -455,6 +456,10 @@ public:
 		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
 #endif
 
+		if (scissorEnable_)
+			batch->SetScissorRect(FlagGG::IntRect(scissorRect_.left, scissorRect_.top, scissorRect_.right, scissorRect_.bottom));
+		else
+			batch->SetScissorRect(FlagGG::IntRect::ZERO);
 		batch->SetBlendMode(blendEnable_ ? BLEND_ALPHA : BLEND_REPLACE);
 
 		const Rect rectFinal = mat_.Apply(rrect.rect);
@@ -533,6 +538,10 @@ public:
 		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
 #endif
 
+		if (scissorEnable_)
+			batch->SetScissorRect(FlagGG::IntRect(scissorRect_.left, scissorRect_.top, scissorRect_.right, scissorRect_.bottom));
+		else
+			batch->SetScissorRect(FlagGG::IntRect::ZERO);
 		batch->SetBlendMode(blendEnable_ ? BLEND_ALPHA : BLEND_REPLACE);
 		auto* texture = GetImageInnerTexture(image.get(), cur_frame);
 		batch->SetTexture(texture);
@@ -587,6 +596,10 @@ public:
 		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
 #endif
 
+		if (scissorEnable_)
+			batch->SetScissorRect(FlagGG::IntRect(scissorRect_.left, scissorRect_.top, scissorRect_.right, scissorRect_.bottom));
+		else
+			batch->SetScissorRect(FlagGG::IntRect::ZERO);
 		batch->SetBlendMode(blendEnable_ ? BLEND_ALPHA : BLEND_REPLACE);
 		auto* texture = GetImageInnerTexture(image.get(), cur_frame);
 		batch->SetTexture(texture);
@@ -639,48 +652,84 @@ public:
 
 	virtual void DrawGlyphs(RefPtr<Font> font, const Paint& paint, const Point& origin, Glyph* glyphs, size_t num_glyphs, const Point& offset) override
 	{
-#if APP_CORE_FOR_ENGINE
-		SharedPtr<BatchWebKit> batch(new BatchWebKit(GetSubsystem<ultralight::RenderContext>()->GetCallStackVertexVector()));
-#else
-		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
-#endif
+		SharedPtr<BatchWebKit> batch;
 
-		batch->SetBlendMode(blendEnable_ ? BLEND_ALPHA : BLEND_REPLACE);
+		Point finalOrigin = mat_.Apply(origin + offset);
 
-		const Point finalOrigin = mat_.Apply(origin + offset);
+		Texture2D* lastGlyphTexture = nullptr;
+
+		double outScale;
+		RefPtr<Bitmap> bitmap;
+		Point bitmapOffset;    // => vertex offset
+		float lsbDelta;
+		float rsbDelta;
+		TextureInfo texInfo;
 
 		for (UInt32 i = 0; i < num_glyphs; ++i)
 		{
-			float x1 = finalOrigin.x;
-			float y1 = finalOrigin.y;
-			float x2 = finalOrigin.x + font->GetGlyphWidth(glyphs[i].index);
-			float y2 = finalOrigin.y + font->GetGlyphHeight(glyphs[i].index);
+			if (!font->GetGlyphTexture(glyphs[i].index, 1.0, 1.0, outScale, texInfo, bitmapOffset, lsbDelta, rsbDelta))
+			{
+				finalOrigin.x += glyphs[i].advance_x;
+				continue;
+			}
+
+			if (texInfo.texture_ != lastGlyphTexture)
+			{
+#if APP_CORE_FOR_ENGINE
+				batch = new BatchWebKit(GetSubsystem<ultralight::RenderContext>()->GetCallStackVertexVector());
+#else
+				batch = new BatchWebKit(&(frameRenderData_->vertexVector_));
+#endif
+				batch->SetTexture(texInfo.texture_);
+				if (scissorEnable_)
+					batch->SetScissorRect(FlagGG::IntRect(scissorRect_.left, scissorRect_.top, scissorRect_.right, scissorRect_.bottom));
+				else
+					batch->SetScissorRect(FlagGG::IntRect::ZERO);
+				batch->SetBlendMode(blendEnable_ ? BLEND_ALPHA : BLEND_REPLACE);
+			}
+
+			float x1 = finalOrigin.x + bitmapOffset.x;
+			float y1 = finalOrigin.y + bitmapOffset.y;
+			float x2 = x1 + font->GetGlyphWidth(glyphs[i].index);
+			float y2 = y1 + font->GetGlyphHeight(glyphs[i].index);
 
 			FlagGG::Color color = UltralightColorGetFloat4(paint.color);
 			UInt32 color32 = color.ToUInt();
 
+			Vector4 data0(/*FillType_Glyph*/11, 1, 0, 0);
+
 			batch->AddTriangle(
 				Vector2(x1, y1), Vector2(x1, y2), Vector2(x2, y2),
-				Vector2(0, 0), Vector2(0, 1), Vector2(1, 1),
+				Vector2(texInfo.uv_.x_, texInfo.uv_.y_), Vector2(texInfo.uv_.x_, texInfo.uv_.w_), Vector2(texInfo.uv_.z_, texInfo.uv_.w_),
 				color32,
 				color32,
-				color32
+				color32,
+				data0
 			);
 
 			batch->AddTriangle(
 				Vector2(x1, y1), Vector2(x2, y2), Vector2(x2, y1),
-				Vector2(0, 0), Vector2(1, 1), Vector2(1, 0),
+				Vector2(texInfo.uv_.x_, texInfo.uv_.y_), Vector2(texInfo.uv_.z_, texInfo.uv_.w_), Vector2(texInfo.uv_.z_, texInfo.uv_.y_),
 				color32,
 				color32,
-				color32
+				color32,
+				data0
 			);
-		}
 
+			ASSERT(font->GetGlyphAdvance(glyphs[i].index) == glyphs[i].advance_x);
+			finalOrigin.x += glyphs[i].advance_x;
+
+			if (texInfo.texture_ != lastGlyphTexture)
+			{
 #if APP_CORE_FOR_ENGINE
-		GetSubsystem<ultralight::RenderContext>()->GetCallStackBatches()->Push(batch);
+				GetSubsystem<ultralight::RenderContext>()->GetCallStackBatches()->Push(batch);
 #else
-		frameRenderData_->uiBatches_.Push(batch);
+				frameRenderData_->uiBatches_.Push(batch);
 #endif
+			}
+
+			lastGlyphTexture = texInfo.texture_;
+		}
 	}
 
 	virtual void DrawGradient(Gradient* gradient, const Rect& dest) override
@@ -691,6 +740,10 @@ public:
 		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
 #endif
 
+		if (scissorEnable_)
+			batch->SetScissorRect(FlagGG::IntRect(scissorRect_.left, scissorRect_.top, scissorRect_.right, scissorRect_.bottom));
+		else
+			batch->SetScissorRect(FlagGG::IntRect::ZERO);
 		batch->SetBlendMode(blendEnable_ ? BLEND_ALPHA : BLEND_REPLACE);
 
 		const Rect rectFinal = mat_.Apply(dest);

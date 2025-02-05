@@ -163,7 +163,7 @@ public:
 	virtual void SetStencilTest(bool stencilTest, ComparisonFunc stencilTestMode, UInt32 stencilRef, UInt32 stencilReadMask = F_MAX_UNSIGNED, UInt32 stencilWriteMask = F_MAX_UNSIGNED);
 
 	// 设置裁剪测试
-	virtual void SetScissorTest(bool scissorTest, const IntRect& rect);
+	virtual void SetScissorTest(bool scissorTest, const IntRect& rect = IntRect::ZERO);
 
 	// 提交渲染指令
 	virtual void Draw(UInt32 vertexStart, UInt32 vertexCount);
@@ -224,6 +224,9 @@ protected:
 	// 准备提交的viewport
 	Rect viewport_;
 	bool viewportDirty_{};
+
+	IntRect scissorRect_;
+	bool scissorRectDirty_{};
 
 	// 准备提交的vbs
 	Vector<SharedPtr<GfxBuffer>> vertexBuffers_;

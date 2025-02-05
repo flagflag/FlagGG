@@ -26,6 +26,7 @@ void GfxDevice::BeginFrame()
 	ResetRenderTargets();
 	depthStencil_.Reset();
 	viewport_ = Rect::ZERO;
+	scissorRect_ = IntRect::ZERO;
 	ClearVertexBuffer();
 	indexBuffer_.Reset();
 	vertexDesc_.Reset();
@@ -341,7 +342,17 @@ void GfxDevice::SetStencilTest(bool stencilTest, ComparisonFunc stencilTestMode,
 
 void GfxDevice::SetScissorTest(bool scissorTest, const IntRect& rect)
 {
+	if (rasterizerState_.scissorTest_ != scissorTest)
+	{
+		rasterizerState_.scissorTest_ = scissorTest;
+		rasterizerStateDirty_ = true;
+	}
 
+	if (scissorRect_ != rect)
+	{
+		scissorRect_ = rect;
+		scissorRectDirty_ = true;
+	}
 }
 
 void GfxDevice::Draw(UInt32 vertexStart, UInt32 vertexCount)

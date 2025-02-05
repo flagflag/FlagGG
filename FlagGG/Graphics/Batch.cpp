@@ -54,6 +54,11 @@ void Batch::SetBlendMode(BlendMode blendMode)
 	blendMode_ = blendMode;
 }
 
+void Batch::SetScissorRect(const IntRect& scissorRect)
+{
+	scissorRect_ = scissorRect;
+}
+
 BatchType Batch::GetType() const
 {
 	return type_;

@@ -494,6 +494,26 @@ void GfxDeviceD3D11::PrepareDraw()
 
 		viewportDirty_ = false;
 	}
+
+	if (scissorRectDirty_)
+	{
+		if (rasterizerState_.scissorTest_)
+		{
+			D3D11_RECT d3d11Rect;
+			d3d11Rect.left = scissorRect_.left_;
+			d3d11Rect.top = scissorRect_.top_;
+			d3d11Rect.right = scissorRect_.right_;
+			d3d11Rect.bottom = scissorRect_.bottom_;
+
+			deviceContext_->RSSetScissorRects(1, &d3d11Rect);
+		}
+		else
+		{
+			deviceContext_->RSSetScissorRects(0, nullptr);
+		}
+
+		scissorRectDirty_ = false;
+	}
 }
 
 void GfxDeviceD3D11::PrepareDispatch()

@@ -87,10 +87,10 @@ RefPtr<Image> Image::Create()
 	return RefPtr<Image>(new ImageImpl());
 }
 
-extern Texture2D* GetImageInnerTexture(Image* image, uint32_t frame_id)
+extern Texture2D* GetImageInnerTexture(Image* image, uint32_t frameId)
 {
 	auto* imageImpl = dynamic_cast<ImageImpl*>(image);
-	return imageImpl ? imageImpl->GetInnerTexture(frame_id) : nullptr;
+	return imageImpl ? imageImpl->GetInnerTexture(frameId) : nullptr;
 }
 
 }
