@@ -84,7 +84,7 @@ private:
 
 RefPtr<Image> Image::Create()
 {
-	return RefPtr<Image>(new ImageImpl());
+	return AdoptRef<Image>(*new ImageImpl());
 }
 
 extern Texture2D* GetImageInnerTexture(Image* image, uint32_t frameId)

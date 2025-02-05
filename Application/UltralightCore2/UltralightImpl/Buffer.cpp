@@ -104,12 +104,12 @@ void Buffer::operator=(const Buffer&)
 
 RefPtr<Buffer> Buffer::Create(void* data, size_t size, void* user_data, DestroyBufferCallback destruction_callback)
 {
-	return RefPtr<Buffer>(new BufferImpl(data, size, user_data, destruction_callback));
+	return AdoptRef<Buffer>(*new BufferImpl(data, size, user_data, destruction_callback));
 }
 
 RefPtr<Buffer> Buffer::CreateFromCopy(const void* data, size_t size)
 {
-	return RefPtr<Buffer>(new BufferImpl(data, size));
+	return AdoptRef<Buffer>(*new BufferImpl(data, size));
 }
 
 }

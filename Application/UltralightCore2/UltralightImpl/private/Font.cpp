@@ -320,7 +320,7 @@ void Font::operator=(const Font&)
 
 RefPtr<Font> Font::Create(void* platform_data, uint64_t font_file_hash, float font_size)
 {
-	return RefPtr<Font>(new FontImpl(platform_data, font_file_hash, font_size));
+	return AdoptRef<Font>(*new FontImpl(platform_data, font_file_hash, font_size));
 }
 
 }

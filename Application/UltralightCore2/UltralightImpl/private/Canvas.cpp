@@ -284,7 +284,7 @@ public:
 
 	virtual void SetClip(const RoundedRect& rrect, bool inverse) override
 	{
-
+		clipRoundedRect_ = rrect;
 	}
 
 	virtual void SetClip(RefPtr<Path> path, FillRule rule, bool inverse) override
@@ -864,6 +864,8 @@ private:
 
 	Rect clipRect_;
 
+	RoundedRect clipRoundedRect_;
+
 #if !APP_CORE_FOR_ENGINE
 // for gpu rendering:
 	SharedPtr<Texture2D> renderTarget_;
@@ -890,7 +892,7 @@ void Canvas::operator=(const Canvas&)
 
 RefPtr<Canvas> Canvas::Create(uint32_t width, uint32_t height, BitmapFormat format, Surface* surface)
 {
-	return RefPtr<Canvas>(new CanvasImpl(width, height, format, surface));
+	return AdoptRef<Canvas>(*new CanvasImpl(width, height, format, surface));
 }
 
 }

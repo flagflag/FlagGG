@@ -9,6 +9,11 @@ class PathImpl : public Path, public RefCountedImpl<PathImpl>
 public:
 	REF_COUNTED_IMPL(PathImpl);
 
+	~PathImpl() override
+	{
+
+	}
+
 	// Management
 	virtual void Set(RefPtr<Path> path) override
 	{
@@ -138,7 +143,7 @@ void Path::operator=(const Path&)
 
 RefPtr<Path> Path::Create()
 {
-	return RefPtr<Path>(new PathImpl());
+	return AdoptRef<Path>(*new PathImpl());
 }
 
 }

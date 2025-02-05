@@ -10,7 +10,7 @@ FontCache::FontCache()
 
 FontCache::~FontCache()
 {
-
+	font_map_.clear();
 }
 
 RefPtr<Font> FontCache::GetFont(void* platform_data, uint64_t font_file_hash, float font_size)

@@ -444,30 +444,30 @@ void Bitmap::operator=(const Bitmap&)
 
 RefPtr<Bitmap> Bitmap::Create()
 {
-	return RefPtr<Bitmap>(new BitmapImpl());
+	return AdoptRef<Bitmap>(*new BitmapImpl());
 }
 
 RefPtr<Bitmap> Bitmap::Create(uint32_t width, uint32_t height, BitmapFormat format)
 {
-	return RefPtr<Bitmap>(new BitmapImpl(width, height, format));
+	return AdoptRef<Bitmap>(*new BitmapImpl(width, height, format));
 }
 
 RefPtr<Bitmap> Bitmap::Create(uint32_t width, uint32_t height, BitmapFormat format, uint32_t alignment)
 {
-	return RefPtr<Bitmap>(new BitmapImpl(width, height, format, alignment));
+	return AdoptRef<Bitmap>(*new BitmapImpl(width, height, format, alignment));
 }
 
 RefPtr<Bitmap> Bitmap::Create(uint32_t width, uint32_t height, BitmapFormat format,
 	uint32_t row_bytes, const void* pixels, size_t size,
 	bool should_copy)
 {
-	return RefPtr<Bitmap>(new BitmapImpl(width, height, format, row_bytes, pixels, size, should_copy));
+	return AdoptRef<Bitmap>(*new BitmapImpl(width, height, format, row_bytes, pixels, size, should_copy));
 }
 
 RefPtr<Bitmap> Bitmap::Create(const Bitmap& bitmap)
 {
 	const void* copyPixels = bitmap.LockPixels();
-	RefPtr<Bitmap> newBitmap(new BitmapImpl(bitmap.width(), bitmap.height(), bitmap.format(), bitmap.row_bytes(), copyPixels, bitmap.size(), true));
+	RefPtr<Bitmap> newBitmap = AdoptRef<Bitmap>(*new BitmapImpl(bitmap.width(), bitmap.height(), bitmap.format(), bitmap.row_bytes(), copyPixels, bitmap.size(), true));
 	bitmap.UnlockPixels();
 	return newBitmap;
 }
