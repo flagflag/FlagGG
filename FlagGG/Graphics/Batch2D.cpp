@@ -100,7 +100,8 @@ void BatchWebKit::AddTriangle(const Vector2& v1, const Vector2& v2, const Vector
 	const Vector4& data3,
 	const Vector4& data4,
 	const Vector4& data5,
-	const Vector4& data6)
+	const Vector4& data6,
+	const Vector2& objectCoord1, const Vector2& objectCoord2, const Vector2& objectCoord3)
 {
 	UInt32 begin = vertexs_->Size();
 	vertexEnd_ = vertexs_->Size() + vertexSize_ / 4u * 3;
@@ -114,8 +115,8 @@ void BatchWebKit::AddTriangle(const Vector2& v1, const Vector2& v2, const Vector
 		dest[idx++] = v1.y_;
 		dest[idx++] = uv1.x_;
 		dest[idx++] = uv1.y_;
-		dest[idx++] = 0.0f;
-		dest[idx++] = 0.0f;
+		dest[idx++] = objectCoord1.x_;
+		dest[idx++] = objectCoord1.y_;
 		((UInt32&)dest[idx++]) = color1;
 
 		dest[idx++] = data0.x_;
@@ -159,8 +160,8 @@ void BatchWebKit::AddTriangle(const Vector2& v1, const Vector2& v2, const Vector
 		dest[idx++] = v2.y_;
 		dest[idx++] = uv2.x_;
 		dest[idx++] = uv2.y_;
-		dest[idx++] = 0.0f;
-		dest[idx++] = 0.0f;
+		dest[idx++] = objectCoord2.x_;
+		dest[idx++] = objectCoord2.y_;
 		((UInt32&)dest[idx++]) = color2;
 
 		dest[idx++] = data0.x_;
@@ -204,8 +205,8 @@ void BatchWebKit::AddTriangle(const Vector2& v1, const Vector2& v2, const Vector
 		dest[idx++] = v3.y_;
 		dest[idx++] = uv3.x_;
 		dest[idx++] = uv3.y_;
-		dest[idx++] = 0.0f;
-		dest[idx++] = 0.0f;
+		dest[idx++] = objectCoord3.x_;
+		dest[idx++] = objectCoord3.y_;
 		((UInt32&)dest[idx++]) = color3;
 
 		dest[idx++] = data0.x_;
@@ -248,6 +249,8 @@ void BatchWebKit::AddTriangle(const Vector2& v1, const Vector2& v2, const Vector
 void BatchWebKit::ApplyShaderParameters(ShaderParameters* shaderParameters)
 {
 	shaderParameters->SetValueImpl("Vector", vector_, sizeof(Vector4) * 8u);
+	shaderParameters->SetValue<UInt32>("ClipSize", clipArray_.Size());
+	shaderParameters->SetValueImpl("Clip", clipArray_.Buffer(), clipArray_.Size() * sizeof(Matrix4));
 }
 
 const PODVector<VertexElement>& BatchWebKit::GetVertexElements()

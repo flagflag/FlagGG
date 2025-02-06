@@ -56,6 +56,8 @@ UISystem::UISystem()
 	materialParameters_ = new ShaderParameters();
 	materialParameters_->AddParametersDefine<Real>("transparency");
 	materialParameters_->AddParametersDefineImpl("Vector", sizeof(Vector4) * 8u);
+	materialParameters_->AddParametersDefine<UInt32>("ClipSize");
+	materialParameters_->AddParametersDefineImpl("Clip", sizeof(Matrix4) * 8u);
 
 	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(Frame::PRERENDER_UPDATE, UISystem::HandleRenderUpdate, this));
 }

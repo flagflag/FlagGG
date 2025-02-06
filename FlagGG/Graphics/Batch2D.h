@@ -4,6 +4,7 @@
 
 #include "Math/Vector2.h"
 #include "Math/Vector4.h"
+#include "Math/Matrix4.h"
 #include "Batch.h"
 #include "Graphics/GraphicsDef.h"
 #include "Container/Vector.h"
@@ -43,7 +44,8 @@ public:
 		const Vector4& data3 = Vector4::ZERO,
 		const Vector4& data4 = Vector4::ZERO,
 		const Vector4& data5 = Vector4::ZERO,
-		const Vector4& data6 = Vector4::ZERO);
+		const Vector4& data6 = Vector4::ZERO,
+		const Vector2& objectCoord1 = Vector2::ZERO, const Vector2& objectCoord2 = Vector2::ZERO, const Vector2& objectCoord3 = Vector2::ZERO);
 
 	void ApplyShaderParameters(ShaderParameters* shaderParameters) override;
 
@@ -53,6 +55,8 @@ public:
 
 // shader parameters
 	Vector4 vector_[8];
+
+	PODVector<Matrix4> clipArray_;
 };
 
 }

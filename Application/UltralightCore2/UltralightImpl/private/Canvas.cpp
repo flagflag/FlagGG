@@ -20,14 +20,13 @@ namespace ultralight
 {
 
 extern Texture2D* GetImageInnerTexture(Image* image, uint32_t frameId);
+extern Texture2D* GetSurfaceInnerTexture(Surface* surface);
 
-#if !APP_CORE_FOR_ENGINE
 struct FrameRenderData : public FlagGG::RefCounted
 {
 	VertexVector vertexVector_;
 	FlagGG::Vector<SharedPtr<Batch>> uiBatches_;
 };
-#endif
 
 class CanvasImpl : public Canvas, public RefCountedImpl<CanvasImpl>
 {
@@ -42,7 +41,12 @@ public:
 	{
 		mat_.SetIdentity();
 
-#if !APP_CORE_FOR_ENGINE
+#if APP_CORE_FOR_ENGINE
+		if (surface_)
+		{
+			frameRenderData_ = new FrameRenderData();
+		}
+#else
 		if (!surface)
 		{
 			RefPtr<Canvas> thisRef(this);
@@ -93,7 +97,7 @@ public:
 		}
 #endif
 
-		return false;
+		return true;
 	}
 
 	virtual void SetDeviceScaleHint(double device_scale_hint) override
@@ -118,12 +122,10 @@ public:
 
 		mat_.SetIdentity();
 
-#if !APP_CORE_FOR_ENGINE
-		if (!frameRenderData_)
+		if ((surface_ || !APP_CORE_FOR_ENGINE) && !frameRenderData_)
 		{
 			frameRenderData_ = new FrameRenderData();
 		}
-#endif
 	}
 
 	// Locks the surface for drawing (CPU only)
@@ -151,16 +153,19 @@ public:
 			surface_->UnlockPixels();
 		}
 
-#if !APP_CORE_FOR_ENGINE
+#if APP_CORE_FOR_ENGINE
+		if (surface_ && frameRenderData_)
+		{
+			auto* renderTarget = GetSurfaceInnerTexture(surface_);
+			if (renderTarget)
+			{
+				GetSubsystem<UISystem>()->RenderWebKit(renderTarget->GetRenderSurface(), FlagGG::Rect(0, 0, width_, height_), frameRenderData_->uiBatches_);
+			}
+		}
+#else
 		if (frameRenderData_ && frameRenderData_->uiBatches_.Size())
 		{
 			RefPtr<Canvas> thisRef(this);
-
-			struct TempRenderData : public FlagGG::RefCounted
-			{
-				VertexVector vertexVector_;
-				FlagGG::Vector<SharedPtr<Batch>> uiBatches_;
-			};
 
 			SharedPtr<FrameRenderData> frameRenderData = frameRenderData_;
 			frameRenderData_.Reset();
@@ -280,11 +285,15 @@ public:
 	virtual void SetClip(const Rect& rect, bool inverse) override
 	{
 		clipRect_ = rect;
+		inverse_ = inverse;
+		useClipRounededRect_ = false;
 	}
 
 	virtual void SetClip(const RoundedRect& rrect, bool inverse) override
 	{
 		clipRoundedRect_ = rrect;
+		inverse_ = inverse;
+		useClipRounededRect_ = true;
 	}
 
 	virtual void SetClip(RefPtr<Path> path, FillRule rule, bool inverse) override
@@ -392,11 +401,7 @@ public:
 	// Drawing
 	virtual void DrawRect(const Rect& rect, const Paint& paint) override
 	{
-#if APP_CORE_FOR_ENGINE
-		SharedPtr<BatchWebKit> batch(new BatchWebKit(GetSubsystem<ultralight::RenderContext>()->GetCallStackVertexVector()));
-#else
-		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
-#endif
+		SharedPtr<BatchWebKit> batch = BeginNewBatch();
 
 		if (scissorEnable_)
 			batch->SetScissorRect(FlagGG::IntRect(scissorRect_.left, scissorRect_.top, scissorRect_.right, scissorRect_.bottom));
@@ -430,11 +435,7 @@ public:
 			color32
 		);
 
-#if APP_CORE_FOR_ENGINE
-		GetSubsystem<ultralight::RenderContext>()->GetCallStackBatches()->Push(batch);
-#else
-		frameRenderData_->uiBatches_.Push(batch);
-#endif
+		EndBatch(batch);
 	}
 
 	virtual void DrawLine(const Point& p0, const Point& p1, const Paint& paint) override
@@ -450,11 +451,7 @@ public:
 	virtual void DrawRoundedRect(const RoundedRect& rrect, const Paint& paint,
 		float stroke_width, Color stroke_color) override
 	{
-#if APP_CORE_FOR_ENGINE
-		SharedPtr<BatchWebKit> batch(new BatchWebKit(GetSubsystem<ultralight::RenderContext>()->GetCallStackVertexVector()));
-#else
-		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
-#endif
+		SharedPtr<BatchWebKit> batch = BeginNewBatch();
 
 		if (scissorEnable_)
 			batch->SetScissorRect(FlagGG::IntRect(scissorRect_.left, scissorRect_.top, scissorRect_.right, scissorRect_.bottom));
@@ -504,11 +501,7 @@ public:
 			data4
 		);
 
-#if APP_CORE_FOR_ENGINE
-		GetSubsystem<ultralight::RenderContext>()->GetCallStackBatches()->Push(batch);
-#else
-		frameRenderData_->uiBatches_.Push(batch);
-#endif
+		EndBatch(batch);
 	}
 
 	virtual void DrawBoxShadow(const Rect& paint_rect, const RoundedRect& rrect, const RoundedRect& clip_rrect,
@@ -532,11 +525,7 @@ public:
 	virtual void DrawImage(RefPtr<Image> image, uint32_t cur_frame,
 		const Rect& src, const Rect& dest, const Paint& paint) override
 	{
-#if APP_CORE_FOR_ENGINE
-		SharedPtr<BatchWebKit> batch(new BatchWebKit(GetSubsystem<ultralight::RenderContext>()->GetCallStackVertexVector()));
-#else
-		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
-#endif
+		SharedPtr<BatchWebKit> batch = BeginNewBatch();
 
 		if (scissorEnable_)
 			batch->SetScissorRect(FlagGG::IntRect(scissorRect_.left, scissorRect_.top, scissorRect_.right, scissorRect_.bottom));
@@ -580,21 +569,13 @@ public:
 			data0
 		);
 
-#if APP_CORE_FOR_ENGINE
-		GetSubsystem<ultralight::RenderContext>()->GetCallStackBatches()->Push(batch);
-#else
-		frameRenderData_->uiBatches_.Push(batch);
-#endif
+		EndBatch(batch);
 	}
 
 	virtual void DrawPattern(RefPtr<Image> image, uint32_t cur_frame,
 		const Rect& src, const Rect& dest, const Matrix& transform) override
 	{
-#if APP_CORE_FOR_ENGINE
-		SharedPtr<BatchWebKit> batch(new BatchWebKit(GetSubsystem<ultralight::RenderContext>()->GetCallStackVertexVector()));
-#else
-		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
-#endif
+		SharedPtr<BatchWebKit> batch = BeginNewBatch();
 
 		if (scissorEnable_)
 			batch->SetScissorRect(FlagGG::IntRect(scissorRect_.left, scissorRect_.top, scissorRect_.right, scissorRect_.bottom));
@@ -643,11 +624,7 @@ public:
 			data0
 		);
 
-#if APP_CORE_FOR_ENGINE
-		GetSubsystem<ultralight::RenderContext>()->GetCallStackBatches()->Push(batch);
-#else
-		frameRenderData_->uiBatches_.Push(batch);
-#endif
+		EndBatch(batch);
 	}
 
 	virtual void DrawGlyphs(RefPtr<Font> font, const Paint& paint, const Point& origin, Glyph* glyphs, size_t num_glyphs, const Point& offset) override
@@ -675,11 +652,8 @@ public:
 
 			if (texInfo.texture_ != lastGlyphTexture)
 			{
-#if APP_CORE_FOR_ENGINE
-				batch = new BatchWebKit(GetSubsystem<ultralight::RenderContext>()->GetCallStackVertexVector());
-#else
-				batch = new BatchWebKit(&(frameRenderData_->vertexVector_));
-#endif
+				batch = BeginNewBatch();
+
 				batch->SetTexture(texInfo.texture_);
 				if (scissorEnable_)
 					batch->SetScissorRect(FlagGG::IntRect(scissorRect_.left, scissorRect_.top, scissorRect_.right, scissorRect_.bottom));
@@ -721,11 +695,7 @@ public:
 
 			if (texInfo.texture_ != lastGlyphTexture)
 			{
-#if APP_CORE_FOR_ENGINE
-				GetSubsystem<ultralight::RenderContext>()->GetCallStackBatches()->Push(batch);
-#else
-				frameRenderData_->uiBatches_.Push(batch);
-#endif
+				EndBatch(batch);
 			}
 
 			lastGlyphTexture = texInfo.texture_;
@@ -734,11 +704,7 @@ public:
 
 	virtual void DrawGradient(Gradient* gradient, const Rect& dest) override
 	{
-#if APP_CORE_FOR_ENGINE
-		SharedPtr<BatchWebKit> batch(new BatchWebKit(GetSubsystem<ultralight::RenderContext>()->GetCallStackVertexVector()));
-#else
-		SharedPtr<BatchWebKit> batch(new BatchWebKit(&(frameRenderData_->vertexVector_)));
-#endif
+		SharedPtr<BatchWebKit> batch = BeginNewBatch();
 
 		if (scissorEnable_)
 			batch->SetScissorRect(FlagGG::IntRect(scissorRect_.left, scissorRect_.top, scissorRect_.right, scissorRect_.bottom));
@@ -797,11 +763,7 @@ public:
 			data3to6[3]
 		);
 
-#if APP_CORE_FOR_ENGINE
-		GetSubsystem<ultralight::RenderContext>()->GetCallStackBatches()->Push(batch);
-#else
-		frameRenderData_->uiBatches_.Push(batch);
-#endif
+		EndBatch(batch);
 	}
 
 	virtual void DrawVideoFrame(RefPtr<VideoFrame> video_frame, const Rect& dest) override
@@ -813,7 +775,74 @@ public:
 	// Painter will sort canvases by draw dependencies and draw them in correct order.
 	virtual void DrawCanvas(RefPtr<Canvas> canvas, const Rect& src, const Rect& dest, const Paint& paint) override
 	{
+		canvas->FlushSurface();
 
+		SharedPtr<BatchWebKit> batch = BeginNewBatch();
+
+		if (scissorEnable_)
+			batch->SetScissorRect(FlagGG::IntRect(scissorRect_.left, scissorRect_.top, scissorRect_.right, scissorRect_.bottom));
+		else
+			batch->SetScissorRect(FlagGG::IntRect::ZERO);
+		batch->SetBlendMode(blendEnable_ ? BLEND_ALPHA : BLEND_REPLACE);
+		auto* texture = GetSurfaceInnerTexture(canvas->surface());
+		batch->SetTexture(texture);
+
+		const Rect rectFinal = mat_.Apply(dest);
+
+		float x1 = rectFinal.left;
+		float y1 = rectFinal.top;
+		float x2 = rectFinal.right;
+		float y2 = rectFinal.bottom;
+
+		float uvX1 = src.left / texture->GetWidth();
+		float uvY1 = src.top / texture->GetHeight();
+		float uvX2 = src.right / texture->GetWidth();
+		float uvY2 = src.bottom / texture->GetHeight();
+
+		float objectX1 = dest.left;
+		float objectY1 = dest.top;
+		float objectX2 = dest.right;
+		float objectY2 = dest.bottom;
+
+		UInt32 color32 = FlagGG::Color::WHITE.ToUInt();
+
+		Vector4 data0(/*FillType_Image*/1, 0, 0, 0);
+
+		batch->AddTriangle(
+			Vector2(x1, y1), Vector2(x1, y2), Vector2(x2, y2),
+			Vector2(uvX1, uvY1), Vector2(uvX1, uvY2), Vector2(uvX2, uvY2),
+			color32,
+			color32,
+			color32,
+			data0,
+			Vector4::ZERO,
+			Vector4::ZERO,
+			Vector4::ZERO,
+			Vector4::ZERO,
+			Vector4::ZERO,
+			Vector4::ZERO,
+			Vector2(objectX1, objectY1), Vector2(objectX1, objectY2), Vector2(objectX2, objectY2)
+		);
+
+		batch->AddTriangle(
+			Vector2(x1, y1), Vector2(x2, y2), Vector2(x2, y1),
+			Vector2(uvX1, uvY1), Vector2(uvX2, uvY2), Vector2(uvX2, uvY1),
+			color32,
+			color32,
+			color32,
+			data0,
+			Vector4::ZERO,
+			Vector4::ZERO,
+			Vector4::ZERO,
+			Vector4::ZERO,
+			Vector4::ZERO,
+			Vector4::ZERO,
+			Vector2(objectX1, objectY1), Vector2(objectX2, objectY2), Vector2(objectX2, objectY1)
+		);
+
+		ApplySoftwareClip(batch);
+
+		EndBatch(batch);
 	}
 
 	virtual void DrawCanvasPattern(RefPtr<Canvas> canvas, const Rect& src_uv, const Rect& src, const Rect& dest, const Matrix& transform) override
@@ -833,6 +862,38 @@ protected:
 	virtual void Draw() override
 	{
 
+	}
+
+	SharedPtr<BatchWebKit> BeginNewBatch()
+	{
+		if (frameRenderData_)
+			return MakeShared<BatchWebKit>(&(frameRenderData_->vertexVector_));
+		else
+			return MakeShared<BatchWebKit>(GetSubsystem<ultralight::RenderContext>()->GetCallStackVertexVector());
+	}
+
+	void EndBatch(SharedPtr<BatchWebKit> batch)
+	{
+		if (frameRenderData_)
+			frameRenderData_->uiBatches_.Push(batch);
+		else
+			GetSubsystem<ultralight::RenderContext>()->GetCallStackBatches()->Push(batch);
+	}
+
+	void ApplySoftwareClip(BatchWebKit* batch)
+	{
+		if (clipRect_.left == 0 && clipRect_.top == 0 && clipRect_.right == width_ && clipRect_.bottom == height_)
+			return;
+
+		if (clipRect_.IsEmpty())
+			return;
+
+		batch->clipArray_.Push(Matrix4(
+			clipRect_.left,                   0, mat_.data[0][0], mat_.data[3][0],
+			clipRect_.top,                    0, mat_.data[0][1], mat_.data[3][1],
+			clipRect_.right - clipRect_.left, 0, mat_.data[1][0], inverse_ ? 1 : 0,
+			clipRect_.bottom - clipRect_.top, 0, mat_.data[1][1], 0
+		));
 	}
 
 private:
@@ -860,20 +921,25 @@ private:
 
 	bool scissorEnable_{ false };
 
-	IntRect scissorRect_;
+	IntRect scissorRect_{};
 
-	Rect clipRect_;
+	Rect clipRect_{};
 
-	RoundedRect clipRoundedRect_;
+	RoundedRect clipRoundedRect_{};
+
+	bool inverse_{};
+
+	bool useClipRounededRect_{};
 
 #if !APP_CORE_FOR_ENGINE
 // for gpu rendering:
+
 	SharedPtr<Texture2D> renderTarget_;
 
 	SharedPtr<FlagGG::Window> window_;
+#endif
 
 	SharedPtr<FrameRenderData> frameRenderData_;
-#endif
 };
 
 Canvas::Canvas() = default;
