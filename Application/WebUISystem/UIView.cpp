@@ -2,6 +2,7 @@
 #include "WebUISystem.h"
 
 #include <Graphics/Window.h>
+#include <Graphics/Texture2D.h>
 #include <Core/EventDefine.h>
 #include <Core/EventManager.h>
 #include <UI/UIEvents.h>
@@ -44,6 +45,10 @@ UIView::UIView(UInt32 width, UInt32 height)
 	, backgroundTransparency_(1.0f)
 	, lastMouseKey_(ultralight::MouseEvent::kButton_None)
 {
+	renderTexture_ = new Texture2D();
+	renderTexture_->SetSize(width, height, TEXTURE_FORMAT_RGBA8, TEXTURE_RENDERTARGET);
+	renderSurface_ = renderTexture_->GetRenderSurface();
+
 	CreateView(width, height);
 }
 
@@ -52,11 +57,11 @@ UIView::UIView(Window* window)
 	, backgroundTransparency_(1.0f)
 	, lastMouseKey_(ultralight::MouseEvent::kButton_None)
 {
-	CreateView(window->GetWidth(), window->GetHeight());
-
 	window_ = window;
 	viewport_ = window->GetViewport();
 	renderSurface_ = viewport_->GetRenderTarget();
+
+	CreateView(window->GetWidth(), window->GetHeight());
 
 	window_->SetUIElementRoot(webViewAdaptor_);
 }
@@ -123,16 +128,20 @@ void UIView::CreateView(UInt32 width, UInt32 height)
 	webViewAdaptor_ = new WebViewUIElement(webView_);
 
 	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(UIEvent::GATHER_RENDER_UI_TREE, UIView::GatherRenderUITrees, this));
-	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_DOWN, UIView::OnKeyDown, this));
-	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, UIView::OnKeyUp, this));
-	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_CHAR, UIView::OnChar, this));
-	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_DOWN, UIView::OnMouseDown, this));
-	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_UP, UIView::OnMouseUp, this));
-	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_MOVE, UIView::OnMouseMove, this));
 
-	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_WHEEL, UIView::OnMouseWheel, this));
-	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::SET_FOCUS, UIView::OnSetFocus, this));
-	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KILL_FOCUS, UIView::OnKillFocus, this));
+	if (window_)
+	{
+		GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_DOWN, UIView::OnKeyDown, this));
+		GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, UIView::OnKeyUp, this));
+		GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_CHAR, UIView::OnChar, this));
+		GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_DOWN, UIView::OnMouseDown, this));
+		GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_UP, UIView::OnMouseUp, this));
+		GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_MOVE, UIView::OnMouseMove, this));
+
+		GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_WHEEL, UIView::OnMouseWheel, this));
+		GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::SET_FOCUS, UIView::OnSetFocus, this));
+		GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KILL_FOCUS, UIView::OnKillFocus, this));
+	}
 }
 
 void UIView::GatherRenderUITrees(Vector<RenderUITree>& renderUITrees)
@@ -142,9 +151,9 @@ void UIView::GatherRenderUITrees(Vector<RenderUITree>& renderUITrees)
 		RenderUITree& item = renderUITrees.EmplaceBack();
 		item.uiRoot_ = webViewAdaptor_;
 		item.renderSurface_ = renderSurface_;
-		auto rect = viewport_->GetSize();
+		auto rect = renderTexture_ ? IntRect(0, 0, renderTexture_->GetWidth(), renderTexture_->GetHeight()) : viewport_->GetSize();
 		item.viewport_ = Rect(rect.Left(), rect.Top(), rect.Right(), rect.Bottom());
-		item.manualRender_ = true;
+		item.manualRender_ = !renderTexture_;
 		item.webKitRendering_ = true;
 		item.backgroundTransparency_ = backgroundTransparency_;
 	}

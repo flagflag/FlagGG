@@ -288,9 +288,9 @@ GfxDeviceVulkan::GfxDeviceVulkan()
 	vkICI.pNext                   = nullptr;
 	vkICI.flags                   = 0;
 	vkICI.pApplicationInfo        = &vkAppInfo;
-	vkICI.enabledLayerCount       = /*3*/0;
+	vkICI.enabledLayerCount       = /*ARRAY_COUNT(instanceEnabledLayerNames)*/0;
 	vkICI.ppEnabledLayerNames     = instanceEnabledLayerNames;
-	vkICI.enabledExtensionCount   = 2;
+	vkICI.enabledExtensionCount   = ARRAY_COUNT(instanceEnabledExtensionNames);
 	vkICI.ppEnabledExtensionNames = instanceEnabledExtensionNames;
 	VULKAN_CHECK(vkCreateInstance(&vkICI, &vkAllocCallback_, &vkInstance_));
 
@@ -357,7 +357,7 @@ GfxDeviceVulkan::GfxDeviceVulkan()
 	vkDCI.pQueueCreateInfos       = &vkDQCI[0];
 	vkDCI.enabledLayerCount       = 0;
 	vkDCI.ppEnabledLayerNames     = nullptr;
-	vkDCI.enabledExtensionCount   = 2;
+	vkDCI.enabledExtensionCount   = ARRAY_COUNT(deviceEnabledExtensionNames);
 	vkDCI.ppEnabledExtensionNames = deviceEnabledExtensionNames;
 	vkDCI.pEnabledFeatures        = &vkPhyDvFeatures_;
 	VULKAN_CHECK(vkCreateDevice(vkPhysicalDevice_, &vkDCI, &vkAllocCallback_, &vkDevice_));
@@ -377,7 +377,7 @@ GfxDeviceVulkan::GfxDeviceVulkan()
 	vkCBAI.pNext = nullptr;
 	vkCBAI.commandPool = vkCmdPool_;
 	vkCBAI.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	vkCBAI.commandBufferCount = 4;
+	vkCBAI.commandBufferCount = ARRAY_COUNT(vkCmdBuffers_);
 	VULKAN_CHECK(vkAllocateCommandBuffers(vkDevice_, &vkCBAI, vkCmdBuffers_));
 
 	VkDescriptorPoolSize dps[] =
@@ -674,22 +674,6 @@ VkCommandBuffer GfxDeviceVulkan::BeginNewRenderCommand(VkRenderPass vkRenderPass
 	vkRPBI.pClearValues = nullptr;
 	vkCmdBeginRenderPass(vkCmdBuffer, &vkRPBI, VK_SUBPASS_CONTENTS_INLINE);
 
-	VkViewport vkViewport;
-	vkViewport.x = viewport_.Left();
-	vkViewport.y = viewport_.Top() + viewport_.Height();
-	vkViewport.width = viewport_.Width();
-	vkViewport.height = -viewport_.Height();
-	vkViewport.minDepth = 0.0f;
-	vkViewport.maxDepth = 1.0f;
-	vkCmdSetViewport(vkCmdBuffer, 0, 1, &vkViewport);
-
-	VkRect2D vkRect;
-	vkRect.offset.x = viewport_.Left();
-	vkRect.offset.y = viewport_.Top();
-	vkRect.extent.width = viewport_.Width();
-	vkRect.extent.height = viewport_.Height();
-	vkCmdSetScissor(vkCmdBuffer, 0, 1, &vkRect);
-
 	if (!currentUniformBuffer_)
 		currentUniformBuffer_ = new VulkanDynamicUniformBuffer(1024 * 1024 * 2); // 2MB
 	
@@ -840,7 +824,7 @@ VkFramebuffer GfxDeviceVulkan::CreateFramebufferFromCurrentState(VkRenderPass vk
 
 void GfxDeviceVulkan::PrepareRenderPass()
 {
-	if (renderTargetDirty_ || depthStencilDirty_ || viewportDirty_)
+	if (renderTargetDirty_ || depthStencilDirty_)
 	{
 		VulkanRenderPassAttachmentsKey key(renderTargets_[0], renderTargets_[1], renderTargets_[2], renderTargets_[3], depthStencil_);
 		auto it = vkRenderPassMap_.Find(key);
@@ -866,7 +850,32 @@ void GfxDeviceVulkan::PrepareRenderPass()
 		vkRenderPassDirty_ = true;
 		renderTargetDirty_ = false;
 		depthStencilDirty_ = false;
+	}
+
+	if (viewportDirty_)
+	{
+		VkViewport vkViewport;
+		vkViewport.x = viewport_.Left();
+		vkViewport.y = viewport_.Top() + viewport_.Height();
+		vkViewport.width = viewport_.Width();
+		vkViewport.height = -viewport_.Height();
+		vkViewport.minDepth = 0.0f;
+		vkViewport.maxDepth = 1.0f;
+		vkCmdSetViewport(vkCmdBuffer_, 0, 1, &vkViewport);
+
 		viewportDirty_ = false;
+	}
+
+	if (scissorRectDirty_)
+	{
+		VkRect2D vkRect;
+		vkRect.offset.x = viewport_.Left();
+		vkRect.offset.y = viewport_.Top();
+		vkRect.extent.width = viewport_.Width();
+		vkRect.extent.height = viewport_.Height();
+		vkCmdSetScissor(vkCmdBuffer_, 0, 1, &vkRect);
+
+		scissorRectDirty_ = false;
 	}
 }
 
@@ -1052,7 +1061,7 @@ void GfxDeviceVulkan::PrepareDynamicState(VkPipelineDynamicStateCreateInfo& vkPD
 	vkPDSCI.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 	vkPDSCI.pNext = nullptr;
 	vkPDSCI.flags = 0;
-	vkPDSCI.dynamicStateCount = 4;
+	vkPDSCI.dynamicStateCount = ARRAY_COUNT(dynamicStates);
 	vkPDSCI.pDynamicStates = dynamicStates;
 }
 

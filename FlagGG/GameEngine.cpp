@@ -74,6 +74,10 @@ void GameEngine::RunFrame()
 		RenderEngine::Instance().Render(viewport);
 	}
 
+	GetSubsystem<UISystem>()->Render();
+
+	GetSubsystem<EventManager>()->SendEvent<Frame::RENDER_UPDATE_HANDLER>(timeStep);
+
 	WindowDevice::Render();
 
 	GfxDevice::GetDevice()->EndFrame();

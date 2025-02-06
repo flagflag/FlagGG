@@ -112,7 +112,8 @@ public:
 	{
 		if (platformFont_)
 		{
-			platform_font_factory()->DestroyPlatformFont(platformFont_);
+			if (platform_font_factory())
+				platform_font_factory()->DestroyPlatformFont(platformFont_);
 			platformFont_ = nullptr;
 		}
 	}

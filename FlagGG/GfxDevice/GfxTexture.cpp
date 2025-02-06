@@ -1,4 +1,5 @@
 #include "GfxTexture.h"
+#include "Math/Math.h"
 
 namespace FlagGG
 {
@@ -42,7 +43,7 @@ void GfxTexture::SetDepth(UInt32 depth)
 
 void GfxTexture::SetLayers(UInt32 layers)
 {
-	textureDesc_.layers_ = layers;
+	textureDesc_.layers_ = Max(layers, 1u);
 }
 
 void GfxTexture::SetCube(bool cube)

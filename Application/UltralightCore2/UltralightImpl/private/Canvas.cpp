@@ -286,14 +286,12 @@ public:
 	{
 		clipRect_ = rect;
 		inverse_ = inverse;
-		useClipRounededRect_ = false;
 	}
 
 	virtual void SetClip(const RoundedRect& rrect, bool inverse) override
 	{
 		clipRoundedRect_ = rrect;
 		inverse_ = inverse;
-		useClipRounededRect_ = true;
 	}
 
 	virtual void SetClip(RefPtr<Path> path, FillRule rule, bool inverse) override
@@ -745,7 +743,8 @@ public:
 			data3to6[0],
 			data3to6[1],
 			data3to6[2],
-			data3to6[3]
+			data3to6[3],
+			Vector2(x1, y1), Vector2(x1, y2), Vector2(x2, y2)
 		);
 
 		batch->AddTriangle(
@@ -760,8 +759,13 @@ public:
 			data3to6[0],
 			data3to6[1],
 			data3to6[2],
-			data3to6[3]
+			data3to6[3],
+			Vector2(x1, y1), Vector2(x2, y2), Vector2(x2, y1)
 		);
+
+		Matrix transform;
+		transform.SetIdentity();
+		ApplySoftwareClip(batch, transform);
 
 		EndBatch(batch);
 	}
@@ -799,10 +803,10 @@ public:
 		float uvX2 = src.right / texture->GetWidth();
 		float uvY2 = src.bottom / texture->GetHeight();
 
-		float objectX1 = dest.left;
-		float objectY1 = dest.top;
-		float objectX2 = dest.right;
-		float objectY2 = dest.bottom;
+		float objectX1 = src.left;
+		float objectY1 = src.top;
+		float objectX2 = src.right;
+		float objectY2 = src.bottom;
 
 		UInt32 color32 = FlagGG::Color::WHITE.ToUInt();
 
@@ -840,7 +844,9 @@ public:
 			Vector2(objectX1, objectY1), Vector2(objectX2, objectY2), Vector2(objectX2, objectY1)
 		);
 
-		ApplySoftwareClip(batch);
+		Matrix transform;
+		transform.SetIdentity();
+		ApplySoftwareClip(batch, transform);
 
 		EndBatch(batch);
 	}
@@ -880,20 +886,50 @@ protected:
 			GetSubsystem<ultralight::RenderContext>()->GetCallStackBatches()->Push(batch);
 	}
 
-	void ApplySoftwareClip(BatchWebKit* batch)
+	float PackRaddi(float raddiX, float raddiY)
 	{
-		if (clipRect_.left == 0 && clipRect_.top == 0 && clipRect_.right == width_ && clipRect_.bottom == height_)
-			return;
+		return 65536.0f * raddiX + raddiY;
+	}
 
-		if (clipRect_.IsEmpty())
-			return;
+	void ApplySoftwareClip(BatchWebKit* batch, const Matrix& transform)
+	{
+		if (!clipRoundedRect_.rect.IsEmpty())
+		{
+			const Rect& rect = clipRoundedRect_.rect;
+			const auto& raddiX = clipRoundedRect_.radii_x;
+			const auto& raddiY = clipRoundedRect_.radii_y;
 
-		batch->clipArray_.Push(Matrix4(
-			clipRect_.left,                   0, mat_.data[0][0], mat_.data[3][0],
-			clipRect_.top,                    0, mat_.data[0][1], mat_.data[3][1],
-			clipRect_.right - clipRect_.left, 0, mat_.data[1][0], inverse_ ? 1 : 0,
-			clipRect_.bottom - clipRect_.top, 0, mat_.data[1][1], 0
-		));
+			float sizeX = rect.right - rect.left;
+			float sizeY = rect.bottom - rect.top;
+			float originX = rect.left + sizeX * 0.5f;
+			float originY = rect.top + sizeY * 0.5f;
+
+			batch->clipArray_.Push(Matrix4(
+				originX, originY, sizeX, sizeY,
+				PackRaddi(raddiX[0], raddiY[0]), PackRaddi(raddiX[1], raddiY[1]), PackRaddi(raddiX[2], raddiY[2]), PackRaddi(raddiX[3], raddiY[3]),
+				transform.data[0][0], transform.data[0][1], transform.data[1][0], transform.data[1][1],
+				transform.data[3][0], transform.data[3][1], inverse_ ? 1 : 0, 0
+			));
+		}
+		else if (!clipRect_.IsEmpty())
+		{
+			if (clipRect_.left == 0 && clipRect_.top == 0 && clipRect_.right == width_ && clipRect_.bottom == height_)
+				return;
+
+			const Rect& rect = clipRect_;
+
+			float sizeX = rect.right - rect.left;
+			float sizeY = rect.bottom - rect.top;
+			float originX = rect.left;
+			float originY = rect.top;
+
+			batch->clipArray_.Push(Matrix4(
+				originX, originY, sizeX, sizeY,
+				PackRaddi(0, 0), PackRaddi(0, 0), PackRaddi(0, 0), PackRaddi(0, 0),
+				transform.data[0][0], transform.data[0][1], transform.data[1][0], transform.data[1][1],
+				transform.data[3][0], transform.data[3][1], inverse_ ? 1 : 0, 0
+			));
+		}
 	}
 
 private:
@@ -928,8 +964,6 @@ private:
 	RoundedRect clipRoundedRect_{};
 
 	bool inverse_{};
-
-	bool useClipRounededRect_{};
 
 #if !APP_CORE_FOR_ENGINE
 // for gpu rendering:

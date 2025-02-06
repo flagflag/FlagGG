@@ -54,6 +54,9 @@ public:
 	// 设置Quad四个角的颜色
 	void SetColor(UIQuadCorner corner, const Color& color);
 
+	// 设置ui纹理
+	void SetTexture(Texture2D* texture);
+
 	// 创建孩子节点
 	UIElement* CreateChild();
 
@@ -78,6 +81,9 @@ private:
 
 	// Quad四个角的颜色
 	Color colors_[UInt32(UIQuadCorner::MAX)];
+
+	// Texture
+	SharedPtr<Texture2D> texture_;
 };
 
 }

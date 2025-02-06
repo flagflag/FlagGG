@@ -35,6 +35,8 @@ public:
 
 	void Initialize();
 
+	void Render();
+
 	void Render(UIElement* uiElement);
 
 	void RenderWebKit(GfxRenderSurface* renderSurface, const Rect& viewport, const Vector<SharedPtr<Batch>>& uiBatches);

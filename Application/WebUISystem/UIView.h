@@ -25,6 +25,7 @@ namespace FlagGG
 class Window;
 class Viewport;
 class GfxRenderSurface;
+class Texture2D;
 class UIElement;
 struct RenderUITree;
 class KeyState;
@@ -57,7 +58,7 @@ public:
 	Real GetBackgroundTransparency() const { return backgroundTransparency_; }
 
 	// 获取渲染的RT
-	GfxRenderSurface* GetRenderSurface() { return renderSurface_; }
+	Texture2D* GetRenderTexture() { return renderTexture_; }
 
 	// 收集ui渲染树（作为事件，由UISystem调用）
 	void GatherRenderUITrees(Vector<RenderUITree>& renderUITrees);
@@ -100,6 +101,8 @@ private:
 	SharedPtr<Window> window_;
 
 	SharedPtr<Viewport> viewport_;
+
+	SharedPtr<Texture2D> renderTexture_;
 
 	SharedPtr<GfxRenderSurface> renderSurface_;
 

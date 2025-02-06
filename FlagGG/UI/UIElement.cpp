@@ -63,6 +63,11 @@ void UIElement::SetColor(UIQuadCorner corner, const Color& color)
 	colors_[UInt32(corner)] = color;
 }
 
+void UIElement::SetTexture(Texture2D* texture)
+{
+	texture_ = texture;
+}
+
 UIElement* UIElement::CreateChild()
 {
 	SharedPtr<UIElement> uiElement(new UIElement());
@@ -95,7 +100,7 @@ void UIElement::UpdateBatch(VertexVector* vertexVector, Vector<SharedPtr<Batch>>
 
 	batch->AddTriangle(
 		Vector2(x1, y1), Vector2(x1, y2), Vector2(x2, y2),
-		Vector2(0, 0), Vector2(1, 0), Vector2(1, 1),
+		Vector2(0, 0), Vector2(0, 1), Vector2(1, 1),
 		colors_[UInt32(UIQuadCorner::TOPLEFT)].ToUInt(),
 		colors_[UInt32(UIQuadCorner::BOTTOMLEFT)].ToUInt(),
 		colors_[UInt32(UIQuadCorner::BOTTOMRIGHT)].ToUInt()
@@ -103,11 +108,13 @@ void UIElement::UpdateBatch(VertexVector* vertexVector, Vector<SharedPtr<Batch>>
 
 	batch->AddTriangle(
 		Vector2(x1, y1), Vector2(x2, y2), Vector2(x2, y1),
-		Vector2(0, 0), Vector2(1, 1), Vector2(0, 1),
+		Vector2(0, 0), Vector2(1, 1), Vector2(1, 0),
 		colors_[UInt32(UIQuadCorner::TOPLEFT)].ToUInt(),
 		colors_[UInt32(UIQuadCorner::BOTTOMRIGHT)].ToUInt(),
 		colors_[UInt32(UIQuadCorner::TOPRIGHT)].ToUInt()
 	);
+
+	batch->SetTexture(texture_);
 
 	uiBatches.Push(batch);
 }

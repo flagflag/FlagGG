@@ -109,6 +109,17 @@ void UISystem::UpdateBatches(UIElement* element, VertexVector* vertexVector, Vec
 	}
 }
 
+void UISystem::Render()
+{
+	for (auto& it : batchRenderDataMap_)
+	{
+		if (!it.second_.manualRender_)
+		{
+			it.second_.Render(defaultTexture_, materialParameters_, it.second_.backgroundTransparency_);
+		}
+	}
+}
+
 void UISystem::Render(UIElement* uiElement)
 {
 	auto* batchRenderData = batchRenderDataMap_.TryGetValue(SharedPtr<UIElement>(uiElement));
@@ -124,6 +135,7 @@ void UISystem::RenderWebKit(GfxRenderSurface* renderSurface, const Rect& viewpor
 	batchRenderData.renderSurface_ = renderSurface;
 	batchRenderData.viewport_ = viewport;
 	batchRenderData.batches_ = uiBatches;
+	batchRenderData.manualRender_ = true;
 	batchRenderData.webKitRendering_ = true;
 	batchRenderData.BuildVertexBuffer();
 	batchRenderData.Render(defaultTexture_, materialParameters_, 1.0f);

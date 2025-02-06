@@ -17,6 +17,7 @@
 #include <FileSystem/FileHandle/LocalFileHandle.h>
 #include <Memory/MemoryHook.h>
 #include <WebUISystem/UIView.h>
+#include <GfxDevice/GfxSwapChain.h>
 
 #include <fstream>
 
@@ -82,8 +83,25 @@ public:
 
 	void CreateWebUIFromURL(const String& url)
 	{
+#if 1
 		uiView_ = new UIView(window_);
 		uiView_->LoadUrl(url);
+#else
+		uiView_ = new UIView(window_->GetWidth(), window_->GetHeight());
+		uiView_->LoadUrl(url);
+
+		//window_->CreateUIElement();
+		//auto* uiRoot = window_->GetUIElement();
+		//uiRoot->SetColor(Color::WHITE);
+		//uiRoot->SetTexture(uiView_->GetRenderTexture());
+
+		GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(Frame::RENDER_UPDATE, UITestApp::RenderUpdate, this));
+#endif
+	}
+
+	void RenderUpdate(Real timeStep)
+	{
+		window_->GetSwapChain()->CopyData(uiView_->GetRenderTexture()->GetGfxTextureRef());
 	}
 
 	void CreateWebUIFromFile(const String& htmlPath)
