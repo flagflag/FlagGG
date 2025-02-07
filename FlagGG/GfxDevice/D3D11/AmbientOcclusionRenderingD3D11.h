@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "GfxDevice/AmbientOcclusionRendering.h"
+#include "Graphics/AmbientOcclusionRendering.h"
 
 #define GFSDK_SSAO 1
 

@@ -4,11 +4,12 @@
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Texture2D.h"
 #include "Graphics/Shader.h"
+#include "Graphics/AmbientOcclusionRendering.h"
+#include "Graphics/AmbientOcclusionRenderingSoftware.h"
 #include "GfxDevice/GfxDevice.h"
 #include "GfxDevice/GfxRenderSurface.h"
 #include "GfxDevice/GfxTexture.h"
 #include "GfxDevice/GfxSwapChain.h"
-#include "GfxDevice/AmbientOcclusionRendering.h"
 #include "Core/EngineSettings.h"
 
 namespace FlagGG
@@ -189,7 +190,15 @@ void DeferredRenderPipline::Render()
 	if (GetSubsystem<EngineSettings>()->renderAO_)
 	{
 		if (!aoRendering_)
+		{
 			aoRendering_ = gfxDevice->CreateAmbientOcclusionRendering();
+			
+			// 使用软件ssao
+			if (aoRendering_ == nullptr)
+			{
+				aoRendering_ = new AmbientOcclusionRenderingSoftware();
+			}
+		}
 
 		AmbientOcclusionInputData inputData;
 		inputData.depthTexture_ = depthTexture_->GetGfxTextureRef();
