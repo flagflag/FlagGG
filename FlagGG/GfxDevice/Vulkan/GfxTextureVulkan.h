@@ -13,6 +13,7 @@
 namespace FlagGG
 {
 
+class GfxShaderResourceViewVulkan;
 class GfxRenderSurfaceVulkan;
 
 class GfxTextureVulkan : public GfxTexture
@@ -38,6 +39,8 @@ public:
 	// 更新纹理数据
 	void UpdateTexture(GfxTexture* gfxTexture) override;
 
+	// 获取子资源的视图
+	GfxShaderResourceView* GetGetSubResourceView(UInt32 index, UInt32 level) override;
 
 	// 获取texute2d的render surface
 	GfxRenderSurface* GetRenderSurface() const override;
@@ -45,7 +48,7 @@ public:
 	// 获取render surface
 	// 1.TextureArray，index传入array的下标
 	// 2.TextureCube，index传入cube的face
-	GfxRenderSurface* GetRenderSurface(UInt32 index) const override;
+	GfxRenderSurface* GetRenderSurface(UInt32 index, UInt32 level) const override;
 
 	// 内存同步
 	void ImageMemoryBarrier(VkCommandBuffer vkCmdBuffer, VkImageLayout vkImageLayout);
@@ -98,6 +101,9 @@ private:
 
 	// Compute写 => StorageView
 	VkImageView vkStorageView_;
+
+	// texture sub resource view
+	Vector<SharedPtr<GfxShaderResourceViewVulkan>> gfxTextureViews_;
 
 	// render surfaces
 	Vector<SharedPtr<GfxRenderSurfaceVulkan>> gfxRenderSurfaces_;

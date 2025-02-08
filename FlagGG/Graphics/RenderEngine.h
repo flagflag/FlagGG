@@ -121,8 +121,11 @@ public:
 	// 渲染RenderBatch
 	void DrawBatch(Camera* camera, const RenderBatch& renderBatch);
 
-	// 渲染Quad
+	// 渲染Quad（保持相机视图、投影等参数不变，将Quad铺满屏幕。一般用于延迟渲染光照pass）
 	void DrawQuad(Camera* camera);
+
+	// 渲染Quad（无视相机，Quad铺满屏幕。一般用于一些屏幕空间算法，例如：Hi-Z、SSR等）
+	void DrawQuad();
 
 	Matrix3x4 GetFullscreenQuadTransform(Camera* camera);
 

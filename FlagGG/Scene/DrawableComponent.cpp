@@ -68,4 +68,9 @@ void DrawableComponent::SetHasLitPass(bool hasLitPass)
 	hasLitPass_ = hasLitPass;
 }
 
+void DrawableComponent::SetHiZVisibilityTestInfo(HiZVisibilityTestInfo* HiZTestInfo)
+{
+	HiZTestInfo_ = HiZTestInfo;
+}
+
 }

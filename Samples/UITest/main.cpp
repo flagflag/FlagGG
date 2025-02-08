@@ -120,7 +120,7 @@ public:
 
 	void OnKeyUp(KeyState* keyState, UInt32 keyCode)
 	{
-		if (keyCode == VK_ESCAPE)
+		if (keyState->GetSender() == window_ && keyCode == VK_ESCAPE)
 		{
 			isRunning_ = false;
 		}

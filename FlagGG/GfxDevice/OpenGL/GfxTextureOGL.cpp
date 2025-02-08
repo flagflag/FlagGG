@@ -325,7 +325,7 @@ GfxRenderSurface* GfxTextureOpenGL::GetRenderSurface() const
 	return gfxRenderSurfaces_.Size() ? gfxRenderSurfaces_[0] : nullptr;
 }
 
-GfxRenderSurface* GfxTextureOpenGL::GetRenderSurface(UInt32 index) const
+GfxRenderSurface* GfxTextureOpenGL::GetRenderSurface(UInt32 index, UInt32 level) const
 {
 	return index < gfxRenderSurfaces_.Size() ? gfxRenderSurfaces_[index] : nullptr;
 }

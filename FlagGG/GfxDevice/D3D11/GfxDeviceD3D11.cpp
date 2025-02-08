@@ -2,6 +2,7 @@
 #include "GfxD3D11Defines.h"
 #include "GfxSwapChainD3D11.h"
 #include "GfxTextureD3D11.h"
+#include "GfxShaderResourceViewD3D11.h"
 #include "GfxShaderD3D11.h"
 #include "GfxRenderSurfaceD3D11.h"
 #include "AmbientOcclusionRenderingD3D11.h"
@@ -164,6 +165,9 @@ GfxDeviceD3D11::GfxDeviceD3D11()
 	: GfxDevice()
 {
 	UINT createDeviceFlags = 0;
+#if _DEBUG
+	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
 
 	HRESULT hr = D3D11CreateDevice(
 		nullptr,
@@ -409,19 +413,16 @@ void GfxDeviceD3D11::PrepareDraw()
 	{
 		static ID3D11RenderTargetView* d3dRenderTargetViews[MAX_RENDERTARGET_COUNT] = {};
 
-		UInt32 renderTargetCount = 0u;
 		for (UInt32 slotID = 0; slotID < MAX_RENDERTARGET_COUNT; ++slotID)
 		{
 			auto renderTargetD3D11 = RTTICast<GfxRenderSurfaceD3D11>(renderTargets_[slotID]);
 			d3dRenderTargetViews[slotID] = renderTargetD3D11 ? renderTargetD3D11->GetRenderTargetView() : nullptr;
-			if (d3dRenderTargetViews[slotID])
-				renderTargetCount = slotID + 1;
 		}
 
 		auto depthStencilD3D11 = RTTICast<GfxRenderSurfaceD3D11>(depthStencil_);
 		auto* d3dDepthStencilView = depthStencilD3D11 ? depthStencilD3D11->GetDepthStencilView() : nullptr;
 
-		deviceContext_->OMSetRenderTargets(renderTargetCount, d3dRenderTargetViews, d3dDepthStencilView);
+		deviceContext_->OMSetRenderTargets(MAX_RENDERTARGET_COUNT, d3dRenderTargetViews, d3dDepthStencilView);
 
 		renderTargetDirty_ = false;
 		depthStencilDirty_ = false;
@@ -436,12 +437,22 @@ void GfxDeviceD3D11::PrepareDraw()
 
 		for (UInt32 i = 0; i < MAX_TEXTURE_CLASS; ++i)
 		{
-			auto currentTexture = RTTICast<GfxTextureD3D11>(textures_[i]);
-			if (currentTexture)
+			ID3D11ShaderResourceView* currentShaderResourceView = nullptr;
+
+			if (auto* textureViewD3D11 = RTTICast<GfxShaderResourceViewD3D11>(textureViews_[i]))
+			{
+				currentShaderResourceView = textureViewD3D11->GetD3D11ShaderResourceView();
+			}
+			else if (auto* textureD3D11 = RTTICast<GfxTextureD3D11>(textures_[i]))
+			{
+				currentShaderResourceView = textureD3D11->GetD3D11ShaderResourceView();
+			}
+
+			if (currentShaderResourceView)
 			{
 				if (vertexShaderD3D11->GetTextureDesc().Contains(i))
 				{
-					vertexShaderResourceView[i] = currentTexture->GetD3D11ShaderResourceView();
+					vertexShaderResourceView[i] = currentShaderResourceView;
 					vertexSamplerState[i] = GetD3D11SamplerState(samplers_[i]);
 				}
 				else
@@ -452,7 +463,7 @@ void GfxDeviceD3D11::PrepareDraw()
 
 				if (pixelShaderD3D11->GetTextureDesc().Contains(i))
 				{
-					pixelShaderResourceView[i] = currentTexture->GetD3D11ShaderResourceView();
+					pixelShaderResourceView[i] = currentShaderResourceView;
 					pixelSamplerState[i] = GetD3D11SamplerState(samplers_[i]);
 				}
 				else

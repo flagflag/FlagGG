@@ -6,6 +6,7 @@
 #include "Graphics/Shader.h"
 #include "Graphics/AmbientOcclusionRendering.h"
 #include "Graphics/AmbientOcclusionRenderingSoftware.h"
+#include "Graphics/HiZCulling.h"
 #include "GfxDevice/GfxDevice.h"
 #include "GfxDevice/GfxRenderSurface.h"
 #include "GfxDevice/GfxTexture.h"
@@ -153,16 +154,45 @@ void DeferredRenderPipline::Render()
 	RenderEngine* renderEngine = GetSubsystem<RenderEngine>();
 	GfxDevice* gfxDevice = GfxDevice::GetDevice();
 
+	bool HiZCullingEnable = GetSubsystem<EngineSettings>()->occlusionCullingType_ == OcclusionCullingType::HiZCulling;
+	if (HiZCullingEnable && HiZCulling_)
+	{
+		HiZCulling_->ClearGeometries();
+
+		for (auto* drawable : renderPiplineContext_.drawables_)
+		{
+			HiZCulling_->AddGeometry(drawable);
+		}
+
+		HiZCulling_->CalcGeometriesVisibility(renderPiplineContext_.camera_);
+
+		HiZVisibleDrawables_.Clear();
+
+		for (auto* drawable : renderPiplineContext_.drawables_)
+		{
+			if (HiZCulling_->IsGeometryVisible(drawable))
+			{
+				HiZVisibleDrawables_.Push(drawable);
+			}
+		}
+
+		renderPiplineContext_.drawables_.Swap(HiZVisibleDrawables_);
+	}
+
 	if (!renderPiplineContext_.camera_->GetUseReflection() && renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP))
 	{
+		auto* shadowMap = renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP);
+		gfxDevice->SetViewport(IntRect(0, 0, shadowMap->GetWidth(), shadowMap->GetHeight()));
 		gfxDevice->SetRenderTarget(nullptr);
-		gfxDevice->SetDepthStencil(renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP)->GetRenderSurface());
+		gfxDevice->SetDepthStencil(shadowMap->GetRenderSurface());
 		gfxDevice->Clear(CLEAR_DEPTH | CLEAR_STENCIL, Color::WHITE, 1.f, 0);
 
 		shadowRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 	}
 
 	AllocGBuffers();
+
+	gfxDevice->SetViewport(IntRect(0, 0, renderPiplineContext_.renderSolution_.x_, renderPiplineContext_.renderSolution_.y_));
 
 	// Pre-z pass
 	{
@@ -268,10 +298,20 @@ void DeferredRenderPipline::Render()
 		deferredLitRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 	}
 
+	gfxDevice->ResetTextures();
+	gfxDevice->ResetSamplers();
 	gfxDevice->SetDepthStencil(depthTexture_->GetRenderSurface());
 
 	waterRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 	alphaRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
+
+	if (HiZCullingEnable)
+	{
+		if (!HiZCulling_)
+			HiZCulling_ = new HiZCulling();
+		
+		HiZCulling_->BuildHiZMap(depthTexture_);
+	}
 
 	if (needRT)
 	{

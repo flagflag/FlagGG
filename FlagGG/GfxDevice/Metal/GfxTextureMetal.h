@@ -44,7 +44,7 @@ public:
 	// 获取render surface
 	// 1.TextureArray，index传入array的下标
 	// 2.TextureCube，index传入cube的face
-	GfxRenderSurface* GetRenderSurface(UInt32 index) const override;
+	GfxRenderSurface* GetRenderSurface(UInt32 index, UInt32 level) const override;
 
 	// 获取Metal纹理
 	mtlpp::Texture& GetMetalTexture() { return mtlTexture_; }

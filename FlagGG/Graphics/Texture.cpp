@@ -46,6 +46,11 @@ void Texture::SetSRGB(bool srgb)
 	gfxTexture_->SetSRGB(srgb);
 }
 
+void Texture::SetSubResourceViewEnabled(bool enable)
+{
+	gfxTexture_->SetSubResourceViewEnabled(enable);
+}
+
 void Texture::SetComparisonFunc(ComparisonFunc comparisonFunc)
 {
 	gfxSampler_->SetComparisonFunc(comparisonFunc);
@@ -64,6 +69,11 @@ Int32 Texture::GetHeight() const
 Int32 Texture::GetDepth() const
 {
 	return gfxTexture_->GetDesc().depth_;
+}
+
+UInt32 Texture::GetNumLevels() const
+{
+	return gfxTexture_->GetDesc().levels_;
 }
 
 bool Texture::IsCompressed() const
@@ -86,33 +96,9 @@ GfxRenderSurface* Texture::GetRenderSurface() const
 	return gfxTexture_->GetRenderSurface();
 }
 
-GfxRenderSurface* Texture::GetRenderSurface(UInt32 index) const
+GfxRenderSurface* Texture::GetRenderSurface(UInt32 index, UInt32 level) const
 {
-	return gfxTexture_->GetRenderSurface(index);
+	return gfxTexture_->GetRenderSurface(index, level);
 }
-
-//void Texture::Initialize()
-//{
-//	D3D11_SAMPLER_DESC samplerDesc;
-//	memset(&samplerDesc, 0, sizeof(samplerDesc));
-//	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-//	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-//	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-//	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-//	samplerDesc.MaxAnisotropy = 4;
-//	samplerDesc.MinLOD = -D3D11_FLOAT32_MAX;
-//	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-//	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-//
-//	HRESULT hr = RenderEngine::Instance()->GetDevice()->CreateSamplerState(&samplerDesc, &sampler_);
-//	if (hr != 0)
-//	{
-//		FLAGGG_LOG_ERROR("CreateSamplerState failed.");
-//
-//		SAFE_RELEASE(sampler_);
-//
-//		return;
-//	}
-//}
 
 }

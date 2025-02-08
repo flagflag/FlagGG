@@ -66,4 +66,9 @@ bool Context::IsInAsyncLoadingThread() const
     return UniqueThread::GetCurrentThreadId() == asyncLoadingThreadId_;
 }
 
+void Context::AddFrameNumber()
+{
+    ++frameNumber_;
+}
+
 }

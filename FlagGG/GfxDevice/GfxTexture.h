@@ -27,11 +27,13 @@ struct TextureDesc
 	UInt32 multiSample_{};
 	bool autoResolve_{};
 	bool sRGB_{};
+	bool subResourceViewEnable_{};   // 是否为纹理子资源创建视图（例如：为纹理的不同Mips创建TextureView）
 	TextureUsage usage_{};
 	TextureBindFlags bindFlags_{};
 	StorageMode storageMode_{};
 };
 
+class GfxShaderResourceView;
 class GfxRenderSurface;
 
 class FlagGG_API GfxTexture : public GfxObject
@@ -62,6 +64,9 @@ public:
 
 	// 设置纹理Cube
 	virtual void SetCube(bool cube);
+
+	// 是否为纹理子资源创建视图
+	virtual void SetSubResourceViewEnabled(bool enable);
 
 	// 设置纹理多重采样
 	virtual void SetMultiSample(UInt32 multiSample);
@@ -96,13 +101,19 @@ public:
 	// 回读GPU数据
 	virtual bool ReadBack(void* dataPtr, UInt32 index, UInt32 level);
 
+	// 回去GPU数据（某个Rect区域）
+	virtual bool ReadBackSubRegion(void* dataPtr, UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 width, UInt32 height);
+
+	// 获取子资源的视图
+	virtual GfxShaderResourceView* GetGetSubResourceView(UInt32 index, UInt32 level);
+
 	// 获取texute2d的render surface
 	virtual GfxRenderSurface* GetRenderSurface() const;
 
 	// 获取render surface
 	// 1.TextureArray，index传入array的下标
 	// 2.TextureCube，index传入cube的face
-	virtual GfxRenderSurface* GetRenderSurface(UInt32 index) const;
+	virtual GfxRenderSurface* GetRenderSurface(UInt32 index, UInt32 level) const;
 
 
 	// 获取纹理描述

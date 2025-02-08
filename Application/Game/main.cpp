@@ -27,6 +27,8 @@ void RunApplication(SetupFinish setupFinish)
 		GetSubsystem<EngineSettings>()->rendererType_ = RENDERER_TYPE_VULKAN;
 	if (CommandParam.Contains("cluster_light"))
 		GetSubsystem<EngineSettings>()->clusterLightEnabled_ = true;
+	if (CommandParam.Contains("close_hiz"))
+		GetSubsystem<EngineSettings>()->occlusionCullingType_ = OcclusionCullingType::None;
 
 	GameApplication app(CommandParam, setupFinish);
 	ApplicationInstance = &app;

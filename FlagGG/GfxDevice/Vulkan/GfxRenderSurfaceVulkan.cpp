@@ -5,12 +5,12 @@
 namespace FlagGG
 {
 
-GfxRenderSurfaceVulkan::GfxRenderSurfaceVulkan(GfxTextureVulkan* ownerTexture)
+GfxRenderSurfaceVulkan::GfxRenderSurfaceVulkan(GfxTextureVulkan* ownerTexture, VkImageView vkImageView)
 	: GfxRenderSurface(ownerTexture)
 	, width_(ownerTexture->GetDesc().width_)
 	, height_(ownerTexture->GetDesc().height_)
 	, vkFormat_(ownerTexture->GetVulkanFormat())
-	, vkImageView_(ownerTexture->GetVulkanImageView())
+	, vkImageView_(vkImageView)
 {
 }
 

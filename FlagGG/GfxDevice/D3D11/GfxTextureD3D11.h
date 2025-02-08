@@ -13,6 +13,7 @@
 namespace FlagGG
 {
 
+class GfxShaderResourceViewD3D11;
 class GfxRenderSurfaceD3D11;
 
 class GfxTextureD3D11 : public GfxTexture
@@ -41,6 +42,11 @@ public:
 	// 回读GPU数据
 	bool ReadBack(void* dataPtr, UInt32 index, UInt32 level) override;
 
+	// 回去GPU数据（某个Rect区域）
+	bool ReadBackSubRegion(void* dataPtr, UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 width, UInt32 height) override;
+
+	// 获取子资源的视图
+	GfxShaderResourceView* GetGetSubResourceView(UInt32 index, UInt32 level) override;
 
 	// 获取texute2d的render surface
 	GfxRenderSurface* GetRenderSurface() const override;
@@ -48,7 +54,7 @@ public:
 	// 获取render surface
 	// 1.TextureArray，index传入array的下标
 	// 2.TextureCube，index传入cube的face
-	GfxRenderSurface* GetRenderSurface(UInt32 index) const override;
+	GfxRenderSurface* GetRenderSurface(UInt32 index, UInt32 level) const override;
 
 	// 获取ID3D11ShaderResourceView*
 	ID3D11ShaderResourceView* GetD3D11ShaderResourceView() const { return shaderResourceView_; }
@@ -74,6 +80,9 @@ private:
 
 	// shader resource view
 	ID3D11ShaderResourceView* shaderResourceView_{};
+
+	// texture sub resource view
+	Vector<SharedPtr<GfxShaderResourceViewD3D11>> gfxTextureViews_;
 
 	// render surfaces
 	Vector<SharedPtr<GfxRenderSurfaceD3D11>> gfxRenderSurfaces_;

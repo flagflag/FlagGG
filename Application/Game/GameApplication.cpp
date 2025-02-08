@@ -82,7 +82,7 @@ void GameApplication::Start()
 
 	logModule_ = new LuaLog();
 	networkModule_ = new LuaNetwork();
-	gameplayModule_ = new LuaGamePlay();
+	gameplayModule_ = new LuaGamePlay(scene_);
 
 	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, GameApplication::Update, this));
 #ifdef _WIN32
@@ -116,6 +116,14 @@ void GameApplication::Start()
 	if (!luaVM_->Execute(luaCodePath + "local_game.lua"))
 	{
 		FLAGGG_LOG_ERROR("Failed to execute local_game.lua.");
+	}
+	if (commandParam_.Contains("unit_test"))
+	{
+		const String unitTestLua = commandParam_["unit_test"].GetString();
+		if (!luaVM_->Execute(luaCodePath + unitTestLua))
+		{
+			FLAGGG_LOG_STD_ERROR("Failed to execute %s.", unitTestLua.CString());
+		}
 	}
 #endif
 

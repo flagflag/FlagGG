@@ -72,11 +72,17 @@ public:
 
 	bool IsInAsyncLoadingThread() const;
 
+	void AddFrameNumber();
+
+	UInt32 GetFrameNumber() const { return frameNumber_; }
+
 private:
 	HashMap<String, SharedPtr<VariableWrapper>> wrappers_;
 
 	UInt64 gameThreadId_{};
 	UInt64 asyncLoadingThreadId_{};
+
+	UInt32 frameNumber_{};
 };
 
 }

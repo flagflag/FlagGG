@@ -84,6 +84,8 @@ void GameEngine::RunFrame()
 
 	GetSubsystem<EventManager>()->SendEvent<Frame::END_FRAME_HANDLER>(timeStep);
 
+	GetSubsystem<Context>()->AddFrameNumber();
+
 	Real sleepTime = 1000.0f / frameRate_ - timer_.GetMilliSeconds(false);
 	if (sleepTime > 0.0f)
 	{

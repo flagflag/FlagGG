@@ -1,6 +1,7 @@
 #include "GfxBufferD3D11.h"
 #include "GfxDeviceD3D11.h"
 #include "GfxD3D11Defines.h"
+#include "Memory/Memory.h"
 #include "Log.h"
 #include "Core/CryAssert.h"
 
@@ -66,7 +67,7 @@ void GfxBufferD3D11::Apply(const void* initialDataPtr)
 		byteCount += (16u - (byteCount % 16u));
 
 	D3D11_BUFFER_DESC desc;
-	memset(&desc, 0, sizeof(desc));
+	Memory::Memzero(&desc, sizeof(desc));
 	desc.BindFlags = bindFlags;
 	desc.CPUAccessFlags = accessFlags;
 	desc.Usage = d3d11Usage[gfxBufferDesc_.usage_];
@@ -170,7 +171,7 @@ void* GfxBufferD3D11::BeginWrite(UInt32 offset, UInt32 size)
 	if (gfxBufferDesc_.accessFlags_ & BUFFER_ACCESS_WRITE)
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedData;
-		memset(&mappedData, 0, sizeof mappedData);
+		Memory::Memzero(&mappedData, sizeof(mappedData));
 		HRESULT hr = GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext()->Map(d3d11Buffer_, 0, d3d11Map[gfxBufferDesc_.usage_], 0, &mappedData);
 		if (FAILED(hr) || !mappedData.pData)
 		{

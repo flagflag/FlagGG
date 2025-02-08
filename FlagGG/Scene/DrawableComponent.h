@@ -13,6 +13,14 @@ namespace FlagGG
 
 class OctreeNode;
 
+struct HiZVisibilityTestInfo : public RefCounted
+{
+	// 帧号
+	UInt32 frameNumber_;
+	// 裁剪测试后的可见性
+	bool visible_;
+};
+
 class FlagGG_API DrawableComponent : public Component
 {
 	OBJECT_OVERRIDE(DrawableComponent, Component);
@@ -66,6 +74,15 @@ public:
 	const Vector<RenderContext>& GetRenderContext() const { return renderContexts_; }
 
 protected:
+	// 设置Hi-Z可见性测试信息
+	void SetHiZVisibilityTestInfo(HiZVisibilityTestInfo* HiZTestInfo);
+
+	// 获取Hi-Z可见性测试信息
+	HiZVisibilityTestInfo* GetHiZVisibilityTestInfo() const { return HiZTestInfo_; }
+
+	friend class HiZCulling;
+
+protected:
 	BoundingBox worldBoundingBox_;
 
 	bool worldBoundingBoxDirty_{ true };
@@ -79,6 +96,9 @@ protected:
 	Vector<RenderContext> renderContexts_;
 
 	bool hasLitPass_{};
+
+	// Hi-Z可见性测试信息
+	SharedPtr<HiZVisibilityTestInfo> HiZTestInfo_;
 };
 
 }

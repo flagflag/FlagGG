@@ -1,5 +1,6 @@
 #include "GfxTextureD3D11.h"
 #include "GfxDeviceD3D11.h"
+#include "GfxShaderResourceViewD3D11.h"
 #include "GfxRenderSurfaceD3D11.h"
 #include "GfxD3D11Defines.h"
 #include "Memory/Memory.h"
@@ -162,7 +163,6 @@ GfxTextureD3D11::~GfxTextureD3D11()
 void GfxTextureD3D11::ReleaseTexture()
 {
 	D3D11_SAFE_RELEASE(resolveTexture_);
-	D3D11_SAFE_RELEASE(shaderResourceView_);
 	D3D11_SAFE_RELEASE(d3d11Texture2D_);
 	D3D11_SAFE_RELEASE(d3d11Texture3D_);
 
@@ -175,7 +175,7 @@ void GfxTextureD3D11::CreateTexture2D()
 	ID3D11Device* d3d11Device = gfxDevice->GetD3D11Device();
 
 	D3D11_TEXTURE2D_DESC textureDesc;
-	memset(&textureDesc, 0, sizeof textureDesc);
+	Memory::Memzero(&textureDesc, sizeof(textureDesc));
 	textureDesc.Format = textureDesc_.sRGB_ ? d3d11TextureFormatInfo[textureDesc_.format_].srgbFormat_ : d3d11TextureFormatInfo[textureDesc_.format_].format_;
 
 	if (textureDesc_.multiSample_ > 1 && gfxDevice->CheckMultiSampleSupport(textureDesc.Format, textureDesc_.multiSample_))
@@ -187,10 +187,6 @@ void GfxTextureD3D11::CreateTexture2D()
 	if (textureDesc_.usage_ == TEXTURE_DEPTHSTENCIL)
 	{
 		textureDesc_.levels_ = 1;
-	}
-	else if (textureDesc_.usage_ == TEXTURE_RENDERTARGET && textureDesc_.levels_ != 1 && textureDesc_.multiSample_ == 1)
-	{
-		textureDesc.MiscFlags |= D3D11_RESOURCE_MISC_GENERATE_MIPS;
 	}
 
 	textureDesc.Width = (UINT)textureDesc_.width_;
@@ -246,16 +242,18 @@ void GfxTextureD3D11::CreateTexture2D()
 
 	if (textureDesc.BindFlags & D3D11_BIND_SHADER_RESOURCE)
 	{
+		bool multiSample = (textureDesc_.multiSample_ > 1 && !textureDesc_.autoResolve_);
+
 		D3D11_SHADER_RESOURCE_VIEW_DESC resourceViewDesc;
-		memset(&resourceViewDesc, 0, sizeof resourceViewDesc);
+		Memory::Memzero(&resourceViewDesc, sizeof(resourceViewDesc));
 		resourceViewDesc.Format = textureDesc_.sRGB_ ? d3d11TextureFormatInfo[textureDesc_.format_].srgbFormat_ : d3d11TextureFormatInfo[textureDesc_.format_].srvFormat_;
 		if (textureDesc.ArraySize <= 1)
 		{
-			resourceViewDesc.ViewDimension = (textureDesc_.multiSample_ > 1 && !textureDesc_.autoResolve_) ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
+			resourceViewDesc.ViewDimension = multiSample ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
 		}
 		else
 		{
-			if (textureDesc_.multiSample_ > 1 && !textureDesc_.autoResolve_)
+			if (multiSample)
 			{
 				resourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY;
 				resourceViewDesc.Texture2DMSArray.ArraySize = textureDesc.ArraySize;
@@ -277,47 +275,198 @@ void GfxTextureD3D11::CreateTexture2D()
 			D3D11_SAFE_RELEASE(shaderResourceView_);
 			return;
 		}
+
+		if (textureDesc_.subResourceViewEnable_)
+		{
+			for (UInt32 index = 0; index < textureDesc.ArraySize; ++index)
+			{
+				if (multiSample)
+				{
+					Memory::Memzero(&resourceViewDesc, sizeof(resourceViewDesc));
+
+					if (textureDesc.ArraySize <= 1)
+						resourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
+					else
+					{
+						resourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY;
+						resourceViewDesc.Texture2DMSArray.FirstArraySlice = index;
+						resourceViewDesc.Texture2DMSArray.ArraySize = textureDesc.ArraySize;
+					}
+
+					ID3D11Resource* viewObject = resolveTexture_ ? resolveTexture_ : d3d11Texture2D_;
+					ID3D11ShaderResourceView* shaderResourceView = nullptr;
+					hr = d3d11Device->CreateShaderResourceView(viewObject, &resourceViewDesc, &shaderResourceView);
+					if (FAILED(hr))
+					{
+						FLAGGG_LOG_ERROR("Failed to create shader sub resource view.");
+						D3D11_SAFE_RELEASE(shaderResourceView);
+						return;
+					}
+
+					gfxTextureViews_.Push(MakeShared<GfxShaderResourceViewD3D11>(this, shaderResourceView));
+				}
+				else
+				{
+					UInt32 levels = textureDesc_.usage_ != TEXTURE_DYNAMIC ? textureDesc_.levels_ : 1;
+					for (UInt32 level = 0; level < levels; ++level)
+					{
+						Memory::Memzero(&resourceViewDesc, sizeof(resourceViewDesc));
+
+						if (textureDesc.ArraySize <= 1)
+						{
+							resourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+							resourceViewDesc.Texture2D.MostDetailedMip = level;
+							resourceViewDesc.Texture2D.MipLevels = 1;
+						}
+						else
+						{
+							resourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+							resourceViewDesc.Texture2DArray.MostDetailedMip = level;
+							resourceViewDesc.Texture2DArray.MipLevels = 1;
+							resourceViewDesc.Texture2DArray.FirstArraySlice = index;
+							resourceViewDesc.Texture2DArray.ArraySize = textureDesc.ArraySize;
+						}
+
+						ID3D11Resource* viewObject = resolveTexture_ ? resolveTexture_ : d3d11Texture2D_;
+						ID3D11ShaderResourceView* shaderResourceView = nullptr;
+						hr = d3d11Device->CreateShaderResourceView(viewObject, &resourceViewDesc, &shaderResourceView);
+						if (FAILED(hr))
+						{
+							FLAGGG_LOG_ERROR("Failed to create shader sub resource view.");
+							D3D11_SAFE_RELEASE(shaderResourceView);
+							return;
+						}
+
+						gfxTextureViews_.Push(MakeShared<GfxShaderResourceViewD3D11>(this, shaderResourceView));
+					}
+				}
+			}
+		}
 	}
 
 	if (textureDesc_.usage_ == TEXTURE_RENDERTARGET)
 	{
-		D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-		memset(&renderTargetViewDesc, 0, sizeof renderTargetViewDesc);
-		renderTargetViewDesc.Format = textureDesc.Format;
-		renderTargetViewDesc.ViewDimension = textureDesc_.multiSample_ > 1 ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
-
-		ID3D11RenderTargetView* renderTargetView;
-		hr = d3d11Device->CreateRenderTargetView(d3d11Texture2D_, &renderTargetViewDesc, &renderTargetView);
-		if (FAILED(hr))
+		for (UInt32 index = 0; index < textureDesc.ArraySize; ++index)
 		{
-			FLAGGG_LOG_ERROR("Failed to create rendertarget view.");
-			D3D11_SAFE_RELEASE(renderTargetView);
-			return;
-		}
+			if (textureDesc_.multiSample_ > 1)
+			{
+				D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+				Memory::Memzero(&renderTargetViewDesc, sizeof(renderTargetViewDesc));
+				renderTargetViewDesc.Format = textureDesc.Format;
+				renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+				if (textureDesc.ArraySize > 1)
+				{
+					renderTargetViewDesc.Texture2DMSArray.FirstArraySlice = index;
+					renderTargetViewDesc.Texture2DMSArray.ArraySize = 1;
+				}
 
-		SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this));
-		renderSurface->SetRenderTargetView(renderTargetView);
-		gfxRenderSurfaces_.Push(renderSurface);
+				ID3D11RenderTargetView* renderTargetView;
+				hr = d3d11Device->CreateRenderTargetView(d3d11Texture2D_, &renderTargetViewDesc, &renderTargetView);
+				if (FAILED(hr))
+				{
+					FLAGGG_LOG_ERROR("Failed to create rendertarget view.");
+					D3D11_SAFE_RELEASE(renderTargetView);
+					return;
+				}
+
+				SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this));
+				renderSurface->SetRenderTargetView(renderTargetView);
+				gfxRenderSurfaces_.Push(renderSurface);
+			}
+			else
+			{
+				for (UInt32 level = 0; level < textureDesc_.levels_; ++level)
+				{
+					D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+					Memory::Memzero(&renderTargetViewDesc, sizeof(renderTargetViewDesc));
+					renderTargetViewDesc.Format = textureDesc.Format;
+					renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+					if (textureDesc.ArraySize <= 1)
+						renderTargetViewDesc.Texture2D.MipSlice = level;
+					else
+					{
+						renderTargetViewDesc.Texture2DArray.MipSlice = level;
+						renderTargetViewDesc.Texture2DArray.FirstArraySlice = index;
+						renderTargetViewDesc.Texture2DArray.ArraySize = 1;
+					}
+
+					ID3D11RenderTargetView* renderTargetView;
+					hr = d3d11Device->CreateRenderTargetView(d3d11Texture2D_, &renderTargetViewDesc, &renderTargetView);
+					if (FAILED(hr))
+					{
+						FLAGGG_LOG_ERROR("Failed to create rendertarget view.");
+						D3D11_SAFE_RELEASE(renderTargetView);
+						return;
+					}
+
+					SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this));
+					renderSurface->SetRenderTargetView(renderTargetView);
+					gfxRenderSurfaces_.Push(renderSurface);
+				}
+			}
+		}
 	}
 	else if (textureDesc_.usage_ == TEXTURE_DEPTHSTENCIL)
 	{
-		D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
-		memset(&depthStencilViewDesc, 0, sizeof depthStencilViewDesc);
-		depthStencilViewDesc.Format = d3d11TextureFormatInfo[textureDesc_.format_].dsvFormat_;
-		depthStencilViewDesc.ViewDimension = textureDesc_.multiSample_ > 1 ? D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D;
-
-		ID3D11DepthStencilView* depthStencilView;
-		hr = d3d11Device->CreateDepthStencilView(d3d11Texture2D_, &depthStencilViewDesc, &depthStencilView);
-		if (FAILED(hr))
+		for (UInt32 index = 0; index < textureDesc.ArraySize; ++index)
 		{
-			FLAGGG_LOG_ERROR("Failed to create depth-stencil view.");
-			D3D11_SAFE_RELEASE(depthStencilView);
-			return;
-		}
+			if (textureDesc_.multiSample_ > 1)
+			{
+				D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+				Memory::Memzero(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
+				depthStencilViewDesc.Format = d3d11TextureFormatInfo[textureDesc_.format_].dsvFormat_;
+				depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+				if (textureDesc.ArraySize > 1)
+				{
+					depthStencilViewDesc.Texture2DMSArray.FirstArraySlice = index;
+					depthStencilViewDesc.Texture2DMSArray.ArraySize = 1;
+				}
 
-		SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this));
-		renderSurface->SetDepthStencilView(depthStencilView);
-		gfxRenderSurfaces_.Push(renderSurface);
+				ID3D11DepthStencilView* depthStencilView;
+				hr = d3d11Device->CreateDepthStencilView(d3d11Texture2D_, &depthStencilViewDesc, &depthStencilView);
+				if (FAILED(hr))
+				{
+					FLAGGG_LOG_ERROR("Failed to create depth-stencil view.");
+					D3D11_SAFE_RELEASE(depthStencilView);
+					return;
+				}
+
+				SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this));
+				renderSurface->SetDepthStencilView(depthStencilView);
+				gfxRenderSurfaces_.Push(renderSurface);
+			}
+			else
+			{
+				for (UInt32 level = 0; level < textureDesc_.levels_; ++level)
+				{
+					D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+					Memory::Memzero(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
+					depthStencilViewDesc.Format = d3d11TextureFormatInfo[textureDesc_.format_].dsvFormat_;
+					depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+					if (textureDesc.ArraySize <= 1)
+						depthStencilViewDesc.Texture2D.MipSlice = level;
+					else
+					{
+						depthStencilViewDesc.Texture2DArray.MipSlice = level;
+						depthStencilViewDesc.Texture2DArray.FirstArraySlice = index;
+						depthStencilViewDesc.Texture2DArray.ArraySize = 1;
+					}
+
+					ID3D11DepthStencilView* depthStencilView;
+					hr = d3d11Device->CreateDepthStencilView(d3d11Texture2D_, &depthStencilViewDesc, &depthStencilView);
+					if (FAILED(hr))
+					{
+						FLAGGG_LOG_ERROR("Failed to create depth-stencil view.");
+						D3D11_SAFE_RELEASE(depthStencilView);
+						return;
+					}
+
+					SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this));
+					renderSurface->SetDepthStencilView(depthStencilView);
+					gfxRenderSurfaces_.Push(renderSurface);
+				}
+			}
+		}
 
 		//if (d3d11Device->GetFeatureLevel() >= D3D_FEATURE_LEVEL_11_0)
 		//{
@@ -339,7 +488,7 @@ void GfxTextureD3D11::CreateTexture3D()
 	ID3D11Device* d3d11Device = gfxDevice->GetD3D11Device();
 
 	D3D11_TEXTURE3D_DESC textureDesc;
-	memset(&textureDesc, 0, sizeof textureDesc);
+	Memory::Memzero(&textureDesc, sizeof(textureDesc));
 	textureDesc.Width = (UINT)textureDesc_.width_;
 	textureDesc.Height = (UINT)textureDesc_.height_;
 	textureDesc.Depth = (UINT)textureDesc_.depth_;
@@ -358,7 +507,7 @@ void GfxTextureD3D11::CreateTexture3D()
 	}
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC resourceViewDesc;
-	memset(&resourceViewDesc, 0, sizeof resourceViewDesc);
+	Memory::Memzero(&resourceViewDesc, sizeof(resourceViewDesc));
 	resourceViewDesc.Format = d3d11TextureFormatInfo[textureDesc_.format_].srvFormat_;
 	resourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
 	resourceViewDesc.Texture3D.MipLevels = textureDesc_.usage_ != TEXTURE_DYNAMIC ? (UINT)textureDesc_.levels_ : 1;
@@ -377,18 +526,13 @@ void GfxTextureD3D11::CreateTextureCube()
 	ID3D11Device* d3d11Device = gfxDevice->GetD3D11Device();
 
 	D3D11_TEXTURE2D_DESC textureDesc;
-	memset(&textureDesc, 0, sizeof textureDesc);
+	Memory::Memzero(&textureDesc, sizeof(textureDesc));
 	textureDesc.Format = textureDesc_.sRGB_ ? d3d11TextureFormatInfo[textureDesc_.format_].srgbFormat_ : d3d11TextureFormatInfo[textureDesc_.format_].format_;
 
 	if (textureDesc_.multiSample_ > 1 && gfxDevice->CheckMultiSampleSupport(textureDesc.Format, textureDesc_.multiSample_))
 	{
 		textureDesc_.multiSample_ = 1;
 		textureDesc_.autoResolve_ = false;
-	}
-
-	if (textureDesc_.usage_ == TEXTURE_RENDERTARGET && textureDesc_.levels_ != 1 && textureDesc_.multiSample_ == 1)
-	{
-		textureDesc.MiscFlags |= D3D11_RESOURCE_MISC_GENERATE_MIPS;
 	}
 
 	textureDesc.Width = (UINT)textureDesc_.width_;
@@ -443,7 +587,7 @@ void GfxTextureD3D11::CreateTextureCube()
 	}
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC resourceViewDesc;
-	memset(&resourceViewDesc, 0, sizeof resourceViewDesc);
+	Memory::Memzero(&resourceViewDesc, sizeof(resourceViewDesc));
 	resourceViewDesc.Format = d3d11TextureFormatInfo[textureDesc_.format_].srvFormat_;
 	resourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
 	resourceViewDesc.Texture2D.MipLevels = textureDesc_.usage_ != TEXTURE_DYNAMIC ? (UINT)textureDesc_.levels_ : 1;
@@ -462,7 +606,7 @@ void GfxTextureD3D11::CreateTextureCube()
 		for (UInt32 i = 0; i < MAX_CUBEMAP_FACES; ++i)
 		{
 			D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-			memset(&renderTargetViewDesc, 0, sizeof renderTargetViewDesc);
+			Memory::Memzero(&renderTargetViewDesc, sizeof(renderTargetViewDesc));
 			renderTargetViewDesc.Format = textureDesc.Format;
 			if (textureDesc_.multiSample_ > 1)
 			{
@@ -674,15 +818,20 @@ void GfxTextureD3D11::UpdateTexture(GfxTexture* gfxTexture)
 
 bool GfxTextureD3D11::ReadBack(void* dataPtr, UInt32 index, UInt32 level)
 {
+	return ReadBackSubRegion(dataPtr, index, level, 0, 0, textureDesc_.width_, textureDesc_.height_);
+}
+
+bool GfxTextureD3D11::ReadBackSubRegion(void* dataPtr, UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 width, UInt32 height)
+{
 	auto* gfxDevice = GetSubsystem<GfxDeviceD3D11>();
 	auto* d3d11Device = GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device();
 	auto* d3d11DeviceContext = GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext();
 
 	D3D11_TEXTURE2D_DESC textureDesc;
-	memset(&textureDesc, 0, sizeof textureDesc);
+	Memory::Memzero(&textureDesc, sizeof(textureDesc));
 	textureDesc.Format = textureDesc_.sRGB_ ? d3d11TextureFormatInfo[textureDesc_.format_].srgbFormat_ : d3d11TextureFormatInfo[textureDesc_.format_].format_;
-	textureDesc.Width = (UINT)textureDesc_.width_;
-	textureDesc.Height = (UINT)textureDesc_.height_;
+	textureDesc.Width = (UINT)width;
+	textureDesc.Height = (UINT)height;
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
 	textureDesc.SampleDesc.Count = 1;
@@ -699,21 +848,30 @@ bool GfxTextureD3D11::ReadBack(void* dataPtr, UInt32 index, UInt32 level)
 		return false;
 	}
 
-	d3d11DeviceContext->CopyResource(copyTexture, GetD3D11Resource());
+	UInt32 copySubResource = D3D11CalcSubresource(level, index, textureDesc_.levels_);
+	UInt32 subResource = D3D11CalcSubresource(0, 0, 1);
 
-	UInt32 subResource = D3D11CalcSubresource(level, index, 1);
+	D3D11_BOX copyBox;
+	copyBox.left = x;
+	copyBox.top = y;
+	copyBox.right = x + width;
+	copyBox.bottom = y + height;
+	copyBox.front = 0;
+	copyBox.back = 1;
+
+	d3d11DeviceContext->CopySubresourceRegion(copyTexture, subResource, 0, 0, 0, GetD3D11Resource(), copySubResource, &copyBox);
 
 	D3D11_MAPPED_SUBRESOURCE mapped;
 	d3d11DeviceContext->Map(copyTexture, subResource, D3D11_MAP_READ, 0, &mapped);
 
-	UInt32 rowDataSize = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, textureDesc_.width_);
+	UInt32 destRowDataSize = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, width);
 	const char* srcPtr = (const char*)mapped.pData;
-	char* destPtr      = (char*)dataPtr;
-	for (UInt32 row = 0; row < textureDesc_.height_; ++row)
+	char* destPtr = (char*)dataPtr;
+	for (UInt32 row = 0; row < height; ++row)
 	{
-		Memory::Memcpy(destPtr, srcPtr, rowDataSize);
-		srcPtr  += mapped.RowPitch;
-		destPtr += rowDataSize;
+		Memory::Memcpy(destPtr, srcPtr, destRowDataSize);
+		srcPtr += mapped.RowPitch;
+		destPtr += destRowDataSize;
 	}
 
 	d3d11DeviceContext->Unmap(copyTexture, subResource);
@@ -723,14 +881,23 @@ bool GfxTextureD3D11::ReadBack(void* dataPtr, UInt32 index, UInt32 level)
 	return true;
 }
 
+GfxShaderResourceView* GfxTextureD3D11::GetGetSubResourceView(UInt32 index, UInt32 level)
+{
+	UInt32 layers = textureDesc_.isCube_ ? 6 : textureDesc_.layers_;
+	UInt32 arrayIndex = index * layers + level;
+	return arrayIndex < gfxTextureViews_.Size() ? gfxTextureViews_[arrayIndex] : nullptr;
+}
+
 GfxRenderSurface* GfxTextureD3D11::GetRenderSurface() const
 {
 	return gfxRenderSurfaces_.Size() ? gfxRenderSurfaces_[0] : nullptr;
 }
 
-GfxRenderSurface* GfxTextureD3D11::GetRenderSurface(UInt32 index) const
+GfxRenderSurface* GfxTextureD3D11::GetRenderSurface(UInt32 index, UInt32 level) const
 {
-	return index < gfxRenderSurfaces_.Size() ? gfxRenderSurfaces_[index] : nullptr;
+	UInt32 layers = textureDesc_.isCube_ ? 6 : textureDesc_.layers_;
+	UInt32 arrayIndex = index * layers + level;
+	return arrayIndex < gfxRenderSurfaces_.Size() ? gfxRenderSurfaces_[arrayIndex] : nullptr;
 }
 
 ID3D11Resource* GfxTextureD3D11::GetD3D11Resource() const

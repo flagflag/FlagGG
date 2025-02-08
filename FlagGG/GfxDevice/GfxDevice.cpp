@@ -2,6 +2,7 @@
 #include "GfxDevice/GfxRenderSurface.h"
 #include "GfxDevice/GfxBuffer.h"
 #include "GfxDevice/GfxTexture.h"
+#include "GfxDevice/GfxShaderResourceView.h"
 #include "GfxDevice/GfxShader.h"
 #include "GfxDevice/GfxSampler.h"
 #include "GfxDevice/VertexDescFactory.h"
@@ -35,14 +36,8 @@ void GfxDevice::BeginFrame()
 	pixelShader_.Reset();
 	computeShader_.Reset();
 	ResetBuffers();
-	for (auto& texture : textures_)
-	{
-		texture.Reset();
-	}
-	for (auto& sampler : samplers_)
-	{
-		sampler.Reset();
-	}
+	ResetTextures();
+	ResetSamplers();
 	rasterizerState_ = RasterizerState();
 	depthStencilState_ = DepthStencilState();
 	rasterizerStateDirty_ = depthStencilStateDirty_ = true;
@@ -169,8 +164,10 @@ void GfxDevice::ResetComputeBuffers()
 {
 	for (auto& it : computeBuffers_)
 	{
-		it = nullptr;
+		it.Reset();
 	}
+
+	computeBufferDirty_ = true;
 }
 
 void GfxDevice::SetComputeBuffer(UInt8 slotID, GfxBuffer* gfxComputeBuffer, ComputeBindAccess bindFlags)
@@ -188,8 +185,10 @@ void GfxDevice::ResetBuffers()
 {
 	for (auto& it : buffers_)
 	{
-		it = nullptr;
+		it.Reset();
 	}
+
+	buffersDirty_ = true;
 }
 
 void GfxDevice::SetBuffer(UInt8 slotID, GfxBuffer* gfxBuffer)
@@ -202,6 +201,21 @@ void GfxDevice::SetBuffer(UInt8 slotID, GfxBuffer* gfxBuffer)
 	}
 }
 
+void GfxDevice::ResetTextures()
+{
+	for (auto& it : textures_)
+	{
+		it.Reset();
+	}
+
+	for (auto& textureView : textureViews_)
+	{
+		textureView.Reset();
+	}
+
+	texturesDirty_ = true;
+}
+
 void GfxDevice::SetTexture(UInt32 slotID, GfxTexture* gfxTexture)
 {
 	if (slotID < MAX_TEXTURE_CLASS)
@@ -209,6 +223,25 @@ void GfxDevice::SetTexture(UInt32 slotID, GfxTexture* gfxTexture)
 		textures_[slotID] = gfxTexture;
 		texturesDirty_ = true;
 	}
+}
+
+void GfxDevice::SetTextureView(UInt32 slotID, GfxShaderResourceView* gfxTextureView)
+{
+	if (slotID < MAX_TEXTURE_CLASS)
+	{
+		textureViews_[slotID] = gfxTextureView;
+		texturesDirty_ = true;
+	}
+}
+
+void GfxDevice::ResetSamplers()
+{
+	for (auto& it : samplers_)
+	{
+		it.Reset();
+	}
+
+	samplerDirty_ = true;
 }
 
 void GfxDevice::SetSampler(UInt32 slotID, GfxSampler* gfxSampler)

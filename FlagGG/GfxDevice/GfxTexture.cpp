@@ -51,6 +51,11 @@ void GfxTexture::SetCube(bool cube)
 	textureDesc_.isCube_ = cube;
 }
 
+void GfxTexture::SetSubResourceViewEnabled(bool enable)
+{
+	textureDesc_.subResourceViewEnable_ = enable;
+}
+
 void GfxTexture::SetMultiSample(UInt32 multiSample)
 {
 	textureDesc_.multiSample_ = multiSample;
@@ -106,12 +111,22 @@ bool GfxTexture::ReadBack(void* dataPtr, UInt32 index, UInt32 level)
 	return false;
 }
 
+bool GfxTexture::ReadBackSubRegion(void* dataPtr, UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 width, UInt32 height)
+{
+	return false;
+}
+
+GfxShaderResourceView* GfxTexture::GetGetSubResourceView(UInt32 index, UInt32 level)
+{
+	return nullptr;
+}
+
 GfxRenderSurface* GfxTexture::GetRenderSurface() const
 {
 	return nullptr;
 }
 
-GfxRenderSurface* GfxTexture::GetRenderSurface(UInt32 index) const
+GfxRenderSurface* GfxTexture::GetRenderSurface(UInt32 index, UInt32 level) const
 {
 	return nullptr;
 }

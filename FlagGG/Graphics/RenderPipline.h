@@ -27,6 +27,7 @@ class Camera;
 class Light;
 class Probe;
 class AmbientOcclusionRendering;
+class HiZCulling;
 
 // 渲染管线上下文
 struct FlagGG_API RenderPiplineContext
@@ -184,9 +185,6 @@ private:
 	SharedPtr<RenderPass> baseRenderPass_;
 	SharedPtr<RenderPass> deferredLitRenderPass_;
 
-	// 环境光遮蔽渲染器
-	SharedPtr<AmbientOcclusionRendering> aoRendering_;
-
 	//
 	SharedPtr<Texture2D> noAOTexture_;
 
@@ -204,6 +202,15 @@ private:
 	// rgb - emissive color
 	// a   - 
 	SharedPtr<Texture2D> GBufferD_;
+
+	// 环境光遮蔽渲染器
+	SharedPtr<AmbientOcclusionRendering> aoRendering_;
+
+	// Hi-Z culling
+	SharedPtr<HiZCulling> HiZCulling_;
+
+	// Hi-Z 裁剪后可见的物体
+	PODVector<DrawableComponent*> HiZVisibleDrawables_;
 };
 
 class FlagGG_API ScriptRenderPipline : public RenderPipline

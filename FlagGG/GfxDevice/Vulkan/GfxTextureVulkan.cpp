@@ -1,5 +1,6 @@
 #include "GfxTextureVulkan.h"
 #include "GfxDeviceVulkan.h"
+#include "GfxShaderResourceViewVulkan.h"
 #include "GfxRenderSurfaceVulkan.h"
 #include "VulkanDefines.h"
 #include "Log.h"
@@ -121,7 +122,37 @@ GfxTextureVulkan::GfxTextureVulkan()
 
 GfxTextureVulkan::~GfxTextureVulkan()
 {
+	auto* deviceVulkan = GetSubsystem<GfxDeviceVulkan>();
 
+	if (vkImageView_)
+	{
+		vkDestroyImageView(deviceVulkan->GetVulkanDevice(), vkImageView_, &deviceVulkan->GetVulkanAllocCallback());
+		vkImageView_ = VK_NULL_HANDLE;
+	}
+
+	if (vkDepthView_)
+	{
+		vkDestroyImageView(deviceVulkan->GetVulkanDevice(), vkDepthView_, &deviceVulkan->GetVulkanAllocCallback());
+		vkDepthView_ = VK_NULL_HANDLE;
+	}
+
+	if (vkStorageView_)
+	{
+		vkDestroyImageView(deviceVulkan->GetVulkanDevice(), vkStorageView_, &deviceVulkan->GetVulkanAllocCallback());
+		vkStorageView_ = VK_NULL_HANDLE;
+	}
+
+	if (vkMemory_)
+	{
+		vkFreeMemory(deviceVulkan->GetVulkanDevice(), vkMemory_, &deviceVulkan->GetVulkanAllocCallback());
+		vkMemory_ = VK_NULL_HANDLE;
+	}
+
+	if (vkImage_)
+	{
+		vkDestroyImage(deviceVulkan->GetVulkanDevice(), vkImage_, &deviceVulkan->GetVulkanAllocCallback());
+		vkImage_ = VK_NULL_HANDLE;
+	}
 }
 
 void GfxTextureVulkan::Apply(const void* initialDataPtr)
@@ -248,7 +279,48 @@ void GfxTextureVulkan::Apply(const void* initialDataPtr)
 		vkIVCI.subresourceRange.levelCount     = vkICI.mipLevels;
 		vkIVCI.subresourceRange.baseArrayLayer = 0;
 		vkIVCI.subresourceRange.layerCount     = vkICI.arrayLayers;
-		vkCreateImageView(deviceVulkan->GetVulkanDevice(), &vkIVCI, &deviceVulkan->GetVulkanAllocCallback(), &vkImageView_);
+		VULKAN_CHECK(vkCreateImageView(deviceVulkan->GetVulkanDevice(), &vkIVCI, &deviceVulkan->GetVulkanAllocCallback(), &vkImageView_));
+
+		gfxTextureViews_.Clear();
+		gfxRenderSurfaces_.Clear();
+
+		UInt32 layers = textureDesc_.isCube_ ? 6 : textureDesc_.layers_;
+		bool hasMultiSubResource = layers > 1 || textureDesc_.levels_ > 1;
+		bool isRenderSurface = textureDesc_.usage_ == TEXTURE_RENDERTARGET || textureDesc_.usage_ == TEXTURE_DEPTHSTENCIL;
+
+		// 3D纹理不支持sub resource view
+		if (hasMultiSubResource && (isRenderSurface || textureDesc_.subResourceViewEnable_) && vkImageViewType != VK_IMAGE_VIEW_TYPE_3D)
+		{
+			for (UInt32 index = 0; index < layers; ++index)
+			{
+				for (UInt32 level = 0; level < textureDesc_.levels_; ++level)
+				{
+					vkIVCI.viewType = VK_IMAGE_VIEW_TYPE_2D;
+					vkIVCI.subresourceRange.baseMipLevel = level;
+					vkIVCI.subresourceRange.levelCount = 1;
+					vkIVCI.subresourceRange.baseArrayLayer = index;
+					vkIVCI.subresourceRange.layerCount = 1;
+
+					VkImageView subImageView = VK_NULL_HANDLE;
+					VULKAN_CHECK(vkCreateImageView(deviceVulkan->GetVulkanDevice(), &vkIVCI, &deviceVulkan->GetVulkanAllocCallback(), &subImageView));
+
+					gfxTextureViews_.Push(MakeShared<GfxShaderResourceViewVulkan>(this, subImageView));
+					gfxRenderSurfaces_.Push(MakeShared<GfxRenderSurfaceVulkan>(this, subImageView));
+				}
+			}
+		}
+		else
+		{
+			if (textureDesc_.subResourceViewEnable_)
+			{
+				gfxTextureViews_.Push(MakeShared<GfxShaderResourceViewVulkan>(this, vkImageView_));
+			}
+
+			if (isRenderSurface)
+			{
+				gfxRenderSurfaces_.Push(MakeShared<GfxRenderSurfaceVulkan>(this, vkImageView_));
+			}
+		}
 	}
 
 // 创建DepthView
@@ -267,7 +339,7 @@ void GfxTextureVulkan::Apply(const void* initialDataPtr)
 		vkIVCI.subresourceRange.levelCount     = vkICI.mipLevels;
 		vkIVCI.subresourceRange.baseArrayLayer = 0;
 		vkIVCI.subresourceRange.layerCount     = vkICI.arrayLayers;
-		vkCreateImageView(deviceVulkan->GetVulkanDevice(), &vkIVCI, &deviceVulkan->GetVulkanAllocCallback(), &vkDepthView_);
+		VULKAN_CHECK(vkCreateImageView(deviceVulkan->GetVulkanDevice(), &vkIVCI, &deviceVulkan->GetVulkanAllocCallback(), &vkDepthView_));
 	}
 
 // 创建StorageView
@@ -286,11 +358,8 @@ void GfxTextureVulkan::Apply(const void* initialDataPtr)
 		vkIVCI.subresourceRange.levelCount     = vkICI.mipLevels;
 		vkIVCI.subresourceRange.baseArrayLayer = 0;
 		vkIVCI.subresourceRange.layerCount     = vkICI.arrayLayers;
-		vkCreateImageView(deviceVulkan->GetVulkanDevice(), &vkIVCI, &deviceVulkan->GetVulkanAllocCallback(), &vkStorageView_);
+		VULKAN_CHECK(vkCreateImageView(deviceVulkan->GetVulkanDevice(), &vkIVCI, &deviceVulkan->GetVulkanAllocCallback(), &vkStorageView_));
 	}
-
-	gfxRenderSurfaces_.Clear();
-	gfxRenderSurfaces_.Push(MakeShared<GfxRenderSurfaceVulkan>(this));
 }
 
 VkImageView GfxTextureVulkan::GetVulkanSamplerView()
@@ -451,14 +520,23 @@ void GfxTextureVulkan::UpdateTexture(GfxTexture* gfxTexture)
 	}
 }
 
+GfxShaderResourceView* GfxTextureVulkan::GetGetSubResourceView(UInt32 index, UInt32 level)
+{
+	UInt32 layers = textureDesc_.isCube_ ? 6 : textureDesc_.layers_;
+	UInt32 arrayIndex = index * layers + level;
+	return arrayIndex < gfxTextureViews_.Size() ? gfxTextureViews_[arrayIndex] : nullptr;
+}
+
 GfxRenderSurface* GfxTextureVulkan::GetRenderSurface() const
 {
 	return gfxRenderSurfaces_.Size() ? gfxRenderSurfaces_[0] : nullptr;
 }
 
-GfxRenderSurface* GfxTextureVulkan::GetRenderSurface(UInt32 index) const
+GfxRenderSurface* GfxTextureVulkan::GetRenderSurface(UInt32 index, UInt32 level) const
 {
-	return index < gfxRenderSurfaces_.Size() ? gfxRenderSurfaces_[index] : nullptr;
+	UInt32 layers = textureDesc_.isCube_ ? 6 : textureDesc_.layers_;
+	UInt32 arrayIndex = index * layers + level;
+	return arrayIndex < gfxRenderSurfaces_.Size() ? gfxRenderSurfaces_[arrayIndex] : nullptr;
 }
 
 void GfxTextureVulkan::SetImageMemoryBarrier(VkCommandBuffer _commandBuffer, VkImage _image, VkImageAspectFlags _aspectMask, VkImageLayout _oldLayout, VkImageLayout _newLayout, uint32_t _levelCount, uint32_t _layerCount)

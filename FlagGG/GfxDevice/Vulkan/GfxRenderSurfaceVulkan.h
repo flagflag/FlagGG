@@ -18,7 +18,7 @@ class GfxRenderSurfaceVulkan : public GfxRenderSurface
 {
 	OBJECT_OVERRIDE(GfxRenderSurfaceVulkan, GfxRenderSurface);
 public:
-	explicit GfxRenderSurfaceVulkan(GfxTextureVulkan* ownerTexture);
+	explicit GfxRenderSurfaceVulkan(GfxTextureVulkan* ownerTexture, VkImageView vkImageView);
 
 	explicit GfxRenderSurfaceVulkan(GfxSwapChainVulkan* ownerSwapChain, VkFormat vkFormat, VkImageView vkImageView);
 

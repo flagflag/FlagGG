@@ -1,6 +1,7 @@
 #include "GfxDeviceVulkan.h"
 #include "GfxSwapChainVulkan.h"
 #include "GfxTextureVulkan.h"
+#include "GfxShaderResourceViewVulkan.h"
 #include "GfxBufferVulkan.h"
 #include "GfxShaderVulkan.h"
 #include "GfxProgramVulkan.h"
@@ -1262,12 +1263,20 @@ void GfxDeviceVulkan::BindTextures(VkDescriptorSet vkDescSet, GfxShaderVulkan* s
 		{
 			if (textures_[i])
 			{
-				auto* textureVulkan = RTTICast<GfxTextureVulkan>(textures_[i]);
+				VkImageView imageView = VK_NULL_HANDLE;
+				if (auto* textureViewVulkan = RTTICast<GfxShaderResourceViewVulkan>(textureViews_[i]))
+				{
+					imageView = textureViewVulkan->GetVulkanSamplerView();
+				}
+				else if (auto* textureVulkan = RTTICast<GfxTextureVulkan>(textures_[i]))
+				{
+					imageView = textureVulkan->GetVulkanSamplerView();
+				}
 
 				VkDescriptorImageInfo& descImageInfo = vkDescImageInfos_.Append();
 
 				descImageInfo.sampler     = GetSampler(samplers_[i]);
-				descImageInfo.imageView   = textureVulkan->GetVulkanSamplerView();
+				descImageInfo.imageView   = imageView;
 				descImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 				// for texture

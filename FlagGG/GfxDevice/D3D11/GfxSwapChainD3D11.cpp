@@ -3,6 +3,7 @@
 #include "GfxDeviceD3D11.h"
 #include "GfxTextureD3D11.h"
 #include "Graphics/Window.h"
+#include "Memory/Memory.h"
 
 namespace FlagGG
 {
@@ -13,7 +14,7 @@ GfxSwapChainD3D11::GfxSwapChainD3D11(Window* window) :
 	HWND handler = (HWND)window->GetHandle();
 
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
-	memset(&swapChainDesc, 0, sizeof(swapChainDesc));
+	Memory::Memzero(&swapChainDesc, sizeof(swapChainDesc));
 	swapChainDesc.BufferCount = 1;
 	swapChainDesc.BufferDesc.Width = window->GetWidth();
 	swapChainDesc.BufferDesc.Height = window->GetHeight();
@@ -80,7 +81,7 @@ void GfxSwapChainD3D11::Resize(UInt32 width, UInt32 height)
 	renderTarget_->SetRenderTargetView(renderTargetView);
 
 	D3D11_TEXTURE2D_DESC depthDesc;
-	memset(&depthDesc, 0, sizeof depthDesc);
+	Memory::Memzero(&depthDesc, sizeof(depthDesc));
 	depthDesc.Width = (UINT)width;
 	depthDesc.Height = (UINT)height;
 	depthDesc.MipLevels = 1;

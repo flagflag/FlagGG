@@ -498,6 +498,16 @@ void RenderEngine::DrawQuad(Camera* camera)
 	DrawCallIndexed(orthographicGeometry_->GetIndexStart(), orthographicGeometry_->GetIndexCount());
 }
 
+void RenderEngine::DrawQuad()
+{
+	SetRasterizerState(fullscreenQuadRS_);
+	SetDepthStencilState(fullscreenDSS_);
+	SetVertexBuffers(orthographicGeometry_->GetVertexBuffers());
+	SetIndexBuffer(orthographicGeometry_->GetIndexBuffer());
+	SetPrimitiveType(orthographicGeometry_->GetPrimitiveType());
+	DrawCallIndexed(orthographicGeometry_->GetIndexStart(), orthographicGeometry_->GetIndexCount());
+}
+
 void RenderEngine::RenderUpdate(Viewport* viewport)
 {
 	RenderView* renderView = viewport->GetOrCreateRenderView();

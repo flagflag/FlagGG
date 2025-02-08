@@ -18,6 +18,7 @@ class Window;
 class GfxSwapChain;
 class GfxBuffer;
 class GfxTexture;
+class GfxShaderResourceView;
 class GfxSampler;
 class GfxShader;
 class GfxProgram;
@@ -117,8 +118,17 @@ public:
 	// 在slotID通道绑定buffer
 	virtual void SetBuffer(UInt8 slotID, GfxBuffer* gfxBuffer);
 
+	// 重置textures
+	void ResetTextures();
+
 	// 在slotID通道绑定纹理
 	virtual void SetTexture(UInt32 slotID, GfxTexture* gfxTexture);
+
+	// 在slotID通道半丁纹理视图
+	virtual void SetTextureView(UInt32 slotID, GfxShaderResourceView* gfxTextureView);
+
+	// 重置samplers
+	void ResetSamplers();
 
 	// 在slotID通道绑定采样器
 	virtual void SetSampler(UInt32 slotID, GfxSampler* gfxSampler);
@@ -257,6 +267,7 @@ protected:
 
 	// 准备提交的texture
 	SharedPtr<GfxTexture> textures_[MAX_TEXTURE_CLASS];
+	SharedPtr<GfxShaderResourceView> textureViews_[MAX_TEXTURE_CLASS];
 	bool texturesDirty_{};
 
 	// 准备提交的sampler

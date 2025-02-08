@@ -40,6 +40,9 @@ public:
 	// 设置SRGB
 	void SetSRGB(bool srgb);
 
+	// 是否为纹理子资源创建视图
+	void SetSubResourceViewEnabled(bool enable);
+
 	// 设置比较方式
 	void SetComparisonFunc(ComparisonFunc comparisonFunc);
 
@@ -52,6 +55,9 @@ public:
 	// 获取纹理深度（2D纹理返回1，3D纹理返回实际深度）
 	Int32 GetDepth() const;
 
+	// 获取纹理mips层数
+	UInt32 GetNumLevels() const;
+
 	// 纹理是否是压缩
 	bool IsCompressed() const;
 
@@ -62,7 +68,7 @@ public:
 	GfxRenderSurface* GetRenderSurface() const;
 
 	// 获取Surface。如果是Cube纹理index填写Face（详见枚举类型CubeMapFace）。如果是Array纹理index填写数组下标。
-	GfxRenderSurface* GetRenderSurface(UInt32 index) const;
+	GfxRenderSurface* GetRenderSurface(UInt32 index, UInt32 level) const;
 
 	// 获取GfxTexture引用
 	GfxTexture* GetGfxTextureRef() const { return gfxTexture_; }
