@@ -37,11 +37,11 @@ HiZCulling::~HiZCulling()
 
 }
 
-void HiZCulling::InitializeFrame(bool reverseZ)
+void HiZCulling::InitializeFrame(Camera* camera)
 {
-	if (!inited_ || reverseZ_ != reverseZ)
+	if (!inited_ || reverseZ_ != camera->GetReverseZ())
 	{
-		reverseZ_ = reverseZ;
+		reverseZ_ = camera->GetReverseZ();
 		inited_ = true;
 
 		INIT_SHADER_VARIATION(buildHiZVS_, "Shader/HiZ/HiZBuilder.hlsl", VS, {});
@@ -51,6 +51,8 @@ void HiZCulling::InitializeFrame(bool reverseZ)
 		INIT_SHADER_VARIATION(calcVisibilityVS_, "Shader/HiZ/HiZVisibility.hlsl", VS, {});
 		INIT_SHADER_VARIATION(calcVisibilityPS_, "Shader/HiZ/HiZVisibility.hlsl", PS, { reverseZ_ ? "REVERSE_Z" : "" });
 	}
+
+	viewProjectMatrix_ = camera->GetProjectionMatrix() * camera->GetViewMatrix();
 }
 
 void HiZCulling::BuildHiZMap(Texture2D* depthTexture)
@@ -163,8 +165,7 @@ void HiZCulling::EncodeGeometriesAABB()
 	// 这样GPU计算ndc空间AABB时会引入for循环，但计算效率还是比CPU快的
 	// 使用RGBA32F格式纹理，现在手机都普及了ES3.0了，因此不需要用RGBA格式去编码了
 
-	UInt32 bufferHeight = (geometries_.Size() + HiZMapWidth - 1) / HiZMapWidth;
-	UInt32 bufferSize = HiZMapWidth * bufferHeight;
+	UInt32 bufferSize = HiZMapWidth * frameHiZHeight_;
 
 	MiZAABBBuffer1_.Resize(bufferSize * sizeof(Vector4));
 	MiZAABBBuffer2_.Resize(bufferSize * sizeof(Vector4));
@@ -176,29 +177,29 @@ void HiZCulling::EncodeGeometriesAABB()
 		MiZAABBBuffer2_[i] = Vector4(AABB.max_, 0.0f);
 	}
 
-	HiZAABBMinPos_->SetData(0, 0, 0, HiZMapWidth, bufferHeight, MiZAABBBuffer1_.Buffer());
-	HiZAABBMaxPos_->SetData(0, 0, 0, HiZMapWidth, bufferHeight, MiZAABBBuffer2_.Buffer());
+	HiZAABBMinPos_->SetData(0, 0, 0, HiZMapWidth, frameHiZHeight_, MiZAABBBuffer1_.Buffer());
+	HiZAABBMaxPos_->SetData(0, 0, 0, HiZMapWidth, frameHiZHeight_, MiZAABBBuffer2_.Buffer());
 }
 
-void HiZCulling::CalcGeometriesVisibility(Camera* camera)
+void HiZCulling::CalcGeometriesVisibility()
 {
 	auto* gfxDevice = GfxDevice::GetDevice();
 	auto* renderEngine = GetSubsystem<RenderEngine>();
+
+	frameHiZHeight_ = (geometries_.Size() + HiZMapWidth - 1) / HiZMapWidth;
 
 	AllocTexture();
 
 	EncodeGeometriesAABB();
 
 	calcVisibilityParams_->SetValue<Vector4>("screenToUV", Vector4(0.5f, -0.5f, 0.5f, 0.5f));
-	calcVisibilityParams_->SetValue<Matrix4>("projviewMatrix", camera->GetProjectionMatrix() * camera->GetViewMatrix());
+	calcVisibilityParams_->SetValue<Matrix4>("projviewMatrix", viewProjectMatrix_);
 	calcVisibilityParams_->SetValue<Vector2>("uvFactor", Vector2(1.0f, 1.0f));
 	calcVisibilityParams_->SetValue<Real>("mipBias", 0.0f);
 	calcVisibilityParams_->SetValue<Vector2>("HiZTextureSize", Vector2(HiZMap_->GetWidth(), HiZMap_->GetHeight()));
 
-	UInt32 bufferHeight = (geometries_.Size() + HiZMapWidth - 1) / HiZMapWidth;
-
 	gfxDevice->SetViewport(IntRect(0, 0, HiZMapWidth, HiZMapHeight));
-	gfxDevice->SetScissorTest(true, IntRect(0, 0, HiZMapWidth, bufferHeight));
+	gfxDevice->SetScissorTest(true, IntRect(0, 0, HiZMapWidth, frameHiZHeight_));
 
 	gfxDevice->ResetRenderTargets();
 	gfxDevice->SetDepthStencil(nullptr);
@@ -219,18 +220,21 @@ void HiZCulling::CalcGeometriesVisibility(Camera* camera)
 	gfxDevice->SetMaterialShaderParameters(calcVisibilityParams_);
 	renderEngine->DrawQuad();
 
+	gfxDevice->SetScissorTest(false);
+}
+
+void HiZCulling::FetchGeometriesVisibilityResults()
+{
 	auto* gfxTexture = HiZResults_->GetGfxTextureRef();
 #if _DEBUG
-	Memory::Memzero(&MiZResultsBuffer_[0], HiZMapWidth * bufferHeight);
+	Memory::Memzero(&MiZResultsBuffer_[0], HiZMapWidth * frameHiZHeight_);
 #endif
-	gfxTexture->ReadBackSubRegion(&MiZResultsBuffer_[0], 0, 0, 0, 0, HiZMapWidth, bufferHeight);
+	gfxTexture->ReadBackSubRegion(&MiZResultsBuffer_[0], 0, 0, 0, 0, HiZMapWidth, frameHiZHeight_);
 
 	for (UInt32 i = 0; i < geometries_.Size(); ++i)
 	{
 		geometries_[i]->GetHiZVisibilityTestInfo()->visible_ = MiZResultsBuffer_[i];
 	}
-
-	gfxDevice->SetScissorTest(false);
 }
 
 bool HiZCulling::IsGeometryVisible(DrawableComponent* drawable)

@@ -68,6 +68,11 @@ bool Unit::Load(const String& path, Node* node)
 		dynamicMeshComp->SetMaterial(material_);
 	}
 
+	if (root.Contains("occlusionculling") && !root["occlusionculling"].GetBool())
+	{
+		meshComp->SetOcclusionCulling(false);
+	}
+
 	return true;
 }
 

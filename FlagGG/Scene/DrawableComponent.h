@@ -70,6 +70,12 @@ public:
 
 	bool GetHasLitPass() const { return hasLitPass_; }
 
+	// 设置遮挡裁剪
+	void SetOcclusionCulling(bool occlusionCulling);
+
+	// 获取遮挡裁剪
+	bool GetOcclusionCulling() const { return occlusionCulling_; }
+
 	// 获取渲染上下文
 	const Vector<RenderContext>& GetRenderContext() const { return renderContexts_; }
 
@@ -96,6 +102,9 @@ protected:
 	Vector<RenderContext> renderContexts_;
 
 	bool hasLitPass_{};
+
+	// 是否需要遮挡裁剪
+	bool occlusionCulling_{ true };
 
 	// Hi-Z可见性测试信息
 	SharedPtr<HiZVisibilityTestInfo> HiZTestInfo_;

@@ -285,18 +285,18 @@ void DeferredRenderPipline::Render()
 		if (!HiZCulling_)
 			HiZCulling_ = new HiZCulling();
 
-		HiZCulling_->InitializeFrame(renderPiplineContext_.camera_->GetReverseZ());
+		HiZCulling_->InitializeFrame(renderPiplineContext_.camera_);
 		
 		HiZCulling_->BuildHiZMap(depthTexture_);
 
 		HiZCulling_->ClearGeometries();
 
-		for (auto* drawable : renderPiplineContext_.drawables_)
+		for (auto* drawable : frameDrawables_)
 		{
 			HiZCulling_->AddGeometry(drawable);
 		}
 
-		HiZCulling_->CalcGeometriesVisibility(renderPiplineContext_.camera_);
+		HiZCulling_->CalcGeometriesVisibility();
 	}
 
 	if (needRT)
@@ -309,6 +309,31 @@ void DeferredRenderPipline::Render()
 		{
 			ownerTexture->UpdateTexture(colorTexture_);
 		}
+	}
+}
+
+void DeferredRenderPipline::GpuOcclusionCulling()
+{
+	if (GetSubsystem<EngineSettings>()->occlusionCullingType_ == OcclusionCullingType::HiZCulling && HiZCulling_)
+	{
+		HiZCulling_->FetchGeometriesVisibilityResults();
+
+		HiZVisibleDrawables_.Clear();
+		frameDrawables_.Clear();
+
+		for (auto* drawable : renderPiplineContext_.drawables_)
+		{
+			if (!drawable->GetOcclusionCulling() || HiZCulling_->IsGeometryVisible(drawable))
+			{
+				HiZVisibleDrawables_.Push(drawable);
+			}
+		}
+
+		UInt32 numCullDrawables = renderPiplineContext_.drawables_.Size() - HiZVisibleDrawables_.Size();
+
+		frameDrawables_.Swap(renderPiplineContext_.drawables_);
+
+		renderPiplineContext_.drawables_.Swap(HiZVisibleDrawables_);
 	}
 }
 

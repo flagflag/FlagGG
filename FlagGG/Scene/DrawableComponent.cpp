@@ -68,6 +68,11 @@ void DrawableComponent::SetHasLitPass(bool hasLitPass)
 	hasLitPass_ = hasLitPass;
 }
 
+void DrawableComponent::SetOcclusionCulling(bool occlusionCulling)
+{
+	occlusionCulling_ = occlusionCulling;
+}
+
 void DrawableComponent::SetHiZVisibilityTestInfo(HiZVisibilityTestInfo* HiZTestInfo)
 {
 	HiZTestInfo_ = HiZTestInfo;

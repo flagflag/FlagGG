@@ -33,7 +33,7 @@ public:
 	~HiZCulling() override;
 
 	// 每帧初始化
-	void InitializeFrame(bool reverseZ);
+	void InitializeFrame(Camera* camera);
 
 	// 构建Hi-Z map
 	void BuildHiZMap(Texture2D* depthTexture);
@@ -45,7 +45,10 @@ public:
 	void AddGeometry(DrawableComponent* drawable);
 
 	// 通过Hi-Z map计算已添加图形的可见性
-	void CalcGeometriesVisibility(Camera* camera);
+	void CalcGeometriesVisibility();
+
+	// 回读图形可见性结果
+	void FetchGeometriesVisibilityResults();
 
 	// 获取图形的可见性
 	bool IsGeometryVisible(DrawableComponent* drawable);
@@ -61,6 +64,9 @@ private:
 
 	// 当前帧深度是否是reverseZ
 	bool reverseZ_{};
+
+	// 当前帧视图投影
+	Matrix4 viewProjectMatrix_;
 
 	// 构建Hi-Z map
 	SharedPtr<Shader> buildHiZVS_;
@@ -79,6 +85,9 @@ private:
 
 	// Hi-Z map
 	SharedPtr<Texture2D> HiZMap_;
+
+	// 当前帧 Hi-Z map的高
+	UInt32 frameHiZHeight_{};
 
 	// 保存Hi-Z测试的图形数据
 	SharedPtr<Texture2D> HiZAABBMinPos_;
