@@ -83,7 +83,11 @@ void PS(
 	float2 scale = uvFactor.xy * (rect.zw - rect.xy) / 3;
 	float2 bias = uvFactor.xy * rect.xy;
 
+#if REVERSE_Z
+    float4 farthestDepth = 1;
+#else
 	float4 farthestDepth = 0;
+#endif
     for (int i = 0; i < 4; i++)
     {
         // TODO could vectorize this
