@@ -34,7 +34,7 @@ void PS(
     in float4 position : SV_POSITION,
     in float2 texcoord : TEXCOORD,
     out float4 outColor : SV_TARGET)
-{ 
+{
     float3 AABBMinPos = AABBMinPosTexture.SampleLevel(AABBMinPosTextureSampler, texcoord, 0).xyz;
     float3 AABBMaxPos = AABBMaxPosTexture.SampleLevel(AABBMaxPosTextureSampler, texcoord, 0).xyz;
 
@@ -42,7 +42,7 @@ void PS(
     float3 AABB[2] = { AABBMinPos, AABBMaxPos };
 	float3 rectMin = float3(1, 1, 1);
 	float3 rectMax = float3(-1, -1, -1);
-    for(int i = 0; i < 8; i++)
+    for (int i = 0; i < 8; i++)
     {
         float3 worldPos;
         worldPos.x = AABB[(i >> 0) & 1].x;
@@ -77,19 +77,17 @@ void PS(
 	float2 scale = uvFactor.xy * (rect.zw - rect.xy) / 3;
 	float2 bias = uvFactor.xy * rect.xy;
 
-	float4 farthestDepth = 1;
-	{
-		for(int i = 0; i < 4; i++)
-		{
-			// TODO could vectorize this
-			float4 depth;
-			depth.x = HiZTexture.SampleLevel(HiZTextureSampler, float2(i, 0) * scale + bias, level).r;
-			depth.y = HiZTexture.SampleLevel(HiZTextureSampler, float2(i, 1) * scale + bias, level).r;
-			depth.z = HiZTexture.SampleLevel(HiZTextureSampler, float2(i, 2) * scale + bias, level).r;
-			depth.w = HiZTexture.SampleLevel(HiZTextureSampler, float2(i, 3) * scale + bias, level).r;
-			farthestDepth = max(farthestDepth, depth);
-		}
-	}
+	float4 farthestDepth = 0;
+    for (int i = 0; i < 4; i++)
+    {
+        // TODO could vectorize this
+        float4 depth;
+        depth.x = HiZTexture.SampleLevel(HiZTextureSampler, float2(i, 0) * scale + bias, level).r;
+        depth.y = HiZTexture.SampleLevel(HiZTextureSampler, float2(i, 1) * scale + bias, level).r;
+        depth.z = HiZTexture.SampleLevel(HiZTextureSampler, float2(i, 2) * scale + bias, level).r;
+        depth.w = HiZTexture.SampleLevel(HiZTextureSampler, float2(i, 3) * scale + bias, level).r;
+        farthestDepth = max(farthestDepth, depth);
+    }
 	farthestDepth.x = max(max(farthestDepth.x, farthestDepth.y), max(farthestDepth.z, farthestDepth.w));
 
 	// Inverted Z buffer

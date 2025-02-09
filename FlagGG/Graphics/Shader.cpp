@@ -67,7 +67,7 @@ Shader* ShaderCode::GetShader(ShaderType type, const Vector<String>& defines)
 
 bool ShaderCode::PreCompileShaderCode(const char* head, const char* tail, String& out)
 {
-	while (head != tail)
+	while (head < tail)
 	{
 		if (head + 10 < tail &&
 			head[0] == '#' &&
@@ -80,12 +80,12 @@ bool ShaderCode::PreCompileShaderCode(const char* head, const char* tail, String
 			head[7] == 'e')
 		{
 			head += 8;
-			while (head != tail && (*head == ' ' || *head == '\t')) ++head;
+			while (head < tail && (*head == ' ' || *head == '\t')) ++head;
 			if (*head == '\"')
 			{
 				++head;
 				const char* temp = head;
-				while (temp != tail && *temp != '\"') ++temp;
+				while (temp < tail && *temp != '\"') ++temp;
 
 				String relativePath(head, temp - head);
 
@@ -97,25 +97,30 @@ bool ShaderCode::PreCompileShaderCode(const char* head, const char* tail, String
 
 				head = temp + 1;
 
-				while (head != tail && (*head == ' ' || *head == '\t')) ++head;
+				while (head < tail && (*head == ' ' || *head == '\t')) ++head;
 
 				// 这个判断不严谨，懒得写了，将就用着。
-				if (head != tail && *head != '\r' && *head != '\n')
+				if (head < tail && *head != '\r' && *head != '\n')
 				{
 					FLAGGG_LOG_ERROR("Pre compile shader error: missing wrap behind #include\"{}\".", relativePath.CString());
 					return false;
 				}
 
-				auto file = GetSubsystem<AssetFileManager>()->OpenFileReader(relativePath);
-				if (!file)
-				{
-					FLAGGG_LOG_ERROR("Pre compile shader error: can not open file[{}].", relativePath.CString());
-					return false;
-				}
-
 				UInt32 bufferSize = 0u;
 				SharedArrayPtr<char> buffer;
-				file->ToBuffer(buffer, bufferSize);
+
+				{
+					auto file = GetSubsystem<AssetFileManager>()->OpenFileReader(relativePath);
+					if (!file)
+					{
+						FLAGGG_LOG_ERROR("Pre compile shader error: can not open file[{}].", relativePath.CString());
+						return false;
+					}
+
+
+					file->ToBuffer(buffer, bufferSize);
+				}
+
 				if (!PreCompileShaderCode(buffer.Get(), buffer.Get() + bufferSize, out))
 					return false;
 			}
@@ -132,21 +137,26 @@ bool ShaderCode::PreCompileShaderCode(const char* head, const char* tail, String
 		}
 	}
 
-	// out.Append(head, tail - head);
+	return true;
 }
+
+static String PreCompileShaderCache;
 
 bool ShaderCode::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 {
 	String buffer;
 	stream->ToString(buffer);
 
-	String out;
-	PreCompileShaderCode(buffer.CString(), buffer.CString() + buffer.Length(), out);
+	if (PreCompileShaderCache.Capacity() == 0)
+		PreCompileShaderCache.Reserve(1024 * 1024 * 5); // 5MB
+	PreCompileShaderCache.Clear();
+	if (!PreCompileShaderCode(buffer.CString(), buffer.CString() + buffer.Length(), PreCompileShaderCache))
+		return false;
 
-	bufferSize_ = out.Length();
+	bufferSize_ = PreCompileShaderCache.Length();
 	buffer_ = new char[bufferSize_ + 1];
 	buffer_[bufferSize_] = '\0';
-	memcpy(buffer_.Get(), out.CString(), bufferSize_);
+	memcpy(buffer_.Get(), PreCompileShaderCache.CString(), bufferSize_);
 
 	return true;
 }

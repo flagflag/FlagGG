@@ -2,6 +2,7 @@
 #include "Graphics/RenderPass.h"
 #include "Graphics/Texture2D.h"
 #include "Graphics/ComputePass.h"
+#include "Graphics/HiZCulling.h"
 #include "Scene/Light.h"
 #include "Scene/DrawableComponent.h"
 #include "Lua/ILua/LuaType.h"
@@ -68,6 +69,21 @@ void CommonRenderPipline::Clear()
 
 void CommonRenderPipline::CollectBatch()
 {
+	if (GetSubsystem<EngineSettings>()->occlusionCullingType_ == OcclusionCullingType::HiZCulling && HiZCulling_)
+	{
+		HiZVisibleDrawables_.Clear();
+
+		for (auto* drawable : renderPiplineContext_.drawables_)
+		{
+			if (HiZCulling_->IsGeometryVisible(drawable))
+			{
+				HiZVisibleDrawables_.Push(drawable);
+			}
+		}
+
+		renderPiplineContext_.drawables_.Swap(HiZVisibleDrawables_);
+	}
+
 	CollectLitBatch();
 
 	CollectUnlitBatch();

@@ -129,6 +129,12 @@ protected:
 	SharedPtr<RenderPass> waterRenderPass_;
 	SharedPtr<Texture2D> colorTexture_;
 	SharedPtr<Texture2D> depthTexture_;
+
+	// Hi-Z culling
+	SharedPtr<HiZCulling> HiZCulling_;
+
+	// Hi-Z 裁剪后可见的物体
+	PODVector<DrawableComponent*> HiZVisibleDrawables_;
 };
 
 // 前向渲染管线
@@ -205,12 +211,6 @@ private:
 
 	// 环境光遮蔽渲染器
 	SharedPtr<AmbientOcclusionRendering> aoRendering_;
-
-	// Hi-Z culling
-	SharedPtr<HiZCulling> HiZCulling_;
-
-	// Hi-Z 裁剪后可见的物体
-	PODVector<DrawableComponent*> HiZVisibleDrawables_;
 };
 
 class FlagGG_API ScriptRenderPipline : public RenderPipline

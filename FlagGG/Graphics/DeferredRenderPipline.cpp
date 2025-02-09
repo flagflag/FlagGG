@@ -154,31 +154,6 @@ void DeferredRenderPipline::Render()
 	RenderEngine* renderEngine = GetSubsystem<RenderEngine>();
 	GfxDevice* gfxDevice = GfxDevice::GetDevice();
 
-	bool HiZCullingEnable = GetSubsystem<EngineSettings>()->occlusionCullingType_ == OcclusionCullingType::HiZCulling;
-	if (HiZCullingEnable && HiZCulling_)
-	{
-		HiZCulling_->ClearGeometries();
-
-		for (auto* drawable : renderPiplineContext_.drawables_)
-		{
-			HiZCulling_->AddGeometry(drawable);
-		}
-
-		HiZCulling_->CalcGeometriesVisibility(renderPiplineContext_.camera_);
-
-		HiZVisibleDrawables_.Clear();
-
-		for (auto* drawable : renderPiplineContext_.drawables_)
-		{
-			if (HiZCulling_->IsGeometryVisible(drawable))
-			{
-				HiZVisibleDrawables_.Push(drawable);
-			}
-		}
-
-		renderPiplineContext_.drawables_.Swap(HiZVisibleDrawables_);
-	}
-
 	if (!renderPiplineContext_.camera_->GetUseReflection() && renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP))
 	{
 		auto* shadowMap = renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP);
@@ -305,12 +280,21 @@ void DeferredRenderPipline::Render()
 	waterRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 	alphaRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 
-	if (HiZCullingEnable)
+	if (GetSubsystem<EngineSettings>()->occlusionCullingType_ == OcclusionCullingType::HiZCulling)
 	{
 		if (!HiZCulling_)
 			HiZCulling_ = new HiZCulling();
 		
 		HiZCulling_->BuildHiZMap(depthTexture_);
+
+		HiZCulling_->ClearGeometries();
+
+		for (auto* drawable : renderPiplineContext_.drawables_)
+		{
+			HiZCulling_->AddGeometry(drawable);
+		}
+
+		HiZCulling_->CalcGeometriesVisibility(renderPiplineContext_.camera_);
 	}
 
 	if (needRT)

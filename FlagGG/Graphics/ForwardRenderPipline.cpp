@@ -3,6 +3,7 @@
 #include "Graphics/ComputePass.h"
 #include "Graphics/RenderEngine.h"
 #include "Graphics/Texture2D.h"
+#include "Graphics/HiZCulling.h"
 #include "GfxDevice/GfxDevice.h"
 #include "GfxDevice/GfxRenderSurface.h"
 #include "GfxDevice/GfxTexture.h"

@@ -8,10 +8,13 @@
 namespace FlagGG
 {
 
+#if USD_MANAGER
 FlagGG_API extern bool UsdMemoryInitializing = false;
+#endif
 
 Memory::Memory()
 {
+#if USD_MANAGER
 	// 这里用到一个技巧，Memory作为单例初始化时是线程安全的（函数内static变量，系统会做线程安全保证，具体原理这里不赘述）
 	// 所以初始化时，我在Memory构造函数改UsdMemoryInitializing是线程安全的
 	UsdMemoryInitializing = true;
@@ -47,6 +50,9 @@ Memory::Memory()
 	}
 
 	UsdMemoryInitializing = false;
+#else
+	malloc_ = new MallocSystem();
+#endif
 }
 
 Memory::Memory(IMalloc* malloc)

@@ -10,6 +10,7 @@
 #include "GfxDevice/GfxDevice.h"
 #include "GfxDevice/GfxTexture.h"
 #include "GfxDevice/GfxSampler.h"
+#include "Memory/Memory.h"
 
 namespace FlagGG
 {
@@ -69,8 +70,12 @@ void HiZCulling::BuildHiZMap(Texture2D* depthTexture)
 	buildHiZPrams_->SetValue<Vector4>("screenToUV", Vector4(0.5f, -0.5f, 0.5f, 0.5f));
 
 	gfxDevice->SetViewport(IntRect(0, 0, HiZMap_->GetWidth(), HiZMap_->GetHeight()));
+	
 	gfxDevice->ResetRenderTargets();
 	gfxDevice->SetDepthStencil(nullptr);
+	gfxDevice->ResetTextures();
+	gfxDevice->ResetSamplers();
+
 	gfxDevice->SetRenderTarget(0, HiZMap_->GetRenderSurface(0, 0));
 	gfxDevice->SetTexture(0, depthTexture->GetGfxTextureRef());
 	gfxDevice->SetSampler(0, depthSampler_);
@@ -185,6 +190,10 @@ void HiZCulling::CalcGeometriesVisibility(Camera* camera)
 	gfxDevice->SetScissorTest(true, IntRect(0, 0, HiZMapWidth, bufferHeight));
 
 	gfxDevice->ResetRenderTargets();
+	gfxDevice->SetDepthStencil(nullptr);
+	gfxDevice->ResetTextures();
+	gfxDevice->ResetSamplers();
+
 	gfxDevice->SetRenderTarget(0, HiZResults_->GetRenderSurface());
 
 	gfxDevice->SetTexture(0, HiZMap_->GetGfxTextureRef());
@@ -200,6 +209,9 @@ void HiZCulling::CalcGeometriesVisibility(Camera* camera)
 	renderEngine->DrawQuad();
 
 	auto* gfxTexture = HiZResults_->GetGfxTextureRef();
+#if _DEBUG
+	Memory::Memzero(&MiZResultsBuffer_[0], HiZMapWidth * bufferHeight);
+#endif
 	gfxTexture->ReadBackSubRegion(&MiZResultsBuffer_[0], 0, 0, 0, 0, HiZMapWidth, bufferHeight);
 
 	for (UInt32 i = 0; i < geometries_.Size(); ++i)

@@ -8,6 +8,8 @@
 #include "Core/BaseMacro.h"
 #include <new>
 
+#if USD_MANAGER
+
 namespace FlagGG
 {
 
@@ -61,6 +63,8 @@ struct FlagGG_API UsdMemoryModule
 };
 
 }
+
+#endif
 
 #if USD_MANAGER
 #define REPLACEMENT_OPERATOR_NEW_AND_DELETE_USD \
