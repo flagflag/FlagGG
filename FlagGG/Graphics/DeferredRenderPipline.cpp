@@ -173,7 +173,7 @@ void DeferredRenderPipline::Render()
 	{
 		gfxDevice->ResetRenderTargets();
 		gfxDevice->SetDepthStencil(depthTexture_->GetRenderSurface());
-		gfxDevice->Clear(CLEAR_DEPTH | CLEAR_STENCIL);
+		gfxDevice->Clear(CLEAR_DEPTH | CLEAR_STENCIL, Color::BLACK, renderPiplineContext_.camera_->GetReverseZ() ? 0.0f : 1.0f);
 
 		depthRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 	}
@@ -284,6 +284,8 @@ void DeferredRenderPipline::Render()
 	{
 		if (!HiZCulling_)
 			HiZCulling_ = new HiZCulling();
+
+		HiZCulling_->InitializeFrame(renderPiplineContext_.camera_->GetReverseZ());
 		
 		HiZCulling_->BuildHiZMap(depthTexture_);
 

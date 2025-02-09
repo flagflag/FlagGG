@@ -260,8 +260,8 @@ void Camera::UpdateProjection() const
 	{
 		Real h = (1.0f / tanf(fov_ * (PI / 180.0f) * 0.5f)) * zoom_;
 		Real w = h / aspect_;
-		Real q = farClip_ / (farClip_ - nearClip_);
-		Real r = -q * nearClip_;
+		Real q = reverseZ_ ? (nearClip_ / (nearClip_ - farClip_)) : (farClip_ / (farClip_ - nearClip_));
+		Real r = reverseZ_ ? (-q * farClip_) : (-q * nearClip_);
 
 		projection_.m00_ = w;
 		projection_.m02_ = projOffset_.x_ * 2.0f;
@@ -551,6 +551,11 @@ void Camera::SetReflectionPlane(const Plane& plane)
 void Camera::SetZUp(bool isZUp)
 {
 	isZUp_ = isZUp;
+}
+
+void Camera::SetReverseZ(bool reverseZ)
+{
+	reverseZ_ = reverseZ;
 }
 
 }

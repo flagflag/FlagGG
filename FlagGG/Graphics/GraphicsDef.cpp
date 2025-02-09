@@ -49,6 +49,18 @@ UInt32 DepthStencilState::GetHash() const
 	return ((((((depthWrite_ ? 1 : 0) << 1) | (stencilTest_ ? 1 : 0)) << 3) | (UInt32)depthTestMode_) << 3) | stencilTestMode_;
 }
 
+ComparisonFunc REVERSE_Z_MAPPING[] =
+{
+	COMPARISON_NEVER,            // COMPARISON_NEVER
+	COMPARISON_GREATER,          // COMPARISON_LESS
+	COMPARISON_EQUAL,            // COMPARISON_EQUAL
+	COMPARISON_GREATER_EQUAL,    // COMPARISON_LESS_EQUAL
+	COMPARISON_LESS,             // COMPARISON_GREATER
+	COMPARISON_NOT_EQUAL,        // COMPARISON_NOT_EQUAL
+	COMPARISON_LESS_EQUAL,       // COMPARISON_GREATER_EQUAL
+	COMPARISON_ALWAYS,           // COMPARISON_ALWAYS
+};
+
 UInt32 VERTEX_ELEMENT_TYPE_SIZE[MAX_VERTEX_ELEMENT_TYPE] =
 {
 	sizeof(Int32),

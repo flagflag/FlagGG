@@ -205,7 +205,7 @@ void GameApplication::CreateScene()
 	scene_->AddChild(cameraNode);
 	camera_ = cameraNode->CreateComponent<Camera>();
 	camera_->SetZUp(true);
-	camera_->SetNearClip(0.1f);
+	camera_->SetNearClip(1.0f);
 	camera_->SetFarClip(1e5f);
 
 	auto* reflectionNode = new Node();

@@ -424,12 +424,12 @@ void RenderEngine::SetRasterizerState(const RasterizerState& rasterizerState)
 	gfxDevice_->SetDepthBias(0.0f, 0.0f);
 }
 
-void RenderEngine::SetDepthStencilState(const DepthStencilState& depthStencilState)
+void RenderEngine::SetDepthStencilState(const DepthStencilState& depthStencilState, bool reverseZ)
 {
 	gfxDevice_->SetDepthWrite(depthStencilState.depthWrite_);
-	gfxDevice_->SetDepthTestMode(depthStencilState.depthTestMode_);
+	gfxDevice_->SetDepthTestMode(reverseZ ? REVERSE_Z_MAPPING[depthStencilState.depthTestMode_] : depthStencilState.depthTestMode_);
 	gfxDevice_->SetStencilTest(
-		depthStencilState.stencilTest_, 
+		depthStencilState.stencilTest_,
 		depthStencilState.stencilTestMode_,
 		depthStencilState.stencilRef_,
 		depthStencilState.stencilReadMask_,
@@ -454,7 +454,7 @@ void RenderEngine::DrawCall(UInt32 vertexStart, UInt32 vertexCount)
 void RenderEngine::DrawBatch(Camera* camera, const RenderBatch& renderBatch)
 {
 	SetRasterizerState(renderBatch.renderPassInfo_->GetRasterizerState());
-	SetDepthStencilState(renderBatch.renderPassInfo_->GetDepthStencilState());
+	SetDepthStencilState(renderBatch.renderPassInfo_->GetDepthStencilState(), camera->GetReverseZ());
 	SetShaderParameter(camera, renderBatch);
 	if (renderBatch.vertexShader_ && renderBatch.pixelShader_)
 		SetShaders(renderBatch.vertexShader_, renderBatch.pixelShader_);
@@ -490,7 +490,7 @@ void RenderEngine::DrawQuad(Camera* camera)
 	quadRenderBatch.numWorldTransform_ = 1u;
 
 	SetRasterizerState(fullscreenQuadRS_);
-	SetDepthStencilState(fullscreenDSS_);
+	SetDepthStencilState(fullscreenDSS_, camera->GetReverseZ());
 	SetShaderParameter(camera, quadRenderBatch);
 	SetVertexBuffers(orthographicGeometry_->GetVertexBuffers());
 	SetIndexBuffer(orthographicGeometry_->GetIndexBuffer());
@@ -501,7 +501,7 @@ void RenderEngine::DrawQuad(Camera* camera)
 void RenderEngine::DrawQuad()
 {
 	SetRasterizerState(fullscreenQuadRS_);
-	SetDepthStencilState(fullscreenDSS_);
+	SetDepthStencilState(fullscreenDSS_, false);
 	SetVertexBuffers(orthographicGeometry_->GetVertexBuffers());
 	SetIndexBuffer(orthographicGeometry_->GetIndexBuffer());
 	SetPrimitiveType(orthographicGeometry_->GetPrimitiveType());

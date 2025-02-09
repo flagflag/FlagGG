@@ -23,6 +23,12 @@ cbuffer HiZParam : register(b0)
     float2 invSize;
 }
 
+#if REVERSE_Z
+    #define farthest min
+#else
+    #define farthest max
+#endif
+
 void PS(
     in float4 position : SV_POSITION,
     in float2 texcoord : TEXCOORD,
@@ -36,7 +42,7 @@ void PS(
     // 采样加速：Gather方式采样，采样四个像素
     float4 deviceZ = sourceTexture.GatherRed(sourceTextureSampler, uv, 0);
     // 保守估计，取最远离相机的z作为当前mip的z
-    float furthestDeviceZ = max(max(deviceZ.x, deviceZ.y), max(deviceZ.z, deviceZ.w));
+    float furthestDeviceZ = farthest(farthest(deviceZ.x, deviceZ.y), farthest(deviceZ.z, deviceZ.w));
     outColor = furthestDeviceZ;
 #endif
 }

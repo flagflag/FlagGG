@@ -30,6 +30,12 @@ cbuffer HiZParam : register(b0)
     float2 HiZTextureSize;
 }
 
+#if REVERSE_Z
+    #define farthest min
+#else
+    #define farthest max
+#endif
+
 void PS(
     in float4 position : SV_POSITION,
     in float2 texcoord : TEXCOORD,
@@ -86,11 +92,15 @@ void PS(
         depth.y = HiZTexture.SampleLevel(HiZTextureSampler, float2(i, 1) * scale + bias, level).r;
         depth.z = HiZTexture.SampleLevel(HiZTextureSampler, float2(i, 2) * scale + bias, level).r;
         depth.w = HiZTexture.SampleLevel(HiZTextureSampler, float2(i, 3) * scale + bias, level).r;
-        farthestDepth = max(farthestDepth, depth);
+        farthestDepth = farthest(farthestDepth, depth);
     }
-	farthestDepth.x = max(max(farthestDepth.x, farthestDepth.y), max(farthestDepth.z, farthestDepth.w));
+	farthestDepth.x = farthest(farthest(farthestDepth.x, farthestDepth.y), farthest(farthestDepth.z, farthestDepth.w));
 
-	// Inverted Z buffer
+    // Inverted Z buffer
+#if REVERSE_Z
+	outColor = rectMax.z >= farthestDepth.x ? 1 : 0;
+#else
 	outColor = rectMin.z <= farthestDepth.x ? 1 : 0;
+#endif
 }
 #endif

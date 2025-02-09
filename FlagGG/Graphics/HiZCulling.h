@@ -32,6 +32,9 @@ public:
 
 	~HiZCulling() override;
 
+	// 每帧初始化
+	void InitializeFrame(bool reverseZ);
+
 	// 构建Hi-Z map
 	void BuildHiZMap(Texture2D* depthTexture);
 
@@ -53,6 +56,12 @@ protected:
 	void EncodeGeometriesAABB();
 
 private:
+	// 是否初始化过
+	bool inited_{};
+
+	// 当前帧深度是否是reverseZ
+	bool reverseZ_{};
+
 	// 构建Hi-Z map
 	SharedPtr<Shader> buildHiZVS_;
 	SharedPtr<Shader> buildHiZPS_;

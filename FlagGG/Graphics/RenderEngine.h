@@ -96,7 +96,7 @@ public:
 	// 设置光栅状态
 	void SetRasterizerState(const RasterizerState& rasterizerState);
 
-	void SetDepthStencilState(const DepthStencilState& depthStencilState);
+	void SetDepthStencilState(const DepthStencilState& depthStencilState, bool reverseZ);
 
 	void SetShaderParameter(Camera* camera, const RenderContext* renderContext);
 

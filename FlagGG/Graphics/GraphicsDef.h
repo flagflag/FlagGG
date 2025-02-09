@@ -389,6 +389,8 @@ struct FlagGG_API DepthStencilState
 	UInt32 GetHash() const;
 };
 
+extern FlagGG_API ComparisonFunc REVERSE_Z_MAPPING[];
+
 extern FlagGG_API UInt32 VERTEX_ELEMENT_TYPE_SIZE[MAX_VERTEX_ELEMENT_TYPE];
 
 extern FlagGG_API const char* VERTEX_ELEMENT_SEM_NAME[MAX_VERTEX_ELEMENT_SEMANTIC];

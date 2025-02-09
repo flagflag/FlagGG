@@ -118,6 +118,11 @@ public:
 
 	void SetZUp(bool isZUp);
 
+	// 反转深度
+	void SetReverseZ(bool reverseZ);
+	// 获取反转深度
+	bool GetReverseZ() const { return reverseZ_; }
+
 protected:
 	void Correct(Vector3& right, Vector3& up, Vector3& look);
 
@@ -150,6 +155,8 @@ private:
 	Matrix3x4 reflectionMatrix_{ Matrix3x4::IDENTITY };
 
 	bool isZUp_{ false };
+
+	bool reverseZ_{ true };
 
 	LinkedListNode<ITransformListener> listenerNode_;
 };

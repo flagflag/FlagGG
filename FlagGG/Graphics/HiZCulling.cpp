@@ -20,15 +20,10 @@ static const UInt32 HiZMapHeight = 256;
 
 HiZCulling::HiZCulling()
 {
-	INIT_SHADER_VARIATION(buildHiZVS_, "Shader/HiZ/HiZBuilder.hlsl", VS, {});
-	INIT_SHADER_VARIATION(buildHiZPS_, "Shader/HiZ/HiZBuilder.hlsl", PS, { "COPY_DEPTH" });
-	INIT_SHADER_VARIATION(buildHiZMipsPS_, "Shader/HiZ/HiZBuilder.hlsl", PS, {});
 	buildHiZPrams_ = new ShaderParameters();
 	buildHiZPrams_->AddParametersDefine<Vector4>("screenToUV");
 	buildHiZPrams_->AddParametersDefine<Vector2>("invSize");
 
-	INIT_SHADER_VARIATION(calcVisibilityVS_, "Shader/HiZ/HiZVisibility.hlsl", VS, {});
-	INIT_SHADER_VARIATION(calcVisibilityPS_, "Shader/HiZ/HiZVisibility.hlsl", PS, {});
 	calcVisibilityParams_ = new ShaderParameters();
 	calcVisibilityParams_->AddParametersDefine<Vector4>("screenToUV");
 	calcVisibilityParams_->AddParametersDefine<Matrix4>("projviewMatrix");
@@ -40,6 +35,22 @@ HiZCulling::HiZCulling()
 HiZCulling::~HiZCulling()
 {
 
+}
+
+void HiZCulling::InitializeFrame(bool reverseZ)
+{
+	if (!inited_ || reverseZ_ != reverseZ)
+	{
+		reverseZ_ = reverseZ;
+		inited_ = true;
+
+		INIT_SHADER_VARIATION(buildHiZVS_, "Shader/HiZ/HiZBuilder.hlsl", VS, {});
+		INIT_SHADER_VARIATION(buildHiZPS_, "Shader/HiZ/HiZBuilder.hlsl", PS, { "COPY_DEPTH" });
+		INIT_SHADER_VARIATION(buildHiZMipsPS_, "Shader/HiZ/HiZBuilder.hlsl", PS, { reverseZ_ ? "REVERSE_Z" : "" });
+
+		INIT_SHADER_VARIATION(calcVisibilityVS_, "Shader/HiZ/HiZVisibility.hlsl", VS, {});
+		INIT_SHADER_VARIATION(calcVisibilityPS_, "Shader/HiZ/HiZVisibility.hlsl", PS, { reverseZ_ ? "REVERSE_Z" : "" });
+	}
 }
 
 void HiZCulling::BuildHiZMap(Texture2D* depthTexture)
