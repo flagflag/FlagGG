@@ -15,6 +15,8 @@
 #include <Core/EventManager.h>
 #include <Core/EngineSettings.h>
 #include <FileSystem/FileHandle/LocalFileHandle.h>
+#include <FileSystem/FileManager.h>
+#include <FileSystem/FileSystemArchive/DefaultFileSystemArchive.h>
 #include <Memory/MemoryHook.h>
 #include <WebUISystem/UIView.h>
 #include <GfxDevice/GfxSwapChain.h>
@@ -31,6 +33,8 @@ public:
 	void Start() override
 	{
 		GameEngine::Start();
+
+		GetSubsystem<AssetFileManager>()->AddArchive(new DefaultFileSystemArchive(GetLocalFileSystem(), GetProgramDir() + "ResForSCE"));
 
 		IntRect rect = GetDesktopRect();
 		window_ = new Window(nullptr, rect);

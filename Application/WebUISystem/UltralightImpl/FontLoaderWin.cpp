@@ -262,7 +262,9 @@ RefPtr<FontFile> UltralightFontLoader::Load(const String& family, int weight, bo
 {
 	using namespace FlagGG;
 
-	auto buffer = GetSubsystem<AssetFileManager>()->OpenFileReader("Fonts/ZYKai_C.ttf");
+	auto buffer = GetSubsystem<AssetFileManager>()->OpenFileReader("Fonts/Regular.otf");
+	if (!buffer)
+		buffer = GetSubsystem<AssetFileManager>()->OpenFileReader("Fonts/ZYKai_C.ttf");
 
 	FlagGG::String fileContent;
 	buffer->ToString(fileContent);
