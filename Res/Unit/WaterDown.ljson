@@ -1,5 +1,6 @@
 {
     geometrytype = "STATIC", // STATIC | SKINNED
     model = "Model/Plane.mdl",
-    material = "Materials/Sandbeach.ljson"
+    material = "Materials/Sandbeach.ljson",
+    occlusionculling = false
 }

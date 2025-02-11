@@ -133,7 +133,7 @@ void GameApplication::Start()
 	}
 
 	// ShowPrefab("deco\\Chinoiserie\\SM_CH_stone_lantern_A\\model.prefab");
-	ShowPrefab("deco\\Building\\Arch_01\\model.prefab");
+	// ShowPrefab("deco\\Building\\Arch_01\\model.prefab");
 }
 
 void GameApplication::Stop()
@@ -208,15 +208,6 @@ void GameApplication::CreateScene()
 	camera_->SetNearClip(1.0f);
 	camera_->SetFarClip(1e5f);
 
-	auto* reflectionNode = new Node();
-	cameraNode->AddChild(reflectionNode);
-	reflectionCamera_ = reflectionNode->CreateComponent<Camera>();
-	reflectionCamera_->SetNearClip(0.1f);
-	reflectionCamera_->SetFarClip(1e5f);
-	reflectionCamera_->SetViewMask(0xff00);
-	reflectionCamera_->SetUseReflection(true);
-	reflectionCamera_->SetZUp(true);
-
 #if 0
 	mainHero_ = new CEUnit();
 	mainHero_->Load("Unit/MainHero.ljson");
@@ -242,13 +233,6 @@ void GameApplication::CreateScene()
 	dissolveHero_->PlayAnimation("Animation/Kachujin_Walk.ani", true);
 	dissolveHero_->SetName("DissolveHero");
 	scene_->AddChild(dissolveHero_);
-
-	terrain_ = new Terrain();
-	terrain_->Create(64);
-	terrain_->SetScale(Vector3(1, 1, 0.2));
-	terrain_->SetPosition(Vector3(0, -80, 0));
-	terrain_->SetName("Terrain");
-	scene_->AddChild(terrain_);
 
 #if 0
 	auto* lightNode = new Unit();
@@ -279,28 +263,6 @@ void GameApplication::CreateScene()
 	skybox_->SetTranspent(true);
 	skybox_->SetRotation(Quaternion(Vector3(0.f, 0.f, 1.f), Vector3(1.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f)).Inverse());
 	scene_->AddChild(skybox_);
-
-	waterDown_ = new Unit();
-	// waterDown_->Load("Unit/WaterDown.ljson");
-	waterDown_->SetPosition(Vector3(0, -5, 10));
-	waterDown_->SetScale(Vector3(10, 10, 10));
-	waterDown_->SetName("WaterDown");
-	waterDown_->SetTranspent(true);
-	auto* comp = waterDown_->GetComponent<StaticMeshComponent>();
-	if (comp)
-		comp->SetViewMask(0xff0000); // 不进入水反射
-	scene_->AddChild(waterDown_);
-
-	water_ = new Unit();
-	water_->Load("Unit/Water.ljson");
-	water_->SetPosition(Vector3(500, 500 - 80, 1));
-	water_->SetRotation(Quaternion(Vector3(0.f, 0.f, 1.f), Vector3(1.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f)).Inverse());
-	water_->SetScale(Vector3(1000, 1000, 1000));
-	water_->SetName("Water");
-	scene_->AddChild(water_);
-
-	Plane waterPlane(water_->GetWorldRotation() * Vector3::UP, water_->GetWorldPosition());
-	reflectionCamera_->SetReflectionPlane(waterPlane);
 }
 
 void GameApplication::SetupWindow()
@@ -321,61 +283,6 @@ void GameApplication::SetupWindow()
 	shadowMap_->SetAddressMode(TEXTURE_COORDINATE_W, TEXTURE_ADDRESS_CLAMP);
 	shadowMap_->SetSize(rect.Width(), rect.Height(), RenderEngine::GetReadableDepthFormat(), TEXTURE_DEPTHSTENCIL);
 	RenderEngine::Instance().SetDefaultTexture(TEXTURE_CLASS_SHADOWMAP, shadowMap_);
-
-	renderTexture_[0] = new Texture2D();
-	renderTexture_[0]->SetNumLevels(1);
-	renderTexture_[0]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetRGBFormat(), TEXTURE_RENDERTARGET);
-
-	renderTexture_[1] = new Texture2D();
-	renderTexture_[1]->SetNumLevels(1);
-	renderTexture_[1]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetDepthStencilFormat(), TEXTURE_DEPTHSTENCIL);
-
-	rttTexture_[0] = new Texture2D();
-	rttTexture_[0]->SetNumLevels(1);
-	rttTexture_[0]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetRGBFormat(), TEXTURE_RENDERTARGET);
-
-	rttTexture_[1] = new Texture2D();
-	rttTexture_[1]->SetNumLevels(1);
-	rttTexture_[1]->SetSize(rect.Width(), rect.Height(), RenderEngine::GetDepthStencilFormat(), TEXTURE_DEPTHSTENCIL);
-
-	SharedPtr<Viewport> rttViewport(new Viewport());
-	rttViewport->Resize(IntRect(0, 0, rect.Width(), rect.Height()));
-	rttViewport->SetCamera(reflectionCamera_);
-	rttViewport->SetScene(scene_);
-	rttViewport->SetRenderTarget(rttTexture_[0]->GetRenderSurface());
-	rttViewport->SetDepthStencil(rttTexture_[1]->GetRenderSurface());
-	// viewports_.Push(rttViewport);
-
-	//auto* waterComp = water_->GetComponent<StaticMeshComponent>();
-	//if (waterComp)
-	//{
-	//	waterComp->SetViewMask(0xff);
-	//	auto* waterMaterial = waterComp->GetMaterial();
-	//	if (waterMaterial)
-	//	{
-	//		waterMaterial->SetTexture(TEXTURE_CLASS_DIFFUSE, rttTexture_[0]);
-	//		waterComp->SetMaterial(waterMaterial);
-	//	}
-	//}
-	//auto* dynamicWaterComp = water_->GetComponent<OceanComponent>();
-	//if (dynamicWaterComp)
-	//{
-	//	dynamicWaterComp->SetViewMask(0xff);
-	//	auto* waterMaterial = waterComp->GetMaterial();
-	//	if (waterMaterial)
-	//	{
-	//		waterMaterial->SetTexture(TEXTURE_CLASS_DIFFUSE, rttTexture_[0]);
-	//		dynamicWaterComp->SetMaterial(waterMaterial);
-	//	}
-	//}
-
-	SharedPtr<Viewport> viewport(new Viewport());
-	viewport->Resize(IntRect(0, 0, rect.Width(), rect.Height()));
-	viewport->SetCamera(camera_);
-	viewport->SetScene(scene_);
-	viewport->SetRenderTarget(renderTexture_[0]->GetRenderSurface());
-	viewport->SetDepthStencil(renderTexture_[1]->GetRenderSurface());
-	// viewports_.Push(viewport);
 
 	window_ = new Window(nullptr, rect);
 	window_->Show();
@@ -441,28 +348,6 @@ void GameApplication::OnKeyDown(KeyState* keyState, UInt32 keyCode)
 
 void GameApplication::OnKeyUp(KeyState* keyState, UInt32 keyCode)
 {
-	if (keyCode == VK_F11)
-	{
-		SharedPtr<Image> image = renderTexture_[0]->GetImage();
-		image->SavePNG("E:\\FlagGG_Scene.png");
-	}
-
-	if (keyCode == VK_F9)
-	{
-		static bool flag = false;
-		if (!flag)
-		{
-			window_->GetViewport()->SetCamera(reflectionCamera_);
-			viewports_[1]->SetCamera(reflectionCamera_);
-		}
-		else
-		{
-			window_->GetViewport()->SetCamera(camera_);
-			viewports_[1]->SetCamera(camera_);
-		}
-		flag = !flag;
-	}
-
 	if (keyCode == VK_F1)
 	{
 		simpleParticle_ = new ParticleActor();

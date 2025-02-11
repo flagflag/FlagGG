@@ -22,14 +22,18 @@ RenderEngine::RenderEngine()
 	shaderParameters_ = new ShaderParameters();
 	shaderParameters_->AddParametersDefine<Matrix3x4>(SP_WORLD_MATRIX);
 	shaderParameters_->AddParametersDefine<Matrix3x4>(SP_VIEW_MATRIX);
+	shaderParameters_->AddParametersDefine<Matrix4>(SP_PROJ_MATRIX);
 	shaderParameters_->AddParametersDefine<Matrix4>(SP_PROJVIEW_MATRIX);
 	shaderParameters_->AddParametersDefine<Matrix3x4>(SP_INV_VIEW_MATRIX);
 	shaderParameters_->AddParametersDefine<float>(SP_NEAR_CLIP);
 	shaderParameters_->AddParametersDefine<float>(SP_FAR_CLIP);
 	shaderParameters_->AddParametersDefine<Vector3>(SP_FRUSTUM_SIZE);
 	shaderParameters_->AddParametersDefine<Vector4>(SP_DEPTH_RECONSTRUCT);
+	shaderParameters_->AddParametersDefine<Vector4>(SP_SCREEN_POSITION_SCALE_BIAS);
 	shaderParameters_->AddParametersDefine<float>(SP_DELTA_TIME);
 	shaderParameters_->AddParametersDefine<float>(SP_ELAPSED_TIME);
+	shaderParameters_->AddParametersDefine<UInt32>(SP_FRAME_NUMBER);
+	shaderParameters_->AddParametersDefine<UInt32>(SP_FRAME_NUMBER_MOD8);
 	shaderParameters_->AddParametersDefine<Vector3>(SP_CAMERA_POS);
 	shaderParameters_->AddParametersDefine<Vector3>(SP_LIGHT_POS);
 	shaderParameters_->AddParametersDefine<Vector3>(SP_LIGHT_DIR);
@@ -304,29 +308,6 @@ void RenderEngine::PostRenderBatch(const Vector<SharedPtr<Batch>>& batches)
 	}
 }
 
-void RenderEngine::SetShaderParameter(Camera* camera, const RenderContext* renderContext)
-{
-	if (!renderContext)
-		return;
-
-	// 视图矩阵，投影矩阵，蒙皮矩阵等
-	if (camera && renderContext->worldTransform_ && renderContext->numWorldTransform_)
-	{
-		shaderParameters_->SetValue(SP_WORLD_MATRIX, *renderContext->worldTransform_);
-		shaderParameters_->SetValue(SP_VIEW_MATRIX, camera->GetViewMatrix());
-		shaderParameters_->SetValue(SP_PROJVIEW_MATRIX, camera->GetProjectionMatrix() * camera->GetViewMatrix());
-		shaderParameters_->SetValue(SP_CAMERA_POS, camera->GetNode()->GetWorldPosition());
-
-		if (renderContext->geometryType_ == GEOMETRY_SKINNED)
-		{
-			shaderParameters_->SetValueImpl(SP_SKIN_MATRICES, renderContext->worldTransform_, renderContext->numWorldTransform_ * sizeof(Matrix3x4));
-		}
-	}
-
-	gfxDevice_->SetEngineShaderParameters(shaderParameters_);
-	gfxDevice_->SetMaterialShaderParameters(renderContext->material_->GetShaderParameters());
-}
-
 void RenderEngine::SetShaderParameter(Camera* camera, const RenderBatch& renderBatch)
 {
 	// 视图矩阵，投影矩阵，蒙皮矩阵等
@@ -334,6 +315,7 @@ void RenderEngine::SetShaderParameter(Camera* camera, const RenderBatch& renderB
 	{
 		shaderParameters_->SetValue(SP_WORLD_MATRIX, *renderBatch.worldTransform_);
 		shaderParameters_->SetValue(SP_VIEW_MATRIX, camera->GetViewMatrix());
+		shaderParameters_->SetValue(SP_PROJ_MATRIX, camera->GetProjectionMatrix());
 		shaderParameters_->SetValue(SP_PROJVIEW_MATRIX, camera->GetProjectionMatrix() * camera->GetViewMatrix());
 		shaderParameters_->SetValue(SP_INV_VIEW_MATRIX, camera->GetViewMatrix().Inverse());
 		shaderParameters_->SetValue(SP_NEAR_CLIP, camera->GetNearClip());
@@ -343,6 +325,7 @@ void RenderEngine::SetShaderParameter(Camera* camera, const RenderBatch& renderB
 		shaderParameters_->SetValue(SP_FRUSTUM_SIZE, farVector);
 		Vector4 depthReconstruct(camera->GetFarClip() / (camera->GetFarClip() - camera->GetNearClip()), -camera->GetNearClip() / (camera->GetFarClip() - camera->GetNearClip()), camera->IsOrthographic() ? 1.0f : 0.0f, camera->IsOrthographic() ? 0.0f : 1.0f);
 		shaderParameters_->SetValue(SP_DEPTH_RECONSTRUCT, depthReconstruct);
+		shaderParameters_->SetValue(SP_SCREEN_POSITION_SCALE_BIAS, Vector4(1, 1, 0, 0));
 		shaderParameters_->SetValue(SP_CAMERA_POS, camera->GetNode()->GetWorldPosition());
 
 		if (renderBatch.geometryType_ == GEOMETRY_SKINNED)

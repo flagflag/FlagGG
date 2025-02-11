@@ -11,8 +11,7 @@
 #include "Core/ObjectFactory.h"
 #include "Log.h"
 #include "GfxDevice/GfxDevice.h"
-
-#include <fstream>
+#include "GfxDevice/Shader/PreProcessShaderInfo.h"
 
 namespace FlagGG
 {
@@ -56,7 +55,7 @@ Shader* ShaderCode::GetShader(ShaderType type, const Vector<String>& defines)
 		}
 	}
 			
-	SharedPtr<Shader> shader(new Shader(buffer_, bufferSize_));
+	SharedPtr<Shader> shader(new Shader(shaderInfo_));
 	shader->SetType(type);
 	shader->SetDefines(newDefines);
 	shader->Compile();
@@ -65,8 +64,10 @@ Shader* ShaderCode::GetShader(ShaderType type, const Vector<String>& defines)
 	return shader;
 }
 
-bool ShaderCode::PreCompileShaderCode(const char* head, const char* tail, String& out)
+static bool PreCompileShaderCode(const char* head, const char* tail, String& out, PreProcessShaderInfo& shaderInfo, UInt32 fileIndex)
 {
+	UInt32 fileLineNumber = 0;
+
 	while (head < tail)
 	{
 		if (head + 10 < tail &&
@@ -106,8 +107,7 @@ bool ShaderCode::PreCompileShaderCode(const char* head, const char* tail, String
 					return false;
 				}
 
-				UInt32 bufferSize = 0u;
-				SharedArrayPtr<char> buffer;
+				String shaderSource;
 
 				{
 					auto file = GetSubsystem<AssetFileManager>()->OpenFileReader(relativePath);
@@ -117,12 +117,16 @@ bool ShaderCode::PreCompileShaderCode(const char* head, const char* tail, String
 						return false;
 					}
 
-
-					file->ToBuffer(buffer, bufferSize);
+					file->ToString(shaderSource);
 				}
 
-				if (!PreCompileShaderCode(buffer.Get(), buffer.Get() + bufferSize, out))
+				UInt32 nextFileIndex = shaderInfo.fileInfos_.Size();
+				shaderInfo.fileInfos_.Push(PreProcessFileInfo{ relativePath });
+
+				if (!PreCompileShaderCode(shaderSource.CString(), shaderSource.CString() + shaderSource.Length(), out, shaderInfo, nextFileIndex))
 					return false;
+
+				shaderInfo.fileInfos_[nextFileIndex].shaderSource_ = std::move(shaderSource);
 			}
 			else
 			{
@@ -132,6 +136,12 @@ bool ShaderCode::PreCompileShaderCode(const char* head, const char* tail, String
 		}
 		else
 		{
+			if (*head == '\n')
+			{
+				shaderInfo.lineInfos_.Push(PreProcessLineInfo{ fileIndex, fileLineNumber });
+				++fileLineNumber;
+			}
+
 			out += *head;
 			++head;
 		}
@@ -140,25 +150,37 @@ bool ShaderCode::PreCompileShaderCode(const char* head, const char* tail, String
 	return true;
 }
 
-static String PreCompileShaderCache;
+SharedPtr<PreProcessShaderInfo> ShaderCode::PreCompileShaderCode(const String& shaderSource)
+{
+	static String PreCompileShaderCache;
+	if (PreCompileShaderCache.Capacity() == 0)
+		PreCompileShaderCache.Reserve(1024 * 1024 * 5); // 5MB
+
+	PreCompileShaderCache.Clear();
+
+	SharedPtr<PreProcessShaderInfo> shaderInfo(new PreProcessShaderInfo);
+
+	shaderInfo->fileInfos_.Push(PreProcessFileInfo{ GetName(), shaderSource });
+
+	if (!FlagGG::PreCompileShaderCode(shaderSource.CString(), shaderSource.CString() + shaderSource.Length(), PreCompileShaderCache, *shaderInfo, 0))
+		return nullptr;
+
+	shaderInfo->bufferSize_ = PreCompileShaderCache.Length();
+	shaderInfo->buffer_ = new char[shaderInfo->bufferSize_ + 1];
+	shaderInfo->buffer_[shaderInfo->bufferSize_] = '\0';
+	Memory::Memcpy(shaderInfo->buffer_.Get(), PreCompileShaderCache.CString(), shaderInfo->bufferSize_);
+
+	return shaderInfo;
+}
 
 bool ShaderCode::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 {
-	String buffer;
-	stream->ToString(buffer);
+	String shaderSource;
+	stream->ToString(shaderSource);
 
-	if (PreCompileShaderCache.Capacity() == 0)
-		PreCompileShaderCache.Reserve(1024 * 1024 * 5); // 5MB
-	PreCompileShaderCache.Clear();
-	if (!PreCompileShaderCode(buffer.CString(), buffer.CString() + buffer.Length(), PreCompileShaderCache))
-		return false;
+	shaderInfo_ = PreCompileShaderCode(shaderSource);
 
-	bufferSize_ = PreCompileShaderCache.Length();
-	buffer_ = new char[bufferSize_ + 1];
-	buffer_[bufferSize_] = '\0';
-	memcpy(buffer_.Get(), PreCompileShaderCache.CString(), bufferSize_);
-
-	return true;
+	return shaderInfo_;
 }
 
 bool ShaderCode::EndLoad()
@@ -168,9 +190,8 @@ bool ShaderCode::EndLoad()
 
 // --------------------------------------------------------------------------------------------------------------
 
-Shader::Shader(SharedArrayPtr<char> buffer, UInt32 bufferSize) :
-	buffer_(buffer),
-	bufferSize_(bufferSize)
+Shader::Shader(PreProcessShaderInfo* shaderInfo)
+	: shaderInfo_(shaderInfo)
 {
 	gfxShader_ = GfxDevice::GetDevice()->CreateShader();
 }
@@ -184,7 +205,7 @@ void Shader::Compile()
 {
 	gfxShader_->SetShaderType(shaderType_);
 	gfxShader_->SetDefines(defines_);
-	gfxShader_->SetShaderSource(buffer_, bufferSize_);
+	gfxShader_->SetShaderInfo(shaderInfo_);
 	gfxShader_->Compile();
 }
 

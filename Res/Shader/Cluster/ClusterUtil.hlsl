@@ -2,7 +2,7 @@
 // 注意这里之前是屏幕空间，现在改成了viewport空间
 float4 Screen2Eye(float4 coord)
 {
-#if BGFX_SHADER_LANGUAGE_GLSL || BGFX_SHADER_LANGUAGE_GLSL_HLSLCC
+#if SHADER_LANGUAGE_GLSL || SHADER_LANGUAGE_GLSL_HLSLCC
     // https://www.khronos.org/opengl/wiki/Compute_eye_space_from_window_space
 //    float3 ndc = float3(
 //        2.0 * (coord.x - viewRect.x) / viewRect.z - 1.0,
@@ -44,7 +44,7 @@ float Screen2EyeDepth(float depth, float near, float far)
 {
     // https://stackoverflow.com/a/45710371/862300
 
-#if BGFX_SHADER_LANGUAGE_GLSL || BGFX_SHADER_LANGUAGE_GLSL_HLSLCC
+#if SHADER_LANGUAGE_GLSL || SHADER_LANGUAGE_GLSL_HLSLCC
     float ndc = 2.0 * depth - 1.0;
     // ndc = (eye * (far + near) / (far - near) - 2 * (far * near) / (far - near)) / eye
     float eye = 2.0 * far * near / (far + near + ndc * (near - far));

@@ -29,6 +29,10 @@ void RunApplication(SetupFinish setupFinish)
 		GetSubsystem<EngineSettings>()->clusterLightEnabled_ = true;
 	if (CommandParam.Contains("close_hiz"))
 		GetSubsystem<EngineSettings>()->occlusionCullingType_ = OcclusionCullingType::None;
+	if (CommandParam.Contains("close_ao"))
+		GetSubsystem<EngineSettings>()->renderAO_ = false;
+	if (CommandParam.Contains("close_ssr"))
+		GetSubsystem<EngineSettings>()->renderSSR_ = false;
 
 	GameApplication app(CommandParam, setupFinish);
 	ApplicationInstance = &app;

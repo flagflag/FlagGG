@@ -1,5 +1,6 @@
 #include "LuaInterface/LuaGame.h"
 #include "Unit/Unit.h"
+#include "Unit/Terrain.h"
 
 #include <Scene/Scene.h>
 #include <Scene/PrefabLoader.h>
@@ -42,12 +43,29 @@ LuaGamePlay::LuaGamePlay(Scene* scene)
 		return 0;
 	});
 	{
+		luaex_classfunction(L, "set_name", [](lua_State* L) -> int
+		{
+			if (auto* node = reinterpret_cast<Node*>(luaex_tousertype(L, 1, "Node")))
+			{
+				node->SetName(lua_tostring(L, 2));
+			}
+			return 0;
+		});
 		luaex_classfunction(L, "set_position", [](lua_State* L) -> int
 		{
 			if (auto* node = reinterpret_cast<Node*>(luaex_tousertype(L, 1, "Node")))
 			{
 				const Vector3 position(lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4));
 				node->SetPosition(position);
+			}
+			return 0;
+		});
+		luaex_classfunction(L, "set_rotation", [](lua_State* L) -> int
+		{
+			if (auto* node = reinterpret_cast<Node*>(luaex_tousertype(L, 1, "Node")))
+			{
+				const Quaternion rotation(lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4), lua_tonumber(L, 5));
+				node->SetRotation(rotation);
 			}
 			return 0;
 		});
@@ -121,6 +139,33 @@ LuaGamePlay::LuaGamePlay(Scene* scene)
 			}
 			lua_pushboolean(L, ret);
 			return 1;
+		});
+	}
+	luaex_endclass(L);
+
+	luaex_beginclass(L, "Terrain", "Node",
+		[](lua_State* L) -> int
+	{
+		Terrain* terrain = new Terrain();
+		luaex_pushusertyperef(L, "Terrain", terrain);
+		return 1;
+	},
+		[](lua_State* L) -> int
+	{
+		if (auto* terrain = reinterpret_cast<Terrain*>(luaex_tousertype(L, 1, "Terrain")))
+		{
+			terrain->ReleaseRef();
+		}
+		return 0;
+	});
+	{
+		luaex_classfunction(L, "create", [](lua_State* L) -> int
+		{
+			if (auto* terrain = reinterpret_cast<Terrain*>(luaex_tousertype(L, 1, "Terrain")))
+			{
+				terrain->Create(lua_tointeger(L, 2));
+			}
+			return 0;
 		});
 	}
 	luaex_endclass(L);

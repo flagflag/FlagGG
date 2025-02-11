@@ -2,5 +2,6 @@
     geometrytype = "STATIC",
     model = "Model/Box.mdl",
     material = "Materials/Skybox.ljson",
-    cast_shadow = false
+    cast_shadow = false,
+    occlusionculling = false
 }

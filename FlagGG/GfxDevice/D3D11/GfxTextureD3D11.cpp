@@ -881,7 +881,7 @@ bool GfxTextureD3D11::ReadBackSubRegion(void* dataPtr, UInt32 index, UInt32 leve
 	return true;
 }
 
-GfxShaderResourceView* GfxTextureD3D11::GetGetSubResourceView(UInt32 index, UInt32 level)
+GfxShaderResourceView* GfxTextureD3D11::GetSubResourceView(UInt32 index, UInt32 level)
 {
 	UInt32 layers = textureDesc_.isCube_ ? 6 : textureDesc_.layers_;
 	UInt32 arrayIndex = index * layers + level;

@@ -23,4 +23,6 @@ protected:
 	int Error(LuaVM* luaVM);
 
 	int Critical(LuaVM* luaVM);
+
+	int Alert(LuaVM* luaVM);
 };

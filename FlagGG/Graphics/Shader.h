@@ -20,6 +20,7 @@ namespace FlagGG
 {
 
 class Shader;
+class PreProcessShaderInfo;
 
 // shader源码
 class FlagGG_API ShaderCode : public Resource
@@ -38,21 +39,18 @@ protected:
 
 	bool EndLoad() override;
 
-	// 预处理shader代码
-	bool PreCompileShaderCode(const char* head, const char* tail, String& out);
+	SharedPtr<PreProcessShaderInfo> PreCompileShaderCode(const String& shaderSource);
 
 private:
 	Vector<SharedPtr<Shader>> shaders_;
 
-	// shader代码
-	SharedArrayPtr<char> buffer_;
-	UInt32 bufferSize_{ 0 };
+	SharedPtr<PreProcessShaderInfo> shaderInfo_;
 };
 
 class FlagGG_API Shader : public RefCounted
 {
 public:
-	Shader(SharedArrayPtr<char> buffer, UInt32 bufferSize);
+	Shader(PreProcessShaderInfo* shaderInfo);
 
 	~Shader() override;
 
@@ -77,9 +75,7 @@ public:
 private:
 	SharedPtr<GfxShader> gfxShader_;
 
-	// shader代码
-	SharedArrayPtr<char> buffer_;
-	UInt32 bufferSize_{ 0 };
+	SharedPtr<PreProcessShaderInfo> shaderInfo_;
 
 	ShaderType shaderType_{};
 

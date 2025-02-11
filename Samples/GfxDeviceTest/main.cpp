@@ -6,6 +6,7 @@
 #include <Utility/SystemHelper.h>
 #include <Graphics/Shader.h>
 #include <Graphics/Texture2D.h>
+#include <Graphics/ShaderHelper.h>
 #include <GfxDevice/GfxDevice.h>
 #include <GfxDevice/GfxProgram.h>
 #include <Core/EngineSettings.h>
@@ -65,12 +66,23 @@ void GfxTextureTest()
 	cache->GetResource<Texture2D>("Textures/WaterReflection.dds");
 }
 
+void ShaderCompileTest(const String& path)
+{
+	SharedPtr<Shader> vs;
+	SharedPtr<Shader> ps;
+
+	INIT_SHADER_VARIATION(vs, path, VS, {});
+	INIT_SHADER_VARIATION(vs, path, PS, {});
+}
+
 int main()
 {
 	//
 	GetSubsystem<EngineSettings>()->rendererType_ = RENDERER_TYPE_VULKAN;
 
 	GetSubsystem<AssetFileManager>()->AddArchive(new DefaultFileSystemArchive(GetLocalFileSystem(), GetProgramDir() + "Res"));
+
+	ShaderCompileTest("Shader/SSR/ScreenSpaceReflections.hlsl");
 
 	UniformTest();
 

@@ -406,15 +406,19 @@ extern FlagGG_API VertexElement DEFAULT_VERTEX_ELEMENT[MAX_DEFAULT_VERTEX_ELEMEN
 
 extern FlagGG_API const FlagGG::StringHash SP_WORLD_MATRIX;
 extern FlagGG_API const FlagGG::StringHash SP_VIEW_MATRIX;
+extern FlagGG_API const FlagGG::StringHash SP_PROJ_MATRIX;
 extern FlagGG_API const FlagGG::StringHash SP_PROJVIEW_MATRIX;
 extern FlagGG_API const FlagGG::StringHash SP_INV_VIEW_MATRIX;
 extern FlagGG_API const FlagGG::StringHash SP_NEAR_CLIP;
 extern FlagGG_API const FlagGG::StringHash SP_FAR_CLIP;
 extern FlagGG_API const FlagGG::StringHash SP_FRUSTUM_SIZE;
 extern FlagGG_API const FlagGG::StringHash SP_DEPTH_RECONSTRUCT;
+extern FlagGG_API const FlagGG::StringHash SP_SCREEN_POSITION_SCALE_BIAS;
 extern FlagGG_API const FlagGG::StringHash SP_SKIN_MATRICES;
 extern FlagGG_API const FlagGG::StringHash SP_DELTA_TIME;
 extern FlagGG_API const FlagGG::StringHash SP_ELAPSED_TIME;
+extern FlagGG_API const FlagGG::StringHash SP_FRAME_NUMBER;
+extern FlagGG_API const FlagGG::StringHash SP_FRAME_NUMBER_MOD8;
 extern FlagGG_API const FlagGG::StringHash SP_CAMERA_POS;
 extern FlagGG_API const FlagGG::StringHash SP_LIGHT_POS;
 extern FlagGG_API const FlagGG::StringHash SP_LIGHT_COLOR;

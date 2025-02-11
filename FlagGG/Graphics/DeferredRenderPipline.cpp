@@ -7,6 +7,7 @@
 #include "Graphics/AmbientOcclusionRendering.h"
 #include "Graphics/AmbientOcclusionRenderingSoftware.h"
 #include "Graphics/HiZCulling.h"
+#include "Graphics/ScreenSpaceReflection.h"
 #include "GfxDevice/GfxDevice.h"
 #include "GfxDevice/GfxRenderSurface.h"
 #include "GfxDevice/GfxTexture.h"
@@ -121,30 +122,35 @@ void DeferredRenderPipline::AllocGBuffers()
 	if (GBufferA_->GetWidth() != renderSolution.x_ || GBufferA_->GetHeight() != renderSolution.y_)
 	{
 		GBufferA_->SetNumLevels(1);
+		GBufferA_->SetFilterMode(TEXTURE_FILTER_NEAREST);
 		GBufferA_->SetSize(renderSolution.x_, renderSolution.y_, TEXTURE_FORMAT_RGBA8, TEXTURE_RENDERTARGET);
 	}
 
 	if (GBufferB_->GetWidth() != renderSolution.x_ || GBufferB_->GetHeight() != renderSolution.y_)
 	{
 		GBufferB_->SetNumLevels(1);
+		GBufferB_->SetFilterMode(TEXTURE_FILTER_NEAREST);
 		GBufferB_->SetSize(renderSolution.x_, renderSolution.y_, TEXTURE_FORMAT_RGBA8, TEXTURE_RENDERTARGET);
 	}
 
 	if (GBufferC_->GetWidth() != renderSolution.x_ || GBufferC_->GetHeight() != renderSolution.y_)
 	{
 		GBufferC_->SetNumLevels(1);
+		GBufferC_->SetFilterMode(TEXTURE_FILTER_NEAREST);
 		GBufferC_->SetSize(renderSolution.x_, renderSolution.y_, TEXTURE_FORMAT_RGBA8, TEXTURE_RENDERTARGET);
 	}
 
 	if (GBufferD_->GetWidth() != renderSolution.x_ || GBufferD_->GetHeight() != renderSolution.y_)
 	{
 		GBufferD_->SetNumLevels(1);
+		GBufferD_->SetFilterMode(TEXTURE_FILTER_NEAREST);
 		GBufferD_->SetSize(renderSolution.x_, renderSolution.y_, TEXTURE_FORMAT_RGBA8, TEXTURE_RENDERTARGET);
 	}
 
 	if (depthTexture_->GetWidth() != renderSolution.x_ || depthTexture_->GetHeight() != renderSolution.y_)
 	{
 		depthTexture_->SetNumLevels(1);
+		depthTexture_->SetFilterMode(TEXTURE_FILTER_NEAREST);
 		depthTexture_->SetSize(renderSolution.x_, renderSolution.y_, TEXTURE_FORMAT_D24S8, TEXTURE_DEPTHSTENCIL);
 	}
 }
@@ -245,6 +251,24 @@ void DeferredRenderPipline::Render()
 		gfxDevice->SetSampler(3u, GBufferD_->GetGfxSamplerRef());
 		gfxDevice->SetSampler(4u, depthTexture_->GetGfxSamplerRef());
 
+		// Render screen space reflections
+		if (GetSubsystem<EngineSettings>()->renderSSR_ && HiZCulling_)
+		{
+			if (!SSR_)
+				SSR_ = new ScreenSpaceReflections();
+
+			ScreenSpaceReflectionsInputData inputData;
+			inputData.HiZMap_ = HiZCulling_->GetClosestHiZMap();
+			inputData.camera_ = renderPiplineContext_.camera_;
+			inputData.renderSolution_ = renderPiplineContext_.renderSolution_;
+
+			SSR_->RenderSSR(inputData);
+
+			auto* GBufferSSR = SSR_->GetGBufferSSR();
+			gfxDevice->SetTexture(5u, GBufferSSR->GetGfxTextureRef());
+			gfxDevice->SetSampler(5u, GBufferSSR->GetGfxSamplerRef());
+		}
+
 		gfxDevice->ResetRenderTargets();
 
 		if (needRT)
@@ -280,15 +304,20 @@ void DeferredRenderPipline::Render()
 	waterRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 	alphaRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 
-	if (GetSubsystem<EngineSettings>()->occlusionCullingType_ == OcclusionCullingType::HiZCulling)
+	// Render Hi-Z map
+	if (GetSubsystem<EngineSettings>()->renderSSR_ || GetSubsystem<EngineSettings>()->occlusionCullingType_ == OcclusionCullingType::HiZCulling)
 	{
 		if (!HiZCulling_)
 			HiZCulling_ = new HiZCulling();
 
-		HiZCulling_->InitializeFrame(renderPiplineContext_.camera_);
-		
-		HiZCulling_->BuildHiZMap(depthTexture_);
+		HiZCulling_->InitializeFrame(renderPiplineContext_.camera_, GetSubsystem<EngineSettings>()->renderSSR_);
 
+		HiZCulling_->BuildHiZMap(depthTexture_);
+	}
+
+	// Calc drawables visibility by Hi-Z map
+	if (GetSubsystem<EngineSettings>()->occlusionCullingType_ == OcclusionCullingType::HiZCulling)
+	{
 		HiZCulling_->ClearGeometries();
 
 		for (auto* drawable : frameDrawables_)

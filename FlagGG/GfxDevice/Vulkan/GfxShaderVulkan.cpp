@@ -22,7 +22,7 @@ GfxShaderVulkan::~GfxShaderVulkan()
 
 bool GfxShaderVulkan::Compile()
 {
-	if (!CompileShader(COMPILE_SHADER_VULKAN, shaderSource_.Get(), shaderSourceSize_, shaderType_, defines_, vkShaderCode_))
+	if (!CompileShader(COMPILE_SHADER_VULKAN, *shaderInfo_, shaderType_, defines_, vkShaderCode_))
 		return false;
 
 	AnalysisReflection();

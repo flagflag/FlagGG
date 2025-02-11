@@ -3,6 +3,7 @@
     {
         float4x3 worldMatrix;
         float4x3 viewMatrix;
+        float4x4 projMatrix;
         float4x4 projviewMatrix;
         float4x3 invViewMatrix;
         float3 frustumSize;
@@ -26,11 +27,17 @@
 #elif defined(PIXEL)
     cbuffer EngineParam : register(b0)
     {
+        float4x3 viewMatrix;
+        float4x4 projMatrix;
+        float4x4 projviewMatrix;
         float nearClip;
         float farClip;
         float4 depthReconstruct;
+        float4 screenPositionScaleBias;
         float deltaTime;
         float elapsedTime;
+        uint frameNumber;
+        uint frameNumberMod8;
         float3 cameraPos;
         float3 lightPos;
         float3 lightDir;

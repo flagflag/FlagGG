@@ -520,7 +520,7 @@ void GfxTextureVulkan::UpdateTexture(GfxTexture* gfxTexture)
 	}
 }
 
-GfxShaderResourceView* GfxTextureVulkan::GetGetSubResourceView(UInt32 index, UInt32 level)
+GfxShaderResourceView* GfxTextureVulkan::GetSubResourceView(UInt32 index, UInt32 level)
 {
 	UInt32 layers = textureDesc_.isCube_ ? 6 : textureDesc_.layers_;
 	UInt32 arrayIndex = index * layers + level;

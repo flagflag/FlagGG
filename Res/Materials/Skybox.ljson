@@ -15,7 +15,7 @@
 	pass =
 	[
 		{
-			name = "forward_lit",
+			name = "forward_alpha",
             depthtestmode = "COMPARISON_LESS_EQUAL"
 		}
 	]

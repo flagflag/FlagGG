@@ -2,6 +2,10 @@
 
 #include "LuaInterface/LuaLog.h"
 
+#if PLATFORM_WINDOWS
+#include <Windows.h>
+#endif
+
 LuaLog::LuaLog()
 {
 	LuaVM* luaVM = GetSubsystem<Context>()->GetVariable<LuaVM>("LuaVM");
@@ -13,7 +17,8 @@ LuaLog::LuaLog()
 			LUA_API_PROXY(LuaLog, Info, "info"),
 			LUA_API_PROXY(LuaLog, Warn, "warn"),
 			LUA_API_PROXY(LuaLog, Error, "error"),
-			LUA_API_PROXY(LuaLog, Critical, "critical")
+			LUA_API_PROXY(LuaLog, Critical, "critical"),
+			LUA_API_PROXY(LuaLog, Alert, "alert"),
 		}
 	);
 }
@@ -45,5 +50,13 @@ int LuaLog::Error(LuaVM* luaVM)
 int LuaLog::Critical(LuaVM* luaVM)
 {
 	FLAGGG_LOG_CRITICAL(luaVM->Get<const char*>(1));
+	return 0;
+}
+
+int LuaLog::Alert(LuaVM* luaVM)
+{
+#if PLATFORM_WINDOWS
+	MessageBoxA(NULL, luaVM->Get<const char*>(1), "alert", 0);
+#endif
 	return 0;
 }

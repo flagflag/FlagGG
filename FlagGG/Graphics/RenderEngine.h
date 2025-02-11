@@ -98,8 +98,6 @@ public:
 
 	void SetDepthStencilState(const DepthStencilState& depthStencilState, bool reverseZ);
 
-	void SetShaderParameter(Camera* camera, const RenderContext* renderContext);
-
 	void SetShaderParameter(Camera* camera, const RenderBatch& renderBatch);
 
 	void SetVertexBuffers(const Vector<SharedPtr<VertexBuffer>>& vertexBuffers);

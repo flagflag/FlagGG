@@ -1,25 +1,27 @@
-#ifdef VERTEX
-cbuffer HiZParam : register(b0)
-{
-    float4 screenToUV;
-}
+#include "Shader/Platform.hlsl"
 
+#ifdef VERTEX
 void VS(
     in float3 position : POSITION,
     out float4 outPosition : SV_POSITION,
     out float2 outTexcoord : TEXCOORD)
 {
     outPosition = float4(position, 1.0);
-    outTexcoord = outPosition.xy * screenToUV.xy + screenToUV.zw;
+    outTexcoord = outPosition.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
 }
 #endif
 
 #if PIXEL
+// Hi-Z map
 Texture2D HiZTexture : register(t0);
-Texture2D AABBMinPosTexture : register(t1);
-Texture2D AABBMaxPosTexture : register(t2);
 SamplerState HiZTextureSampler : register(s0);
+
+// AABB - min position
+Texture2D AABBMinPosTexture : register(t1);
 SamplerState AABBMinPosTextureSampler : register(s1);
+
+// AABB - max position
+Texture2D AABBMaxPosTexture : register(t2);
 SamplerState AABBMaxPosTextureSampler : register(s2);
 
 cbuffer HiZParam : register(b0)
@@ -48,6 +50,7 @@ void PS(
     float3 AABB[2] = { AABBMinPos, AABBMaxPos };
 	float3 rectMin = float3(1, 1, 1);
 	float3 rectMax = float3(-1, -1, -1);
+    UNROLL
     for (int i = 0; i < 8; i++)
     {
         float3 worldPos;
@@ -88,6 +91,7 @@ void PS(
 #else
 	float4 farthestDepth = 0;
 #endif
+    UNROLL
     for (int i = 0; i < 4; i++)
     {
         // TODO could vectorize this

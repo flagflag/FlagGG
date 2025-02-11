@@ -64,8 +64,13 @@ void GameEngine::RunFrame()
 
 	WindowDevice::RenderUpdate();
 
-	RenderEngine::Instance().GetShaderParameters().SetValue(SP_DELTA_TIME, timeStep);
-	RenderEngine::Instance().GetShaderParameters().SetValue(SP_ELAPSED_TIME, elapsedTime_);
+	{
+		RenderEngine::Instance().GetShaderParameters().SetValue<float>(SP_DELTA_TIME, timeStep);
+		RenderEngine::Instance().GetShaderParameters().SetValue<float>(SP_ELAPSED_TIME, elapsedTime_);
+		UInt32 frameNumber = GetSubsystem<Context>()->GetFrameNumber();
+		RenderEngine::Instance().GetShaderParameters().SetValue<UInt32>(SP_FRAME_NUMBER, frameNumber);
+		RenderEngine::Instance().GetShaderParameters().SetValue<UInt32>(SP_FRAME_NUMBER_MOD8, frameNumber % 8);
+	}
 
 	GfxDevice::GetDevice()->BeginFrame();
 

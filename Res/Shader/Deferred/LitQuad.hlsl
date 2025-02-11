@@ -31,8 +31,10 @@ struct PixelInput
         float4 clipPos  = mul(float4(worldPos, 1.0), projviewMatrix);
 
         PixelInput output;
-        output.position = clipPos;
-        output.texcoord = GetQuadTexCoord(clipPos);
+        // output.position = clipPos;
+        // output.texcoord = GetQuadTexCoord(clipPos);
+        output.position = float4(input.position.xyz, 1.0);
+        output.texcoord = input.position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
         output.farRay = GetFarRay(clipPos);
         #ifdef ORTHO
             output.nearRay = GetNearRay(clipPos);
@@ -48,24 +50,26 @@ struct PixelInput
     Texture2D GBuffer2Map : register(t2);
     Texture2D GBuffer3Map : register(t3);
     Texture2D depthBuffer : register(t4);
+    Texture2D GBufferSSR  : register(t5);
 
     SamplerState GBuffer0Sampler : register(s0);
     SamplerState GBuffer1Sampler : register(s1);
     SamplerState GBuffer2Sampler : register(s2);
     SamplerState GBuffer3Sampler : register(s3);
     SamplerState depthBufferSampler : register(s4);
+    SamplerState GBufferSSRSampler : register(s5);
 
     PixelOutput PS(PixelInput input)
     {
-        float4 GBufferA = GBuffer0Map.Sample(GBuffer0Sampler, input.texcoord);
-        float4 GBufferB = GBuffer1Map.Sample(GBuffer1Sampler, input.texcoord);
-        float4 GBufferC = GBuffer2Map.Sample(GBuffer2Sampler, input.texcoord);
-        float4 GBufferD = GBuffer3Map.Sample(GBuffer3Sampler, input.texcoord);
+        float4 GBufferA = GBuffer0Map.SampleLevel(GBuffer0Sampler, input.texcoord, 0);
+        float4 GBufferB = GBuffer1Map.SampleLevel(GBuffer1Sampler, input.texcoord, 0);
+        float4 GBufferC = GBuffer2Map.SampleLevel(GBuffer2Sampler, input.texcoord, 0);
+        float4 GBufferD = GBuffer3Map.SampleLevel(GBuffer3Sampler, input.texcoord, 0);
 
         PBRContext context;
 
         context.normalDirection = DecodeGBufferNormal(GBufferA.rgb);
-        context.occlusion = GBufferA.a * aoMap.Sample(aoSampler, input.texcoord).r;
+        context.occlusion = GBufferA.a * aoMap.SampleLevel(aoSampler, input.texcoord, 0).r;
 
         context.metallic = GBufferB.r;
         context.specular = GBufferB.g;
@@ -77,7 +81,7 @@ struct PixelInput
         context.emissiveColor = GBufferD.rgb;
 
         // If rendering a directional light quad, optimize out the w divide
-        float sourceDepth = depthBuffer.Sample(depthBufferSampler, input.texcoord).r;
+        float sourceDepth = depthBuffer.SampleLevel(depthBufferSampler, input.texcoord, 0).r;
         float depth = ReconstructDepth(sourceDepth);
         #ifdef ORTHO
             float3 worldPosition = mix(input.nearRay, input.farRay, depth);

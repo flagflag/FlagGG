@@ -6,10 +6,13 @@
 
 #include "GfxDevice/GfxObject.h"
 #include "Container/ArrayPtr.h"
+#include "Container/Ptr.h"
 #include "Graphics/GraphicsDef.h"
 
 namespace FlagGG
 {
+
+class PreProcessShaderInfo;
 
 class FlagGG_API GfxShader : public GfxObject
 {
@@ -23,7 +26,7 @@ public:
 	virtual void SetShaderType(ShaderType shaderType);
 
 	// 设置shader代码
-	virtual void SetShaderSource(SharedArrayPtr<char> shaderSource, UInt32 size);
+	virtual void SetShaderInfo(PreProcessShaderInfo* shaderInfo);
 
 	// 设置宏定义
 	virtual void SetDefines(const Vector<String>& defines);
@@ -35,9 +38,7 @@ protected:
 	// shader类型
 	ShaderType shaderType_{};
 
-	// shader代码
-	SharedArrayPtr<char> shaderSource_;
-	UInt32 shaderSourceSize_{};
+	SharedPtr<PreProcessShaderInfo> shaderInfo_;
 
 	// 宏
 	Vector<String> defines_;

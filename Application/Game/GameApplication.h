@@ -70,13 +70,9 @@ private:
 	SharedPtr<Window> window_;
 	SharedPtr<UIView> uiView_;
 	SharedPtr<Camera> camera_;
-	SharedPtr<Camera> reflectionCamera_;
 	SharedPtr<Scene> scene_;
 
-	SharedPtr<Texture2D> renderTexture_[2];
 	SharedPtr<Texture2D> shadowMap_;
-
-	SharedPtr<Texture2D> rttTexture_[2];
 
 	SharedPtr<Unit> mainHero_;
 	SharedPtr<Unit> dissolveHero_;

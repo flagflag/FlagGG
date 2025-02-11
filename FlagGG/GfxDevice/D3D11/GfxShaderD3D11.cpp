@@ -125,7 +125,7 @@ void GfxShaderD3D11::AnalysisReflection(ID3DBlob* compileCode)
 bool GfxShaderD3D11::Compile()
 {
 	ID3DBlob* compileCode = nullptr;
-	if (!CompileShader(shaderSource_.Get(), shaderSourceSize_, shaderType_, defines_, compileCode, shaderCode_))
+	if (!CompileShader(*shaderInfo_, shaderType_, defines_, compileCode, shaderCode_))
 	{
 		FLAGGG_LOG_ERROR("Failed to compile shader.");
 		return false;

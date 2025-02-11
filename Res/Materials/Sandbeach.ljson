@@ -1,12 +1,13 @@
 {
 	vsshader = 
 	{
-		path = "Shader/Model.hlsl",
-		defines =  [ "STATIC" ]
+		path = "Shader/ModelPBR.hlsl",
+		defines =  [ "STATIC", "SHADOW" ]
 	},
 	psshader = 
 	{
-		path = "Shader/Model.hlsl"
+		path = "Shader/ModelPBR.hlsl",
+		defines = [ "SHADOW", "DIRLIGHT", "AMBIENT" ]
 	},
 	texture =
 	{
@@ -18,29 +19,46 @@
 		{
 			name = "forward_lit",
 			depthtestmode = "COMPARISON_LESS_EQUAL"
+		},
+		{
+			name = "deferred_base",
+			depthtestmode = "COMPARISON_EQUAL",
+			depthwrite = false,
+			psshader =
+			{
+				defines = [ "DEFERRED_BASEPASS" ]
+			}
+		},
+		{
+			name = "depth",
+			depthtestmode = "COMPARISON_LESS_EQUAL",
+			vsshader = 
+			{
+				path = "Shader/Depth.hlsl",
+				defines = [ "STATIC" ]
+			},
+			psshader = 
+			{
+				path = "Shader/Depth.hlsl"
+			}
 		}
 	],
-    shader_parameters = 
+	shader_parameters = 
 	[
 		{
-			name = "ambientColor",
-			type = "vector4",
-			value = [ 0.0, 0.0, 0.0, 16 ]
-		},
-		{
-			name = "diffuseColor",
-			type = "vector4",
-			value = [ 1.0, 1.0, 1.0, 255 ]
-		},
-		{
-			name = "specularColor",
-			type = "vector4",
-			value = [ 0.1, 0.1, 0.1, 16 ]
-		},
-		{
-			name = "emissivePower",
+			name = "metallic",
 			type = "float",
-			value = 2
+			value = 0
+		},
+		{
+			name = "roughness",
+			type = "float",
+			value = 1.0
+		},
+		{
+			name = "baseColor",
+			type = "vector4",
+			value = [ 1, 1, 1, 1 ]
 		}
 	]
 }

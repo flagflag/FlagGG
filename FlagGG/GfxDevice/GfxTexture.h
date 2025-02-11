@@ -105,7 +105,7 @@ public:
 	virtual bool ReadBackSubRegion(void* dataPtr, UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 width, UInt32 height);
 
 	// 获取子资源的视图
-	virtual GfxShaderResourceView* GetGetSubResourceView(UInt32 index, UInt32 level);
+	virtual GfxShaderResourceView* GetSubResourceView(UInt32 index, UInt32 level);
 
 	// 获取texute2d的render surface
 	virtual GfxRenderSurface* GetRenderSurface() const;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GfxDevice/D3D11/GfxD3D11Defines.h"
+#include "GfxDevice/Shader/PreProcessShaderInfo.h"
 #include "Core/BaseTypes.h"
 #include "Core/Subsystem.h"
 #include "Graphics/GraphicsDef.h"
@@ -55,6 +56,6 @@ public:
 	GUID IID_ID3D11ShaderReflection;
 };
 
-extern bool CompileShader(const char* buffer, USize bufferSize, ShaderType type, const Vector<String>& defines, ID3DBlob*& outCompileCode, ID3DBlob*& outStrippedCode);
+extern bool CompileShader(const PreProcessShaderInfo& shaderInfo, ShaderType type, const Vector<String>& defines, ID3DBlob*& outCompileCode, ID3DBlob*& outStrippedCode);
 
 }

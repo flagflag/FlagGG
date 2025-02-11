@@ -54,7 +54,82 @@ D3DCompiler::D3DCompiler()
 	}
 }
 
-bool CompileShader(const char* buffer, USize bufferSize, ShaderType type, const Vector<String>& defines, ID3DBlob*& outCompileCode, ID3DBlob*& outStrippedCode)
+static String ProcessOriginShaderInfo(const PreProcessShaderInfo& shaderInfo, const String& errorMsgStr)
+{
+	Int32 errorPos = errorMsgStr.Find(": error");
+	if (errorPos == String::NPOS)
+	{
+		return String::EMPTY;
+	}
+
+	Int32 rightPos = errorMsgStr.Substring(0, errorPos).FindLast(')');
+	if (rightPos == String::NPOS)
+	{
+		return String::EMPTY;
+	}
+
+	Int32 leftPos = errorMsgStr.Substring(0, rightPos).FindLast('(');
+	if (leftPos == String::NPOS)
+	{
+		return String::EMPTY;
+	}
+
+	Vector<String> ret = errorMsgStr.Substring(leftPos + 1, rightPos - leftPos - 1).Split(',');
+	if (ret.Size() <= 1)
+	{
+		return String::EMPTY;
+	}
+
+	const UInt32 line = ToInt(ret[0]);
+
+	if (line >= shaderInfo.lineInfos_.Size())
+	{
+		return String::EMPTY;
+	}
+
+	const auto& lineInfo = shaderInfo.lineInfos_[line];
+	const auto& fileInfo = shaderInfo.fileInfos_[lineInfo.originFileIndex_];
+
+	String errorInfo;
+
+	errorInfo += '\n';
+	errorInfo += ToString("%s\nerror: (%u, %s)",
+		fileInfo.filePath_.CString(), lineInfo.originLineNumber_, ret[1].CString());
+
+	const UInt32 maxDumpLines = 10;
+	UInt32 findPos = 0;
+	UInt32 lineNumber = 0;
+	PODVector<Int32> linePos;
+	linePos.Push(-1);
+	while (true)
+	{
+		findPos = fileInfo.shaderSource_.Find('\n', findPos + 1);
+		if (findPos == String::NPOS)
+			break;
+		linePos.Push(findPos);
+		if (lineNumber == lineInfo.originLineNumber_ + maxDumpLines / 2)
+		{
+			errorInfo += '\n';
+			for (UInt32 i = 0; i + 1 < linePos.Size(); ++i)
+			{
+				const UInt32 currenLineNumber = lineNumber - linePos.Size() + i + 3;
+				if (currenLineNumber == lineInfo.originLineNumber_)
+					errorInfo += ToString("%4d >> | ", currenLineNumber);
+				else
+					errorInfo += ToString("%4d    | ", currenLineNumber);
+				errorInfo += fileInfo.shaderSource_.Substring(linePos[i] + 1, linePos[i + 1] - linePos[i]);
+			}
+			break;
+		}
+		++lineNumber;
+		if (linePos.Size() > maxDumpLines)
+			linePos.Erase(0);
+	}
+
+	return errorInfo;
+}
+
+bool CompileShader(const PreProcessShaderInfo& shaderInfo, ShaderType type, const Vector<String>& defines, ID3DBlob*& outCompileCode, ID3DBlob*& outStrippedCode)
 {
 	const char* entryPoint = nullptr;
 	const char* profile = nullptr;
@@ -120,8 +195,8 @@ bool CompileShader(const char* buffer, USize bufferSize, ShaderType type, const 
 	macros.Push(emptyMacro);
 
 	HRESULT hr = GetSubsystem<D3DCompiler>()->D3DCompile(
-		buffer,
-		bufferSize,
+		shaderInfo.buffer_,
+		shaderInfo.bufferSize_,
 		nullptr,
 		&macros[0],
 		nullptr,
@@ -142,15 +217,18 @@ bool CompileShader(const char* buffer, USize bufferSize, ShaderType type, const 
 				GetLocalFileSystem()->CreateDirectory(shaderCacheDir);
 			LocalFileHandle fileHandle;
 			fileHandle.Open(shaderCacheDir + "shader_error_" + GetTimeStamp() + ".txt", FileMode::FILE_WRITE);
-			fileHandle.Write(buffer, bufferSize);
+			fileHandle.Write(shaderInfo.buffer_, shaderInfo.bufferSize_);
 			fileHandle.Close();
 		}
 
 		if (errorMsgs)
 		{
-			FLAGGG_LOG_ERROR("Error code: {}", (const char*)errorMsgs->GetBufferPointer());
+			String errorMsgStr = reinterpret_cast<const char*>(errorMsgs->GetBufferPointer());
+			errorMsgStr += ProcessOriginShaderInfo(shaderInfo, errorMsgStr);
 
-			ASSERT_MESSAGE(false, (const char*)errorMsgs->GetBufferPointer());
+			FLAGGG_LOG_ERROR("Error code: {}", errorMsgStr.CString());
+
+			ASSERT_MESSAGE(false, errorMsgStr.CString());
 
 			D3D11_SAFE_RELEASE(errorMsgs);
 		}

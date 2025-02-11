@@ -46,7 +46,7 @@ public:
 	bool ReadBackSubRegion(void* dataPtr, UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 width, UInt32 height) override;
 
 	// 获取子资源的视图
-	GfxShaderResourceView* GetGetSubResourceView(UInt32 index, UInt32 level) override;
+	GfxShaderResourceView* GetSubResourceView(UInt32 index, UInt32 level) override;
 
 	// 获取texute2d的render surface
 	GfxRenderSurface* GetRenderSurface() const override;

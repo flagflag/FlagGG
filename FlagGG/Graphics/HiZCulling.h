@@ -33,7 +33,7 @@ public:
 	~HiZCulling() override;
 
 	// 每帧初始化
-	void InitializeFrame(Camera* camera);
+	void InitializeFrame(Camera* camera, bool genClosestHiZ);
 
 	// 构建Hi-Z map
 	void BuildHiZMap(Texture2D* depthTexture);
@@ -53,6 +53,12 @@ public:
 	// 获取图形的可见性
 	bool IsGeometryVisible(DrawableComponent* drawable);
 
+	// 获取Hi-Z map
+	Texture2D* GetHiZMap() const { return HiZMap_; }
+
+	// 获取Closest Hi-Z map
+	Texture2D* GetClosestHiZMap() const { return closestHiZMap_; }
+
 protected:
 	void AllocTexture();
 
@@ -64,6 +70,9 @@ private:
 
 	// 当前帧深度是否是reverseZ
 	bool reverseZ_{};
+
+	// 是否生成closest Hi-Z map
+	bool genClosestHiZ_{};
 
 	// 当前帧视图投影
 	Matrix4 viewProjectMatrix_;
@@ -85,6 +94,7 @@ private:
 
 	// Hi-Z map
 	SharedPtr<Texture2D> HiZMap_;
+	SharedPtr<Texture2D> closestHiZMap_;
 
 	// 当前帧 Hi-Z map的高
 	UInt32 frameHiZHeight_{};

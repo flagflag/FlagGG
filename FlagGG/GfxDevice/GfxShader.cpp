@@ -1,5 +1,6 @@
 #include "GfxShader.h"
 #include "Container/Sort.h"
+#include "GfxDevice/Shader/PreProcessShaderInfo.h"
 
 namespace FlagGG
 {
@@ -31,10 +32,9 @@ void GfxShader::SetShaderType(ShaderType shaderType)
 	shaderType_ = shaderType;
 }
 
-void GfxShader::SetShaderSource(SharedArrayPtr<char> shaderSource, UInt32 size)
+void GfxShader::SetShaderInfo(PreProcessShaderInfo* shaderInfo)
 {
-	shaderSource_ = shaderSource;
-	shaderSourceSize_ = size;
+	shaderInfo_ = shaderInfo;
 }
 
 void GfxShader::SetDefines(const Vector<String>& defines)

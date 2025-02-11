@@ -116,7 +116,7 @@ bool GfxTexture::ReadBackSubRegion(void* dataPtr, UInt32 index, UInt32 level, UI
 	return false;
 }
 
-GfxShaderResourceView* GfxTexture::GetGetSubResourceView(UInt32 index, UInt32 level)
+GfxShaderResourceView* GfxTexture::GetSubResourceView(UInt32 index, UInt32 level)
 {
 	return nullptr;
 }

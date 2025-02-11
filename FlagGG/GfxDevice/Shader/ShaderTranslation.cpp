@@ -17,7 +17,7 @@ static const char* SHADER_LANGUAGE_DEFINE[] =
 	"SHADER_LANGUAGE_VULKAN=1",
 };
 
-bool CompileShader(CompileShaderLanguage compileShaderLanguage, const char* buffer, USize bufferSize, ShaderType type, const Vector<String>& defines, String& outShaderCode)
+bool CompileShader(CompileShaderLanguage compileShaderLanguage, const PreProcessShaderInfo& shaderInfo, ShaderType type, const Vector<String>& defines, String& outShaderCode)
 {
 	ID3DBlob* d3d11CompileCode = nullptr;
 	ID3DBlob* d3d11ShaderCode = nullptr;
@@ -25,7 +25,7 @@ bool CompileShader(CompileShaderLanguage compileShaderLanguage, const char* buff
 	Vector<String> actualDefines = defines;
 	actualDefines.Push(SHADER_LANGUAGE_DEFINE[compileShaderLanguage]);
 
-	if (!CompileShader(buffer, bufferSize, type, actualDefines, d3d11CompileCode, d3d11ShaderCode))
+	if (!CompileShader(shaderInfo, type, actualDefines, d3d11CompileCode, d3d11ShaderCode))
 	{
 		FLAGGG_LOG_ERROR("Failed to compile shader.");
 		return false;

@@ -27,7 +27,7 @@ bool GfxShaderOpenGL::Compile()
 	oglShader_ = GL::CreateShader(oglShaderType);
 	ASSERT_MESSAGE(oglShader_ != 0, "CreateShader failed.");
 
-	if (!CompileShader(COMPILE_SHADER_GLSL, shaderSource_.Get(), shaderSourceSize_, shaderType_, defines_, oglShaderCode_))
+	if (!CompileShader(COMPILE_SHADER_GLSL, *shaderInfo_, shaderType_, defines_, oglShaderCode_))
 		return false;
 
 	const GLchar* oglShaderCode = oglShaderCode_.CString();

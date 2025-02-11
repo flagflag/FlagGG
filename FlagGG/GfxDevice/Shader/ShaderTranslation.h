@@ -3,6 +3,7 @@
 #include "Core/BaseTypes.h"
 #include "Graphics/GraphicsDef.h"
 #include "Container/Vector.h"
+#include "GfxDevice/Shader/PreProcessShaderInfo.h"
 
 namespace FlagGG
 {
@@ -15,6 +16,6 @@ enum CompileShaderLanguage
 	COMPILE_SHADER_VULKAN,
 };
 
-extern bool CompileShader(CompileShaderLanguage compileShaderLanguage, const char* buffer, USize bufferSize, ShaderType type, const Vector<String>& defines, String& outShaderCode);
+extern bool CompileShader(CompileShaderLanguage compileShaderLanguage, const PreProcessShaderInfo& shaderInfo, ShaderType type, const Vector<String>& defines, String& outShaderCode);
 
 }
