@@ -3,6 +3,7 @@
 #include "GfxTextureD3D11.h"
 #include "GfxRenderSurfaceD3D11.h"
 #include "Graphics/Texture2D.h"
+#include "Scene/Camera.h"
 
 namespace FlagGG
 {
@@ -47,22 +48,25 @@ void AmbientOcclusionRenderingD3D11::RenderAO(const AmbientOcclusionInputData& i
 #if GFSDK_SSAO
 	AllocAOTexture(inputData.renderSolution_);
 
-	auto* depthTextureD3D11 = RTTICast<GfxTextureD3D11>(inputData.depthTexture_);
-	auto* normalTextureD3D11 = RTTICast<GfxTextureD3D11>(inputData.normalTexture_);
+	auto* depthTextureD3D11 = RTTICast<GfxTextureD3D11>(inputData.screenDepthTexture_->GetGfxTextureRef());
+	auto* normalTextureD3D11 = RTTICast<GfxTextureD3D11>(inputData.screenNormalTexture_->GetGfxTextureRef());
 	auto* aoSurfaceD3D11 = RTTICast<GfxRenderSurfaceD3D11>(aoTexture_->GetRenderSurface());
+
+	Matrix4 projMatrix = inputData.camera_->GetProjectionMatrix();
+	Matrix4 viewMatrix = inputData.camera_->GetViewMatrix().ToMatrix4();
 
 	GFSDK_SSAO_InputData_D3D11 inputDataD3D11 = {};
 	inputDataD3D11.DepthData.DepthTextureType = GFSDK_SSAO_HARDWARE_DEPTHS;
 	inputDataD3D11.DepthData.pFullResDepthTextureSRV = depthTextureD3D11->GetD3D11ShaderResourceView();
 	inputDataD3D11.DepthData.pFullResDepthTexture2ndLayerSRV = nullptr;
-	inputDataD3D11.DepthData.ProjectionMatrix.Data = GFSDK_SSAO_Float4x4((const GFSDK_SSAO_FLOAT*)inputData.projectMatrix_.Data());
+	inputDataD3D11.DepthData.ProjectionMatrix.Data = GFSDK_SSAO_Float4x4((const GFSDK_SSAO_FLOAT*)projMatrix.Data());
 	inputDataD3D11.DepthData.ProjectionMatrix.Layout = GFSDK_SSAO_COLUMN_MAJOR_ORDER;
 	inputDataD3D11.DepthData.MetersToViewSpaceUnits = 1.0f;
 
 	if (normalTextureD3D11)
 	{
 		inputDataD3D11.NormalData.Enable = true;
-		inputDataD3D11.NormalData.WorldToViewMatrix.Data = GFSDK_SSAO_Float4x4((const GFSDK_SSAO_FLOAT*)inputData.viewMatrix_.Data());
+		inputDataD3D11.NormalData.WorldToViewMatrix.Data = GFSDK_SSAO_Float4x4((const GFSDK_SSAO_FLOAT*)viewMatrix.Data());
 		inputDataD3D11.NormalData.WorldToViewMatrix.Layout = GFSDK_SSAO_COLUMN_MAJOR_ORDER;
 		inputDataD3D11.NormalData.DecodeScale = 1.0f;
 		inputDataD3D11.NormalData.DecodeBias = 0.0f;

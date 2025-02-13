@@ -197,6 +197,7 @@ bool Texture3D::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 
 bool Texture3D::EndLoad()
 {
+	SetGpuTag(GetName());
 	return false;
 }
 

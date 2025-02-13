@@ -301,25 +301,113 @@ Vector3 Vector3TransformCoord(const Vector3& target, const Matrix4& T)
 	return Vector3(mat.m00_ / mat.m03_, mat.m01_ / mat.m03_, mat.m02_ / mat.m03_);
 }
 
-Matrix4 MatrixPerspectiveFovLH(Real fovy, Real aspect, Real zn, Real zf)
+Matrix4 CreatePerspectiveMatrix(Real fov, Real aspect, Real nearZ, Real farZ, Real zoom)
 {
-#if PLATFORM_WINDOWS
-	D3DXMATRIX out;
-	D3DXMatrixPerspectiveFovLH(
-		&out,
-		fovy,
-		aspect,
-		zn,
-		zf
+	Real h = (1.0f / tanf(fov * (PI / 180.0f) * 0.5f)) * zoom;
+	Real w = h / aspect;
+	Real q = farZ / (farZ - nearZ);
+	Real r = -q * nearZ;
+
+	return Matrix4(
+		   w, 0.0f, 0.0f, 0.0f,
+		0.0f,    h, 0.0f, 0.0f,
+		0.0f, 0.0f,   q,     r,
+		0.0f, 0.0f, 1.0f, 0.0f
+	);
+}
+
+Matrix4 CreateReverseZPerspectiveMatrix(Real fov, Real aspect, Real nearZ, Real farZ, Real zoom)
+{
+	Real h = (1.0f / tanf(fov * (PI / 180.0f) * 0.5f)) * zoom;
+	Real w = h / aspect;
+	Real q = nearZ / (nearZ - farZ);
+	Real r = -q * farZ;
+
+	return Matrix4(
+		   w, 0.0f, 0.0f, 0.0f,
+		0.0f,    h, 0.0f, 0.0f,
+		0.0f, 0.0f,   q,     r,
+		0.0f, 0.0f, 1.0f, 0.0f
+	);
+}
+
+Vector4 CreateDeviceZToWorldZTransform(const Matrix4& projectMatrix)
+{
+	// The perspective depth projection comes from the the following projection matrix:
+	//
+	// | 1  0  0  0 |
+	// | 0  1  0  0 |
+	// | 0  0  A  B |
+	// | 0  0  1  0 |
+	//
+	// Z' = (Z * A + B) / Z
+	// Z' = A + B / Z
+	//
+	// So to get Z from Z' is just:
+	// Z = B / (Z' - A)
+	//
+	// Note a reversed Z projection matrix will have A=0.
+	//
+	// Done in shader as:
+	// Z = 1 / (Z' * C1 - C2)   --- Where C1 = 1/B, C2 = A/B
+	//
+
+	Real depthMul = projectMatrix.m22_;
+	Real depthAdd = projectMatrix.m23_;
+
+	if (depthAdd == 0.f)
+	{
+		// Avoid dividing by 0 in this case
+		depthAdd = 0.00000001f;
+	}
+
+	// perspective
+	// sceneDepth = 1.0f / (deviceZ / projectMatrix[3][2] - projectMatrix[2][2] / projectMatrix[3][2])
+
+	// ortho
+	// sceneDepth = deviceZ /projectMatrix[2][2] - projectMatrix3][2] / projectMatrix2][2];
+
+	// combined equation in shader to handle either
+	// sceneDepth = deviceZ * deviceZToWorldZTransform[0] + deviceZToWorldZTransform[1] + 1.0f / (deviceZ * deviceZToWorldZTransform[2] - deviceZToWorldZTransform[3]);
+
+	// therefore perspective needs
+	// deviceZToWorldZTransform[0] = 0.0f
+	// deviceZToWorldZTransform[1] = 0.0f
+	// deviceZToWorldZTransform[2] = 1.0f / projectMatrix3][2]
+	// deviceZToWorldZTransform[3] = projectMatrix2][2] / projectMatrix3][2]
+
+	// and ortho needs
+	// deviceZToWorldZTransform[0] = 1.0f / projectMatrix2][2]
+	// deviceZToWorldZTransform[1] = -projectMatrix3][2] / projectMatrix2][2] + 1.0f
+	// deviceZToWorldZTransform[2] = 0.0f
+	// deviceZToWorldZTransform[3] = 1.0f
+
+	bool bIsPerspectiveProjection = projectMatrix.m33_ < 1.0f;
+
+	if (bIsPerspectiveProjection)
+	{
+		float subtractValue = depthMul / depthAdd;
+
+		// Subtract a tiny number to avoid divide by 0 errors in the shader when a very far distance is decided from the depth buffer.
+		// This fixes fog not being applied to the black background in the editor.
+		subtractValue -= 0.00000001f;
+
+		return Vector4(
+			0.0f,
+			0.0f,
+			1.0f / depthAdd,
+			subtractValue
 		);
-#endif
-
-	Matrix4 output;
-#if PLATFORM_WINDOWS
-	memcpy(&output, &out, sizeof(Matrix4));
-#endif
-
-	return output;
+	}
+	else
+	{
+		return Vector4(
+			(float)(1.0f / projectMatrix.m22_),
+			(float)(-projectMatrix.m23_ / projectMatrix.m22_ + 1.0f),
+			0.0f,
+			1.0f
+		);
+	}
 }
 
 }

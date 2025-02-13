@@ -382,7 +382,10 @@ void GameApplication::OnKeyUp(KeyState* keyState, UInt32 keyCode)
 
 	if (keyCode == VK_F3)
 	{
-		GetSubsystem<EngineSettings>()->renderAO_ = !GetSubsystem<EngineSettings>()->renderAO_;
+		if (GetSubsystem<EngineSettings>()->aoType_ == AmbientOcclusionType::Software)
+			GetSubsystem<EngineSettings>()->aoType_ = AmbientOcclusionType::None;
+		else
+			GetSubsystem<EngineSettings>()->aoType_ = AmbientOcclusionType::Software;
 	}
 
 	// luaVM_->CallEvent("on_key_up", keyCode);

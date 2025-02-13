@@ -565,6 +565,18 @@ void DeferredLitRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UI
 		if (shadowMap)
 		{
 			engineShaderParameters.SetValue(SP_SHADOWMAP_PIXEL_TEXELS, Vector2(1.f / shadowMap->GetWidth(), 1.f / shadowMap->GetHeight()));
+			gfxDevice->SetTexture(TEXTURE_CLASS_SHADOWMAP, shadowMap->GetGfxTextureRef());
+			gfxDevice->SetSampler(TEXTURE_CLASS_SHADOWMAP, shadowMap->GetGfxSamplerRef());
+		}
+		if (auto iblCube = renderEngine->GetDefaultTexture(TEXTURE_CLASS_IBL))
+		{
+			gfxDevice->SetTexture(TEXTURE_CLASS_IBL, iblCube->GetGfxTextureRef());
+			gfxDevice->SetSampler(TEXTURE_CLASS_IBL, iblCube->GetGfxSamplerRef());
+		}
+		if (auto ssaoMap = renderEngine->GetDefaultTexture(TEXTURE_CLASS_SSAO))
+		{
+			gfxDevice->SetTexture(TEXTURE_CLASS_SSAO, ssaoMap->GetGfxTextureRef());
+			gfxDevice->SetSampler(TEXTURE_CLASS_SSAO, ssaoMap->GetGfxSamplerRef());
 		}
 
 		if (!litVertexShader_ || !litPixelShader_)

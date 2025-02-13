@@ -19,6 +19,9 @@ public:
 	~GfxObject() override;
 
 	virtual bool IsValid() const;
+
+	// 设置Gpu tag
+	virtual void SetGpuTag(const String& gpuTag);
 };
 
 }

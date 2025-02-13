@@ -13,6 +13,7 @@ namespace FlagGG
 
 class Matrix4;
 class Vector3;
+class Vector4;
 
 enum Intersection
 {
@@ -200,10 +201,25 @@ FlagGG_API Matrix4 MatrixLookAtLH(const Matrix4& eye, const Matrix4& at, const M
   * @brief 投影矩阵变换
   * @param fovy   - 用于指定以弧度为单位的虚拟摄像机在y轴上的成像角度，即视域角度（View of View），成像角度越大，映射到投影窗口中的图形就越小；反之，投影图像就越大
   * @param aspect - 用于描述屏幕显示区的横纵比，他的值就为屏幕的宽度/高度。对应不同比例的显示屏幕，比如16/9，4/3等等，最终显示的投影图像可能会使图像被拉伸
-  * @param zn     - 表示视截体中近裁剪面距我们摄像机的位置，即人眼到“室内落地窗”之间的距离
-  * @param zf     - 表示视截体中远裁剪面距我们摄像机的位置，即人眼到“室外黑色墙壁”之间的距离
+  * @param nearZ  - 表示视截体中近裁剪面距我们摄像机的位置，即人眼到“室内落地窗”之间的距离
+  * @param farZ   - 表示视截体中远裁剪面距我们摄像机的位置，即人眼到“室外黑色墙壁”之间的距离
   * 注：具体可以参考这里：https://blog.csdn.net/poem_qianmo/article/details/8408723
   */
-FlagGG_API Matrix4 MatrixPerspectiveFovLH(Real fovy, Real aspect, Real zn, Real zf);
+FlagGG_API Matrix4 CreatePerspectiveMatrix(Real fov, Real aspect, Real nearZ, Real farZ, Real zoom);
+
+/**
+  * @brief 投影矩阵变换（ReverseZ）
+  * @param fovy   - 用于指定以弧度为单位的虚拟摄像机在y轴上的成像角度，即视域角度（View of View），成像角度越大，映射到投影窗口中的图形就越小；反之，投影图像就越大
+  * @param aspect - 用于描述屏幕显示区的横纵比，他的值就为屏幕的宽度/高度。对应不同比例的显示屏幕，比如16/9，4/3等等，最终显示的投影图像可能会使图像被拉伸
+  * @param nearZ  - 表示视截体中近裁剪面距我们摄像机的位置，即人眼到“室内落地窗”之间的距离
+  * @param farZ   - 表示视截体中远裁剪面距我们摄像机的位置，即人眼到“室外黑色墙壁”之间的距离
+  * 注：具体可以参考这里：https://blog.csdn.net/poem_qianmo/article/details/8408723
+  */
+FlagGG_API Matrix4 CreateReverseZPerspectiveMatrix(Real fov, Real aspect, Real nearZ, Real farZ, Real zoom);
+
+/**
+ * @brief 创建设备深度到世界Z的转换
+ */
+FlagGG_API Vector4 CreateDeviceZToWorldZTransform(const Matrix4& projectMatrix);
 
 }

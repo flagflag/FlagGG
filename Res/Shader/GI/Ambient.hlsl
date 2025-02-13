@@ -74,7 +74,7 @@ void GI_Indirect(float3 normalDirection, float3 viewDirection, float perceptualR
         indirectSpecular = filterGGX.xyz * filterGGX.w * 6.0 * iblIntensity; // radiance
     #endif
 
-    indirectDiffuse = indirectDiffuse * occlusion * ambientOcclusionIntensity;
-    indirectSpecular = indirectSpecular * occlusion * ambientOcclusionIntensity;
+    indirectDiffuse = indirectDiffuse * occlusion;
+    indirectSpecular = indirectSpecular * occlusion;
 }
 #endif

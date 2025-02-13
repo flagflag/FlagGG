@@ -413,6 +413,7 @@ extern FlagGG_API const FlagGG::StringHash SP_NEAR_CLIP;
 extern FlagGG_API const FlagGG::StringHash SP_FAR_CLIP;
 extern FlagGG_API const FlagGG::StringHash SP_FRUSTUM_SIZE;
 extern FlagGG_API const FlagGG::StringHash SP_DEPTH_RECONSTRUCT;
+extern FlagGG_API const FlagGG::StringHash SP_DEVICEZ_TO_WORLDZ;
 extern FlagGG_API const FlagGG::StringHash SP_SCREEN_POSITION_SCALE_BIAS;
 extern FlagGG_API const FlagGG::StringHash SP_SKIN_MATRICES;
 extern FlagGG_API const FlagGG::StringHash SP_DELTA_TIME;

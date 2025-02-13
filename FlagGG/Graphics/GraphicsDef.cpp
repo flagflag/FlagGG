@@ -112,6 +112,7 @@ const FlagGG::StringHash SP_NEAR_CLIP("nearClip");
 const FlagGG::StringHash SP_FAR_CLIP("farClip");
 const FlagGG::StringHash SP_FRUSTUM_SIZE("frustumSize");
 const FlagGG::StringHash SP_DEPTH_RECONSTRUCT("depthReconstruct");
+const FlagGG::StringHash SP_DEVICEZ_TO_WORLDZ("deviceZToWorldZ");
 const FlagGG::StringHash SP_SCREEN_POSITION_SCALE_BIAS("screenPositionScaleBias");
 const FlagGG::StringHash SP_SKIN_MATRICES("skinMatrices");
 const FlagGG::StringHash SP_DELTA_TIME("deltaTime");

@@ -123,7 +123,8 @@ void DeferredRenderPipline::AllocGBuffers()
 	{
 		GBufferA_->SetNumLevels(1);
 		GBufferA_->SetFilterMode(TEXTURE_FILTER_NEAREST);
-		GBufferA_->SetSize(renderSolution.x_, renderSolution.y_, TEXTURE_FORMAT_RGBA8, TEXTURE_RENDERTARGET);
+		GBufferA_->SetSize(renderSolution.x_, renderSolution.y_, TEXTURE_FORMAT_RGB10A2, TEXTURE_RENDERTARGET);
+		GBufferA_->SetGpuTag("GBufferA");
 	}
 
 	if (GBufferB_->GetWidth() != renderSolution.x_ || GBufferB_->GetHeight() != renderSolution.y_)
@@ -131,6 +132,7 @@ void DeferredRenderPipline::AllocGBuffers()
 		GBufferB_->SetNumLevels(1);
 		GBufferB_->SetFilterMode(TEXTURE_FILTER_NEAREST);
 		GBufferB_->SetSize(renderSolution.x_, renderSolution.y_, TEXTURE_FORMAT_RGBA8, TEXTURE_RENDERTARGET);
+		GBufferB_->SetGpuTag("GBufferB");
 	}
 
 	if (GBufferC_->GetWidth() != renderSolution.x_ || GBufferC_->GetHeight() != renderSolution.y_)
@@ -138,6 +140,7 @@ void DeferredRenderPipline::AllocGBuffers()
 		GBufferC_->SetNumLevels(1);
 		GBufferC_->SetFilterMode(TEXTURE_FILTER_NEAREST);
 		GBufferC_->SetSize(renderSolution.x_, renderSolution.y_, TEXTURE_FORMAT_RGBA8, TEXTURE_RENDERTARGET);
+		GBufferC_->SetGpuTag("GBufferC");
 	}
 
 	if (GBufferD_->GetWidth() != renderSolution.x_ || GBufferD_->GetHeight() != renderSolution.y_)
@@ -145,6 +148,7 @@ void DeferredRenderPipline::AllocGBuffers()
 		GBufferD_->SetNumLevels(1);
 		GBufferD_->SetFilterMode(TEXTURE_FILTER_NEAREST);
 		GBufferD_->SetSize(renderSolution.x_, renderSolution.y_, TEXTURE_FORMAT_RGBA8, TEXTURE_RENDERTARGET);
+		GBufferD_->SetGpuTag("GBufferD");
 	}
 
 	if (depthTexture_->GetWidth() != renderSolution.x_ || depthTexture_->GetHeight() != renderSolution.y_)
@@ -152,6 +156,7 @@ void DeferredRenderPipline::AllocGBuffers()
 		depthTexture_->SetNumLevels(1);
 		depthTexture_->SetFilterMode(TEXTURE_FILTER_NEAREST);
 		depthTexture_->SetSize(renderSolution.x_, renderSolution.y_, TEXTURE_FORMAT_D24S8, TEXTURE_DEPTHSTENCIL);
+		depthTexture_->SetGpuTag("ScreenDepth");
 	}
 }
 
@@ -159,6 +164,10 @@ void DeferredRenderPipline::Render()
 {
 	RenderEngine* renderEngine = GetSubsystem<RenderEngine>();
 	GfxDevice* gfxDevice = GfxDevice::GetDevice();
+
+	bool renderSSR = GetSubsystem<EngineSettings>()->renderSSR_;
+	bool renderAO = GetSubsystem<EngineSettings>()->aoType_ != AmbientOcclusionType::None;
+	bool HiZCullingEnable = GetSubsystem<EngineSettings>()->occlusionCullingType_ == OcclusionCullingType::HiZCulling;
 
 	if (!renderPiplineContext_.camera_->GetUseReflection() && renderEngine->GetDefaultTexture(TEXTURE_CLASS_SHADOWMAP))
 	{
@@ -173,36 +182,54 @@ void DeferredRenderPipline::Render()
 
 	AllocGBuffers();
 
-	gfxDevice->SetViewport(IntRect(0, 0, renderPiplineContext_.renderSolution_.x_, renderPiplineContext_.renderSolution_.y_));
+	IntRect screenRect(0, 0, renderPiplineContext_.renderSolution_.x_, renderPiplineContext_.renderSolution_.y_);
 
 	// Pre-z pass
 	{
 		gfxDevice->ResetRenderTargets();
 		gfxDevice->SetDepthStencil(depthTexture_->GetRenderSurface());
+		gfxDevice->SetViewport(screenRect);
 		gfxDevice->Clear(CLEAR_DEPTH | CLEAR_STENCIL, Color::BLACK, renderPiplineContext_.camera_->GetReverseZ() ? 0.0f : 1.0f);
 
 		depthRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 	}
 
+	// Render Hi-Z map
+	if (renderSSR || renderAO || HiZCullingEnable)
+	{
+		if (!HiZCulling_)
+			HiZCulling_ = new HiZCulling();
+
+		HiZCulling_->InitializeFrame(renderPiplineContext_.camera_, renderSSR || renderAO);
+
+		HiZCulling_->BuildHiZMap(depthTexture_);
+	}
+
+	gfxDevice->SetViewport(IntRect(0, 0, renderPiplineContext_.renderSolution_.x_, renderPiplineContext_.renderSolution_.y_));
+
 	// Render deferred base to multiple render targets
 	{
 		gfxDevice->ResetRenderTargets();
+		gfxDevice->ResetTextures();
+		gfxDevice->ResetSamplers();
 		gfxDevice->SetRenderTarget(0u, GBufferA_->GetRenderSurface());
 		gfxDevice->SetRenderTarget(1u, GBufferB_->GetRenderSurface());
 		gfxDevice->SetRenderTarget(2u, GBufferC_->GetRenderSurface());
 		gfxDevice->SetRenderTarget(3u, GBufferD_->GetRenderSurface());
 		gfxDevice->SetDepthStencil(depthTexture_->GetRenderSurface());
+		gfxDevice->SetViewport(screenRect);
 		gfxDevice->Clear(CLEAR_COLOR);
 
 		baseRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 	}
 
 	// Render ssao
-	if (GetSubsystem<EngineSettings>()->renderAO_)
+	if (GetSubsystem<EngineSettings>()->aoType_ != AmbientOcclusionType::None)
 	{
 		if (!aoRendering_)
 		{
-			aoRendering_ = gfxDevice->CreateAmbientOcclusionRendering();
+			if (GetSubsystem<EngineSettings>()->aoType_ == AmbientOcclusionType::Hardware)
+				aoRendering_ = gfxDevice->CreateAmbientOcclusionRendering();
 			
 			// 使用软件ssao
 			if (aoRendering_ == nullptr)
@@ -212,10 +239,10 @@ void DeferredRenderPipline::Render()
 		}
 
 		AmbientOcclusionInputData inputData;
-		inputData.depthTexture_ = depthTexture_->GetGfxTextureRef();
-		inputData.normalTexture_ = GBufferA_->GetGfxTextureRef();
-		inputData.viewMatrix_ = renderPiplineContext_.camera_->GetViewMatrix();
-		inputData.projectMatrix_ = renderPiplineContext_.camera_->GetProjectionMatrix();
+		inputData.screenDepthTexture_ = depthTexture_;
+		inputData.screenNormalTexture_ = GBufferA_;
+		inputData.HiZMap_ = HiZCulling_->GetHiZMap();
+		inputData.camera_ = renderPiplineContext_.camera_;
 		inputData.renderSolution_ = renderPiplineContext_.renderSolution_;
 
 		aoRendering_->RenderAO(inputData);
@@ -235,10 +262,35 @@ void DeferredRenderPipline::Render()
 		renderEngine->SetDefaultTexture(TEXTURE_CLASS_SSAO, noAOTexture_);
 	}
 
+	// Render screen space reflections
+	if (renderSSR && HiZCulling_)
+	{
+		if (!SSR_)
+			SSR_ = new ScreenSpaceReflections();
+
+		ScreenSpaceReflectionsInputData inputData;
+		inputData.GBufferA_ = GBufferA_;
+		inputData.GBufferB_ = GBufferB_;
+		inputData.GBufferC_ = GBufferC_;
+		inputData.screenDepthTexture_ = depthTexture_;
+		inputData.HiZMap_ = HiZCulling_->GetClosestHiZMap();
+		inputData.camera_ = renderPiplineContext_.camera_;
+		inputData.renderSolution_ = renderPiplineContext_.renderSolution_;
+
+		SSR_->RenderSSR(inputData);
+
+		auto* GBufferSSR = SSR_->GetGBufferSSR();
+		gfxDevice->SetTexture(5u, GBufferSSR->GetGfxTextureRef());
+		gfxDevice->SetSampler(5u, GBufferSSR->GetGfxSamplerRef());
+	}
+
 	bool needRT = waterRenderPass_->HasAnyBatch();
 
 	// Render deferred lit to color render target
 	{
+		gfxDevice->ResetTextures();
+		gfxDevice->ResetSamplers();
+
 		gfxDevice->SetTexture(0u, GBufferA_->GetGfxTextureRef());
 		gfxDevice->SetTexture(1u, GBufferB_->GetGfxTextureRef());
 		gfxDevice->SetTexture(2u, GBufferC_->GetGfxTextureRef());
@@ -250,24 +302,6 @@ void DeferredRenderPipline::Render()
 		gfxDevice->SetSampler(2u, GBufferC_->GetGfxSamplerRef());
 		gfxDevice->SetSampler(3u, GBufferD_->GetGfxSamplerRef());
 		gfxDevice->SetSampler(4u, depthTexture_->GetGfxSamplerRef());
-
-		// Render screen space reflections
-		if (GetSubsystem<EngineSettings>()->renderSSR_ && HiZCulling_)
-		{
-			if (!SSR_)
-				SSR_ = new ScreenSpaceReflections();
-
-			ScreenSpaceReflectionsInputData inputData;
-			inputData.HiZMap_ = HiZCulling_->GetClosestHiZMap();
-			inputData.camera_ = renderPiplineContext_.camera_;
-			inputData.renderSolution_ = renderPiplineContext_.renderSolution_;
-
-			SSR_->RenderSSR(inputData);
-
-			auto* GBufferSSR = SSR_->GetGBufferSSR();
-			gfxDevice->SetTexture(5u, GBufferSSR->GetGfxTextureRef());
-			gfxDevice->SetSampler(5u, GBufferSSR->GetGfxSamplerRef());
-		}
 
 		gfxDevice->ResetRenderTargets();
 
@@ -291,6 +325,8 @@ void DeferredRenderPipline::Render()
 			gfxDevice->SetDepthStencil(nullptr);
 		}
 
+		gfxDevice->SetViewport(screenRect);
+
 		if (clusterLightPass_)
 			clusterLightPass_->BindGpuObject();
 
@@ -304,19 +340,8 @@ void DeferredRenderPipline::Render()
 	waterRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 	alphaRenderPass_->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 
-	// Render Hi-Z map
-	if (GetSubsystem<EngineSettings>()->renderSSR_ || GetSubsystem<EngineSettings>()->occlusionCullingType_ == OcclusionCullingType::HiZCulling)
-	{
-		if (!HiZCulling_)
-			HiZCulling_ = new HiZCulling();
-
-		HiZCulling_->InitializeFrame(renderPiplineContext_.camera_, GetSubsystem<EngineSettings>()->renderSSR_);
-
-		HiZCulling_->BuildHiZMap(depthTexture_);
-	}
-
 	// Calc drawables visibility by Hi-Z map
-	if (GetSubsystem<EngineSettings>()->occlusionCullingType_ == OcclusionCullingType::HiZCulling)
+	if (HiZCullingEnable)
 	{
 		HiZCulling_->ClearGeometries();
 

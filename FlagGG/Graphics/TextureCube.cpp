@@ -303,6 +303,7 @@ bool TextureCube::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 
 bool TextureCube::EndLoad()
 {
+	SetGpuTag(GetName());
 	return true;
 }
 

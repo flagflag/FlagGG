@@ -262,6 +262,7 @@ bool Texture2DArray::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 
 bool Texture2DArray::EndLoad()
 {
+	SetGpuTag(GetName());
 	return true;
 }
 

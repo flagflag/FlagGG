@@ -138,8 +138,8 @@ static bool PreCompileShaderCode(const char* head, const char* tail, String& out
 		{
 			if (*head == '\n')
 			{
-				shaderInfo.lineInfos_.Push(PreProcessLineInfo{ fileIndex, fileLineNumber });
 				++fileLineNumber;
+				shaderInfo.lineInfos_.Push(PreProcessLineInfo{ fileIndex, fileLineNumber });
 			}
 
 			out += *head;
@@ -161,6 +161,7 @@ SharedPtr<PreProcessShaderInfo> ShaderCode::PreCompileShaderCode(const String& s
 	SharedPtr<PreProcessShaderInfo> shaderInfo(new PreProcessShaderInfo);
 
 	shaderInfo->fileInfos_.Push(PreProcessFileInfo{ GetName(), shaderSource });
+	shaderInfo->lineInfos_.Push(PreProcessLineInfo{ 0, 0 });
 
 	if (!FlagGG::PreCompileShaderCode(shaderSource.CString(), shaderSource.CString() + shaderSource.Length(), PreCompileShaderCache, *shaderInfo, 0))
 		return nullptr;

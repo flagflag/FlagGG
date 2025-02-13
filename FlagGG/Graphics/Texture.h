@@ -46,6 +46,9 @@ public:
 	// 设置比较方式
 	void SetComparisonFunc(ComparisonFunc comparisonFunc);
 
+	// 设置Gpu tag
+	void SetGpuTag(const String& gpuTag);
+
 	// 获取纹理宽度
 	Int32 GetWidth() const;
 

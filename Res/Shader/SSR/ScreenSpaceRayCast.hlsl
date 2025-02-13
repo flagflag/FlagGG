@@ -290,11 +290,6 @@ bool RayCastHiZ(RayCastParam rcParam, out float3 outHitUVs, out float level)
     return bHit;
 }
 
-float ConvertFromDeviceZ(float deviceZ)
-{
-    return ReconstructDepth(deviceZ);
-}
-
 // float ComputeRayHitSqrDistance(float3 worldPosition, float3 hitUVz)
 // {
 // 	// ALU get factored out with ReprojectHit.

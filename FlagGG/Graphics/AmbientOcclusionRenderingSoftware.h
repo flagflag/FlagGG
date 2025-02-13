@@ -1,5 +1,5 @@
 //
-// Èí¼ş»·¾³¹âÕÚ±ÎäÖÈ¾Æ÷
+// è½¯ä»¶ç¯å¢ƒå…‰é®è”½æ¸²æŸ“å™¨
 //
 
 #pragma once
@@ -9,6 +9,23 @@
 namespace FlagGG
 {
 
+class Shader;
+class ShaderParameters;
+
+struct AmbientOcclusionSettings
+{
+	float ambientOcclusionRadius_{ 200.0f };         // aoåŠå¾„
+	float ambientOcclusionPower_{ 2 };               // aoå¼ºåº¦
+	float ambientOcclusionBias_{ 3 };                // aoåç§»
+	float ambientOcclusionDistance_{ 80.0f };        // aoè·ç¦»
+	float ambientOcclusionIntensity_{ 0.5f };        // aoå¼ºåº¦
+	float ambientOcclusionFadeRadius_{ 5000.0f };    // è¿‡åº¦åŠå¾„
+	float ambientOcclusionFadeDistance_{ 8000.0f };  // è¿‡åº¦è·ç¦»
+	float ambientOcclusionMipScale_{ 1.0f };         //
+	float ambientOcclusionMipThreshold_{ 0.01 };     //
+	float ambientOcclusionMipBlend_{ 0.6 };          //
+};
+
 class AmbientOcclusionRenderingSoftware : public AmbientOcclusionRendering
 {
 public:
@@ -16,17 +33,40 @@ public:
 
 	~AmbientOcclusionRenderingSoftware() override;
 
-	// äÖÈ¾»·¾³¹ØÕÚ±Î
+	// æ¸²æŸ“ç¯å¢ƒå…³é®è”½
 	void RenderAO(const AmbientOcclusionInputData& inputData) override;
 
-	// »ñÈ¡»·¾³¹ÜÕÚ±ÎÎÆÀí
+	// è·å–ç¯å¢ƒç®¡é®è”½çº¹ç†
 	Texture2D* GetAmbientOcclusionTexture() const override;
 
 protected:
 	void AllocAOTexture(const IntVector2& renderSolution);
 
+	void SetSSAOShaderParameters(float fov, float ratio);
+
 private:
+	// vs
+	SharedPtr<Shader> SSAOVS_;
+	// setup pass ps
+	SharedPtr<Shader> SSAOSetupPS_;
+	// step pass ps
+	SharedPtr<Shader> SSAOStepPS_;
+	// final pass ps
+	SharedPtr<Shader> SSAOFinalPS_;
+
+	//
+	SharedPtr<ShaderParameters> shaderParameters_;
+	// éšæœºæ³•çº¿
+	SharedPtr<Texture2D> randomNormals_;
+	// é™é‡‡æ ·normal
+	SharedPtr<Texture2D> downsampledNormal_;
+	// é™é‡‡æ ·ao
+	SharedPtr<Texture2D> downsampledAO_;
+	// ao
 	SharedPtr<Texture2D> aoTexture_;
+
+	// AOè®¾ç½®
+	AmbientOcclusionSettings settings_;
 };
 
 }

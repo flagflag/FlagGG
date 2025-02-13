@@ -33,6 +33,7 @@
         float nearClip;
         float farClip;
         float4 depthReconstruct;
+        float4 deviceZToWorldZ;
         float4 screenPositionScaleBias;
         float deltaTime;
         float elapsedTime;
@@ -48,7 +49,6 @@
         float4 envCubeAngle;
         float shIntensity;
         float iblIntensity;
-        float ambientOcclusionIntensity;
         // SH
         float4 SHAr;
         float4 SHAg;

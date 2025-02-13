@@ -81,12 +81,11 @@ struct PixelInput
         context.emissiveColor = GBufferD.rgb;
 
         // If rendering a directional light quad, optimize out the w divide
-        float sourceDepth = depthBuffer.SampleLevel(depthBufferSampler, input.texcoord, 0).r;
-        float depth = ReconstructDepth(sourceDepth);
+        float sceneDepth = ConvertFromDeviceZ(depthBuffer.SampleLevel(depthBufferSampler, input.texcoord, 0).r);
         #ifdef ORTHO
-            float3 worldPosition = mix(input.nearRay, input.farRay, depth);
+            float3 worldPosition = mix(input.nearRay, input.farRay, sceneDepth);
         #else
-            float3 worldPosition = input.farRay * depth;
+            float3 worldPosition = input.farRay * sceneDepth;
         #endif
 
         // Position acquired via near/far ray is relative to camera. Bring position to world space
@@ -95,7 +94,7 @@ struct PixelInput
 
     // #ifdef SHADOW
     //     float4 projWorldPos = hvec4_init(worldPosition, 1.0);
-    //     float shadow = GetShadowDeferred(projWorldPos, context.normalDirection, depth);
+    //     float shadow = GetShadowDeferred(projWorldPos, context.normalDirection, sceneDepth);
     // #else
     //     float shadow = 1.0;
     // #endif
@@ -104,7 +103,7 @@ struct PixelInput
         context.viewDirection = normalize(eyeVec);
     #if defined(DEFERRED_CLUSTER)
         context.fragCoord = input.position.xy;
-        context.sceneDepth = LinearizeDepth(sourceDepth, nearClip, farClip);
+        context.sceneDepth = sceneDepth;
     #endif
 
         return PBRPipline(context);

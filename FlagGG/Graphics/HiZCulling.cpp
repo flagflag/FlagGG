@@ -76,6 +76,7 @@ void HiZCulling::BuildHiZMap(Texture2D* depthTexture)
 		HiZMap_->SetSubResourceViewEnabled(true);
 		HiZMap_->SetFilterMode(TEXTURE_FILTER_NEAREST);
 		HiZMap_->SetSize(HiZMapSize.x_, HiZMapSize.y_, TEXTURE_FORMAT_R32F, TEXTURE_RENDERTARGET);
+		HiZMap_->SetGpuTag("FurthestHiZ");
 	}
 
 	if (genClosestHiZ_)
@@ -90,6 +91,7 @@ void HiZCulling::BuildHiZMap(Texture2D* depthTexture)
 			closestHiZMap_->SetSubResourceViewEnabled(true);
 			closestHiZMap_->SetFilterMode(TEXTURE_FILTER_NEAREST);
 			closestHiZMap_->SetSize(HiZMapSize.x_, HiZMapSize.y_, TEXTURE_FORMAT_R32F, TEXTURE_RENDERTARGET);
+			closestHiZMap_->SetGpuTag("ClosestHiZ");
 		}
 	}
 

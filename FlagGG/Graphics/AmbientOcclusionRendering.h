@@ -12,14 +12,14 @@ namespace FlagGG
 {
 
 class Texture2D;
-class GfxTexture;
+class Camera;
 
 struct AmbientOcclusionInputData
 {
-	GfxTexture* depthTexture_;
-	GfxTexture* normalTexture_;
-	Matrix4 viewMatrix_;
-	Matrix4 projectMatrix_;
+	Texture2D* screenNormalTexture_;
+	Texture2D* screenDepthTexture_;
+	Texture2D* HiZMap_;
+	Camera* camera_;
 	IntVector2 renderSolution_;
 };
 

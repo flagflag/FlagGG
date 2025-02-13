@@ -638,6 +638,19 @@ void GfxTextureD3D11::CreateTextureCube()
 	}
 }
 
+void GfxTextureD3D11::SetGpuTag(const String& gpuTag)
+{
+	if (d3d11Texture2D_)
+	{
+		d3d11Texture2D_->SetPrivateData(WKPDID_D3DDebugObjectName, gpuTag.Length(), gpuTag.CString());
+	}
+
+	if (d3d11Texture3D_)
+	{
+		d3d11Texture3D_->SetPrivateData(WKPDID_D3DDebugObjectName, gpuTag.Length(), gpuTag.CString());
+	}
+}
+
 void GfxTextureD3D11::Apply(const void* initialDataPtr)
 {
 	ReleaseTexture();

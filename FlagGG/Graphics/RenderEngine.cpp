@@ -29,6 +29,7 @@ RenderEngine::RenderEngine()
 	shaderParameters_->AddParametersDefine<float>(SP_FAR_CLIP);
 	shaderParameters_->AddParametersDefine<Vector3>(SP_FRUSTUM_SIZE);
 	shaderParameters_->AddParametersDefine<Vector4>(SP_DEPTH_RECONSTRUCT);
+	shaderParameters_->AddParametersDefine<Vector4>(SP_DEVICEZ_TO_WORLDZ);
 	shaderParameters_->AddParametersDefine<Vector4>(SP_SCREEN_POSITION_SCALE_BIAS);
 	shaderParameters_->AddParametersDefine<float>(SP_DELTA_TIME);
 	shaderParameters_->AddParametersDefine<float>(SP_ELAPSED_TIME);
@@ -325,6 +326,7 @@ void RenderEngine::SetShaderParameter(Camera* camera, const RenderBatch& renderB
 		shaderParameters_->SetValue(SP_FRUSTUM_SIZE, farVector);
 		Vector4 depthReconstruct(camera->GetFarClip() / (camera->GetFarClip() - camera->GetNearClip()), -camera->GetNearClip() / (camera->GetFarClip() - camera->GetNearClip()), camera->IsOrthographic() ? 1.0f : 0.0f, camera->IsOrthographic() ? 0.0f : 1.0f);
 		shaderParameters_->SetValue(SP_DEPTH_RECONSTRUCT, depthReconstruct);
+		shaderParameters_->SetValue(SP_DEVICEZ_TO_WORLDZ, CreateDeviceZToWorldZTransform(camera->GetProjectionMatrix()));
 		shaderParameters_->SetValue(SP_SCREEN_POSITION_SCALE_BIAS, Vector4(1, 1, 0, 0));
 		shaderParameters_->SetValue(SP_CAMERA_POS, camera->GetNode()->GetWorldPosition());
 

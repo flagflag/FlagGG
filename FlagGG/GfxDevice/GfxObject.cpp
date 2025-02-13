@@ -18,4 +18,9 @@ bool GfxObject::IsValid() const
 	return false;
 }
 
+void GfxObject::SetGpuTag(const String& gpuTag)
+{
+
+}
+
 }

@@ -93,8 +93,13 @@ static String ProcessOriginShaderInfo(const PreProcessShaderInfo& shaderInfo, co
 	String errorInfo;
 
 	errorInfo += '\n';
-	errorInfo += ToString("%s\nerror: (%u, %s)",
-		fileInfo.filePath_.CString(), lineInfo.originLineNumber_, ret[1].CString());
+	if (lineInfo.originFileIndex_ != 0)
+	{
+		errorInfo += shaderInfo.fileInfos_.Front().filePath_;
+		errorInfo += "\n";
+	}
+	errorInfo += fileInfo.filePath_;
+	errorInfo += ToString("\nerror: (%u, %s)", lineInfo.originLineNumber_, ret[1].CString());
 
 	const UInt32 maxDumpLines = 10;
 	UInt32 findPos = 0;
@@ -104,10 +109,9 @@ static String ProcessOriginShaderInfo(const PreProcessShaderInfo& shaderInfo, co
 	while (true)
 	{
 		findPos = fileInfo.shaderSource_.Find('\n', findPos + 1);
-		if (findPos == String::NPOS)
-			break;
-		linePos.Push(findPos);
-		if (lineNumber == lineInfo.originLineNumber_ + maxDumpLines / 2)
+		if (findPos != String::NPOS)
+			linePos.Push(findPos);
+		if (findPos == String::NPOS || lineNumber == lineInfo.originLineNumber_ + maxDumpLines / 2)
 		{
 			errorInfo += '\n';
 			for (UInt32 i = 0; i + 1 < linePos.Size(); ++i)

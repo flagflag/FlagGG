@@ -24,6 +24,9 @@ public:
 
 	~GfxTextureD3D11() override;
 
+	// 设置Gpu tag
+	void SetGpuTag(const String& gpuTag) override;
+
 	// 应用当前设置
 	void Apply(const void* initialDataPtr) override;
 

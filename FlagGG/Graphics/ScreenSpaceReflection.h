@@ -18,6 +18,10 @@ class ShaderParameters;
 
 struct ScreenSpaceReflectionsInputData
 {
+	Texture2D* GBufferA_;
+	Texture2D* GBufferB_;
+	Texture2D* GBufferC_;
+	Texture2D* screenDepthTexture_;
 	Texture2D* HiZMap_;
 	Camera* camera_;
 	IntVector2 renderSolution_;

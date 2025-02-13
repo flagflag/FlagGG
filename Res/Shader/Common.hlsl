@@ -102,6 +102,14 @@ float3 DecodeGBufferNormal(float3 normalDirection)
     return normalDirection * 2.0 - 1.0;
 }
 
+#if PIXEL
+float ConvertFromDeviceZ(float deviceZ)
+{
+	// Supports ortho and perspective, see CreateInvDeviceZToWorldZTransform()
+	return deviceZ * deviceZToWorldZ[0] + deviceZToWorldZ[1] + 1.0f / (deviceZ * deviceZToWorldZ[2] - deviceZToWorldZ[3]);
+}
+#endif
+
 float GammaToLinearSpaceExact(float value)
 {
     if (value <= 0.04045f)
@@ -189,4 +197,19 @@ float4 Square(float4 x)
 float Pow5 (float x)
 {
     return x*x * x*x * x;
+}
+
+float length2(float2 v)
+{
+	return dot(v, v);
+}
+
+float length2(float3 v)
+{
+	return dot(v, v);
+}
+
+float length2(float4 v)
+{
+	return dot(v, v);
 }

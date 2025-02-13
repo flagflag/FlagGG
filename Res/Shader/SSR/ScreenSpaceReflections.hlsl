@@ -44,7 +44,7 @@ Texture2D GBuffer2Map : register(t2);
 SamplerState GBuffer2Sampler : register(s2);
 
 // 屏幕空间深度
-Texture2D depthBuffer : register(t4);         
+Texture2D depthBuffer : register(t4);
 SamplerState depthBufferSampler : register(s4);
 
 // Hi-Z map
@@ -78,10 +78,9 @@ void PS(
 		return;
 	}
 
-    float sourceDepth = depthBuffer.SampleLevel(depthBufferSampler, texcoord, 0).r;
-    float depth = ReconstructDepth(sourceDepth);
+    float sceneDepth = ConvertFromDeviceZ(depthBuffer.SampleLevel(depthBufferSampler, texcoord, 0).r);
 
-    float3 worldPosition = farRay * depth;
+    float3 worldPosition = farRay * sceneDepth;
     float3 viewDirection = normalize(-worldPosition);
     worldPosition += cameraPos;
 
@@ -102,7 +101,7 @@ void PS(
     rcParam.rayOrigin = worldPosition;
     rcParam.rayDirection = viewReflection;
     rcParam.roughness = roughness;
-    rcParam.sceneDepth = depth;
+    rcParam.sceneDepth = sceneDepth;
     rcParam.numSteps = numSteps;
     // 类似TAA，时序抖动（减少发射的射线个数）
     rcParam.stepOffset = InterleavedGradientNoise(texcoord, frameNumberMod8) - 0.5;

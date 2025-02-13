@@ -11,6 +11,22 @@
 namespace FlagGG
 {
 
+enum class AmbientOcclusionType
+{
+	None = 0,
+	Hardware,
+	Software,
+};
+
+enum class AmbientOcclusionQuality
+{
+	VERY_LOW = 0,
+	LOW,
+	MEDIUM,
+	HIGH,
+	VERY_HIGH,
+};
+
 enum class OcclusionCullingType
 {
 	None = 0,
@@ -22,8 +38,9 @@ struct FlagGG_API EngineSettings : public Subsystem<EngineSettings>
 {
 	RendererType rendererType_{ RENDERER_TYPE_D3D11 };
 	bool clusterLightEnabled_{ false };
-	bool renderAO_{ true };
+	AmbientOcclusionType aoType_{ AmbientOcclusionType::Software };
 	bool renderSSR_{ true };
+	AmbientOcclusionQuality AOQuality_{ AmbientOcclusionQuality::VERY_HIGH };
 	OcclusionCullingType occlusionCullingType_{ OcclusionCullingType::HiZCulling };
 };
 

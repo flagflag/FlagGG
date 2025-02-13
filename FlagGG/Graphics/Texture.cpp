@@ -56,6 +56,11 @@ void Texture::SetComparisonFunc(ComparisonFunc comparisonFunc)
 	gfxSampler_->SetComparisonFunc(comparisonFunc);
 }
 
+void Texture::SetGpuTag(const String& gpuTag)
+{
+	gfxTexture_->SetGpuTag(gpuTag);
+}
+
 Int32 Texture::GetWidth() const
 {
 	return gfxTexture_->GetDesc().width_;
