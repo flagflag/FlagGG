@@ -170,6 +170,9 @@ private:
 	SharedPtr<Texture2D> refractionTexture_;
 
 	SharedPtr<Texture2D> screenDepthTexture_;
+
+	// 调试RT
+	SharedPtr<Texture2D> debugTexture_;
 };
 
 // 无光pass

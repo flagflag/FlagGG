@@ -335,6 +335,8 @@ void WaterRenderPass::SortBatch()
 
 }
 
+#define DEBUG_WATER_DEPTH 0
+
 void WaterRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer)
 {
 	auto* gfxDevice = GfxDevice::GetDevice();
@@ -355,6 +357,9 @@ void WaterRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 l
 	{
 		refractionTexture_ = new Texture2D();
 		screenDepthTexture_ = new Texture2D();
+#if DEBUG_WATER_DEPTH
+		debugTexture_ = new Texture2D();
+#endif
 	}
 
 	const auto& rtDesc = gfxRenderTexture->GetDesc();
@@ -365,13 +370,21 @@ void WaterRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 l
 		refractionTexture_->SetAddressMode(TEXTURE_COORDINATE_U, TEXTURE_ADDRESS_CLAMP);
 		refractionTexture_->SetAddressMode(TEXTURE_COORDINATE_V, TEXTURE_ADDRESS_CLAMP);
 		refractionTexture_->SetAddressMode(TEXTURE_COORDINATE_W, TEXTURE_ADDRESS_CLAMP);
+		refractionTexture_->SetFilterMode(TEXTURE_FILTER_NEAREST);
 		refractionTexture_->SetSize(rtDesc.width_, rtDesc.height_, rtDesc.format_, TEXTURE_DYNAMIC);
 
 		screenDepthTexture_->SetNumLevels(1);
 		screenDepthTexture_->SetAddressMode(TEXTURE_COORDINATE_U, TEXTURE_ADDRESS_CLAMP);
 		screenDepthTexture_->SetAddressMode(TEXTURE_COORDINATE_V, TEXTURE_ADDRESS_CLAMP);
 		screenDepthTexture_->SetAddressMode(TEXTURE_COORDINATE_W, TEXTURE_ADDRESS_CLAMP);
+		screenDepthTexture_->SetFilterMode(TEXTURE_FILTER_NEAREST);
 		screenDepthTexture_->SetSize(rtDesc.width_, rtDesc.height_, gfxDepthTexture->GetDesc().format_, TEXTURE_DYNAMIC);
+
+#if DEBUG_WATER_DEPTH
+		debugTexture_->SetNumLevels(1);
+		debugTexture_->SetFilterMode(TEXTURE_FILTER_NEAREST);
+		debugTexture_->SetSize(rtDesc.width_, rtDesc.height_, TEXTURE_FORMAT_RGBA32F, TEXTURE_RENDERTARGET);
+#endif
 	}
 
 	auto* gfxRefractionTexture = refractionTexture_->GetGfxTextureRef();
@@ -390,6 +403,10 @@ void WaterRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 l
 	renderEngine->SetDefaultTexture(TextureClass(0), refractionTexture_);
 	renderEngine->SetDefaultTexture(TextureClass(1), screenDepthTexture_);
 
+#if DEBUG_WATER_DEPTH
+	gfxDevice->SetRenderTarget(1, debugTexture_->GetRenderSurface());
+#endif
+
 	auto& renderBatches = renderBatchQueue_.renderBatches_;
 	for (auto& renderBatch : renderBatches)
 	{
@@ -398,6 +415,10 @@ void WaterRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 l
 
 	renderEngine->SetDefaultTexture(TextureClass(0), nullptr);
 	renderEngine->SetDefaultTexture(TextureClass(1), nullptr);
+
+#if DEBUG_WATER_DEPTH
+	gfxDevice->SetRenderTarget(1, nullptr);
+#endif
 }
 
 /*********************************************************/

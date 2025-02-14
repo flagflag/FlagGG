@@ -51,9 +51,7 @@ struct PixelInput
 	float2 uv1        : TEXCOORD1;
     float2 uv2        : TEXCOORD2;
 	float4 screenPos  : SCREENPOS;
-	float2 reflectTex : TEXCOORD;
-	float4 eyeVec     : EYEVEC;
-    float3 worldPosition : WORLD_POS;
+    float3 worldPosition : WORLDPOS;
 #ifdef RAIN_DOT
     float2 uv : TEXCOORD3;
 #endif
@@ -71,8 +69,7 @@ struct PixelInput
         output.uv1 = waveDensity * (worldPosition.yx / waveScaler.x + waterSpeed * elapsedTime);
         output.uv2 = waveDensity * (worldPosition.yx / waveScaler.y + waterSpeed * elapsedTime);
         output.screenPos = GetScreenPos(clipPosition);
-        output.reflectTex = GetQuadTexCoord(clipPosition) * clipPosition.w;
-        output.eyeVec = float4(cameraPos - worldPosition, GetDepth(clipPosition));
+        output.worldPosition = worldPosition;
 #ifdef RAIN_DOT
         output.uv = input.texcoord;
 #endif
@@ -80,47 +77,51 @@ struct PixelInput
         return output;
     }
 #else
-    float4 PS(PixelInput input) : SV_TARGET
+    struct PixelOutputT
     {
-        float3 eyeVec = normalize(input.eyeVec.xyz);
+    #if DEBUG_WATER_DEPTH
+        float4 color    : SV_Target0;
+        float4 debugRet : SV_Target1;
+    #else
+        float4 color    : SV_TARGET;
+    #endif
+    };
+
+    PixelOutputT PS(PixelInput input) : SV_TARGET
+    {
+        float3 viewDirection = normalize(cameraPos - input.worldPosition);
         float3 texNormal = DecodeNormal(waterNormalMap.Sample(waterNormalSampler, input.uv1)) + DecodeNormal(waterNormalMap.Sample(waterNormalSampler, input.uv2));
         float3 worldNormal = normalize(texNormal);
 
-        float NdotV = clamp(dot(worldNormal, eyeVec), 0.0, 1.0);
-        float fresnel = pow(1.0 - NdotV, fresnelFactor);
-
-        #if defined(BAKE_REFRACTION)
-            float2 refractUV = input.worldPosition.xy / 2.56;
-        #else
-            float2 refractUV = input.screenPos.xy / input.screenPos.w;
-        #endif
+        float2 refractUV = input.screenPos.xy / input.screenPos.w;
         float2 noise = worldNormal.xy * noiseStrength; // worldNormal.xy作为distortion系数
         
-#if 0
-        float waterBottomDepth = ReconstructDepth(depthBuffer.Sample(depthBufferSampler, refractUV + noise).r);
-        if (waterBottomDepth < input.eyeVec.w)       
-        {
+        float sceneDepth = ConvertFromDeviceZ(depthBuffer.Sample(depthBufferSampler, refractUV + noise).r);
+        if (sceneDepth > input.screenPos.w)
             refractUV += noise;
-        }
-#else
-        refractUV += noise;
-#endif
         float3 refrCol = GammaToLinearSpace(refractionMap.Sample(refractionSampler, refractUV).rgb) * waterColor1;
 
         // 高光
         float3 worldNormalNoise = lerp(float3(0.0, 0.0, 1.0), worldNormal, normalStrength);
-        NdotV = clamp(dot(worldNormalNoise, eyeVec), 0.0, 1.0);
-        float3 viewReflection = 2.0 * NdotV * worldNormalNoise - eyeVec; // Same as: -reflect(viewDirection, worldNormalNoise);
+        float NdotV = clamp(dot(worldNormalNoise, viewDirection), 0.0, 1.0);
+        float3 viewReflection = 2.0 * NdotV * worldNormalNoise - viewDirection; // Same as: -reflect(viewDirection, worldNormalNoise);
         float3 cubeR = viewReflection.xzy;
         float3 reflCol = reflectionCube.SampleLevel(reflectionSampler, cubeR, 0.0).rgb;
         reflCol = GammaToLinearSpace(reflCol);
         // 与环境高光关联
         reflCol = reflCol * waterReflectionIntensity * M_PI;
 
+        float fresnel = pow(1.0 - NdotV, fresnelFactor);
         float reflIntensity = clamp(reflection * fresnel, 0.0, 1.0);
 
         float3 color = lerp(refrCol, reflCol, reflIntensity);
 
-	    return float4(LinearToGammaSpace(ToAcesFilmic(color)), 1.0);
+        PixelOutputT output;
+        output.color = float4(LinearToGammaSpace(ToAcesFilmic(color)), 1.0);
+#if DEBUG_WATER_DEPTH
+        output.debugRet = float4(sceneDepth, input.position.w, input.screenPos.w, 1);
+#endif
+
+	    return output;
     }
 #endif
