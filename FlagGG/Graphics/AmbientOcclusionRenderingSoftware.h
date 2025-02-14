@@ -21,7 +21,7 @@ struct AmbientOcclusionSettings
 	float ambientOcclusionIntensity_{ 0.5f };        // ao强度
 	float ambientOcclusionFadeRadius_{ 5000.0f };    // 过度半径
 	float ambientOcclusionFadeDistance_{ 8000.0f };  // 过度距离
-	float ambientOcclusionMipScale_{ 1.0f };         //
+	float ambientOcclusionMipScale_{ 1.7f };         //
 	float ambientOcclusionMipThreshold_{ 0.01 };     //
 	float ambientOcclusionMipBlend_{ 0.6 };          //
 };
@@ -42,7 +42,7 @@ public:
 protected:
 	void AllocAOTexture(const IntVector2& renderSolution);
 
-	void SetSSAOShaderParameters(float fov, float ratio);
+	void SetSSAOShaderParameters(float fov, const IntVector2& screenSize, const IntVector2& targetSize);
 
 private:
 	// vs

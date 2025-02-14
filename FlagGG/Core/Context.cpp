@@ -69,6 +69,12 @@ bool Context::IsInAsyncLoadingThread() const
 void Context::AddFrameNumber()
 {
     ++frameNumber_;
+
+    ++temporalAASampleIndex_;
+    if (temporalAASampleIndex_ >= 17)
+    {
+        temporalAASampleIndex_ = 0;
+    }
 }
 
 }

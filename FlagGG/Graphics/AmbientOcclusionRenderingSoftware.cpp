@@ -11,7 +11,7 @@ namespace FlagGG
 
 AmbientOcclusionRenderingSoftware::AmbientOcclusionRenderingSoftware()
 {
-	const String SHADER_QUALITY = ToString("SHADER_QUALITY=%d", Int32(GetSubsystem<EngineSettings>()->AOQuality_));
+	const String SHADER_QUALITY = ToString("SHADER_QUALITY=%d", Int32(/*GetSubsystem<EngineSettings>()->AOQuality_*/AmbientOcclusionQuality::MEDIUM));
 
 	INIT_SHADER_VARIATION(SSAOVS_,      "Shader/SSAO/ScreenSpaceAmbientOcclusionVS.hlsl",      VS, {});
 	INIT_SHADER_VARIATION(SSAOSetupPS_, "Shader/SSAO/ScreenSpaceAmbientOcclusionSetupPS.hlsl", PS, Vector<String>({ SHADER_QUALITY }));
@@ -19,6 +19,7 @@ AmbientOcclusionRenderingSoftware::AmbientOcclusionRenderingSoftware()
 	INIT_SHADER_VARIATION(SSAOFinalPS_, "Shader/SSAO/ScreenSpaceAmbientOcclusionMainPS.hlsl",  PS, Vector<String>({ SHADER_QUALITY, "USE_AO_SETUP_AS_INPUT=0", "USE_UPSAMPLE=1" }));
 
 	randomNormals_ = GetSubsystem<ResourceCache>()->GetResource<Texture2D>("Textures/RandomNormals.tga");
+	randomNormals_->SetFilterMode(TEXTURE_FILTER_NEAREST);
 
 	shaderParameters_ = new ShaderParameters();
 	shaderParameters_->AddParametersDefine<Real>("ambientOcclusionPower");
@@ -39,6 +40,7 @@ AmbientOcclusionRenderingSoftware::AmbientOcclusionRenderingSoftware()
 	shaderParameters_->AddParametersDefine<Vector2>("temporalOffset");
 	shaderParameters_->AddParametersDefine<Vector2>("SSAO_DownsampledAOInverseSize");
 	shaderParameters_->AddParametersDefine<Vector2>("AOViewport_ViewportSize");
+	shaderParameters_->AddParametersDefine<Vector4>("HiZRemapping");
 	shaderParameters_->AddParametersDefine<Vector2>("invSize");
 	shaderParameters_->AddParametersDefine<Real>("thresholdInverse");
 }
@@ -48,16 +50,20 @@ AmbientOcclusionRenderingSoftware::~AmbientOcclusionRenderingSoftware()
 
 }
 
-void AmbientOcclusionRenderingSoftware::SetSSAOShaderParameters(float fov, float ratio)
+void AmbientOcclusionRenderingSoftware::SetSSAOShaderParameters(float fov, const IntVector2& screenSize, const IntVector2& targetSize)
 {
-	float scaleFactor = 1.0f;
+	float scaleFactor = float(screenSize.x_) / float(targetSize.x_);
 	float scaleRadiusInWorldSpace = 0.0f;
 	float AORadiusInShader = settings_.ambientOcclusionRadius_ / 400.0f;
 	float f = log2(scaleFactor);
 	AORadiusInShader *= powf(settings_.ambientOcclusionMipScale_, f) / 4.0f;
 
-	float invTanHalfFov = 1.0f / tanf(fov * 0.5f);
+	float ratio = float(screenSize.x_) / float(screenSize.y_);
+	Vector2 viewportUVToRandomUV(Real(targetSize.x_) / randomNormals_->GetWidth(), Real(targetSize.y_) / randomNormals_->GetHeight());
+
+	float invTanHalfFov = (1.0f / tanf(fov * (PI / 180.0f) * 0.5f));
 	float HiZStepMipLevelFactor = 0.4f;
+	Vector2 temporalOffset = (GetSubsystem<Context>()->GetCurrentTemporalAASampleIndex() % 8) * Vector2(2.48f, 7.52f) / (float)randomNormals_->GetWidth();
 
 	shaderParameters_->SetValue<Real>("ambientOcclusionPower", settings_.ambientOcclusionPower_);
 	shaderParameters_->SetValue<Real>("ambientOcclusionBias", settings_.ambientOcclusionBias_ / 1000.0f);
@@ -69,18 +75,18 @@ void AmbientOcclusionRenderingSoftware::SetSSAOShaderParameters(float fov, float
 	shaderParameters_->SetValue<Real>("ambientOcclusionMipBlend", settings_.ambientOcclusionMipBlend_);
 	shaderParameters_->SetValue<Real>("AORadiusInShader", AORadiusInShader);
 	shaderParameters_->SetValue<Real>("ratio", ratio);
+	shaderParameters_->SetValue<Vector2>("viewportUVToRandomUV", viewportUVToRandomUV);
 	shaderParameters_->SetValue<Real>("scaleFactor", scaleFactor);
 	shaderParameters_->SetValue<Real>("scaleRadiusInWorldSpace", scaleRadiusInWorldSpace);
 	shaderParameters_->SetValue<Real>("invTanHalfFov", invTanHalfFov);
 	shaderParameters_->SetValue<Real>("HiZStepMipLevelFactor", HiZStepMipLevelFactor);
-	shaderParameters_->SetValue<Vector2>("temporalOffset", Vector2());
+	shaderParameters_->SetValue<Vector2>("temporalOffset", temporalOffset);
+	shaderParameters_->SetValue<Vector2>("AOViewport_ViewportSize", Vector2(targetSize));
 }
 
 void AmbientOcclusionRenderingSoftware::RenderAO(const AmbientOcclusionInputData& inputData)
 {
 	AllocAOTexture(inputData.renderSolution_);
-
-	SetSSAOShaderParameters(inputData.camera_->GetFov(), float(inputData.renderSolution_.x_) / float(inputData.renderSolution_.y_));
 
 	auto* gfxDevice = GfxDevice::GetDevice();
 	auto* renderEngine = GetSubsystem<RenderEngine>();
@@ -92,11 +98,16 @@ void AmbientOcclusionRenderingSoftware::RenderAO(const AmbientOcclusionInputData
 
 	gfxDevice->SetMaterialShaderParameters(shaderParameters_);
 
+	const Vector2 HiZScaleFactor((Real)downsampledNormal_->GetWidth() / inputData.HiZMap_->GetWidth(), (Real)downsampledNormal_->GetHeight() / inputData.HiZMap_->GetHeight());
+	shaderParameters_->SetValue<Vector4>("HiZRemapping", Vector4(0.5 * HiZScaleFactor.x_, -0.5 * HiZScaleFactor.y_, 0.5 * HiZScaleFactor.x_, 0.5 * HiZScaleFactor.y_));
+
 	// Downsample normal
 	{
-		const float thresholdInversee = settings_.ambientOcclusionMipThreshold_ * ((float)downsampledNormal_->GetWidth() / aoTexture_->GetWidth());
+		SetSSAOShaderParameters(inputData.camera_->GetFov(), inputData.renderSolution_, IntVector2(downsampledNormal_->GetWidth(), downsampledNormal_->GetHeight()));
+
+		const Real thresholdInverse = settings_.ambientOcclusionMipThreshold_ * ((Real)downsampledNormal_->GetWidth() / aoTexture_->GetWidth());
 		shaderParameters_->SetValue<Vector2>("invSize", Vector2(1.0f / downsampledNormal_->GetWidth(), 1.0f / downsampledNormal_->GetHeight()));
-		shaderParameters_->SetValue<Real>("thresholdInverse", thresholdInversee);
+		shaderParameters_->SetValue<Real>("thresholdInverse", thresholdInverse);
 
 		gfxDevice->SetRenderTarget(0, downsampledNormal_->GetRenderSurface());
 
@@ -114,8 +125,7 @@ void AmbientOcclusionRenderingSoftware::RenderAO(const AmbientOcclusionInputData
 
 	// Build downsampled AO
 	{
-		shaderParameters_->SetValue<Vector2>("viewportUVToRandomUV", Vector2((float)downsampledAO_->GetWidth() / randomNormals_->GetWidth(), (float)downsampledAO_->GetHeight() / randomNormals_->GetWidth()));
-		shaderParameters_->SetValue<Vector2>("AOViewport_ViewportSize", Vector2(downsampledAO_->GetWidth(), downsampledAO_->GetHeight()));
+		SetSSAOShaderParameters(inputData.camera_->GetFov(), inputData.renderSolution_, IntVector2(downsampledAO_->GetWidth(), downsampledAO_->GetHeight()));
 
 		gfxDevice->SetRenderTarget(0, downsampledAO_->GetRenderSurface());
 
@@ -135,9 +145,9 @@ void AmbientOcclusionRenderingSoftware::RenderAO(const AmbientOcclusionInputData
 
 	// Build final AO
 	{
-		shaderParameters_->SetValue<Vector2>("viewportUVToRandomUV", Vector2((float)aoTexture_->GetWidth() / randomNormals_->GetWidth(), (float)aoTexture_->GetHeight() / randomNormals_->GetWidth()));
+		SetSSAOShaderParameters(inputData.camera_->GetFov(), inputData.renderSolution_, IntVector2(aoTexture_->GetWidth(), aoTexture_->GetHeight()));
+
 		shaderParameters_->SetValue<Vector2>("SSAO_DownsampledAOInverseSize", Vector2(1.0f / downsampledAO_->GetWidth(), 1.0f / downsampledAO_->GetHeight()));
-		shaderParameters_->SetValue<Vector2>("AOViewport_ViewportSize", Vector2(aoTexture_->GetWidth(), aoTexture_->GetHeight()));
 
 		gfxDevice->SetRenderTarget(0, aoTexture_->GetRenderSurface());
 
@@ -164,7 +174,7 @@ void AmbientOcclusionRenderingSoftware::AllocAOTexture(const IntVector2& renderS
 	{
 		downsampledNormal_ = new Texture2D();
 		downsampledNormal_->SetNumLevels(1);
-		downsampledNormal_->SetFilterMode(TEXTURE_FILTER_BILINEAR);
+		downsampledNormal_->SetFilterMode(TEXTURE_FILTER_NEAREST);
 	}
 
 	if (downsampledNormal_->GetWidth() != downsampledSolution.x_ ||
@@ -178,7 +188,7 @@ void AmbientOcclusionRenderingSoftware::AllocAOTexture(const IntVector2& renderS
 	{
 		downsampledAO_ = new Texture2D();
 		downsampledAO_->SetNumLevels(1);
-		downsampledAO_->SetFilterMode(TEXTURE_FILTER_BILINEAR);
+		downsampledAO_->SetFilterMode(TEXTURE_FILTER_NEAREST);
 	}
 
 	if (downsampledAO_->GetWidth() != downsampledSolution.x_ ||

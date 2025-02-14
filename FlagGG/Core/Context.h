@@ -76,6 +76,8 @@ public:
 
 	UInt32 GetFrameNumber() const { return frameNumber_; }
 
+	UInt32 GetCurrentTemporalAASampleIndex() const { return temporalAASampleIndex_; }
+
 private:
 	HashMap<String, SharedPtr<VariableWrapper>> wrappers_;
 
@@ -83,6 +85,7 @@ private:
 	UInt64 asyncLoadingThreadId_{};
 
 	UInt32 frameNumber_{};
+	UInt32 temporalAASampleIndex_{};
 };
 
 }

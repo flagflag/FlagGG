@@ -2,7 +2,7 @@
 
 float GetHZBDepth(float2 screenPos, float mipLevel)
 {
-	float2 HiZUV = screenPos * float2(2, -2) + float2(-1, 1);
+	float2 HiZUV = screenPos * HiZRemapping.xy + HiZRemapping.zw;
 	float HiZDepth = HiZTexture.SampleLevel(HiZSampler, HiZUV, mipLevel).r;
 	return ConvertFromDeviceZ(HiZDepth);
 }

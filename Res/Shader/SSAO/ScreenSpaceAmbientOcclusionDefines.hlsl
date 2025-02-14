@@ -146,6 +146,7 @@ cbuffer HiZParam : register(b1)
     float2 temporalOffset;
     float2 SSAO_DownsampledAOInverseSize;
     float2 AOViewport_ViewportSize;
+	float4 HiZRemapping;
 }
 
 // 屏幕法线

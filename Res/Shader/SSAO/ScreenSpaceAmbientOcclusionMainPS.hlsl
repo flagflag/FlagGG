@@ -50,7 +50,7 @@ void AmbientOcclusionPass(in float2 uv, in float2 screenPos, float4 svPosition, 
             randomVec = float2(0, 1) * actualAORadius;
         }
 
-        float2 fovFixXY = fovFix.xy * (1.0f - viewSpacePosition.z);
+        float2 fovFixXY = fovFix.xy * (1.0f / viewSpacePosition.z);
         float4 randomBase = float4(randomVec, -randomVec.y, randomVec.x) * float4(fovFixXY, fovFixXY);
 
         float2 screenSpacePos = viewSpacePosition.xy / viewSpacePosition.z;
