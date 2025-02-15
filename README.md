@@ -46,10 +46,12 @@ emscripten - 构建
 * 渲染层功能
     * ClusterLighting（基建中）
     * Hi-Z Culling（完成）
-    * SSAO（目前接入了一版NV的HBAO+，后面有计划引入软件层面的SSAO算法，例如：ASSAO）
+    * SSAO（完成）
+        * NV的HBAO+
+        * 混合形SSAO（MSSAO和HBAO的混合版本，参照UE5）
     * 体积雾
     * 体积光
-    * SSR
+    * SSR（ing）
     * TAA
     * GPU-Instance
     * GPU-Driven
