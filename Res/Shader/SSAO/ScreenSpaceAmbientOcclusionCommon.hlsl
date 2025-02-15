@@ -143,6 +143,9 @@ float acosApproxNormAngle(float x)
 }
 
 // @return float3(invNormAngleL, invNormAngleR, weight)\
+// P点：原点
+// S点：球面上的采样点
+// 向量ω：P->S向量
 // SSAO计算与HBAO非常类似、同样会跑正反两个方向，但是在AO计算方程上做了些trick：
 // 1.在可见性计算V上，不使用Sin(S)-Sin(H)、而是直接用的向量ω与P点法线N之间的cos值；
 // 2.在衰减方程W上，直接用向量ω的模长代替

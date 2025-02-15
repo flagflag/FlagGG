@@ -198,6 +198,7 @@ void AmbientOcclusionPass(in float2 uv, in float2 screenPos, float4 svPosition, 
 		float3 normalA = ReconstructNormal(pixA.zw);
 		float3 normalB = ReconstructNormal(pixB.zw);
 		float3 normalC = ReconstructNormal(pixC.zw);
+        // 法线越接近，权重越大
 		weightB *= saturate(pow(saturate(dot(normalA, normalB)), normalTweak));
 		weightC *= saturate(pow(saturate(dot(normalA, normalC)), normalTweak));
 #endif
@@ -205,6 +206,7 @@ void AmbientOcclusionPass(in float2 uv, in float2 screenPos, float4 svPosition, 
 #if QUAD_MESSAGE_PASSING_DEPTH
 		const float depthTweak = 1;
 		float invDepth = 1.0f / pixA.y;
+        // 深度越接近，权重越大
 		weightB *= 1 - saturate(abs(1 - pixB.y * invDepth) * depthTweak);
 		weightC *= 1 - saturate(abs(1 - pixC.y * invDepth) * depthTweak);
 #endif
