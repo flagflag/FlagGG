@@ -304,8 +304,8 @@ void GfxTextureVulkan::Apply(const void* initialDataPtr)
 					VkImageView subImageView = VK_NULL_HANDLE;
 					VULKAN_CHECK(vkCreateImageView(deviceVulkan->GetVulkanDevice(), &vkIVCI, &deviceVulkan->GetVulkanAllocCallback(), &subImageView));
 
-					gfxTextureViews_.Push(MakeShared<GfxShaderResourceViewVulkan>(this, subImageView));
-					gfxRenderSurfaces_.Push(MakeShared<GfxRenderSurfaceVulkan>(this, subImageView));
+					gfxTextureViews_.Push(MakeShared<GfxShaderResourceViewVulkan>(this, subImageView, textureDesc_.width_ >> level, textureDesc_.height_ >> level));
+					gfxRenderSurfaces_.Push(MakeShared<GfxRenderSurfaceVulkan>(this, subImageView, textureDesc_.width_ >> level, textureDesc_.height_ >> level));
 				}
 			}
 		}
@@ -313,12 +313,12 @@ void GfxTextureVulkan::Apply(const void* initialDataPtr)
 		{
 			if (textureDesc_.subResourceViewEnable_)
 			{
-				gfxTextureViews_.Push(MakeShared<GfxShaderResourceViewVulkan>(this, vkImageView_));
+				gfxTextureViews_.Push(MakeShared<GfxShaderResourceViewVulkan>(this, vkImageView_, textureDesc_.width_, textureDesc_.height_));
 			}
 
 			if (isRenderSurface)
 			{
-				gfxRenderSurfaces_.Push(MakeShared<GfxRenderSurfaceVulkan>(this, vkImageView_));
+				gfxRenderSurfaces_.Push(MakeShared<GfxRenderSurfaceVulkan>(this, vkImageView_, textureDesc_.width_, textureDesc_.height_));
 			}
 		}
 	}

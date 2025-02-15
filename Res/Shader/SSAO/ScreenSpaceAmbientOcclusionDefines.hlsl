@@ -165,12 +165,14 @@ SamplerState randomNormalSampler : register(s2);
 Texture2D HiZTexture : register(t3);
 SamplerState HiZSampler : register(s3);
 
-// Downsample normal
+// Setup normal + depth
 Texture2D SSAO_SetupTexture : register(t4);
 SamplerState SSAO_SetupTexutreSampler : register(s4);
-Texture2D SSAO_NormalsTexture : register(t4);
-SamplerState SSAO_NormalsTextureSampler : register(s4);
+
+// Downsample normal + depth
+Texture2D SSAO_NormalsTexture : register(t5);
+SamplerState SSAO_NormalsTextureSampler : register(s5);
 
 // Downsample ao
-Texture2D SSAO_DownsampledAO : register(t5);
-SamplerState SSAO_DownsampledAOSampler : register(s5);
+Texture2D SSAO_DownsampledAO : register(t6);
+SamplerState SSAO_DownsampledAOSampler : register(s6);

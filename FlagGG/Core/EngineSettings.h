@@ -40,7 +40,7 @@ struct FlagGG_API EngineSettings : public Subsystem<EngineSettings>
 	bool clusterLightEnabled_{ false };
 	AmbientOcclusionType aoType_{ AmbientOcclusionType::Software };
 	bool renderSSR_{ true };
-	AmbientOcclusionQuality AOQuality_{ AmbientOcclusionQuality::VERY_HIGH };
+	AmbientOcclusionQuality AOQuality_{ AmbientOcclusionQuality::MEDIUM };
 	OcclusionCullingType occlusionCullingType_{ OcclusionCullingType::HiZCulling };
 };
 

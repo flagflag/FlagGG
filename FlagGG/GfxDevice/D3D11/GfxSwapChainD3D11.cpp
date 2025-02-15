@@ -77,7 +77,7 @@ void GfxSwapChainD3D11::Resize(UInt32 width, UInt32 height)
 		return;
 	}
 
-	renderTarget_ = new GfxRenderSurfaceD3D11(this);
+	renderTarget_ = new GfxRenderSurfaceD3D11(this, width, height);
 	renderTarget_->SetRenderTargetView(renderTargetView);
 
 	D3D11_TEXTURE2D_DESC depthDesc;
@@ -111,7 +111,7 @@ void GfxSwapChainD3D11::Resize(UInt32 width, UInt32 height)
 		return;
 	}
 
-	depthStencil_ = new GfxRenderSurfaceD3D11(this);
+	depthStencil_ = new GfxRenderSurfaceD3D11(this, width, height);
 	depthStencil_->SetDepthStencilView(depthStencilView);
 }
 

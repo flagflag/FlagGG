@@ -18,8 +18,8 @@ void GfxSwapChainOpenGL::Resize(UInt32 width, UInt32 height)
 {
 	glSwapChain_->Resize(width, height);
 
-	renderTarget_ = new GfxRenderSurfaceOpenGL(this);
-	depthStencil_ = new GfxRenderSurfaceOpenGL(this);
+	renderTarget_ = new GfxRenderSurfaceOpenGL(this, width, height);
+	depthStencil_ = new GfxRenderSurfaceOpenGL(this, width, height);
 }
 
 void GfxSwapChainOpenGL::CopyData(GfxTexture* gfxTexture)

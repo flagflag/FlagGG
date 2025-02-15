@@ -303,7 +303,7 @@ void GfxTextureD3D11::CreateTexture2D()
 						return;
 					}
 
-					gfxTextureViews_.Push(MakeShared<GfxShaderResourceViewD3D11>(this, shaderResourceView));
+					gfxTextureViews_.Push(MakeShared<GfxShaderResourceViewD3D11>(this, shaderResourceView, textureDesc_.width_, textureDesc_.height_));
 				}
 				else
 				{
@@ -337,7 +337,7 @@ void GfxTextureD3D11::CreateTexture2D()
 							return;
 						}
 
-						gfxTextureViews_.Push(MakeShared<GfxShaderResourceViewD3D11>(this, shaderResourceView));
+						gfxTextureViews_.Push(MakeShared<GfxShaderResourceViewD3D11>(this, shaderResourceView, textureDesc_.width_ >> level, textureDesc_.height_ >> level));
 					}
 				}
 			}
@@ -369,7 +369,7 @@ void GfxTextureD3D11::CreateTexture2D()
 					return;
 				}
 
-				SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this));
+				SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this, textureDesc_.width_, textureDesc_.height_));
 				renderSurface->SetRenderTargetView(renderTargetView);
 				gfxRenderSurfaces_.Push(renderSurface);
 			}
@@ -399,7 +399,7 @@ void GfxTextureD3D11::CreateTexture2D()
 						return;
 					}
 
-					SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this));
+					SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this, textureDesc_.width_ >> level, textureDesc_.height_ >> level));
 					renderSurface->SetRenderTargetView(renderTargetView);
 					gfxRenderSurfaces_.Push(renderSurface);
 				}
@@ -431,7 +431,7 @@ void GfxTextureD3D11::CreateTexture2D()
 					return;
 				}
 
-				SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this));
+				SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this, textureDesc_.width_, textureDesc_.height_));
 				renderSurface->SetDepthStencilView(depthStencilView);
 				gfxRenderSurfaces_.Push(renderSurface);
 			}
@@ -461,7 +461,7 @@ void GfxTextureD3D11::CreateTexture2D()
 						return;
 					}
 
-					SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this));
+					SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this, textureDesc_.width_ >> level, textureDesc_.height_ >> level));
 					renderSurface->SetDepthStencilView(depthStencilView);
 					gfxRenderSurfaces_.Push(renderSurface);
 				}
@@ -631,7 +631,7 @@ void GfxTextureD3D11::CreateTextureCube()
 				return;
 			}
 
-			SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this));
+			SharedPtr<GfxRenderSurfaceD3D11> renderSurface(new GfxRenderSurfaceD3D11(this, textureDesc_.width_, textureDesc_.height_));
 			renderSurface->SetRenderTargetView(renderTargetView);
 			gfxRenderSurfaces_.Push(renderSurface);
 		}
@@ -648,6 +648,24 @@ void GfxTextureD3D11::SetGpuTag(const String& gpuTag)
 	if (d3d11Texture3D_)
 	{
 		d3d11Texture3D_->SetPrivateData(WKPDID_D3DDebugObjectName, gpuTag.Length(), gpuTag.CString());
+	}
+
+	for (UInt32 i = 0; i < textureDesc_.levels_; ++i)
+	{
+		if (auto* renderSurface = GetRenderSurface(0, i))
+		{
+			renderSurface->SetGpuTag(ToString("%s-RenderView(%d x %d)", gpuTag.CString(), textureDesc_.width_ >> i, textureDesc_.height_ >> i));
+		}
+		if (auto* textureView = GetSubResourceView(0, i))
+		{
+			textureView->SetGpuTag(ToString("%s-TextureView(%d x %d)", gpuTag.CString(), textureDesc_.width_ >> i, textureDesc_.height_ >> i));
+		}
+	}
+
+	if (shaderResourceView_)
+	{
+		const String viewGpuTag = gpuTag + "-TextureView";
+		shaderResourceView_->SetPrivateData(WKPDID_D3DDebugObjectName, viewGpuTag.Length(), viewGpuTag.CString());
 	}
 }
 

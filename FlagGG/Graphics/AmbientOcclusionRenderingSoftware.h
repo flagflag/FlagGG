@@ -11,6 +11,8 @@ namespace FlagGG
 
 class Shader;
 class ShaderParameters;
+class GfxRenderSurface;
+class GfxShaderResourceView;
 
 struct AmbientOcclusionSettings
 {
@@ -44,13 +46,23 @@ protected:
 
 	void SetSSAOShaderParameters(float fov, const IntVector2& screenSize, const IntVector2& targetSize);
 
+	void SetHIZShaderParameters(Texture2D* HiZMap, const IntVector2& screenSize, UInt32 AOSamplingMipLevel);
+
+	void DownsampleNormalAndDepth(const AmbientOcclusionInputData& inputData, UInt32 mipLevel);
+
+	void GenerateDownsampledAO(const AmbientOcclusionInputData& inputData, UInt32 mipLevel, bool combineDownsampledAO);
+
+	void GenerateScreenAO(const AmbientOcclusionInputData& inputData);
+
 private:
 	// vs
 	SharedPtr<Shader> SSAOVS_;
 	// setup pass ps
 	SharedPtr<Shader> SSAOSetupPS_;
 	// step pass ps
-	SharedPtr<Shader> SSAOStepPS_;
+	SharedPtr<Shader> SSAOStepPS1_;
+	// step pass ps
+	SharedPtr<Shader> SSAOStepPS2_;
 	// final pass ps
 	SharedPtr<Shader> SSAOFinalPS_;
 

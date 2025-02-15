@@ -18,17 +18,11 @@ class GfxRenderSurfaceVulkan : public GfxRenderSurface
 {
 	OBJECT_OVERRIDE(GfxRenderSurfaceVulkan, GfxRenderSurface);
 public:
-	explicit GfxRenderSurfaceVulkan(GfxTextureVulkan* ownerTexture, VkImageView vkImageView);
+	explicit GfxRenderSurfaceVulkan(GfxTextureVulkan* ownerTexture, VkImageView vkImageView, UInt32 surfaceWidth, UInt32 surfaceHeight);
 
-	explicit GfxRenderSurfaceVulkan(GfxSwapChainVulkan* ownerSwapChain, VkFormat vkFormat, VkImageView vkImageView);
+	explicit GfxRenderSurfaceVulkan(GfxSwapChainVulkan* ownerSwapChain, VkFormat vkFormat, VkImageView vkImageView, UInt32 surfaceWidth, UInt32 surfaceHeight);
 
 	~GfxRenderSurfaceVulkan() override;
-
-	// 获取ImageView宽
-	UInt32 GetWidth() const { return width_; }
-
-	// 获取ImageView高
-	UInt32 GetHeight() const { return height_; }
 
 	// 获取format
 	VkFormat GetVulkanFormat() { return vkFormat_; }
@@ -40,10 +34,6 @@ public:
 	void UpdateImageView(VkImageView vkImageView);
 
 private:
-	UInt32 width_;
-
-	UInt32 height_;
-
 	// Surface format
 	VkFormat vkFormat_;
 

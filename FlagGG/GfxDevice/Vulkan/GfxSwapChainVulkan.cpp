@@ -146,7 +146,7 @@ void GfxSwapChainVulkan::Resize(UInt32 width, UInt32 height)
 		VULKAN_CHECK(vkCreateImageView(deviceVulkan->GetVulkanDevice(), &vkIVCI, &deviceVulkan->GetVulkanAllocCallback(), &colorView));
 	}
 
-	renderTarget_ = new GfxRenderSurfaceVulkan(this, vkSurfaceFormat_.format, VK_NULL_HANDLE);
+	renderTarget_ = new GfxRenderSurfaceVulkan(this, vkSurfaceFormat_.format, VK_NULL_HANDLE, backbufferWidth_, backbufferHeight_);
 
 	depthStencilTexture_ = new GfxTextureVulkan();
 	depthStencilTexture_->SetFormat(TEXTURE_FORMAT_D24S8);

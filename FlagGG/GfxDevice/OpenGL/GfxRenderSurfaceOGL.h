@@ -17,7 +17,7 @@ class GfxRenderSurfaceOpenGL : public GfxRenderSurface
 public:
 	explicit GfxRenderSurfaceOpenGL(GfxTexture* ownerTexture, GLenum textureFormat, GLsizei width, GLsizei height);
 
-	explicit GfxRenderSurfaceOpenGL(GfxSwapChain* ownerSwapChain);
+	explicit GfxRenderSurfaceOpenGL(GfxSwapChain* ownerSwapChain, GLsizei width, GLsizei height);
 
 	~GfxRenderSurfaceOpenGL() override;
 

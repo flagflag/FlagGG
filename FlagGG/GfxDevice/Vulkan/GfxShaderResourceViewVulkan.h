@@ -15,7 +15,7 @@ class GfxShaderResourceViewVulkan : public GfxShaderResourceView
 {
 	OBJECT_OVERRIDE(GfxShaderResourceViewVulkan, GfxShaderResourceView);
 public:
-	GfxShaderResourceViewVulkan(GfxTexture* ownerTexture, VkImageView imageSamplerView);
+	GfxShaderResourceViewVulkan(GfxTexture* ownerTexture, VkImageView imageSamplerView, UInt32 viewWidth, UInt32 viewHeight);
 
 	~GfxShaderResourceViewVulkan() override;
 

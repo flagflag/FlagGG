@@ -15,9 +15,12 @@ class GfxShaderResourceViewD3D11 : public GfxShaderResourceView
 {
 	OBJECT_OVERRIDE(GfxShaderResourceViewD3D11, GfxShaderResourceView);
 public:
-	GfxShaderResourceViewD3D11(GfxTexture* ownerTexture, ID3D11ShaderResourceView* shaderResourceView);
+	GfxShaderResourceViewD3D11(GfxTexture* ownerTexture, ID3D11ShaderResourceView* shaderResourceView, UInt32 viewWidth, UInt32 viewHeight);
 
 	~GfxShaderResourceViewD3D11() override;
+
+	// 设置Gpu tag
+	void SetGpuTag(const String& gpuTag) override;
 
 	// 获取ID3D11ShaderResourceView*
 	ID3D11ShaderResourceView* GetD3D11ShaderResourceView() const { return shaderResourceView_; }

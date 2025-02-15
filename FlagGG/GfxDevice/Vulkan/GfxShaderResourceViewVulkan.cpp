@@ -4,8 +4,8 @@
 namespace FlagGG
 {
 
-GfxShaderResourceViewVulkan::GfxShaderResourceViewVulkan(GfxTexture* ownerTexture, VkImageView imageSamplerView)
-	: GfxShaderResourceView(ownerTexture)
+GfxShaderResourceViewVulkan::GfxShaderResourceViewVulkan(GfxTexture* ownerTexture, VkImageView imageSamplerView, UInt32 viewWidth, UInt32 viewHeight)
+	: GfxShaderResourceView(ownerTexture, viewWidth, viewHeight)
 	, imageSamplerView_(imageSamplerView)
 {
 

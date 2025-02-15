@@ -15,11 +15,14 @@ class GfxRenderSurfaceD3D11 : public GfxRenderSurface
 {
 	OBJECT_OVERRIDE(GfxRenderSurfaceD3D11, GfxRenderSurface);
 public:
-	explicit GfxRenderSurfaceD3D11(GfxTexture* ownerTexture);
+	explicit GfxRenderSurfaceD3D11(GfxTexture* ownerTexture, UInt32 surfaceWidth, UInt32 surfaceHeight);
 
-	explicit GfxRenderSurfaceD3D11(GfxSwapChain* ownerSwapChain);
+	explicit GfxRenderSurfaceD3D11(GfxSwapChain* ownerSwapChain, UInt32 surfaceWidth, UInt32 surfaceHeight);
 
 	~GfxRenderSurfaceD3D11() override;
+
+	// 设置Gpu tag
+	void SetGpuTag(const String& gpuTag) override;
 
 	void SetRenderTargetView(ID3D11RenderTargetView* renderTargetView);
 

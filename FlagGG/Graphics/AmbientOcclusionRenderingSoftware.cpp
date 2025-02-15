@@ -4,6 +4,9 @@
 #include "Graphics/ShaderHelper.h"
 #include "Graphics/RenderEngine.h"
 #include "GfxDevice/GfxDevice.h"
+#include "GfxDevice/GfxRenderSurface.h"
+#include "GfxDevice/GfxTexture.h"
+#include "GfxDevice/GfxShaderResourceView.h"
 #include "Core/EngineSettings.h"
 
 namespace FlagGG
@@ -11,11 +14,12 @@ namespace FlagGG
 
 AmbientOcclusionRenderingSoftware::AmbientOcclusionRenderingSoftware()
 {
-	const String SHADER_QUALITY = ToString("SHADER_QUALITY=%d", Int32(/*GetSubsystem<EngineSettings>()->AOQuality_*/AmbientOcclusionQuality::MEDIUM));
+	const String SHADER_QUALITY = ToString("SHADER_QUALITY=%d", Int32(GetSubsystem<EngineSettings>()->AOQuality_));
 
 	INIT_SHADER_VARIATION(SSAOVS_,      "Shader/SSAO/ScreenSpaceAmbientOcclusionVS.hlsl",      VS, {});
 	INIT_SHADER_VARIATION(SSAOSetupPS_, "Shader/SSAO/ScreenSpaceAmbientOcclusionSetupPS.hlsl", PS, Vector<String>({ SHADER_QUALITY }));
-	INIT_SHADER_VARIATION(SSAOStepPS_,  "Shader/SSAO/ScreenSpaceAmbientOcclusionMainPS.hlsl",  PS, Vector<String>({ SHADER_QUALITY, "USE_AO_SETUP_AS_INPUT=1", "USE_UPSAMPLE=0" }));
+	INIT_SHADER_VARIATION(SSAOStepPS1_,  "Shader/SSAO/ScreenSpaceAmbientOcclusionMainPS.hlsl",  PS, Vector<String>({ SHADER_QUALITY, "USE_AO_SETUP_AS_INPUT=1", "USE_UPSAMPLE=0" }));
+	INIT_SHADER_VARIATION(SSAOStepPS2_, "Shader/SSAO/ScreenSpaceAmbientOcclusionMainPS.hlsl", PS, Vector<String>({ SHADER_QUALITY, "USE_AO_SETUP_AS_INPUT=1", "USE_UPSAMPLE=1" }));
 	INIT_SHADER_VARIATION(SSAOFinalPS_, "Shader/SSAO/ScreenSpaceAmbientOcclusionMainPS.hlsl",  PS, Vector<String>({ SHADER_QUALITY, "USE_AO_SETUP_AS_INPUT=0", "USE_UPSAMPLE=1" }));
 
 	randomNormals_ = GetSubsystem<ResourceCache>()->GetResource<Texture2D>("Textures/RandomNormals.tga");
@@ -82,6 +86,126 @@ void AmbientOcclusionRenderingSoftware::SetSSAOShaderParameters(float fov, const
 	shaderParameters_->SetValue<Real>("HiZStepMipLevelFactor", HiZStepMipLevelFactor);
 	shaderParameters_->SetValue<Vector2>("temporalOffset", temporalOffset);
 	shaderParameters_->SetValue<Vector2>("AOViewport_ViewportSize", Vector2(targetSize));
+
+}
+
+void AmbientOcclusionRenderingSoftware::SetHIZShaderParameters(Texture2D* HiZMap, const IntVector2& screenSize, UInt32 AOSamplingMipLevel)
+{
+	const Vector2 HiZScaleFactor((Real)screenSize.x_ / (2.0f * HiZMap->GetWidth()), (Real)screenSize.y_ / (2.0f * HiZMap->GetHeight()));
+	const Vector2 SSAO_DownsampledAOInverseSize(1.0f / (downsampledAO_->GetWidth() >> AOSamplingMipLevel), 1.0f / (downsampledAO_->GetHeight() >> AOSamplingMipLevel));
+
+	shaderParameters_->SetValue<Vector4>("HiZRemapping", Vector4(0.5 * HiZScaleFactor.x_, -0.5 * HiZScaleFactor.y_, 0.5 * HiZScaleFactor.x_, 0.5 * HiZScaleFactor.y_));
+	shaderParameters_->SetValue<Vector2>("SSAO_DownsampledAOInverseSize", SSAO_DownsampledAOInverseSize);
+}
+
+void AmbientOcclusionRenderingSoftware::DownsampleNormalAndDepth(const AmbientOcclusionInputData& inputData, UInt32 mipLevel)
+{
+	auto* gfxDevice = GfxDevice::GetDevice();
+	auto* renderEngine = GetSubsystem<RenderEngine>();
+	auto* renderSurface = downsampledNormal_->GetRenderSurface(0, mipLevel);
+
+	// 重置rt、texture绑定
+	gfxDevice->ResetRenderTargets();
+	gfxDevice->SetDepthStencil(nullptr);
+	gfxDevice->ResetTextures();
+	gfxDevice->ResetSamplers();
+
+	SetSSAOShaderParameters(inputData.camera_->GetFov(), inputData.renderSolution_, IntVector2(renderSurface->GetWidth(), renderSurface->GetHeight()));
+
+	const Real thresholdInverse = settings_.ambientOcclusionMipThreshold_ * ((Real)renderSurface->GetWidth() / aoTexture_->GetWidth());
+	shaderParameters_->SetValue<Vector2>("invSize", Vector2(1.0f / renderSurface->GetWidth(), 1.0f / renderSurface->GetHeight()));
+	shaderParameters_->SetValue<Real>("thresholdInverse", thresholdInverse);
+
+	gfxDevice->SetRenderTarget(0, renderSurface);
+
+	gfxDevice->SetViewport(IntRect(0, 0, renderSurface->GetWidth(), renderSurface->GetHeight()));
+
+	gfxDevice->SetTexture(0, inputData.screenNormalTexture_->GetGfxTextureRef());
+	gfxDevice->SetTexture(1, inputData.screenDepthTexture_->GetGfxTextureRef());
+
+	gfxDevice->SetSampler(0, inputData.screenNormalTexture_->GetGfxSamplerRef());
+	gfxDevice->SetSampler(1, inputData.screenDepthTexture_->GetGfxSamplerRef());
+
+	gfxDevice->SetShaders(SSAOVS_->GetGfxRef(), SSAOSetupPS_->GetGfxRef());
+	renderEngine->DrawQuad();
+}
+
+void AmbientOcclusionRenderingSoftware::GenerateDownsampledAO(const AmbientOcclusionInputData& inputData, UInt32 mipLevel, bool combineDownsampledAO)
+{
+	auto* gfxDevice = GfxDevice::GetDevice();
+	auto* renderEngine = GetSubsystem<RenderEngine>();
+	auto* renderSurface = downsampledAO_->GetRenderSurface(0, mipLevel);
+
+	// 重置rt、texture绑定
+	gfxDevice->ResetRenderTargets();
+	gfxDevice->SetDepthStencil(nullptr);
+	gfxDevice->ResetTextures();
+	gfxDevice->ResetSamplers();
+
+	SetSSAOShaderParameters(inputData.camera_->GetFov(), inputData.renderSolution_, IntVector2(renderSurface->GetWidth(), renderSurface->GetHeight()));
+	SetHIZShaderParameters(inputData.HiZMap_, inputData.renderSolution_, mipLevel + 1);
+
+	gfxDevice->SetRenderTarget(0, renderSurface);
+
+	gfxDevice->SetViewport(IntRect(0, 0, renderSurface->GetWidth(), renderSurface->GetHeight()));
+
+	gfxDevice->SetTexture(2, randomNormals_->GetGfxTextureRef());
+	gfxDevice->SetTexture(3, inputData.HiZMap_->GetGfxTextureRef());
+	gfxDevice->SetTextureView(4, downsampledNormal_->GetGfxTextureRef()->GetSubResourceView(0, mipLevel));
+	if (combineDownsampledAO)
+	{
+		gfxDevice->SetTextureView(5, downsampledNormal_->GetGfxTextureRef()->GetSubResourceView(0, mipLevel + 1));
+		gfxDevice->SetTextureView(6, downsampledAO_->GetGfxTextureRef()->GetSubResourceView(0, mipLevel + 1));
+	}
+
+	gfxDevice->SetSampler(2, randomNormals_->GetGfxSamplerRef());
+	gfxDevice->SetSampler(3, inputData.HiZMap_->GetGfxSamplerRef());
+	gfxDevice->SetSampler(4, downsampledNormal_->GetGfxSamplerRef());
+	if (combineDownsampledAO)
+	{
+		gfxDevice->SetSampler(5, downsampledNormal_->GetGfxSamplerRef());
+		gfxDevice->SetSampler(6, downsampledAO_->GetGfxSamplerRef());
+	}
+
+	gfxDevice->SetShaders(SSAOVS_->GetGfxRef(), combineDownsampledAO ? SSAOStepPS2_->GetGfxRef() : SSAOStepPS1_->GetGfxRef());
+	renderEngine->DrawQuad();
+}
+
+void AmbientOcclusionRenderingSoftware::GenerateScreenAO(const AmbientOcclusionInputData& inputData)
+{
+	auto* gfxDevice = GfxDevice::GetDevice();
+	auto* renderEngine = GetSubsystem<RenderEngine>();
+	auto* renderSurface = aoTexture_->GetRenderSurface();
+
+	// 重置rt、texture绑定
+	gfxDevice->ResetRenderTargets();
+	gfxDevice->SetDepthStencil(nullptr);
+	gfxDevice->ResetTextures();
+	gfxDevice->ResetSamplers();
+
+	SetSSAOShaderParameters(inputData.camera_->GetFov(), inputData.renderSolution_, IntVector2(aoTexture_->GetWidth(), aoTexture_->GetHeight()));
+	SetHIZShaderParameters(inputData.HiZMap_, inputData.renderSolution_, 0);
+
+	gfxDevice->SetRenderTarget(0, renderSurface);
+
+	gfxDevice->SetViewport(IntRect(0, 0, renderSurface->GetWidth(), renderSurface->GetHeight()));
+
+	gfxDevice->SetTexture(0, inputData.screenNormalTexture_->GetGfxTextureRef());
+	gfxDevice->SetTexture(1, inputData.screenDepthTexture_->GetGfxTextureRef());
+	gfxDevice->SetTexture(2, randomNormals_->GetGfxTextureRef());
+	gfxDevice->SetTexture(3, inputData.HiZMap_->GetGfxTextureRef());
+	gfxDevice->SetTextureView(5, downsampledNormal_->GetGfxTextureRef()->GetSubResourceView(0, 0));
+	gfxDevice->SetTextureView(6, downsampledAO_->GetGfxTextureRef()->GetSubResourceView(0, 0));
+
+	gfxDevice->SetSampler(0, inputData.screenNormalTexture_->GetGfxSamplerRef());
+	gfxDevice->SetSampler(1, inputData.screenDepthTexture_->GetGfxSamplerRef());
+	gfxDevice->SetSampler(2, randomNormals_->GetGfxSamplerRef());
+	gfxDevice->SetSampler(3, inputData.HiZMap_->GetGfxSamplerRef());
+	gfxDevice->SetSampler(5, downsampledNormal_->GetGfxSamplerRef());
+	gfxDevice->SetSampler(6, downsampledAO_->GetGfxSamplerRef());
+
+	gfxDevice->SetShaders(SSAOVS_->GetGfxRef(), SSAOFinalPS_->GetGfxRef());
+	renderEngine->DrawQuad();
 }
 
 void AmbientOcclusionRenderingSoftware::RenderAO(const AmbientOcclusionInputData& inputData)
@@ -91,74 +215,27 @@ void AmbientOcclusionRenderingSoftware::RenderAO(const AmbientOcclusionInputData
 	auto* gfxDevice = GfxDevice::GetDevice();
 	auto* renderEngine = GetSubsystem<RenderEngine>();
 
-	gfxDevice->ResetRenderTargets();
-	gfxDevice->SetDepthStencil(nullptr);
-	gfxDevice->ResetTextures();
-	gfxDevice->ResetSamplers();
-
 	gfxDevice->SetMaterialShaderParameters(shaderParameters_);
 
-	const Vector2 HiZScaleFactor((Real)downsampledNormal_->GetWidth() / inputData.HiZMap_->GetWidth(), (Real)downsampledNormal_->GetHeight() / inputData.HiZMap_->GetHeight());
-	shaderParameters_->SetValue<Vector4>("HiZRemapping", Vector4(0.5 * HiZScaleFactor.x_, -0.5 * HiZScaleFactor.y_, 0.5 * HiZScaleFactor.x_, 0.5 * HiZScaleFactor.y_));
+	bool isMultiStepPass = GetSubsystem<EngineSettings>()->AOQuality_ > AmbientOcclusionQuality::MEDIUM;
 
-	// Downsample normal
+	// Downsample normal (1/2, 1/2)
+	DownsampleNormalAndDepth(inputData, 0);
+
+	if (isMultiStepPass)
 	{
-		SetSSAOShaderParameters(inputData.camera_->GetFov(), inputData.renderSolution_, IntVector2(downsampledNormal_->GetWidth(), downsampledNormal_->GetHeight()));
+		// Downsample normal (1/4, 1/4)
+		DownsampleNormalAndDepth(inputData, 1);
 
-		const Real thresholdInverse = settings_.ambientOcclusionMipThreshold_ * ((Real)downsampledNormal_->GetWidth() / aoTexture_->GetWidth());
-		shaderParameters_->SetValue<Vector2>("invSize", Vector2(1.0f / downsampledNormal_->GetWidth(), 1.0f / downsampledNormal_->GetHeight()));
-		shaderParameters_->SetValue<Real>("thresholdInverse", thresholdInverse);
-
-		gfxDevice->SetRenderTarget(0, downsampledNormal_->GetRenderSurface());
-
-		gfxDevice->SetViewport(IntRect(0, 0, downsampledNormal_->GetWidth(), downsampledNormal_->GetHeight()));
-
-		gfxDevice->SetTexture(0, inputData.screenNormalTexture_->GetGfxTextureRef());
-		gfxDevice->SetTexture(1, inputData.screenDepthTexture_->GetGfxTextureRef());
-
-		gfxDevice->SetSampler(0, inputData.screenNormalTexture_->GetGfxSamplerRef());
-		gfxDevice->SetSampler(1, inputData.screenDepthTexture_->GetGfxSamplerRef());
-
-		gfxDevice->SetShaders(SSAOVS_->GetGfxRef(), SSAOSetupPS_->GetGfxRef());
-		renderEngine->DrawQuad();
+		// Build downsampled AO
+		GenerateDownsampledAO(inputData, 1, false);
 	}
 
 	// Build downsampled AO
-	{
-		SetSSAOShaderParameters(inputData.camera_->GetFov(), inputData.renderSolution_, IntVector2(downsampledAO_->GetWidth(), downsampledAO_->GetHeight()));
-
-		gfxDevice->SetRenderTarget(0, downsampledAO_->GetRenderSurface());
-
-		gfxDevice->SetViewport(IntRect(0, 0, downsampledAO_->GetWidth(), downsampledAO_->GetHeight()));
-
-		gfxDevice->SetTexture(2, randomNormals_->GetGfxTextureRef());
-		gfxDevice->SetTexture(3, inputData.HiZMap_->GetGfxTextureRef());
-		gfxDevice->SetTexture(4, downsampledNormal_->GetGfxTextureRef());
-
-		gfxDevice->SetSampler(2, randomNormals_->GetGfxSamplerRef());
-		gfxDevice->SetSampler(3, inputData.HiZMap_->GetGfxSamplerRef());
-		gfxDevice->SetSampler(4, downsampledNormal_->GetGfxSamplerRef());
-
-		gfxDevice->SetShaders(SSAOVS_->GetGfxRef(), SSAOStepPS_->GetGfxRef());
-		renderEngine->DrawQuad();
-	}
+	GenerateDownsampledAO(inputData, 0, isMultiStepPass);
 
 	// Build final AO
-	{
-		SetSSAOShaderParameters(inputData.camera_->GetFov(), inputData.renderSolution_, IntVector2(aoTexture_->GetWidth(), aoTexture_->GetHeight()));
-
-		shaderParameters_->SetValue<Vector2>("SSAO_DownsampledAOInverseSize", Vector2(1.0f / downsampledAO_->GetWidth(), 1.0f / downsampledAO_->GetHeight()));
-
-		gfxDevice->SetRenderTarget(0, aoTexture_->GetRenderSurface());
-
-		gfxDevice->SetViewport(IntRect(0, 0, aoTexture_->GetWidth(), aoTexture_->GetHeight()));
-
-		gfxDevice->SetTexture(5, downsampledAO_->GetGfxTextureRef());
-		gfxDevice->SetSampler(5, downsampledAO_->GetGfxSamplerRef());
-
-		gfxDevice->SetShaders(SSAOVS_->GetGfxRef(), SSAOFinalPS_->GetGfxRef());
-		renderEngine->DrawQuad();
-	}
+	GenerateScreenAO(inputData);
 }
 
 Texture2D* AmbientOcclusionRenderingSoftware::GetAmbientOcclusionTexture() const
@@ -168,33 +245,36 @@ Texture2D* AmbientOcclusionRenderingSoftware::GetAmbientOcclusionTexture() const
 
 void AmbientOcclusionRenderingSoftware::AllocAOTexture(const IntVector2& renderSolution)
 {
-	const IntVector2 downsampledSolution(renderSolution.x_ / 2, renderSolution.y_ / 2);
+	const IntVector2 halfSolution(renderSolution.x_ / 2, renderSolution.y_ / 2);
+	const IntVector2 quarterSolution(renderSolution.x_ / 4, renderSolution.y_ / 4);
 
 	if (!downsampledNormal_)
 	{
 		downsampledNormal_ = new Texture2D();
-		downsampledNormal_->SetNumLevels(1);
+		downsampledNormal_->SetNumLevels(0);
 		downsampledNormal_->SetFilterMode(TEXTURE_FILTER_NEAREST);
+		downsampledNormal_->SetSubResourceViewEnabled(true);
 	}
 
-	if (downsampledNormal_->GetWidth() != downsampledSolution.x_ ||
-		downsampledNormal_->GetHeight() != downsampledSolution.y_)
+	if (downsampledNormal_->GetWidth() != halfSolution.x_ ||
+		downsampledNormal_->GetHeight() != halfSolution.y_)
 	{
-		downsampledNormal_->SetSize(downsampledSolution.x_, downsampledSolution.y_, TEXTURE_FORMAT_RGBA16F, TEXTURE_RENDERTARGET);
+		downsampledNormal_->SetSize(halfSolution.x_, halfSolution.y_, TEXTURE_FORMAT_RGBA16F, TEXTURE_RENDERTARGET);
 		downsampledNormal_->SetGpuTag("DownsampledNormal");
 	}
 
 	if (!downsampledAO_)
 	{
 		downsampledAO_ = new Texture2D();
-		downsampledAO_->SetNumLevels(1);
+		downsampledAO_->SetNumLevels(0);
 		downsampledAO_->SetFilterMode(TEXTURE_FILTER_NEAREST);
+		downsampledAO_->SetSubResourceViewEnabled(true);
 	}
 
-	if (downsampledAO_->GetWidth() != downsampledSolution.x_ ||
-		downsampledAO_->GetHeight() != downsampledSolution.y_)
+	if (downsampledAO_->GetWidth() != halfSolution.x_ ||
+		downsampledAO_->GetHeight() != halfSolution.y_)
 	{
-		downsampledAO_->SetSize(downsampledSolution.x_, downsampledSolution.y_, TEXTURE_FORMAT_RGBA8, TEXTURE_RENDERTARGET);
+		downsampledAO_->SetSize(halfSolution.x_, halfSolution.y_, TEXTURE_FORMAT_RGBA8, TEXTURE_RENDERTARGET);
 		downsampledAO_->SetGpuTag("DownsampledAO");
 	}
 
@@ -209,7 +289,7 @@ void AmbientOcclusionRenderingSoftware::AllocAOTexture(const IntVector2& renderS
 		aoTexture_->GetHeight() != renderSolution.y_)
 	{
 		aoTexture_->SetSize(renderSolution.x_, renderSolution.y_, TEXTURE_FORMAT_R8, TEXTURE_RENDERTARGET);
-		downsampledAO_->SetGpuTag("AmbientOcclusion");
+		aoTexture_->SetGpuTag("AmbientOcclusion");
 	}
 }
 

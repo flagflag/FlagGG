@@ -31,6 +31,8 @@ void RunApplication(SetupFinish setupFinish)
 		GetSubsystem<EngineSettings>()->occlusionCullingType_ = OcclusionCullingType::None;
 	if (CommandParam.Contains("ao_type"))
 		GetSubsystem<EngineSettings>()->aoType_ = (AmbientOcclusionType)ToInt(CommandParam["ao_type"].GetString());
+	if (CommandParam.Contains("ao_quality"))
+		GetSubsystem<EngineSettings>()->AOQuality_ = (AmbientOcclusionQuality)ToInt(CommandParam["ao_quality"].GetString());
 	if (CommandParam.Contains("close_ssr"))
 		GetSubsystem<EngineSettings>()->renderSSR_ = false;
 

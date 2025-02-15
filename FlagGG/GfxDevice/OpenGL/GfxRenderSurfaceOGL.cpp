@@ -4,7 +4,7 @@ namespace FlagGG
 {
 
 GfxRenderSurfaceOpenGL::GfxRenderSurfaceOpenGL(GfxTexture* ownerTexture, GLenum textureFormat, GLsizei width, GLsizei height)
-	: GfxRenderSurface(ownerTexture)
+	: GfxRenderSurface(ownerTexture, width, height)
 {
 	GL::GenRenderbuffers(1, &oglRenderBuffer_);
 	GL::BindRenderbuffer(GL_RENDERBUFFER, oglRenderBuffer_);
@@ -12,8 +12,8 @@ GfxRenderSurfaceOpenGL::GfxRenderSurfaceOpenGL(GfxTexture* ownerTexture, GLenum 
 	GL::BindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
-GfxRenderSurfaceOpenGL::GfxRenderSurfaceOpenGL(GfxSwapChain* ownerSwapChain)
-	: GfxRenderSurface(ownerSwapChain)
+GfxRenderSurfaceOpenGL::GfxRenderSurfaceOpenGL(GfxSwapChain* ownerSwapChain, GLsizei width, GLsizei height)
+	: GfxRenderSurface(ownerSwapChain, width, height)
 {
 
 }
