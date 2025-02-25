@@ -88,7 +88,8 @@ void Octree::RaycastImpl(const OctreeNode* node, RayOctreeQuery& query) const
 
 	for (auto comp : node->components_)
 	{
-		comp->ProcessRayQuery(query, query.results_);
+		if (comp->GetDrawableFlags() & query.drawableFlags_)
+			comp->ProcessRayQuery(query, query.results_);
 	}
 
 	for (auto child : node->children_)

@@ -24,7 +24,7 @@ public:
 	bool IsRenderable() override { return true; }
 
 	// 获取DrawableFlags
-	UInt32 GetDrawableFlags() const override { return DRAWABLE_GEOMETRY; }
+	UInt32 GetDrawableFlags() const override { return DRAWABLE_STATICMESH; }
 
 	// 更新包围盒
 	void OnUpdateWorldBoundingBox() override;

@@ -142,6 +142,9 @@ FORCEINLINE bool IsNearlyZero(const float& value)
 }
 
 template <class T>
+FORCEINLINE T Sign(T value) { return value > 0.0 ? 1.0 : (value < 0.0 ? -1.0 : 0.0); }
+
+template <class T>
 FORCEINLINE T Clamp(const T x, const T min, const T max) { return (x < min) ? min : (x < max) ? x : max; }
 
 FlagGG_API UInt32 FloatToRawIntBits(Real value);

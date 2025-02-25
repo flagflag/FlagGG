@@ -32,6 +32,7 @@ class KeyState;
 enum MouseKey;
 class IntVector2;
 class Vector2;
+class LuaVM;
 
 class WebUISystem_API UIView : public Object
 {
@@ -51,6 +52,9 @@ public:
 	// 加载html
 	void LoadHTML(const String& html);
 
+	// 关联Lua虚拟机
+	void LinkLuaVM(LuaVM* luaVM);
+
 	// 设置背景透明度
 	void SetBackgroundTransparency(Real transparency);
 
@@ -63,6 +67,7 @@ public:
 	// 收集ui渲染树（作为事件，由UISystem调用）
 	void GatherRenderUITrees(Vector<RenderUITree>& renderUITrees);
 
+	ultralight::View* GetWebView() const { return webView_; }
 
 // 系统事件：
 

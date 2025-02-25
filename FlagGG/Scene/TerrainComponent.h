@@ -20,14 +20,23 @@ class FlagGG_API TerrainComponent : public DrawableComponent
 {
 	OBJECT_OVERRIDE(TerrainComponent, DrawableComponent);
 public:
-	// 设置路径大小
-	void SetPathSize(UInt32 pathSize);
+	// 设置Patch大小
+	void SetPatchSize(UInt32 patchSize);
+
+	// 设置三角面大小
+	void SetQuadSize(UInt32 quadSize);
 
 	// 设置高度图
 	void SetHeightMap(Image* image);
 
+	// 获取高度图
+	Image* GetHeightMap() const { return heightMap_; }
+
 	// 设置材质
 	void SetMaterial(Material* material);
+
+	// 获取材质
+	Material* GetMaterial() const { return material_; }
 
 	// 是否可渲染
 	bool IsRenderable() override { return true; }
@@ -43,7 +52,8 @@ protected:
 	void CreateGeometry();
 
 private:
-	UInt32 pathSize_;
+	UInt32 patchSize_;
+	UInt32 quadSize_;
 
 	IntVector2 patchesNum_;
 	IntVector2 verticesNum_;

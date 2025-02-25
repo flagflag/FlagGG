@@ -7,6 +7,7 @@ namespace FlagGG
 {
 	
 class Scene;
+class LuaVM;
 
 }
 
@@ -23,6 +24,11 @@ public:
 	~GameBuilder() override;
 
 	void Setup(Scene* scene);
+
+protected:
+	void ExportLuaAPI();
+
+	int GetBrush(LuaVM* luaVM);
 
 private:
 	SharedPtr<Brush> brush_;

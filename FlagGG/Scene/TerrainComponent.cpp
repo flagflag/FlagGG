@@ -6,11 +6,21 @@
 namespace FlagGG
 {
 
-void TerrainComponent::SetPathSize(UInt32 pathSize)
+void TerrainComponent::SetPatchSize(UInt32 patchSize)
 {
-	if (pathSize_ != pathSize)
+	if (patchSize_ != patchSize)
 	{
-		pathSize_ = pathSize;
+		patchSize_ = patchSize;
+
+		CreateGeometry();
+	}
+}
+
+void TerrainComponent::SetQuadSize(UInt32 quadSize)
+{
+	if (quadSize_ != quadSize)
+	{
+		quadSize_ = quadSize;
 
 		CreateGeometry();
 	}
@@ -42,13 +52,13 @@ void TerrainComponent::SetMaterial(Material* material)
 
 void TerrainComponent::CreateGeometry()
 {
-	if (pathSize_ == 0 || !heightMap_) return;
+	if (patchSize_ == 0 || !heightMap_) return;
 
 	meshBoundingBox_.Clear();
 
-	patchWorldSize_ = Vector2(pathSize_, pathSize_);
-	patchesNum_ = IntVector2(heightMap_->GetWidth() / pathSize_, heightMap_->GetHeight() / pathSize_);
-	verticesNum_ = IntVector2(patchesNum_.x_ * pathSize_, patchesNum_.y_ * pathSize_);
+	patchWorldSize_ = Vector2(patchSize_, patchSize_);
+	patchesNum_ = IntVector2(heightMap_->GetHeight() / patchSize_, heightMap_->GetWidth() / patchSize_);
+	verticesNum_ = IntVector2(patchesNum_.x_ * patchSize_, patchesNum_.y_ * patchSize_);
 	patchWorldOrigin_ = Vector2(-0.5f * patchesNum_.x_ * patchWorldSize_.x_, -0.5f * patchesNum_.y_ * patchWorldSize_.y_);
 
 	geometry_ = new Geometry();
@@ -96,7 +106,7 @@ void TerrainComponent::CreateGeometry()
 			const Color& color = heightMap_->GetPixel(y, verticesNum_.x_ - 1 - x);
 			Real height = color.r_ * 255.0f;
 #endif
-			Vector3 position(y, x, height);
+			Vector3 position(x, y, height);
 			IOFrame::Buffer::WriteVector3(buffer1, position);
 			IOFrame::Buffer::WriteVector3(buffer1, Vector3(0, 0, 1));
 			IOFrame::Buffer::WriteVector4(buffer1, Vector4(0, 1, 0, 1));
@@ -107,12 +117,12 @@ void TerrainComponent::CreateGeometry()
 			if (x != verticesNum_.x_ - 1 && y != verticesNum_.y_ - 1)
 			{
 				buffer2->WriteInt32(x * verticesNum_.y_ + y);
-				buffer2->WriteInt32(x * verticesNum_.y_ + y + 1);
 				buffer2->WriteInt32((x + 1) * verticesNum_.y_ + y + 1);
+				buffer2->WriteInt32(x * verticesNum_.y_ + y + 1);
 
 				buffer2->WriteInt32(x * verticesNum_.y_ + y);
-				buffer2->WriteInt32((x + 1) * verticesNum_.y_ + y + 1);
 				buffer2->WriteInt32((x + 1) * verticesNum_.y_ + y);
+				buffer2->WriteInt32((x + 1) * verticesNum_.y_ + y + 1);
 			}
 		}
 	}
@@ -129,6 +139,9 @@ void TerrainComponent::CreateGeometry()
 	renderContext.numWorldTransform_ = 1;
 	renderContext.worldTransform_ = &node_->GetWorldTransform();
 	renderContext.viewMask_ = GetViewMask();
+
+	if (meshBoundingBox_.min_.z_ == meshBoundingBox_.max_.z_)
+		meshBoundingBox_.max_.z_++;
 }
 
 void TerrainComponent::OnUpdateWorldBoundingBox()

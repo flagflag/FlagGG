@@ -154,16 +154,18 @@ class FlagGG_API RayOctreeQuery
 {
 public:
 	RayOctreeQuery(PODVector<RayQueryResult>& results, const Ray& ray,
-		RayQueryLevel level = RAY_QUERY_TRIANGLE, Real maxDistance = F_INFINITY) :
+		RayQueryLevel level = RAY_QUERY_TRIANGLE, Real maxDistance = F_INFINITY, UInt32 drawableFlags = DRAWABLE_ANY) :
 		results_(results),
 		ray_(ray),
 		level_(level),
-		maxDistance_(maxDistance)
+		maxDistance_(maxDistance),
+		drawableFlags_(drawableFlags)
 	{}
 
 	PODVector<RayQueryResult>& results_;
 	RayQueryLevel level_;
 	Real maxDistance_;
+	UInt32 drawableFlags_;
 	Ray ray_;
 };
 

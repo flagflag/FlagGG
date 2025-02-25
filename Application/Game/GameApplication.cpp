@@ -144,6 +144,8 @@ void GameApplication::Stop()
 
 	GameEngine::Stop();
 
+	uiView_.Reset();
+
 	FLAGGG_LOG_INFO("end application.");
 }
 
@@ -217,10 +219,10 @@ void GameApplication::CreateScene()
 #else
 	mainHero_ = new SCEUnit();
 #if !ONLINE_GAME
-	mainHero_->Load("characters1/jianke_c96b/model.prefab");
-	mainHero_->PlayAnimation("characters1/jianke_c96b/anim/idle.ani", true);
+	// mainHero_->Load("characters1/jianke_c96b/model.prefab");
+	// mainHero_->PlayAnimation("characters1/jianke_c96b/anim/idle.ani", true);
 #endif
-	mainHero_->SetPosition(Vector3(4, 0, 0));
+	mainHero_->SetPosition(Vector3(0, 0, 0));
 	mainHero_->SetName("MainHero");
 
 #endif
@@ -314,6 +316,30 @@ void GameApplication::SetupWindow()
 #endif
 }
 
+int GameApplication::SetupWebUI(LuaVM* luaVM)
+{
+	if (!uiView_)
+	{
+		uiView_ = new UIView(window_);
+		uiView_->LinkLuaVM(luaVM);
+	}
+	return 0;
+}
+
+int GameApplication::LoadWebUI(LuaVM* luaVM)
+{
+	const String url = luaVM->Get<String>(1);
+	uiView_->LoadUrl(url);
+	uiView_->SetBackgroundTransparency(0.0f);
+	return 0;
+}
+
+int GameApplication::GetWebView(LuaVM* luaVM)
+{
+	lua_pushlightuserdata(*luaVM, uiView_->GetWebView());
+	return 1;
+}
+
 void GameApplication::OpenLuaVM()
 {
 	luaVM_->Open();
@@ -327,8 +353,17 @@ void GameApplication::OpenLuaVM()
 	luaVM_->RegisterCEvents(
 	{
 		C_LUA_API_PROXY(Begin, "main_begin"),
-		C_LUA_API_PROXY(Begin, "main_end")
+		C_LUA_API_PROXY(Begin, "main_end"),
 	});
+
+	luaVM_->RegisterCPPEvents(
+		"app",
+		this,
+		{
+			LUA_API_PROXY(GameApplication, SetupWebUI, "setup_web_ui"),
+			LUA_API_PROXY(GameApplication, LoadWebUI, "load_web_ui"),
+			LUA_API_PROXY(GameApplication, GetWebView, "get_web_view"),
+		});
 }
 
 void GameApplication::CreateNetwork()

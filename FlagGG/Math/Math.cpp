@@ -36,32 +36,32 @@ bool IsFinite(Real number)
 
 Real Sin(Real angle)
 {
-	return sin(angle * 180.0f / PI);
+	return sin(angle * F_DEGTORAD);
 }
 
 Real Cos(Real angle)
 {
-	return cos(angle * 180.0f / PI);
+	return cos(angle * F_DEGTORAD);
 }
 
 Real Tan(Real angle)
 {
-	return tan(angle * 180.0f / PI);
+	return tan(angle * F_DEGTORAD);
 }
 
 Real Asin(Real angle)
 {
-	return asin(angle * 180.0f / PI);
+	return asin(angle * F_DEGTORAD);
 }
 
 Real Acos(Real angle)
 {
-	return acos(angle * 180.0f / PI);
+	return acos(angle * F_DEGTORAD);
 }
 
 Real Atan(Real angle)
 {
-	return atan(angle * 180.0f / PI);
+	return atan(angle * F_DEGTORAD);
 }
 
 Real Abs(Real number)

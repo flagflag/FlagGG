@@ -148,19 +148,23 @@ void ThirdPersonPerspective::OnMouseDown(KeyState* keyState, MouseKey mouseKey, 
 {
 	if (mouseKey == MOUSE_RIGHT)
 		mouseDown_ = true;
-	GetSubsystem<Input>()->HideMouse();
+
+	if (mouseDown_)
+		GetSubsystem<Input>()->HideMouse();
 }
 
 void ThirdPersonPerspective::OnMouseUp(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos)
 {
+	if (mouseDown_)
+		GetSubsystem<Input>()->ShowMouse();
+
 	if (mouseKey == MOUSE_RIGHT)
 		mouseDown_ = false;
-	GetSubsystem<Input>()->ShowMouse();
 }
 
 void ThirdPersonPerspective::OnMouseMove(KeyState* keyState, const IntVector2& mousePos, const Vector2& delta)
 {
-	static const float rate_{ 0.00005f };
+	static const float rate_{ 0.1f };
 
 	if (isLocked_)
 		return;

@@ -6,9 +6,16 @@
 #include <Core/EventDefine.h>
 #include <Core/EventManager.h>
 #include <UI/UIEvents.h>
+#include <Lua/LuaVM.h>
+#include <Lua/LuaBinding/LuaBinding.h>
+
 #include <Ultralight/Renderer.h>
+#include <Ultralight/JavaScript.h>
+#include <AppCore/JSHelpers.h>
 
 #include <UltralightCore2/RenderContext.h>
+
+#include <functional>
 
 namespace FlagGG
 {
@@ -92,6 +99,59 @@ void UIView::LoadHTML(const String& html)
 		webView_->LoadHTML(html.CString());
 		htmlUrl_ = nullptr;
 		htmlContent_ = html;
+	}
+}
+
+void UIView::LinkLuaVM(LuaVM* luaVM)
+{
+	if (webView_)
+	{
+		luaex_globalfunction(*luaVM, "register_js_function", [](lua_State* L) -> int
+		{
+			ultralight::View* webView = static_cast<ultralight::View*>(lua_touserdata(L, 1));
+			if (webView)
+			{
+				const char* funcName = lua_tostring(L, 2);
+				LuaFunction __luaFunc(L, 3);
+
+				ultralight::RefPtr<ultralight::JSContext> jsContext = webView->LockJSContext();
+				ultralight::SetJSContext(jsContext->ctx());
+
+				ultralight::JSObject global = ultralight::JSGlobalObject();
+				std::function<ultralight::JSValue(const ultralight::JSObject&, const ultralight::JSArgs&)> jsFunc = [__luaFunc](const ultralight::JSObject&, const ultralight::JSArgs& jsParams) -> ultralight::JSValue
+				{
+					LuaFunction luaFunc = __luaFunc;
+					lua_State* L = luaFunc.BeginCall();
+					for (Int32 i = 0; i < jsParams.size(); ++i)
+					{
+						auto& param = jsParams[i];
+						if (param.IsBoolean())
+						{
+							lua_pushboolean(L, param.ToBoolean());
+						}
+						else if (param.IsNumber())
+						{
+							lua_pushnumber(L, param.ToNumber());
+						}
+						else if (param.IsString())
+						{
+							ultralight::String jsStr = param.ToString();
+							lua_pushstring(L, jsStr.utf8().data());
+						}
+						else
+						{
+							lua_pushnil(L);
+						}
+					}
+					luaFunc.EndCall(jsParams.size(), 0);
+
+					return ultralight::JSValue();
+				};
+				global[funcName] = jsFunc;
+			}
+
+			return 0;
+		});
 	}
 }
 

@@ -27,6 +27,8 @@ public:
 
 	void DetachComponent(BrushComponent* brushComponent);
 
+	BrushComponent* GetComponent(StringHash className);
+
 	Scene* GetOwnerScene() const { return scene_; }
 
 protected:
@@ -37,6 +39,10 @@ protected:
 	void OnMouseMove(KeyState* keyState, const IntVector2& mousePos, const Vector2& delta);
 
 	void OnWheel();
+
+	void OnKeyDown(KeyState* keyState, UInt32 keyCode);
+
+	void OnKeyUp(KeyState* keyState, UInt32 keyCode);
 
 	void OnUpdate(float timeStep);
 	

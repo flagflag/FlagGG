@@ -32,6 +32,13 @@ void Model::SetBoneMappings(const Vector<PODVector<UInt32>>& boneMappings)
 void Model::SetNumGeometries(UInt32 numGeometries)
 {
 	geometries_.Resize(numGeometries);
+
+	// For easier creation of from-scratch geometry, ensure that all geometries start with at least 1 LOD level (0 makes no sense)
+	for (unsigned i = 0; i < geometries_.Size(); ++i)
+	{
+		if (geometries_[i].Empty())
+			geometries_[i].Resize(1);
+	}
 }
 
 void Model::SetNumGeometryLodLevels(UInt32 index, UInt32 num)
@@ -54,7 +61,7 @@ bool Model::SetGeometry(UInt32 index, UInt32 lodLevel, Geometry* geometry)
 	return true;
 }
 
-void Model::SetBoundingBox(BoundingBox& box)
+void Model::SetBoundingBox(const BoundingBox& box)
 {
 	boundingBox_ = box;
 }

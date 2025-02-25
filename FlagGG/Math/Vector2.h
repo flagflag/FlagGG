@@ -301,6 +301,22 @@ public:
     /// Project vector onto axis.
     float ProjectOntoAxis(const Vector2& axis) const { return DotProduct(axis.Normalized()); }
 
+	/// Project position vector onto line segment.
+	Vector2 ProjectOntoLine(const Vector2& from, const Vector2& to, bool clamped = false) const
+	{
+		const Vector2 direction = to - from;
+		const float lengthSquared = direction.LengthSquared();
+		float factor = (*this - from).DotProduct(direction) / lengthSquared;
+
+		if (clamped)
+			factor = Clamp(factor, 0.0f, 1.0f);
+
+		return from + direction * factor;
+	}
+
+	/// Calculate distance to another position vector.
+	float DistanceToPoint(const Vector2& point) const { return (*this - point).Length(); }
+
     /// Returns the angle between this vector and another vector in degrees.
     float Angle(const Vector2& rhs) const { return FlagGG::Acos(DotProduct(rhs) / (Length() * rhs.Length())); }
 

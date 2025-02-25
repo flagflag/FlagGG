@@ -482,12 +482,15 @@ Ray Camera::GetScreenRay(Real x, Real y)
 		return ret;
 	}
 
-	Matrix4 viewProjInverse = (GetProjectionMatrix() * GetViewMatrix()).Inverse();
+	// Matrix4 viewProjInverse = (GetProjectionMatrix() * GetViewMatrix()).Inverse();
+	// 注意：GetProjectionMatrix()获取到可能是ReverseZ的投影（这个是给GPU用的），这里的计算要使用非ReverseZ的投影
+	Matrix4 viewProjInverse = (CreatePerspectiveMatrix(fov_, aspect_, nearClip_, farClip_, zoom_) * GetViewMatrix()).Inverse();
 
+	// 从UV空间转换到NDC空间
 	x = 2.0f * x - 1.0f;
 	y = 1.0f - 2.0f * y;
 	Vector3 nearPos(x, y, 0.0f);
-	Vector3 farPos(x, y, 0.01f);
+	Vector3 farPos(x, y, 1.0f);
 
 	ret.origin_ = viewProjInverse * nearPos;
 	ret.direction_ = ((viewProjInverse * farPos) - ret.origin_).Normalized();

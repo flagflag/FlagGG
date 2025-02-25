@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>面板</title>
+        <style>
+            html {
+                overflow: hidden;
+                background: rgba(0, 0, 0, 0);
+                height: 100%;
+            }
+
+            .panel {
+                width: 300px;
+                height: 100%;
+                background-color: #00000000;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-evenly;
+                align-items: center;
+                border: 2px solid #ccc;
+                position: absolute;
+            }
+
+            .panel-image {
+                width: 320px;
+                height: 500px;
+                background: url('background.jpg') no-repeat center center;
+            }
+
+            .panel-button {
+                width: 280px;
+                height: 500px;
+                background-color: #f9f9f980;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-evenly;
+                align-items: center;
+            }
+
+            .button {
+                width: 200px;
+                height: 50px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                font-size: 16px;
+                cursor: pointer;
+            }
+
+            .button:hover {
+                background-color: #45a049;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="panel">
+            <div class="panel-button">
+                <button class="button" id="set_brush_id1">纹理ID减一</button>
+                <button class="button" id="set_brush_id2">增加ID加一</button>
+            </div>
+        </div>
+    </body>
+    <script>
+        document.getElementById('set_brush_id1').onclick = function() {
+            AddBrushID(-1)
+        }
+        document.getElementById('set_brush_id2').onclick = function() {
+            AddBrushID(1)
+        }
+    </script>
+</html>

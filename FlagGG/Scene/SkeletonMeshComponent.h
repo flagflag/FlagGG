@@ -22,6 +22,9 @@ public:
 	// 帧更新
 	void Update(Real timeStep) override;
 
+	// 获取DrawableFlags
+	UInt32 GetDrawableFlags() const override { return DRAWABLE_SKELETONMESH; }
+
 	// 控件树发生dirty
 	void UpdateTreeDirty() override;
 

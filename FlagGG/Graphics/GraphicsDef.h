@@ -440,6 +440,10 @@ extern FlagGG_API const FlagGG::StringHash SP_SHBB;
 extern FlagGG_API const FlagGG::StringHash SP_SHC;
 
 extern FlagGG_API const UInt32 DRAWABLE_UNDEFINED;
+extern FlagGG_API const UInt32 DRAWABLE_STATICMESH;
+extern FlagGG_API const UInt32 DRAWABLE_SKELETONMESH;
+extern FlagGG_API const UInt32 DRAWABLE_TERRAIN;
+extern FlagGG_API const UInt32 DRAWABLE_PARTICLE;
 extern FlagGG_API const UInt32 DRAWABLE_GEOMETRY;
 extern FlagGG_API const UInt32 DRAWABLE_LIGHT;
 extern FlagGG_API const UInt32 DRAWABLE_PROBE;

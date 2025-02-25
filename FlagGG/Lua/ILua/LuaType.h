@@ -55,6 +55,17 @@ public:
 		CallImpl(luaState_, sizeof...(args), returnCount);
 	}
 
+	lua_State* BeginCall()
+	{
+		lua_rawgeti(luaState_, LUA_REGISTRYINDEX, ref_);
+		return luaState_;
+	}
+
+	void EndCall(int paramCount, int returnCount)
+	{
+		CallImpl(luaState_, paramCount, returnCount);
+	}
+
 	friend class LuaVM;
 
 protected:

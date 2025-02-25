@@ -42,7 +42,7 @@ public:
 	bool SetGeometry(UInt32 index, UInt32 lodLevel, Geometry* geometry);
 
 	// 设置包围盒
-	void SetBoundingBox(BoundingBox& box);
+	void SetBoundingBox(const BoundingBox& box);
 
 	// 获取顶点buffers
 	const Vector<SharedPtr<VertexBuffer>>& GetVertexBuffers() const;

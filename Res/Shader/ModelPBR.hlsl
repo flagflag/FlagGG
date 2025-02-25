@@ -8,10 +8,12 @@
 #ifdef VERTEX
     struct VertexInput
     {
-        float4 position : POSITION;
+        float3 position : POSITION;
+    #ifndef NO_TEXTURE
         float2 texcoord : TEXCOORD;
+    #endif
         float3 normal : NORMAL;
-    #ifdef COLOR
+    #ifdef VERTEX_COLOR
         float4 color : COLOR;
     #endif
     #ifdef SKINNED
@@ -20,8 +22,10 @@
     #endif
     };
 #else
-    Texture2D colorMap : register(t0);
-    SamplerState colorSampler : register(s0);
+    #ifndef NO_TEXTURE
+        Texture2D colorMap : register(t0);
+        SamplerState colorSampler : register(s0);
+    #endif
     #ifdef DISSOLVE
         Texture2D noiseMap : register(t1);
         SamplerState noiseSampler : register(s1);
@@ -38,9 +42,11 @@
 struct PixelInput
 {
 	float4 position : SV_POSITION;
+#ifndef NO_TEXTURE
 	float2 texcoord : TEXCOORD;
+#endif
 	float3 normal : NORMAL;
-#ifdef COLOR
+#ifdef VERTEX_COLOR
 	float4 color : COLOR;
 #endif
 	float4 worldPosition : WORLD_POS;
@@ -57,16 +63,17 @@ struct PixelInput
     #else
         float4x3 iWorldMatrix = GetSkinMatrix(input.blendWeights, input.blendIndices);
     #endif
-        input.position.w = 1.0;
-        float3 worldPosition = mul(input.position, iWorldMatrix);
+        float3 worldPosition = mul(float4(input.position, 1.0), iWorldMatrix);
         float3 worldNormal = normalize(mul(input.normal, (float3x3)iWorldMatrix));
         float4 clipPos = mul(float4(worldPosition, 1.0), projviewMatrix);
         
         PixelInput output;
         output.position = clipPos;
+    #ifndef NO_TEXTURE
         output.texcoord = input.texcoord;
+    #endif
         output.normal = worldNormal;
-    #ifdef COLOR
+    #ifdef VERTEX_COLOR
         output.color = input.color;
     #endif
         output.worldPosition = float4(worldPosition, GetDepth(clipPos));
@@ -88,10 +95,14 @@ struct PixelInput
         context.shadow = 1.0;
     #endif
 
-    #ifndef COLOR
-        context.diffuseColor = baseColor.rgb * colorMap.Sample(colorSampler, input.texcoord).rgb;
+    #ifdef NO_TEXTURE
+        context.diffuseColor = float(1.0).xxx;
     #else
-        context.diffuseColor = baseColor.rgb * input.color.rgb * input.color.a;
+        context.diffuseColor = baseColor.rgb * colorMap.Sample(colorSampler, input.texcoord).rgb;
+    #endif
+
+    #ifdef VERTEX_COLOR
+        context.diffuseColor = context.diffuseColor * input.color.rgb * input.color.a;
     #endif
         context.metallic = metallic;
         context.roughness = roughness;

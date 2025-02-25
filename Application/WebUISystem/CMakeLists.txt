@@ -24,13 +24,15 @@ else()
     setup_library (STATIC)
 endif()
 
-target_link_libraries (${TARGET_NAME} UltralightCore Ultralight WebCore FlagGG)
+target_link_libraries (${TARGET_NAME} UltralightCore Ultralight WebCore AppCore FlagGG)
 
 if (WIN32)
 	add_custom_command(TARGET ${TARGET_NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy 
         ${CMAKE_CURRENT_SOURCE_DIR}/../UltralightSDK/bin/Ultralight.dll ${CMAKE_CURRENT_SOURCE_DIR}/../../bin/Debug)
 	add_custom_command(TARGET ${TARGET_NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy 
         ${CMAKE_CURRENT_SOURCE_DIR}/../UltralightSDK/bin/WebCore.dll ${CMAKE_CURRENT_SOURCE_DIR}/../../bin/Debug)
+	add_custom_command(TARGET ${TARGET_NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy 
+        ${CMAKE_CURRENT_SOURCE_DIR}/../UltralightSDK/bin/AppCore.dll ${CMAKE_CURRENT_SOURCE_DIR}/../../bin/Debug)
 endif()
 
 setup_test ()

@@ -10,6 +10,8 @@ Brush::Brush(Scene* scene)
 	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_DOWN, Brush::OnMouseDown, this));
 	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_UP, Brush::OnMouseUp, this));
 	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::MOUSE_MOVE, Brush::OnMouseMove, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_DOWN, Brush::OnKeyDown, this));
+	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(InputEvent::KEY_UP, Brush::OnKeyUp, this));
 	GetSubsystem<EventManager>()->RegisterEvent(EVENT_HANDLER(Frame::LOGIC_UPDATE, Brush::OnUpdate, this));
 }
 
@@ -30,6 +32,16 @@ void Brush::DetachComponent(BrushComponent* brushComponent)
 	brushComponents_.Remove(SharedPtr<BrushComponent>(brushComponent));
 	brushComponent->OnDetach();
 	brushComponent->SetOwnerBrush(nullptr);
+}
+
+BrushComponent* Brush::GetComponent(StringHash className)
+{
+	for (auto& comp : brushComponents_)
+	{
+		if (comp->GetType() == className)
+			return comp;
+	}
+	return nullptr;
 }
 
 
@@ -60,6 +72,22 @@ void Brush::OnMouseMove(KeyState* keyState, const IntVector2& mousePos, const Ve
 void Brush::OnWheel()
 {
 
+}
+
+void Brush::OnKeyDown(KeyState* keyState, UInt32 keyCode)
+{
+	for (auto& brushComponent : brushComponents_)
+	{
+		brushComponent->OnKeyDown(keyState, keyCode);
+	}
+}
+
+void Brush::OnKeyUp(KeyState* keyState, UInt32 keyCode)
+{
+	for (auto& brushComponent : brushComponents_)
+	{
+		brushComponent->OnKeyUp(keyState, keyCode);
+	}
 }
 
 void Brush::OnUpdate(float timeStep)

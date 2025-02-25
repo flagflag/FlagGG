@@ -32,6 +32,10 @@ public:
 
 	virtual void OnWheel() {}
 
+	virtual void OnKeyDown(KeyState* keyState, UInt32 keyCode) {}
+
+	virtual void OnKeyUp(KeyState* keyState, UInt32 keyCode) {}
+
 	virtual void OnUpdate(float timeStep) {}
 
 protected:

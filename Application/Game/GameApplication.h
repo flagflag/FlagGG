@@ -52,6 +52,10 @@ protected:
 	void OpenLuaVM();
 	void CreateNetwork();
 
+	int SetupWebUI(LuaVM* luaVM);
+	int LoadWebUI(LuaVM* luaVM);
+	int GetWebView(LuaVM* luaVM);
+
 #ifdef _WIN32
 	void OnKeyDown(KeyState* keyState, UInt32 keyCode);
 	void OnKeyUp(KeyState* keyState, UInt32 keyCode);
