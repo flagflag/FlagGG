@@ -1,3 +1,7 @@
+//
+// 纹理混合笔刷
+//
+
 #pragma once
 
 #include "GameBuilder/Brush/BrushComponent.h"

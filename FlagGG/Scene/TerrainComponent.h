@@ -16,15 +16,21 @@
 namespace FlagGG
 {
 
-class FlagGG_API TerrainComponent : public DrawableComponent
+class TerrainPatchComponent;
+
+class FlagGG_API TerrainComponent : public Component
 {
-	OBJECT_OVERRIDE(TerrainComponent, DrawableComponent);
+	OBJECT_OVERRIDE(TerrainComponent, Component);
 public:
+	TerrainComponent();
+
+	~TerrainComponent() override;
+
 	// 设置Patch大小
 	void SetPatchSize(UInt32 patchSize);
 
 	// 设置三角面大小
-	void SetQuadSize(UInt32 quadSize);
+	void SetQuadSize(const Vector3& quadSize);
 
 	// 设置高度图
 	void SetHeightMap(Image* image);
@@ -38,36 +44,35 @@ public:
 	// 获取材质
 	Material* GetMaterial() const { return material_; }
 
-	// 是否可渲染
-	bool IsRenderable() override { return true; }
-
-	// 获取DrawableFlags
-	UInt32 GetDrawableFlags() const override { return DRAWABLE_GEOMETRY; }
-
-	// 更新包围盒
-	void OnUpdateWorldBoundingBox() override;
-
-protected:
 	// 创建图形数据
 	void CreateGeometry();
 
-private:
-	UInt32 patchSize_;
-	UInt32 quadSize_;
+protected:
+	// 创建Patch网格
+	void CreatePatchGeometry(TerrainPatchComponent* patch, int patchX, int patchY);
 
-	IntVector2 patchesNum_;
-	IntVector2 verticesNum_;
+private:
+	// Lod层数
+	UInt32 numLodLevels_;
+	// 最大Lod层数
+	UInt32 maxLodLevels_;
+	// 每个Patch的顶点数目
+	UInt32 patchSize_;
+	// 每个Quad的尺寸
+	Vector3 quadSize_;
+
+	IntVector2 numPatches_;
+	IntVector2 numVertices_;
 	Vector2 patchWorldSize_;
 	Vector2 patchWorldOrigin_;
 	Matrix3x4 indentity_;
 
 	SharedPtr<Image> heightMap_;
 	SharedPtr<Material> material_;
-	SharedPtr<Geometry> geometry_;
-	SharedPtr<VertexBuffer> vertexBuffer_;
-	SharedPtr<IndexBuffer> indexBuffer_;
+	//SharedPtr<VertexBuffer> vertexBuffer_;
+	//SharedPtr<IndexBuffer> indexBuffer_;
 
-	BoundingBox meshBoundingBox_;
+	Vector<WeakPtr<TerrainPatchComponent>> patches_;
 };
 
 }

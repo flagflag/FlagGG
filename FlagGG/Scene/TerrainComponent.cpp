@@ -1,4 +1,5 @@
 #include "Scene/TerrainComponent.h"
+#include "Scene/TerrainPatchComponent.h"
 #include "Scene/Node.h"
 #include "IOFrame/Buffer/StringBuffer.h"
 #include "IOFrame/Buffer/IOBufferAux.h"
@@ -6,23 +7,30 @@
 namespace FlagGG
 {
 
+TerrainComponent::TerrainComponent()
+	: maxLodLevels_(4)
+{
+
+}
+
+TerrainComponent::~TerrainComponent()
+{
+
+}
+
 void TerrainComponent::SetPatchSize(UInt32 patchSize)
 {
 	if (patchSize_ != patchSize)
 	{
 		patchSize_ = patchSize;
-
-		CreateGeometry();
 	}
 }
 
-void TerrainComponent::SetQuadSize(UInt32 quadSize)
+void TerrainComponent::SetQuadSize(const Vector3& quadSize)
 {
 	if (quadSize_ != quadSize)
 	{
 		quadSize_ = quadSize;
-
-		CreateGeometry();
 	}
 }
 
@@ -31,8 +39,6 @@ void TerrainComponent::SetHeightMap(Image* image)
 	if (heightMap_ != image)
 	{
 		heightMap_ = image;
-
-		CreateGeometry();
 	}
 }
 
@@ -41,12 +47,6 @@ void TerrainComponent::SetMaterial(Material* material)
 	if (material_ != material)
 	{
 		material_ = material;
-
-		if (renderContexts_.Size())
-		{
-			auto& renderContext = renderContexts_[0];
-			renderContext.material_ = material_;
-		}
 	}
 }
 
@@ -54,28 +54,51 @@ void TerrainComponent::CreateGeometry()
 {
 	if (patchSize_ == 0 || !heightMap_) return;
 
-	meshBoundingBox_.Clear();
-
-	patchWorldSize_ = Vector2(patchSize_, patchSize_);
-	patchesNum_ = IntVector2(heightMap_->GetHeight() / patchSize_, heightMap_->GetWidth() / patchSize_);
-	verticesNum_ = IntVector2(patchesNum_.x_ * patchSize_, patchesNum_.y_ * patchSize_);
-	patchWorldOrigin_ = Vector2(-0.5f * patchesNum_.x_ * patchWorldSize_.x_, -0.5f * patchesNum_.y_ * patchWorldSize_.y_);
-
-	geometry_ = new Geometry();
-	geometry_->SetPrimitiveType(PRIMITIVE_TRIANGLE);
-	geometry_->SetLodDistance(0);
-
-	if (!vertexBuffer_)
+	UInt32 lodSize = patchSize_;
+	numLodLevels_ = 1;
+	while (lodSize > 4 && numLodLevels_ < maxLodLevels_)
 	{
-		vertexBuffer_ = new VertexBuffer();
+		lodSize >>= 1;
+		++numLodLevels_;
 	}
-	geometry_->SetVertexBuffer(0, vertexBuffer_);
 
-	if (!indexBuffer_)
+	patchWorldSize_ = Vector2(patchSize_ * quadSize_.x_, patchSize_ * quadSize_.y_);
+	numPatches_ = IntVector2(heightMap_->GetHeight() / patchSize_, heightMap_->GetWidth() / patchSize_);
+	numVertices_ = IntVector2(numPatches_.x_ * patchSize_, numPatches_.y_ * patchSize_);
+	patchWorldOrigin_ = Vector2::ZERO;
+
+	auto* ownerNode = GetNode();
+	ownerNode->RemoveAllChild();
+
+	patches_.Clear();
+	patches_.Resize(numPatches_.x_ * numPatches_.y_);
+
+	for (Int32 patchX = 0; patchX < numPatches_.x_; ++patchX)
 	{
-		indexBuffer_ = new IndexBuffer();
+		for (Int32 patchY = 0; patchY < numPatches_.y_; ++patchY)
+		{
+			SharedPtr<Node> patchNode(new Node());
+			ownerNode->AddChild(patchNode);
+			patchNode->SetPosition(Vector3(patchX * patchSize_ * quadSize_.x_, patchY * patchSize_ * quadSize_.y_));
+
+			TerrainPatchComponent* patch = patchNode->CreateComponent<TerrainPatchComponent>();
+			patches_[patchX * numPatches_.y_ + patchY] = patch;
+
+			CreatePatchGeometry(patch, patchX, patchY);
+		}
 	}
-	geometry_->SetIndexBuffer(indexBuffer_);
+}
+
+void TerrainComponent::CreatePatchGeometry(TerrainPatchComponent* patch, int patchX, int patchY)
+{
+	SharedPtr<Geometry> geometry(new Geometry());
+	geometry->SetPrimitiveType(PRIMITIVE_TRIANGLE);
+	geometry->SetLodDistance(0);
+
+	SharedPtr<VertexBuffer> vertexBuffer(new VertexBuffer());
+	geometry->SetVertexBuffer(0, vertexBuffer);
+	SharedPtr<IndexBuffer> indexBuffer(new IndexBuffer());
+	geometry->SetIndexBuffer(indexBuffer);
 
 	static const PODVector<VertexElement> vertexElements =
 	{
@@ -85,68 +108,59 @@ void TerrainComponent::CreateGeometry()
 		VertexElement(VE_VECTOR2, SEM_TEXCOORD, 0)
 	};
 
-	vertexBuffer_->SetSize(verticesNum_.x_ * verticesNum_.y_, vertexElements);
-	auto* buffer1 = vertexBuffer_->LockStaticBuffer(0, vertexBuffer_->GetVertexCount());
+	vertexBuffer->SetSize((patchSize_ + 1) * (patchSize_ + 1), vertexElements);
+	auto* buffer1 = vertexBuffer->LockStaticBuffer(0, vertexBuffer->GetVertexCount());
 
-	indexBuffer_->SetSize(sizeof(UInt32), (verticesNum_.x_ - 1) * (verticesNum_.y_ - 1) * 6);
-	auto* buffer2 = indexBuffer_->LockStaticBuffer(0, indexBuffer_->GetIndexCount());
+	indexBuffer->SetSize(sizeof(UInt32), patchSize_ * patchSize_ * 6);
+	auto* buffer2 = indexBuffer->LockStaticBuffer(0, indexBuffer->GetIndexCount());
 
 	// 地形高度图相关
 	const unsigned char* src = heightMap_->GetData();
 	unsigned imgComps = heightMap_->GetComponents();
 	unsigned imgRow = heightMap_->GetWidth() * imgComps;
 
-	for (UInt32 x = 0; x < verticesNum_.x_; ++x)
+	BoundingBox meshBoundingBox;
+
+	for (UInt32 x = 0; x <= patchSize_; ++x)
 	{
-		for (UInt32 y = 0; y < verticesNum_.y_; ++y)
+		for (UInt32 y = 0; y <= patchSize_; ++y)
 		{
-#if 0
-			// Real height = src[imgRow * (verticesNum_.x_ - 1 - x) + y];
-#else
-			const Color& color = heightMap_->GetPixel(y, verticesNum_.x_ - 1 - x);
-			Real height = color.r_ * 255.0f;
-#endif
-			Vector3 position(x, y, height);
+			Int32 xPos = patchX * patchSize_ + x;
+			Int32 yPos = patchY * patchSize_ + y;
+
+			const Color& color = heightMap_->GetPixel(yPos, numVertices_.x_ - 1 - xPos);
+			Real height = color.r_ * quadSize_.z_;
+
+			Vector3 position(x * quadSize_.x_, y * quadSize_.y_, height);
 			IOFrame::Buffer::WriteVector3(buffer1, position);
 			IOFrame::Buffer::WriteVector3(buffer1, Vector3(0, 0, 1));
 			IOFrame::Buffer::WriteVector4(buffer1, Vector4(0, 1, 0, 1));
-			IOFrame::Buffer::WriteVector2(buffer1, Vector2(1.0f * x / verticesNum_.x_, 1.0f * y / verticesNum_.y_));
+			IOFrame::Buffer::WriteVector2(buffer1, Vector2(1.0f * xPos / numVertices_.x_, 1.0f * yPos / numVertices_.y_));
 
-			meshBoundingBox_.Merge(position);
+			meshBoundingBox.Merge(position);
 
-			if (x != verticesNum_.x_ - 1 && y != verticesNum_.y_ - 1)
+			if (x != patchSize_ && y != patchSize_)
 			{
-				buffer2->WriteInt32(x * verticesNum_.y_ + y);
-				buffer2->WriteInt32((x + 1) * verticesNum_.y_ + y + 1);
-				buffer2->WriteInt32(x * verticesNum_.y_ + y + 1);
+				buffer2->WriteInt32(x * (patchSize_ + 1) + y);
+				buffer2->WriteInt32((x + 1) * (patchSize_ + 1) + y + 1);
+				buffer2->WriteInt32(x * (patchSize_ + 1) + y + 1);
 
-				buffer2->WriteInt32(x * verticesNum_.y_ + y);
-				buffer2->WriteInt32((x + 1) * verticesNum_.y_ + y);
-				buffer2->WriteInt32((x + 1) * verticesNum_.y_ + y + 1);
+				buffer2->WriteInt32(x * (patchSize_ + 1) + y);
+				buffer2->WriteInt32((x + 1) * (patchSize_ + 1) + y);
+				buffer2->WriteInt32((x + 1) * (patchSize_ + 1) + y + 1);
 			}
 		}
-	}
-
-	vertexBuffer_->UnlockStaticBuffer();
-	indexBuffer_->UnlockStaticBuffer();
-
-	geometry_->SetDataRange(0, indexBuffer_->GetIndexCount());
-
-	renderContexts_.Resize(1);
-	auto& renderContext = renderContexts_[0];
-	renderContext.geometryType_ = GEOMETRY_STATIC;
-	renderContext.geometry_ = geometry_;
-	renderContext.numWorldTransform_ = 1;
-	renderContext.worldTransform_ = &node_->GetWorldTransform();
-	renderContext.viewMask_ = GetViewMask();
-
-	if (meshBoundingBox_.min_.z_ == meshBoundingBox_.max_.z_)
-		meshBoundingBox_.max_.z_++;
 }
 
-void TerrainComponent::OnUpdateWorldBoundingBox()
-{
-	worldBoundingBox_ = meshBoundingBox_.Transformed(node_->GetWorldTransform());
+	vertexBuffer->UnlockStaticBuffer();
+	indexBuffer->UnlockStaticBuffer();
+
+	geometry->SetDataRange(0, indexBuffer->GetIndexCount());
+
+	patch->SetGeometry(geometry);
+	patch->SetMaterial(material_);
+	patch->SetBoundingBox(meshBoundingBox);
+	// patch->SetOcclusionCulling(false);
 }
 
 }

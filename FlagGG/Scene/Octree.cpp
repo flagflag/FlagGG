@@ -59,7 +59,7 @@ void OctreeNode::RemoveAllChildren()
 
 Octree::Octree() :
 	maxLevel_(8u),
-	root_(BoundingBox(-1000.0f, 1000.0f), 0)
+	root_(BoundingBox(-1e5f, 1e5f), 0)
 {
 }
 
