@@ -28,7 +28,8 @@
     cbuffer MaterialParam : register(b1)
     {
         float blendRatio;
-        float2 textureSize;
+        float2 idMapTexels;
+        float2 weightMapTexels;
     }
 #endif
 
@@ -81,7 +82,10 @@ struct PixelInput
         return ww / (ww.x + ww.y + ww.z);
     }
 
-    float2 TransUV(float2 uv, float texSize)
+#define SPLAT_MAP3 1
+
+#if SPLAT_MAP3
+    float2 GetUV(float2 uv, float texSize)
     {
         // 纹理有错位偏移一个像素距离
         uv += 1.0 / texSize;
@@ -89,24 +93,50 @@ struct PixelInput
         float texMappingSize = texSize / 3.0;
         float2 mappingUV = floor(uv * texMappingSize) / texMappingSize;
         float2 mappingUVLerp = frac(uv * texMappingSize) / texMappingSize;
-        return mappingUV + 1.5 / texSize + (mappingUVLerp - 1.5 / texSize) / 3;
+        return mappingUV + 1.5 / texSize + (mappingUVLerp - 1.5 / texSize) / 1.5;
     }
+
+    float2 GetIdUV(float2 uv, float texSize)
+    {
+        return GetUV(uv, texSize);
+    }
+
+    float2 GetWeightUV(float2 uv, float texSize)
+    {
+        return GetUV(uv, texSize);
+    }
+#else
+    float2 GetIdUV(float2 uv, float texSize)
+    {
+        return uv - 0.5 / texSize;
+    }
+
+    float2 GetWeightUV(float2 uv, float texSize)
+    {
+        uv -= 1.0 / texSize;
+        float texMappingSize = texSize * 0.5;
+        float2 mappingUV = floor(uv * texMappingSize) / texMappingSize;
+        float2 mappingUVLerp = frac(uv * texMappingSize) / texMappingSize;
+        return mappingUV + mappingUVLerp * 0.5 + 0.5 / texSize;
+    }
+#endif
 
     PixelOutput PS(PixelInput input)
     {
-        float2 uv = TransUV(input.weightTex, textureSize);
-        float3 blendTexIndex = floor(idMap.SampleLevel(idSampler, uv, 0).rgb * 255.0 + 0.5);
-        float3 weight = weightMap.SampleLevel(weightSampler, uv, 0).rgb;
+        float3 blendTexIndex = floor(idMap.SampleLevel(idSampler, GetIdUV(input.weightTex, idMapTexels), 0).rgb * 255.0 + 0.5);
+        float3 weight = weightMap.SampleLevel(weightSampler, GetWeightUV(input.weightTex, weightMapTexels), 0).rgb;
 
         float4 texDiff1 = baseColorMap.Sample(baseColorSampler, float3(input.detailTex, blendTexIndex.x));
         float4 texDiff2 = baseColorMap.Sample(baseColorSampler, float3(input.detailTex, blendTexIndex.y));
         float4 texDiff3 = baseColorMap.Sample(baseColorSampler, float3(input.detailTex, blendTexIndex.z));
 
-        weight = GetBlendThreeFactor(float3(texDiff1.a, texDiff2.a, texDiff3.a), weight);
-
         float4 texNormal1 = normalMap.Sample(normalSampler, float3(input.detailTex, blendTexIndex.x));
         float4 texNormal2 = normalMap.Sample(normalSampler, float3(input.detailTex, blendTexIndex.y));
         float4 texNormal3 = normalMap.Sample(normalSampler, float3(input.detailTex, blendTexIndex.z));
+
+    #if SPLAT_MAP3
+        weight = GetBlendThreeFactor(float3(texDiff1.a, texDiff2.a, texDiff3.a), weight);
+    #endif
 
         // => xyz - color, w - metallic
         texDiff1.a = texNormal1.a;
@@ -148,6 +178,23 @@ struct PixelInput
     #endif
         context.occlusion = 1.0;
         context.alpha = 1.0;
+
+    #if 0
+        context.diffuseColor = float3(0, 0, 0);
+        if (blendTexIndex.x == 1)
+            context.diffuseColor.r = weight.r;
+        if (blendTexIndex.y == 1)
+            context.diffuseColor.r = weight.g;
+        if (blendTexIndex.z == 1)
+            context.diffuseColor.r = weight.b;
+
+        // if (blendTexIndex.x == 2)
+        //     context.diffuseColor.g = weight.r;
+        // if (blendTexIndex.y == 2)
+        //     context.diffuseColor.g = weight.g;
+        // if (blendTexIndex.z == 2)
+        //     context.diffuseColor.g = weight.b;
+    #endif
 
         return PBRPipline(context);
     }

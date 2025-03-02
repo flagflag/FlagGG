@@ -48,7 +48,9 @@ protected:
 
 	void UpdateTextureWeight(const RayQueryResult& result);
 
-	void UpdateTextureWeight(const IntVector2& texPos, float blend);
+	void UpdateTextureWeight3(const IntVector2& texPos, float blend);
+
+	void UpdateTextureWeight2(const IntVector2& texPos, float blend);
 
 	void UpdateGpuTexture();
 
@@ -63,6 +65,12 @@ protected:
 	void EncodeToImage(UInt32 x, UInt32 y, const TextureInfo* texInfo);
 
 	void EncodeToBuffer(UInt32 x, UInt32 y, const TextureInfo* texInfo);
+
+	void EncodeIdToBuffer(UInt32 x, UInt32 y, UInt32 id0, UInt32 id1, UInt32 id2);
+
+	void EncodeWeightToBuffer(UInt32 x, UInt32 y, float weight0, float weight1, float weight2);
+
+	void DecodeFromBuffer(UInt32 x, UInt32 y, TextureInfo* texInfo);
 
 private:
 	bool isWorking_;

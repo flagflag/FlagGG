@@ -23,7 +23,7 @@ void Terrain::Create(UInt32 pathSize)
 	}
 	comp->SetPatchSize(pathSize);
 	comp->SetQuadSize(Vector3(1, 1, 64));
-	comp->SetHeightMap(cache->GetResource<Image>("Textures/HeightMap.png"));
+	comp->SetHeightMap(cache->GetResource<Image>("Textures/PlaneHeightMap.png"));
 	comp->SetMaterial(cache->GetResource<Material>("Materials/Terrain.ljson"));
 	comp->CreateGeometry();
 }
