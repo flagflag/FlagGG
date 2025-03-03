@@ -19,7 +19,7 @@ struct PBRContext
     float3 worldPosition;           // 世界坐标
     float3 normalDirection;         // 世界坐标法线向量
     float3 viewDirection;           // 物体到相机的向量
-    float3 tangentDirecntion;       // 世界坐标切线向量
+    float3 tangentDirection;       // 世界坐标切线向量
     float3 bnormalDirection;        // 世界坐标副法线向量
     float shadow;                   // 阴影衰减
     float occlusion;                // 环境光遮蔽
@@ -130,7 +130,7 @@ float3 DisneyBRDF(PBRContext context, float3 specularColor, float oneMinusReflec
 
     // X: Tangent
     // Y: Bnormal
-    float3 X = context.tangentDirecntion;
+    float3 X = context.tangentDirection;
     float3 Y = context.bnormalDirection;
 
     float XdotV = dot(X, context.viewDirection);

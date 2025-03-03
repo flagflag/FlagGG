@@ -175,7 +175,7 @@ struct PixelInput
         context.emissiveColor = float3(0.0, 0.0, 0.0);
         context.worldPosition = input.worldPosition.xyz;
         context.normalDirection = normalize(normalRoughness.xyz);
-        context.tangentDirecntion = input.tangent;
+        context.tangentDirection = input.tangent;
         context.bnormalDirection = input.biNormal;
         context.viewDirection = normalize(cameraPos - input.worldPosition.xyz);
 

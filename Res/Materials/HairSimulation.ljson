@@ -1,0 +1,81 @@
+{
+    vsshader =
+    {
+        path = "Shader/SCE/HairSimulation.hlsl"
+    },
+    psshader =
+    {
+        path = "Shader/SCE/HairSimulation.hlsl"
+    },
+    textures =
+    {
+        "0" =
+        {
+            type = "texture2d",
+            ath = "Textures/HairShift.tga"
+        },
+        "1" =
+        {
+            type = "texture2d",
+            ath = "Textures/HairAlpha.tga"
+        }
+    },
+	shader_parameters = 
+	[
+        // TilingX
+		{
+			name = "HairTileX",
+			type = "float",
+            value = 1.0
+		},
+        // TilingY
+		{
+			name = "HairTileY",
+			type = "float",
+			value = 3.0
+		},
+        // 高光失真
+        {
+            name = "Distorsion",
+            type = "float",
+            value = 0.35
+        },
+        // 高光偏移
+        {
+            name = "HairOffset",
+            type = "float",
+            value = 0.104
+        },
+        // 高光宽度
+        {
+            name = "HairWidth",
+            type = "float",
+            value = 0.95
+        },
+        // 高光强度
+        {
+            name = "HairSpecular",
+            type = "float",
+            value = 1.0
+        },
+        // 固有色
+        {
+            name = "BaseColorA",
+            type = "vector4",
+            value = [ 0.0, 0.0, 0.0, 1.0 ]
+        },
+        // 发丝颜色
+        {
+            name = "BaseColorB",
+            type = "vector4",
+            value = [ 0.0, 0.0, 0.0, 1.0 ]
+        }
+	],
+	pass =
+	[
+		{
+			name = "forward_alpha",
+            depthtestmode = "COMPARISON_LESS_EQUAL"
+		}
+	]
+}

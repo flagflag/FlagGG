@@ -70,13 +70,8 @@ void ShaderCompileTest()
 {
 	SharedPtr<Shader> shader;
 
-	INIT_SHADER_VARIATION(shader, "Shader/SSAO/ScreenSpaceAmbientOcclusionVS.hlsl", VS, Vector<String>({}));
-	for (UInt32 i = 0; i <= 4; ++i)
-	{
-		INIT_SHADER_VARIATION(shader, "Shader/SSAO/ScreenSpaceAmbientOcclusionSetupPS.hlsl", PS, Vector<String>({ ToString("SHADER_QUALITY=%d", i) }));
-		INIT_SHADER_VARIATION(shader, "Shader/SSAO/ScreenSpaceAmbientOcclusionMainPS.hlsl", PS, Vector<String>({ ToString("SHADER_QUALITY=%d", i), "USE_AO_SETUP_AS_INPUT=1", "USE_UPSAMPLE=0" }));
-		INIT_SHADER_VARIATION(shader, "Shader/SSAO/ScreenSpaceAmbientOcclusionMainPS.hlsl", PS, Vector<String>({ ToString("SHADER_QUALITY=%d", i), "USE_AO_SETUP_AS_INPUT=0", "USE_UPSAMPLE=1" }));
-	}
+	INIT_SHADER_VARIATION(shader, "Shader/SCE/HairSimulation.hlsl", VS, Vector<String>({}));
+	INIT_SHADER_VARIATION(shader, "Shader/SCE/HairSimulation.hlsl", PS, Vector<String>({}));
 }
 
 int main()

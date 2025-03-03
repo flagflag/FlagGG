@@ -213,3 +213,14 @@ float length2(float4 v)
 {
 	return dot(v, v);
 }
+
+float3 luma(float3 rgb)
+{
+	float yy = dot(float3(0.2126729, 0.7151522, 0.0721750), rgb);
+	return yy.xxxx;
+}
+
+float4 luma(float4 rgb)
+{
+	return float4(luma(rgb.xyz), rgb.w);
+}

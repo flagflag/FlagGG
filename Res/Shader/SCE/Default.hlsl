@@ -122,7 +122,7 @@ struct PixelInput
 
         context.worldPosition = input.worldPosition.xyz;
         context.viewDirection = normalize(cameraPos - input.worldPosition.xyz);
-        context.tangentDirecntion = input.tangent;
+        context.tangentDirection = input.tangent;
         context.bnormalDirection = input.biNormal;
     #ifdef SHADOW
         context.shadow = GetShadow(input.shadowPos, input.worldPosition.w);
