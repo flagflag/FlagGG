@@ -208,6 +208,18 @@ void TextureBrushComponent::UpdateTextureWeight(const RayQueryResult& result)
 
 	Vector2 realPos(result.position_.x_, result.position_.y_);
 
+	IntVector2 direction[] =
+	{
+		{ 1, 0 },
+		{ 1, 1 },
+		{ 0, 1 },
+		{ -1, 1 },
+		{ -1, 0 },
+		{ -1, -1 },
+		{ 0, -1 },
+		{ 1, -1 },
+	};
+
 	for (int x = -tsize.x_; x <= tsize.x_; x++)
 	{
 		for (int y = -tsize.x_; y <= tsize.y_; ++y)
@@ -233,6 +245,16 @@ void TextureBrushComponent::UpdateTextureWeight(const RayQueryResult& result)
 
 				// UpdateTextureWeight3(gridPos, blend);
 				UpdateTextureWeight2(gridPos, blend);
+
+				//for (Int32 k = 0; k < 8; ++k)
+				//{
+				//	IntVector2 nxtPos = gridPos + direction[k];
+				//	if (nxtPos.x_ >= 0 && nxtPos.y_ >= 0 &&
+				//		nxtPos.x_ < idImage_->GetWidth() && nxtPos.y_ < idImage_->GetHeight())
+				//	{
+				//		UpdateTextureWeight2(nxtPos, 0.0f);
+				//	}
+				//}
 			}
 		}
 	}
@@ -468,9 +490,16 @@ void TextureBrushComponent::UpdateGpuTexture()
 	}
 
 #if SPLAT_MAP3
-	float idWeight[256];
-	for (auto& value : idWeight)
-		value = 666;
+	float idMaxWeight[256];
+	float idMinWeight[256];
+	Int32 idCount[256];
+	for (Int32 i = 0; i < 256; ++i)
+	{
+		idMaxWeight[i] = 0;
+		idMinWeight[i] = 666;
+		idCount[i] = 0;
+	}
+
 	for (Int32 x = 0; x < idImage_->GetWidth(); ++x)
 	{
 		for (Int32 y = 0; y < idImage_->GetHeight(); ++y)
@@ -491,7 +520,9 @@ void TextureBrushComponent::UpdateGpuTexture()
 					DecodeFromBuffer(texcoord[i].x_, texcoord[i].y_, tex[i]);
 					for (UInt32 j = 1; j < 3; ++j)
 					{
-						idWeight[tex[i][j].id] = Min(idWeight[tex[i][j].id], tex[i][j].w);
+						idMaxWeight[tex[i][j].id] = Max(idMaxWeight[tex[i][j].id], tex[i][j].w);
+						idMinWeight[tex[i][j].id] = Min(idMinWeight[tex[i][j].id], tex[i][j].w);
+						idCount[tex[i][j].id]++;
 					}
 				}
 
@@ -499,17 +530,22 @@ void TextureBrushComponent::UpdateGpuTexture()
 				{
 					for (UInt32 j = 1; j < 3; ++j)
 					{
-						tex[i][j].w = idWeight[tex[i][j].id];
+						if (idCount[tex[i][j].id] < 4)
+							tex[i][j].w = idMinWeight[tex[i][j].id];
+						else
+							tex[i][j].w = idMaxWeight[tex[i][j].id];
 					}
 					EncodeToBuffer(texcoord[i].x_, texcoord[i].y_, tex[i]);
 				}
 
-				// ¸´Ô­
+				// å¤åŽŸ
 				for (UInt32 i = 0; i < 4; ++i)
 				{
 					for (UInt32 j = 1; j < 3; ++j)
 					{
-						idWeight[tex[i][j].id] = 666;
+						idMaxWeight[tex[i][j].id] = 0;
+						idMinWeight[tex[i][j].id] = 666;
+						idCount[tex[i][j].id] = 0;
 					}
 				}
 			}
