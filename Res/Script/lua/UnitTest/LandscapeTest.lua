@@ -13,11 +13,14 @@ function LandscapeTest:run()
 
     -- 创建地形
     local terrain = context.Terrain.new()
-    terrain:create(64)
+    terrain:create(64, { 1, 1, 64 }, 'Textures/PlaneHeightMap.png', 'Materials/TerrainLandscape.ljson')
 	terrain:set_scale(1, 1, 1)
 	terrain:set_position(0, 0, 0)
 	terrain:set_name('Terrain')
     scene:add_child(terrain)
+
+    local texture_brush_comp = context.TextureBrushComponent.new()
+    game_builder.get_brush():attach_component(texture_brush_comp)
 
     app.setup_web_ui()
     app.load_web_ui('file:///WebUI/GameBuilder.html')

@@ -13,7 +13,7 @@ function HiZTest:run()
 
     -- 创建地形
     local terrain = context.Terrain.new()
-    terrain:create(64)
+    terrain:create(64, { 1, 1, 64 }, 'Textures/HeightMap.png', 'Materials/Terrain.ljson')
 	terrain:set_scale(1, 1, 0.2)
 	terrain:set_position(0, -80, 0)
 	terrain:set_name('Terrain')

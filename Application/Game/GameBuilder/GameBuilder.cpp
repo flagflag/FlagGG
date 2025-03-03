@@ -22,9 +22,6 @@ void GameBuilder::Setup(Scene* scene)
 {
 	brush_ = new Brush(scene);
 
-	auto brushComp = MakeShared<TextureBrushComponent>();
-	brush_->AttachComponent(brushComp);
-
 	ExportLuaAPI();
 }
 
@@ -48,6 +45,15 @@ void GameBuilder::ExportLuaAPI()
 		return 0;
 	});
 	{
+		luaex_classfunction(L, "attach_component", [](lua_State* L) -> int
+		{
+			if (auto* brush = reinterpret_cast<Brush*>(luaex_tousertype(L, 1, "Brush")))
+			{
+				auto* brushComp = reinterpret_cast<BrushComponent*>(luaex_tousertype(L, 2, "BrushComponent"));
+				brush->AttachComponent(brushComp);
+			}
+			return 0;
+		});
 		luaex_classfunction(L, "get_component", [](lua_State* L) -> int
 		{
 			if (auto* brush = reinterpret_cast<Brush*>(luaex_tousertype(L, 1, "Brush")))
@@ -71,7 +77,13 @@ void GameBuilder::ExportLuaAPI()
 	});
 	luaex_endclass(L);
 
-	luaex_beginclass(L, "TextureBrushComponent", "BrushComponent", nullptr, [](lua_State* L) -> int
+	luaex_beginclass(L, "TextureBrushComponent", "BrushComponent", [](lua_State* L) -> int
+	{
+		auto brushComp = MakeShared<TextureBrushComponent>();
+		luaex_pushusertyperef(L, "TextureBrushComponent", brushComp);
+		return 1;
+	},
+		[](lua_State* L) -> int
 	{
 		if (auto* brushComp = reinterpret_cast<TextureBrushComponent*>(luaex_tousertype(L, 1, "TextureBrushComponent")))
 		{

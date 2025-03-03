@@ -6,6 +6,7 @@
 #include <Scene/PrefabLoader.h>
 #include <Lua/LuaBinding/LuaBinding.h>
 #include <Lua/LuaBinding/LuaExtend.h>
+#include <Lua/LuaBinding/LuaMath.h>
 
 LuaGamePlay::LuaGamePlay(Scene* scene)
 	: scene_(scene)
@@ -163,7 +164,11 @@ LuaGamePlay::LuaGamePlay(Scene* scene)
 		{
 			if (auto* terrain = reinterpret_cast<Terrain*>(luaex_tousertype(L, 1, "Terrain")))
 			{
-				terrain->Create(lua_tointeger(L, 2));
+				UInt32 patchSize = lua_tointeger(L, 2);
+				Vector3 quadSize = luaex_tovector3(L, 3);
+				const char* heightMapPath = lua_tostring(L, 4);
+				const char* matPath = lua_tostring(L, 5);
+				terrain->Create(patchSize, quadSize, heightMapPath, matPath);
 			}
 			return 0;
 		});

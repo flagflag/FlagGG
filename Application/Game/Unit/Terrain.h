@@ -10,7 +10,7 @@ class Terrain : public Node
 public:
 	Terrain();
 
-	void Create(UInt32 pathSize);
+	void Create(UInt32 pathSize, const Vector3& quadSize, const String& heightMap, const String& materialPath);
 
 private:
 	UInt32 xCount_;

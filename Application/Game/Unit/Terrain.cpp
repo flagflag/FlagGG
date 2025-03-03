@@ -10,7 +10,7 @@
 Terrain::Terrain()
 { }
 
-void Terrain::Create(UInt32 pathSize)
+void Terrain::Create(UInt32 pathSize, const Vector3& quadSize, const String& heightMap, const String& materialPath)
 {
 	RemoveAllChild();
 
@@ -22,8 +22,8 @@ void Terrain::Create(UInt32 pathSize)
 		comp = CreateComponent<TerrainComponent>();
 	}
 	comp->SetPatchSize(pathSize);
-	comp->SetQuadSize(Vector3(1, 1, 64));
-	comp->SetHeightMap(cache->GetResource<Image>("Textures/PlaneHeightMap.png"));
-	comp->SetMaterial(cache->GetResource<Material>("Materials/Terrain.ljson"));
+	comp->SetQuadSize(quadSize);
+	comp->SetHeightMap(cache->GetResource<Image>(heightMap));
+	comp->SetMaterial(cache->GetResource<Material>(materialPath));
 	comp->CreateGeometry();
 }
