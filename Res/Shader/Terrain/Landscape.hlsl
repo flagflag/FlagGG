@@ -75,7 +75,7 @@ struct PixelInput
         PixelInput output;
         output.position  = clipPosition;
         output.weightTex = input.texcoord;
-        output.detailTex = worldPosition.xy / 10.24;
+        output.detailTex = worldPosition.xy / 512.0;
         output.normal   = worldNormal;
         output.tangent  = worldTangent;
         output.biNormal = worldBiNormal;

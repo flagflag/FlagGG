@@ -133,7 +133,7 @@ void ForwardRenderPipline::Render()
 		gfxDevice->SetRenderTarget(renderPiplineContext_.renderTarget_);
 		gfxDevice->SetDepthStencil(renderPiplineContext_.depthStencil_);
 	}
-	gfxDevice->Clear(CLEAR_COLOR | CLEAR_DEPTH | CLEAR_STENCIL);
+	gfxDevice->Clear(CLEAR_COLOR | CLEAR_DEPTH | CLEAR_STENCIL, Color::BLACK, renderPiplineContext_.camera_->GetReverseZ() ? 0.0f : 1.0f);
 	
 	litRenderPass_[0]->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);
 	litRenderPass_[1]->RenderBatch(renderPiplineContext_.camera_, renderPiplineContext_.shadowCamera_, 0u);

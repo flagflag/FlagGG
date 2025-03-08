@@ -13,10 +13,13 @@ function MapBuilderTest:run()
 
     local map_builder = context.MapBuilder.new()
     map_builder:set_scene(scene)
-    map_builder:load_map('E:/GitProject/NE/Urho/vs_bgfx_editor/bin/Update/promotion2/scene/default/map.acmap')
+    -- map_builder:load_map('E:/GitProject/NE/Urho/vs_bgfx_editor/bin/Update/promotion2/scene/default/map.acmap')
+    map_builder:load_map('E:/GitProject/NE/Res/maps/single_simple_ts_template_2/scene/default/map.acmap')
 
     local camera_node = scene:get_child('MainHero', true)
-    camera_node:set_position(3389, 5420, 520)
+    -- camera_node:set_position(3389, 5420, 520)
+    camera_node:set_position(1102, 2056, 1439)
+    camera_node:set_rotation(0.948600411, 0, 0.316476375, 0)
 
     app.set_camera_move_speed(500.0)
 end

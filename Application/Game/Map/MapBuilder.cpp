@@ -14,6 +14,8 @@
 #include <Graphics/Texture2D.h>
 #include <Log.h>
 
+#define TERRAIN_PLANE_TEST 0
+
 MapBuilder::MapBuilder()
 {
 
@@ -135,6 +137,7 @@ void MapBuilder::LoadMap(const String& path)
 
 void MapBuilder::GenerateTile(const Editor::EditorMap::DTileFlagGG& tileInfos)
 {
+#if !TERRAIN_PLANE_TEST
 	auto* assetFileMgr = GetSubsystem<AssetFileManager>();
 	auto* cache = GetSubsystem<ResourceCache>();
 
@@ -156,6 +159,7 @@ void MapBuilder::GenerateTile(const Editor::EditorMap::DTileFlagGG& tileInfos)
 			}
 		}
 	}
+#endif
 }
 
 static UInt32 TEX_STYLE_OFFSET[] =
@@ -207,8 +211,7 @@ void MapBuilder::GenerateTextureWeights(const Editor::EditorMap::DMaterialWeight
 
 	texWeights_->UpdateGpuTexture();
 
-#if 0
-	// for test:
+#if TERRAIN_PLANE_TEST
 	SharedPtr<Image> heightMap(new Image());
 	heightMap->SetSize(textureHeight, textureWidth, 4);
 	for (Int32 x = 0; x < heightMap->GetWidth(); ++x)
@@ -222,7 +225,7 @@ void MapBuilder::GenerateTextureWeights(const Editor::EditorMap::DMaterialWeight
 	auto* material = GetSubsystem<ResourceCache>()->GetResource<Material>("Materials/TerrainLandscape.ljson");
 	auto* terrainComp = terrain->CreateComponent<TerrainComponent>();
 	terrainComp->SetPatchSize(64);
-	terrainComp->SetQuadSize(Vector3(1, 1, 64));
+	terrainComp->SetQuadSize(Vector3(64, 64, 64));
 	terrainComp->SetHeightMap(heightMap);
 	terrainComp->SetMaterial(material);
 	terrainComp->CreateGeometry();

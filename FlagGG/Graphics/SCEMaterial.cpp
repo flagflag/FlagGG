@@ -130,13 +130,13 @@ bool SCEMaterial::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 				auto& pass = CreateOrGetRenderPass(RENDER_PASS_TYPE_SHADOW);
 				auto shaderCode = cache->GetResource<ShaderCode>("Shader/Shadow.hlsl");
 				pass.SetVertexShader(shaderCode->GetShader(VS, { meshTypeDefine }));
-				pass.SetPixelShader(shaderCode->GetShader(PS, { "MODEL_SHADOW" }));
+				pass.SetPixelShader(shaderCode->GetShader(PS, { it.pixelDefines_.Split(' ') }));
 			}
 			{
 				auto& pass = CreateOrGetRenderPass(RENDER_PASS_TYPE_DEPTH);
 				auto shaderCode = cache->GetResource<ShaderCode>("Shader/Depth.hlsl");
 				pass.SetVertexShader(shaderCode->GetShader(VS, { meshTypeDefine }));
-				pass.SetPixelShader(shaderCode->GetShader(PS, {}));
+				pass.SetPixelShader(shaderCode->GetShader(PS, { it.pixelDefines_.Split(' ') }));
 				pass.SetDepthTestMode(COMPARISON_LESS_EQUAL);
 			}
 			break;

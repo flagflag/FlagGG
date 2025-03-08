@@ -5,6 +5,7 @@
     struct VertexInput
     {
         float4 position : POSITION;
+        float2 texcoord : TEXCOORD;
     #ifdef SKINNED
         float4 blendWeights : BLEND_WEIGHTS;
         int4 blendIndices : BLEND_INDICES;
@@ -20,6 +21,7 @@
 struct PixelInput
 {
 	float4 position : SV_POSITION;
+    float2 texcoord : TEXCOORD;
 };
 
 #ifdef VERTEX
@@ -45,12 +47,23 @@ struct PixelInput
         
         PixelInput output;
         output.position = clipPosition;
+        output.texcoord = input.texcoord;
 
         return output;
     }
 #else
+    #ifdef ALPHAMASK
+        Texture2D colorMap : register(t0);
+        SamplerState colorSampler : register(s0);
+    #endif
+
     float4 PS(PixelInput input) : SV_TARGET
     {
+    #ifdef ALPHAMASK
+        float4 texDiff = colorMap.Sample(colorSampler, input.texcoord);
+        if (texDiff.a < 0.5)
+            discard;
+    #endif
         return float4(1.0, 1.0, 1.0, 1.0);
     }
 #endif
