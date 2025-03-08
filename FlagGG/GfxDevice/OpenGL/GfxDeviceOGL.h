@@ -80,7 +80,7 @@ public:
 	void DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart) override;
 
 	// 提交渲染指令
-	void DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceCount) override;
+	void DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceStart, UInt32 instanceCount) override;
 
 	// Flush
 	void Flush() override;

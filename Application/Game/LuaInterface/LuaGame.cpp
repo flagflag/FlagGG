@@ -1,6 +1,7 @@
 #include "LuaInterface/LuaGame.h"
 #include "Unit/Unit.h"
 #include "Unit/Terrain.h"
+#include "Map/MapBuilder.h"
 
 #include <Scene/Scene.h>
 #include <Scene/PrefabLoader.h>
@@ -76,6 +77,17 @@ LuaGamePlay::LuaGamePlay(Scene* scene)
 			{
 				const Vector3 scale(lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4));
 				node->SetScale(scale);
+			}
+			return 0;
+		});
+		luaex_classfunction(L, "get_child", [](lua_State* L) -> int
+		{
+			if (auto* node = reinterpret_cast<Node*>(luaex_tousertype(L, 1, "Node")))
+			{
+				const char* name = lua_tostring(L, 2);
+				auto child = node->GetChild(StringHash(name), lua_toboolean(L, 3));
+				luaex_pushusertyperef(L, "Node", child);
+				return 1;
 			}
 			return 0;
 		});
@@ -169,6 +181,42 @@ LuaGamePlay::LuaGamePlay(Scene* scene)
 				const char* heightMapPath = lua_tostring(L, 4);
 				const char* matPath = lua_tostring(L, 5);
 				terrain->Create(patchSize, quadSize, heightMapPath, matPath);
+			}
+			return 0;
+		});
+	}
+	luaex_endclass(L);
+
+	luaex_beginclass(L, "MapBuilder", "",
+		[](lua_State* L)->int
+	{
+		SharedPtr<MapBuilder> mapBuilder(new MapBuilder());
+		luaex_pushusertyperef(L, "MapBuilder", mapBuilder);
+		return 1;
+	}, [](lua_State* L)->int
+	{
+		if (auto* mapBuilder = reinterpret_cast<MapBuilder*>(luaex_tousertype(L, 1, "MapBuilder")))
+		{
+			mapBuilder->ReleaseRef();
+		}
+		return 0;
+	});
+	{
+		luaex_classfunction(L, "set_scene", [](lua_State* L)->int
+		{
+			if (auto* mapBuilder = reinterpret_cast<MapBuilder*>(luaex_tousertype(L, 1, "MapBuilder")))
+			{
+				auto* scene = reinterpret_cast<Scene*>(luaex_tousertype(L, 2, "Scene"));
+				mapBuilder->SetScene(scene);
+			}
+			return 0;
+		});
+		luaex_classfunction(L, "load_map", [](lua_State* L)->int
+		{
+			if (auto* mapBuilder = reinterpret_cast<MapBuilder*>(luaex_tousertype(L, 1, "MapBuilder")))
+			{
+				const char* path = lua_tostring(L, 2);
+				mapBuilder->LoadMap(path);
 			}
 			return 0;
 		});

@@ -13,6 +13,7 @@
 #include "GfxDevice/GfxTexture.h"
 #include "GfxDevice/GfxSwapChain.h"
 #include "Core/EngineSettings.h"
+#include "Core/Profiler.h"
 
 namespace FlagGG
 {
@@ -45,6 +46,8 @@ void DeferredRenderPipline::Clear()
 
 void DeferredRenderPipline::OnSolveLitBatch()
 {
+	PROFILE_AUTO(DeferredRenderPipline::OnSolveLitBatch);
+
 	for (auto* drawable : renderPiplineContext_.drawables_)
 	{
 		drawable->SetHasLitPass(false);
@@ -90,6 +93,8 @@ void DeferredRenderPipline::OnSolveLitBatch()
 
 void DeferredRenderPipline::PrepareRender()
 {
+	PROFILE_AUTO(DeferredRenderPipline::PrepareRender);
+
 	if (clusterLightPass_)
 		clusterLightPass_->Dispatch(GetRenderPiplineContext());
 	shadowRenderPass_->SortBatch();
@@ -162,6 +167,8 @@ void DeferredRenderPipline::AllocGBuffers()
 
 void DeferredRenderPipline::Render()
 {
+	PROFILE_AUTO(DeferredRenderPipline::Render);
+
 	RenderEngine* renderEngine = GetSubsystem<RenderEngine>();
 	GfxDevice* gfxDevice = GfxDevice::GetDevice();
 
@@ -368,6 +375,8 @@ void DeferredRenderPipline::Render()
 
 void DeferredRenderPipline::GpuOcclusionCulling()
 {
+	PROFILE_AUTO(DeferredRenderPipline::GpuOcclusionCulling);
+
 	if (GetSubsystem<EngineSettings>()->occlusionCullingType_ == OcclusionCullingType::HiZCulling && HiZCulling_)
 	{
 		HiZCulling_->FetchGeometriesVisibilityResults();

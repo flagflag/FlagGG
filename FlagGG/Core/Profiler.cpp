@@ -66,7 +66,7 @@ void Profiler::PrintData(ProfilerBlock* block, String& output, unsigned depth, u
 	bool showTotal) const
 {
 	static const int LINE_MAX_LENGTH = 256;
-	static const int NAME_MAX_LENGTH = 30;
+	static const int NAME_MAX_LENGTH = 60;
 
 	char line[LINE_MAX_LENGTH];
 	char indentedName[LINE_MAX_LENGTH];

@@ -48,11 +48,17 @@ public:
 	// 提交渲染指令
 	void DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart) override;
 
+	// 提交渲染指令
+	void DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceStart, UInt32 instanceCount) override;
+
 	// Flush
 	void Flush() override;
 
 	// Compute dispatch
 	void Dispatch(UInt32 threadGroupCountX, UInt32 threadGroupCountY, UInt32 threadGroupCountZ) override;
+
+	// 是否支持Instance
+	bool IsInstanceSupported() const override;
 
 
 	/**********************************************************/
@@ -104,7 +110,7 @@ protected:
 
 	void CopyShaderParameterToBuffer(GfxShaderD3D11* shader, GfxBufferD3D11* buffer);
 
-	ID3D11InputLayout* GetD3D11InputLayout(VertexDescription* vertxDesc, GfxShaderD3D11* vertexShader);
+	ID3D11InputLayout* GetD3D11InputLayout(VertexDescription* vertxDesc, VertexDescription* instanceDesc, GfxShaderD3D11* vertexShader);
 
 	ID3D11SamplerState* GetD3D11SamplerState(GfxSampler* gfxSampler);
 

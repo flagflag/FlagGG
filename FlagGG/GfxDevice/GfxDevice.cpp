@@ -31,6 +31,8 @@ void GfxDevice::BeginFrame()
 	ClearVertexBuffer();
 	indexBuffer_.Reset();
 	vertexDesc_.Reset();
+	instanceBuffer_.Reset();
+	instanceDesc_.Reset();
 	ResetComputeBuffers();
 	vertexShader_.Reset();
 	pixelShader_.Reset();
@@ -157,6 +159,24 @@ void GfxDevice::SetVertexDescription(VertexDescription* vertexDesc)
 	{
 		vertexDesc_ = vertexDesc;
 		vertexDescDirty_ = true;
+	}
+}
+
+void GfxDevice::SetInstanceBuffer(GfxBuffer* gfxInstanceBuffer)
+{
+	if (instanceBuffer_ != gfxInstanceBuffer)
+	{
+		instanceBuffer_ = gfxInstanceBuffer;
+		instanceBufferDirty_ = true;
+	}
+}
+
+void GfxDevice::SetInstanceDescription(VertexDescription* instanceDesc)
+{
+	if (instanceDesc_ != instanceDesc)
+	{
+		instanceDesc_ = instanceDesc;
+		instanceDescDirty_ = true;
 	}
 }
 
@@ -398,7 +418,7 @@ void GfxDevice::DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 vertexS
 
 }
 
-void GfxDevice::DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceCount)
+void GfxDevice::DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceStart, UInt32 instanceCount)
 {
 
 }

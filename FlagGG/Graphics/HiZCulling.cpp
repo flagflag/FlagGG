@@ -11,6 +11,7 @@
 #include "GfxDevice/GfxTexture.h"
 #include "GfxDevice/GfxSampler.h"
 #include "Memory/Memory.h"
+#include "Core/Profiler.h"
 
 namespace FlagGG
 {
@@ -254,6 +255,8 @@ void HiZCulling::CalcGeometriesVisibility()
 
 void HiZCulling::FetchGeometriesVisibilityResults()
 {
+	PROFILE_AUTO(HiZCulling::FetchGeometriesVisibilityResults);
+
 	auto* gfxTexture = HiZResults_->GetGfxTextureRef();
 #if _DEBUG
 	Memory::Memzero(&MiZResultsBuffer_[0], HiZMapWidth * frameHiZHeight_);

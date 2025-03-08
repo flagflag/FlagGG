@@ -106,6 +106,12 @@ public:
 	// 设置顶点描述
 	virtual void SetVertexDescription(VertexDescription* vertexDesc);
 
+	// 设置InstanceBuffer
+	virtual void SetInstanceBuffer(GfxBuffer* gfxInstanceBuffer);
+
+	// 设置Instance描述
+	virtual void SetInstanceDescription(VertexDescription* instanceDesc);
+
 	// 重置compute buffer
 	virtual void ResetComputeBuffers();
 
@@ -182,13 +188,16 @@ public:
 	virtual void DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart = 0u);
 
 	// 提交渲染指令
-	virtual void DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceCount);
+	virtual void DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceStart, UInt32 instanceCount);
 
 	// Flush
 	virtual void Flush();
 
 	// Compute dispatch
 	virtual void Dispatch(UInt32 threadGroupCountX, UInt32 threadGroupCountY, UInt32 threadGroupCountZ);
+
+	// 是否支持Instance
+	virtual bool IsInstanceSupported() const { return false; }
 
 
 	/**********************************************************/
@@ -249,6 +258,14 @@ protected:
 	// vbs desc
 	SharedPtr<VertexDescription> vertexDesc_;
 	bool vertexDescDirty_{};
+
+	// inst buffer
+	SharedPtr<GfxBuffer> instanceBuffer_;
+	bool instanceBufferDirty_{};
+
+	// inst desc
+	SharedPtr<VertexDescription> instanceDesc_;
+	bool instanceDescDirty_{};
 
 	// compute buffer
 	SharedPtr<GfxBuffer> computeBuffers_[MAX_GPU_UNITS_COUNT];

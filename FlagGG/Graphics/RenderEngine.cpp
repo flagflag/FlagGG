@@ -454,6 +454,26 @@ void RenderEngine::DrawBatch(Camera* camera, const RenderBatch& renderBatch)
 	DrawCallIndexed(renderBatch.geometry_->GetIndexStart(), renderBatch.geometry_->GetIndexCount());
 }
 
+void RenderEngine::DrawBatch(Camera* camera, const RenderInstanceBatch& renderBatch, VertexBuffer* instanceBuffer)
+{
+	SetRasterizerState(renderBatch.renderPassInfo_->GetRasterizerState());
+	SetDepthStencilState(renderBatch.renderPassInfo_->GetDepthStencilState(), camera->GetReverseZ());
+	SetShaderParameter(camera, renderBatch);
+	if (renderBatch.vertexShader_ && renderBatch.pixelShader_)
+		SetShaders(renderBatch.vertexShader_, renderBatch.pixelShader_);
+	else
+		SetShaders(renderBatch.material_->GetVertexShader(), renderBatch.material_->GetPixelShader());
+	SetMaterialTextures(renderBatch.material_);
+	SetVertexBuffers(renderBatch.geometry_->GetVertexBuffers());
+	if (renderBatch.vertexDesc_)
+		gfxDevice_->SetVertexDescription(renderBatch.vertexDesc_);
+	SetIndexBuffer(renderBatch.geometry_->GetIndexBuffer());
+	SetPrimitiveType(renderBatch.geometry_->GetPrimitiveType());
+	gfxDevice_->SetInstanceBuffer(instanceBuffer->GetGfxRef());
+	gfxDevice_->SetInstanceDescription(instanceBuffer->GetVertexDescription());
+	gfxDevice_->DrawIndexedInstanced(renderBatch.geometry_->GetIndexStart(), renderBatch.geometry_->GetIndexCount(), 0, renderBatch.instanceStart_, renderBatch.instanceCount_);
+}
+
 Matrix3x4 RenderEngine::GetFullscreenQuadTransform(Camera* camera)
 {
 	Matrix3x4 quadTransform;

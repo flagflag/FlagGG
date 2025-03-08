@@ -316,12 +316,13 @@ bool LJSONParser::ToValue(const LJSONValue& parent, const String& type, const St
 
 	bool hasNonDig = false;
 	bool appearDot = false;
+	Int32 indexE = -1;
 
 	for (UInt32 i = 0; i < content.Length(); ++i)
 	{
 		if (!isdigit(content[i]))
 		{
-			if (i == 0 && content[i] == '-')
+			if (content[i] == '-' && indexE + 1 == i)
 			{
 				continue;
 			}
@@ -329,6 +330,10 @@ bool LJSONParser::ToValue(const LJSONValue& parent, const String& type, const St
 			if (!appearDot && content[i] == '.')
 			{
 				appearDot = true;
+			}
+			else if (indexE == -1 && content[i] == 'e')
+			{
+				indexE = i;
 			}
 			else
 			{

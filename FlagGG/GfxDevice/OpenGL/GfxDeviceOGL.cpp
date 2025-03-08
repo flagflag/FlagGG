@@ -367,7 +367,7 @@ void GfxDeviceOpenGL::DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 v
 	GL::DrawElements(GetOGLPrimitive(primitiveType_), indexCount, indexFormat, (void*)(uintptr_t)indexStartByte);
 }
 
-void GfxDeviceOpenGL::DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceCount)
+void GfxDeviceOpenGL::DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceStart, UInt32 instanceCount)
 {
 	PrepareDraw();
 

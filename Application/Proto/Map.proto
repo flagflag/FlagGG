@@ -1,0 +1,768 @@
+/**
+ * Editor 地图信息的proto格式化协议
+ */
+
+option go_package = "Editor";
+package Editor.EditorMap;
+
+/**
+ * 编辑器地图信息
+ * @member DMapInfo    					 - 长宽和SDC限制
+ * @member DTerrainAttribute       		 - 顶点属性
+ * @member DConnectiveAttribute      	 - 连通点属性
+ * @member DStaticDecorationAttribute    - 静态装饰物属性
+ * @member DPrefabNameArray      		 - 瓦片信息
+ * @member DMaterialWeights       		 - 材质属性
+
+ * @member DTILEFLAGGG                   - FlagGG用的瓦片属性
+ * @member DTILENAMEUE4                  - UE4用的瓦片属性
+
+ * @member DExtraCollision               - 额外碰撞属性
+ * @member DGrassRegion                  - 草丛区域属性
+ * @member DGridAttribute                - 格子属性
+ * @member DUnitAttribute                - 单位属性
+ * @member DLightAttribute               - 灯光属性
+ * @member DAreaAttribute                - 区域属性
+
+ * @member DCameraAttribute              - 镜头属性
+ * @member DPlayerHero                   - 玩家英雄
+ * @member DMapRange                     - 地图范围属性
+ * @member DEnvironmentAttribute         - 环境属性
+ * @member DGlobalAttribute              - 全局属性
+ * @member DLightMapAttribute            - LightMap属性
+ * @member DCliffVertexData              - 悬崖顶点数据
+ */
+
+enum EditorEditorMapMessage
+{
+    DMAPINFO          			= 0x0001;
+    DTERRAINATTRIBUTE          	= 0x0002;
+    DCONNECTIVEATTRIBUTE   		= 0x0003;
+    DSTATICDECORATIONATTRIBUTE  = 0x0004;
+    DPREFABNAMEARRAY   			= 0x0005;
+    DMATERIALWEIGHTS          	= 0x0006;
+    DMAPEXTRAINFO               = 0x0007;
+
+    DTILEFLAGGG                 = 0X0013;
+    DTILENAMEUE4                = 0X0014;
+    DEXTRACOLLISION             = 0X0015;
+    DGRASSREGION                = 0X0016;
+    DGRIDATTRIBUTE              = 0X0019;
+    DUNITATTRIBUTE              = 0X0020;
+    DLIGHTATTRIBUTE             = 0X0021;
+    DAREAATTRIBUTE		        = 0X0022;
+
+    DCAMERAATTRIBUTE            = 0X0030;
+    DPLAYERHERO                 = 0X0031;
+    DMAPRANGE                   = 0X0032;
+    DENVIRONMENTATTRIBUTE       = 0X0033;
+    DGLOBALATTRIBUTE            = 0X0034;
+    DENVIRONMENTEXATTRIBUTE     = 0X0035;
+    DPOINTLIGHT					= 0X0036;
+    DLIGHTMAPATTRIBUTE          = 0X0037;
+    DCLIFFVERTEXDATA            = 0X0038;
+}
+
+enum EditorMapVersion
+{
+    VERSION_DECORATIONREALPOSITION      = 0x0000;
+    VERSION_DECORATIONREALPACKAGEDIR    = 0x0001;
+    VERSION_DECORATIONREALSCALE         = 0x0002;
+    VERSION_TILENAMEPOSARRAY            = 0x0003;
+    VERSION_TILEDECALDATAARRAY          = 0x0004;
+    VERSION_GRIDVISION                  = 0x0005;
+    VERSION_DECORATIONPOSITION3D        = 0x0006;
+    VERSION_UNIONCOLLISION              = 0x0007;
+    VERSION_UNITNAME                    = 0x0008;
+    VERSION_ENVIRONMENTEX               = 0x0009;
+    VERSION_OUTERAREAUNIT               = 0x000A;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * 地形顶点属性
+ * @member Type         - 地形点的类型（陆或水）
+ * @member HeightVal    - 地形点的高度
+ */
+message STerrainAttribute
+{
+    required int32 Type     	= 1;
+    required int32 HeightVal    = 2;
+}
+
+/**
+ * 连通顶点属性
+ * @member Index        - 连通点的哈希值
+ * @member MaskVal      - 连通点的类型
+ */
+message SConnectiveAttribute
+{
+    required int32 Index    = 1;
+	required int32 MaskVal	= 2;
+}
+
+message SVector2D
+{
+    required float x    = 1;
+    required float y    = 2;
+}
+
+message SVector
+{
+    required float x    = 1;
+    required float y    = 2;
+    required float z    = 3;
+}
+
+message SVector4D
+{
+    required float x    = 1;
+    required float y    = 2;
+    required float z    = 3;
+    required float w    = 4;
+}
+
+message SQuaternion
+{
+    required float w    = 1;
+    required float x    = 2;
+    required float y    = 3;
+    required float z    = 4;
+}
+
+message SRotator
+{
+    required int32 Pitch = 1;
+    required int32 Yaw	= 2;
+    required int32 Roll	= 3;
+}
+
+message SBox
+{
+    required SVector Min = 1;
+    required SVector Max = 2;
+}
+
+message SMark
+{
+    required int32 Bottom = 1;
+    required int32 Right = 2;
+    required int32 Top = 3;
+    required int32 Left = 4;
+}
+
+message SPointType
+{
+    required int32 BottomLeft = 1;
+    required int32 BottomRight = 2;
+    required int32 TopRight = 3;
+    required int32 TopLeft = 4;
+}
+
+message SPointHeight
+{
+    required int32 BottomLeft = 1;
+    required int32 BottomRight = 2;
+    required int32 TopRight = 3;
+    required int32 TopLeft = 4;
+}
+
+message SFixHeight
+{
+    required int32 BottomLeft = 1;
+    required int32 BottomRight = 2;
+    required int32 TopRight = 3;
+    required int32 TopLeft = 4;
+}
+
+/**
+ * 纹理装饰物，纹理风格+材质+分类+PrefabPath，唯一确定一个纹理装饰物
+ * @member StyleName      - 纹理风格
+ * @member MaterialName   - 材质路径
+ * @member ClassName      - 分类
+ */
+message STexDecoClass
+{
+    required string StyleName = 1;
+    required string MaterialName = 2;
+    required string ClassName = 3;
+    optional float SrcDirection = 4;
+    optional SVector2D BoundaryOffset = 5;
+}
+
+message SIntVector3
+{
+    required int32 X = 1;
+    required int32 Y = 2;
+    required int32 Z = 3;
+}
+
+/**
+ * 装饰物顶点属性
+ * @member Index        - 装饰物点的哈希值
+ * @member Type         - 装饰物点的类型（树或饰品）
+ * @member Invisible    - 装饰物点是否可见
+ * @member RotCount     - 装饰物点的朝向
+ * @member TileSetName  - 添加装饰物时TileSet的名称
+ * @member TypeID       - 装饰物点用的素材名
+ */
+message SStaticDecorationAttribute
+{
+    required int32 Index        = 1;
+    required float RotCount 	= 2;
+    required string PackageName = 3;
+    required string GroupName   = 4;
+    required string PrefabName  = 5;
+    optional SVector2D Position = 6;
+    optional string PackageDir  = 7;
+    optional SVector Scale      = 8;
+    optional SVector Position3D = 9;
+    optional string FullPrefabName = 10;
+    optional float Yaw          = 11;
+    optional float Pitch        = 12;
+    optional int32 Type         = 13;
+    optional STexDecoClass TexDecoClass = 14;
+    optional string ScenePath = 15;
+    optional SQuaternion Quat = 16;
+    optional string Group = 17;
+    optional string Rank = 18;
+    optional SPrefabLightMap LightMapInfo = 19;
+    optional bool NoAdsorbent = 20;
+    optional string Description = 21;
+    optional bool Invisible = 22;
+    optional bool Unselectable = 23;
+    optional bool CastShadow = 24;
+    optional bool OCC = 25;
+    optional bool InnerstrokeEnable = 26;
+    optional bool OutstrokeEnable = 27;
+    optional int32 StrokeGroupIndex = 28;
+	repeated SAnchorAttribute AnchorAttribute = 29;
+    optional SRotator Rotator = 30;
+    optional string WeatherEffect = 31;
+    optional SIntVector3 TerrainBlendIndex = 32;
+    optional uint32 RuntimeViewMask = 33;
+    optional float MaxDrawDistance = 34;
+    optional float MaxShadowDistance = 35;
+}
+
+message SNamePosData
+{
+    required string Name 	= 1;
+    required SVector Pos    = 2;
+}
+
+message SNamePosArray
+{
+    repeated SNamePosData DataArray = 1;
+}
+
+message SAnchorAttribute
+{
+    required SVector Position3D = 1;
+    required SQuaternion Quat = 2;
+    required string AnchorName = 3;
+    optional string Description = 4;
+}
+
+message SPrefabLightMap
+{
+    repeated SLightMapDef LightMapArray = 1;
+}
+
+message SLightMapDef
+{
+    required int32 LightMapIdx = 1;
+    required SVector4D LightMapBias = 2;
+}
+
+/**
+ * 瓦片装饰物数据
+ * @member Name         - Prefab路径
+ * @member Loc          - 位置
+ * @member Rot          - 旋转（欧拉角）
+ * @member Scale        - 缩放
+ * @member Mark         - 瓦片边标记
+ * @member Index        - 代理装饰物在Prefab中的第几个槽（按照Prefab配置的顺序0~n）
+ * @member Quat         - 旋转（四元数，后面加的）
+ * @member Flags        - 地图Flags，例如：瓦片小装饰物隐藏的flag
+*/
+message SDecalData
+{
+    required string Name    = 1;
+    required SVector Loc    = 2;
+    required SVector Rot    = 3;
+    required SVector Scale  = 4;
+    optional SMark Mark     = 5;
+    optional int32 Index    = 6;
+    optional SQuaternion Quat = 7;
+    optional string TileSet  = 8;
+    optional SFixHeight FixHeight = 9;
+    optional SPrefabLightMap LightMap = 10;
+    optional SPointType PointType = 11;
+    optional SPointHeight PointHeight = 12;
+    optional string uuid = 13;
+    optional string WeatherEffect = 14;
+    optional string InternalStyle = 15;
+}
+
+/**
+ * 瓦片装饰物数据Array
+ */
+message SDecalDataArray
+{
+    repeated SDecalData DataArray = 1;
+}
+
+/**
+ * prefab属性
+ * @member RotCount        - prefab的朝向
+ * @member PackageName     - prefab用的素材包名
+ * @member NameArray       - prefab所有用的素材名（包括本身素材以及绑定的装饰物）
+ * @member StyleName       - prefab所用的风格（例如刷斜坡还是台阶）
+ * @member NamePosArray    - prefab上每个prefab的名字和位置
+ */
+message SPrefabNameArray
+{
+    required int32 RotCount 	            = 1;
+    required string PackageName             = 2;
+    repeated string NameArray 	            = 3;
+    optional string StyleName               = 4;
+    optional SNamePosArray NamePosArray     = 5;
+    optional bool HasPos                    = 6;
+    optional SDecalDataArray DecalDataArray = 7;
+}
+
+/**
+ * 颜色RGBA属性
+ * @member RGBA - 材质通道
+ */
+ message SColorRGBA
+ {
+     required int32 R            = 1;
+     required int32 G            = 2;
+     required int32 B            = 3;
+     required int32 A            = 4;
+ }
+
+/**
+ * 材质RGBA属性
+ * @member Index            - 材质点的哈希值
+ * @member RGBA             - 权重编码
+ * @member BaseColor        - 颜色系数
+ * @member CloudShadowColor - rgb云阴影颜色+a迷雾颜色
+ * @member WaterBlend       - 水纹理alpha
+ * @member Weights          - 高质量混合权重
+ */
+message SColor
+{
+    required int32 Index        = 1;
+	required int32 R            = 2;
+	required int32 G            = 3;
+	required int32 B            = 4;
+	required int32 A            = 5;
+    optional SColorRGBA BaseColor           = 6;
+    optional SColorRGBA CloudShadowColor    = 7;
+    optional float WaterBlend   = 8;
+    optional int32 PathIdentify = 9;
+    optional SColorRGBA Weights = 10;
+}
+
+message STileNameUE4
+{
+    required string TileName            =1;
+    required int32 RotCount             =2;
+    required int32 TileHeight           =3;
+    optional SDecalDataArray DecalDataArray =4;
+    optional string TileSet             =5;
+}
+
+message STileFlagGG
+{
+    repeated SDecalData DataArray = 1;
+    optional int32 Version = 2;
+    repeated string UserRemovedProxyDecos = 3;
+    optional bool CanBeTransparent = 4;
+}
+
+message SUnitAttribute
+{
+    required int32 UnitIndex            =1;
+    required int32 UnitTypeID           =2;
+    required SVector Location           =3;
+    required float RotCount             =4;
+    required SVector Scale              =5;
+    required float Radius               =6;
+    required int32 Player               =7;
+    required string Name                =8;
+    optional string UnitName            =9;
+}
+
+message SBaseTreeAttribute
+{
+    required int32 Id                   =1;
+    required int32 Type                 =2;
+    required string Name                =3;
+    required int32 Parent               =4;
+    required int32 Flags                =5;
+    optional int32 Custom               =6;
+}
+
+message SLightTreeAttribute
+{
+
+    optional string Location            =1;
+    optional string Rotation            =2;
+    optional string Color               =3;
+    optional float Radius               =4;
+    optional float Brightness           =5;
+    optional bool CastShadow            =6;
+}
+
+message SLightAttribute
+{
+    required SBaseTreeAttribute BaseAttribute    =1;
+    optional SLightTreeAttribute LightAttribute  =2;
+}
+
+message SCustomAttribute
+{
+    required string Key = 1;
+    required string Value = 2;
+}
+
+message SAreaTreeAttribute
+{
+    repeated string Location            =1;
+    optional string Color               =2;
+    optional float Width                =3;
+    optional float Height               =4;
+    optional float Radius               =5;
+}
+
+message SAreaAttribute
+{
+    required SBaseTreeAttribute BaseAttribute       =1;
+    optional SAreaTreeAttribute AreaAttribute      =2;
+    repeated SCustomAttribute CustomAttribute       =3;
+}
+
+message SPlayerHero
+{
+    required int32 Player       = 1;
+    required int32 UnitIndex    = 2;
+}
+
+message SSkyLightAttribute
+{
+    required int32 SelectIndex          = 1;
+    required bool Enabled               = 2;
+    required float CustomBrightness     = 3;
+    required string CustomColor         = 4;
+    required float UsedBrightness       = 5;
+    required string UsedColor           = 6;
+}
+
+message SHeightFogAttribute
+{
+    required bool Enabled               =1;
+    required float FogDensity           =2;
+    required float StartDistance        =3;
+    required string OppositeLightColor  =4;
+}
+
+/*
+message SEnvironmentExSkyLightAttribute
+{
+    required bool Enabled               = 1;
+    required string Color               = 2;
+    required float Brightness           = 3;
+}
+
+message SEnvironmentExHeightFogAttribute
+{
+    required bool Enabled                       =1;
+    required float FogDensity                   =2;
+    required float FogHeightFalloff             =3;
+    required float StartDistance                =4;
+    required float OppositeLightBrightness      =5;
+    required string OppositeLightColor          =6;
+    required string LightInscatteringColor      =7;
+}
+
+message SEnvironmentExSkyBallAttribute
+{
+    required string StaticMesh      =1;
+    required string Materials       =2;
+}
+*/
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 这里除了DMapInfo，其他都是以结构数组的形式存储，因为地编里大部分数据都是通过TArray<T>的形式来存储的
+
+/**
+ * 地图属性
+ * @member Width                        - 宽
+ * @member Height                       - 高
+ * @member MaxDeltaGrade                - SDC顶点基础限制
+ * @member MaxDeltaBetweenWaterLand     - SDC水陆顶点限制
+ * @member MaxDeltaBetweenPathTile      - SDC瓦片路径限制
+ * @member MapVersion                   - 地图版本，标记不同类型的地图
+ * @member BinaryVersion                - 二进制版本，标记程序版本
+ * @member LightGroupPath               - 灯光组路径
+ * @member MultiBlend                   - 是否是多纹理混合
+ */
+message DMapInfo
+{
+	required int32 Width            			= 1;
+    required int32 Height           			= 2;
+    required int32 MaxDeltaGrade  				= 3;
+    required int32 MaxDeltaBetweenWaterLand  	= 4;
+    required int32 MaxDeltaBetweenPathTile  	= 5;
+    optional int32 MapVersion                   = 6;
+    optional int32 BinaryVersion                = 7;
+    optional string LightGroupPath              = 8;
+    optional bool MultiBlend                    = 9;
+    optional int32 MaterialQuality              = 10;
+    optional int32 LandscapeWidth               = 11;
+    optional int32 LandscapeHeight              = 12;
+}
+
+/**
+ * 地图额外的信息，游戏不需要关心，通常时编辑器关心
+ * @member Level        - 地图Z轴的层数
+ * @member TileX        - 瓦片X方向长度
+ * @member TileY        - 瓦片Y方向长度
+ * @member TileZ        - 瓦片Z方向长度
+ * @member Style        - 纹理风格，风格配置的路径
+ * @member TileSet      - 瓦片集
+ * @member Margin       - 地图边界
+ */
+message DMapExtraInfo
+{
+    required int32 Level = 1;
+    required int32 TileX = 2;
+    required int32 TileY = 3;
+    required int32 TileZ = 4;
+    optional string Style = 5;
+    optional string TileSet = 6;
+    optional int32 TerrainEnableInGame = 7;
+    optional int32 Margin   = 10;
+}
+
+message DTerrainAttribute
+{
+	repeated STerrainAttribute CrossPointAttributes = 1;
+}
+
+message DConnectiveAttribute
+{
+	repeated SConnectiveAttribute ConnectivePointAttributes = 1;
+}
+
+message DStaticDecorationAttribute
+{
+	repeated SStaticDecorationAttribute StaticDecorationPointAttribute = 1;
+    optional uint32 StrokeGroupCount = 2;
+}
+
+message DPrefabNameArray
+{
+	repeated SPrefabNameArray PrefabNameArray = 1;
+}
+
+
+message DMaterialWeights
+{
+	repeated SColor MaterialWeights = 1;
+    optional SColorRGBA CloudFogColor = 2;
+}
+
+message DTileFlagGG
+{
+    repeated STileFlagGG Tile =1;
+}
+
+message DTileNameUE4
+{
+    repeated STileNameUE4 TileNameUE4 =1;
+}
+
+message DFocusEmptyCollision
+{
+    repeated bool FocusEmptyCollision   = 1;
+}
+
+message DCollision
+{
+    repeated int32 Collision = 1;
+}
+
+message DGridAttribute
+{
+    repeated bool ExtraCollision                        = 1;
+    repeated bool GrassRegion                           = 2;
+    repeated int32 VisionHeight                         = 3;
+    optional DFocusEmptyCollision FocusEmptyCollision   = 4;
+    optional DCollision Collision                       = 5;
+}
+
+message DExtraCollision
+{
+    repeated bool ExtraCollision = 1;
+}
+
+message DGrassRegion
+{
+    repeated bool GrassRegion = 1;
+}
+
+message DUnitAttribute
+{
+    repeated SUnitAttribute UnitAttribute = 1;
+}
+
+message DLightAttribute
+{
+    repeated SLightAttribute LightAttribute = 1;
+}
+
+message DAreaAttribute
+{
+    repeated SAreaAttribute AreaAttribute = 1;
+}
+
+message DCameraAttribute
+{
+    required SVector ViewLocation   = 1;
+    required SRotator ViewRotation  = 2;
+    required float ViewFOV          = 3;
+    optional float CameraLength     = 4;
+    optional int32 ViewOperationType= 5;
+    optional string GameCameraSetting=6;
+}
+
+message DPlayerHero
+{
+    repeated SPlayerHero PlayerHero = 1;
+}
+
+message DMapRange
+{
+    required SBox MiniMapRange = 1;
+    required SBox CameraRange = 2;
+}
+
+message DEnvironmentAttribute
+{
+    required SSkyLightAttribute SkyLightAttribute   = 1;
+    required SHeightFogAttribute HeightFogAttribute = 2;
+    required int32 SkyBallIndex                     = 3;
+}
+
+message DGlobalAttribute
+{
+    required bool IsTerrainUseVision                = 1;
+    required bool IsUseFow                          = 2;
+}
+
+message DEnvironmentExAttribute
+{
+    required string EnvironmentJson                  =1;
+    optional string DrawDistanceJson                 =2;
+}
+
+message SLightMapAttribute
+{
+    required int32 BlockX                  =1;
+    required int32 BlockY                  =2;
+    required int32 TMType                  =3;
+    required int32 LightMapIdx             =4;
+    required SVector4D LightMapBias        =5;
+}
+
+message SLightMapTextureAttribute
+{
+    required SVector4D Scale0 =1;
+    required SVector4D Scale1 =2;
+}
+
+message SLightMapTextureAttributeArray
+{
+    repeated SLightMapTextureAttribute Textures = 1;
+}
+
+message DLightMapAttribute
+{
+    required int32 LightMapCount = 1;
+    repeated SLightMapAttribute LightMapAttribute = 2;
+    optional float Directionality = 3;
+    optional SLightMapTextureAttributeArray TextureAttrs = 4;
+}
+
+message SCliffVertexData
+{
+    required uint32 Hash = 1;
+    required SVector2D LightMapUV = 2;
+}
+
+message DCliffVertexData
+{
+    repeated SCliffVertexData VertexData = 1;
+}
+
+message SSlot
+{
+    required string Name                    = 1;
+    required SVector WorldPosition          = 2;
+    optional string Tag                     = 3;
+}
+
+message SWidget
+{
+    required int32 Id                       = 1;
+    required SVector WorldPosition          = 2;
+    required float Radius                   = 3;
+    required float Rotation                 = 4;
+    required float Scale                    = 5;
+    repeated SSlot Slots                    = 6;
+}
+
+message SAreaInfo
+{
+    optional bool GlobalResources   = 1;
+    required string Tag             = 2;
+    required string WeatherStyle    = 3;
+	repeated SWidget Widgets        = 4;
+    optional int32 ID               = 5;
+    optional SVector WorldPosition  = 6;
+    optional float Radius           = 7;
+	repeated SSlot Slots            = 8;
+}
+
+message DRandomArea
+{
+	repeated SAreaInfo AreaInfo = 1;
+}
+
+message ControlledSyncUnit
+{
+    required uint32 UnitID               = 1;
+    required uint32 SlotID               = 2;
+    required uint32 SceneNameIndex       = 3;
+    required uint32 PrefabPathIndex      = 4;
+    required uint32 UnitLinkIndex        = 5;
+    required SVector WorldPosition       = 6;
+    optional float Scale                 = 7;
+    required float CollisionRaidus       = 8;
+    optional float MaxDrawDistance       = 9;
+    optional float MaxShadowDistance     = 10;
+    optional SVector WorldRotation       = 11;
+    optional uint32 WeatherStyleIndex    = 12;
+}
+
+message ControlledSyncUnits
+{  
+    repeated ControlledSyncUnit Units        = 1;
+    repeated string NameArray                = 2;
+}

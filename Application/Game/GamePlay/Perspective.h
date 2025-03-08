@@ -38,6 +38,9 @@ public:
 	// 解锁视角
 	virtual void Unlock() = 0;
 
+	// 设置移动相机移动速度
+	virtual void SetMoveSpeed(float moveSpeed) = 0;
+
 private:
 
 };

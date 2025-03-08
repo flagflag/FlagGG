@@ -1,4 +1,3 @@
-#ifdef _WIN32
 #include <Core/EventManager.h>
 #include <Graphics/RenderEngine.h>
 #include <Graphics/Batch2D.h>
@@ -8,7 +7,6 @@
 #include <Scene/Octree.h>
 #include <Scene/StaticMeshComponent.h>
 #include <Scene/OceanComponent.h>
-#endif
 #include <Scene/PrefabLoader.h>
 #include <Physics/Physics.h>
 #include <Log.h>
@@ -17,6 +15,7 @@
 #include <FileSystem/FileSystemArchive/DefaultFileSystemArchive.h>
 #include <Config/LJSONFile.h>
 #include <Core/EngineSettings.h>
+#include <Core/Profiler.h>
 
 #include "GameApplication.h"
 #include "GamePlay/ThirdPersonPerspective.h"
@@ -340,6 +339,12 @@ int GameApplication::GetWebView(LuaVM* luaVM)
 	return 1;
 }
 
+int GameApplication::SetCameraMoveSpeed(LuaVM* luaVM)
+{
+	perspective_->SetMoveSpeed(luaVM->Get<float>(1));
+	return 0;
+}
+
 void GameApplication::OpenLuaVM()
 {
 	luaVM_->Open();
@@ -363,6 +368,7 @@ void GameApplication::OpenLuaVM()
 			LUA_API_PROXY(GameApplication, SetupWebUI, "setup_web_ui"),
 			LUA_API_PROXY(GameApplication, LoadWebUI, "load_web_ui"),
 			LUA_API_PROXY(GameApplication, GetWebView, "get_web_view"),
+			LUA_API_PROXY(GameApplication, SetCameraMoveSpeed, "set_camera_move_speed"),
 		});
 }
 
@@ -421,6 +427,12 @@ void GameApplication::OnKeyUp(KeyState* keyState, UInt32 keyCode)
 			GetSubsystem<EngineSettings>()->aoType_ = AmbientOcclusionType::None;
 		else
 			GetSubsystem<EngineSettings>()->aoType_ = AmbientOcclusionType::Software;
+	}
+
+	if (keyCode == VK_F4)
+	{
+		const String& ret = GetSubsystem<Profiler>()->PrintData();
+		printf("%s\n", ret.CString());
 	}
 
 	// luaVM_->CallEvent("on_key_up", keyCode);

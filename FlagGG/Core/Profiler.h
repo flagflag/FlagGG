@@ -2,6 +2,7 @@
 
 #include "Container/Str.h"
 #include "Utility/SystemHelper.h"
+#include "Core/Subsystem.h"
 
 namespace FlagGG
 {
@@ -139,7 +140,7 @@ public:
 	unsigned totalCount_;
 };
 
-class FlagGG_API Profiler
+class FlagGG_API Profiler : public Subsystem<Profiler>
 {
 public:
 	explicit Profiler();
@@ -196,3 +197,6 @@ private:
 
 }
 
+#define BEGIN_PROFILE_BLOCK(name) FlagGG::GetSubsystem<FlagGG::Profiler>()->BeginBlock(#name)
+#define END_PROFILE_BLOCK(name) FlagGG::GetSubsystem<FlagGG::Profiler>()->EndBlock()
+#define PROFILE_AUTO(name) AutoProfileBlock HELPER_NAME_CAT(ProfilerTag, __COUNTER__)(FlagGG::GetSubsystem<FlagGG::Profiler>(), #name)

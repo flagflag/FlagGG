@@ -11,6 +11,7 @@
 #include "GfxDevice/VertexDescFactory.h"
 #include "Graphics/ShaderParameter.h"
 #include "Memory/Memory.h"
+#include "Core/Profiler.h"
 
 #include "Log.h"
 
@@ -273,6 +274,8 @@ void GfxDeviceD3D11::Draw(UInt32 vertexStart, UInt32 vertexCount)
 		return;
 	}
 
+	PROFILE_AUTO(GfxDeviceD3D11::Draw);
+
 	PrepareDraw();
 
 	deviceContext_->Draw(vertexCount, vertexStart);
@@ -286,9 +289,26 @@ void GfxDeviceD3D11::DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 ve
 		return;
 	}
 
+	PROFILE_AUTO(GfxDeviceD3D11::DrawIndexed);
+
 	PrepareDraw();
 
 	deviceContext_->DrawIndexed(indexCount, indexStart, vertexStart);
+}
+
+void GfxDeviceD3D11::DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceStart, UInt32 instanceCount)
+{
+	if (!vertexShader_ || !pixelShader_)
+	{
+		ASSERT_MESSAGE(false, "vertex shader or pixel shader is null.");
+		return;
+	}
+
+	PROFILE_AUTO(GfxDeviceD3D11::DrawIndexedInstanced);
+
+	PrepareDraw();
+
+	deviceContext_->DrawIndexedInstanced(indexCount, instanceCount, indexStart, vertexStart, instanceStart);
 }
 
 void GfxDeviceD3D11::Flush()
@@ -303,8 +323,15 @@ void GfxDeviceD3D11::Dispatch(UInt32 threadGroupCountX, UInt32 threadGroupCountY
 	deviceContext_->Dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
 }
 
+bool GfxDeviceD3D11::IsInstanceSupported() const
+{
+	return true;
+}
+
 void GfxDeviceD3D11::PrepareDraw()
 {
+	PROFILE_AUTO(GfxDeviceD3D11::PrepareDraw);
+
 	PrepareRasterizerState();
 
 	PrepareDepthStencilState();
@@ -323,7 +350,7 @@ void GfxDeviceD3D11::PrepareDraw()
 		break;
 	}
 
-	if (vertexBufferDirty_)
+	if (vertexBufferDirty_ || instanceBufferDirty_)
 	{
 		static ID3D11Buffer* d3dVertexBuffers[MAX_VERTEX_BUFFER_COUNT] = { nullptr };
 		static UInt32 d3dVertexBufferCount{ 0 };
@@ -338,6 +365,15 @@ void GfxDeviceD3D11::PrepareDraw()
 			d3dVertexBuffers[i] = vertexBufferD3D11->GetD3D11Buffer();
 			d3dVertexSize[i] = vertexDesc_->GetStrideSize();
 			d3dVertexOffset[i] = 0;
+		}
+
+		if (instanceBuffer_)
+		{
+			auto* instanceBufferD3D11 = RTTICast<GfxBufferD3D11>(instanceBuffer_);
+			d3dVertexBuffers[d3dVertexBufferCount] = instanceBufferD3D11->GetD3D11Buffer();
+			d3dVertexSize[d3dVertexBufferCount] = instanceBufferD3D11->GetDesc().stride_;
+			d3dVertexOffset[d3dVertexBufferCount] = 0;
+			++d3dVertexBufferCount;
 		}
 
 		deviceContext_->IASetVertexBuffers(0, d3dVertexBufferCount, d3dVertexBuffers, d3dVertexSize, d3dVertexOffset);
@@ -361,15 +397,19 @@ void GfxDeviceD3D11::PrepareDraw()
 		shaderDirty_ = false;
 	}
 
-	if (vertexDescDirty_)
+	if (vertexDescDirty_ || instanceBufferDirty_)
 	{
-		ID3D11InputLayout* vertexFormat = GetD3D11InputLayout(vertexDesc_, vertexShaderD3D11);
+		ID3D11InputLayout* vertexFormat = GetD3D11InputLayout(vertexDesc_, instanceDesc_, vertexShaderD3D11);
 		deviceContext_->IASetInputLayout(vertexFormat);
 
 		vertexDescDirty_ = false;
 	}
 
+	instanceBufferDirty_ = false;
+
 	{
+		PROFILE_AUTO(CopyShaderParameter);
+
 		CopyShaderParameterToBuffer(vertexShaderD3D11, vsConstantBuffer_);
 		CopyShaderParameterToBuffer(pixelShaderD3D11, psConstantBuffer_);
 
@@ -717,7 +757,7 @@ void GfxDeviceD3D11::CopyShaderParameterToBuffer(GfxShaderD3D11* shader, GfxBuff
 	}
 }
 
-ID3D11InputLayout* GfxDeviceD3D11::GetD3D11InputLayout(VertexDescription* vertxDesc, GfxShaderD3D11* vertexShader)
+ID3D11InputLayout* GfxDeviceD3D11::GetD3D11InputLayout(VertexDescription* vertxDesc, VertexDescription* instanceDesc, GfxShaderD3D11* vertexShader)
 {
 	auto key = MakePair(vertxDesc->GetUUID(), vertexShader);
 
@@ -744,6 +784,26 @@ ID3D11InputLayout* GfxDeviceD3D11::GetD3D11InputLayout(VertexDescription* vertxD
 		desc.InputSlotClass = element.perInstance_ ? D3D11_INPUT_PER_INSTANCE_DATA : D3D11_INPUT_PER_VERTEX_DATA;
 		desc.InstanceDataStepRate = element.perInstance_ ? 1 : 0;
 		d3d11InputElementDescs.Push(desc);
+	}
+
+	if (instanceDesc)
+	{
+		const PODVector<VertexElement>& elements = instanceDesc->GetElements();
+
+		for (const auto& element : elements)
+		{
+			const char* semName = VERTEX_ELEMENT_SEM_NAME[element.vertexElementSemantic_];
+
+			D3D11_INPUT_ELEMENT_DESC desc;
+			desc.SemanticName = semName;
+			desc.SemanticIndex = element.index_;
+			desc.Format = d3dElementFormats[element.vertexElementType_];
+			desc.InputSlot = 1;
+			desc.AlignedByteOffset = element.offset_;
+			desc.InputSlotClass = element.perInstance_ ? D3D11_INPUT_PER_INSTANCE_DATA : D3D11_INPUT_PER_VERTEX_DATA;
+			desc.InstanceDataStepRate = element.perInstance_ ? 1 : 0;
+			d3d11InputElementDescs.Push(desc);
+		}
 	}
 
 	ID3DBlob* shaderBlob = vertexShader->GetByteCode();

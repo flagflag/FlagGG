@@ -545,11 +545,11 @@ void GfxDeviceVulkan::DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 v
 	vkCmdDrawIndexed(vkCmdBuffer_, indexCount, 1, indexStart, vertexStart, 0);
 }
 
-void GfxDeviceVulkan::DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceCount)
+void GfxDeviceVulkan::DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceStart, UInt32 instanceCount)
 {
 	PrepareDraw();
 
-	vkCmdDrawIndexed(vkCmdBuffer_, indexCount, instanceCount, indexStart, vertexStart, 0);
+	vkCmdDrawIndexed(vkCmdBuffer_, indexCount, instanceCount, indexStart, vertexStart, instanceStart);
 }
 
 void GfxDeviceVulkan::Flush()

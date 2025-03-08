@@ -15,6 +15,7 @@ ThirdPersonPerspective::ThirdPersonPerspective(bool moveCameraWhenMouseDown, boo
 	controlCamera_(new Camera()),
 	lookupNode_(new Node()),
 	isLocked_(false),
+	moveSpeed_(5.0f),
 	moveCameraWhenMouseDown_(moveCameraWhenMouseDown),
 	mouseDown_(false),
 	syncMode_(SyncMode_Local),
@@ -144,6 +145,11 @@ void ThirdPersonPerspective::Unlock()
 	isLocked_ = false;
 }
 
+void ThirdPersonPerspective::SetMoveSpeed(float moveSpeed)
+{
+	moveSpeed_ = moveSpeed;
+}
+
 void ThirdPersonPerspective::OnMouseDown(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos)
 {
 	if (mouseKey == MOUSE_RIGHT)
@@ -187,8 +193,7 @@ void ThirdPersonPerspective::HandleUpdate(float timeStep)
 	if (!window_->IsForegroundWindow())
 		return;
 
-	static const float walkSpeed_{ 5.0f };
-	float walkDelta = timeStep * walkSpeed_;
+	float walkDelta = timeStep * moveSpeed_;
 
 	if (syncMode_ == SyncMode_Local)
 	{

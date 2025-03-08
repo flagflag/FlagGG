@@ -12,6 +12,11 @@
         float2 texcoord : TEXCOORD;
         float3 normal   : NORMAL;
         float4 tangent  : TANGENT;
+    #ifdef INSTANCE
+        float4 instanceData0 : INSTANCE0;
+        float4 instanceData1 : INSTANCE1;
+        float4 instanceData2 : INSTANCE2;
+    #endif
     };
 #else
     Texture2DArray baseColorMap : register(t0);
@@ -50,10 +55,20 @@ struct PixelInput
 #ifdef VERTEX
     PixelInput VS(VertexInput input)
     {
+        #ifdef INSTANCE
+            float4x3 iWorldMatrix = float4x3(
+                float3(input.instanceData0.x, input.instanceData1.x, input.instanceData2.x),
+                float3(input.instanceData0.y, input.instanceData1.y, input.instanceData2.y),
+                float3(input.instanceData0.z, input.instanceData1.z, input.instanceData2.z),
+                float3(input.instanceData0.w, input.instanceData1.w, input.instanceData2.w)
+                );
+        #else
+            float4x3 iWorldMatrix = worldMatrix;
+        #endif
         input.position.w = 1.0;
-        float3 worldPosition = mul(input.position, worldMatrix);
-        float3 worldNormal   = normalize(mul(input.normal, (float3x3)worldMatrix));
-        float3 worldTangent  = normalize(mul(input.tangent.xyz, (float3x3)worldMatrix));
+        float3 worldPosition = mul(input.position, iWorldMatrix);
+        float3 worldNormal   = normalize(mul(input.normal, (float3x3)iWorldMatrix));
+        float3 worldTangent  = normalize(mul(input.tangent.xyz, (float3x3)iWorldMatrix));
         float3 worldBiNormal = cross(worldTangent, worldNormal) * input.tangent.w;
         float4 clipPosition  = mul(float4(worldPosition, 1.0), projviewMatrix);
         

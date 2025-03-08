@@ -106,7 +106,7 @@ public:
 	void RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer) override;
 
 	// 返回是否有渲染批次
-	bool HasAnyBatch() const override { return renderBatchQueue_.renderBatches_.Size() || renderBatchQueue_.renderBatchGroups_.Size(); }
+	bool HasAnyBatch() const override { return renderBatchQueue_.HasAnyBatch(); }
 
 private:
 	RenderBatchQueue renderBatchQueue_;
@@ -162,7 +162,7 @@ public:
 	void RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer) override;
 
 	// 返回是否有渲染批次
-	bool HasAnyBatch() const override { return renderBatchQueue_.renderBatches_.Size() || renderBatchQueue_.renderBatchGroups_.Size(); }
+	bool HasAnyBatch() const override { return renderBatchQueue_.HasAnyBatch(); }
 
 private:
 	RenderBatchQueue renderBatchQueue_;
@@ -197,7 +197,7 @@ public:
 	void RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer) override;
 
 	// 返回是否有渲染批次
-	bool HasAnyBatch() const override { return renderBatchQueue_.renderBatches_.Size() || renderBatchQueue_.renderBatchGroups_.Size(); }
+	bool HasAnyBatch() const override { return renderBatchQueue_.HasAnyBatch(); }
 
 private:
 	RenderBatchQueue renderBatchQueue_;
@@ -225,7 +225,7 @@ public:
 	void RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 layer) override;
 
 	// 返回是否有渲染批次
-	bool HasAnyBatch() const override { return renderBatchQueue_.renderBatches_.Size() || renderBatchQueue_.renderBatchGroups_.Size(); }
+	bool HasAnyBatch() const override { return renderBatchQueue_.HasAnyBatch(); }
 
 private:
 	RenderBatchQueue renderBatchQueue_;

@@ -22,6 +22,7 @@ namespace FlagGG
 
 class GfxDevice;
 struct RenderBatch;
+struct RenderInstanceBatch;
 
 class FlagGG_API RenderEngine : public Subsystem<RenderEngine>
 {
@@ -118,6 +119,9 @@ public:
 
 	// 渲染RenderBatch
 	void DrawBatch(Camera* camera, const RenderBatch& renderBatch);
+
+	// 渲染RenderInstanceBatch
+	void DrawBatch(Camera* camera, const RenderInstanceBatch& renderBatch, VertexBuffer* instanceBuffer);
 
 	// 渲染Quad（保持相机视图、投影等参数不变，将Quad铺满屏幕。一般用于延迟渲染光照pass）
 	void DrawQuad(Camera* camera);

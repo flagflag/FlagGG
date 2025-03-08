@@ -41,7 +41,11 @@ Shader* ShaderCode::GetShader(ShaderType type, const Vector<String>& defines)
 {
 	Vector<String> newDefines = defines;
 	if (type == VS)
+	{
 		newDefines.Push("VERTEX");
+		if (GfxDevice::GetDevice()->IsInstanceSupported())
+			newDefines.Push("INSTANCE");
+	}
 	else if (type == PS)
 		newDefines.Push("PIXEL");
 	else if (type == CS)

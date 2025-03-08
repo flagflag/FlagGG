@@ -54,6 +54,9 @@ public:
 	// 解锁视角
 	void Unlock() override;
 
+	// 设置移动相机移动速度
+	void SetMoveSpeed(float moveSpeed) override;
+
 protected:
 	void OnMouseDown(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos);
 	void OnMouseUp(KeyState* keyState, MouseKey mouseKey, const IntVector2& mousePos);
@@ -72,6 +75,9 @@ private:
 
 	// 镜头锁标记
 	bool isLocked_;
+
+	// 相机移动速度
+	float moveSpeed_;
 
 	// 当鼠标按下时才移动镜头
 	bool moveCameraWhenMouseDown_;

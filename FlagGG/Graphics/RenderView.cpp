@@ -12,6 +12,8 @@
 #include "Math/Polyhedron.h"
 #include "GfxDevice/GfxDevice.h"
 #include "GfxDevice/GfxRenderSurface.h"
+#include "Utility/SystemHelper.h"
+#include "Core/Profiler.h"
 
 namespace FlagGG
 {
@@ -90,6 +92,8 @@ void RenderView::RenderUpdate()
 	if (!needRenderView_)
 		return;
 
+	PROFILE_AUTO(RenderView::RenderUpdate);
+
 	renderPiplineContext_ = &renderPipline_->GetRenderPiplineContext();
 	renderPiplineContext_->Clear();
 
@@ -111,6 +115,8 @@ void RenderView::RenderUpdate()
 
 void RenderView::CollectVisibilityObjects()
 {
+	PROFILE_AUTO(RenderView::CollectVisibilityObjects);
+
 	tempQueryResults_.Clear();
 	FrustumOctreeQuery query(tempQueryResults_, camera_->GetFrustum(), DRAWABLE_ANY, camera_->GetViewMask());
 	octree_->GetElements(query);
@@ -247,6 +253,8 @@ void RenderView::Render()
 {
 	if (!needRenderView_)
 		return;
+
+	PROFILE_AUTO(RenderView::Render);
 
 	float aspect = (float)viewport_.Width() / viewport_.Height();
 	camera_->SetAspect(aspect);

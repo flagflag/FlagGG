@@ -6,6 +6,7 @@
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileSystemArchive/DefaultFileSystemArchive.h"
 #include "UI/UISystem.h"
+#include "Core/Profiler.h"
 
 namespace FlagGG
 {
@@ -48,6 +49,8 @@ void GameEngine::RunFrame()
 	UInt32 deltaTime = timer_.GetMilliSeconds(true);
 	Real timeStep = (Real)deltaTime / 1000.0f;
 	elapsedTime_ += timeStep;
+
+	GetSubsystem<Profiler>()->BeginFrame();
 
 	GetSubsystem<EventManager>()->SendEvent<Frame::BEGIN_FRAME_HANDLER>(timeStep);
 
@@ -94,8 +97,12 @@ void GameEngine::RunFrame()
 	Real sleepTime = 1000.0f / frameRate_ - timer_.GetMilliSeconds(false);
 	if (sleepTime > 0.0f)
 	{
+		PROFILE_AUTO(FrameSleep);
 		Sleep(sleepTime);
 	}
+
+	GetSubsystem<Profiler>()->BeginInterval();
+	GetSubsystem<Profiler>()->EndFrame();
 }
 
 void GameEngine::Stop()
