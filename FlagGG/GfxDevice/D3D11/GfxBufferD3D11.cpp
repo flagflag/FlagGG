@@ -31,11 +31,24 @@ GfxBufferD3D11::~GfxBufferD3D11()
 	D3D11_SAFE_RELEASE(d3d11Buffer_);
 }
 
+void GfxBufferD3D11::SetGpuTag(const String& gpuTag)
+{
+	if (d3d11Buffer_)
+	{
+		d3d11Buffer_->SetPrivateData(WKPDID_D3DDebugObjectName, gpuTag.Length(), gpuTag.CString());
+	}
+}
+
 void GfxBufferD3D11::Apply(const void* initialDataPtr)
 {
 	if (d3d11Buffer_)
 	{
 		D3D11_SAFE_RELEASE(d3d11Buffer_);
+	}
+
+	if (d3d11SRV_)
+	{
+		D3D11_SAFE_RELEASE(d3d11SRV_);
 	}
 
 	if (d3d11UAV_)
@@ -44,15 +57,17 @@ void GfxBufferD3D11::Apply(const void* initialDataPtr)
 	}
 
 	UINT bindFlags = 0;
+	bool isShaderRead = !!(gfxBufferDesc_.bindFlags_ & (BUFFER_BIND_RASTE_READ | BUFFER_BIND_COMPUTE_READ));
 	bool isComputeWrite = !!(gfxBufferDesc_.bindFlags_ & (BUFFER_BIND_COMPUTE_WRITE | BUFFER_BIND_DRAW_INDIRECT));
 	if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_VERTEX)
 		bindFlags |= D3D11_BIND_VERTEX_BUFFER;
 	if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_INDEX)
 		bindFlags |= D3D11_BIND_INDEX_BUFFER;
-	if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_UNIFORM)
-		bindFlags |= D3D11_BIND_CONSTANT_BUFFER;
-	if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_COMPUTE_READ)
+	// 注意：常量buffer和srv只能选一个
+	if (isShaderRead)
 		bindFlags |= D3D11_BIND_SHADER_RESOURCE;
+	else if (gfxBufferDesc_.bindFlags_ & BUFFER_BIND_UNIFORM)
+		bindFlags |= D3D11_BIND_CONSTANT_BUFFER;
 	if (isComputeWrite)
 		bindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
@@ -72,7 +87,7 @@ void GfxBufferD3D11::Apply(const void* initialDataPtr)
 	desc.CPUAccessFlags = accessFlags;
 	desc.Usage = d3d11Usage[gfxBufferDesc_.usage_];
 	desc.ByteWidth = byteCount;
-	if (isComputeWrite)
+	if (isShaderRead || isComputeWrite)
 	{
 		desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 		desc.StructureByteStride = gfxBufferDesc_.stride_;
@@ -100,6 +115,23 @@ void GfxBufferD3D11::Apply(const void* initialDataPtr)
 		D3D11_SAFE_RELEASE(d3d11Buffer_);
 		FLAGGG_LOG_ERROR("Failed to create vertex buffer.");
 		return;
+	}
+
+	if (isShaderRead)
+	{
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		Memory::Memzero(&srvDesc, sizeof(srvDesc));
+		srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+		srvDesc.Buffer.FirstElement = 0;
+		srvDesc.Buffer.NumElements = gfxBufferDesc_.size_ / gfxBufferDesc_.stride_;
+
+		HRESULT hr = GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device()->CreateShaderResourceView(d3d11Buffer_, &srvDesc, &d3d11SRV_);
+		if (FAILED(hr))
+		{
+			D3D11_SAFE_RELEASE(d3d11SRV_);
+			FLAGGG_LOG_ERROR("Failed to CreateShaderResourceView.");
+		}
 	}
 
 	if (isComputeWrite)

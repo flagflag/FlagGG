@@ -7,11 +7,12 @@
 #include "Core/Object.h"
 #include "Container/Ptr.h"
 
-#define SAMPLER_CLUSTERS_CLUSTERS 11
-#define SAMPLER_CLUSTERS_ATOMICINDEX 12
-#define SAMPLER_CLUSTERS_LIGHTINDICES 13
-#define SAMPLER_CLUSTERS_LIGHTGRID 14
-#define SAMPLER_LIGHTS_POINTLIGHTS 15
+#define SAMPLER_CLUSTERS_OFFSET 9
+#define SAMPLER_CLUSTERS_CLUSTERS 0
+#define SAMPLER_CLUSTERS_ATOMICINDEX 1
+#define SAMPLER_CLUSTERS_LIGHTINDICES 2
+#define SAMPLER_CLUSTERS_LIGHTGRID 3
+#define SAMPLER_LIGHTS_POINTLIGHTS 4
 
 namespace FlagGG
 {
@@ -58,6 +59,10 @@ public:
 
 	// 绑定gpu对象
 	void BindGpuObject() override;
+
+	static UInt32 GetComputeBinding(UInt32 binding);
+
+	static UInt32 GetRasterizerBinding(UInt32 binding);
 
 protected:
 	void InitShader();

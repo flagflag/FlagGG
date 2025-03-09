@@ -283,12 +283,12 @@ protected:
 	bool buffersDirty_{};
 
 	// 准备提交的texture
-	SharedPtr<GfxTexture> textures_[MAX_TEXTURE_CLASS];
-	SharedPtr<GfxShaderResourceView> textureViews_[MAX_TEXTURE_CLASS];
+	SharedPtr<GfxTexture> textures_[MAX_GPU_UNITS_COUNT];
+	SharedPtr<GfxShaderResourceView> textureViews_[MAX_GPU_UNITS_COUNT];
 	bool texturesDirty_{};
 
 	// 准备提交的sampler
-	SharedPtr<GfxSampler> samplers_[MAX_TEXTURE_CLASS];
+	SharedPtr<GfxSampler> samplers_[MAX_GPU_UNITS_COUNT];
 	bool samplerDirty_{};
 
 	// 光栅化状态

@@ -14,8 +14,8 @@ cbuffer ClusterParam : register(b1)
 #if !defined(PIXEL)
     float nearClip;
     float farClip;
+    float4x3 viewMatrix;
 #endif
-    float4x4 viewMatrix;
     float4x4 invProjMatrix;
     uint pointLightCount;
     uint spotLightCount;

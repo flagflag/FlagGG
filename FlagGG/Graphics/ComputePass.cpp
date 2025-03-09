@@ -61,6 +61,7 @@ ClusterLightPass::ClusterLightPass()
 	clusterBuffer_->SetAccess(BUFFER_ACCESS_NONE);
 	clusterBuffer_->SetUsage(BUFFER_USAGE_DYNAMIC);
 	clusterBuffer_->Apply(nullptr);
+	clusterBuffer_->SetGpuTag("ClusterBuffer");
 
 	// RWStructuredBuffer<uint>
 	atomicIndexBuffer_ = gfxDevice->CreateBuffer();
@@ -70,24 +71,27 @@ ClusterLightPass::ClusterLightPass()
 	atomicIndexBuffer_->SetAccess(BUFFER_ACCESS_NONE);
 	atomicIndexBuffer_->SetUsage(BUFFER_USAGE_DYNAMIC);
 	atomicIndexBuffer_->Apply(nullptr);
+	atomicIndexBuffer_->SetGpuTag("AtomicIndexBuffer");
 
 	// RWStructuredBuffer<uint>
 	lightGridBuffer_ = gfxDevice->CreateBuffer();
 	lightGridBuffer_->SetStride(sizeof(UInt32));
 	lightGridBuffer_->SetSize(clusterCount * 4 * sizeof(UInt32));
-	lightGridBuffer_->SetBind(BUFFER_BIND_COMPUTE_READ | BUFFER_BIND_COMPUTE_WRITE);
+	lightGridBuffer_->SetBind(BUFFER_BIND_RASTE_READ | BUFFER_BIND_COMPUTE_READ | BUFFER_BIND_COMPUTE_WRITE);
 	lightGridBuffer_->SetAccess(BUFFER_ACCESS_NONE);
 	lightGridBuffer_->SetUsage(BUFFER_USAGE_DYNAMIC);
 	lightGridBuffer_->Apply(nullptr);
+	lightGridBuffer_->SetGpuTag("LightGridBuffer");
 
 	// RWStructuredBuffer<uint>
 	lightIndicesBuffer_ = gfxDevice->CreateBuffer();
 	lightIndicesBuffer_->SetStride(sizeof(UInt32));
 	lightIndicesBuffer_->SetSize(clusterCount * MAX_LIGHTS_PER_CLUSTER * sizeof(UInt32));
-	lightIndicesBuffer_->SetBind(BUFFER_BIND_COMPUTE_READ | BUFFER_BIND_COMPUTE_WRITE);
+	lightIndicesBuffer_->SetBind(BUFFER_BIND_RASTE_READ | BUFFER_BIND_COMPUTE_READ | BUFFER_BIND_COMPUTE_WRITE);
 	lightIndicesBuffer_->SetAccess(BUFFER_ACCESS_NONE);
 	lightIndicesBuffer_->SetUsage(BUFFER_USAGE_DYNAMIC);
 	lightIndicesBuffer_->Apply(nullptr);
+	lightIndicesBuffer_->SetGpuTag("LightIndicesBuffer");
 
 	lightsBuffer_ = gfxDevice->CreateBuffer();
 }
@@ -107,11 +111,11 @@ void ClusterLightPass::InitShader()
 	auto* cache = GetSubsystem<ResourceCache>();
 	const Vector<String> defines =
 	{
-		ToString("SAMPLER_CLUSTERS_CLUSTERS=%d ", SAMPLER_CLUSTERS_CLUSTERS),
-		ToString("SAMPLER_CLUSTERS_ATOMICINDEX=%d ", SAMPLER_CLUSTERS_ATOMICINDEX),
-		ToString("SAMPLER_CLUSTERS_LIGHTINDICES=%d ", SAMPLER_CLUSTERS_LIGHTINDICES),
-		ToString("SAMPLER_CLUSTERS_LIGHTGRID=%d ", SAMPLER_CLUSTERS_LIGHTGRID),
-		ToString("SAMPLER_LIGHTS_POINTLIGHTS=%d ", SAMPLER_LIGHTS_POINTLIGHTS),
+		ToString("SAMPLER_CLUSTERS_CLUSTERS=%d ", GetComputeBinding(SAMPLER_CLUSTERS_CLUSTERS)),
+		ToString("SAMPLER_CLUSTERS_ATOMICINDEX=%d ", GetComputeBinding(SAMPLER_CLUSTERS_ATOMICINDEX)),
+		ToString("SAMPLER_CLUSTERS_LIGHTINDICES=%d ", GetComputeBinding(SAMPLER_CLUSTERS_LIGHTINDICES)),
+		ToString("SAMPLER_CLUSTERS_LIGHTGRID=%d ", GetComputeBinding(SAMPLER_CLUSTERS_LIGHTGRID)),
+		ToString("SAMPLER_LIGHTS_POINTLIGHTS=%d ", GetComputeBinding(SAMPLER_LIGHTS_POINTLIGHTS)),
 		"WRITE_CLUSTERS",
 		"PLATFORM_WINDOWS_DIRECTX",
 	};
@@ -216,10 +220,11 @@ void ClusterLightPass::ApplyLightInfo(RenderPiplineContext& renderPiplineContext
 		// RWStructuredBuffer<float4>
 		lightsBuffer_->SetStride(sizeof(Vector4));
 		lightsBuffer_->SetSize(dynamicLightCount * sizeof(ClusterLightInfo));
-		lightsBuffer_->SetBind(BUFFER_BIND_UNIFORM);
-		lightsBuffer_->SetAccess(BUFFER_ACCESS_WRITE);
+		lightsBuffer_->SetBind(BUFFER_BIND_UNIFORM | BUFFER_BIND_RASTE_READ | BUFFER_BIND_COMPUTE_READ);
+		lightsBuffer_->SetAccess(BUFFER_ACCESS_NONE);
 		lightsBuffer_->SetUsage(BUFFER_USAGE_DYNAMIC);
 		lightsBuffer_->Apply(lightsBufferCache_.Buffer());
+		lightsBuffer_->SetGpuTag("LightsBuffer");
 	}
 }
 
@@ -241,23 +246,23 @@ void ClusterLightPass::Dispatch(RenderPiplineContext& renderPiplineContext)
 // Cluster building
 	gfxDevice->SetComputeShader(clusterBuildingShader_);
 	gfxDevice->ResetComputeBuffers();
-	gfxDevice->SetComputeBuffer(SAMPLER_CLUSTERS_CLUSTERS, clusterBuffer_, COMPUTE_BIND_ACCESS_READWRITE);
+	gfxDevice->SetComputeBuffer(GetComputeBinding(SAMPLER_CLUSTERS_CLUSTERS), clusterBuffer_, COMPUTE_BIND_ACCESS_READWRITE);
 	gfxDevice->Dispatch(CLUSTERS_X / CLUSTERS_X_THREADS, CLUSTERS_Y / CLUSTERS_Y_THREADS, CLUSTERS_Z / CLUSTERS_Z_THREADS);
 
 // Reset counter
 	gfxDevice->SetComputeShader(resetCounterShader_);
 	gfxDevice->ResetComputeBuffers();
-	gfxDevice->SetComputeBuffer(SAMPLER_CLUSTERS_ATOMICINDEX, atomicIndexBuffer_, COMPUTE_BIND_ACCESS_READWRITE);
+	gfxDevice->SetComputeBuffer(GetComputeBinding(SAMPLER_CLUSTERS_ATOMICINDEX), atomicIndexBuffer_, COMPUTE_BIND_ACCESS_READWRITE);
 	gfxDevice->Dispatch(1, 1, 1);
 
 // Light culling
 	gfxDevice->SetComputeShader(lightCullingShader_);
 	gfxDevice->ResetComputeBuffers();
-	gfxDevice->SetComputeBuffer(SAMPLER_CLUSTERS_CLUSTERS, clusterBuffer_, COMPUTE_BIND_ACCESS_READWRITE);
-	gfxDevice->SetComputeBuffer(SAMPLER_CLUSTERS_ATOMICINDEX, atomicIndexBuffer_, COMPUTE_BIND_ACCESS_READWRITE);
-	gfxDevice->SetComputeBuffer(SAMPLER_CLUSTERS_LIGHTINDICES, lightIndicesBuffer_, COMPUTE_BIND_ACCESS_READWRITE);
-	gfxDevice->SetComputeBuffer(SAMPLER_CLUSTERS_LIGHTGRID, lightGridBuffer_, COMPUTE_BIND_ACCESS_READWRITE);
-	gfxDevice->SetComputeBuffer(SAMPLER_LIGHTS_POINTLIGHTS, lightsBuffer_, COMPUTE_BIND_ACCESS_READ);
+	gfxDevice->SetComputeBuffer(GetComputeBinding(SAMPLER_CLUSTERS_CLUSTERS), clusterBuffer_, COMPUTE_BIND_ACCESS_READWRITE);
+	gfxDevice->SetComputeBuffer(GetComputeBinding(SAMPLER_CLUSTERS_ATOMICINDEX), atomicIndexBuffer_, COMPUTE_BIND_ACCESS_READWRITE);
+	gfxDevice->SetComputeBuffer(GetComputeBinding(SAMPLER_CLUSTERS_LIGHTINDICES), lightIndicesBuffer_, COMPUTE_BIND_ACCESS_READWRITE);
+	gfxDevice->SetComputeBuffer(GetComputeBinding(SAMPLER_CLUSTERS_LIGHTGRID), lightGridBuffer_, COMPUTE_BIND_ACCESS_READWRITE);
+	gfxDevice->SetComputeBuffer(GetComputeBinding(SAMPLER_LIGHTS_POINTLIGHTS), lightsBuffer_, COMPUTE_BIND_ACCESS_READ);
 	gfxDevice->Dispatch(CLUSTERS_X / CLUSTERS_X_THREADS, CLUSTERS_Y / CLUSTERS_Y_THREADS, CLUSTERS_Z / CLUSTERS_Z_THREADS);
 
 // Reset
@@ -267,11 +272,21 @@ void ClusterLightPass::Dispatch(RenderPiplineContext& renderPiplineContext)
 void ClusterLightPass::BindGpuObject()
 {
 	auto* gfxDevice = GfxDevice::GetDevice();
-	gfxDevice->SetBuffer(SAMPLER_CLUSTERS_CLUSTERS, clusterBuffer_);
-	gfxDevice->SetBuffer(SAMPLER_CLUSTERS_ATOMICINDEX, atomicIndexBuffer_);
-	gfxDevice->SetBuffer(SAMPLER_CLUSTERS_LIGHTINDICES, lightIndicesBuffer_);
-	gfxDevice->SetBuffer(SAMPLER_CLUSTERS_LIGHTGRID, lightGridBuffer_);
-	gfxDevice->SetBuffer(SAMPLER_LIGHTS_POINTLIGHTS, lightsBuffer_);
+	gfxDevice->SetBuffer(GetRasterizerBinding(SAMPLER_CLUSTERS_CLUSTERS), clusterBuffer_);
+	gfxDevice->SetBuffer(GetRasterizerBinding(SAMPLER_CLUSTERS_ATOMICINDEX), atomicIndexBuffer_);
+	gfxDevice->SetBuffer(GetRasterizerBinding(SAMPLER_CLUSTERS_LIGHTINDICES), lightIndicesBuffer_);
+	gfxDevice->SetBuffer(GetRasterizerBinding(SAMPLER_CLUSTERS_LIGHTGRID), lightGridBuffer_);
+	gfxDevice->SetBuffer(GetRasterizerBinding(SAMPLER_LIGHTS_POINTLIGHTS), lightsBuffer_);
+}
+
+UInt32 ClusterLightPass::GetComputeBinding(UInt32 binding)
+{
+	return binding;
+}
+
+UInt32 ClusterLightPass::GetRasterizerBinding(UInt32 binding)
+{
+	return binding + SAMPLER_CLUSTERS_OFFSET;
 }
 
 }

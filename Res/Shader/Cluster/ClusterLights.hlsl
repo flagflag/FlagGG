@@ -1,7 +1,7 @@
 // for each light:
 //   float4 position (w is padding)
 //   float4 intensity + radius (xyz is intensity, w is radius)
-StructuredBuffer<float4> clusterLightsBuffer : REGISTER(u, SAMPLER_LIGHTS_POINTLIGHTS);
+StructuredBuffer<float4> clusterLightsBuffer : REGISTER(t, SAMPLER_LIGHTS_POINTLIGHTS);
 
 struct PointLight
 {

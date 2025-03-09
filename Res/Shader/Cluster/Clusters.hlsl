@@ -19,7 +19,7 @@
 #ifdef WRITE_CLUSTERS
     #define CLUSTER_BUFFER(name, type, reg) RWStructuredBuffer<type> name : REGISTER(u, reg)
 #else
-    #define CLUSTER_BUFFER(name, type, reg) StructuredBuffer<type> name : REGISTER(u, reg)
+    #define CLUSTER_BUFFER(name, type, reg) StructuredBuffer<type> name : REGISTER(t, reg)
 #endif
 
 // light indices belonging to clusters

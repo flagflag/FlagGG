@@ -39,6 +39,12 @@ void AmbientOcclusionRenderingD3D11::AllocAOTexture(const IntVector2& renderSolu
 	if (!aoTexture_)
 	{
 		aoTexture_ = new Texture2D();
+		aoTexture_->SetNumLevels(1);
+	}
+
+	if (aoTexture_->GetWidth() != renderSolution.x_ ||
+		aoTexture_->GetHeight() != renderSolution.y_)
+	{
 		aoTexture_->SetSize(renderSolution.x_, renderSolution.y_, TEXTURE_FORMAT_R8, TEXTURE_RENDERTARGET);
 	}
 }

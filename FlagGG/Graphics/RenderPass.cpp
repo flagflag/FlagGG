@@ -681,9 +681,9 @@ void DeferredLitRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UI
 					"DIRLIGHT",
 					"AMBIENT",
 					"DEFERRED_CLUSTER",
-					ToString("SAMPLER_CLUSTERS_LIGHTINDICES=%d ", SAMPLER_CLUSTERS_LIGHTINDICES),
-					ToString("SAMPLER_CLUSTERS_LIGHTGRID=%d ", SAMPLER_CLUSTERS_LIGHTGRID),
-					ToString("SAMPLER_LIGHTS_POINTLIGHTS=%d ", SAMPLER_LIGHTS_POINTLIGHTS),
+					ToString("SAMPLER_CLUSTERS_LIGHTINDICES=%d ", ClusterLightPass::GetRasterizerBinding(SAMPLER_CLUSTERS_LIGHTINDICES)),
+					ToString("SAMPLER_CLUSTERS_LIGHTGRID=%d ", ClusterLightPass::GetRasterizerBinding(SAMPLER_CLUSTERS_LIGHTGRID)),
+					ToString("SAMPLER_LIGHTS_POINTLIGHTS=%d ", ClusterLightPass::GetRasterizerBinding(SAMPLER_LIGHTS_POINTLIGHTS)),
 				};
 			}
 			else

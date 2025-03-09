@@ -20,6 +20,9 @@ public:
 
 	~GfxBufferD3D11() override;
 
+	// 设置Gpu tag
+	void SetGpuTag(const String& gpuTag) override;
+
 	// 应用当前设置（未调用之前buffer处于不可用状态）
 	void Apply(const void* initialDataPtr) override;
 
@@ -42,10 +45,15 @@ public:
 	ID3D11Buffer* GetD3D11Buffer() const { return d3d11Buffer_; }
 
 	//
+	ID3D11ShaderResourceView* GetShaderResourceView() const { return d3d11SRV_; }
+
+	//
 	ID3D11UnorderedAccessView* GetUnorderedAccessViews() const { return d3d11UAV_; }
 
 private:
 	ID3D11Buffer* d3d11Buffer_{};
+
+	ID3D11ShaderResourceView* d3d11SRV_{};
 
 	ID3D11UnorderedAccessView* d3d11UAV_{};
 
