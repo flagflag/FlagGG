@@ -11,6 +11,13 @@
 namespace FlagGG
 {
 
+enum class ClusterLightType
+{
+	None = 0,
+	ClusterLight,
+	ClusterLightApprox,
+};
+
 enum class AmbientOcclusionType
 {
 	None = 0,
@@ -37,7 +44,7 @@ enum class OcclusionCullingType
 struct FlagGG_API EngineSettings : public Subsystem<EngineSettings>
 {
 	RendererType rendererType_{ RENDERER_TYPE_D3D11 };
-	bool clusterLightEnabled_{ false };
+	ClusterLightType clusterLightType_{ ClusterLightType::None };
 	AmbientOcclusionType aoType_{ AmbientOcclusionType::Software };
 	bool renderSSR_{ true };
 	AmbientOcclusionQuality AOQuality_{ AmbientOcclusionQuality::MEDIUM };

@@ -51,7 +51,7 @@ CommonRenderPipline::CommonRenderPipline()
 	, alphaRenderPass_(new AlphaRenderPass())
 	, waterRenderPass_(new WaterRenderPass())
 {
-	if (GetSubsystem<EngineSettings>()->clusterLightEnabled_)
+	if (GetSubsystem<EngineSettings>()->clusterLightType_ != ClusterLightType::None)
 		clusterLightPass_ = new ClusterLightPass();
 }
 

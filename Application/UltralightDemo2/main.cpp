@@ -209,7 +209,7 @@ int main(int argc, const char* argv[])
 	else if (rendererType == "vk")
 		FlagGG::GetSubsystem<FlagGG::EngineSettings>()->rendererType_ = FlagGG::RENDERER_TYPE_VULKAN;
 	if (CommandParam.Contains("cluster_light"))
-		FlagGG::GetSubsystem<FlagGG::EngineSettings>()->clusterLightEnabled_ = true;
+		FlagGG::GetSubsystem<FlagGG::EngineSettings>()->clusterLightType_ = (ClusterLightType)ToUInt(CommandParam["cluster_light"].GetString());
 
 	if (CommandParam.Contains("multi_rendering"))
 	{

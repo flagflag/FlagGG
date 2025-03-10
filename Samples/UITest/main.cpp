@@ -150,7 +150,7 @@ void Run()
 	else if (rendererType == "vk")
 		GetSubsystem<EngineSettings>()->rendererType_ = RENDERER_TYPE_VULKAN;
 	if (CommandParam.Contains("cluster_light"))
-		GetSubsystem<EngineSettings>()->clusterLightEnabled_ = true;
+		GetSubsystem<EngineSettings>()->clusterLightType_ = (ClusterLightType)ToUInt(CommandParam["cluster_light"].GetString());;
 
 	UITestApp app;
 	app.Run();

@@ -671,18 +671,16 @@ void DeferredLitRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UI
 		{
 			auto shaderCode = GetSubsystem<ResourceCache>()->GetResource<ShaderCode>("Shader/Deferred/LitQuad.hlsl");
 
-			auto vs = shaderCode->GetShader(VS, {});
-			litVertexShader_ = vs->GetGfxRef();
-
 			Vector<String> psDefines;
 
-			if (GetSubsystem<EngineSettings>()->clusterLightEnabled_)
+			if (GetSubsystem<EngineSettings>()->clusterLightType_ != ClusterLightType::None)
 			{
 				psDefines =
 				{
 					"DIRLIGHT",
 					"AMBIENT",
 					"DEFERRED_CLUSTER",
+					String(GetSubsystem<EngineSettings>()->clusterLightType_ == ClusterLightType::ClusterLight ? "" : "CLUSTER_APPROX"),
 					ToString("SAMPLER_CLUSTERS_LIGHTINDICES=%d ", ClusterLightPass::GetRasterizerBinding(SAMPLER_CLUSTERS_LIGHTINDICES)),
 					ToString("SAMPLER_CLUSTERS_LIGHTGRID=%d ", ClusterLightPass::GetRasterizerBinding(SAMPLER_CLUSTERS_LIGHTGRID)),
 					ToString("SAMPLER_LIGHTS_POINTLIGHTS=%d ", ClusterLightPass::GetRasterizerBinding(SAMPLER_LIGHTS_POINTLIGHTS)),
@@ -701,6 +699,9 @@ void DeferredLitRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UI
 					String(camera->GetReverseZ() ? "REVERSE_Z" : ""),
 				};
 			}
+
+			auto vs = shaderCode->GetShader(VS, {});
+			litVertexShader_ = vs->GetGfxRef();
 
 			auto ps = shaderCode->GetShader(PS, psDefines);
 			litPixelShader_ = ps->GetGfxRef();

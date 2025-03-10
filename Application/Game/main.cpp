@@ -26,7 +26,7 @@ void RunApplication(SetupFinish setupFinish)
 	else if(rendererType == "vk")
 		GetSubsystem<EngineSettings>()->rendererType_ = RENDERER_TYPE_VULKAN;
 	if (CommandParam.Contains("cluster_light"))
-		GetSubsystem<EngineSettings>()->clusterLightEnabled_ = true;
+		GetSubsystem<EngineSettings>()->clusterLightType_ = (ClusterLightType)ToUInt(CommandParam["cluster_light"].GetString());;
 	if (CommandParam.Contains("close_hiz"))
 		GetSubsystem<EngineSettings>()->occlusionCullingType_ = OcclusionCullingType::None;
 	if (CommandParam.Contains("ao_type"))
