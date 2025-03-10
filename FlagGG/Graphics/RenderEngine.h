@@ -99,7 +99,7 @@ public:
 
 	void SetDepthStencilState(const DepthStencilState& depthStencilState, bool reverseZ);
 
-	void SetShaderParameter(Camera* camera, const RenderBatch& renderBatch);
+	void SetShaderParameter(Camera* camera, const RenderBatch& renderBatch, bool disableReverseZ = false);
 
 	void SetVertexBuffers(const Vector<SharedPtr<VertexBuffer>>& vertexBuffers);
 
@@ -124,7 +124,7 @@ public:
 	void DrawBatch(Camera* camera, const RenderInstanceBatch& renderBatch, VertexBuffer* instanceBuffer);
 
 	// 渲染Quad（保持相机视图、投影等参数不变，将Quad铺满屏幕。一般用于延迟渲染光照pass）
-	void DrawQuad(Camera* camera);
+	void DrawQuad(Camera* camera, bool disableReverseZ = true);
 
 	// 渲染Quad（无视相机，Quad铺满屏幕。一般用于一些屏幕空间算法，例如：Hi-Z、SSR等）
 	void DrawQuad();

@@ -8,6 +8,7 @@
 #include "GfxDevice/GfxTextureUtils.h"
 #include "Graphics/GraphicsDef.h"
 #include "Container/FlagSet.h"
+#include "Container/Ptr.h"
 
 namespace FlagGG
 {
@@ -35,6 +36,17 @@ struct TextureDesc
 
 class GfxShaderResourceView;
 class GfxRenderSurface;
+
+class GfxTextureReadbackDataStream : public GfxObject
+{
+	OBJECT_OVERRIDE(GfxTextureReadbackDataStream, GfxObject);
+public:
+	explicit GfxTextureReadbackDataStream();
+
+	~GfxTextureReadbackDataStream() override;
+
+	virtual void Read(void* dataPtr) = 0;
+};
 
 class FlagGG_API GfxTexture : public GfxObject
 {
@@ -101,8 +113,14 @@ public:
 	// 回读GPU数据
 	virtual bool ReadBack(void* dataPtr, UInt32 index, UInt32 level);
 
-	// 回去GPU数据（某个Rect区域）
+	// 回读GPU数据（某个Rect区域）
 	virtual bool ReadBackSubRegion(void* dataPtr, UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 width, UInt32 height);
+
+	// 回读GPU数据
+	virtual SharedPtr<GfxTextureReadbackDataStream> ReadBackToStream(UInt32 index, UInt32 level);
+
+	// 回读GPU数据（某个Rect区域）
+	virtual SharedPtr<GfxTextureReadbackDataStream> ReadBackSubRegionToStream(UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 width, UInt32 height);
 
 	// 获取子资源的视图
 	virtual GfxShaderResourceView* GetSubResourceView(UInt32 index, UInt32 level);

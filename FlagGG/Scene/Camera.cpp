@@ -559,6 +559,10 @@ void Camera::SetZUp(bool isZUp)
 void Camera::SetReverseZ(bool reverseZ)
 {
 	reverseZ_ = reverseZ;
+
+	frustumDirty_ = true;
+	viewDirty_ = true;
+	projectionDirty_ = true;
 }
 
 }

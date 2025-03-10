@@ -1,12 +1,12 @@
 #include "Shader/PBR/BRDF.hlsl"
 #ifdef PIXEL
 
-float3 PBR_BRDF(PBRContext context)
+void PBR_BRDF(PBRContext context, out PBRResult result)
 {
     float oneMinusReflectivity;
     float3 specularColor;
     context.diffuseColor = DiffuseAndSpecularFromMetallic(context.diffuseColor, context.metallic, context.specular, specularColor, oneMinusReflectivity);
-    return DisneyBRDF(context, specularColor, oneMinusReflectivity);
+    DisneyBRDF(context, specularColor, oneMinusReflectivity, result);
 }
 
 #if defined(DEFERRED_BASEPASS)
@@ -54,14 +54,25 @@ PixelOutput PBRPipline(PBRContext context)
 // 前向渲染管线
 struct PixelOutput
 {
+#if defined(DEFERRED_CLUSTER) && defined(DEBUG_CLUSTER)
+    float4 color : SV_target0;
+    float4 debugData : SV_target1;
+#else
     float4 color : SV_TARGET;
+#endif
 };
 
 PixelOutput PBRPipline(PBRContext context)
 {
+    PBRResult result;
+    PBR_BRDF(context, result);
+
     PixelOutput output;
-    output.color.rgb = PBR_BRDF(context) + context.emissiveColor;
+    output.color.rgb = result.finalColor + context.emissiveColor;
     output.color = float4(LinearToGammaSpace(ToAcesFilmic(output.color.rgb)), context.alpha);
+#if defined(DEFERRED_CLUSTER) && defined(DEBUG_CLUSTER)
+    output.debugData = result.debugData;
+#endif
     return output;
 }
 

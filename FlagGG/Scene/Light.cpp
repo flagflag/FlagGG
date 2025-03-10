@@ -72,4 +72,14 @@ Color Light::GetEffectiveColor() const
 	return effectiveColor;
 }
 
+void Light::OnUpdateWorldBoundingBox()
+{
+	if (lightType_ == LIGHT_TYPE_POINT || lightType_ == LIGHT_TYPE_SPOT)
+	{
+		const Vector3 worldPos = node_->GetWorldPosition();
+		const Vector3 rangeV3 = Vector3(range_, range_, range_);
+		worldBoundingBox_ = BoundingBox(worldPos - rangeV3, worldPos + rangeV3);
+	}
+}
+
 }

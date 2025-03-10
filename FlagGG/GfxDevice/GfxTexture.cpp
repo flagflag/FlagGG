@@ -4,6 +4,16 @@
 namespace FlagGG
 {
 
+GfxTextureReadbackDataStream::GfxTextureReadbackDataStream()
+{
+
+}
+
+GfxTextureReadbackDataStream::~GfxTextureReadbackDataStream()
+{
+
+}
+
 GfxTexture::GfxTexture()
 	: GfxObject()
 	, textureDesc_{ TEXTURE_FORMAT_RGBA8, 1, 1, 1, 1, 1, 0, false, 1, false, false, TEXTURE_STATIC }
@@ -114,6 +124,16 @@ bool GfxTexture::ReadBack(void* dataPtr, UInt32 index, UInt32 level)
 bool GfxTexture::ReadBackSubRegion(void* dataPtr, UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 width, UInt32 height)
 {
 	return false;
+}
+
+SharedPtr<GfxTextureReadbackDataStream> GfxTexture::ReadBackToStream(UInt32 index, UInt32 level)
+{
+	return nullptr;
+}
+
+SharedPtr<GfxTextureReadbackDataStream> GfxTexture::ReadBackSubRegionToStream(UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 width, UInt32 height)
+{
+	return nullptr;
 }
 
 GfxShaderResourceView* GfxTexture::GetSubResourceView(UInt32 index, UInt32 level)

@@ -75,6 +75,9 @@ public:
 	// 获取实际的光照强度颜色
 	Color GetEffectiveColor() const;
 
+	// 更新包围盒
+	void OnUpdateWorldBoundingBox() override;
+
 protected:
 	Color GetColorFromTemperature() const;
 

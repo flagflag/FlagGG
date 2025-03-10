@@ -149,6 +149,83 @@ static const D3D11TextureFormatInfo d3d11TextureFormatInfo[] =
 	{ DXGI_FORMAT_R24G8_TYPELESS,     DXGI_FORMAT_R24_UNORM_X8_TYPELESS, DXGI_FORMAT_D24_UNORM_S8_UINT, DXGI_FORMAT_UNKNOWN              }, // D0S8
 };
 
+GfxTextureReadbackDataStreamD3D11::GfxTextureReadbackDataStreamD3D11(GfxTextureD3D11* owner, UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 width, UInt32 height)
+	: stagingTexture_(nullptr)
+{
+	auto* gfxDevice = GetSubsystem<GfxDeviceD3D11>();
+	auto* d3d11Device = GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device();
+	auto* d3d11DeviceContext = GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext();
+
+	const auto& gfxTextureDesc = owner->GetDesc();
+
+	D3D11_TEXTURE2D_DESC textureDesc;
+	Memory::Memzero(&textureDesc, sizeof(textureDesc));
+	textureDesc.Format = gfxTextureDesc.sRGB_ ? d3d11TextureFormatInfo[gfxTextureDesc.format_].srgbFormat_ : d3d11TextureFormatInfo[gfxTextureDesc.format_].format_;
+	textureDesc.Width = (UINT)width;
+	textureDesc.Height = (UINT)height;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.SampleDesc.Quality = gfxDevice->GetMultiSampleQuality(textureDesc.Format, 1);
+	textureDesc.Usage = D3D11_USAGE_STAGING;
+	textureDesc.BindFlags = 0;
+	textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+
+	HRESULT hr = d3d11Device->CreateTexture2D(&textureDesc, nullptr, &stagingTexture_);
+	if (FAILED(hr))
+	{
+		D3D11_SAFE_RELEASE(stagingTexture_);
+		FLAGGG_LOG_ERROR("Can not create d3d11 texture2d");
+		return;
+	}
+
+	UInt32 copySubResource = D3D11CalcSubresource(level, index, gfxTextureDesc.levels_);
+	UInt32 subResource = D3D11CalcSubresource(0, 0, 1);
+
+	D3D11_BOX copyBox;
+	copyBox.left = x;
+	copyBox.top = y;
+	copyBox.right = x + width;
+	copyBox.bottom = y + height;
+	copyBox.front = 0;
+	copyBox.back = 1;
+
+	d3d11DeviceContext->CopySubresourceRegion(stagingTexture_, subResource, 0, 0, 0, owner->GetD3D11Resource(), copySubResource, &copyBox);
+
+	format_ = gfxTextureDesc.format_;
+	width_ = width;
+	height_ = height;
+}
+
+GfxTextureReadbackDataStreamD3D11::~GfxTextureReadbackDataStreamD3D11()
+{
+	D3D11_SAFE_RELEASE(stagingTexture_);
+}
+
+void GfxTextureReadbackDataStreamD3D11::Read(void* dataPtr)
+{
+	auto* gfxDevice = GetSubsystem<GfxDeviceD3D11>();
+	auto* d3d11Device = GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device();
+	auto* d3d11DeviceContext = GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext();
+
+	UInt32 subResource = D3D11CalcSubresource(0, 0, 1);
+
+	D3D11_MAPPED_SUBRESOURCE mapped;
+	d3d11DeviceContext->Map(stagingTexture_, subResource, D3D11_MAP_READ, 0, &mapped);
+
+	UInt32 destRowDataSize = GfxTextureUtils::GetRowDataSize(format_, width_);
+	const char* srcPtr = (const char*)mapped.pData;
+	char* destPtr = (char*)dataPtr;
+	for (UInt32 row = 0; row < height_; ++row)
+	{
+		Memory::Memcpy(destPtr, srcPtr, destRowDataSize);
+		srcPtr += mapped.RowPitch;
+		destPtr += destRowDataSize;
+	}
+
+	d3d11DeviceContext->Unmap(stagingTexture_, subResource);
+}
+
 GfxTextureD3D11::GfxTextureD3D11()
 	: GfxTexture()
 {
@@ -854,62 +931,21 @@ bool GfxTextureD3D11::ReadBack(void* dataPtr, UInt32 index, UInt32 level)
 
 bool GfxTextureD3D11::ReadBackSubRegion(void* dataPtr, UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 width, UInt32 height)
 {
-	auto* gfxDevice = GetSubsystem<GfxDeviceD3D11>();
-	auto* d3d11Device = GetSubsystem<GfxDeviceD3D11>()->GetD3D11Device();
-	auto* d3d11DeviceContext = GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext();
-
-	D3D11_TEXTURE2D_DESC textureDesc;
-	Memory::Memzero(&textureDesc, sizeof(textureDesc));
-	textureDesc.Format = textureDesc_.sRGB_ ? d3d11TextureFormatInfo[textureDesc_.format_].srgbFormat_ : d3d11TextureFormatInfo[textureDesc_.format_].format_;
-	textureDesc.Width = (UINT)width;
-	textureDesc.Height = (UINT)height;
-	textureDesc.MipLevels = 1;
-	textureDesc.ArraySize = 1;
-	textureDesc.SampleDesc.Count = 1;
-	textureDesc.SampleDesc.Quality = gfxDevice->GetMultiSampleQuality(textureDesc.Format, 1);
-	textureDesc.Usage = D3D11_USAGE_STAGING;
-	textureDesc.BindFlags = 0;
-	textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-
-	ID3D11Texture2D* copyTexture;
-	HRESULT hr = d3d11Device->CreateTexture2D(&textureDesc, nullptr, &copyTexture);
-	if (FAILED(hr))
-	{
-		FLAGGG_LOG_ERROR("Can not create d3d11 texture2d");
+	GfxTextureReadbackDataStreamD3D11 readbackStream(this, index, level, x, y, width, height);
+	if (!readbackStream.IsValid())
 		return false;
-	}
-
-	UInt32 copySubResource = D3D11CalcSubresource(level, index, textureDesc_.levels_);
-	UInt32 subResource = D3D11CalcSubresource(0, 0, 1);
-
-	D3D11_BOX copyBox;
-	copyBox.left = x;
-	copyBox.top = y;
-	copyBox.right = x + width;
-	copyBox.bottom = y + height;
-	copyBox.front = 0;
-	copyBox.back = 1;
-
-	d3d11DeviceContext->CopySubresourceRegion(copyTexture, subResource, 0, 0, 0, GetD3D11Resource(), copySubResource, &copyBox);
-
-	D3D11_MAPPED_SUBRESOURCE mapped;
-	d3d11DeviceContext->Map(copyTexture, subResource, D3D11_MAP_READ, 0, &mapped);
-
-	UInt32 destRowDataSize = GfxTextureUtils::GetRowDataSize(textureDesc_.format_, width);
-	const char* srcPtr = (const char*)mapped.pData;
-	char* destPtr = (char*)dataPtr;
-	for (UInt32 row = 0; row < height; ++row)
-	{
-		Memory::Memcpy(destPtr, srcPtr, destRowDataSize);
-		srcPtr += mapped.RowPitch;
-		destPtr += destRowDataSize;
-	}
-
-	d3d11DeviceContext->Unmap(copyTexture, subResource);
-
-	D3D11_SAFE_RELEASE(copyTexture);
-
+	readbackStream.Read(dataPtr);
 	return true;
+}
+
+SharedPtr<GfxTextureReadbackDataStream> GfxTextureD3D11::ReadBackToStream(UInt32 index, UInt32 level)
+{
+	return ReadBackSubRegionToStream(index, level, 0, 0, textureDesc_.width_, textureDesc_.height_);
+}
+
+SharedPtr<GfxTextureReadbackDataStream> GfxTextureD3D11::ReadBackSubRegionToStream(UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 width, UInt32 height)
+{
+	return MakeShared<GfxTextureReadbackDataStreamD3D11>(this, index, level, x, y, width, height);
 }
 
 GfxShaderResourceView* GfxTextureD3D11::GetSubResourceView(UInt32 index, UInt32 level)

@@ -5,6 +5,8 @@
 
 #include <Scene/Scene.h>
 #include <Scene/PrefabLoader.h>
+#include <Scene/Light.h>
+#include <Scene/Probe.h>
 #include <Lua/LuaBinding/LuaBinding.h>
 #include <Lua/LuaBinding/LuaExtend.h>
 #include <Lua/LuaBinding/LuaMath.h>
@@ -88,6 +90,75 @@ LuaGamePlay::LuaGamePlay(Scene* scene)
 				auto child = node->GetChild(StringHash(name), lua_toboolean(L, 3));
 				luaex_pushusertyperef(L, "Node", child);
 				return 1;
+			}
+			return 0;
+		});
+		luaex_classfunction(L, "get_component", [](lua_State* L) -> int
+		{
+			if (auto* node = reinterpret_cast<Node*>(luaex_tousertype(L, 1, "Node")))
+			{
+				const char* componentType = lua_tostring(L, 2);
+				auto* comp = node->GetComponent(StringHash(componentType));
+				luaex_pushusertyperef(L, comp->GetTypeName().CString(), comp);
+				return 1;
+			}
+			return 0;
+		});
+	}
+	luaex_endclass(L);
+
+	luaex_beginclass(L, "Component", "", nullptr, [](lua_State* L) -> int
+	{
+		if (auto* comp = reinterpret_cast<Component*>(luaex_tousertype(L, 1, "Component")))
+		{
+			comp->ReleaseRef();
+		}
+		return 0;
+	});
+	luaex_endclass(L);
+
+	luaex_beginclass(L, "Light", "Component", nullptr, [](lua_State* L) -> int
+	{
+		if (auto* light = reinterpret_cast<Light*>(luaex_tousertype(L, 1, "Light")))
+		{
+			light->ReleaseRef();
+		}
+		return 0;
+	});
+	{
+		luaex_classfunction(L, "set_brightness", [](lua_State* L) -> int
+		{
+			if (auto* light = reinterpret_cast<Light*>(luaex_tousertype(L, 1, "Light")))
+			{
+				light->SetBrightness(lua_tonumber(L, 2));
+			}
+			return 0;
+		});
+	}
+	luaex_endclass(L);
+
+	luaex_beginclass(L, "Probe", "Component", nullptr, [](lua_State* L) -> int
+	{
+		if (auto* probe = reinterpret_cast<Probe*>(luaex_tousertype(L, 1, "Probe")))
+		{
+			probe->ReleaseRef();
+		}
+		return 0;
+	});
+	{
+		luaex_classfunction(L, "set_diffuse_intensity", [](lua_State* L) -> int
+		{
+			if (auto* probe = reinterpret_cast<Probe*>(luaex_tousertype(L, 1, "Probe")))
+			{
+				probe->SetDiffuseIntensity(lua_tonumber(L, 2));
+			}
+			return 0;
+		});
+		luaex_classfunction(L, "set_specular_intensity", [](lua_State* L) -> int
+		{
+			if (auto* probe = reinterpret_cast<Probe*>(luaex_tousertype(L, 1, "Probe")))
+			{
+				probe->SetSpecularIntensity(lua_tonumber(L, 2));
 			}
 			return 0;
 		});

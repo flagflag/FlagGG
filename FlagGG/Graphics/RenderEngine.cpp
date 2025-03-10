@@ -309,11 +309,14 @@ void RenderEngine::PostRenderBatch(const Vector<SharedPtr<Batch>>& batches)
 	}
 }
 
-void RenderEngine::SetShaderParameter(Camera* camera, const RenderBatch& renderBatch)
+void RenderEngine::SetShaderParameter(Camera* camera, const RenderBatch& renderBatch, bool disableReverseZ)
 {
 	// 视图矩阵，投影矩阵，蒙皮矩阵等
 	if (camera && renderBatch.worldTransform_ && renderBatch.numWorldTransform_)
 	{
+		bool reverseZ = camera->GetReverseZ();
+		if (disableReverseZ && reverseZ)
+			camera->SetReverseZ(false);
 		shaderParameters_->SetValue(SP_WORLD_MATRIX, *renderBatch.worldTransform_);
 		shaderParameters_->SetValue(SP_VIEW_MATRIX, camera->GetViewMatrix());
 		shaderParameters_->SetValue(SP_PROJ_MATRIX, camera->GetProjectionMatrix());
@@ -324,6 +327,8 @@ void RenderEngine::SetShaderParameter(Camera* camera, const RenderBatch& renderB
 		Vector3 nearVector, farVector;
 		camera->GetFrustumSize(nearVector, farVector);
 		shaderParameters_->SetValue(SP_FRUSTUM_SIZE, farVector);
+		if (disableReverseZ && reverseZ)
+			camera->SetReverseZ(true);
 		Vector4 depthReconstruct(camera->GetFarClip() / (camera->GetFarClip() - camera->GetNearClip()), -camera->GetNearClip() / (camera->GetFarClip() - camera->GetNearClip()), camera->IsOrthographic() ? 1.0f : 0.0f, camera->IsOrthographic() ? 0.0f : 1.0f);
 		shaderParameters_->SetValue(SP_DEPTH_RECONSTRUCT, depthReconstruct);
 		shaderParameters_->SetValue(SP_DEVICEZ_TO_WORLDZ, CreateDeviceZToWorldZTransform(camera->GetProjectionMatrix()));
@@ -485,7 +490,7 @@ Matrix3x4 RenderEngine::GetFullscreenQuadTransform(Camera* camera)
 	return camera->GetEffectiveWorldTransform() * quadTransform;
 }
 
-void RenderEngine::DrawQuad(Camera* camera)
+void RenderEngine::DrawQuad(Camera* camera, bool disableReverseZ)
 {
 	Matrix3x4 worldTransform = GetFullscreenQuadTransform(camera);
 
@@ -496,7 +501,7 @@ void RenderEngine::DrawQuad(Camera* camera)
 
 	SetRasterizerState(fullscreenQuadRS_);
 	SetDepthStencilState(fullscreenDSS_, camera->GetReverseZ());
-	SetShaderParameter(camera, quadRenderBatch);
+	SetShaderParameter(camera, quadRenderBatch, disableReverseZ);
 	SetVertexBuffers(orthographicGeometry_->GetVertexBuffers());
 	SetIndexBuffer(orthographicGeometry_->GetIndexBuffer());
 	SetPrimitiveType(orthographicGeometry_->GetPrimitiveType());

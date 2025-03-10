@@ -208,6 +208,8 @@ void GameApplication::CreateScene()
 	camera_->SetZUp(true);
 	camera_->SetNearClip(1.0f);
 	camera_->SetFarClip(1e5f);
+	if (commandParam_.Contains("close_reversez"))
+		camera_->SetReverseZ(false);
 
 #if 0
 	mainHero_ = new CEUnit();
@@ -235,13 +237,7 @@ void GameApplication::CreateScene()
 	dissolveHero_->SetName("DissolveHero");
 	scene_->AddChild(dissolveHero_);
 
-#if 0
-	auto* lightNode = new Unit();
-	lightNode->Load("Unit/MainHero.ljson");
-	lightNode->PlayAnimation("Animation/Kachujin_Walk.ani", true);
-#else
-	auto* lightNode = new Node();
-#endif
+	SharedPtr<Node> lightNode(new Node());
 	Light* light = lightNode->CreateComponent<Light>();
 	light->SetNearClip(0.1f);
 	light->SetFarClip(1000000000.0f);
@@ -249,10 +245,12 @@ void GameApplication::CreateScene()
 	light->SetBrightness(3.f);
 	lightNode->SetPosition(Vector3(-10, 10, 20));
 	lightNode->SetDirection(Vector3(1.0f, 1.0f, -1.0f));
+	lightNode->SetName("MainLight");
 	scene_->AddChild(lightNode);
 #endif
 
 	auto* probeNode = new Node();
+	probeNode->SetName("MainProbe");
 	auto* probe = probeNode->CreateComponent<Probe>();
 	probe->SetArea(BoundingBox(-1e5, 1e5));
 	scene_->AddChild(probeNode);
@@ -433,6 +431,11 @@ void GameApplication::OnKeyUp(KeyState* keyState, UInt32 keyCode)
 	{
 		const String& ret = GetSubsystem<Profiler>()->PrintData();
 		printf("%s\n", ret.CString());
+	}
+
+	if (keyCode == VK_F5)
+	{
+		Shader::ReCompileAllShader();
 	}
 
 	// luaVM_->CallEvent("on_key_up", keyCode);

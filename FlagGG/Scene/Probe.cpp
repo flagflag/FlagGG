@@ -6,6 +6,8 @@ namespace FlagGG
 {
 
 Probe::Probe()
+	: diffuseIntensity_(0.3f)
+	, specularIntensity_(0.3f)
 {
 	shaderConstants_[0] = Vector4(0.274252, 0.245369, -0.0620501, 0.701207);
 	shaderConstants_[1] = Vector4(0.353687, 0.365217, -0.0740966, 0.796212);
@@ -22,6 +24,16 @@ Probe::Probe()
 	iblCube_->SetFilterMode(TEXTURE_FILTER_TRILINEAR);
 }
 
+void Probe::SetDiffuseIntensity(float diffuseIntensity)
+{
+	diffuseIntensity_ = diffuseIntensity;
+}
+
+void Probe::SetSpecularIntensity(float specularIntensity)
+{
+	specularIntensity_ = specularIntensity;
+}
+
 void Probe::SetArea(const BoundingBox& bbox)
 {
 	worldBoundingBox_ = bbox;
@@ -31,8 +43,8 @@ void Probe::ApplyRender(RenderEngine* renderEngine)
 {
 	auto& engineShaderParameters = renderEngine->GetShaderParameters();
 	engineShaderParameters.SetValue(SP_ENV_CUBE_ANGLE, Vector4(0, 1, 0, 1));
-	engineShaderParameters.SetValue(SP_SH_INTENSITY, 0.3f);
-	engineShaderParameters.SetValue(SP_IBL_INTENSITY, 0.3f);
+	engineShaderParameters.SetValue(SP_SH_INTENSITY, diffuseIntensity_);
+	engineShaderParameters.SetValue(SP_IBL_INTENSITY, specularIntensity_);
 	engineShaderParameters.SetValue(SP_AMBIENT_OCCLUSION_INTENSITY, 1.0f);
 	engineShaderParameters.SetValue(SP_SHAR, shaderConstants_[0]);
 	engineShaderParameters.SetValue(SP_SHAG, shaderConstants_[1]);

@@ -44,7 +44,7 @@ emscripten - 构建
         * UltralightCore.dll没有开源，因此我重写了这个动态库，使用自己引擎做了渲染的工作
         * 因为重写了渲染层，所以顺便就支持了webui和引擎ui相互嵌套的功能
 * 渲染层功能
-    * ClusterLighting（基建中）
+    * ClusterLighting（完成）
     * Hi-Z Culling（完成）
     * SSAO（完成）
         * NV的HBAO+

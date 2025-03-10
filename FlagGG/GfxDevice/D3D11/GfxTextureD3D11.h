@@ -15,6 +15,29 @@ namespace FlagGG
 
 class GfxShaderResourceViewD3D11;
 class GfxRenderSurfaceD3D11;
+class GfxTextureD3D11;
+
+class GfxTextureReadbackDataStreamD3D11 : public GfxTextureReadbackDataStream
+{
+	OBJECT_OVERRIDE(GfxTextureReadbackDataStreamD3D11, GfxTextureReadbackDataStream);
+public:
+	GfxTextureReadbackDataStreamD3D11(GfxTextureD3D11* owner, UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 width, UInt32 height);
+
+	~GfxTextureReadbackDataStreamD3D11() override;
+
+	void Read(void* dataPtr) override;
+
+	bool IsValid() const { return stagingTexture_; }
+
+private:
+	ID3D11Texture2D* stagingTexture_;
+
+	TextureFormat format_;
+
+	UInt32 width_;
+
+	UInt32 height_;
+};
 
 class GfxTextureD3D11 : public GfxTexture
 {
@@ -45,8 +68,14 @@ public:
 	// 回读GPU数据
 	bool ReadBack(void* dataPtr, UInt32 index, UInt32 level) override;
 
-	// 回去GPU数据（某个Rect区域）
+	// 回读GPU数据（某个Rect区域）
 	bool ReadBackSubRegion(void* dataPtr, UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 width, UInt32 height) override;
+
+	// 回读GPU数据
+	SharedPtr<GfxTextureReadbackDataStream> ReadBackToStream(UInt32 index, UInt32 level) override;
+
+	// 回读GPU数据（某个Rect区域）
+	SharedPtr<GfxTextureReadbackDataStream> ReadBackSubRegionToStream(UInt32 index, UInt32 level, UInt32 x, UInt32 y, UInt32 width, UInt32 height) override;
 
 	// 获取子资源的视图
 	GfxShaderResourceView* GetSubResourceView(UInt32 index, UInt32 level) override;

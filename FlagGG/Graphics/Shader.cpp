@@ -195,15 +195,19 @@ bool ShaderCode::EndLoad()
 
 // --------------------------------------------------------------------------------------------------------------
 
+static PODVector<Shader*> allShaders;
+
 Shader::Shader(PreProcessShaderInfo* shaderInfo)
 	: shaderInfo_(shaderInfo)
 {
 	gfxShader_ = GfxDevice::GetDevice()->CreateShader();
+
+	allShaders.Push(this);
 }
 
 Shader::~Shader()
 {
-
+	allShaders.Remove(this);
 }
 
 void Shader::Compile()
@@ -212,6 +216,12 @@ void Shader::Compile()
 	gfxShader_->SetDefines(defines_);
 	gfxShader_->SetShaderInfo(shaderInfo_);
 	gfxShader_->Compile();
+}
+
+void Shader::ReCompile()
+{
+	gfxShader_ = GfxDevice::GetDevice()->CreateShader();
+	Compile();
 }
 
 void Shader::SetType(ShaderType type)
@@ -234,6 +244,14 @@ String Shader::GetDefinesString() const
 ShaderType Shader::GetType()
 {
 	return shaderType_;
+}
+
+void Shader::ReCompileAllShader()
+{
+	for (auto* shader : allShaders)
+	{
+		shader->ReCompile();
+	}
 }
 
 }

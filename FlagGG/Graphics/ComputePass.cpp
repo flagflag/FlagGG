@@ -7,6 +7,7 @@
 #include "Scene/Light.h"
 #include "Scene/Node.h"
 #include "Resource/ResourceCache.h"
+#include "Memory/Memory.h"
 
 namespace FlagGG
 {
@@ -177,7 +178,7 @@ void ClusterLightPass::InitShaderParameters(RenderPiplineContext& renderPiplineC
 	shaderParameters_->SetValue(CLUSTER_FAR_CLIP, renderPiplineContext.camera_->GetFarClip());
 	shaderParameters_->SetValue(VIEW_MATERIX, renderPiplineContext.camera_->GetViewMatrix().ToMatrix4());
 	shaderParameters_->SetValue(INV_PROJ, renderPiplineContext.camera_->GetProjectionMatrix().Inverse());
-	shaderParameters_->SetValue(POINT_LIGHT_COUNT, 0u);	
+	shaderParameters_->SetValue(POINT_LIGHT_COUNT, lightsBufferCache_.Size());
 	shaderParameters_->SetValue(SPOT_LIGHT_COUNT, 0u);
 	shaderParameters_->SetValue(NON_PUNCTUAL_POINT_LIGHT_COUNT, 0u);
 	shaderParameters_->SetValue(POINT_LIGHT_OFFSET, 0u);
@@ -197,34 +198,45 @@ void ClusterLightPass::ApplyLightInfo(RenderPiplineContext& renderPiplineContext
 		}
 	}
 
-	if (lightsBufferCache_.Size() < dynamicLightCount)
 	{
-		lightsBufferCache_.Resize(dynamicLightCount);
-		UInt32 index = 0;
+		lightsBufferCache_.Clear();
+		lightsBufferCache_.Reserve(dynamicLightCount);
 
 		for (auto& light : renderPiplineContext.lights_)
 		{
 			if (light->GetLightType() == LIGHT_TYPE_POINT ||
 				light->GetLightType() == LIGHT_TYPE_SPOT)
 			{
-				ClusterLightInfo& info = lightsBufferCache_[index];
+				ClusterLightInfo& info = lightsBufferCache_.Append();
 				info.position_ = light->GetNode()->GetWorldPosition();
 				info.falloffRange_ = light->GetRange();
 				const Color color = light->GetEffectiveColor();
 				info.intensity_ = Vector3(color.r_, color.g_, color.b_);
 				info.radius_ = light->GetRange();
-				++index;
 			}
 		}
 
-		// RWStructuredBuffer<float4>
-		lightsBuffer_->SetStride(sizeof(Vector4));
-		lightsBuffer_->SetSize(dynamicLightCount * sizeof(ClusterLightInfo));
-		lightsBuffer_->SetBind(BUFFER_BIND_UNIFORM | BUFFER_BIND_RASTE_READ | BUFFER_BIND_COMPUTE_READ);
-		lightsBuffer_->SetAccess(BUFFER_ACCESS_NONE);
-		lightsBuffer_->SetUsage(BUFFER_USAGE_DYNAMIC);
-		lightsBuffer_->Apply(lightsBufferCache_.Buffer());
-		lightsBuffer_->SetGpuTag("LightsBuffer");
+		if (lightsBufferCache_.Size())
+		{
+			const UInt32 bufferSize = lightsBufferCache_.Size() * sizeof(ClusterLightInfo);
+			if (bufferSize > lightsBuffer_->GetDesc().size_ || bufferSize < lightsBuffer_->GetDesc().size_ / 2)
+			{
+				// RWStructuredBuffer<float4>
+				lightsBuffer_->SetStride(sizeof(Vector4));
+				lightsBuffer_->SetSize(lightsBufferCache_.Size() * sizeof(ClusterLightInfo));
+				lightsBuffer_->SetBind(BUFFER_BIND_UNIFORM | BUFFER_BIND_RASTE_READ | BUFFER_BIND_COMPUTE_READ);
+				lightsBuffer_->SetAccess(BUFFER_ACCESS_NONE);
+				lightsBuffer_->SetUsage(BUFFER_USAGE_DYNAMIC);
+				lightsBuffer_->Apply(lightsBufferCache_.Buffer());
+				lightsBuffer_->SetGpuTag("LightsBuffer");
+			}
+			else
+			{
+				auto* dest = lightsBuffer_->BeginWrite(0, bufferSize);
+				Memory::Memcpy(dest, lightsBufferCache_.Buffer(), bufferSize);
+				lightsBuffer_->EndWrite(bufferSize);
+			}
+		}
 	}
 }
 
@@ -235,9 +247,9 @@ void ClusterLightPass::Dispatch(RenderPiplineContext& renderPiplineContext)
 		InitShader();
 	}
 
-	InitShaderParameters(renderPiplineContext);
-
 	ApplyLightInfo(renderPiplineContext);
+
+	InitShaderParameters(renderPiplineContext);
 
 	auto* gfxDevice = GfxDevice::GetDevice();
 	gfxDevice->ResetRenderTargets();
@@ -277,6 +289,7 @@ void ClusterLightPass::BindGpuObject()
 	gfxDevice->SetBuffer(GetRasterizerBinding(SAMPLER_CLUSTERS_LIGHTINDICES), lightIndicesBuffer_);
 	gfxDevice->SetBuffer(GetRasterizerBinding(SAMPLER_CLUSTERS_LIGHTGRID), lightGridBuffer_);
 	gfxDevice->SetBuffer(GetRasterizerBinding(SAMPLER_LIGHTS_POINTLIGHTS), lightsBuffer_);
+	gfxDevice->SetMaterialShaderParameters(shaderParameters_);
 }
 
 UInt32 ClusterLightPass::GetComputeBinding(UInt32 binding)

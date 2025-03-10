@@ -108,6 +108,13 @@ static SharedPtr<Node> LoadPrefab_LightArchetype(const LJSONValue& source)
 	light->SetColor(Color(jsonColor["r"].GetDouble(), jsonColor["g"].GetDouble(), jsonColor["b"].GetDouble(), jsonColor["a"].GetDouble()));
 	light->SetBrightness(source["brightness"].GetDouble());
 	light->SetRange(source["range"].GetDouble());
+	light->SetLightUnit(LU_CANDELAS);
+#if 1
+	auto* meshComp = instance->CreateComponent<StaticMeshComponent>();
+	meshComp->SetModel(GetSubsystem<ResourceCache>()->GetResource<Model>("editor/model/Sphere.mdl"));
+	meshComp->SetMaterial(GetSubsystem<ResourceCache>()->GetResource<Material>("Materials/StaticModel.ljson"));
+	instance->SetScale(Vector3(10, 10, 10));
+#endif
 	return instance;
 }
 

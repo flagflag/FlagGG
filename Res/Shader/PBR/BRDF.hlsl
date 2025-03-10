@@ -31,6 +31,14 @@ struct PBRContext
 #endif
 };
 
+struct PBRResult
+{
+    float3 finalColor;
+#if defined(DEFERRED_CLUSTER) && defined(DEBUG_CLUSTER)
+    float4 debugData;
+#endif
+};
+
 /**
  * @param specularColor - 高光颜色
  * @param roughness     - 粗糙度
@@ -113,9 +121,12 @@ float3 GetLightingColor(float3 diffuseColor, float3 specularColor, float roughne
  * @param specularColor             - 高光颜色
  * @param oneMinusReflectivity      - 1.0 - 反色率
  */
-float3 DisneyBRDF(PBRContext context, float3 specularColor, float oneMinusReflectivity)
+void DisneyBRDF(PBRContext context, float3 specularColor, float oneMinusReflectivity, out PBRResult result)
 {
-    float3 finalColor = float3(0.0, 0.0, 0.0);
+    result.finalColor = float3(0.0, 0.0, 0.0);
+#if defined(DEFERRED_CLUSTER) && defined(DEBUG_CLUSTER)
+    result.debugData = 0;
+#endif
 
 // roughness
     float perceptualRoughness = context.roughness;
@@ -152,7 +163,7 @@ float3 DisneyBRDF(PBRContext context, float3 specularColor, float oneMinusReflec
         , XdotV, YdotV, ax, ay, X, Y
     #endif
     );
-    finalColor += lightingColor * lightColor * (attenuation * context.shadow);
+    result.finalColor += lightingColor * lightColor * (attenuation * context.shadow);
 #endif // DIRLIGHT
 
 // Point/Spot light
@@ -186,7 +197,12 @@ float3 DisneyBRDF(PBRContext context, float3 specularColor, float oneMinusReflec
         #endif
         );
 
-        finalColor += lightingColor * lightColor * attenuation;
+        result.finalColor += lightingColor * lightColor * attenuation;
+
+#if defined(DEFERRED_CLUSTER) && defined(DEBUG_CLUSTER)
+        result.debugData.xyz += lightingColor * lightColor * attenuation;
+        result.debugData.w = distance(context.worldPosition, light.position);
+#endif
     }
 
 // 非精确光源计算
@@ -199,11 +215,11 @@ float3 DisneyBRDF(PBRContext context, float3 specularColor, float oneMinusReflec
         //capsule light
         if (light.length > 0.0)
         {
-            finalColor += GetCapsuleLighting(light, context.worldPosition, context.normalDirection, context.viewDirection, context.diffuseColor, specularColor, roughness, perceptualRoughness);
+            result.finalColor += GetCapsuleLighting(light, context.worldPosition, context.normalDirection, context.viewDirection, context.diffuseColor, specularColor, roughness, perceptualRoughness);
         }
         else if (light.packRadius > 0.0)
         {
-            finalColor += GetSphereLighting(light, context.worldPosition, context.normalDirection, context.viewDirection, context.diffuseColor, specularColor, roughness, perceptualRoughness);
+            result.finalColor += GetSphereLighting(light, context.worldPosition, context.normalDirection, context.viewDirection, context.diffuseColor, specularColor, roughness, perceptualRoughness);
         }
     }
 #endif
@@ -224,8 +240,6 @@ float3 DisneyBRDF(PBRContext context, float3 specularColor, float oneMinusReflec
         indirectSpecular = indirectSpecular * surfaceReduction * FresnelLerp(specularColor, vec3_splat(grazingTerm), NdotV);
     #endif
 
-    finalColor += indirectDiffuse + indirectSpecular;
+    result.finalColor += indirectDiffuse + indirectSpecular;
 #endif // AMBIENT
-
-    return finalColor;
 }

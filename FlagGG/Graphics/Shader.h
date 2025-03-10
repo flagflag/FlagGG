@@ -63,6 +63,9 @@ public:
 	// 编译
 	void Compile();
 
+	// 重新编译
+	void ReCompile();
+
 	// 获取shader宏字符串
 	String GetDefinesString() const;
 
@@ -71,6 +74,8 @@ public:
 
 	// 获取gfx引用
 	GfxShader* GetGfxRef() const { return gfxShader_; }
+
+	static void ReCompileAllShader();
 
 private:
 	SharedPtr<GfxShader> gfxShader_;
