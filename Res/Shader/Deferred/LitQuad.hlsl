@@ -97,12 +97,11 @@ struct PixelInput
         float3 eyeVec = -worldPosition;
         worldPosition += cameraPos;
 
-    // #ifdef SHADOW
-    //     float4 projWorldPos = hvec4_init(worldPosition, 1.0);
-    //     float shadow = GetShadowDeferred(projWorldPos, context.normalDirection, sceneDepthNormalize);
-    // #else
-    //     float shadow = 1.0;
-    // #endif
+    #ifdef SHADOW
+        context.shadow = GetShadowDeferred(worldPosition, sceneDepthNormalize);
+    #else
+        float shadow = 1.0;
+    #endif
 
         context.worldPosition = worldPosition;
         context.viewDirection = normalize(eyeVec);

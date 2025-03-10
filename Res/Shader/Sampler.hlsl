@@ -1,5 +1,3 @@
-
-#ifdef VERTEX
 float4 GetShadowPos(float3 worldPos)
 {
     float4 shadowClipPos = mul(float4(worldPos, 1.0), lightProjviewMatrix);
@@ -10,7 +8,8 @@ float4 GetShadowPos(float3 worldPos)
         shadowClipPos.w
 	);
 }
-#else
+
+#ifdef PIXEL
     #ifdef SHADOW
         Texture2D shadowMap : register(t6);
         SamplerComparisonState shadowSampler : register(s6);
@@ -37,7 +36,13 @@ float4 GetShadowPos(float3 worldPos)
         float GetShadow(float4 inShadowPos, float depth)
         {
             float inLight = GetShadow(inShadowPos);
-            return saturate(inLight + depth);
+            return saturate(inLight + 0.1);
+        }
+
+        float GetShadowDeferred(float3 worldPosition, float depth)
+        {
+            float4 shadowClipPos = GetShadowPos(worldPosition);
+            return GetShadow(shadowClipPos, depth);
         }
     #endif
 

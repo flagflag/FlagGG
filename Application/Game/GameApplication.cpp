@@ -270,7 +270,9 @@ void GameApplication::SetupWindow()
 	if (commandParam_.Contains("NoWindow"))
 		return;
 
-	IntRect rect = GetDesktopRect();
+	IntRect desktopRect = GetDesktopRect();
+	IntVector2 desktopSize(desktopRect.Width(), desktopRect.Height());
+	IntRect rect(desktopSize.x_ * 0.1, desktopSize.y_ * 0.1, desktopSize.x_ * 0.1 + 1728, desktopSize.y_ * 0.1 + 1080);
 
 	// 创建一张shaderMap
 	shadowMap_ = new Texture2D();

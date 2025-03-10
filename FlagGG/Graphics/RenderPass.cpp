@@ -679,6 +679,7 @@ void DeferredLitRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UI
 				{
 					"DIRLIGHT",
 					"AMBIENT",
+					"SHADOW",
 					"DEFERRED_CLUSTER",
 					String(GetSubsystem<EngineSettings>()->clusterLightType_ == ClusterLightType::ClusterLight ? "" : "CLUSTER_APPROX"),
 					ToString("SAMPLER_CLUSTERS_LIGHTINDICES=%d ", ClusterLightPass::GetRasterizerBinding(SAMPLER_CLUSTERS_LIGHTINDICES)),
@@ -696,6 +697,7 @@ void DeferredLitRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UI
 				{
 					"DIRLIGHT",
 					"AMBIENT",
+					"SHADOW",
 					String(camera->GetReverseZ() ? "REVERSE_Z" : ""),
 				};
 			}

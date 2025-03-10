@@ -202,6 +202,7 @@ void RenderView::CollectVisibilityObjects()
 		shadowCamera_->SetAspect(1.f);
 		shadowCamera_->SetNearClip(0.f);
 		shadowCamera_->SetFarClip(shadowBox.max_.z_);
+		shadowCamera_->SetReverseZ(false);
 
 		const float minX = shadowBox.min_.x_;
 		const float minY = shadowBox.min_.y_;
