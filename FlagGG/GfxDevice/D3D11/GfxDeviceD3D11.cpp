@@ -339,11 +339,11 @@ void GfxDeviceD3D11::PrepareDraw()
 	auto vertexShaderD3D11 = RTTICast<GfxShaderD3D11>(vertexShader_);
 	auto pixelShaderD3D11 = RTTICast<GfxShaderD3D11>(pixelShader_);
 
-	if (computeBufferDirty_)
+	if (computeResourcesDirty_)
 	{
 		ID3D11UnorderedAccessView* d3dUAV[D3D11_PS_CS_UAV_REGISTER_COUNT] = {};
 		deviceContext_->CSSetUnorderedAccessViews(0, D3D11_PS_CS_UAV_REGISTER_COUNT, d3dUAV, nullptr);
-		computeBufferDirty_ = false;
+		computeResourcesDirty_ = false;
 	}
 
 	switch (primitiveType_)
@@ -474,7 +474,7 @@ void GfxDeviceD3D11::PrepareDraw()
 			}
 			else if (auto* bufferD3D11 = RTTICast<GfxBufferD3D11>(buffers_[i]))
 			{
-				currentShaderResourceView = bufferD3D11->GetShaderResourceView();
+				currentShaderResourceView = bufferD3D11->GetD3D11ShaderResourceView();
 			}
 
 			if (currentShaderResourceView)
@@ -572,23 +572,33 @@ void GfxDeviceD3D11::PrepareDispatch()
 	auto computeShaderD3D11 = RTTICast<GfxShaderD3D11>(computeShader_);
 	ID3D11Buffer* d3dComputeConstantBuffer[MAX_CONST_BUFFER] = {};
 
-	if (computeBufferDirty_)
+	if (computeResourcesDirty_)
 	{
 		ID3D11ShaderResourceView* d3dSRV[D3D11_PS_CS_UAV_REGISTER_COUNT] = {};
 		ID3D11UnorderedAccessView* d3dUAV[D3D11_PS_CS_UAV_REGISTER_COUNT] = {};
 
 		for (UInt32 i = 0; i < D3D11_PS_CS_UAV_REGISTER_COUNT; ++i)
 		{
-			auto* computeBufferD3D11 = RTTICast<GfxBufferD3D11>(computeBuffers_[i]);
-			if (computeBufferD3D11)
+			if (auto* computeBufferD3D11 = RTTICast<GfxBufferD3D11>(computeBuffers_[i]))
 			{
 				if (computeBindFlags_[i] == COMPUTE_BIND_ACCESS_READ)
 				{
-					d3dSRV[i] = computeBufferD3D11->GetShaderResourceView();
+					d3dSRV[i] = computeBufferD3D11->GetD3D11ShaderResourceView();
 				}
 				else
 				{
-					d3dUAV[i] = computeBufferD3D11->GetUnorderedAccessViews();
+					d3dUAV[i] = computeBufferD3D11->GetD3D11UnorderedAccessView();
+				}
+			}
+			if (auto* computeTextureD3D11 = RTTICast<GfxTextureD3D11>(computeTextures_[i]))
+			{
+				if (computeBindFlags_[i] == COMPUTE_BIND_ACCESS_READ)
+				{
+					d3dSRV[i] = computeTextureD3D11->GetD3D11ShaderResourceView();
+				}
+				else
+				{
+					d3dUAV[i] = computeTextureD3D11->GetD3D11UnorderedAccessView();
 				}
 			}
 		}
@@ -596,7 +606,7 @@ void GfxDeviceD3D11::PrepareDispatch()
 		deviceContext_->CSSetShaderResources(0, D3D11_PS_CS_UAV_REGISTER_COUNT, d3dSRV);
 		deviceContext_->CSSetUnorderedAccessViews(0, D3D11_PS_CS_UAV_REGISTER_COUNT, d3dUAV, nullptr);
 
-		computeBufferDirty_ = false;
+		computeResourcesDirty_ = false;
 	}
 
 	if (shaderDirty_)

@@ -282,6 +282,9 @@ bool TextureCube::LoadMulti2DFace(IOFrame::Buffer::IOBuffer* stream)
 		}
 	}
 
+	if (gfxTexture_)
+		gfxTexture_->SetGpuTag(GetName());
+
 	return true;
 }
 

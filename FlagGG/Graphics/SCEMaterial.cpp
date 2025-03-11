@@ -91,6 +91,7 @@ bool SCEMaterial::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 				texture->SetFilterMode(textureDesc.filterMode_);
 				texture->SetData(textureDesc.image_);
 				texture->SetName(textureDesc.image_->GetName());
+				texture->SetGpuTag(textureDesc.image_->GetName());
 				cache->AddManualResource(texture);
 				SetTexture((TextureClass)it.first_, texture);
 			}

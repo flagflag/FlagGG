@@ -7,6 +7,7 @@
 #include <Graphics/Shader.h>
 #include <Graphics/Texture2D.h>
 #include <Graphics/ShaderHelper.h>
+#include <Graphics/GpuTextureCompression.h>
 #include <GfxDevice/GfxDevice.h>
 #include <GfxDevice/GfxProgram.h>
 #include <Core/EngineSettings.h>
@@ -74,10 +75,17 @@ void ShaderCompileTest()
 	INIT_SHADER_VARIATION(shader, "Shader/SCE/HairSimulation.hlsl", PS, Vector<String>({}));
 }
 
+void TextureCompressionTest()
+{
+	auto* cache = GetSubsystem<ResourceCache>();
+	auto* uncompressTexture = cache->GetResource<Texture2D>("Textures/waterLight.png");
+	auto compressTexture = GetSubsystem<GpuTextureCompression>()->CompressTexture(uncompressTexture);
+}
+
 int main()
 {
 	//
-	GetSubsystem<EngineSettings>()->rendererType_ = RENDERER_TYPE_VULKAN;
+	// GetSubsystem<EngineSettings>()->rendererType_ = RENDERER_TYPE_VULKAN;
 
 	GetSubsystem<AssetFileManager>()->AddArchive(new DefaultFileSystemArchive(GetLocalFileSystem(), GetProgramDir() + "Res"));
 
@@ -88,6 +96,8 @@ int main()
 	GfxBufferTest();
 
 	GfxTextureTest();
+
+	TextureCompressionTest();
 	
 	return 0;
 }

@@ -242,6 +242,8 @@ void GfxTextureD3D11::ReleaseTexture()
 	D3D11_SAFE_RELEASE(resolveTexture_);
 	D3D11_SAFE_RELEASE(d3d11Texture2D_);
 	D3D11_SAFE_RELEASE(d3d11Texture3D_);
+	D3D11_SAFE_RELEASE(shaderResourceView_);
+	D3D11_SAFE_RELEASE(d3d11UAV_);
 
 	gfxRenderSurfaces_.Clear();
 }
@@ -274,6 +276,11 @@ void GfxTextureD3D11::CreateTexture2D()
 	textureDesc.SampleDesc.Quality = gfxDevice->GetMultiSampleQuality(textureDesc.Format, textureDesc_.multiSample_);
 	textureDesc.Usage = textureDesc_.usage_ == TEXTURE_DYNAMIC ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
 	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+	if (textureDesc_.bindFlags_ & TEXTURE_BIND_COMPUTE_WRITE)
+	{
+		textureDesc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
+	}
 
 	if (textureDesc_.usage_ == TEXTURE_RENDERTARGET)
 	{
@@ -418,6 +425,23 @@ void GfxTextureD3D11::CreateTexture2D()
 					}
 				}
 			}
+		}
+	}
+
+	if (textureDesc.BindFlags & D3D11_BIND_UNORDERED_ACCESS)
+	{
+		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
+		Memory::Memzero(&uavDesc, sizeof(uavDesc));
+		uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+		uavDesc.Texture2D.MipSlice = 0;
+
+		hr = d3d11Device->CreateUnorderedAccessView(d3d11Texture2D_, &uavDesc, &d3d11UAV_);
+		if (FAILED(hr))
+		{
+			FLAGGG_LOG_ERROR("Failed to create unordered access view.");
+			D3D11_SAFE_RELEASE(d3d11UAV_);
+			return;
 		}
 	}
 

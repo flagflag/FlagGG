@@ -257,6 +257,9 @@ bool Texture2DArray::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		currentImage = currentImage->GetNextSibling();
 	}
 
+	if (gfxTexture_)
+		gfxTexture_->SetGpuTag(GetName());
+
 	return true;
 }
 

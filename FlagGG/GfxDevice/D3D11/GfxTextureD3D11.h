@@ -91,6 +91,9 @@ public:
 	// 获取ID3D11ShaderResourceView*
 	ID3D11ShaderResourceView* GetD3D11ShaderResourceView() const { return shaderResourceView_; }
 
+	// 获取ID3D11UnorderedAccessView*
+	ID3D11UnorderedAccessView* GetD3D11UnorderedAccessView() const { return d3d11UAV_; }
+
 	// 获取ID3D11Resource
 	ID3D11Resource* GetD3D11Resource() const;
 
@@ -112,6 +115,9 @@ private:
 
 	// shader resource view
 	ID3D11ShaderResourceView* shaderResourceView_{};
+
+	// uav
+	ID3D11UnorderedAccessView* d3d11UAV_{};
 
 	// texture sub resource view
 	Vector<SharedPtr<GfxShaderResourceViewD3D11>> gfxTextureViews_;

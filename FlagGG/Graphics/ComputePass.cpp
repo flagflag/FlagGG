@@ -257,19 +257,19 @@ void ClusterLightPass::Dispatch(RenderPiplineContext& renderPiplineContext)
 
 // Cluster building
 	gfxDevice->SetComputeShader(clusterBuildingShader_);
-	gfxDevice->ResetComputeBuffers();
+	gfxDevice->ResetComputeResources();
 	gfxDevice->SetComputeBuffer(GetComputeBinding(SAMPLER_CLUSTERS_CLUSTERS), clusterBuffer_, COMPUTE_BIND_ACCESS_READWRITE);
 	gfxDevice->Dispatch(CLUSTERS_X / CLUSTERS_X_THREADS, CLUSTERS_Y / CLUSTERS_Y_THREADS, CLUSTERS_Z / CLUSTERS_Z_THREADS);
 
 // Reset counter
 	gfxDevice->SetComputeShader(resetCounterShader_);
-	gfxDevice->ResetComputeBuffers();
+	gfxDevice->ResetComputeResources();
 	gfxDevice->SetComputeBuffer(GetComputeBinding(SAMPLER_CLUSTERS_ATOMICINDEX), atomicIndexBuffer_, COMPUTE_BIND_ACCESS_READWRITE);
 	gfxDevice->Dispatch(1, 1, 1);
 
 // Light culling
 	gfxDevice->SetComputeShader(lightCullingShader_);
-	gfxDevice->ResetComputeBuffers();
+	gfxDevice->ResetComputeResources();
 	gfxDevice->SetComputeBuffer(GetComputeBinding(SAMPLER_CLUSTERS_CLUSTERS), clusterBuffer_, COMPUTE_BIND_ACCESS_READWRITE);
 	gfxDevice->SetComputeBuffer(GetComputeBinding(SAMPLER_CLUSTERS_ATOMICINDEX), atomicIndexBuffer_, COMPUTE_BIND_ACCESS_READWRITE);
 	gfxDevice->SetComputeBuffer(GetComputeBinding(SAMPLER_CLUSTERS_LIGHTINDICES), lightIndicesBuffer_, COMPUTE_BIND_ACCESS_READWRITE);
@@ -278,7 +278,7 @@ void ClusterLightPass::Dispatch(RenderPiplineContext& renderPiplineContext)
 	gfxDevice->Dispatch(CLUSTERS_X / CLUSTERS_X_THREADS, CLUSTERS_Y / CLUSTERS_Y_THREADS, CLUSTERS_Z / CLUSTERS_Z_THREADS);
 
 // Reset
-	gfxDevice->ResetComputeBuffers();
+	gfxDevice->ResetComputeResources();
 }
 
 void ClusterLightPass::BindGpuObject()

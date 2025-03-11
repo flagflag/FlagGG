@@ -112,11 +112,14 @@ public:
 	// 设置Instance描述
 	virtual void SetInstanceDescription(VertexDescription* instanceDesc);
 
-	// 重置compute buffer
-	virtual void ResetComputeBuffers();
+	// 重置compute resources
+	virtual void ResetComputeResources();
 
 	// 设置compute buffer
 	virtual void SetComputeBuffer(UInt8 slotID, GfxBuffer* gfxComputeBuffer, ComputeBindAccess bindFlags = COMPUTE_BIND_ACCESS_READ);
+
+	// 设置compute texture
+	virtual void SetComputeTexture(UInt8 slotID, GfxTexture* gfxaTexture, ComputeBindAccess bindFlags = COMPUTE_BIND_ACCESS_READ);
 
 	// 重置buffer
 	virtual void ResetBuffers();
@@ -269,8 +272,9 @@ protected:
 
 	// compute buffer
 	SharedPtr<GfxBuffer> computeBuffers_[MAX_GPU_UNITS_COUNT];
+	SharedPtr<GfxTexture> computeTextures_[MAX_GPU_UNITS_COUNT];
 	ComputeBindAccess computeBindFlags_[MAX_GPU_UNITS_COUNT];
-	bool computeBufferDirty_{};
+	bool computeResourcesDirty_{};
 
 	// 准备提交的shaders
 	SharedPtr<GfxShader> vertexShader_;

@@ -194,7 +194,13 @@ bool Texture2D::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		return false;
 	}
 
-	return SetData(&image);
+	if (!SetData(&image))
+		return false;
+
+	if (gfxTexture_)
+		gfxTexture_->SetGpuTag(GetName());
+
+	return true;
 }
 
 bool Texture2D::EndLoad()

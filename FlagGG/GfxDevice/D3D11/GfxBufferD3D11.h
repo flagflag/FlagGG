@@ -44,11 +44,11 @@ public:
 	//
 	ID3D11Buffer* GetD3D11Buffer() const { return d3d11Buffer_; }
 
-	//
-	ID3D11ShaderResourceView* GetShaderResourceView() const { return d3d11SRV_; }
+	// 获取ID3D11ShaderResourceView*
+	ID3D11ShaderResourceView* GetD3D11ShaderResourceView() const { return d3d11SRV_; }
 
-	//
-	ID3D11UnorderedAccessView* GetUnorderedAccessViews() const { return d3d11UAV_; }
+	// 获取ID3D11UnorderedAccessView*
+	ID3D11UnorderedAccessView* GetD3D11UnorderedAccessView() const { return d3d11UAV_; }
 
 private:
 	ID3D11Buffer* d3d11Buffer_{};

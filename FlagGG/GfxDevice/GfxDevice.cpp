@@ -33,7 +33,7 @@ void GfxDevice::BeginFrame()
 	vertexDesc_.Reset();
 	instanceBuffer_.Reset();
 	instanceDesc_.Reset();
-	ResetComputeBuffers();
+	ResetComputeResources();
 	vertexShader_.Reset();
 	pixelShader_.Reset();
 	computeShader_.Reset();
@@ -180,24 +180,42 @@ void GfxDevice::SetInstanceDescription(VertexDescription* instanceDesc)
 	}
 }
 
-void GfxDevice::ResetComputeBuffers()
+void GfxDevice::ResetComputeResources()
 {
 	for (auto& it : computeBuffers_)
 	{
 		it.Reset();
 	}
 
-	computeBufferDirty_ = true;
+	for (auto& it : computeTextures_)
+	{
+		it.Reset();
+	}
+
+	computeResourcesDirty_ = true;
 }
 
 void GfxDevice::SetComputeBuffer(UInt8 slotID, GfxBuffer* gfxComputeBuffer, ComputeBindAccess bindFlags)
 {
-	CRY_ASSERT(slotID < MAX_GPU_UNITS_COUNT);
+	ASSERT(slotID < MAX_GPU_UNITS_COUNT);
 	if (slotID < MAX_GPU_UNITS_COUNT)
 	{
 		computeBuffers_[slotID] = gfxComputeBuffer;
+		computeTextures_[slotID].Reset();
 		computeBindFlags_[slotID] = bindFlags;
-		computeBufferDirty_ = true;
+		computeResourcesDirty_ = true;
+	}
+}
+
+void GfxDevice::SetComputeTexture(UInt8 slotID, GfxTexture* gfxaTexture, ComputeBindAccess bindFlags)
+{
+	ASSERT(slotID < MAX_GPU_UNITS_COUNT);
+	if (slotID < MAX_GPU_UNITS_COUNT)
+	{
+		computeBuffers_[slotID].Reset();
+		computeTextures_[slotID] = gfxaTexture;
+		computeBindFlags_[slotID] = bindFlags;
+		computeResourcesDirty_ = true;
 	}
 }
 
@@ -213,7 +231,7 @@ void GfxDevice::ResetBuffers()
 
 void GfxDevice::SetBuffer(UInt8 slotID, GfxBuffer* gfxBuffer)
 {
-	CRY_ASSERT(slotID < MAX_GPU_UNITS_COUNT);
+	ASSERT(slotID < MAX_GPU_UNITS_COUNT);
 	if (slotID < MAX_GPU_UNITS_COUNT)
 	{
 		buffers_[slotID] = gfxBuffer;
