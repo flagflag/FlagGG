@@ -13,7 +13,7 @@ function LandscapeTest:run()
 
     -- 创建地形
     local terrain = context.Terrain.new()
-    terrain:create(64, { 1, 1, 64 }, 'Textures/PlaneHeightMap.png', 'Materials/TerrainLandscape.ljson')
+    terrain:create(64, { 64, 64, 64 }, 'Textures/PlaneHeightMap.png', 'Materials/TerrainLandscape.ljson')
 	terrain:set_scale(1, 1, 1)
 	terrain:set_position(0, 0, 0)
 	terrain:set_name('Terrain')
@@ -21,6 +21,13 @@ function LandscapeTest:run()
 
     local texture_brush_comp = context.TextureBrushComponent.new()
     game_builder.get_brush():attach_component(texture_brush_comp)
+
+    local camera_node = scene:get_child('MainHero', true)
+    camera_node:set_position(-64, 1100, 900)
+    -- camera_node:set_rotation(0.948600411, 0, 0.316476375, 0)
+    camera_node:set_rotation(0.944376230, 0, 0.328866959, 0)
+
+    app.set_camera_move_speed(500.0)
 
     app.setup_web_ui()
     app.load_web_ui('file:///WebUI/GameBuilder.html')

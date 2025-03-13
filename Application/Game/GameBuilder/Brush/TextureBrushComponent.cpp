@@ -12,6 +12,7 @@
 #include <Scene/Octree.h>
 #include <Graphics/Texture2D.h>
 #include <Graphics/Material.h>
+#include <Graphics/Window.h>
 #include <Resource/ResourceCache.h>
 #include <Utility/SystemHelper.h>
 #include <TypeTraits/IsArray.h>
@@ -21,7 +22,7 @@
 
 TextureBrushComponent::TextureBrushComponent()
 	: isWorking_(false)
-	, brushSize_(2.56)
+	, brushSize_(256)
 	, brushId_(1)
 {
 
@@ -88,7 +89,8 @@ void TextureBrushComponent::OnUpdate(float timeStep)
 	auto* camera = cameraNode->GetComponent<Camera>();
 	auto* octree = ownerBrush_->GetOwnerScene()->GetComponentRecursive<Octree>();
 
-	IntRect rect = GetDesktopRect();
+	auto* window = GetSubsystem<Context>()->GetVariable<Window>("MainWindow");
+	IntRect rect = window->GetViewport()->GetSize();
 	auto mousePos = GetSubsystem<Input>()->GetMousePos();
 
 	Ray ray = camera->GetScreenRay((float)mousePos.x_ / rect.Width(), (float)mousePos.y_ / rect.Height());
@@ -122,7 +124,7 @@ void TextureBrushComponent::TryCreateData()
 	if (ownerBrush_ && !texWeights_)
 	{
 		MeshBuilder meshBuilder;
-		auto mesh = meshBuilder.BuildArc(brushSize_, 0.02, 64, Color::GREEN, 0.005);
+		auto mesh = meshBuilder.BuildArc(brushSize_, 2, 64, Color::GREEN, 0.5);
 		auto material = GetSubsystem<ResourceCache>()->GetResource<Material>("Materials/3DHud.ljson");
 
 		hudCircle_ = new Node();
@@ -158,7 +160,7 @@ void TextureBrushComponent::TryCreateData()
 
 void TextureBrushComponent::UpdateTextureWeight(const RayQueryResult& result)
 {
-	const IntVector2 gridSize(1, 1);
+	const IntVector2 gridSize(64, 64);
 	const float sizeSquared = brushSize_ * brushSize_;
 	IntVector2 tsize(Round(brushSize_ / gridSize.x_), Round(brushSize_ / gridSize.y_));
 
@@ -190,11 +192,12 @@ void TextureBrushComponent::UpdateTextureWeight(const RayQueryResult& result)
 			Vector2 actualPos(x * gridSize.x_ + pos.x_, y * gridSize.y_ + pos.y_);
 			IntVector3 dotPos(Round(actualPos.x_), Round(actualPos.y_), 0);
 			Vector3 fpos(Round((float)dotPos.x_ / gridSize.x_) * gridSize.x_, Round((float)dotPos.y_ / gridSize.y_) * gridSize.y_, 0);
+			IntVector2 gridPos(fpos.x_ / gridSize.x_, fpos.y_ / gridSize.y_);
 
-			if (fpos.x_ < 0 || fpos.y_ < 0)
+			if (gridPos.x_ < 0 || gridPos.y_ < 0)
 				continue;
 
-			if (fpos.x_ > texelsSize.x_ || fpos.y_ > texelsSize.y_)
+			if (gridPos.x_ > texelsSize.x_ || gridPos.y_ > texelsSize.y_)
 				continue;
 
 			float lengthSquared = Vector2(fpos.x_ - realPos.x_, fpos.y_ - realPos.y_).LengthSquared();
@@ -202,8 +205,6 @@ void TextureBrushComponent::UpdateTextureWeight(const RayQueryResult& result)
 			{
 				float distPercent = Min(Sqrt(lengthSquared) / brushSize_, (float)1.0);
 				float alpha = 1.0 - distPercent * distPercent;
-
-				IntVector2 gridPos(fpos.x_ / gridSize.x_, fpos.y_ / gridSize.y_);
 				float blend = Equals(alpha, 0.f) ? 0.f : alpha;
 
 				// UpdateTextureWeight3(gridPos, blend);
@@ -215,7 +216,10 @@ void TextureBrushComponent::UpdateTextureWeight(const RayQueryResult& result)
 				//	if (nxtPos.x_ >= 0 && nxtPos.y_ >= 0 &&
 				//		nxtPos.x_ < texelsSize.x_ && nxtPos.y_ < texelsSize.y_)
 				//	{
-				//		UpdateTextureWeight2(nxtPos, 0.0f);
+				//		// UpdateTextureWeight2(nxtPos, 0.0f);
+				//		TerrainTextureWeights::TextureInfo tex[3];
+				//		texWeights_->GetTextureInfo(nxtPos.x_, nxtPos.y_, tex);
+				//		texWeights_->SetTextureInfo(nxtPos.x_, nxtPos.y_, tex);
 				//	}
 				//}
 			}

@@ -818,6 +818,32 @@ ID3D11InputLayout* GfxDeviceD3D11::GetD3D11InputLayout(VertexDescription* vertxD
 		}
 	}
 
+	for (auto& inputDesc : vertexShader->GetInputVariableDescs())
+	{
+		bool findIt = false;
+		for (auto& desc : d3d11InputElementDescs)
+		{
+			if (inputDesc.semanticName_ == desc.SemanticName &&
+				inputDesc.semanticIndex_ == desc.SemanticIndex)
+			{
+				findIt = true;
+				break;
+			}
+		}
+		if (!findIt)
+		{
+			D3D11_INPUT_ELEMENT_DESC desc;
+			desc.SemanticName = inputDesc.semanticName_.CString();
+			desc.SemanticIndex = inputDesc.semanticIndex_;
+			desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			desc.InputSlot = 0;
+			desc.AlignedByteOffset = 0;
+			desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			desc.InstanceDataStepRate = 0;
+			d3d11InputElementDescs.Push(desc);
+		}
+	}
+
 	ID3DBlob* shaderBlob = vertexShader->GetByteCode();
 	if (!shaderBlob)
 	{

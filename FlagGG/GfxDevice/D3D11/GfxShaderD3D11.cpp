@@ -43,6 +43,21 @@ void GfxShaderD3D11::AnalysisReflection(ID3DBlob* compileCode)
 		return;
 	}
 
+	for (UInt32 i = 0; i < shaderDesc.InputParameters; ++i)
+	{
+		D3D11_SIGNATURE_PARAMETER_DESC* inputDesc = new D3D11_SIGNATURE_PARAMETER_DESC;
+		hr = reflector->GetInputParameterDesc(i, inputDesc);
+		if (FAILED(hr))
+		{
+			FLAGGG_LOG_ERROR("Failed to get input desc.");
+			return;
+		}
+
+		auto& inputVariable = inputVariableDescs_.EmplaceBack();
+		inputVariable.semanticName_ = inputDesc->SemanticName;
+		inputVariable.semanticIndex_ = inputDesc->SemanticIndex;
+	}
+
 	HashMap<StringHash, UInt32> cbufferBindMap;
 	for (UInt32 i = 0; i < shaderDesc.BoundResources; ++i)
 	{

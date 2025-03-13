@@ -115,7 +115,7 @@ void ShadowRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 
 		for (auto& renderBatch : it.second_.renderBatchQueue_.renderBatches_)
 		{
 			renderEngine->SetRasterizerState(renderBatch.renderPassInfo_->GetRasterizerState());
-			gfxDevice->SetDepthBias(-0.25f, -5);
+			gfxDevice->SetDepthBias(/*0.00025f*/0, 5);
 			renderEngine->SetDepthStencilState(depthStencilState_, false);
 			renderEngine->SetShaderParameter(shadowCamera, renderBatch);
 			renderEngine->SetShaders(renderBatch.vertexShader_, renderBatch.pixelShader_);
@@ -127,7 +127,7 @@ void ShadowRenderPass::RenderBatch(Camera* camera, Camera* shadowCamera, UInt32 
 		for (auto& renderBatch : it.second_.renderBatchQueue_.renderInstanceBatches_)
 		{
 			renderEngine->SetRasterizerState(renderBatch.renderPassInfo_->GetRasterizerState());
-			gfxDevice->SetDepthBias(-0.25f, -5);
+			gfxDevice->SetDepthBias(/*0.00025f*/0, 5);
 			renderEngine->SetDepthStencilState(depthStencilState_, false);
 			renderEngine->SetShaderParameter(shadowCamera, renderBatch);
 			renderEngine->SetShaders(renderBatch.vertexShader_, renderBatch.pixelShader_);

@@ -13,6 +13,12 @@
 namespace FlagGG
 {
 
+struct D3D11InputVariableDesc
+{
+	String semanticName_;
+	UInt32 semanticIndex_;
+};
+
 struct D3D11ConstantBufferVariableDesc
 {
 	String name_;
@@ -50,6 +56,9 @@ public:
 	// 编译
 	bool Compile() override;
 
+	//
+	const Vector<D3D11InputVariableDesc>& GetInputVariableDescs() const { return inputVariableDescs_; }
+
 	// 获取ConstantBuffer描述
 	const HashMap<UInt32, D3D11ConstantBufferDesc>& GetContantBufferVariableDesc() const { return constantBufferDescs_; }
 
@@ -81,6 +90,7 @@ private:
 	ID3D11PixelShader* pixelShader_{};
 	ID3D11ComputeShader* computeShader_{};
 
+	Vector<D3D11InputVariableDesc> inputVariableDescs_;
 	HashMap<UInt32, D3D11ConstantBufferDesc> constantBufferDescs_;
 	HashMap<UInt32, D3D11StructBufferDesc> structBufferDescs_;
 	HashMap<UInt32, D3D11ShaderTextureDesc> textureDescs_;
