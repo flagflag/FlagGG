@@ -294,6 +294,8 @@ void GameApplication::SetupWindow()
 
 	WindowDevice::RegisterWinMessage(window_);
 
+	GetSubsystem<Context>()->RegisterVariable<Window>(window_, "MainWindow");
+
 #if 0
 	if (auto buffer = GetSubsystem<AssetFileManager>()->OpenFileReader("WebUI/GameEntry.html"))
 	{
