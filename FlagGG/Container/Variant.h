@@ -4,7 +4,7 @@
 #include <typeindex>
 #include <algorithm>
 
-#include "Core/FunctionTraits.h"
+#include "TypeTraits/FunctionTraits.h"
 #include "Container/Str.h"
 #include "Container/StringHash.h"
 #include "Container/Swap.h"

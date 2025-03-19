@@ -8,6 +8,8 @@
 #include <Core/EventDefine.h>
 #include <Core/Context.h>
 
+#include <functional>
+
 using namespace FlagGG;
 
 class Network : public IOFrame::Handler::EventHandler

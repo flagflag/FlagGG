@@ -1,90 +1,214 @@
-#pragma once
+//
+// 函数
+//
 
-#include <functional>
+#pragma once
 
 namespace FlagGG
 {
 
-template < class FunctionDefine, class InstanceType = void >
-class FunctionImpl
+struct PODFuncStorage
 {
-public:
-	using FunctionType = FunctionDefine(InstanceType::*);
-
-	FunctionImpl(FunctionType func, InstanceType* instance) :
-		func_(func),
-		instance_(instance)
-	{ }
-
-	template < class ... Args >
-	void operator()(Args&& ... args)
+	PODFuncStorage()
+		: type_(0)
+		, funcPtr_(nullptr)
 	{
-		(instance_->*func_)(std::forward<Args>(args)...);
+
+	}
+
+	PODFuncStorage(void* funcPtr)
+		: type_(0)
+		, funcPtr_(funcPtr)
+	{
+	}
+
+	template <typename T>
+	PODFuncStorage(T classFunc)
+		: type_(1)
+	{
+		new (memory_) T(classFunc);
+	}
+
+	void* GetPtr()
+	{
+		return type_ ? memory_ : funcPtr_;
+	}
+
+	PODFuncStorage& operator=(const PODFuncStorage& rhs)
+	{
+		type_ = rhs.type_;
+		memcpy(memory_, rhs.memory_, 24);
+		return *this;
 	}
 
 private:
-	InstanceType* instance_;
-
-	FunctionType func_;
+	char type_;
+	union
+	{
+		void* funcPtr_;
+		char memory_[24];
+	};
 };
 
-template < class FunctionDefine >
-class FunctionImpl < FunctionDefine >
+template <typename F>
+struct FunctionImpl;
+
+template <typename Ret, typename ... Args>
+class FunctionImpl<Ret(Args...)>
 {
 public:
-	using FunctionType = FunctionDefine*;
+	using FunctionTypeInner = Ret(void*, void*, Args ...);
+	using FunctionType = Ret(Args ...);
+	using ReturnType = Ret;
 
-	FunctionImpl(FunctionType func) :
-		func_(func)
-	{ }
-
-	template < class ... Args >
-	void operator()(Args&& ... args)
+	FunctionImpl()
+		: func_(nullptr)
+		, funcStorage_{}
+		, instancePtr_(nullptr)
 	{
-		(*func_)(std::forward<Args>(args)...);
+	}
+
+	FunctionImpl(std::nullptr_t null)
+		: func_(nullptr)
+		, funcStorage_{}
+		, instancePtr_(nullptr)
+	{
+	}
+
+	FunctionImpl(FunctionType* func)
+		: funcStorage_(reinterpret_cast<void*>(func))
+		, instancePtr_(nullptr)
+	{
+		func_ = [](void* unused, void* funcPtr, Args ... args) -> Ret
+		{
+			return (*reinterpret_cast<FunctionType*>(funcPtr))(std::forward<Args>(args)...);
+		};
+	}
+
+	template <typename ClassType, typename ClassFuncType>
+	FunctionImpl(ClassFuncType classFunc, ClassType* instance)
+		: funcStorage_(classFunc)
+		, instancePtr_(instance)
+	{
+		func_ = [](void* instancePtr, void* funcPtr, Args ... args) -> Ret
+		{
+			auto instanceImpl = reinterpret_cast<ClassType*>(instancePtr);
+			auto funcImpl = *reinterpret_cast<ClassFuncType*>(funcPtr);
+			return (instanceImpl->*funcImpl)(std::forward<Args>(args)...);
+		};
+	}
+
+	FunctionImpl(const FunctionImpl& rhs)
+	{
+		Set(rhs);
+	}
+
+	FunctionImpl& operator=(const FunctionImpl& rhs)
+	{
+		Set(rhs);
+		return *this;
+	}
+
+	template <typename ... Args>
+	Ret operator()(Args&& ... args)
+	{
+		return func_(instancePtr_, funcStorage_.GetPtr(), std::forward<Args>(args)...);
+	}
+
+	operator bool()
+	{
+		return func_;
+	}
+
+protected:
+	void Set(const FunctionImpl& rhs)
+	{
+		func_ = rhs.func_;
+		funcStorage_ = rhs.funcStorage_;
+		instancePtr_ = rhs.instancePtr_;
 	}
 
 private:
-	FunctionType func_;
+	FunctionTypeInner* func_;
+	PODFuncStorage funcStorage_;
+	void* instancePtr_;
 };
 
-template < class T >
+template <typename Ret, typename ... Args>
+class FunctionImpl<Ret(*)(Args...)> : FunctionImpl<Ret(Args...)> {};
+
+template <typename F>
+struct FunctionBinder;
+
+template <typename Ret, typename ClassName, typename ... Args>
+struct FunctionBinder<Ret(ClassName::*)(Args...)>
+{
+	using ClassFuncType = Ret(ClassName::*)(Args...);
+	using ClassType = ClassName;
+
+	static FunctionImpl<Ret(Args...)> Bind(ClassFuncType func, ClassType* instance)
+	{
+		return FunctionImpl<Ret(Args...)>(func, instance);
+	}
+};
+
+template <typename T>
 class Function
 {
 public:
-	typedef Function<T> Type;
 	using NativeType = T;
 
 	Function()
-	{ }
+	{
+	}
 
 	Function(std::nullptr_t null) :
 		funcWrapper_(null)
-	{ }
-
-	Function(const Type& value)
 	{
-		funcWrapper_ = value.funcWrapper_;
 	}
 
-	template < class F >
-	Function(F func) :
-		funcWrapper_(FunctionImpl<T>(func))
-	{ }
-
-	template < class F, class I >
-	Function(F func, I* ins) :
-		funcWrapper_(FunctionImpl<T, I>(func, ins))
-	{ }
-
-	template < class ... Args >
-	void operator()(Args&& ... args)
+	template <typename F>
+	Function(F&& func) :
+		funcWrapper_(std::forward<F>(func))
 	{
-		funcWrapper_(std::forward<Args>(args)...);
+	}
+
+	template <typename F, typename I>
+	Function(F&& func, I* inst) :
+		funcWrapper_(FunctionBinder<F>::Bind(func, inst))
+	{
+	}
+
+	Function(Function&& rhs)
+	{
+		funcWrapper_ = std::move(rhs.funcWrapper_);
+	}
+
+	Function(const Function& rhs)
+	{
+		funcWrapper_ = rhs.funcWrapper_;
+	}
+
+	Function& operator=(Function&& rhs)
+	{
+		funcWrapper_ = std::move(rhs.funcWrapper_);
+		return *this;
+	}
+
+	Function& operator=(const Function& rhs)
+	{
+		funcWrapper_ = rhs.funcWrapper_;
+		return *this;
+	}
+
+	template <typename ... Args>
+	typename FunctionImpl<T>::ReturnType operator()(Args&& ... args)
+	{
+		return funcWrapper_(std::forward<Args>(args)...);
 	}
 
 private:
-	std::function<T> funcWrapper_;
+	FunctionImpl<T> funcWrapper_;
 };
 
 }
