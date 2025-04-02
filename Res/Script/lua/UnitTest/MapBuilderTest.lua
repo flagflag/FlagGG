@@ -13,6 +13,7 @@ function MapBuilderTest:run()
 
     local map_builder = context.MapBuilder.new()
     map_builder:set_scene(scene)
+    map_builder:set_terrain_blend_test(true)
     -- map_builder:load_map('E:/GitProject/NE/Urho/vs_bgfx_editor/bin/Update/promotion2/scene/default/map.acmap')
     map_builder:load_map('E:/GitProject/NE/Res/maps/single_simple_ts_template_2/scene/default/map.acmap')
 

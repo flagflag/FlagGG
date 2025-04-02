@@ -41,14 +41,21 @@ enum class OcclusionCullingType
 	HiZCulling,
 };
 
+enum class ScreenSpaceReflectionsType
+{
+	None = 0,
+	SSPR,      // 屏幕空间平面反射
+	SSR,       // 屏幕空间反射
+};
+
 struct FlagGG_API EngineSettings : public Subsystem<EngineSettings>
 {
 	RendererType rendererType_{ RENDERER_TYPE_D3D11 };
 	ClusterLightType clusterLightType_{ ClusterLightType::None };
 	AmbientOcclusionType aoType_{ AmbientOcclusionType::Software };
-	bool renderSSR_{ true };
 	AmbientOcclusionQuality AOQuality_{ AmbientOcclusionQuality::MEDIUM };
 	OcclusionCullingType occlusionCullingType_{ OcclusionCullingType::HiZCulling };
+	ScreenSpaceReflectionsType screenSpaceReflectionsType_{ ScreenSpaceReflectionsType::None };
 };
 
 }

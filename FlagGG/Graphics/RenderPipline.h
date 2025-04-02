@@ -28,7 +28,7 @@ class Light;
 class Probe;
 class AmbientOcclusionRendering;
 class HiZCulling;
-class ScreenSpaceReflections;
+class IScreenSpaceReflections;
 
 // 渲染管线上下文
 struct FlagGG_API RenderPiplineContext
@@ -223,7 +223,7 @@ private:
 	PODVector<DrawableComponent*> frameDrawables_;
 
 	// 屏幕空间反射
-	SharedPtr<ScreenSpaceReflections> SSR_;
+	SharedPtr<IScreenSpaceReflections> SSR_;
 };
 
 class FlagGG_API ScriptRenderPipline : public RenderPipline

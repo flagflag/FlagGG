@@ -71,7 +71,7 @@ void RenderView::Define(Viewport* viewport)
 	if (!renderPipline_)
 	{
 		if (!defaultRenderPipline_)
-			defaultRenderPipline_ = new ForwardRenderPipline();
+			defaultRenderPipline_ = new DeferredRenderPipline();
 		renderPipline_ = defaultRenderPipline_;
 	}
 

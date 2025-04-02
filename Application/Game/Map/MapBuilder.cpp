@@ -14,9 +14,10 @@
 #include <Graphics/Texture2D.h>
 #include <Log.h>
 
-#define TERRAIN_PLANE_TEST 0
-
 MapBuilder::MapBuilder()
+	: tileXCount_(0)
+	, tileYCount_(0)
+	, terrainBlendTest_(false)
 {
 
 }
@@ -34,6 +35,11 @@ void MapBuilder::SetScene(Scene* scene)
 void MapBuilder::SetTilePool(TilePool* tilePool)
 {
 
+}
+
+void MapBuilder::SetTerrainBlendTest(bool terrainBlendTest)
+{
+	terrainBlendTest_ = terrainBlendTest;
 }
 
 void MapBuilder::LoadMap(const String& path)
@@ -137,7 +143,9 @@ void MapBuilder::LoadMap(const String& path)
 
 void MapBuilder::GenerateTile(const Editor::EditorMap::DTileFlagGG& tileInfos)
 {
-#if !TERRAIN_PLANE_TEST
+	if (terrainBlendTest_)
+		return;
+
 	auto* assetFileMgr = GetSubsystem<AssetFileManager>();
 	auto* cache = GetSubsystem<ResourceCache>();
 
@@ -159,7 +167,6 @@ void MapBuilder::GenerateTile(const Editor::EditorMap::DTileFlagGG& tileInfos)
 			}
 		}
 	}
-#endif
 }
 
 static UInt32 TEX_STYLE_OFFSET[] =
@@ -211,39 +218,40 @@ void MapBuilder::GenerateTextureWeights(const Editor::EditorMap::DMaterialWeight
 
 	texWeights_->UpdateGpuTexture();
 
-#if TERRAIN_PLANE_TEST
-	SharedPtr<Image> heightMap(new Image());
-	heightMap->SetSize(textureHeight, textureWidth, 4);
-	for (Int32 x = 0; x < heightMap->GetWidth(); ++x)
+	if (terrainBlendTest_)
 	{
-		for (Int32 y = 0; y < heightMap->GetHeight(); ++y)
+		SharedPtr<Image> heightMap(new Image());
+		heightMap->SetSize(textureHeight, textureWidth, 4);
+		for (Int32 x = 0; x < heightMap->GetWidth(); ++x)
 		{
-			heightMap->SetPixel(x, y, Color::BLACK);
+			for (Int32 y = 0; y < heightMap->GetHeight(); ++y)
+			{
+				heightMap->SetPixel(x, y, Color::BLACK);
+			}
+		}
+		SharedPtr<Node> terrain(new Node());
+		auto* material = GetSubsystem<ResourceCache>()->GetResource<Material>("Materials/TerrainLandscape.ljson");
+		auto* terrainComp = terrain->CreateComponent<TerrainComponent>();
+		terrainComp->SetPatchSize(64);
+		terrainComp->SetQuadSize(Vector3(64, 64, 64));
+		terrainComp->SetHeightMap(heightMap);
+		terrainComp->SetMaterial(material);
+		terrainComp->CreateGeometry();
+		scene_->AddChild(terrain);
+		{
+			auto* idTexutre = texWeights_->GetIdTexture();
+			auto* weightTexture = texWeights_->GetWeightTexture();
+
+			material->SetTexture((TextureClass)2, idTexutre);
+			material->SetTexture((TextureClass)3, weightTexture);
+
+			auto shaderParameters = material->GetShaderParameters();
+			shaderParameters->AddParametersDefine<Vector2>("idMapTexels");
+			shaderParameters->SetValue<Vector2>("idMapTexels", Vector2(idTexutre->GetWidth(), idTexutre->GetHeight()));
+			shaderParameters->AddParametersDefine<Vector2>("weightMapTexels");
+			shaderParameters->SetValue<Vector2>("weightMapTexels", Vector2(weightTexture->GetWidth(), weightTexture->GetHeight()));
 		}
 	}
-	SharedPtr<Node> terrain(new Node());
-	auto* material = GetSubsystem<ResourceCache>()->GetResource<Material>("Materials/TerrainLandscape.ljson");
-	auto* terrainComp = terrain->CreateComponent<TerrainComponent>();
-	terrainComp->SetPatchSize(64);
-	terrainComp->SetQuadSize(Vector3(64, 64, 64));
-	terrainComp->SetHeightMap(heightMap);
-	terrainComp->SetMaterial(material);
-	terrainComp->CreateGeometry();
-	scene_->AddChild(terrain);
-	{
-		auto* idTexutre = texWeights_->GetIdTexture();
-		auto* weightTexture = texWeights_->GetWeightTexture();
-
-		material->SetTexture((TextureClass)2, idTexutre);
-		material->SetTexture((TextureClass)3, weightTexture);
-
-		auto shaderParameters = material->GetShaderParameters();
-		shaderParameters->AddParametersDefine<Vector2>("idMapTexels");
-		shaderParameters->SetValue<Vector2>("idMapTexels", Vector2(idTexutre->GetWidth(), idTexutre->GetHeight()));
-		shaderParameters->AddParametersDefine<Vector2>("weightMapTexels");
-		shaderParameters->SetValue<Vector2>("weightMapTexels", Vector2(weightTexture->GetWidth(), weightTexture->GetHeight()));
-	}
-#endif
 }
 
 void MapBuilder::GenerateDecoration(const Editor::EditorMap::DStaticDecorationAttribute& decoInfos)

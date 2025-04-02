@@ -6,7 +6,7 @@
 
 #include "Core/Object.h"
 #include "Container/Ptr.h"
-#include "Math/Vector2.h"
+#include "Graphics/IScreenSpaceReflection.h"
 
 namespace FlagGG
 {
@@ -16,28 +16,17 @@ class Camera;
 class Shader;
 class ShaderParameters;
 
-struct ScreenSpaceReflectionsInputData
+class ScreenSpaceReflections : public IScreenSpaceReflections
 {
-	Texture2D* GBufferA_;
-	Texture2D* GBufferB_;
-	Texture2D* GBufferC_;
-	Texture2D* screenDepthTexture_;
-	Texture2D* HiZMap_;
-	Camera* camera_;
-	IntVector2 renderSolution_;
-};
-
-class ScreenSpaceReflections : public Object
-{
-	OBJECT_OVERRIDE(ScreenSpaceReflections, Object);
+	OBJECT_OVERRIDE(ScreenSpaceReflections, IScreenSpaceReflections);
 public:
 	explicit ScreenSpaceReflections();
 
 	~ScreenSpaceReflections() override;
 
-	void RenderSSR(const ScreenSpaceReflectionsInputData& inputData);
+	void RenderSSR(const ScreenSpaceReflectionsInputData& inputData) override;
 
-	Texture2D* GetGBufferSSR() { return GBufferSSR_; }
+	Texture2D* GetGBufferSSR() const override { return GBufferSSR_; }
 
 private:
 	// 屏幕空间反射GBuffer

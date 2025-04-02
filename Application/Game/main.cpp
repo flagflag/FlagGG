@@ -33,8 +33,8 @@ void RunApplication(SetupFinish setupFinish)
 		GetSubsystem<EngineSettings>()->aoType_ = (AmbientOcclusionType)ToInt(CommandParam["ao_type"].GetString());
 	if (CommandParam.Contains("ao_quality"))
 		GetSubsystem<EngineSettings>()->AOQuality_ = (AmbientOcclusionQuality)ToInt(CommandParam["ao_quality"].GetString());
-	if (CommandParam.Contains("close_ssr"))
-		GetSubsystem<EngineSettings>()->renderSSR_ = false;
+	if (CommandParam.Contains("ssr_type"))
+		GetSubsystem<EngineSettings>()->screenSpaceReflectionsType_ = (ScreenSpaceReflectionsType)ToInt(CommandParam["ssr_type"].GetString());
 
 	GameApplication app(CommandParam, setupFinish);
 	ApplicationInstance = &app;

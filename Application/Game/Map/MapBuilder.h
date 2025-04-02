@@ -37,6 +37,9 @@ public:
 	/// 设置瓦片池
 	void SetTilePool(TilePool* tilePool);
 
+	/// 设置测试
+	void SetTerrainBlendTest(bool terrainBlendTest);
+
 	/// 加载地图
 	void LoadMap(const String& path);
 
@@ -62,4 +65,7 @@ private:
 
 	UInt32 tileXCount_;
 	UInt32 tileYCount_;
+
+	// 测试
+	bool terrainBlendTest_;
 };

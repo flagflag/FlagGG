@@ -290,6 +290,14 @@ LuaGamePlay::LuaGamePlay(Scene* scene)
 			}
 			return 0;
 		});
+		luaex_classfunction(L, "set_terrain_blend_test", [](lua_State* L) -> int
+		{
+			if (auto* mapBuilder = reinterpret_cast<MapBuilder*>(luaex_tousertype(L, 1, "MapBuilder")))
+			{
+				mapBuilder->SetTerrainBlendTest(lua_toboolean(L, 2));
+			}
+			return 0;
+		});
 		luaex_classfunction(L, "load_map", [](lua_State* L)->int
 		{
 			if (auto* mapBuilder = reinterpret_cast<MapBuilder*>(luaex_tousertype(L, 1, "MapBuilder")))

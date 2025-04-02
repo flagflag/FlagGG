@@ -290,8 +290,14 @@ void GameApplication::SetupWindow()
 	window_->Show();
 	window_->GetViewport()->SetCamera(camera_);
 	window_->GetViewport()->SetScene(scene_);
-	if (commandParam_.Contains("deferred_rendering"))
-		window_->GetViewport()->SetRenderPipline(new DeferredRenderPipline());
+	if (commandParam_.Contains("render_pipline"))
+	{
+		const String type = commandParam_["render_pipline"].GetString();
+		if (type == "deferred")
+			window_->GetViewport()->SetRenderPipline(new DeferredRenderPipline());
+		else if (type == "forward")
+			window_->GetViewport()->SetRenderPipline(new ForwardRenderPipline());
+	}
 
 	WindowDevice::RegisterWinMessage(window_);
 

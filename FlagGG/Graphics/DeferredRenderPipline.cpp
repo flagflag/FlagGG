@@ -7,6 +7,7 @@
 #include "Graphics/AmbientOcclusionRendering.h"
 #include "Graphics/AmbientOcclusionRenderingSoftware.h"
 #include "Graphics/HiZCulling.h"
+#include "Graphics/ScreenSpacePlaneReflection.h"
 #include "Graphics/ScreenSpaceReflection.h"
 #include "GfxDevice/GfxDevice.h"
 #include "GfxDevice/GfxRenderSurface.h"
@@ -172,7 +173,7 @@ void DeferredRenderPipline::Render()
 	RenderEngine* renderEngine = GetSubsystem<RenderEngine>();
 	GfxDevice* gfxDevice = GfxDevice::GetDevice();
 
-	bool renderSSR = GetSubsystem<EngineSettings>()->renderSSR_;
+	bool renderSSR = GetSubsystem<EngineSettings>()->screenSpaceReflectionsType_ != ScreenSpaceReflectionsType::None;
 	bool renderAO = GetSubsystem<EngineSettings>()->aoType_ != AmbientOcclusionType::None;
 	bool HiZCullingEnable = GetSubsystem<EngineSettings>()->occlusionCullingType_ == OcclusionCullingType::HiZCulling;
 
@@ -273,7 +274,18 @@ void DeferredRenderPipline::Render()
 	if (renderSSR && HiZCulling_)
 	{
 		if (!SSR_)
-			SSR_ = new ScreenSpaceReflections();
+		{
+			switch (GetSubsystem<EngineSettings>()->screenSpaceReflectionsType_)
+			{
+			case ScreenSpaceReflectionsType::SSPR:
+				SSR_ = new ScreenSpacePlaneReflections();
+				break;
+
+			case ScreenSpaceReflectionsType::SSR:
+				SSR_ = new ScreenSpaceReflections();
+				break;
+			}
+		}
 
 		ScreenSpaceReflectionsInputData inputData;
 		inputData.GBufferA_ = GBufferA_;

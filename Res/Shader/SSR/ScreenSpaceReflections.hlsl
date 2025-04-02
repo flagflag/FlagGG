@@ -51,7 +51,7 @@ SamplerState depthBufferSampler : register(s4);
 Texture2D HiZTexture : register(t5);
 SamplerState HiZTextureSampler : register(s5);
 
-cbuffer HiZParam : register(b1)
+cbuffer SSRParam : register(b1)
 {
     float roughnessMaskScale;
     float4 HiZUvFactorAndInvFactor;
