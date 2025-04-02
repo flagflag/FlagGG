@@ -123,6 +123,21 @@ FORCEINLINE T CubicInterpDerivative(const T& P0, const T& T0, const T& P1, const
 	return T((a * A2) + (b * A) + c);
 }
 
+/// Color channel gamme to linear space
+FORCEINLINE Real GammaToLinearSpace(Real colorChannel)
+{
+	return Pow(colorChannel, 2.2f);
+}
+
+/// Color channel linear to gamme space
+FORCEINLINE Real LinearToGammaSpace(Real colorChannel)
+{
+	return Pow(colorChannel, 1.0f / 2.2f);
+}
+
+/// Point light falloff
+FlagGG_API Real GetLightFalloff(Real lightRaidus, Real objectDistance);
+
 FlagGG_API int Compare(Real _1, Real _2);
 
 FlagGG_API Real Equals(Real _1, Real _2);

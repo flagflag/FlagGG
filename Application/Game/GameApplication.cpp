@@ -252,6 +252,7 @@ void GameApplication::CreateScene()
 	auto* probeNode = new Node();
 	probeNode->SetName("MainProbe");
 	auto* probe = probeNode->CreateComponent<Probe>();
+	probe->Load("SkyAmbientProbe/day");
 	probe->SetArea(BoundingBox(-1e5, 1e5));
 	scene_->AddChild(probeNode);
 

@@ -114,6 +114,21 @@ Int32 CeilToInt(Real number)
 	return static_cast<Int32>(Ceil(number));
 }
 
+static Real Square(Real x)
+{
+	return x * x;
+}
+
+Real GetLightFalloff(Real lightRaidus, Real objectDistance)
+{
+	Real distSqr = objectDistance * objectDistance;
+	Real falloff = 1.0 / (distSqr + 1.0);
+	Real w = 1.0 / lightRaidus;
+	Real lightRadiusMask = Square(Clamp(1.0f - Square(distSqr * w * w), 0.f, 1.f));
+	falloff *= lightRadiusMask;
+	return falloff;
+}
+
 int Compare(Real _1, Real _2)
 {
 	if (fabs(_1 - _2) < F_EPSILON) return 0;

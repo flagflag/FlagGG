@@ -148,6 +148,10 @@ public:
 	void GetLevels(PODVector<const Image*>& levels) const;
 
 protected:
+	Color GetPixelRGBA(int x, int y, int z) const;
+
+	Color GetPixelRGBA16F(int x, int y, int z) const;
+
 	bool BeginLoad(IOFrame::Buffer::IOBuffer* stream) override;
 
 	bool EndLoad() override;

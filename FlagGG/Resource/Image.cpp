@@ -2,6 +2,7 @@
 #include "Resource/Decompress.h"
 #include "Core/ObjectFactory.h"
 #include "Math/Math.h"
+#include "Math/HalfFloat.h"
 #include "Utility/SystemHelper.h"
 #include "IOFrame/Stream/FileStream.h"
 #include "Log.h"
@@ -223,7 +224,7 @@ Image::~Image() = default;
 
 bool Image::IsCompressed() const
 {
-	return compressedFormat_ != CF_NONE;
+	return compressedFormat_ != CF_NONE && compressedFormat_ != CF_RGBA && compressedFormat_ != CF_RGBA16F;
 }
 
 bool Image::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
@@ -1264,7 +1265,19 @@ Color Image::GetPixel(int x, int y) const
 	return GetPixel(x, y, 0);
 }
 
+static UInt32 GetSizePerComponent(CompressedFormat compressedFormat)
+{
+	return compressedFormat == CF_RGBA16F ? 2 : 1;
+}
+
 Color Image::GetPixel(int x, int y, int z) const
+{
+	if (compressedFormat_ == CF_RGBA16F)
+		return GetPixelRGBA16F(x, y, z);
+	return GetPixelRGBA(x, y, z);
+}
+
+Color Image::GetPixelRGBA(int x, int y, int z) const
 {
 	if (!data_ || z < 0 || z >= depth_ || IsCompressed())
 		return Color::BLACK;
@@ -1288,6 +1301,36 @@ Color Image::GetPixel(int x, int y, int z) const
 		break;
 	default:
 		ret.r_ = ret.g_ = ret.b_ = (Real)src[0] / 255.0f;
+		break;
+	}
+
+	return ret;
+}
+
+Color Image::GetPixelRGBA16F(int x, int y, int z) const
+{
+	if (!data_ || z < 0 || z >= depth_ || IsCompressed())
+		return Color::BLACK;
+	x = Clamp(x, 0, width_ - 1);
+	y = Clamp(y, 0, height_ - 1);
+
+	half_float::half* src = reinterpret_cast<half_float::half*>(data_.Get()) + (z * width_ * height_ + y * width_ + x) * components_;
+	Color ret;
+
+	switch (components_)
+	{
+	case 4:
+		ret.a_ = src[3];
+		// Fall through
+	case 3:
+		ret.b_ = src[2];
+		// Fall through
+	case 2:
+		ret.g_ = src[1];
+		ret.r_ = src[0];
+		break;
+	default:
+		ret.r_ = ret.g_ = ret.b_ = src[0];
 		break;
 	}
 

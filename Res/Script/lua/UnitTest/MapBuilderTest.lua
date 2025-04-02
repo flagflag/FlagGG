@@ -22,8 +22,7 @@ function MapBuilderTest:run()
 
     local probe_node = scene:get_child('MainProbe', true)
     local probe_comp = probe_node:get_component('Probe')
-    probe_comp:set_diffuse_intensity(0.01)
-    probe_comp:set_specular_intensity(0)
+    probe_comp:load('SkyAmbientProbe/night')
 
     local camera_node = scene:get_child('MainHero', true)
     -- camera_node:set_position(3389, 5420, 520)

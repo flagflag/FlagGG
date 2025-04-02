@@ -90,6 +90,12 @@ public:
         return *this;
     }
 
+	/// Return const value by index.
+	float operator[](unsigned index) const { return (&r_)[index]; }
+
+	/// Return mutable value by index.
+	float& operator[](unsigned index) { return (&r_)[index]; }
+
     /// Return float data.
     const float* Data() const { return &r_; }
 

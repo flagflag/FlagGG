@@ -146,6 +146,14 @@ LuaGamePlay::LuaGamePlay(Scene* scene)
 		return 0;
 	});
 	{
+		luaex_classfunction(L, "load", [](lua_State* L) -> int
+		{
+			if (auto* probe = reinterpret_cast<Probe*>(luaex_tousertype(L, 1, "Probe")))
+			{
+				probe->Load(lua_tostring(L, 2));
+			}
+			return 0;
+		});
 		luaex_classfunction(L, "set_diffuse_intensity", [](lua_State* L) -> int
 		{
 			if (auto* probe = reinterpret_cast<Probe*>(luaex_tousertype(L, 1, "Probe")))
