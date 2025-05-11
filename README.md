@@ -5,13 +5,29 @@
 * Samples - 一些测试样例
 * Tools - 工具模块，非常不成熟，等基本盘搞定才会继续写
 
+执行准备工作
+```
+Windows平台执行：prepare.bat
+其它平台执行：prepare.sh
+```
+
 Visual Studio 2022 - 构建
 ```
-# 构建动态库版本
-./build_shared.bat
+# 生成vs工程（动态库版本）
+./generate_project_windows_shared.bat
 
-# 构建静态库版本
-./build_static.bat
+# 生成vs工程（静态库版本）
+./generate_project_windows_static.bat
+```
+
+MacOS - 构建
+```
+1.使用vscode打开目录
+2.下载插件：CMake、CMakeTools
+3.下载完后，侧边会出现CMake构建工具的叶签，点击按钮切换到CMake构建的界面
+4.点击Configure All Projects，这一步这行CMake生成平台构建工程
+5.在PROJECT OUTLINE树形界面选择需要构建的库，然后点击Build按钮进行编译
+6.在Run And Debug界面选需要启动的二进制文件运行
 ```
 
 emscripten - 构建
@@ -53,7 +69,6 @@ emscripten - 构建
     * 体积光
     * SSR（ing）
     * TAA
-    * GPU-Instance
+    * GPU-Instance (完成)
     * GPU-Driven
 * 烘焙系统（这个会作为一个长线任务，之后慢慢补全不同的烘焙系统）
-
