@@ -8,20 +8,32 @@
 #include "UI/UIEvents.h"
 #include "Log.h"
 
+#if PLATFORM_WINDOWS
 #include <windows.h>
 #include <windowsx.h>
+#endif
 #include <memory>
 
 namespace FlagGG
 {
 
+#if PLATFORM_WINDOWS
+struct DefferedMessage
+{
+	HWND handler_;
+	UINT message_;
+	WPARAM wParam_;
+	LPARAM lParam_;
+};
+#endif
+
 const wchar_t* WindowDevice::className_ = L"FlagGGWindow";
 
 Vector<SharedPtr<Window>> WindowDevice::recivers_;
 
+#if PLATFORM_WINDOWS
 PODVector<DefferedMessage> WindowDevice::defferedMsgs_;
 
-#if PLATFORM_WINDOWS
 static LRESULT APIENTRY StaticWndProc(HWND handler, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
@@ -134,7 +146,9 @@ Window::Window(void* parentWindow, const IntRect& rect) :
 {
 	Create(parentWindow, rect);
 
+#if PLATFORM_WINDOWS
 	::GetCursorPos(&mousePos_);
+#endif
 }
 
 Window::~Window()
@@ -305,9 +319,9 @@ void Window::GatherRenderUITrees(Vector<RenderUITree>& renderUITrees)
 	item.manualRender_ = true;
 }
 
+#if PLATFORM_WINDOWS
 void Window::WinProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-#if PLATFORM_WINDOWS
 	auto* input = GetSubsystem<Input>();
 
 	RawMsgParam rawMsgParam;
@@ -400,7 +414,7 @@ void Window::WinProc(UINT message, WPARAM wParam, LPARAM lParam)
 		GetSubsystem<EventManager>()->SendEvent<Application::WINDOW_CLOSE_HANDLER>(window_);
 		break;
 	}
-#endif
 }
+#endif
 
 }

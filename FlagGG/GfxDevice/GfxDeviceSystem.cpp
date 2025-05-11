@@ -1,5 +1,7 @@
 #include "GfxDevice.h"
+#if FLAGGG_D3D11
 #include "D3D11/GfxDeviceD3D11.h"
+#endif
 #if FLAGGG_OPENGL
 #include "OpenGL/GfxDeviceOGL.h"
 #endif
@@ -25,9 +27,11 @@ static GfxDevice* CreateOrGetDevice()
 			const String rootDir = GetProgramDir();
 			switch (GetSubsystem<EngineSettings>()->rendererType_)
 			{
+#if FLAGGG_D3D11
 			case RENDERER_TYPE_D3D11:
 				device_ = GetSubsystem<GfxDeviceD3D11>();
 				break;
+#endif
 
 #if FLAGGG_OPENGL
 			case RENDERER_TYPE_OPENGL:

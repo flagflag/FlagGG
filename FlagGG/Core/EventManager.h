@@ -62,7 +62,7 @@ public:
 			Vector<SharedPtr<EventWrapper>>& wrappers = it->second_;
 			for (auto itWrapper = wrappers.Begin(); itWrapper != wrappers.End(); ++itWrapper)
 			{
-				(*static_cast<HandlerType::FunctionType*>((*itWrapper)->GetEvent()))(std::forward<Args>(args)...);
+				(*static_cast<typename HandlerType::FunctionType*>((*itWrapper)->GetEvent()))(std::forward<Args>(args)...);
 			}
 		}
 	}

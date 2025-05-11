@@ -43,14 +43,14 @@ Resource* ResourceCache::GetResource(StringHash type, const String& path)
 	if (!buffer)
 	{
 		FLAGGG_LOG_ERROR("Can not open file stream [{}].", path.CString());
-		return false;
+		return nullptr;
 	}
 
 	if (!resource->LoadStream(buffer))
 	{
 		FLAGGG_LOG_ERROR("Load Resource[{}] failed.", path.CString());
 		ASSERT_MESSAGE(false, "Failed to load resource.");
-		return false;
+		return nullptr;
 	}
 
 	typeToResourceMapping_[type].Insert(MakePair(formatPath, resource));

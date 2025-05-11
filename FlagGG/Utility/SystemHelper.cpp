@@ -11,6 +11,9 @@
 #pragma comment(lib, "shlwapi.lib")
 #pragma comment(lib, "winmm.lib")
 #else
+#if PLATFORM_APPLE
+#include <mach-o/dyld.h>
+#endif
 #include <unistd.h>
 #include <limits.h>
 #include <dirent.h>
@@ -216,7 +219,7 @@ IntRect GetDesktopRect()
 	SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
 	return IntRect(IntVector2(rect.left, rect.top), IntVector2(rect.right, rect.bottom));
 #else
-	return Mach::IntRect::ZERO;
+	return IntRect::ZERO;
 #endif
 }
 

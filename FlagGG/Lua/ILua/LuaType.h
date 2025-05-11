@@ -4,6 +4,7 @@
 #include "Container/Str.h"
 #include "Container/RefCounted.h"
 #include "Lua/ILua/LuaUtil.h"
+#include "Lua/ILua/StackCore.h"
 #include "Lua/LuaBinding/LuaExtend.h"
 #include "Core/BaseTypes.h"
 

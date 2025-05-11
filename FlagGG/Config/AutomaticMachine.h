@@ -13,10 +13,10 @@ namespace FlagGG
 
 static const UInt32 CHAR_COUNT = 256;
 
-class StateNode;
+struct StateNode;
 typedef StateNode* StatePtr;
 
-typedef struct StateNode
+struct StateNode
 {
 	StateNode();
 

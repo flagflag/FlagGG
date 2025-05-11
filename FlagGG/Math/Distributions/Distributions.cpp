@@ -18,6 +18,8 @@
 #include "Math/Distributions/DistributionQuaternionConstantCurve.h"
 #include "Core/Context.h"
 
+#include <float.h>
+
 namespace FlagGG
 {
 

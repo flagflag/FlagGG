@@ -8,5 +8,5 @@
 #ifdef PLATFORM_WINDOWS
 #include "Platform/WindowsPlatformAtomics.h"
 #else
-#error
+#include "Platform/ClangPlatformAtomics.h"
 #endif

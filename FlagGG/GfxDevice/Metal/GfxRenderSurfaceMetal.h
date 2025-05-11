@@ -17,9 +17,9 @@ class GfxRenderSurfaceMetal : public GfxRenderSurface
 {
 	OBJECT_OVERRIDE(GfxRenderSurfaceMetal, GfxRenderSurface);
 public:
-	explicit GfxRenderSurfaceMetal(GfxTextureMetal* ownerTexture);
+	explicit GfxRenderSurfaceMetal(GfxTextureMetal* ownerTexture, UInt32 surfaceWidth, UInt32 surfaceHeight);
 
-	explicit GfxRenderSurfaceMetal(GfxSwapChainMetal* ownerSwapChain, mtlpp::Texture& mtlRenderTexture);
+	explicit GfxRenderSurfaceMetal(GfxSwapChainMetal* ownerSwapChain, mtlpp::Texture& mtlRenderTexture, UInt32 surfaceWidth, UInt32 surfaceHeight);
 
 	~GfxRenderSurfaceMetal() override;
 

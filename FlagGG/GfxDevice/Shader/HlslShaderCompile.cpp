@@ -1,3 +1,4 @@
+#if PLATFORM_WINDOWS
 #include "HlslShaderCompile.h"
 #include "FileSystem/FileHandle/LocalFileHandle.h"
 #include "FileSystem/FileSystem.h"
@@ -260,3 +261,4 @@ bool CompileShader(const PreProcessShaderInfo& shaderInfo, ShaderType type, cons
 
 
 }
+#endif

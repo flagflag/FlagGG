@@ -18,7 +18,7 @@ GfxShaderMetal::~GfxShaderMetal()
 
 bool GfxShaderMetal::Compile()
 {
-	if (!CompileShader(COMPILE_SHADER_METAL, shaderSource_.Get(), shaderSourceSize_, shaderType_, defines_, mtlShaderCode_))
+	if (!CompileShader(COMPILE_SHADER_METAL, *shaderInfo_, shaderType_, defines_, mtlShaderCode_))
 		return false;
 
 	ns::Error error;

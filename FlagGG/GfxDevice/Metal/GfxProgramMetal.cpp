@@ -149,7 +149,7 @@ void GfxProgramMetal::ApplyUniformSetter(MetalConstantBufferVariableDesc& varDes
 		{
 			const float* floatValue = (const float*)uniformValue;
 			half_float::half* halfTargetData = (half_float::half*)targetData;
-			UInt32 floatCount = (UInt32)desc.dataType_ - (UINT32)mtlpp::DataType::Half + 1;
+			UInt32 floatCount = (UInt32)desc.dataType_ - (UInt32)mtlpp::DataType::Half + 1;
 			for (UInt32 i = 0; i < floatCount; ++i)
 			{
 				halfTargetData[i] = floatValue[i];
@@ -166,7 +166,7 @@ void GfxProgramMetal::ApplyUniformSetter(MetalConstantBufferVariableDesc& varDes
 		{
 			const float* floatValue = (const float*)uniformValue;
 			half_float::half* halfTargetData = (half_float::half*)targetData;
-			UInt32 floatCount = (UInt32)desc.dataType_ - (UINT32)mtlpp::DataType::Half2x2 + 4;
+			UInt32 floatCount = (UInt32)desc.dataType_ - (UInt32)mtlpp::DataType::Half2x2 + 4;
 			for (UInt32 i = 0; i < floatCount; ++i)
 			{
 				halfTargetData[i] = floatValue[i];
@@ -183,7 +183,7 @@ void GfxProgramMetal::ApplyUniformSetter(MetalConstantBufferVariableDesc& varDes
 		{
 			const float* floatValue = (const float*)uniformValue;
 			half_float::half* halfTargetData = (half_float::half*)targetData;
-			UInt32 floatCount = (UInt32)desc.dataType_ - (UINT32)mtlpp::DataType::Half3x2 + 6;
+			UInt32 floatCount = (UInt32)desc.dataType_ - (UInt32)mtlpp::DataType::Half3x2 + 6;
 			for (UInt32 i = 0; i < floatCount; ++i)
 			{
 				halfTargetData[i] = floatValue[i];
@@ -200,7 +200,7 @@ void GfxProgramMetal::ApplyUniformSetter(MetalConstantBufferVariableDesc& varDes
 		{
 			const float* floatValue = (const float*)uniformValue;
 			half_float::half* halfTargetData = (half_float::half*)targetData;
-			UInt32 floatCount = (UInt32)desc.dataType_ - (UINT32)mtlpp::DataType::Half4x2 + 8;
+			UInt32 floatCount = (UInt32)desc.dataType_ - (UInt32)mtlpp::DataType::Half4x2 + 8;
 			for (UInt32 i = 0; i < floatCount; ++i)
 			{
 				halfTargetData[i] = floatValue[i];

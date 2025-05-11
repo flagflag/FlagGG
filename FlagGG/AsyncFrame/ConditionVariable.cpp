@@ -55,7 +55,7 @@ void ConditionVariable::Wait(HandleObject* object, UInt32 waitTime)
 #else
 	timespec timeout;
 	timeout.tv_sec = 0;
-	timeout.tv_nsec = static_cast<uint64_t>(waitTime) * 1000000u; // ·ÀÖ¹±¬int
+	timeout.tv_nsec = static_cast<UInt64>(waitTime) * 1000000u; // é˜²æ­¢çˆ†int
 	pthread_cond_timedwait(GetObject<pthread_cond_t>(), object->GetObject<pthread_mutex_t>(), &timeout);
 #endif
 }

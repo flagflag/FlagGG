@@ -51,7 +51,7 @@ public:
 	 * @param InValue value to construct with.
 	 */
 	explicit FORCEINLINE EnumAsByte(UInt8 inValue)
-		: value_(InValue)
+		: value_(inValue)
 	{ }
 
 public:

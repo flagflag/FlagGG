@@ -147,7 +147,7 @@ public:
 	}
 
 	template < class T >
-	typename const std::decay<T>::type& Get() const
+	const typename std::decay<T>::type& Get() const
 	{
 		using U = typename std::decay<T>::type;
 		if (!Is<U>())
@@ -170,7 +170,7 @@ public:
 	}
 
 	template < class T >
-	typename const std::decay<T>::type& TryGet() const
+	const typename std::decay<T>::type& TryGet() const
 	{
 		using U = typename std::decay<T>::type;
 		if (!Is<U>())
@@ -218,7 +218,7 @@ public:
 	template < class F >
 	void Visit(F&& f)
 	{
-		using T = typename FunctionTraits<std::remove_reference<F>::type>::Argument<0>::Type;
+		using T = typename FunctionTraits<typename std::remove_reference<F>::type>::template Argument<0>::Type;
 		if (Is<T>())
 			f(Get<T>());
 	}
@@ -226,9 +226,9 @@ public:
 	template < class F, class ... Rest >
 	void Visit(F&& f, Rest&& ... rest)
 	{
-		using T = typename FunctionTraits<std::remove_reference<F>::type>::Argument<0>::Type;
+		using T = typename FunctionTraits<typename std::remove_reference<F>::type>::template Argument<0>::Type;
 		if (Is<T>())
-			f(Get<T>);
+			f(Get<T>());
 		else
 			Visit(std::forward<Rest>(rest)...);
 	}

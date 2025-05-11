@@ -2,7 +2,10 @@
 #include "Core/BaseTypes.h"
 
 #include <string.h>
+#include <ctype.h>
+#if PLATFORM_WINDOWS
 #include <windows.h>
+#endif
 
 namespace FlagGG
 {

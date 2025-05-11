@@ -244,7 +244,6 @@ bool SpirvHelper::GlslToSpirv(ShaderType type, const String& glslShaderCode, Str
 {
 	return false;
 }
-#e
 #endif
 
 }

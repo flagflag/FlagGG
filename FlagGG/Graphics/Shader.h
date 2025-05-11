@@ -20,7 +20,7 @@ namespace FlagGG
 {
 
 class Shader;
-class PreProcessShaderInfo;
+struct PreProcessShaderInfo;
 
 // shader源码
 class FlagGG_API ShaderCode : public Resource

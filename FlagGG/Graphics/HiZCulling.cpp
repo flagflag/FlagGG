@@ -1,4 +1,4 @@
-#include "HizCulling.h"
+#include "HiZCulling.h"
 #include "Resource/ResourceCache.h"
 #include "Scene/DrawableComponent.h"
 #include "Scene/Camera.h"

@@ -2,8 +2,6 @@
 #include "Core/Context.h"
 #include "Core/EventManager.h"
 
-#include <windows.h>
-
 namespace FlagGG
 {
 
@@ -50,21 +48,29 @@ Input::Input() :
 
 IntVector2 Input::GetMousePos() const
 {
+#if PLATFORM_WINDOWS
 	POINT point;
 	::GetCursorPos(&point);
 	return IntVector2(point.x, point.y);
+#else
+	return IntVector2::ZERO;
+#endif
 }
 
 void Input::ShowMouse()
 {
+#if PLATFORM_WINDOWS
 	::ShowCursor(TRUE);
 	isMouseShow_ = true;
+#endif
 }
 
 void Input::HideMouse()
 {
+#if PLATFORM_WINDOWS
 	::ShowCursor(FALSE);
 	isMouseShow_ = false;
+#endif
 }
 
 bool Input::IsMouseShow() const

@@ -47,13 +47,13 @@ public:
 template <typename T, typename U>
 inline T* RTTICast(U& object)
 {
-	return object ? object->Cast<T>() : nullptr;
+	return object ? object->template Cast<T>() : nullptr;
 }
 
 template <typename T, typename U>
 inline T* RTTICast(U* object)
 {
-	return object ? object->Cast<T>() : nullptr;
+	return object ? object->template Cast<T>() : nullptr;
 }
 
 }

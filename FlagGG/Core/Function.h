@@ -51,7 +51,7 @@ private:
 };
 
 template <typename F>
-struct FunctionImpl;
+class FunctionImpl;
 
 template <typename Ret, typename ... Args>
 class FunctionImpl<Ret(Args...)>
@@ -109,10 +109,10 @@ public:
 		return *this;
 	}
 
-	template <typename ... Args>
-	Ret operator()(Args&& ... args)
+	template <typename ...CallArgs>
+	Ret operator()(CallArgs&& ... args)
 	{
-		return func_(instancePtr_, funcStorage_.GetPtr(), std::forward<Args>(args)...);
+		return func_(instancePtr_, funcStorage_.GetPtr(), std::forward<CallArgs>(args)...);
 	}
 
 	operator bool()

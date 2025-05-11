@@ -7,6 +7,8 @@
 #include "Core/BaseTypes.h"
 #include "Core/BaseMacro.h"
 
+#include <stddef.h>
+
 namespace FlagGG
 {
 

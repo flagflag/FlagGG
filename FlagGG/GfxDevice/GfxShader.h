@@ -12,7 +12,7 @@
 namespace FlagGG
 {
 
-class PreProcessShaderInfo;
+struct PreProcessShaderInfo;
 
 class FlagGG_API GfxShader : public GfxObject
 {

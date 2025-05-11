@@ -9,7 +9,7 @@
 #include "Memory/MemoryDefines.h"
 #include "Memory/Malloc.h"
 
-#include <malloc.h>
+#include <stdlib.h>
 #include <memory.h>
 
 namespace FlagGG

@@ -19,14 +19,7 @@
 namespace FlagGG
 {
 
-struct DefferedMessage
-{
-	HWND handler_;
-	UINT message_;
-	WPARAM wParam_;
-	LPARAM lParam_;
-};
-
+struct DefferedMessage;
 class Window;
 class GfxSwapChain;
 class UIElement;
@@ -53,7 +46,9 @@ public:
 
 	static Vector<SharedPtr<Window>> recivers_;
 
+#if PLATFORM_WINDOWS
 	static PODVector<DefferedMessage> defferedMsgs_;
+#endif
 };
 
 class FlagGG_API Window : public Object
@@ -112,8 +107,10 @@ public:
 	// 收集ui渲染树（作为事件，由UISystem调用）
 	void GatherRenderUITrees(Vector<RenderUITree>& renderUITrees);
 
+#if PLATFORM_WINDOWS
 	// 窗口事件
 	void WinProc(UINT message, WPARAM wParam, LPARAM lParam);
+#endif
 
 protected:
 	bool Create(void* parentWindow, const IntRect& rect);
@@ -145,7 +142,9 @@ private:
 	UInt32 vertexSize_{ 0 };
 	UInt32 vertexCount_{ 0 };
 
+#if PLATFORM_WINDOWS
 	POINT mousePos_;
+#endif
 };
 
 }

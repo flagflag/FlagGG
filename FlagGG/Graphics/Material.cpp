@@ -469,7 +469,7 @@ bool Material::BeginLoad(IOFrame::Buffer::IOBuffer* stream)
 		const auto& texturesConfig = root["textures"];
 		if (texturesConfig.IsObject())
 		{
-			for (auto& it = texturesConfig.Begin(); it != texturesConfig.End(); ++it)
+			for (auto it = texturesConfig.Begin(); it != texturesConfig.End(); ++it)
 			{
 				const String& name = it->first_;
 				TextureClass TC = ToTextureClass(name);

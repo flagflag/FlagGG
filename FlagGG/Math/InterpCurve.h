@@ -78,17 +78,17 @@ public:
 	 *	Evaluate the output for an arbitary input value.
 	 *	For inputs outside the range of the keys, the first/last key value is assumed.
 	 */
-	T Eval(const float inVal, const T& default = T(ForceInit)) const;
+	T Eval(const float inVal, const T& defaultValue = T(ForceInit)) const;
 
 	/**
 	 *	Evaluate the derivative at a point on the curve.
 	 */
-	T EvalDerivative(const float inVal, const T& default = T(ForceInit)) const;
+	T EvalDerivative(const float inVal, const T& defaultValue = T(ForceInit)) const;
 
 	/**
 	 *	Evaluate the second derivative at a point on the curve.
 	 */
-	T EvalSecondDerivative(const float inVal, const T& default = T(ForceInit)) const;
+	T EvalSecondDerivative(const float inVal, const T& defaultValue = T(ForceInit)) const;
 
 	/**
 	 * Find the nearest point on spline to the given point.
@@ -121,7 +121,7 @@ public:
 	void AutoSetTangents(float tension = 0.0f, bool stationaryEndpoints = true);
 
 	/** Calculate the min/max out value that can be returned by this InterpCurve. */
-	void CalcBounds(T& outMin, T& outMax, const T& default = T(ForceInit)) const;
+	void CalcBounds(T& outMin, T& outMax, const T& defaultValue = T(ForceInit)) const;
 
 public:
 
@@ -286,15 +286,15 @@ Int32 InterpCurve<T>::GetPointIndexForInputValue(const float inValue) const
 
 
 template< class T >
-T InterpCurve<T>::Eval(const float inVal, const T& default) const
+T InterpCurve<T>::Eval(const float inVal, const T& defaultValue) const
 {
 	const Int32 numPoints = points_.Size();
 	const Int32 lastPoint = numPoints - 1;
 
-	// If no point in curve, return the default value we passed in.
+	// If no point in curve, return the defaultValue value we passed in.
 	if (numPoints == 0)
 	{
-		return default;
+		return defaultValue;
 	}
 
 	// Binary search to find index of lower bound of input value
@@ -352,15 +352,15 @@ T InterpCurve<T>::Eval(const float inVal, const T& default) const
 
 
 template< class T >
-T InterpCurve<T>::EvalDerivative(const float inVal, const T& default) const
+T InterpCurve<T>::EvalDerivative(const float inVal, const T& defaultValue) const
 {
 	const Int32 numPoints = points_.Size();
 	const Int32 lastPoint = numPoints - 1;
 
-	// If no point in curve, return the default value we passed in.
+	// If no point in curve, return the defaultValue value we passed in.
 	if (numPoints == 0)
 	{
-		return default;
+		return defaultValue;
 	}
 
 	// Binary search to find index of lower bound of input value
@@ -419,15 +419,15 @@ T InterpCurve<T>::EvalDerivative(const float inVal, const T& default) const
 
 
 template< class T >
-T InterpCurve<T>::EvalSecondDerivative(const float inVal, const T& default) const
+T InterpCurve<T>::EvalSecondDerivative(const float inVal, const T& defaultValue) const
 {
 	const Int32 numPoints = points_.Size();
 	const Int32 lastPoint = numPoints - 1;
 
-	// If no point in curve, return the default value we passed in.
+	// If no point in curve, return the defaultValue value we passed in.
 	if (numPoints == 0)
 	{
-		return default;
+		return defaultValue;
 	}
 
 	// Binary search to find index of lower bound of input value
@@ -588,7 +588,7 @@ float InterpCurve<T>::InaccurateFindNearestOnSegment(const T& pointInSpace, Int3
 				const T lastBestTangent = CubicInterpDerivative(points_[ptIdx].outVal_, points_[ptIdx].leaveTangent_ * diff, points_[nextPtIdx].outVal_, points_[nextPtIdx].arriveTangent_ * diff, valuesT[point]);
 				const T delta = (pointInSpace - foundPoint);
 				float move = static_cast<float>((lastBestTangent | delta) / lastBestTangent.LengthSquared());
-				move = Clamp(Move, -lastMove * Scale, lastMove * Scale);
+				move = Clamp(move, -lastMove * Scale, lastMove * Scale);
 				valuesT[point] += move;
 				valuesT[point] = Clamp(valuesT[point], 0.0f, 1.0f);
 				lastMove = Abs(move);
@@ -683,14 +683,14 @@ void InterpCurve<T>::AutoSetTangents(float tension, bool stationaryEndpoints)
 
 
 template< class T >
-void InterpCurve<T>::CalcBounds(T& outMin, T& outMax, const T& default) const
+void InterpCurve<T>::CalcBounds(T& outMin, T& outMax, const T& defaultValue) const
 {
 	const Int32 numPoints = points_.Size();
 
 	if (numPoints == 0)
 	{
-		outMin = default;
-		outMax = default;
+		outMin = defaultValue;
+		outMax = defaultValue;
 	}
 	else if (numPoints == 1)
 	{

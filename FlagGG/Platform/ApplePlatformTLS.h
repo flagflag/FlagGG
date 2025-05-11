@@ -1,5 +1,5 @@
 //
-// Windows平台TLS
+// Apple平台TLS
 //
 
 #pragma once
@@ -7,25 +7,19 @@
 #include "Core/BaseTypes.h"
 #include "Core/BaseMacro.h"
 
+#include <pthread.h>
+#include <mach/mach.h>
+
 namespace FlagGG
 {
-
-namespace Windows
-{
-
-FlagGG_API UInt32 TlsAlloc();
-FlagGG_API void TlsSetValue(UInt32 SlotIndex, void* Value);
-FlagGG_API void* TlsGetValue(UInt32 SlotIndex);
-FlagGG_API void TlsFree(UInt32 SlotIndex);
-FlagGG_API UInt32 GetCurrentThreadId();
-
-}
 
 /**
  * Windows implementation of the TLS OS functions.
  */
-struct FlagGG_API WindowsPlatformTLS
+struct FlagGG_API ApplePlatformTLS
 {
+	static const UInt32 InvalidTlsSlot = 0xFFFFFFFF;
+
 	/**
 	 * Returns the currently executing thread's identifier.
 	 *
@@ -33,7 +27,7 @@ struct FlagGG_API WindowsPlatformTLS
 	 */
 	static FORCEINLINE UInt32 GetCurrentThreadId(void)
 	{
-		return Windows::GetCurrentThreadId();
+		return (UInt32)pthread_mach_thread_np(pthread_self());
 	}
 
 	/**
@@ -43,7 +37,7 @@ struct FlagGG_API WindowsPlatformTLS
 	 */
 	static FORCEINLINE bool IsValidTlsSlot(UInt32 slotIndex)
 	{
-		return slotIndex != 0xFFFFFFFF;
+		return slotIndex != InvalidTlsSlot;
 	}
 
 	/**
@@ -53,7 +47,12 @@ struct FlagGG_API WindowsPlatformTLS
 	 */
 	static FORCEINLINE UInt32 AllocTlsSlot(void)
 	{
-		return Windows::TlsAlloc();
+		pthread_key_t slotKey = 0;
+		if (pthread_key_create(&slotKey, nullptr) != 0)
+		{
+			slotKey = InvalidTlsSlot;
+		}
+		return slotKey;
 	}
 
 	/**
@@ -64,7 +63,7 @@ struct FlagGG_API WindowsPlatformTLS
 	 */
 	static FORCEINLINE void SetTlsValue(UInt32 slotIndex, void* value)
 	{
-		Windows::TlsSetValue(slotIndex, value);
+		pthread_setspecific((pthread_key_t)slotIndex, value);
 	}
 
 	/**
@@ -75,7 +74,7 @@ struct FlagGG_API WindowsPlatformTLS
 	 */
 	static FORCEINLINE void* GetTlsValue(UInt32 slotIndex)
 	{
-		return Windows::TlsGetValue(slotIndex);
+		return pthread_getspecific((pthread_key_t)slotIndex);
 	}
 
 	/**
@@ -85,10 +84,10 @@ struct FlagGG_API WindowsPlatformTLS
 	 */
 	static FORCEINLINE void FreeTlsSlot(UInt32 slotIndex)
 	{
-		Windows::TlsFree(slotIndex);
+		pthread_key_delete((pthread_key_t)slotIndex);
 	}
 };
 
-typedef WindowsPlatformTLS PlatformTLS;
+typedef ApplePlatformTLS PlatformTLS;
 
 }

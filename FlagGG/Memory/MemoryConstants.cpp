@@ -1,5 +1,6 @@
 #include "MemoryConstants.h"
 #include "Memory/Memory.h"
+#include "Log.h"
 
 #if PLATFORM_WINDOWS
 #include <windows.h>
@@ -33,7 +34,7 @@ MemoryConstants::MemoryConstants()
 	pageSize_ = systemInfo.dwPageSize;
 	totalPhysicalGB_ = (UInt32)((totalPhysical_ + 1024 * 1024 * 1024 - 1) / 1024 / 1024 / 1024);
 #else
-#error
+	FLAGGG_LOG_INFO("MemoryConstants fetch not supported.");
 #endif
 }
 

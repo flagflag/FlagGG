@@ -2,8 +2,6 @@
 SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_CXX_STANDARD 17)
 if ((NOT WIN32) AND (NOT WIN64))
-    message ("unix set std=c++11")
-
     # 编译参数
     set(CXX_FLAGS
         -g

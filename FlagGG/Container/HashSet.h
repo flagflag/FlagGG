@@ -404,7 +404,7 @@ public:
 			ptr = ptr->Next();
 		}
 
-		Urho3D::Sort(RandomAccessIterator<Node*>(ptrs), RandomAccessIterator<Node*>(ptrs + numKeys), CompareNodes);
+		FlagGG::Sort(RandomAccessIterator<Node*>(ptrs), RandomAccessIterator<Node*>(ptrs + numKeys), CompareNodes);
 
 		head_ = ptrs[0];
 		ptrs[0]->prev_ = 0;

@@ -1825,7 +1825,7 @@ void ParticleEmitterInstance::SpawnParticles(Int32 count, float startTime, float
 					ParticleModule* OffsetModule = highestLODLevel->spawnModules_[moduleIndex];
 					spawnModule->Spawn(this, GetModuleDataOffset(OffsetModule), spawnTime, particle);
 
-					ASSERT("NaN in particle Location. Template: %s.", component_ && component_->template_ ? component_->template_->GetName().CString() : "UNKNOWN");
+					// ASSERT("NaN in particle Location. Template: %s.", component_ && component_->template_ ? component_->template_->GetName().CString() : "UNKNOWN");
 				}
 			}
 			PostSpawn(particle, interp, spawnTime);

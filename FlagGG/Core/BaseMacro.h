@@ -70,7 +70,7 @@
 	#else
 		#define MS_ALIGN(n) __declspec(align(n))
 	#endif
-#elif defined(__ANDROID__) || defined(IOS)
+#elif defined(__ANDROID__) || defined(IOS) || defined(__APPLE__)
 	#define GCC_PACK(n) __attribute__((packed,aligned(n)))
 	#define GCC_ALIGN(n) __attribute__((aligned(n)))
 #endif

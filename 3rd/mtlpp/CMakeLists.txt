@@ -6,7 +6,9 @@ list (APPEND TARGET_PROPERTIES FOLDER "3rd")
 setup_lint ()
 
 # Define source files
-define_source_files (GLOB_CPP_PATTERNS *.mm GLOB_H_PATTERNS *.hpp)
+list (APPEND EXCLUDED_SOURCE_DIRS "examples")
+string (REPLACE ";" "/[^;]+;" EXCLUDE_PATTERNS "${EXCLUDED_SOURCE_DIRS};")
+define_source_files (EXCLUDE_PATTERNS ${EXCLUDE_PATTERNS} RECURSE GROUP GLOB_CPP_PATTERNS *.mm GLOB_H_PATTERNS *.hpp)
 
 # Define dependency libs
 set (INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})

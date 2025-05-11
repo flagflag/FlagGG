@@ -56,7 +56,7 @@ public:
 	static Vector3 GetCameraOffsetFromPayload(Int32 cameraPayloadOffset, const BaseParticle& particle, const Vector3& particlePosition, const Vector3& cameraPosition);
 
 	//
-	static Vector3 ParticleMeshDataBuilder::GetCameraOffset(float cameraPayloadOffset, Vector3 dirToCamera);
+	static Vector3 GetCameraOffset(float cameraPayloadOffset, Vector3 dirToCamera);
 
 	//
 	static void GetDynamicValueFromPayload(Int32 dynamicPayloadOffset, const BaseParticle& particle, Vector4& outDynamicData);

@@ -112,7 +112,7 @@ void GfxDeviceMetal::DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 ve
 	mtlRenderCommandEncoder_.DrawIndexed(metalPrimitiveType[primitiveType_], indexCount, mtlpp::IndexType::UInt16, indexBuffer_->Cast<GfxBufferMetal>()->GetMetalBuffer(), indexStart);
 }
 
-void GfxDeviceMetal::DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceCount)
+void GfxDeviceMetal::DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceStart, UInt32 instanceCount)
 {
 	PrepareDraw();
 
@@ -217,7 +217,7 @@ void GfxDeviceMetal::PrepareRenderPassAttachments()
 		ns::Array<mtlpp::RenderPassColorAttachmentDescriptor> colorAttachments = mtlRenderPassDesc.GetColorAttachments();
 		for (UInt32 i = 0; i < rtCount; ++i)
 		{
-			mtlpp::RenderPassColorAttachmentDescriptor& colorAttachment = colorAttachments[i];
+			mtlpp::RenderPassColorAttachmentDescriptor colorAttachment = colorAttachments[i];
 			colorAttachment.SetTexture(renderTargets_[i]->GetOwnerTexture()->Cast<GfxTextureMetal>()->GetMetalTexture());
 			colorAttachment.SetLoadAction(mtlpp::LoadAction::DontCare);
 			colorAttachment.SetStoreAction(mtlpp::StoreAction::DontCare);
@@ -275,7 +275,7 @@ void GfxDeviceMetal::PrepareRenderPiplineState()
 			ns::Array<mtlpp::RenderPipelineColorAttachmentDescriptor> colorAttachments = mtlRenderPiplineDesc.GetColorAttachments();
 			for (UInt32 i = 0; i < colorAttachments.GetSize(); ++i)
 			{
-				auto& colorAttachment = colorAttachments[i];
+				auto colorAttachment = colorAttachments[i];
 				colorAttachment.SetPixelFormat(GfxTextureMetal::ToMetalPixelFormat(renderTargets_[i]->GetOwnerTexture()->Cast<GfxTexture>()->GetDesc().format_));
 
 				if (rasterizerState_.blendMode_ != BLEND_REPLACE)

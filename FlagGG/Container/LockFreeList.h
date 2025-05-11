@@ -16,8 +16,12 @@
 #include <functional>
 #include <type_traits>
 
-#undef InterlockedCompareExchangePointer;
-#undef InterlockedCompareExchange;
+#ifdef InterlockedCompareExchangePointer
+	#undef InterlockedCompareExchangePointer
+#endif
+#ifdef InterlockedCompareExchange
+	#undef InterlockedCompareExchange
+#endif
 
 // what level of checking to perform...normally checkLockFreePointerList but could be ensure or check
 #if 1

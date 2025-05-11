@@ -17,6 +17,8 @@
 //-----------------------------------------------------------------------------------------------------
 #ifdef _WIN64
 #define DEBUG_BREAK /*_wassert(_CRT_WIDE(__FILE__), _CRT_WIDE(__FILE__), (unsigned)(__LINE__))*/__debugbreak()
+#elif __APPLE__
+#define DEBUG_BREAK
 #else
 #define DEBUG_BREAK _asm { int 3 }
 #endif

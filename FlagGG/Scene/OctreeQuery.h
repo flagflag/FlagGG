@@ -27,9 +27,9 @@ public:
 
 	virtual ~OctreeQuery() = default;
 
-	// É¾³ý¿½±´º¯Êý
+	// É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	OctreeQuery(const OctreeQuery & rhs) = delete;
-	// É¾³ý¿½±´º¯Êý
+	// É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	OctreeQuery& operator =(const OctreeQuery& rhs) = delete;
 
 	/// Intersection test for an octant.
@@ -163,10 +163,10 @@ public:
 	{}
 
 	PODVector<RayQueryResult>& results_;
+	Ray ray_;
 	RayQueryLevel level_;
 	Real maxDistance_;
 	UInt32 drawableFlags_;
-	Ray ray_;
 };
 
 }

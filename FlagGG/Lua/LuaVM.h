@@ -7,7 +7,8 @@
 #include "Container/List.h"
 #include "Container/Vector.h"
 #include "Lua/ILua/LuaType.h"
-#include "Lua/ILua/StackCore.h"
+#include "Lua/ILua/StackGet.h"
+#include "Lua/ILua/StackSet.h"
 
 #include <stdint.h>
 #include <lua.hpp>

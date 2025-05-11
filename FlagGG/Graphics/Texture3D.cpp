@@ -6,8 +6,6 @@
 #include "Math/Math.h"
 #include "Log.h"
 
-#include <d3dx11.h>
-
 namespace FlagGG
 {
 

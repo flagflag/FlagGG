@@ -14,6 +14,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <filesystem>
+
 namespace FlagGG
 {
 
@@ -33,7 +35,7 @@ bool PlatformFileInterface::DeleteDirectory(const String& directoryPath)
 	DIR* dir;
 	struct dirent* de;
 	struct stat st {};
-	dir = opendir(GetNativePath(path).CString());
+	dir = opendir(directoryPath.CString());
 	if (dir)
 	{
 		while ((de = readdir(dir)))
@@ -41,7 +43,7 @@ bool PlatformFileInterface::DeleteDirectory(const String& directoryPath)
 			String fileName(de->d_name);
 			if (fileName == "." || fileName == "..")
 				continue;
-			String pathAndName = path + fileName;
+			String pathAndName = directoryPath + fileName;
 			if (!stat(pathAndName.CString(), &st))
 			{
 				if (st.st_mode & S_IFDIR)
@@ -57,7 +59,7 @@ bool PlatformFileInterface::DeleteDirectory(const String& directoryPath)
 			}
 		}
 		closedir(dir);
-		return PlatformFileInterface::DeleteFile(input);
+		return PlatformFileInterface::DeleteFile(directoryPath);
 	}
 
 	return false;
@@ -106,7 +108,10 @@ bool PlatformFileInterface::MoveFile(const String& fileName, const String& newFi
 
 bool PlatformFileInterface::CopyFile(const String& fileName, const String& targetFileName)
 {
-	return copy(fileName.CString(), targetFileName.CString()) == 0;
+	// return copy(fileName.CString(), targetFileName.CString()) == 0;
+	std::error_code errorCode;
+	std::filesystem::copy(fileName.CString(), targetFileName.CString(), std::filesystem::copy_options::recursive, errorCode);
+	return errorCode.value() == 0;
 }
 
 }

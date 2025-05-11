@@ -91,12 +91,20 @@ struct TFileInterface<8> : public FileInterfaceBase
 {
 	FORCEINLINE static int fseek(FILE* stream, Int64 offset, int origin)
 	{
+#if PLATFORM_WINDOWS
 		return ::_fseeki64(stream, offset, origin);
+#else
+		return ::fseeko(stream, offset, origin);
+#endif
 	}
 
 	FORCEINLINE static Int64 ftell(FILE* stream)
 	{
+#if PLATFORM_WINDOWS
 		return ::_ftelli64(stream);
+#else
+		return ::ftello(stream);
+#endif
 	}
 };
 

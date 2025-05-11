@@ -35,7 +35,10 @@ else ()
 	target_link_libraries (${TARGET_NAME} FlagGG)
 endif ()
 
-target_link_libraries (${TARGET_NAME} LuaGameEngine WebUISystem)
+target_link_libraries (${TARGET_NAME} LuaGameEngine)
+if (WIN32)
+    target_link_libraries (${TARGET_NAME} WebUISystem)
+endif ()
 
 setup_test ()
 

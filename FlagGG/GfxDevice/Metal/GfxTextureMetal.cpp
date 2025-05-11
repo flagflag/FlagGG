@@ -166,7 +166,7 @@ void GfxTextureMetal::Apply(const void* initialDataPtr)
 		UpdateTexture(initialDataPtr);
 
 	gfxRenderSurfaces_.Clear();
-	gfxRenderSurfaces_.Push(MakeShared<GfxRenderSurfaceMetal>(this));
+	gfxRenderSurfaces_.Push(MakeShared<GfxRenderSurfaceMetal>(this, textureDesc_.width_, textureDesc_.height_));
 }
 
 void GfxTextureMetal::UpdateTexture(const void* dataPtr)

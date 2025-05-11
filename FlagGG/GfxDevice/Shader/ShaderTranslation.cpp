@@ -2,7 +2,9 @@
 #include "hlslcc.h"
 
 #include "ShaderTranslation.h"
+#if PLATFORM_WINDOWS
 #include "HlslShaderCompile.h"
+#endif
 #include "SpirvHelper.h"
 #include "Log.h"
 
@@ -19,6 +21,7 @@ static const char* SHADER_LANGUAGE_DEFINE[] =
 
 bool CompileShader(CompileShaderLanguage compileShaderLanguage, const PreProcessShaderInfo& shaderInfo, ShaderType type, const Vector<String>& defines, String& outShaderCode)
 {
+#if PLATFORM_WINDOWS
 	ID3DBlob* d3d11CompileCode = nullptr;
 	ID3DBlob* d3d11ShaderCode = nullptr;
 
@@ -108,6 +111,9 @@ bool CompileShader(CompileShaderLanguage compileShaderLanguage, const PreProcess
 #endif
 
 	return true;
+#else
+	return false;
+#endif
 }
 
 }

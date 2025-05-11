@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Lua/ILua/StackGet.h"
-#include "Lua/ILua/StackSet.h"
+#include "Export.h"
+#include <lua.hpp>
 
 namespace FlagGG
 {
