@@ -149,13 +149,14 @@ String GetTimeStamp(const String& fmt)
 	auto now = std::chrono::system_clock::now();
 
 	time_t sysTime = std::chrono::system_clock::to_time_t(now);
-	char dateTime[64];
+	char dateTime[64] = {};
 	strftime(dateTime, sizeof(dateTime), fmt.CString(), localtime(&sysTime));
 
 	auto duration = now.time_since_epoch();
 	auto secs = std::chrono::duration_cast<std::chrono::seconds>(duration);
 	auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() - secs.count() * 1000LL;
-	return ToString("%s_%03lld", dateTime, msec);
+	// return ToString("%s_%03lld", dateTime, (Int64)msec);
+	return String(dateTime) + ToString("_%03lld", (Int64)msec);
 }
 
 bool ParseCommand(const char** argv, UInt32 argc,  LJSONValue& result)

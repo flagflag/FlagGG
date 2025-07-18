@@ -15,6 +15,10 @@ set (INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
 
 setup_library (STATIC)
 
+target_link_libraries(${TARGET_NAME} PRIVATE "-framework CoreFoundation")
+target_link_libraries(${TARGET_NAME} PRIVATE "-framework Foundation")
+target_link_libraries(${TARGET_NAME} PRIVATE "-framework Metal")
+
 if (IOS)
 	xcode_setup(${TARGET_NAME})
 endif ()

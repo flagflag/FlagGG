@@ -131,6 +131,10 @@ static PRGR libfunc_rgr;
 
 #if LJ_TARGET_HAS_GETENTROPY
 extern int getentropy(void *buf, size_t len)
+{
+  arc4random_buf(buf, len);
+  return 0;
+}
 #ifdef __ELF__
   __attribute__((weak))
 #endif

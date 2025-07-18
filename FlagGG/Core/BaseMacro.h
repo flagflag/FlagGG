@@ -52,7 +52,7 @@
 
 #ifdef _WIN32
 	#define FORCEINLINE __forceinline									/* Force code to be inline */
-#elif defined(__ANDROID__) || defined(IOS) || defined(__linux__)
+#elif defined(__ANDROID__) || defined(IOS) || defined(__APPLE__) || defined(__linux__)
 	#define FORCEINLINE inline __attribute__ ((always_inline))			/* Force code to be inline */
 #else
 	#define FORCEINLINE

@@ -85,7 +85,7 @@ void TextureCompressionTest()
 int main()
 {
 	//
-	// GetSubsystem<EngineSettings>()->rendererType_ = RENDERER_TYPE_VULKAN;
+	GetSubsystem<EngineSettings>()->rendererType_ = RENDERER_TYPE_METAL;
 
 	GetSubsystem<AssetFileManager>()->AddArchive(new DefaultFileSystemArchive(GetLocalFileSystem(), GetProgramDir() + "Res"));
 
@@ -102,4 +102,6 @@ int main()
 	return 0;
 }
 
+#ifndef FlagGG_STATIC_DEFINE
 IMPLEMENT_MODULE_USD("UniformTest");
+#endif
