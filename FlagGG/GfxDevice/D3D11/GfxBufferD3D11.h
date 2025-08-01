@@ -30,7 +30,7 @@ private:
 	ID3D11Buffer* stagingBuffer_;
 
 	UInt32 bufferSize_;
-}
+};
 
 class GfxBufferD3D11 : public GfxBuffer
 {

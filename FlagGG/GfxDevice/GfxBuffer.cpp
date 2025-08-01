@@ -3,6 +3,16 @@
 namespace FlagGG
 {
 
+GfxBufferReadbackDataStream::GfxBufferReadbackDataStream()
+{
+
+}
+
+GfxBufferReadbackDataStream::~GfxBufferReadbackDataStream()
+{
+
+}
+
 GfxBuffer::GfxBuffer()
 	: GfxObject()
 	, gfxBufferDesc_{}

@@ -162,7 +162,7 @@ static const D3D11_STENCIL_OP d3d11StencilOperation[] =
 	D3D11_STENCIL_OP_DECR,
 };
 
-typedef HRESULT(WINAPI* PFN_CREATE_DXGI_FACTORY)(UINT flags, REFID riid, void** ppFactory);
+typedef HRESULT(WINAPI* PFN_CREATE_DXGI_FACTORY)(UINT flags, REFIID riid, void** ppFactory);
 
 static HMODULE GetDXXGIDynamicLibModule()
 {
@@ -216,7 +216,7 @@ GfxDeviceD3D11::GfxDeviceD3D11()
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-	HRESULT hr = D3D11CreateDevice(
+	hr = D3D11CreateDevice(
 		adapter,
 		D3D_DRIVER_TYPE_UNKNOWN,
 		nullptr,
@@ -379,7 +379,7 @@ void GfxDeviceD3D11::DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, 
 	deviceContext_->DrawIndexedInstanced(indexCount, instanceCount, indexStart, vertexStart, instanceStart);
 }
 
-void GfxDeviceD3D11::DrawIndexedInstancedIndirect(GfxBuffer* indirectBuffer, UInt32 indirectDataOffset, UInt32 indirectDataStride, UInt32 drawIndirectCount) override;
+void GfxDeviceD3D11::DrawIndexedInstancedIndirect(GfxBuffer* indirectBuffer, UInt32 indirectDataOffset, UInt32 indirectDataStride, UInt32 drawIndirectCount)
 {
 	if (!vertexShader_ || !pixelShader_)
 	{
@@ -395,7 +395,7 @@ void GfxDeviceD3D11::DrawIndexedInstancedIndirect(GfxBuffer* indirectBuffer, UIn
 
 	if (nvApi_->IsInitialized() && nvApi_->nvApiD3D11MultiDrawIndexedInstancedIndirect)
 	{
-		nvApi_->nvApiD3D11MultiDrawIndexedInstancedIndirect(deviceContext_, drawIndirectCount, gfxBufferD3D11->GetD3D11Buffer(), indirectDataOffset, indirectDataStride)
+		nvApi_->nvApiD3D11MultiDrawIndexedInstancedIndirect(deviceContext_, drawIndirectCount, gfxBufferD3D11->GetD3D11Buffer(), indirectDataOffset, indirectDataStride);
 	}
 	else
 	{

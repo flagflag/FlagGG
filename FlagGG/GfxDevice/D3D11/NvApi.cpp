@@ -153,7 +153,7 @@ void NvApi::Init()
                     {
                         char name[64];
                         nvApiGpuGetFullName(nvGpu_, name);
-                        BX_TRACE("%s", name);
+                        FLAGGG_LOG_STD_DEBUG("%s", name);
                     }
                     else
                     {
@@ -188,7 +188,7 @@ void NvApi::Shutdown()
         nvApiDll_ = NULL;
     }
 
-    shutdownAftermath();
+    ShutdownAftermath();
 }
 
 void NvApi::GetMemoryInfo(int64_t& gpuMemoryUsed, int64_t& gpuMemoryMax)
@@ -224,15 +224,15 @@ bool NvApi::LoadAftermath()
 
     if (NULL != nvAftermathDll_)
     {
-        nvAftermathDx11Initialize          = (PFN_NVAFTERMATH_DX11_INITIALIZE         )bx::dlsym(nvAftermathDll_, "GFSDK_Aftermath_DX11_Initialize");
-        nvAftermathDx11CreateContextHandle = (PFN_NVAFTERMATH_DX11_CREATECONTEXTHANDLE)bx::dlsym(nvAftermathDll_, "GFSDK_Aftermath_DX11_CreateContextHandle");
-        nvAftermathDx12Initialize          = (PFN_NVAFTERMATH_DX12_INITIALIZE         )bx::dlsym(nvAftermathDll_, "GFSDK_Aftermath_DX12_Initialize");
-        nvAftermathDx12CreateContextHandle = (PFN_NVAFTERMATH_DX12_CREATECONTEXTHANDLE)bx::dlsym(nvAftermathDll_, "GFSDK_Aftermath_DX12_CreateContextHandle");
-        nvAftermathReleaseContextHandle	   = (PFN_NVAFTERMATH_RELEASECONTEXTHANDLE    )bx::dlsym(nvAftermathDll_, "GFSDK_Aftermath_ReleaseContextHandle");
-        nvAftermathSetEventMarker          = (PFN_NVAFTERMATH_SETEVENTMARKER          )bx::dlsym(nvAftermathDll_, "GFSDK_Aftermath_SetEventMarker");
-        nvAftermathGetData                 = (PFN_NVAFTERMATH_GETDATA                 )bx::dlsym(nvAftermathDll_, "GFSDK_Aftermath_GetData");
-        nvAftermathGetDeviceStatus         = (PFN_NVAFTERMATH_GETDEVICESTATUS         )bx::dlsym(nvAftermathDll_, "GFSDK_Aftermath_GetDeviceStatus");
-        nvAftermathGetPageFaultInformation = (PFN_NVAFTERMATH_GETPAGEFAULTINFORMATION )bx::dlsym(nvAftermathDll_, "GFSDK_Aftermath_GetPageFaultInformation");
+        nvAftermathDx11Initialize          = (PFN_NVAFTERMATH_DX11_INITIALIZE         )::GetProcAddress(nvAftermathDll_, "GFSDK_Aftermath_DX11_Initialize");
+        nvAftermathDx11CreateContextHandle = (PFN_NVAFTERMATH_DX11_CREATECONTEXTHANDLE)::GetProcAddress(nvAftermathDll_, "GFSDK_Aftermath_DX11_CreateContextHandle");
+        nvAftermathDx12Initialize          = (PFN_NVAFTERMATH_DX12_INITIALIZE         )::GetProcAddress(nvAftermathDll_, "GFSDK_Aftermath_DX12_Initialize");
+        nvAftermathDx12CreateContextHandle = (PFN_NVAFTERMATH_DX12_CREATECONTEXTHANDLE)::GetProcAddress(nvAftermathDll_, "GFSDK_Aftermath_DX12_CreateContextHandle");
+        nvAftermathReleaseContextHandle	   = (PFN_NVAFTERMATH_RELEASECONTEXTHANDLE    )::GetProcAddress(nvAftermathDll_, "GFSDK_Aftermath_ReleaseContextHandle");
+        nvAftermathSetEventMarker          = (PFN_NVAFTERMATH_SETEVENTMARKER          )::GetProcAddress(nvAftermathDll_, "GFSDK_Aftermath_SetEventMarker");
+        nvAftermathGetData                 = (PFN_NVAFTERMATH_GETDATA                 )::GetProcAddress(nvAftermathDll_, "GFSDK_Aftermath_GetData");
+        nvAftermathGetDeviceStatus         = (PFN_NVAFTERMATH_GETDEVICESTATUS         )::GetProcAddress(nvAftermathDll_, "GFSDK_Aftermath_GetDeviceStatus");
+        nvAftermathGetPageFaultInformation = (PFN_NVAFTERMATH_GETPAGEFAULTINFORMATION )::GetProcAddress(nvAftermathDll_, "GFSDK_Aftermath_GetPageFaultInformation");
 
         bool initialized = true
             && NULL != nvAftermathDx11Initialize
@@ -259,7 +259,7 @@ bool NvApi::LoadAftermath()
 
 bool NvApi::InitAftermath(const ID3D11Device* device, const ID3D11DeviceContext* deviceCtx)
 {
-    if (loadAftermath() )
+    if (LoadAftermath())
     {
         int32_t result;
         result = nvAftermathDx11Initialize(0x13, 1, device);
@@ -267,7 +267,7 @@ bool NvApi::InitAftermath(const ID3D11Device* device, const ID3D11DeviceContext*
         {
             result = nvAftermathDx11CreateContextHandle(deviceCtx, &aftermathHandle_);
             if (1 != result)
-                FLAGGG_LOG_STD_WARN(, "NV Aftermath: nvAftermathDx12CreateContextHandle failed %x", result);
+                FLAGGG_LOG_STD_WARN("NV Aftermath: nvAftermathDx12CreateContextHandle failed %x", result);
 
             if (1 == result)
             {
@@ -291,7 +291,7 @@ bool NvApi::InitAftermath(const ID3D11Device* device, const ID3D11DeviceContext*
 
 bool NvApi::InitAftermath(const ID3D12Device* device, const ID3D12CommandList* commandList)
 {
-    if (LoadAftermath() )
+    if (LoadAftermath())
     {
         int32_t result;
         result = nvAftermathDx12Initialize(0x13, 1, device);
@@ -344,7 +344,7 @@ void NvApi::ShutdownAftermath()
             aftermathHandle_ = NULL;
         }
 
-        bx::dlclose(nvAftermathDll_);
+        ::FreeLibrary(nvAftermathDll_);
         nvAftermathDll_ = NULL;
     }
 }
@@ -353,7 +353,7 @@ void NvApi::SetMarker(const String& marker)
 {
     if (NULL != aftermathHandle_)
     {
-        ASSERT(nvAftermathSetEventMarker(aftermathHandle_, marker.getPtr(), marker.getLength()));
+        ASSERT(nvAftermathSetEventMarker(aftermathHandle_, marker.CString(), marker.Length()));
     }
 }
 

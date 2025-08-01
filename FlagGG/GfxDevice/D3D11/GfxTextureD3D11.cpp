@@ -756,7 +756,7 @@ void GfxTextureD3D11::SetGpuTag(const String& gpuTag)
 
 	if (textureDesc_.layers_ > 1)
 	{
-		for (UInt32 layer = 0; layer < textureDesc_.layers_; ++i)
+		for (UInt32 layer = 0; layer < textureDesc_.layers_; ++layer)
 		{
 			for (UInt32 i = 0; i < textureDesc_.levels_; ++i)
 			{

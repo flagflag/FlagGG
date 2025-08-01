@@ -54,10 +54,10 @@ struct NvApi
 
     void SetMarker(const String& marker);
 
-    void* nvApiDll_;
+    HMODULE nvApiDll_;
     NvPhysicalGpuHandle* nvGpu_;
 
-    void* nvAftermathDll_;
+    HMODULE nvAftermathDll_;
     NvAftermathContextHandle* aftermathHandle_;
 
     PFN_NVAPI_MULTIDRAWINDIRECT nvApiD3D11MultiDrawInstancedIndirect;

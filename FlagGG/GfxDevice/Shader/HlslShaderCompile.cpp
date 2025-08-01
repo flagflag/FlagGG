@@ -1,3 +1,4 @@
+#include "Core/BaseTypes.h"
 #if PLATFORM_WINDOWS
 #include "HlslShaderCompile.h"
 #include "FileSystem/FileHandle/LocalFileHandle.h"

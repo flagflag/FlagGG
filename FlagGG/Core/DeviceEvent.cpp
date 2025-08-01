@@ -1,6 +1,9 @@
 #include "Core/DeviceEvent.h"
 #include "Core/Context.h"
 #include "Core/EventManager.h"
+#if PLATFORM_WINDOWS
+#include <Windows.h>
+#endif
 
 namespace FlagGG
 {
