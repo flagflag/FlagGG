@@ -29,6 +29,7 @@ void CS()
 }
 #else
 [numthreads(1, 1, 1)]
+void CS()
 {
     uint index = globalIndex[0];
     uint count = 0;

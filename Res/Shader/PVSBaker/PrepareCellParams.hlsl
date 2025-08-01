@@ -50,11 +50,11 @@ float4 EulerAnglesToQuat(float x, float y, float z)
     float sinZ = sin(z);
     float cosZ = cos(z);
 
-    float4 rect;
-    rect.w = cosY * cosX * cosZ + sinY * sinX * sinZ;
-    rect.x = cosY * sinX * cosZ + sinY * cosX * sinZ;
-    rect.y = sinY * cosX * cosZ - cosY * sinX * sinZ;
-    rect.z = cosY * cosX * sinZ - sinY * sinX * cosZ;
+    float4 ret;
+    ret.w = cosY * cosX * cosZ + sinY * sinX * sinZ;
+    ret.x = cosY * sinX * cosZ + sinY * cosX * sinZ;
+    ret.y = sinY * cosX * cosZ - cosY * sinX * sinZ;
+    ret.z = cosY * cosX * sinZ - sinY * sinX * cosZ;
 
     return ret;
 }
@@ -65,7 +65,7 @@ float4x4 InverseMatrix(float4x4 src)
                 src[1][0] * src[2][1] * src[0][2] +
                 src[2][0] * src[0][1] * src[1][2] +
                 src[2][0] * src[1][1] * src[0][2] +
-                src[1][0] * src[0][1] * scc[2][2] +
+                src[1][0] * src[0][1] * src[2][2] +
                 src[0][0] * src[2][1] * src[1][2];
 
     float invDet = 1.0f / det;
@@ -74,7 +74,7 @@ float4x4 InverseMatrix(float4x4 src)
     ret[0][0] = (src[1][1] * src[2][2] - src[2][1] * src[1][2]) * invDet;
     ret[0][1] = -(src[0][1] * src[2][2] - src[2][1] * src[0][2]) * invDet;
     ret[0][2] = (src[0][1] * src[1][2] - src[1][1] * src[0][2]) * invDet;
-    ret[0][3] = -(src[0][3] * ret[0][0] + src[1][3] * rect[0][1] + src[2][3] * ret[0][2]);
+    ret[0][3] = -(src[0][3] * ret[0][0] + src[1][3] * ret[0][1] + src[2][3] * ret[0][2]);
     ret[1][0] = -(src[1][0] * src[2][2] - src[2][0] * src[1][2]) * invDet;
     ret[1][1] = (src[0][0] * src[2][2] - src[2][0] * src[0][2]) * invDet;
     ret[1][2] = -(src[0][0] * src[1][2] - src[1][0] * src[0][2]) * invDet;
@@ -95,10 +95,10 @@ float4x4 GetView(float3 position, float3 rotation)
 {
     float4 quat = EulerAnglesToQuat(rotation.x, rotation.y, rotation.z);
     float4x4 ret = float4x4(
-        1.0f - 2.0f * quat.y * quat.y - 2.0f * quat.z * quat.z,     2.0f * quat.x * quat.y - 2.0f * quat.w * quat.z,            2.0f * quat.x * quat.z + 2.0f * quat.w * quat.y,        position.x,
-        2.0 * quat.x * quat.y + 2.0f * quat.w * quat.z,             1.0f - 2.0f * quat.x * quat.x - 2.0f * quat.z * quat.z,     2.0f * quat.y * quat.z - 2.0f * quat.w * quat.x,        position.y,
-        2.0f * quat.x * quat.z - 2.0f * quat.w * quat.y,            2.0f * quat.y * quat.z + 2.0f * quat.w * quat.x,            1.0f - 2.0f * quat.x * quat.x - 2.0f quat.y * quat.y,   position.z,
-        0,                                                          0,                                                          0,                                                      1
+        1.0f - 2.0f * quat.y * quat.y - 2.0f * quat.z * quat.z,     2.0f * quat.x * quat.y - 2.0f * quat.w * quat.z,            2.0f * quat.x * quat.z + 2.0f * quat.w * quat.y,            position.x,
+        2.0 * quat.x * quat.y + 2.0f * quat.w * quat.z,             1.0f - 2.0f * quat.x * quat.x - 2.0f * quat.z * quat.z,     2.0f * quat.y * quat.z - 2.0f * quat.w * quat.x,            position.y,
+        2.0f * quat.x * quat.z - 2.0f * quat.w * quat.y,            2.0f * quat.y * quat.z + 2.0f * quat.w * quat.x,            1.0f - 2.0f * quat.x * quat.x - 2.0f * quat.y * quat.y,     position.z,
+        0,                                                          0,                                                          0,                                                          1
     );
     return ret;
 }
@@ -201,7 +201,7 @@ void CS(uint3 DTid : SV_DispatchThreadID)
         {
             uint idx = startLocation + face * sampleCount + i;
 
-            float3 samplePoint = samplePointBuffer[i].xyz;
+            float3 samplePoint = samplePointsBuffer[i].xyz;
 
             float4x4 viewTransform = GetView(cellPosition + samplePoint, rotation[face]);
 

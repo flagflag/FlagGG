@@ -27,7 +27,7 @@
             float3(instanceData0.w, instanceData1.w, instanceData2.w)
         );
         float3 worldPosition = mul(float4(position, 1.0), worldMatrix);
-        float3 clipPosition = mul(float4(worldPosition, 1.0), projViewMatrix);
+        float4 clipPosition = mul(float4(worldPosition, 1.0), projViewMatrix);
         outPosition = clipPosition;
         outModelID = instanceData3;
     #if DEBUG_VIEW

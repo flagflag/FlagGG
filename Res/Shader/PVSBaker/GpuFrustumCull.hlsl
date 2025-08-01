@@ -45,7 +45,7 @@ struct DrawIndexedIndirectArgs
 };
 RWStructuredBuffer<DrawIndexedIndirectArgs> drawIndirectArgsBuffer : register(u3);
 // Draw count
-RWStructuredBuffer<uint> globalIndex : reigster(u4);
+RWStructuredBuffer<uint> globalIndex : register(u4);
 
 // 检测AABB是否在视锥体内
 bool IsInside(PVSGpuCullUniform params, BoundingBox aabb)
@@ -118,6 +118,7 @@ void CS(uint3 DTid : SV_DispatchThreadID)
             InterlockedAdd(globalIndex[i], 1, drawIndex);
 
             // write draw indirect data
+            DrawIndexedIndirectArgs args;
             args.indexCountPerInstance = geom.indexCount;
             args.instanceCount         = 1;
             args.startIndexLocation    = geom.startIndexLocation;

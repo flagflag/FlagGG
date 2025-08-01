@@ -11,7 +11,7 @@ RWStructuredBuffer<uint> visibilityMap : register(u1);
 
 #if INIT_VAR
 [numthreads(THREAD_COUNT, 1, 1)]
-void CS(uint32 DTid : SV_DispatchThreadID)
+void CS(uint3 DTid : SV_DispatchThreadID)
 {
     if (DTid.x < modelIDRange)
     {
@@ -19,7 +19,7 @@ void CS(uint32 DTid : SV_DispatchThreadID)
     }
 }
 #else
-[numthreads(THREAD_X_COUNT, THREAD_Y_COUNT, THREAD_Z_COUNT)]
+[numthreads(THREAD_X_COUNT, THREAD_Y_COUNT, 1)]
 void CS(uint3 DTid : SV_DispatchThreadID)
 {
     // 超过纹理size
@@ -30,7 +30,7 @@ void CS(uint3 DTid : SV_DispatchThreadID)
     for (uint i = 0; i < sampleCount; ++i)
     {
         // 先这样，后面改成SampleGrad加速采样缓存
-        uint modelID = modelIDTexture.Load(uint4(DTid.xy, i), 0);
+        uint modelID = modelIDTexture.Load(uint4(DTid.xy, i, 0));
         // 校验下modelID是否合法，避免Gpu挂了（Gpu挂了超级难查）
         if (modelID < modelIDRange)
         {
