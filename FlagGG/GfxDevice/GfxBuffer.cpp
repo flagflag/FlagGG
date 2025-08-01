@@ -64,6 +64,31 @@ void GfxBuffer::EndWrite(UInt32 bytesWritten)
 
 }
 
+void GfxBuffer::CopyData(GfxBuffer* srcBuffer, UInt32 srcOffset, UInt32 destOffset, UInt32 copySize)
+{
+
+}
+
+bool GfxBuffer::ReadBack(void* dataPtr)
+{
+	return false;
+}
+
+bool GfxBuffer::ReadBackSubResigon(void* dataPtr, UInt32 offset, UInt32 size)
+{
+	return false;
+}
+
+SharedPtr<GfxBufferReadbackDataStream> GfxBuffer::ReadBackToStream()
+{
+	return nullptr;
+}
+
+SharedPtr<GfxBufferReadbackDataStream> GfxBuffer::ReadbackToStream(UInt32 offset, UInt32 size)
+{
+	return nullptr;
+}
+
 const UInt8* GfxBuffer::GetShadowData() const
 {
 	return nullptr;

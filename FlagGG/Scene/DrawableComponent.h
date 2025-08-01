@@ -11,7 +11,7 @@
 namespace FlagGG
 {
 
-class OctreeNode;
+struct OctreeNode;
 
 struct HiZVisibilityTestInfo : public RefCounted
 {

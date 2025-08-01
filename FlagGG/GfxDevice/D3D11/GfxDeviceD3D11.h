@@ -21,6 +21,7 @@ namespace FlagGG
 class GfxShaderD3D11;
 class GfxBufferD3D11;
 class GfxSampler;
+struct NvApi;
 
 class GfxDeviceD3D11 : public GfxDevice, public Subsystem<GfxDeviceD3D11>
 {
@@ -50,6 +51,9 @@ public:
 
 	// 提交渲染指令
 	void DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceStart, UInt32 instanceCount) override;
+
+	// 提交渲染指令
+	void DrawIndexedInstancedIndirect(GfxBuffer* indirectBuffer, UInt32 indirectDataOffset, UInt32 indirectDataStride, UInt32 drawIndirectCount) override;
 
 	// Flush
 	void Flush() override;
@@ -125,6 +129,9 @@ private:
 		MAX_CONST_BUFFER,
 	};
 
+	// D3D11 Factory
+	IDXGIFactory* factory_{};
+
 	// D3D11设备
 	ID3D11Device* device_{};
 
@@ -148,6 +155,9 @@ private:
 	HashMap<Pair<UInt32, GfxShaderD3D11*>, ID3D11InputLayout*> d3d11InputLayoutMap_;
 
 	HashMap<UInt32, ID3D11SamplerState*> d3d11SamplerStateMap_;
+
+	// Nv Api
+	UniquePtr<NvApi> nvApi_;
 };
 
 }

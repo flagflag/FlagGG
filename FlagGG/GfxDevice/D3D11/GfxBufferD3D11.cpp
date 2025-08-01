@@ -20,6 +20,60 @@ static D3D11_MAP d3d11Map[] =
 	D3D11_MAP_WRITE_DISCARD
 };
 
+GfxBufferReadbackDataStreamD3D11::GfxBufferReadbackDataStreamD3D11(GfxBufferD3D11* owner, UInt32 offset, UInt32 size)
+	: stagingBuffer_(nullptr)
+{
+	auto* gfxDevice = GetSubsystem<GfxDeviceD3D11>();
+	auto* d3d11Device = gfxDevice->GetD3D11Device();
+	auto* d3d11DeviceContext = gfxDevice->GetD3D11DeviceContext();
+
+	const auto& gfxBufferDesc = owner->GetDesc();
+	bufferSize_ = size;
+
+	D3D11_BUFFER_DESC bufferDesc;
+	Memory::Memzero(&bufferDesc, sizeof(bufferDesc));
+	bufferDesc.Usage = D3D11_USAGE_STAGING;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	bufferDesc.ByteWidth = bufferSize_;
+
+	HRESULT hr = d3d11Device->CreateBuffer(&bufferDesc, nullptr, &stagingBuffer_);
+	if (FAILED(hr))
+	{
+		D3D11_SAFE_RELEASE(stagingBuffer_);
+		FLAGGG_LOG_ERROR("Can not create d3d11 buffer.");
+		return;
+	}
+
+	D3D11_BOX copyBox;
+	copyBox.left = offset;
+	copyBox.right = size;
+	copyBox.top = 0;
+	copyBox.bottom = 1;
+	copyBox.front = 0;
+	copyBox.back = 1;
+
+	d3d11DeviceContext->CopySubresourceRegion(stagingBuffer_, 0, 0, 0, 0, owner->GetD3D11Buffer(), 0, &copyBox);
+}
+
+GfxBufferReadbackDataStreamD3D11::~GfxBufferReadbackDataStreamD3D11()
+{
+	D3D11_SAFE_RELEASE(stagingBuffer_);
+}
+
+void GfxBufferReadbackDataStreamD3D11::Read(void* dataPtr)
+{
+	auto* gfxDevice = GetSubsystem<GfxDeviceD3D11>();
+	auto* d3d11Device = gfxDevice->GetD3D11Device();
+	auto* d3d11DeviceContext = gfxDevice->GetD3D11DeviceContext();
+
+	D3D11_MAPPED_SUBRESOURCE mapped;
+	d3d11DeviceContext->Map(stagingBuffer_, 0, D3D11_MAP_READ, 0, &mapped);
+
+	Memory::Memcpy(dataPtr, mapped.pData, bufferSize_);
+
+	d3d11DeviceContext->Unmap(stagingBuffer_, 0);
+}
+
 GfxBufferD3D11::GfxBufferD3D11()
 	: GfxBuffer()
 {
@@ -29,6 +83,8 @@ GfxBufferD3D11::GfxBufferD3D11()
 GfxBufferD3D11::~GfxBufferD3D11()
 {
 	D3D11_SAFE_RELEASE(d3d11Buffer_);
+	D3D11_SAFE_RELEASE(d3d11SRV_);
+	D3D11_SAFE_RELEASE(d3d11UAV_);
 }
 
 void GfxBufferD3D11::SetGpuTag(const String& gpuTag)
@@ -243,6 +299,50 @@ void GfxBufferD3D11::EndWrite(UInt32 bytesWritten)
 
 		GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext()->UpdateSubresource(d3d11Buffer_, 0, &destBox, &shadowdData_[0], 0, 0);
 	}
+}
+
+void GfxBufferD3D11::CopyData(GfxBuffer* srcBuffer, UInt32 srcOffset, UInt32 destOffset, UInt32 copySize)
+{
+	auto bufferD3D11 = RTTICast<GfxBufferD3D11>(srcBuffer);
+
+	D3D11_BOX srcBox;
+	srcBox.left = srcOffset;
+	srcBox.right = srcOffset + copySize;
+	srcBox.top = 0;
+	srcBox.bottom = 1;
+	srcBox.front = 0;
+	srcBox.back = 1;
+
+	GetSubsystem<GfxDeviceD3D11>()->GetD3D11DeviceContext()->CopySubresourceRegion(
+		GetD3D11Buffer(), 0, destOffset, 0, 0, bufferD3D11->GetD3D11Buffer(), 0, &srcBox);
+}
+
+bool GfxBufferD3D11::ReadBack(void* dataPtr)
+{
+	GfxBufferReadbackDataStreamD3D11 readbackStream(this, 0, GetDesc().size_);
+	if (!readbackStream.IsValid())
+		return false;
+	readbackStream.Read(dataPtr);
+	return true;
+}
+
+bool GfxBufferD3D11::ReadBackSubResigon(void* dataPtr, UInt32 offset, UInt32 size)
+{
+	GfxBufferReadbackDataStreamD3D11 readbackStream(this, offset, GetDesc().size_);
+	if (!readbackStream.IsValid())
+		return false;
+	readbackStream.Read(dataPtr);
+	return true;
+}
+
+SharedPtr<GfxBufferReadbackDataStream> GfxBufferD3D11::ReadBackToStream()
+{
+	return MakeShared<GfxBufferReadbackDataStreamD3D11>(this, 0, GetDesc().size_);
+}
+
+SharedPtr<GfxBufferReadbackDataStream> GfxBufferD3D11::ReadbackToStream(UInt32 offset, UInt32 size)
+{
+	return MakeShared<GfxBufferReadbackDataStreamD3D11>(this, offset, GetDesc().size_);
 }
 
 }

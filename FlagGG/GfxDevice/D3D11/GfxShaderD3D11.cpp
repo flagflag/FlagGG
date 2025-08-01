@@ -45,7 +45,9 @@ void GfxShaderD3D11::AnalysisReflection(ID3DBlob* compileCode)
 
 	for (UInt32 i = 0; i < shaderDesc.InputParameters; ++i)
 	{
-		D3D11_SIGNATURE_PARAMETER_DESC* inputDesc = new D3D11_SIGNATURE_PARAMETER_DESC;
+		// 有trick，GetInputParameterDesc实际调用的是D3D12_SIGNATURE_PARAMETER_DESC的版本，因此内存会越界
+		UInt8 STACK_MEMORY[sizeof(D3D11_SIGNATURE_PARAMETER_DESC) * 2];
+		D3D11_SIGNATURE_PARAMETER_DESC* inputDesc = new(STACK_MEMORY) D3D11_SIGNATURE_PARAMETER_DESC;
 		hr = reflector->GetInputParameterDesc(i, inputDesc);
 		if (FAILED(hr))
 		{

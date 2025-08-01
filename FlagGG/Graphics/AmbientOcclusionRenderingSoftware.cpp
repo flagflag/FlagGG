@@ -213,7 +213,6 @@ void AmbientOcclusionRenderingSoftware::RenderAO(const AmbientOcclusionInputData
 	AllocAOTexture(inputData.renderSolution_);
 
 	auto* gfxDevice = GfxDevice::GetDevice();
-	auto* renderEngine = GetSubsystem<RenderEngine>();
 
 	gfxDevice->SetMaterialShaderParameters(shaderParameters_);
 

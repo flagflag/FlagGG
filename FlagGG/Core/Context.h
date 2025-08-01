@@ -35,7 +35,9 @@ struct VariableWrapperImpl : public VariableWrapper
 class FlagGG_API Context : public Subsystem<Context>
 {
 public:
-	template < class VariableType >
+	Context();
+
+	template <class VariableType>
 	void RegisterVariable(VariableType* variable, const String& variableName)
 	{
 		SharedPtr<VariableWrapper> wrapper(new VariableWrapperImpl<VariableType>(variable));
@@ -78,6 +80,22 @@ public:
 
 	UInt32 GetCurrentTemporalAASampleIndex() const { return temporalAASampleIndex_; }
 
+	void SetWorkDir(const String& workDir);
+
+	void SetResourceDir(const String& resDir);
+
+	void SetLogDir(const String& logDir);
+
+	void SetBinaryDir(const String& binaryDir);
+
+	const String& GetWorkDir() const { return workDir_; }
+
+	const String& GetResourceDir() const { return resDir_; }
+
+	const String& GetLogDir() const { return logDir_; }
+
+	const String& GetBinaryDir() const { return binaryDir_; }
+
 private:
 	HashMap<String, SharedPtr<VariableWrapper>> wrappers_;
 
@@ -86,6 +104,11 @@ private:
 
 	UInt32 frameNumber_{};
 	UInt32 temporalAASampleIndex_{};
+
+	String workDir_;
+	String resDir_;
+	String logDir_;
+	String binaryDir_;
 };
 
 }

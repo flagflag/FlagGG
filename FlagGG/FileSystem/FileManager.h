@@ -43,6 +43,9 @@ public:
 	// 删除子文件系统
 	void RemoveArchive(FileSystemArchive* fileSystemArchive);
 
+	// 获取文件系统个数
+	UInt32 GetNumArchive() const { return fileSystemArchives_.Size(); }
+
 protected:
 	// 返回是否只读
 	bool IsReadOnly() const override { return true; }

@@ -121,6 +121,15 @@ public:
 	// 设置compute texture
 	virtual void SetComputeTexture(UInt8 slotID, GfxTexture* gfxaTexture, ComputeBindAccess bindFlags = COMPUTE_BIND_ACCESS_READ);
 
+	// 设置compute sampler
+	virtual void SetComputeSampler(UInt8 slotID, GfxSampler* gfxSampler);
+
+	// 重置常量buffer
+	virtual void ResetConstantBuffer();
+
+	// 在slotID通道绑定常量buffer
+	virtual void SetConstantBuffer(UInt8 slotID, GfxBuffer* gfxBuffer);
+
 	// 重置buffer
 	virtual void ResetBuffers();
 
@@ -192,6 +201,9 @@ public:
 
 	// 提交渲染指令
 	virtual void DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceStart, UInt32 instanceCount);
+
+	// 提交渲染指令
+	virtual void DrawIndexedInstancedIndirect(GfxBuffer* indirectBuffer, UInt32 indirectDataOffset, UInt32 indirectDataStride, UInt32 drawIndirectCount);
 
 	// Flush
 	virtual void Flush();
@@ -281,6 +293,11 @@ protected:
 	SharedPtr<GfxShader> pixelShader_;
 	SharedPtr<GfxShader> computeShader_;
 	bool shaderDirty_{};
+	bool computeShaderDirty_{};
+
+	// constant buffer
+	SharedPtr<GfxBuffer> constantBuffers_[MAX_GPU_UNITS_COUNT];
+	bool constantBuffersDirty_{};
 
 	// 准备提交的buffer
 	SharedPtr<GfxBuffer> buffers_[MAX_GPU_UNITS_COUNT];
@@ -294,6 +311,10 @@ protected:
 	// 准备提交的sampler
 	SharedPtr<GfxSampler> samplers_[MAX_GPU_UNITS_COUNT];
 	bool samplerDirty_{};
+
+	// 准备提交的compute sampler
+	SharedPtr<GfxSampler> computeSamplers_[MAX_GPU_UNITS_COUNT];
+	bool computeSamplerDirty_{};
 
 	// 光栅化状态
 	RasterizerState rasterizerState_;

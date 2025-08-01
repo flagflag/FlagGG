@@ -481,11 +481,14 @@ void GfxTextureD3D11::CreateTexture2D()
 					D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
 					Memory::Memzero(&renderTargetViewDesc, sizeof(renderTargetViewDesc));
 					renderTargetViewDesc.Format = textureDesc.Format;
-					renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 					if (textureDesc.ArraySize <= 1)
+					{
+						renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 						renderTargetViewDesc.Texture2D.MipSlice = level;
+					}
 					else
 					{
+						renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
 						renderTargetViewDesc.Texture2DArray.MipSlice = level;
 						renderTargetViewDesc.Texture2DArray.FirstArraySlice = index;
 						renderTargetViewDesc.Texture2DArray.ArraySize = 1;
@@ -751,15 +754,35 @@ void GfxTextureD3D11::SetGpuTag(const String& gpuTag)
 		d3d11Texture3D_->SetPrivateData(WKPDID_D3DDebugObjectName, gpuTag.Length(), gpuTag.CString());
 	}
 
-	for (UInt32 i = 0; i < textureDesc_.levels_; ++i)
+	if (textureDesc_.layers_ > 1)
 	{
-		if (auto* renderSurface = GetRenderSurface(0, i))
+		for (UInt32 layer = 0; layer < textureDesc_.layers_; ++i)
 		{
-			renderSurface->SetGpuTag(ToString("%s-RenderView(%d x %d)", gpuTag.CString(), textureDesc_.width_ >> i, textureDesc_.height_ >> i));
+			for (UInt32 i = 0; i < textureDesc_.levels_; ++i)
+			{
+				if (auto* renderSurface = GetRenderSurface(0, i))
+				{
+					renderSurface->SetGpuTag(ToString("%s-RenderView[%d](%d x %d)", gpuTag.CString(), layer, textureDesc_.width_ >> i, textureDesc_.height_ >> i));
+				}
+				if (auto* textureView = GetSubResourceView(0, i))
+				{
+					textureView->SetGpuTag(ToString("%s-TextureView[%d](%d x %d)", gpuTag.CString(), layer, textureDesc_.width_ >> i, textureDesc_.height_ >> i));
+				}
+			}
 		}
-		if (auto* textureView = GetSubResourceView(0, i))
+	}
+	else
+	{
+		for (UInt32 i = 0; i < textureDesc_.levels_; ++i)
 		{
-			textureView->SetGpuTag(ToString("%s-TextureView(%d x %d)", gpuTag.CString(), textureDesc_.width_ >> i, textureDesc_.height_ >> i));
+			if (auto* renderSurface = GetRenderSurface(0, i))
+			{
+				renderSurface->SetGpuTag(ToString("%s-RenderView(%d x %d)", gpuTag.CString(), textureDesc_.width_ >> i, textureDesc_.height_ >> i));
+			}
+			if (auto* textureView = GetSubResourceView(0, i))
+			{
+				textureView->SetGpuTag(ToString("%s-TextureView(%d x %d)", gpuTag.CString(), textureDesc_.width_ >> i, textureDesc_.height_ >> i));
+			}
 		}
 	}
 
@@ -974,8 +997,7 @@ SharedPtr<GfxTextureReadbackDataStream> GfxTextureD3D11::ReadBackSubRegionToStre
 
 GfxShaderResourceView* GfxTextureD3D11::GetSubResourceView(UInt32 index, UInt32 level)
 {
-	UInt32 layers = textureDesc_.isCube_ ? 6 : textureDesc_.layers_;
-	UInt32 arrayIndex = index * layers + level;
+	UInt32 arrayIndex = index * textureDesc_.levels_ + level;
 	return arrayIndex < gfxTextureViews_.Size() ? gfxTextureViews_[arrayIndex] : nullptr;
 }
 
@@ -986,8 +1008,7 @@ GfxRenderSurface* GfxTextureD3D11::GetRenderSurface() const
 
 GfxRenderSurface* GfxTextureD3D11::GetRenderSurface(UInt32 index, UInt32 level) const
 {
-	UInt32 layers = textureDesc_.isCube_ ? 6 : textureDesc_.layers_;
-	UInt32 arrayIndex = index * layers + level;
+	UInt32 arrayIndex = index * textureDesc_.levels_ + level;
 	return arrayIndex < gfxRenderSurfaces_.Size() ? gfxRenderSurfaces_[arrayIndex] : nullptr;
 }
 

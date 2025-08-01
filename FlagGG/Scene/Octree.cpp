@@ -5,9 +5,10 @@
 namespace FlagGG
 {
 
-OctreeNode::OctreeNode(const BoundingBox& box, UInt32 level) :
-	box_(box),
-	level_(level)
+OctreeNode::OctreeNode(const BoundingBox& box, UInt32 level)
+	: level_(level)
+	, box_(box)
+	
 {
 	const auto& halfSize = box_.HalfSize();
 	cullingBox_ = BoundingBox(box_.min_ - halfSize, box_.max_ + halfSize);
@@ -57,9 +58,9 @@ void OctreeNode::RemoveAllChildren()
 	}
 }
 
-Octree::Octree() :
-	maxLevel_(8u),
-	root_(BoundingBox(-1e5f, 1e5f), 0)
+Octree::Octree()
+	: root_(BoundingBox(-1e5f, 1e5f), 0)
+	, maxLevel_(8u)
 {
 }
 
@@ -114,7 +115,7 @@ void Octree::GetElementsImpl(const OctreeNode* node, OctreeQuery& query, bool in
 			inside = true;
 		else if (res == OUTSIDE)
 		{
-			// AABB±»µ±Ç°node·¶Î§°üÎ§
+			// AABBï¿½ï¿½ï¿½ï¿½Ç°nodeï¿½ï¿½Î§ï¿½ï¿½Î§
 			return;
 		}
 	}

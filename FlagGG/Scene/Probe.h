@@ -20,7 +20,7 @@ public:
 	Probe();
 
 	// 获取DrawableFlags
-	virtual UInt32 GetDrawableFlags() const { return DRAWABLE_PROBE; }
+	UInt32 GetDrawableFlags() const override { return DRAWABLE_PROBE; }
 
 	// 加载
 	void Load(const String& path);

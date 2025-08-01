@@ -141,7 +141,6 @@ void WindowDevice::UnregisterWinMessage(Window* wv)
 
 Window::Window(void* parentWindow, const IntRect& rect) :
 	window_(nullptr),
-	parentWindow_(parentWindow),
 	rect_(rect)
 {
 	Create(parentWindow, rect);

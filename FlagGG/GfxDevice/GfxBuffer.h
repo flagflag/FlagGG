@@ -6,6 +6,7 @@
 
 #include "GfxDevice/GfxObject.h"
 #include "Graphics/GraphicsDef.h"
+#include "Container/Ptr.h"
 #include "Container/FlagSet.h"
 #include "Math/Math.h"
 
@@ -22,6 +23,17 @@ struct GfxBufferDesc
 	BufferBindFlags bindFlags_;      // BufferBind
 	BufferAccessFlags accessFlags_;  // BufferAccess
 	BufferUsage usage_;              // BufferUsage
+};
+
+class FlagGG_API GfxBufferReadbackDataStream : public GfxObject
+{
+	OBJECT_OVERRIDE(GfxBufferReadbackDataStream, GfxObject);
+public:
+	explicit GfxBufferReadbackDataStream();
+
+	~GfxBufferReadbackDataStream() override;
+
+	virtual void Read(void* dataPtr) = 0;
 };
 
 class FlagGG_API GfxBuffer : public GfxObject
@@ -61,6 +73,21 @@ public:
 
 	// 结束写数据
 	virtual void EndWrite(UInt32 bytesWritten);
+
+	// 拷贝数据
+	virtual void CopyData(GfxBuffer* srcBuffer, UInt32 srcOffset, UInt32 destOffset, UInt32 copySize);
+
+	// 回读GPU数据
+	virtual bool ReadBack(void* dataPtr);
+
+	// 回读GPU数据（某个Rect区域）
+	virtual bool ReadBackSubResigon(void* dataPtr, UInt32 offset, UInt32 size);
+
+	// 回读GPU数据
+	virtual SharedPtr<GfxBufferReadbackDataStream> ReadBackToStream();
+
+	// 回去GPU数据（某个Rect区域）
+	virtual SharedPtr<GfxBufferReadbackDataStream> ReadbackToStream(UInt32 offset, UInt32 size);
 
 	// 获取CPU映射数据
 	virtual const UInt8* GetShadowData() const;

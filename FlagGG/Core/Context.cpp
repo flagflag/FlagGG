@@ -1,8 +1,17 @@
 #include "Core/Context.h"
 #include "AsyncFrame/Thread/UniqueThread.h"
+#include "Utility/SystemHelper.h"
 
 namespace FlagGG
 {
+
+Context::Context()
+{
+    workDir_ = GetProgramDir();
+    resDir_ = workDir_ + "Res";
+    logDir_ = workDir_ + "logs";
+    binaryDir_ = workDir_;
+}
 
 #if PLATFORM_WINDOWS
 template <> void Context::RegisterVariable<Int8>(Int8* variable, const String& variableName)
@@ -75,6 +84,26 @@ void Context::AddFrameNumber()
     {
         temporalAASampleIndex_ = 0;
     }
+}
+
+void Context::SetWorkDir(const String& workDir)
+{
+    workDir_ = workDir;
+}
+
+void Context::SetResourceDir(const String& resDir)
+{
+    resDir_ = resDir;
+}
+
+void Context::SetLogDir(const String& logDir)
+{
+    logDir_ = logDir;
+}
+
+void Context::SetBinaryDir(const String& binaryDir)
+{
+    binaryDir_ = binaryDir;
 }
 
 }

@@ -12,8 +12,8 @@
 #include "Graphics/ShaderParameter.h"
 #include "Memory/Memory.h"
 #include "Core/Profiler.h"
-
 #include "Log.h"
+#include "NvApi.h"
 
 namespace FlagGG
 {
@@ -162,17 +162,63 @@ static const D3D11_STENCIL_OP d3d11StencilOperation[] =
 	D3D11_STENCIL_OP_DECR,
 };
 
+typedef HRESULT(WINAPI* PFN_CREATE_DXGI_FACTORY)(UINT flags, REFID riid, void** ppFactory);
+
+static HMODULE GetDXXGIDynamicLibModule()
+{
+	static HMODULE dxgiLib = ::LoadLibraryA("dxgi.dll");
+	return dxgiLib;
+}
+
+static PFN_CREATE_DXGI_FACTORY GetCreateDXGIFactory(const char* funcName)
+{
+	return reinterpret_cast<PFN_CREATE_DXGI_FACTORY>(::GetProcAddress(GetDXXGIDynamicLibModule(), funcName));
+}
+
 GfxDeviceD3D11::GfxDeviceD3D11()
 	: GfxDevice()
 {
+	// 需要先初始化NV动态库，这样通过IDXGIAdapter::EnumAdapters获取到的显卡才会按照机能排序，越靠前的机能越好
+	nvApi_ = new NvApi();
+	nvApi_->Init();
+
+	auto createDXGIFactory = GetCreateDXGIFactory("CreateDXGIFactory2");
+	HRESULT hr = createDXGIFactory(0, __uuidof(IDXGIFactory), (void**)&factory_);
+	if (FAILED(hr))
+	{
+		createDXGIFactory = GetCreateDXGIFactory("CreateDXGIFactory1");
+		hr = createDXGIFactory(0, __uuidof(IDXGIFactory), (void**)&factory_);
+		if (FAILED(hr))
+		{
+			createDXGIFactory = GetCreateDXGIFactory("CreateDXGIFactory");
+			hr = createDXGIFactory(0, __uuidof(IDXGIFactory), (void**)&factory_);
+			if (FAILED(hr))
+			{
+				FLAGGG_LOG_ERROR("D3d11CreateDevice failed.");
+				return;
+			}
+		}
+	}
+
+	IDXGIAdapter* adapter = nullptr;
+	for (Int32 i = 0; ; ++i)
+	{
+		if (SUCCEEDED(factory_->EnumAdapters(i, &adapter)))
+		{
+			DXGI_ADAPTER_DESC desc;
+			adapter->GetDesc(&desc);
+			break;
+		}
+	}
+
 	UINT createDeviceFlags = 0;
 #if _DEBUG
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
 	HRESULT hr = D3D11CreateDevice(
-		nullptr,
-		D3D_DRIVER_TYPE_HARDWARE,
+		adapter,
+		D3D_DRIVER_TYPE_UNKNOWN,
 		nullptr,
 		createDeviceFlags,
 		nullptr,
@@ -183,7 +229,26 @@ GfxDeviceD3D11::GfxDeviceD3D11()
 		&deviceContext_
 	);
 
-	if (hr != 0)
+#if _DEBUG
+	if (FAILED(hr))
+	{
+		createDeviceFlags ^= D3D11_CREATE_DEVICE_DEBUG;
+		hr = D3D11CreateDevice(
+			adapter,
+			D3D_DRIVER_TYPE_UNKNOWN,
+			nullptr,
+			createDeviceFlags,
+			nullptr,
+			0,
+			D3D11_SDK_VERSION,
+			&device_,
+			nullptr,
+			&deviceContext_
+		);
+	}
+#endif
+
+	if (FAILED(hr))
 	{
 		FLAGGG_LOG_ERROR("D3D11CreateDevice failed.");
 
@@ -196,6 +261,7 @@ GfxDeviceD3D11::GfxDeviceD3D11()
 
 GfxDeviceD3D11::~GfxDeviceD3D11()
 {
+	D3D11_SAFE_RELEASE(factory_);
 	D3D11_SAFE_RELEASE(device_);
 	D3D11_SAFE_RELEASE(deviceContext_);
 	for (auto& it : rasterizerStates_)
@@ -214,6 +280,8 @@ GfxDeviceD3D11::~GfxDeviceD3D11()
 	{
 		D3D11_SAFE_RELEASE(it);
 	}
+
+	nvApi_->Shutdown();
 }
 
 void GfxDeviceD3D11::BeginFrame()
@@ -311,6 +379,33 @@ void GfxDeviceD3D11::DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, 
 	deviceContext_->DrawIndexedInstanced(indexCount, instanceCount, indexStart, vertexStart, instanceStart);
 }
 
+void GfxDeviceD3D11::DrawIndexedInstancedIndirect(GfxBuffer* indirectBuffer, UInt32 indirectDataOffset, UInt32 indirectDataStride, UInt32 drawIndirectCount) override;
+{
+	if (!vertexShader_ || !pixelShader_)
+	{
+		ASSERT_MESSAGE(false, "vertex shader or pixel shader is null.");
+		return;
+	}
+
+	PROFILE_AUTO(GfxDeviceD3D11::DrawIndexedInstancedIndirect);
+
+	PrepareDraw();
+
+	auto* gfxBufferD3D11 = RTTICast<GfxBufferD3D11>(indirectBuffer);
+
+	if (nvApi_->IsInitialized() && nvApi_->nvApiD3D11MultiDrawIndexedInstancedIndirect)
+	{
+		nvApi_->nvApiD3D11MultiDrawIndexedInstancedIndirect(deviceContext_, drawIndirectCount, gfxBufferD3D11->GetD3D11Buffer(), indirectDataOffset, indirectDataStride)
+	}
+	else
+	{
+		for (UInt32 i = 0; i < drawIndirectCount; ++i)
+		{
+			deviceContext_->DrawIndexedInstancedIndirect(gfxBufferD3D11->GetD3D11Buffer(), indirectDataOffset + indirectDataStride * i);
+		}
+	}
+}
+
 void GfxDeviceD3D11::Flush()
 {
 	deviceContext_->Flush();
@@ -341,6 +436,8 @@ void GfxDeviceD3D11::PrepareDraw()
 
 	if (computeResourcesDirty_)
 	{
+		ID3D11ShaderResourceView* d3dSRV[D3D11_PS_CS_UAV_REGISTER_COUNT] = {};
+		deviceContext_->CSSetShaderResources(0, D3D11_PS_CS_UAV_REGISTER_COUNT, d3dSRV);
 		ID3D11UnorderedAccessView* d3dUAV[D3D11_PS_CS_UAV_REGISTER_COUNT] = {};
 		deviceContext_->CSSetUnorderedAccessViews(0, D3D11_PS_CS_UAV_REGISTER_COUNT, d3dUAV, nullptr);
 		computeResourcesDirty_ = false;
@@ -415,18 +512,30 @@ void GfxDeviceD3D11::PrepareDraw()
 	instanceBufferDirty_ = false;
 
 	{
-		PROFILE_AUTO(CopyShaderParameter);
+		if (engineShaderParameters_ || materialShaderParameters_)
+		{
+			PROFILE_AUTO(CopyShaderParameter);
 
-		CopyShaderParameterToBuffer(vertexShaderD3D11, vsConstantBuffer_);
-		CopyShaderParameterToBuffer(pixelShaderD3D11, psConstantBuffer_);
+			CopyShaderParameterToBuffer(vertexShaderD3D11, vsConstantBuffer_);
+			CopyShaderParameterToBuffer(pixelShaderD3D11, psConstantBuffer_);
+		}
 
 		static ID3D11Buffer* d3dVSConstantBuffer[MAX_CONST_BUFFER] = { nullptr };
 		static ID3D11Buffer* d3dPSConstantBuffer[MAX_CONST_BUFFER] = { nullptr };
 
 		for (UInt32 i = 0; i < MAX_CONST_BUFFER; ++i)
 		{
-			d3dVSConstantBuffer[i] = vsConstantBuffer_[i].GetD3D11Buffer();
-			d3dPSConstantBuffer[i] = psConstantBuffer_[i].GetD3D11Buffer();
+			if (constantBuffers_[i])
+			{
+				auto bufferD3D11 = RTTICast<GfxBufferD3D11>(constantBuffers_[i]);
+				d3dVSConstantBuffer[i] = bufferD3D11->GetD3D11Buffer();
+				d3dPSConstantBuffer[i] = bufferD3D11->GetD3D11Buffer();
+			}
+			else
+			{
+				d3dVSConstantBuffer[i] = vsConstantBuffer_[i].GetD3D11Buffer();
+				d3dPSConstantBuffer[i] = psConstantBuffer_[i].GetD3D11Buffer();
+			}
 		}
 
 		deviceContext_->VSSetConstantBuffers(0, MAX_CONST_BUFFER, d3dVSConstantBuffer);
@@ -569,6 +678,10 @@ void GfxDeviceD3D11::PrepareDraw()
 
 void GfxDeviceD3D11::PrepareDispatch()
 {
+	// TODO: 待优化
+	deviceContext_->OMSetRenderTargets(0, nullptr, nullptr);
+	renderTargetDirty_ = true;
+
 	auto computeShaderD3D11 = RTTICast<GfxShaderD3D11>(computeShader_);
 	ID3D11Buffer* d3dComputeConstantBuffer[MAX_CONST_BUFFER] = {};
 
@@ -609,18 +722,41 @@ void GfxDeviceD3D11::PrepareDispatch()
 		computeResourcesDirty_ = false;
 	}
 
-	if (shaderDirty_)
+	if (computeSamplerDirty_)
+	{
+		static ID3D11SamplerState* computeSamplerState[D3D11_PS_CS_UAV_REGISTER_COUNT] = {};
+
+		for (UInt32 i = 0; i < D3D11_PS_CS_UAV_REGISTER_COUNT; ++i)
+		{
+			computeSamplerState[i] = GetD3D11SamplerState(computeSamplers_[i]);
+		}
+
+		deviceContext_->CSSetSamplers(0, D3D11_PS_CS_UAV_REGISTER_COUNT, computeSamplerState);
+
+		computeSamplerDirty_ = false;
+	}
+
+	if (computeShaderDirty_)
 	{
 		deviceContext_->CSSetShader(computeShaderD3D11->GetD3D11ComputeShader(), nullptr, 0);
 
-		shaderDirty_ = false;
+		computeShaderDirty_ = false;
 	}
 
-	CopyShaderParameterToBuffer(computeShaderD3D11, csConstantBuffer_);
+	if (engineShaderParameters_ || materialShaderParameters_)
+		CopyShaderParameterToBuffer(computeShaderD3D11, csConstantBuffer_);
 
 	for (UInt32 i = 0; i < MAX_CONST_BUFFER; ++i)
 	{
-		d3dComputeConstantBuffer[i] = csConstantBuffer_[i].GetD3D11Buffer();
+		if (constantBuffers_[i])
+		{
+			auto bufferD3D11 = RTTICast<GfxBufferD3D11>(constantBuffers_[i]);
+			d3dComputeConstantBuffer[i] = bufferD3D11->GetD3D11Buffer();
+		}
+		else
+		{
+			d3dComputeConstantBuffer[i] = csConstantBuffer_[i].GetD3D11Buffer();
+		}
 	}
 
 	deviceContext_->CSSetConstantBuffers(0, MAX_CONST_BUFFER, d3dComputeConstantBuffer);

@@ -433,7 +433,7 @@ FORCEINLINE Real& TwoVectors::operator[]( Int32 i )
 FORCEINLINE String TwoVectors::ToString() const
 {
 	char tempBuffer[CONVERSION_BUFFER_LENGTH];
-	sprintf(tempBuffer, "V1=(%s) V2=(%s)", *v1_.ToString().CString(), *v2_.ToString().CString());
+	sprintf(tempBuffer, "V1=(%s) V2=(%s)", v1_.ToString().CString(), v2_.ToString().CString());
 	return tempBuffer;
 }
 

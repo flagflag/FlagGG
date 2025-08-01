@@ -130,9 +130,12 @@ void GfxDevice::SetViewport(const IntRect& viewport)
 
 void GfxDevice::SetVertexBuffer(GfxBuffer* gfxVertexBuffer)
 {
-	vertexBuffers_.Resize(1);
-	vertexBuffers_[0] = gfxVertexBuffer;
-	vertexBufferDirty_ = true;
+	if (vertexBuffers_.Size() != 1 || vertexBuffers_[0] != gfxVertexBuffer)
+	{
+		vertexBuffers_.Resize(1);
+		vertexBuffers_[0] = gfxVertexBuffer;
+		vertexBufferDirty_ = true;
+	}
 }
 
 void GfxDevice::ClearVertexBuffer()
@@ -149,8 +152,11 @@ void GfxDevice::AddVertexBuffer(GfxBuffer* gfxVertexBuffer)
 
 void GfxDevice::SetIndexBuffer(GfxBuffer* gfxIndexBuffer)
 {
-	indexBuffer_ = gfxIndexBuffer;
-	indexBufferDirty_ = true;
+	if (indexBuffer_ != gfxIndexBuffer)
+	{
+		indexBuffer_ = gfxIndexBuffer;
+		indexBufferDirty_ = true;
+	}
 }
 
 void GfxDevice::SetVertexDescription(VertexDescription* vertexDesc)
@@ -216,6 +222,35 @@ void GfxDevice::SetComputeTexture(UInt8 slotID, GfxTexture* gfxaTexture, Compute
 		computeTextures_[slotID] = gfxaTexture;
 		computeBindFlags_[slotID] = bindFlags;
 		computeResourcesDirty_ = true;
+	}
+}
+
+void GfxDevice::SetComputeSampler(UInt8 slotID, GfxSampler* gfxSampler)
+{
+	if (slotID < MAX_GPU_UNITS_COUNT)
+	{
+		computeSamplers_[slotID] = gfxSampler;
+		computeSamplerDirty_ = true;
+	}
+}
+
+void GfxDevice::ResetConstantBuffer()
+{
+	for (auto& it : constantBuffers_)
+	{
+		it.Reset();
+	}
+
+	constantBuffersDirty_ = true;
+}
+
+void GfxDevice::SetConstantBuffer(UInt8 slotID, GfxBuffer* gfxBuffer)
+{
+	ASSERT(slotID < MAX_GPU_UNITS_COUNT);
+	if (slotID < MAX_GPU_UNITS_COUNT)
+	{
+		constantBuffers_[slotID] = gfxBuffer;
+		constantBuffersDirty_ = true;
 	}
 }
 
@@ -297,7 +332,6 @@ void GfxDevice::SetShaders(GfxShader* vertexShader, GfxShader* pixelShader)
 	{
 		vertexShader_ = vertexShader;
 		pixelShader_ = pixelShader;
-		computeShader_ = nullptr;
 		shaderDirty_ = true;
 		vertexDescDirty_ = true;
 	}
@@ -307,10 +341,8 @@ void GfxDevice::SetComputeShader(GfxShader* computeShader)
 {
 	if (computeShader_ != computeShader)
 	{
-		vertexShader_ = nullptr;
-		pixelShader_ = nullptr;
 		computeShader_ = computeShader;
-		shaderDirty_ = true;
+		computeShaderDirty_ = true;
 	}
 }
 
@@ -437,6 +469,11 @@ void GfxDevice::DrawIndexed(UInt32 indexStart, UInt32 indexCount, UInt32 vertexS
 }
 
 void GfxDevice::DrawIndexedInstanced(UInt32 indexStart, UInt32 indexCount, UInt32 vertexStart, UInt32 instanceStart, UInt32 instanceCount)
+{
+
+}
+
+void GfxDevice::DrawIndexedInstancedIndirect(GfxBuffer* indirectBuffer, UInt32 indirectDataOffset, UInt32 indirectDataStride, UInt32 drawIndirectCount)
 {
 
 }

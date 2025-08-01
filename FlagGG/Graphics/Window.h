@@ -129,18 +129,9 @@ private:
 	// 窗口ui根节点
 	SharedPtr<UIElement> uiRoot_;
 
-	UInt32 multiSample_{ 1 };
-
-	bool sRGB_{ true };
-
 	void* window_{ nullptr };
 
-	void* parentWindow_{ nullptr };
-
 	IntRect rect_;
-
-	UInt32 vertexSize_{ 0 };
-	UInt32 vertexCount_{ 0 };
 
 #if PLATFORM_WINDOWS
 	POINT mousePos_;
