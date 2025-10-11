@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Physics/Rigid.h"
+#include "Physics/PhysX/Rigid.h"
 
 namespace FlagGG
 {

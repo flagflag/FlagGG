@@ -1,5 +1,5 @@
 #include "Rigid.h"
-#include "Physics/PhysicsScene.h"
+#include "Physics/PhysX/PhysicsScene.h"
 #include "Scene/Scene.h"
 
 namespace FlagGG

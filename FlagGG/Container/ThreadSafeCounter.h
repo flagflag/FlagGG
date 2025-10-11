@@ -1,5 +1,5 @@
 //
-// Ô­×Óint32
+// åŸå­int32
 //
 
 #pragma once
@@ -10,7 +10,7 @@
 namespace FlagGG
 {
 
-class ThreadSafeCounter
+class FlagGG_API ThreadSafeCounter
 {
 public:
 	ThreadSafeCounter()
@@ -32,46 +32,46 @@ public:
 		counter_ = rhs.GetValue();
 	}
 
-	// É¾³ı¿½±´º¯Êı
+	// åˆ é™¤æ‹·è´å‡½æ•°
 	ThreadSafeCounter& operator=(const ThreadSafeCounter& rhs) = delete;
 
-	// Ô­×Ó²Ù×÷£¬ÊıÖµ+1
+	// åŸå­æ“ä½œï¼Œæ•°å€¼+1
 	Int32 Increment()
 	{
 		return PlatformAtomics::InterlockedIncrement(&counter_);
 	}
 
-	// Ô­×Ó²Ù×÷£¬ÊıÖµ+amount
+	// åŸå­æ“ä½œï¼Œæ•°å€¼+amount
 	Int32 Add(Int32 amount)
 	{
 		return PlatformAtomics::InterlockedAdd(&counter_, amount);
 	}
 
-	// Ô­×Ó²Ù×÷£¬ÊıÖµ-1
+	// åŸå­æ“ä½œï¼Œæ•°å€¼-1
 	Int32 Decrement()
 	{
 		return PlatformAtomics::InterlockedDecrement(&counter_);
 	}
 
-	// Ô­×Ó²Ù×÷£¬ÊıÖµ-amount
+	// åŸå­æ“ä½œï¼Œæ•°å€¼-amount
 	Int32 Subtract(Int32 amount)
 	{
 		return PlatformAtomics::InterlockedAdd(&counter_, -amount);
 	}
 
-	// Ô­×Ó²Ù×÷£¬counter_ = value
+	// åŸå­æ“ä½œï¼Œcounter_ = value
 	Int32 Set(Int32 value)
 	{
 		return PlatformAtomics::InterlockedExchange(&counter_, value);
 	}
 
-	// Ô­×Ó²Ù×÷£¬counter_ = 0
+	// åŸå­æ“ä½œï¼Œcounter_ = 0
 	Int32 Reset()
 	{
 		return PlatformAtomics::InterlockedExchange(&counter_, 0);
 	}
 
-	// Ô­×Ó²Ù×÷£¬»ñÈ¡counter_µÄÖµ
+	// åŸå­æ“ä½œï¼Œè·å–counter_çš„å€¼
 	Int32 GetValue() const
 	{
 		return PlatformAtomics::AtomicRead(&const_cast<ThreadSafeCounter*>(this)->counter_);

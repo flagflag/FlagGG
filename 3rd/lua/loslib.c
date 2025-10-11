@@ -382,13 +382,6 @@ static const luaL_Reg syslib[] = {
   {"clock",     os_clock},
   {"date",      os_date},
   {"difftime",  os_difftime},
-//modified by 魏越闽
-//execute里面用了system函数，这个函数从XCode9开始不支持在iOS使用了
-//我感觉也没有必要啊，iPhone上app能执行别的进程吗。。(或者我理解得有问题？)
-//虽然网上有解决方案，比如
-//  https://www.jianshu.com/p/daf6eba205ba
-//  https://github.com/libpd/pd-for-ios/issues/19
-//但我还是考虑直接把这个方法移除，因为反正也用不到。。出问题的话也许也更容易暴露
 #if !(defined(IOS) || defined(TVOS))
   {"execute",   os_execute},
 #endif

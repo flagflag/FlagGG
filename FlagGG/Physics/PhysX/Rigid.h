@@ -38,7 +38,7 @@ protected:
 	void OnGlobalRemoveFromScene(Scene* scene, Component* component) {}
 
 
-private:
+protected:
 	friend class PhysicsScene;
 
 	physx::PxRigidActor* rigidActor_;

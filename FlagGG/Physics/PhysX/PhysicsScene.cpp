@@ -1,6 +1,6 @@
 #include "PhysicsScene.h"
-#include "Physics/Rigid.h"
-#include "Physics/PhysicsSystem.h"
+#include "Physics/PhysX/Rigid.h"
+#include "Physics/PhysX/PhysicsSystem.h"
 
 #ifdef FLAGGG_PHYSICS
 #include <PxPhysics.h>

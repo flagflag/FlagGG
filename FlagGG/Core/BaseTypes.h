@@ -55,11 +55,6 @@ static const Real Float32_HalfPI = Real(0.5 * 3.14159265358979323846);
 static const Real Float32_2InversePI = Real(2.0 / 3.14159265358979323846);
 static const Real Float32_Inverse2PI = Real(0.5 / 3.14159265358979323846);
 
-
-#ifndef MTU
-#define MTU 1500 //以太网标准MTU
-#endif
-
 enum { INDEX_NONE = -1 };
 
 enum EForceInit
