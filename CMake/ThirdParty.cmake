@@ -44,3 +44,10 @@ endif ()
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/Khronos)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/HLSLcc/include)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/JoltPhysics)
+if (FLAGGG_PHYSX)
+    set (PHYSX_LIBS
+        PhysX_64.lib
+        PhysXFoundation_64.lib
+    )
+    link_directories (${CMAKE_CURRENT_SOURCE_DIR}/../3rd/PhysX/physx/bin/win.x86_64.vc142.mt)
+endif ()

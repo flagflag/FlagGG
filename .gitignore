@@ -1,6 +1,7 @@
 3rd/boost_1_67_0
 3rd/boost_1_69_0
 3rd/rapidjson/.git
+3rd/PhysX/physx/compiler/vc17win64
 FlagGG/project/Debug/*
 FlagGG/project/Release/*
 LuaScript

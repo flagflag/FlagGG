@@ -111,6 +111,21 @@ list (APPEND THIRD_LIB yogacore)
 if (FLAGGG_VULKAN)
     list (APPEND THIRD_LIB glslang spirv-tools spirv-reflect-lib)
 endif ()
+if (FLAGGG_PHYSX)
+    list (APPEND THIRD_LIB ${PHYSX_LIBS})
+    add_custom_command(TARGET ${TARGET_NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy 
+        ${CMAKE_CURRENT_SOURCE_DIR}/../3rd/PhysX/physx/bin/win.x86_64.vc142.mt/$<IF:$<CONFIG:Debug>,debug,release>/PhysX_64.dll ${CMAKE_CURRENT_SOURCE_DIR}/../bin/$<IF:$<CONFIG:Debug>,Debug,Release>)
+    add_custom_command(TARGET ${TARGET_NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy 
+        ${CMAKE_CURRENT_SOURCE_DIR}/../3rd/PhysX/physx/bin/win.x86_64.vc142.mt/$<IF:$<CONFIG:Debug>,debug,release>/PhysXCommon_64.dll ${CMAKE_CURRENT_SOURCE_DIR}/../bin/$<IF:$<CONFIG:Debug>,Debug,Release>)
+    add_custom_command(TARGET ${TARGET_NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy 
+        ${CMAKE_CURRENT_SOURCE_DIR}/../3rd/PhysX/physx/bin/win.x86_64.vc142.mt/$<IF:$<CONFIG:Debug>,debug,release>/PhysXCooking_64.dll ${CMAKE_CURRENT_SOURCE_DIR}/../bin/$<IF:$<CONFIG:Debug>,Debug,Release>)
+    add_custom_command(TARGET ${TARGET_NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy 
+        ${CMAKE_CURRENT_SOURCE_DIR}/../3rd/PhysX/physx/bin/win.x86_64.vc142.mt/$<IF:$<CONFIG:Debug>,debug,release>/PhysXDevice64.dll ${CMAKE_CURRENT_SOURCE_DIR}/../bin/$<IF:$<CONFIG:Debug>,Debug,Release>)
+    add_custom_command(TARGET ${TARGET_NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy 
+        ${CMAKE_CURRENT_SOURCE_DIR}/../3rd/PhysX/physx/bin/win.x86_64.vc142.mt/$<IF:$<CONFIG:Debug>,debug,release>/PhysXFoundation_64.dll ${CMAKE_CURRENT_SOURCE_DIR}/../bin/$<IF:$<CONFIG:Debug>,Debug,Release>)
+    add_custom_command(TARGET ${TARGET_NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy 
+        ${CMAKE_CURRENT_SOURCE_DIR}/../3rd/PhysX/physx/bin/win.x86_64.vc142.mt/$<IF:$<CONFIG:Debug>,debug,release>/PhysXGpu_64.dll ${CMAKE_CURRENT_SOURCE_DIR}/../bin/$<IF:$<CONFIG:Debug>,Debug,Release>)
+endif ()
 
 target_link_libraries(${TARGET_NAME} ${THIRD_LIB})
 
