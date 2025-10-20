@@ -8,6 +8,7 @@
 #include <PxScene.h>
 #include <PxRigidActor.h>
 #include <foundation/PxVec3.h>
+#include <extensions/PxDefaultSimulationFilterShader.h>
 #endif
 
 namespace FlagGG
@@ -19,7 +20,9 @@ PhysicsScene::PhysicsScene()
 	auto* physics = GetSubsystem<Physics>()->GetPxPhysics();
 
 	physx::PxSceneDesc sceneDesc(physics->getTolerancesScale());
-	sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
+	sceneDesc.gravity = physx::PxVec3(0.0f, 0.0f, -9.81f);
+	if (!sceneDesc.filterShader)
+		sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 	sceneDesc.flags |= physx::PxSceneFlag::eENABLE_PCM;
 	sceneDesc.flags |= physx::PxSceneFlag::eENABLE_STABILIZATION;
 	sceneDesc.flags |= physx::PxSceneFlag::eENABLE_ACTIVE_ACTORS;

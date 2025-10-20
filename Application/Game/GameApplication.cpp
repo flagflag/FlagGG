@@ -16,6 +16,9 @@
 #include <Config/LJSONFile.h>
 #include <Core/EngineSettings.h>
 #include <Core/Profiler.h>
+#if FLAGGG_PHYSICS
+#include <Physics/Physics.h>
+#endif
 
 #include "GameApplication.h"
 #include "GamePlay/ThirdPersonPerspective.h"
